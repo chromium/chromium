@@ -157,14 +157,14 @@ constexpr char kExcludeCredentialsRangeErrorMessage[] =
 constexpr char kRpIdContentTypeMessage[] =
     "SecurityError: The relying party ID is not a registrable domain suffix "
     "of, nor equal to the current domain. Subsequently, the "
-    ".well-known/webauthn-origins resource of the claimed RP ID had the wrong "
+    ".well-known/webauthn resource of the claimed RP ID had the wrong "
     "content-type. (It should be application/json.)";
 
 constexpr char kRpIdNoEntryMessage[] =
     "SecurityError: The relying party ID is not a registrable domain suffix "
     "of, nor equal to the current domain. Subsequently, fetching the "
-    ".well-known/webauthn-origins resource of the claimed RP ID was successful, "
-    "but no listed origin matched the caller.";
+    ".well-known/webauthn resource of the claimed RP ID was "
+    "successful, but no listed origin matched the caller.";
 
 // Templates to be used with base::ReplaceStringPlaceholders. Can be
 // modified to include up to 9 replacements. The default values for
@@ -471,7 +471,7 @@ class WebAuthBrowserTestContentBrowserClient
   }
 
   // set_webauthn_origins_response sets the fake HTTP response that will be
-  // returned for all requests for `.well-known/webauthn-origins` requests.
+  // returned for all requests for `.well-known/webauthn` requests.
   void set_webauthn_origins_response(std::string_view content_type,
                                      std::string_view authorized_origin) {
     auto fake_url_loader_factory =

@@ -106,7 +106,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   }
 
   constexpr char well_known_url_template[] =
-      "https://domain.com/.well-known/webauthn-origins";
+      "https://domain.com/.well-known/webauthn";
   GURL well_known_url(well_known_url_template);
   CHECK(well_known_url.is_valid());
 
@@ -149,7 +149,7 @@ blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
     const base::Value& value) {
-  // This code processes a .well-known/webauthn-origins JSON. See
+  // This code processes a .well-known/webauthn JSON. See
   // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
 
   if (!value.is_dict()) {
@@ -216,7 +216,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::RemoteValidation(
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback)
     : caller_origin_(caller_origin), callback_(std::move(callback)) {}
 
-// OnFetchComplete is called when the `.well-known/webauthn-origins` for an
+// OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
     std::unique_ptr<std::string> body) {
