@@ -1971,7 +1971,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
 // Tests that a clean close from the server is not reported as an error when
 // there is a race between OnDropChannel and SendFrame.
 // Regression test for https://crbug.com/937790.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketCleanClose) {
+//
+// TODO(b:332825952): Flaky on linux-chromeos-dbg
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebSocketCleanClose DISABLED_WebSocketCleanClose
+#else
+#define MAYBE_WebSocketCleanClose WebSocketCleanClose
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebSocketCleanClose) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
   ASSERT_TRUE(RunExtensionTest(
