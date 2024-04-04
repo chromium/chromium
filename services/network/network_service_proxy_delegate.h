@@ -61,7 +61,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
  private:
   friend class NetworkServiceProxyDelegateTest;
-  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyDelegateTest, MergeProxyRules);
 
   // Checks whether `proxy_chain` is present in the current proxy config.
   bool IsInProxyConfig(const net::ProxyChain& proxy_chain) const;
@@ -70,11 +69,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   // proxied.
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
                         const std::string& method) const;
-
-  // Returns the equivalent of replacing all DIRECT proxies in
-  // `existing_proxy_list` with the proxies in `custom_proxy_list`.
-  net::ProxyList MergeProxyRules(const net::ProxyList& existing_proxy_list,
-                                 const net::ProxyList& custom_proxy_list) const;
 
   void OnObserverDisconnect();
 

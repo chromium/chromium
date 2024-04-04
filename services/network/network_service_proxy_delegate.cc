@@ -133,8 +133,6 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  // At this point, this delegate is not supporting IP protection, so apply the
-  // `proxy_config_` as usual.
   if (!EligibleForProxy(*result, method)) {
     return;
   }
@@ -221,24 +219,6 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   }
 
   return true;
-}
-
-net::ProxyList NetworkServiceProxyDelegate::MergeProxyRules(
-    const net::ProxyList& existing_proxy_list,
-    const net::ProxyList& custom_proxy_list) const {
-  net::ProxyList merged_proxy_list;
-  for (const auto& existing_chain : existing_proxy_list.AllChains()) {
-    if (existing_chain.is_direct()) {
-      // Replace direct option with all proxies in the custom proxy list
-      for (const auto& custom_chain : custom_proxy_list.AllChains()) {
-        merged_proxy_list.AddProxyChain(custom_chain);
-      }
-    } else {
-      merged_proxy_list.AddProxyChain(existing_chain);
-    }
-  }
-
-  return merged_proxy_list;
 }
 
 void NetworkServiceProxyDelegate::OnObserverDisconnect() {
