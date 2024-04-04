@@ -180,12 +180,13 @@
     <template is="dom-if" restamp
         if="[[showAutoBrightnessToggle_()]]">
       <!-- TODO(cambickel): Update this toggle to read from the auto-brightness
-        pref, and add an on-change handler. -->
+        pref. -->
       <!-- Note: Until a pref is added, this will show an error saying "pref not
         found". This is okay, because this section is behind a flag, and a pref
         will be added before the flag is enabled by default. -->
       <settings-toggle-button id="autoBrightnessToggle" class="indented hr"
-          noSetPref="true" label="$i18n{displayAutoBrightnessToggleLabel}"
+          no-set-pref label="$i18n{displayAutoBrightnessToggleLabel}"
+          on-settings-boolean-control-change="onAutoBrightnessToggleChange_"
           sub-label="$i18n{displayAutoBrightnessToggleSubtitle}">
       </settings-toggle-button>
     </template>

@@ -34,6 +34,8 @@ export class FakeDisplaySettingsProvider implements
       DisplayBrightnessSettingsObserverInterface[] = [];
   private isTabletMode: boolean = false;
   private brightnessPercent: number = 0;
+  // Enabled by default to match system behavior.
+  private isAmbientLightSensorEnabled: boolean = true;
   private performanceSettingEnabled: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
@@ -115,6 +117,15 @@ export class FakeDisplaySettingsProvider implements
 
   getInternalDisplayScreenBrightness(): number {
     return this.brightnessPercent;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  setInternalDisplayAmbientLightSensorEnabled(enabled: boolean): void {
+    this.isAmbientLightSensorEnabled = enabled;
+  }
+
+  getInternalDisplayAmbientLightSensorEnabled(): boolean {
+    return this.isAmbientLightSensorEnabled;
   }
 
   // Implement DisplaySettingsProviderInterface.

@@ -146,12 +146,19 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(brightness_percent_);
   }
-  void SetAmbientLightSensorEnabled(bool enabled) override {}
+  void SetAmbientLightSensorEnabled(bool enabled) override {
+    is_ambient_light_sensor_enabled_ = enabled;
+  }
 
   double brightness_percent() const { return brightness_percent_; }
+  bool is_ambient_light_sensor_enabled() const {
+    return is_ambient_light_sensor_enabled_;
+  }
 
  private:
   double brightness_percent_;
+  // Enabled by default to match system behavior.
+  bool is_ambient_light_sensor_enabled_ = true;
 };
 
 }  // namespace
@@ -600,6 +607,66 @@ TEST_F(DisplaySettingsProviderTest,
       "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
       /*sample=*/brightness_percent,
       /*expected_bucket_count=*/1);
+}
+
+// Test the behavior when setting the internal display screen brightness (when
+// the feature flag is disabled).
+TEST_F(DisplaySettingsProviderTest,
+       SetAmbientLightSensorEnabled_FeatureDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+
+  // Set the ambient_light_sensor_enabled with a sentinel value, so we can test
+  // that the value doesn't change if the feature flag is disabled.
+  bool initial_sensor_enabled = true;
+  brightness_control_delegate_->SetAmbientLightSensorEnabled(
+      initial_sensor_enabled);
+
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
+
+  bool expected_sensor_enabled = false;
+  provider_->SetInternalDisplayAmbientLightSensorEnabled(
+      expected_sensor_enabled);
+
+  // When feature flag is disabled, setting the ambient light sensor value has
+  // no effect, and the value should be equal to the initial value.
+  EXPECT_EQ(initial_sensor_enabled,
+            brightness_control_delegate_->is_ambient_light_sensor_enabled());
+}
+
+// Test the behavior when setting the internal display screen brightness (when
+// the feature flag is enabled).
+TEST_F(DisplaySettingsProviderTest,
+       SetAmbientLightSensorEnabled_FeatureEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+
+  // Set the ambient_light_sensor_enabled with a sentinel value, so we can test
+  // that the value changes if the feature flag is enabled.
+  bool initial_sensor_enabled = true;
+  brightness_control_delegate_->SetAmbientLightSensorEnabled(
+      initial_sensor_enabled);
+
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
+
+  // When feature flag is enabled, setting the ambient light sensor value from
+  // the provider should update the actual ambient light sensor value.
+  bool expected_sensor_enabled = false;
+  provider_->SetInternalDisplayAmbientLightSensorEnabled(
+      expected_sensor_enabled);
+  EXPECT_EQ(expected_sensor_enabled,
+            brightness_control_delegate_->is_ambient_light_sensor_enabled());
+
+  // Re-enabling the sensor from the provider should also work.
+  bool expected_sensor_enabled2 = true;
+  provider_->SetInternalDisplayAmbientLightSensorEnabled(
+      expected_sensor_enabled2);
+  EXPECT_EQ(expected_sensor_enabled2,
+            brightness_control_delegate_->is_ambient_light_sensor_enabled());
 }
 
 }  // namespace ash::settings

@@ -40,6 +40,7 @@ import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} 
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
@@ -1205,6 +1206,23 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         Math.min(brightnessSliderValue, this.brightnessSliderMax_));
     this.displaySettingsProvider.setInternalDisplayScreenBrightness(
         newBrightness);
+  }
+
+  /**
+   * Handles the event when the auto-brightness toggle changes value.
+   */
+  private onAutoBrightnessToggleChange_(): void {
+    if (!isDisplayBrightnessControlInSettingsEnabled()) {
+      return;
+    }
+
+    const isAutoBrightnessToggleChecked: boolean =
+        strictQuery(
+            '#autoBrightnessToggle', this.shadowRoot,
+            SettingsToggleButtonElement)
+            .checked;
+    this.displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(
+        isAutoBrightnessToggleChecked);
   }
 
   /**

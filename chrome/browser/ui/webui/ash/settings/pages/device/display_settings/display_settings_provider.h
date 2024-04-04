@@ -98,6 +98,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
   void SetInternalDisplayScreenBrightness(double percent) override;
 
+  void SetInternalDisplayAmbientLightSensorEnabled(bool enabled) override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 

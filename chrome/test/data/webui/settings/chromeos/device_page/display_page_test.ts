@@ -1058,7 +1058,7 @@ suite('<settings-display>', () => {
         assertEquals(1, displayPage.displays.length);
         flush();
 
-        // Before adjust the slider, the value in FakeDisplaySettingsProvider
+        // Before adjusting the slider, the value in FakeDisplaySettingsProvider
         // should be equal to the default.
         assertEquals(
             displaySettingsProvider.getInternalDisplayScreenBrightness(), 0);
@@ -1160,6 +1160,55 @@ suite('<settings-display>', () => {
         assertEquals(
             maxOutputBrightnessPercent - (2 * increment),
             displaySettingsProvider.getInternalDisplayScreenBrightness());
+      });
+
+  test(
+      'Auto brightness toggle updates DisplaySettingsProvider, flag enabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {enableDisplayBrightnessControlInSettings: true});
+        await initPage();
+
+        // Set up the internal display.
+        addDisplay(1);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+        await fakeSystemDisplay.getInfoCalled.promise;
+        await fakeSystemDisplay.getLayoutCalled.promise;
+        assertEquals(1, displayPage.displays.length);
+        flush();
+
+        // Before adjusting the auto-brightness toggle, the value in
+        // FakeDisplaySettingsProvider should be equal to the default (true).
+        assertTrue(displaySettingsProvider
+                       .getInternalDisplayAmbientLightSensorEnabled());
+
+        const autoBrightnessToggle =
+            displayPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#autoBrightnessToggle');
+        assertTrue(!!autoBrightnessToggle);
+
+        // Set the auto-brightness toggle to be on, to match the state of the
+        // provider setting.
+        // TODO(cambickel): When the auto-brightness toggle can observe the
+        // current state of the auto-brightness setting, remove this.
+        autoBrightnessToggle.checked = true;
+        await flushTasks();
+
+        // Switch auto-brightness to off.
+        autoBrightnessToggle.click();
+        await flushTasks();
+
+        // The setting in FakeDisplaySettingsProvider should now be disabled.
+        assertFalse(displaySettingsProvider
+                        .getInternalDisplayAmbientLightSensorEnabled());
+
+        // Switch auto-brightness to on.
+        autoBrightnessToggle.click();
+        await flushTasks();
+
+        // The setting in FakeDisplaySettingsProvider should now be enabled.
+        assertTrue(displaySettingsProvider
+                       .getInternalDisplayAmbientLightSensorEnabled());
       });
 
 });

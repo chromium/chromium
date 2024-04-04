@@ -325,4 +325,13 @@ void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
   base::UmaHistogramPercentage(histogram_name, percent);
 }
 
+void DisplaySettingsProvider::SetInternalDisplayAmbientLightSensorEnabled(
+    bool enabled) {
+  if (!features::IsBrightnessControlInSettingsEnabled()) {
+    return;
+  }
+
+  brightness_control_delegate_->SetAmbientLightSensorEnabled(enabled);
+}
+
 }  // namespace ash::settings

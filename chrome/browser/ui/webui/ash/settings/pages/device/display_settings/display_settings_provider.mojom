@@ -127,4 +127,8 @@ interface DisplaySettingsProvider {
 
   // Sets the screen brightness of the internal display.
   SetInternalDisplayScreenBrightness(double percent);
+
+  // Sets whether the internal display should use the device's ambient light
+  // sensor to automatically set the display brightness.
+  SetInternalDisplayAmbientLightSensorEnabled(bool enabled);
 };
