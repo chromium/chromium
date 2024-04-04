@@ -11,6 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 
+namespace tab_groups {
+class TabGroupId;
+}  // namespace tab_groups
+
 namespace tabs {
 
 class TabModel;
@@ -32,6 +36,20 @@ class TabStripCollection : public TabCollection {
   UnpinnedTabCollection* GetUnpinnedCollection() {
     return unpinned_collection_;
   }
+
+  // Adds a tab to a particular index in the collection in a
+  // recursive method. This forwards calls to either the pinned
+  // container or the unpinned container. If the inputs are incorrect
+  // this method will fail and hit a CHECK.
+  void AddTabRecursive(std::unique_ptr<TabModel> tab_model,
+                       size_t index,
+                       std::optional<tab_groups::TabGroupId> new_group_id,
+                       bool new_pinned_state);
+
+  // Returns the tab at a particular index from the collection tree.
+  // The index is a recursive index and if the index is invalid it returns
+  // nullptr.
+  tabs::TabModel* GetTabAtIndexRecursive(size_t index) const;
 
   // TabCollection:
   // This will be false as this does not contain a tab as a direct child.

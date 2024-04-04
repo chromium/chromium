@@ -37,6 +37,10 @@ void TabGroupTabCollection::CloseTab(TabModel* tab_model) {
   impl_->CloseTab(tab_model);
 }
 
+tabs::TabModel* TabGroupTabCollection::GetTabAtIndex(size_t index) const {
+  return impl_->GetTabAtIndex(index);
+}
+
 bool TabGroupTabCollection::ContainsTab(TabModel* tab_model) const {
   return impl_->ContainsTab(tab_model);
 }

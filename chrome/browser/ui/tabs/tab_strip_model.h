@@ -167,10 +167,8 @@ class TabStripModel : public TabGroupController {
   void RemoveObserver(TabStripModelObserver* observer);
 
   // Retrieve the number of WebContentses/emptiness of the TabStripModel.
-  int count() const {
-    return static_cast<int>(GetContentsDataAsVector().size());
-  }
-  bool empty() const { return GetContentsDataAsVector().empty(); }
+  int count() const;
+  bool empty() const;
 
   int GetIndexOfTab(tabs::TabHandle tab) const;
   tabs::TabHandle GetTabHandleAt(int index) const;
@@ -684,6 +682,9 @@ class TabStripModel : public TabGroupController {
   int ConstrainInsertionIndex(int index, bool pinned_tab) const;
 
   int ConstrainMoveIndex(int index, bool pinned_tab) const;
+
+  // Returns the tab at an index from the `contents_data`.
+  tabs::TabModel* GetTabAtIndex(int index) const;
 
   // If |index| is selected all the selected indices are returned, otherwise a
   // vector with |index| is returned. This is used when executing commands to

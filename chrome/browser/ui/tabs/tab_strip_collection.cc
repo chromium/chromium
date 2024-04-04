@@ -38,6 +38,35 @@ bool TabStripCollection::ContainsTabRecursive(TabModel* tab_model) const {
          unpinned_collection_->ContainsTabRecursive(tab_model);
 }
 
+void TabStripCollection::AddTabRecursive(
+    std::unique_ptr<TabModel> tab_model,
+    size_t index,
+    std::optional<tab_groups::TabGroupId> new_group_id,
+    bool new_pinned_state) {
+  CHECK(index >= 0 && index <= TabCountRecursive());
+  if (new_pinned_state) {
+    CHECK(!new_group_id.has_value());
+    pinned_collection_->AddTab(std::move(tab_model), index);
+  } else {
+    unpinned_collection_->AddTabRecursive(
+        std::move(tab_model), index - pinned_collection_->TabCountRecursive(),
+        new_group_id);
+  }
+}
+
+tabs::TabModel* TabStripCollection::GetTabAtIndexRecursive(size_t index) const {
+  const size_t pinned_count = pinned_collection_->TabCountRecursive();
+
+  if (index < pinned_count) {
+    return pinned_collection_->GetTabAtIndex(index);
+  } else {
+    // Adjust the index for the unpinned collection (subtract the count of
+    // pinned tabs)
+    const size_t unpinned_index = index - pinned_count;
+    return unpinned_collection_->GetTabAtIndexRecursive(unpinned_index);
+  }
+}
+
 bool TabStripCollection::ContainsCollection(TabCollection* collection) const {
   return impl_->ContainsCollection(collection);
 }

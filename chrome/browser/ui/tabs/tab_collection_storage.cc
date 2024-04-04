@@ -20,6 +20,12 @@ bool TabCollectionStorage::ContainsTab(TabModel* tab_model) const {
   return GetIndexOfTab(tab_model).has_value();
 }
 
+TabModel* TabCollectionStorage::GetTabAtIndex(size_t index) const {
+  const std::unique_ptr<tabs::TabModel>* tab =
+      std::get_if<std::unique_ptr<tabs::TabModel>>(&children_[index]);
+  return tab ? tab->get() : nullptr;
+}
+
 bool TabCollectionStorage::ContainsCollection(
     TabCollection* tab_collection) const {
   return GetIndexOfCollection(tab_collection).has_value();

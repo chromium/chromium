@@ -28,6 +28,82 @@ void UnpinnedTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
+void UnpinnedTabCollection::AddTabRecursive(
+    std::unique_ptr<TabModel> tab_model,
+    size_t index,
+    std::optional<tab_groups::TabGroupId> new_group_id) {
+  size_t curr_index = 0;
+  size_t direct_child_index = 0;
+
+  // `index` can be equal to the tab count as at this point the tab has not yet
+  // been added.
+  CHECK(index >= 0 && index <= TabCountRecursive());
+
+  for (const auto& child : impl_->GetChildren()) {
+    CHECK(curr_index <= index);
+    if (curr_index == index && !new_group_id.has_value()) {
+      return AddTab(std::move(tab_model), direct_child_index);
+    }
+    if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
+      curr_index++;
+    } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
+                   child)) {
+      TabGroupTabCollection* group_collection =
+          static_cast<TabGroupTabCollection*>(
+              std::get<std::unique_ptr<tabs::TabCollection>>(child).get());
+      const size_t num_of_tabs_in_sub_collection =
+          group_collection->TabCountRecursive();
+
+      // Check if the tab should be added to the subcollection.
+      if (new_group_id.has_value() &&
+          new_group_id.value() == group_collection->GetTabGroupId() &&
+          index <= curr_index + num_of_tabs_in_sub_collection) {
+        return group_collection->AddTab(std::move(tab_model),
+                                        index - curr_index);
+      } else {
+        curr_index += num_of_tabs_in_sub_collection;
+      }
+    }
+    direct_child_index++;
+  }
+
+  // Case when we want to add a tab to the end of this collection as a direct
+  // child.
+  if (index == curr_index) {
+    return AddTab(std::move(tab_model), direct_child_index);
+  }
+}
+
+tabs::TabModel* UnpinnedTabCollection::GetTabAtIndexRecursive(size_t index) {
+  size_t curr_index = 0;
+  size_t direct_child_index = 0;
+
+  for (auto& child : impl_->GetChildren()) {
+    if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
+      if (curr_index == index) {
+        return impl_->GetTabAtIndex(direct_child_index);
+      } else {
+        curr_index++;
+      }
+    } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
+                   child)) {
+      TabGroupTabCollection* group_collection =
+          static_cast<TabGroupTabCollection*>(
+              std::get<std::unique_ptr<tabs::TabCollection>>(child).get());
+      size_t num_of_tabs_in_sub_collection =
+          group_collection->TabCountRecursive();
+
+      if (index < curr_index + num_of_tabs_in_sub_collection) {
+        return group_collection->GetTabAtIndex(index - curr_index);
+      } else {
+        curr_index += num_of_tabs_in_sub_collection;
+      }
+    }
+    direct_child_index++;
+  }
+  return nullptr;
+}
+
 void UnpinnedTabCollection::AppendTab(std::unique_ptr<TabModel> tab_model) {
   AddTab(std::move(tab_model), ChildCount());
 }

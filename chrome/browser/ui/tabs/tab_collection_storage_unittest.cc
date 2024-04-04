@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/tab_collection_storage.h"
+
 #include <memory>
 
+#include "base/test/gtest_util.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -142,8 +144,11 @@ TEST_F(TabCollectionStorageTest, AddTabOperation) {
   SetTabID(tab_model_two_ptr, 5);
   collection_storage->AddTab(std::move(tab_model_two), 3ul);
   EXPECT_EQ(collection_storage->GetIndexOfTab(tab_model_two_ptr), 3ul);
+  EXPECT_EQ(collection_storage->GetTabAtIndex(3ul), tab_model_two_ptr);
   EXPECT_EQ(StorageCollectionChildrenString(),
             (std::vector<std::string>{"T0", "T1", "T2", "T5", "T3", "T4"}));
+
+  // TODO(b/332586827):Add death testing for out of bounds index.
 }
 
 TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
@@ -222,36 +227,39 @@ TEST_F(TabCollectionStorageTest, MoveTabOperation) {
             (std::vector<std::string>{"T0", "T1", "T2", "T4", "T3"}));
 }
 
-// TODO(b/327925372): Re-enable the test.
+// TODO(b/332586827): Re-enable death testing.
 TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(nullptr, GetTabStripModel());
   tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
   std::unique_ptr<tabs::TabModel> empty_ptr;
 
-  EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       collection_storage->AddTab(
           std::make_unique<tabs::TabModel>(nullptr, GetTabStripModel()), 10ul),
       "");
-  EXPECT_DEATH(collection_storage->AddTab(std::move(empty_ptr), 1ul), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      collection_storage->AddTab(std::move(empty_ptr), 1ul), "");
 
-  EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       {
         std::unique_ptr<tabs::TabModel> tab_model =
             collection_storage->RemoveTab(tab_model_one.get());
       },
       "");
-  EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       {
         std::unique_ptr<tabs::TabModel> tab_model =
             collection_storage->RemoveTab(nullptr);
       },
       "");
 
-  EXPECT_DEATH(collection_storage->MoveTab(tab_model_one.get(), 0ul), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      collection_storage->MoveTab(tab_model_one.get(), 0ul), "");
   collection_storage->AddTab(std::move(tab_model_one), 0ul);
-  EXPECT_DEATH(collection_storage->MoveTab(tab_model_one.get(), 10ul), "");
-  EXPECT_DEATH(collection_storage->MoveTab(nullptr, 10ul), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      collection_storage->MoveTab(tab_model_one.get(), 10ul), "");
+  EXPECT_DEATH_IF_SUPPORTED(collection_storage->MoveTab(nullptr, 10ul), "");
 }
 
 TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {

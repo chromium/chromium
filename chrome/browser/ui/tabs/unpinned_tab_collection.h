@@ -31,6 +31,18 @@ class UnpinnedTabCollection : public TabCollection {
   // Adds a `tab_model` to the collection at a particular index.
   void AddTab(std::unique_ptr<TabModel> tab_model, size_t direct_child_index);
 
+  // Adds a tab to a particular index in the collection in a
+  // recursive method. This method fails a check if the index is
+  // invalid or the parameters passed in are incorrect.
+  void AddTabRecursive(std::unique_ptr<TabModel> tab_model,
+                       size_t index,
+                       std::optional<tab_groups::TabGroupId> new_group_id);
+
+  // Returns the tab at a particular index from the collection tree.
+  // The index is a recursive index and if the index is invalid it returns
+  // nullptr.
+  tabs::TabModel* GetTabAtIndexRecursive(size_t index);
+
   // Appends a `tab_model` to the end of the collection.
   void AppendTab(std::unique_ptr<TabModel> tab_model);
 
