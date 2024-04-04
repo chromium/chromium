@@ -1304,12 +1304,12 @@ void InteractionSequence::BuildSubsequences(const Step* current_step) {
   for (auto& subsequence_data : next_step()->subsequence_data) {
     if (!subsequence_data.sequence) {
       subsequence_data.builder.SetContext(configuration_->context);
-      subsequence_data.builder.SetCompletedCallback(base::BindOnce(
-          &InteractionSequence::OnSubsequenceCompleted, base::Unretained(this),
-          base::Unretained(&subsequence_data)));
-      subsequence_data.builder.SetAbortedCallback(base::BindOnce(
-          &InteractionSequence::OnSubsequenceAborted, base::Unretained(this),
-          base::Unretained(&subsequence_data)));
+      subsequence_data.builder.SetCompletedCallback(
+          base::BindOnce(&InteractionSequence::OnSubsequenceCompleted,
+                         AsWeakPtr(), SubsequenceHandle(&subsequence_data)));
+      subsequence_data.builder.SetAbortedCallback(
+          base::BindOnce(&InteractionSequence::OnSubsequenceAborted,
+                         AsWeakPtr(), SubsequenceHandle(&subsequence_data)));
       subsequence_data.sequence =
           subsequence_data.builder.BuildSubsequence(current_step);
       // This will prevent internal transitions until the current step

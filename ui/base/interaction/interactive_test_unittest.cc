@@ -1292,6 +1292,25 @@ TEST_F(InteractiveTestTest, AnyOfAllFail) {
                                Check(base::BindOnce([]() { return false; }))));
 }
 
+// This is a regression test for an issue where there is a UAF when tearing down
+// an AnyOf() inside an If().
+TEST_F(InteractiveTestTest, AnyOfInsideIf) {
+  TestElement el(kTestId1, kTestContext1);
+  QueueAction([&el, this]() {
+    QueueAction([&el, this]() {
+      el.Show();
+      QueueAction([&el]() { el.SendCustomEvent(kTestEvent1); });
+    });
+  });
+
+  RunTestSequenceInContext(
+      kTestContext1, If([]() { return true; },
+                        AnyOf(std::move(WaitForEvent(kTestId1, kTestEvent1)
+                                            .SetMustBeVisibleAtStart(false)),
+                              Steps(WaitForShow(kTestId1),
+                                    WaitForEvent(kTestId1, kTestEvent2)))));
+}
+
 // This test that various types of logging can compile with different types of
 // parameters. The output of this test must be verified manually.
 TEST_F(InteractiveTestTest, Log) {

@@ -565,7 +565,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   ElementContext UpdateNextStepContext(const Step* current_step);
 
   // Callbacks for when subsequences terminate.
-  using SubsequenceHandle = const SubsequenceData*;
+  using SubsequenceHandle = const void*;
   void OnSubsequenceCompleted(SubsequenceHandle subsequence);
   void OnSubsequenceAborted(SubsequenceHandle subsequence,
                             const AbortedData& aborted_data);
