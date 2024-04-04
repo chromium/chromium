@@ -100,8 +100,8 @@ struct ArraySerializer<
     MojomType,
     MaybeConstUserType,
     UserTypeIterator,
-    typename std::enable_if<BelongsTo<typename MojomType::Element,
-                                      MojomTypeCategory::kPOD>::value>::type> {
+    std::enable_if_t<BelongsTo<typename MojomType::Element,
+                               MojomTypeCategory::kPOD>::value>> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -120,8 +120,6 @@ struct ArraySerializer<
       UserTypeIterator* input,
       MessageFragment<Data>& fragment,
       const ContainerValidateParams* validate_params) {
-    DCHECK(!validate_params->element_is_nullable)
-        << "Primitive type should be non-nullable";
     DCHECK(!validate_params->element_validate_params)
         << "Primitive type should not have array validate params";
 
@@ -151,7 +149,7 @@ struct ArraySerializer<
       } else {
         ArrayIterator<Traits, UserType> iterator(*output);
         for (size_t i = 0; i < input->size(); ++i)
-          iterator.GetNext() = input->at(i);
+          iterator.GetNext() = static_cast<DataElement>(input->at(i));
       }
     }
     return true;
@@ -162,6 +160,7 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
+  requires(!base::is_instantiation<std::optional, typename MojomType::Element>)
 struct ArraySerializer<
     MojomType,
     MaybeConstUserType,
@@ -201,6 +200,73 @@ struct ArraySerializer<
     for (size_t i = 0; i < input->size(); ++i) {
       if (!Deserialize<Element>(input->at(i), &iterator.GetNext()))
         return false;
+    }
+    return true;
+  }
+};
+
+// Handles serialization and deserialization of arrays of optional enum types.
+template <typename MojomType,
+          typename MaybeConstUserType,
+          typename UserTypeIterator>
+  requires(base::is_instantiation<std::optional, typename MojomType::Element>)
+struct ArraySerializer<
+    MojomType,
+    MaybeConstUserType,
+    UserTypeIterator,
+    std::enable_if_t<BelongsTo<typename MojomType::Element,
+                               MojomTypeCategory::kEnum>::value>> {
+  using UserType = typename std::remove_const<MaybeConstUserType>::type;
+  using Data = typename MojomTypeTraits<MojomType>::Data;
+  using DataElement = typename Data::Element;
+  using Element = typename MojomType::Element;
+  using Traits = ArrayTraits<UserType>;
+
+  static_assert(IsAbslOptional<typename Traits::Element>::value,
+                "Output type should be optional");
+  static_assert(sizeof(Element) == sizeof(DataElement),
+                "Incorrect array serializer");
+
+  static void SerializeElements(
+      UserTypeIterator* input,
+      MessageFragment<Data>& fragment,
+      const ContainerValidateParams* validate_params) {
+    DCHECK(!validate_params->element_validate_params)
+        << "Primitive type should not have array validate params";
+
+    Data* output = fragment.data();
+    size_t size = input->GetSize();
+    for (size_t i = 0; i < size; ++i) {
+      auto next = input->GetNext();
+      if (next) {
+        int32_t serialized;
+        Serialize<typename Element::value_type>(*next, &serialized);
+        output->at(i) = serialized;
+      } else {
+        output->at(i) = std::nullopt;
+      }
+    }
+  }
+
+  static bool DeserializeElements(Data* input,
+                                  UserType* output,
+                                  Message* message) {
+    if (!Traits::Resize(*output, input->size())) {
+      return false;
+    }
+    ArrayIterator<Traits, UserType> iterator(*output);
+    for (size_t i = 0; i < input->size(); ++i) {
+      std::optional<int32_t> element = input->at(i).ToOptional();
+      if (element) {
+        typename Element::value_type deserialized;
+        if (!Deserialize<typename Element::value_type>(*element,
+                                                       &deserialized)) {
+          return false;
+        }
+        iterator.GetNext() = deserialized;
+      } else {
+        iterator.GetNext() = std::nullopt;
+      }
     }
     return true;
   }

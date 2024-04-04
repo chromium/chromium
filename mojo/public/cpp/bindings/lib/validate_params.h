@@ -71,12 +71,14 @@ struct ArrayValidateParamsHolder {
   };
 };
 
-template <uint32_t expected_num_elements, ValidateEnumFunc* validate_enum_func>
+template <uint32_t expected_num_elements,
+          bool element_is_nullable,
+          ValidateEnumFunc* validate_enum_func>
 struct ArrayOfEnumsValidateParamsHolder {
   static_assert(validate_enum_func);
   static inline constexpr ContainerValidateParams kInstance = {
       .expected_num_elements = expected_num_elements,
-      .element_is_nullable = false,
+      .element_is_nullable = element_is_nullable,
       .key_validate_params = nullptr,
       .element_validate_params = nullptr,
       .validate_enum_func = validate_enum_func,
@@ -108,10 +110,13 @@ constexpr const ContainerValidateParams& GetArrayValidator() {
 
 // Gets a validator for an array of enums. If `expected_num_elements` is 0, size
 // validation is skipped. `validate_enum_func` must not be null.',
-template <uint32_t expected_num_elements, ValidateEnumFunc* validate_enum_func>
+template <uint32_t expected_num_elements,
+          bool element_is_nullable,
+          ValidateEnumFunc* validate_enum_func>
 constexpr const ContainerValidateParams& GetArrayOfEnumsValidator() {
   static_assert(validate_enum_func);
   return ArrayOfEnumsValidateParamsHolder<expected_num_elements,
+                                          element_is_nullable,
                                           validate_enum_func>::kInstance;
 }
 

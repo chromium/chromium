@@ -68,6 +68,7 @@ class ArrayDataViewImpl<
 };
 
 template <typename T>
+  requires(!base::is_instantiation<std::optional, T>)
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
@@ -83,6 +84,46 @@ class ArrayDataViewImpl<
 
   T operator[](size_t index) const {
     return ToKnownEnumValueHelper(static_cast<T>(data_->at(index)));
+  }
+
+  template <typename U>
+  bool Read(size_t index, U* output) {
+    return Deserialize<T>(data_->at(index), output);
+  }
+
+ protected:
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data.
+  RAW_PTR_EXCLUSION Data_* data_;
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data.
+  RAW_PTR_EXCLUSION Message* message_;
+};
+
+template <typename T>
+  requires(base::is_instantiation<std::optional, T>)
+class ArrayDataViewImpl<
+    T,
+    typename std::enable_if<
+        BelongsTo<T, MojomTypeCategory::kEnum>::value>::type> {
+ public:
+  static_assert(std::is_same<std::underlying_type_t<typename T::value_type>,
+                             int32_t>::value,
+                "Unexpected enum type");
+
+  using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
+
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
+
+  T operator[](size_t index) const {
+    auto value = static_cast<std::optional<int32_t>>(data_->at(index));
+    if (!value) {
+      return std::nullopt;
+    } else {
+      return ToKnownEnumValueHelper(
+          static_cast<typename T::value_type>(*value));
+    }
   }
 
   template <typename U>

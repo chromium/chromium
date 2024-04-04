@@ -1238,7 +1238,7 @@ class Enum(ValueKind):
       spec = 'x:' + mojom_name
     else:
       spec = None
-    ValueKind.__init__(self, spec, False, module)
+    super().__init__(spec, False, module)
     self.mojom_name = mojom_name
     self.name = None
     self.native_only = False
@@ -1683,3 +1683,9 @@ def ContainsNativeTypes(kind):
     return False
 
   return Check(kind)
+
+
+def EnsureUnnullable(kind):
+  if IsNullableKind(kind):
+    return kind.MakeUnnullableKind()
+  return kind

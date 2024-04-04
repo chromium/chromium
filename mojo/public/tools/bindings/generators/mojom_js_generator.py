@@ -692,7 +692,7 @@ class Generator(generator.Generator):
   def _GetSpecType(self, kind, for_module=False):
     def get_spec(kind):
       if self._IsPrimitiveKind(kind):
-        return _kind_to_lite_js_type[kind]
+        return _kind_to_lite_js_type[mojom.EnsureUnnullable(kind)]
       if mojom.IsArrayKind(kind):
         return "mojo.internal.Array(%s, %s)" % (get_spec(
             kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
@@ -816,7 +816,7 @@ class Generator(generator.Generator):
 
   def _CodecType(self, kind):
     if kind in mojom.PRIMITIVES:
-      return _kind_to_codec_type[kind]
+      return _kind_to_codec_type[mojom.EnsureUnnullable(kind)]
     if mojom.IsStructKind(kind):
       pointer_type = "NullablePointerTo" if mojom.IsNullableKind(kind) \
           else "PointerTo"
@@ -914,7 +914,7 @@ class Generator(generator.Generator):
 
   def _JavaScriptValidateArrayParams(self, field):
     nullable = self._JavaScriptNullableParam(field)
-    element_kind = field.kind.kind
+    element_kind = mojom.EnsureUnnullable(field.kind.kind)
     element_size = pack.PackedField.GetSizeForKind(element_kind)
     expected_dimension_sizes = GetArrayExpectedDimensionSizes(field.kind)
     element_type = self._ElementCodecType(element_kind)

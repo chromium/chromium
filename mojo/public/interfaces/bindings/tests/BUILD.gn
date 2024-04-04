@@ -194,6 +194,25 @@ mojom("test_interfaces") {
   scramble_message_ids = false
 }
 
+mojom("test_interfaces_for_containers_of_optionals") {
+  testonly = true
+  generate_java = false
+  sources = [ "containers_of_nullable_types.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom =
+              "mojo.test.containers_of_nullable_types.mojom.TypemappedStruct"
+          cpp = "::mojo::test::containers_of_nullable_types::NativeStruct"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/bindings/tests/containers_of_nullable_types_mojom_traits.h" ]
+      traits_sources = [ "//mojo/public/cpp/bindings/tests/containers_of_nullable_types_mojom_traits.cc" ]
+    },
+  ]
+}
+
 component("test_export_component") {
   testonly = true
   deps = [ ":test_export" ]

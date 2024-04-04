@@ -872,6 +872,20 @@ class Generator(generator.Generator):
                              else "const %s&" % cpp_wrapper_type)
 
   def _GetCppFieldType(self, kind):
+
+    def _AddOptionalPODContainer(type_name):
+      return "std::optional<%s>" % type_name
+
+    def _GetTypeForElement(kind):
+      if not mojom.IsValueKind(kind):
+        return self._GetCppFieldType(kind)
+
+      if mojom.IsNullableKind(kind):
+        return _AddOptionalPODContainer(
+            self._GetCppFieldType(mojom.EnsureUnnullable(kind)))
+      else:
+        return self._GetCppFieldType(kind)
+
     if mojom.IsStructKind(kind):
       return ("mojo::internal::Pointer<%s>" %
           self._GetNameForKind(kind, internal=True))
@@ -879,11 +893,11 @@ class Generator(generator.Generator):
       return "%s" % self._GetNameForKind(kind, internal=True)
     if mojom.IsArrayKind(kind):
       return ("mojo::internal::Pointer<mojo::internal::Array_Data<%s>>" %
-              self._GetCppFieldType(kind.kind))
+              _GetTypeForElement(kind.kind))
     if mojom.IsMapKind(kind):
       return ("mojo::internal::Pointer<mojo::internal::Map_Data<%s, %s>>" %
-              (self._GetCppFieldType(kind.key_kind),
-               self._GetCppFieldType(kind.value_kind)))
+              (self._GetCppFieldType(
+                  kind.key_kind), _GetTypeForElement(kind.value_kind)))
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return "mojo::internal::Interface_Data"
     if mojom.IsPendingReceiverKind(kind):
@@ -1018,20 +1032,23 @@ class Generator(generator.Generator):
           kind=kind.value_kind))
       return (f'mojo::internal::GetMapValidator<*{key_validate_params}, '
               f'*{element_validate_params}>()')
-    else:  # mojom.IsArrayKind(kind)
+    elif mojom.IsArrayKind(kind):
       expected_num_elements = generator.ExpectedArraySize(kind) or 0
+      element_is_nullable = 'true' if mojom.IsNullableKind(
+          kind.kind) else 'false'
       element_validate_params = self._GetNewContainerValidateParams(kind.kind)
       if mojom.IsEnumKind(kind.kind):
         enum_validate_func = ("%s::Validate" %
             self._GetQualifiedNameForKind(kind.kind, internal=True,
                                           flatten_nested_kind=True))
         return (f'mojo::internal::GetArrayOfEnumsValidator<'
-                f'{expected_num_elements}, {enum_validate_func}>()')
+                f'{expected_num_elements}, {element_is_nullable}, '
+                f'{enum_validate_func}>()')
       else:
-        element_is_nullable = ('true'
-                               if mojom.IsNullableKind(kind.kind) else 'false')
         return (f'mojo::internal::GetArrayValidator<{expected_num_elements}, '
                 f'{element_is_nullable}, {element_validate_params}>()')
+    else:
+      raise Exception("Unknown kind: %s" % kind)
 
   def _GetNewContainerValidateParams(self, kind):
     if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind) and
