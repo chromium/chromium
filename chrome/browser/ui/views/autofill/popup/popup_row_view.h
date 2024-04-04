@@ -123,8 +123,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   int line_number() const { return line_number_; }
 
  private:
-  void RunOnAccepted();
-
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();
   }
