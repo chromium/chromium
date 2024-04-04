@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
 
+#include <limits.h>
+
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -201,17 +203,39 @@ TEST_F(TrashServiceTest, InvalidPathKeyValueScenarios) {
     ExpectParsingFailedForFileContents(file_contents);
   }
 
-  const std::vector<std::string> kInvalidPaths = {{
-      "/foo/bar.txt",            // Missing "Path=" key.
-      "Patn=/foo/bar.txt",       // Misspelled "Path=" key.
-      "Path=/foo/../bar.txt",    // Path references parent.
+  // Create a too-long path where each component is valid.
+  std::string long_path;
+  for (int i = 0; long_path.size() < PATH_MAX; ++i) {
+    long_path += '/';
+    long_path.append(200, static_cast<char>('a' + i));
+  }
+  long_path.resize(PATH_MAX);
+
+  const std::vector<std::string> lines = {{
+      "/foo/bar",                // Missing "Path=" key.
+      "Patn=/foo/bar",           // Misspelled "Path=" key.
+      "Path=/foo/../bar",        // Path references parent.
+      "Path=/foo/%2e%2E/bar",    // Path references parent in a sneaky way.
+      "Path=/foo/./bar",         // Path references current dir.
+      "Path=/foo/%2e/bar",       // Path references current dir in a sneaky way.
       "Path=relative/path.txt",  // Relative file path.
       "Path=",                   // Empty path.
       "Path=bar"                 // Relative folder path.
+      "Path=foo/bar"             // Relative path.
+      "Path=/",                  // Root path.
+      "Path=%2f",                // Root path in a sneaky way.
+      "Path=/////",              // Root path.
+      "Path=//server/foo/bar",   // UNC-style path.
+      "Path=/foo%00/bar",        // Embedded NUL byte.
+      "Path=/foo%ff/bar",        // Non UTF-8.
+      base::StrCat(
+          {"Path=/", std::string(NAME_MAX + 1, 'x')}),  // Long component.
+      base::StrCat({"Path=", long_path}),               // Long path.
   }};
-  for (const auto& path : kInvalidPaths) {
+
+  for (const std::string& line : lines) {
     TrashInfoContents contents;
-    contents.path_line = path;
+    contents.path_line = line;
     ExpectParsingFailedForFileContents(contents.ToString());
   }
 }

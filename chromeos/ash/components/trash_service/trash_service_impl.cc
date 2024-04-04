@@ -4,12 +4,14 @@
 
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
 
-#include <linux/limits.h>
+#include <limits.h>
 
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace ash::trash_service {
@@ -66,15 +69,45 @@ base::FilePath ValidateAndCreateRestorePath(std::string_view line) {
   line.remove_prefix(kPathToken.size());
 
   const std::string unescaped = base::UnescapeBinaryURLComponent(line);
-  if (unescaped.size() > PATH_MAX) {
+  if (unescaped.size() >= PATH_MAX) {
     LOG(ERROR) << "Extracted path is too long";
     return base::FilePath();
   }
 
-  const base::FilePath path(std::move(unescaped));
-  if (path.empty() || !path.IsAbsolute() || path.ReferencesParent()) {
-    LOG(ERROR) << "Extracted path is invalid";
+  if (unescaped.find('\0') != std::string::npos) {
+    LOG(ERROR) << "Extracted path contains a NUL byte";
     return base::FilePath();
+  }
+
+  if (!base::IsStringUTF8(unescaped)) {
+    LOG(ERROR) << "Extracted path is not a valid UTF-8 string";
+    return base::FilePath();
+  }
+
+  const base::FilePath path(std::move(unescaped));
+
+  const std::vector<std::string> components = path.GetComponents();
+  base::span<const std::string> parts = components;
+
+  // The first part should be "/".
+  if (parts.empty() || parts.front() != "/") {
+    LOG(ERROR) << "Extracted path is not absolute";
+    return base::FilePath();
+  }
+
+  // Pop the first part.
+  parts = parts.subspan(1);
+  if (parts.empty()) {
+    LOG(ERROR) << "Extracted path is just the root path";
+    return base::FilePath();
+  }
+
+  // Validate each remaining part.
+  for (const std::string& part : parts) {
+    if (part == "." || part == ".." || part.size() > NAME_MAX) {
+      LOG(ERROR) << "Extracted path contains an invalid component";
+      return base::FilePath();
+    }
   }
 
   return path;
