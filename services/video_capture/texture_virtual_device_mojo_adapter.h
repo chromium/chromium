@@ -51,8 +51,7 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   void StartInProcess(
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager) override;
+      media::VideoEffectsContext context) override;
   void MaybeSuspend() override;
   void Resume() override;
   void GetPhotoState(GetPhotoStateCallback callback) override;

@@ -12,6 +12,7 @@
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/base/scoped_async_trace.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_service.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -30,15 +31,16 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   ~ServiceVideoCaptureDeviceLauncher() override;
 
   // VideoCaptureDeviceLauncher implementation.
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const media::VideoCaptureParams& params,
-                         base::WeakPtr<media::VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb,
-                         mojo::PendingRemote<media::mojom::VideoEffectsManager>
-                             video_effects_manager) override;
+  void LaunchDeviceAsync(
+      const std::string& device_id,
+      blink::mojom::MediaStreamType stream_type,
+      const media::VideoCaptureParams& params,
+      base::WeakPtr<media::VideoFrameReceiver> receiver,
+      base::OnceClosure connection_lost_cb,
+      Callbacks* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor) override;
   void AbortLaunch() override;
 
  private:

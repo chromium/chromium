@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -31,32 +32,20 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   MockVideoCaptureDeviceLauncher();
   ~MockVideoCaptureDeviceLauncher() override;
 
-  MOCK_METHOD8(DoLaunchDeviceAsync,
-               void(const std::string& device_id,
-                    blink::mojom::MediaStreamType stream_type,
-                    const media::VideoCaptureParams& params,
-                    base::WeakPtr<media::VideoFrameReceiver>* receiver,
-                    base::OnceClosure* connection_lost_cb,
-                    Callbacks* callbacks,
-                    base::OnceClosure* done_cb,
-                    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-                        video_effects_manager));
+  MOCK_METHOD(void,
+              LaunchDeviceAsync,
+              (const std::string& device_id,
+               blink::mojom::MediaStreamType stream_type,
+               const media::VideoCaptureParams& params,
+               base::WeakPtr<media::VideoFrameReceiver> receiver,
+               base::OnceClosure connection_lost_cb,
+               Callbacks* callbacks,
+               base::OnceClosure done_cb,
+               mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+                   video_effects_processor),
+              (override));
 
-  MOCK_METHOD0(AbortLaunch, void());
-
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const media::VideoCaptureParams& params,
-                         base::WeakPtr<media::VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb,
-                         mojo::PendingRemote<media::mojom::VideoEffectsManager>
-                             video_effects_manager) override {
-    DoLaunchDeviceAsync(device_id, stream_type, params, &receiver,
-                        &connection_lost_cb, callbacks, &done_cb,
-                        std::move(video_effects_manager));
-  }
+  MOCK_METHOD(void, AbortLaunch, ());
 };
 
 class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {

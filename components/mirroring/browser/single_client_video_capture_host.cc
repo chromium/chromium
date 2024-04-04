@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 
 using media::VideoFrameConsumerFeedbackObserver;
 
@@ -100,7 +101,7 @@ void SingleClientVideoCaptureHost::Start(
                         std::unique_ptr<DeviceLauncherCallbacks>) {},
                      std::move(device_launcher),
                      std::move(device_launcher_callbacks)),
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>{});
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>{});
 }
 
 void SingleClientVideoCaptureHost::Stop(

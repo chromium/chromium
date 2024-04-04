@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "media/capture/video/video_capture_device_client.h"
 #include "services/video_capture/push_video_stream_subscription_impl.h"
 
 namespace video_capture {
@@ -85,9 +86,9 @@ void VideoSourceImpl::CreatePushSubscription(
   }
 }
 
-void VideoSourceImpl::RegisterVideoEffectsManager(
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> remote) {
-  pending_video_effects_manager_ = std::move(remote);
+void VideoSourceImpl::RegisterVideoEffectsProcessor(
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {
+  pending_video_effects_processor_ = std::move(remote);
 }
 
 void VideoSourceImpl::OnClientDisconnected() {
@@ -143,9 +144,10 @@ void VideoSourceImpl::OnCreateDeviceResponse(
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-    info.device->StartInProcess(device_start_settings_,
-                                broadcaster_.GetWeakPtr(),
-                                std::move(pending_video_effects_manager_));
+    info.device->StartInProcess(
+        device_start_settings_, broadcaster_.GetWeakPtr(),
+        media::VideoEffectsContext(
+            std::move(pending_video_effects_processor_)));
     UmaHistogramTimes("Media.VideoCapture.StartSourceSuccessLatency",
                       base::TimeTicks::Now() - device_startup_start_time_);
     device_status_ = DeviceStatus::kStarted;

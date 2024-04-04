@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIDEO_EFFECTS_TEST_FAKE_VIDEO_EFFECTS_PROCESSOR_H_
 #define SERVICES_VIDEO_EFFECTS_TEST_FAKE_VIDEO_EFFECTS_PROCESSOR_H_
 
+#include "base/memory/weak_ptr.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,8 +34,13 @@ class FakeVideoEffectsProcessor : public mojom::VideoEffectsProcessor {
   mojo::Remote<media::mojom::VideoEffectsManager>& GetVideoEffectsManager();
 
  private:
+  void OnMojoConnectionLost();
+
   mojo::Receiver<mojom::VideoEffectsProcessor> receiver_;
   mojo::Remote<media::mojom::VideoEffectsManager> manager_;
+
+  // Must be last:
+  base::WeakPtrFactory<FakeVideoEffectsProcessor> weak_ptr_factory_{this};
 };
 
 }  // namespace video_effects

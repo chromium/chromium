@@ -38,6 +38,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -240,6 +241,15 @@ class MockBrowserClient : public content::ContentBrowserClient {
                mojo::PendingReceiver<media::mojom::VideoEffectsManager>
                    video_effects_manager),
               (override));
+
+  MOCK_METHOD(
+      void,
+      BindVideoEffectsProcessor,
+      (const std::string& device_id,
+       content::BrowserContext* browser_context,
+       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+           video_effects_processor),
+      (override));
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -432,13 +442,13 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-// Try to start and stop a device with an effects manager
-TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
+// Try to start and stop a device with an effects processor
+TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsProcessor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kCameraMicEffects);
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver;
-  EXPECT_CALL(browser_client_, BindVideoEffectsManager(devices_.front().id,
-                                                       &browser_context_, _))
+  EXPECT_CALL(browser_client_, BindVideoEffectsProcessor(devices_.front().id,
+                                                         &browser_context_, _))
       .Times(1);
 
   base::UnguessableToken video_session_id = vcm_->Open(devices_.front());

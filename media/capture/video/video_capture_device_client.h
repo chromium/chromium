@@ -21,6 +21,7 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 
 namespace media {
 class VideoCaptureBufferPool;
@@ -33,6 +34,28 @@ using VideoCaptureJpegDecoderFactoryCB =
 #if BUILDFLAG(IS_MAC)
 CAPTURE_EXPORT BASE_DECLARE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac);
 #endif
+
+// Structure used to inject dependencies required for the
+// `VideoCaptureDeviceClient` to apply video effects.
+class CAPTURE_EXPORT VideoEffectsContext {
+ public:
+  explicit VideoEffectsContext(
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote);
+  ~VideoEffectsContext();
+
+  VideoEffectsContext(const VideoEffectsContext& other) = delete;
+  VideoEffectsContext& operator=(VideoEffectsContext& other) = delete;
+
+  VideoEffectsContext(VideoEffectsContext&& other);
+  VideoEffectsContext& operator=(VideoEffectsContext&& other);
+
+  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
+  TakeVideoEffectsProcessor();
+
+ private:
+  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+      video_effects_processor_;
+};
 
 // Implementation of VideoCaptureDevice::Client that uses a buffer pool
 // to provide buffers and converts incoming data to the I420 format for
@@ -57,11 +80,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       VideoCaptureJpegDecoderFactoryCB jpeg_decoder_factory_callback);
 #else
-  VideoCaptureDeviceClient(
-      std::unique_ptr<VideoFrameReceiver> receiver,
-      scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager);
+  VideoCaptureDeviceClient(std::unique_ptr<VideoFrameReceiver> receiver,
+                           scoped_refptr<VideoCaptureBufferPool> buffer_pool,
+                           VideoEffectsContext video_effects_context);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;
@@ -166,7 +187,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager_;
+  mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Thread collision warner to ensure that producer-facing API is not called

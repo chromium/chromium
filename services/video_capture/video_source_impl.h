@@ -22,6 +22,7 @@
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 
 namespace video_capture {
 
@@ -48,8 +49,9 @@ class VideoSourceImpl : public mojom::VideoSource {
       mojo::PendingReceiver<mojom::PushVideoStreamSubscription> subscription,
       CreatePushSubscriptionCallback callback) override;
 
-  void RegisterVideoEffectsManager(
-      mojo::PendingRemote<media::mojom::VideoEffectsManager> remote) override;
+  void RegisterVideoEffectsProcessor(
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
+      override;
 
  private:
   enum class DeviceStatus {
@@ -88,8 +90,12 @@ class VideoSourceImpl : public mojom::VideoSource {
   raw_ptr<Device, AcrossTasksDanglingUntriaged> device_{nullptr};
   media::VideoCaptureParams device_start_settings_;
   bool restart_device_once_when_stop_complete_ = false;
-  mojo::PendingRemote<media::mojom::VideoEffectsManager>
-      pending_video_effects_manager_;
+
+  // Video effects processor that will be used to start the capture on the
+  // `device_`.
+  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+      pending_video_effects_processor_;
+
   base::TimeTicks device_startup_start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);

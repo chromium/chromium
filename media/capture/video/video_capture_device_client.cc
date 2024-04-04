@@ -20,11 +20,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
+#include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -231,6 +234,21 @@ class BufferPoolBufferHandleProvider
   const int buffer_id_;
 };
 
+VideoEffectsContext::VideoEffectsContext(
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
+    : video_effects_processor_(std::move(remote)) {}
+
+VideoEffectsContext::VideoEffectsContext(VideoEffectsContext&& other) = default;
+VideoEffectsContext& VideoEffectsContext::operator=(
+    VideoEffectsContext&& other) = default;
+
+VideoEffectsContext::~VideoEffectsContext() = default;
+
+mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
+VideoEffectsContext::TakeVideoEffectsProcessor() {
+  return std::move(video_effects_processor_);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
@@ -249,13 +267,14 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager)
+    VideoEffectsContext video_effects_context)
     : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN),
       mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      effects_manager_(std::move(video_effects_manager), mojo_task_runner_) {}
+      effects_processor_(
+          std::move(video_effects_context.TakeVideoEffectsProcessor()),
+          mojo_task_runner_) {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
@@ -263,7 +282,7 @@ VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
   // Make sure that the remote is destroyed from the same sequence that it was
   // created on.
   mojo_task_runner_->PostTask(
-      FROM_HERE, base::DoNothingWithBoundArgs(std::move(effects_manager_)));
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(effects_processor_)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   for (int buffer_id : buffer_ids_known_by_receiver_) {
     receiver_->OnBufferRetired(buffer_id);

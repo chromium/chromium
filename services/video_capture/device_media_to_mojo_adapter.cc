@@ -96,14 +96,14 @@ void DeviceMediaToMojoAdapter::Start(
                "DeviceMediaToMojoAdapter::Start");
   StartInternal(std::move(requested_settings),
                 std::move(video_frame_handler_pending_remote),
-                /*frame_handler=*/nullptr, /*start_in_process=*/false, {});
+                /*frame_handler=*/nullptr, /*start_in_process=*/false,
+                media::VideoEffectsContext({}));
 }
 
 void DeviceMediaToMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    media::VideoEffectsContext context) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInProcess");
@@ -111,7 +111,7 @@ void DeviceMediaToMojoAdapter::StartInProcess(
   StartInternal(std::move(requested_settings),
                 /*handler_pending_remote=*/std::nullopt,
                 std::move(frame_handler), /*start_in_process=*/true,
-                std::move(video_effects_manager));
+                std::move(context));
 }
 
 void DeviceMediaToMojoAdapter::StartInternal(
@@ -120,8 +120,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
     bool start_in_process,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    media::VideoEffectsContext context) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInternal");
@@ -188,7 +187,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
               &media::VideoFrameReceiver::OnLog, video_frame_receiver))));
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
-      std::move(media_receiver), buffer_pool, std::move(video_effects_manager));
+      std::move(media_receiver), buffer_pool, std::move(context));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   device_->AllocateAndStart(requested_settings, std::move(device_client));

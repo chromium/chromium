@@ -19,6 +19,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/mock_video_frame_receiver.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -27,6 +28,8 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/test/fake_video_effects_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,7 +144,11 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
+  // Will be nullopt until `Init()` has been called:
+  std::optional<video_effects::FakeVideoEffectsProcessor>
+      fake_video_effects_processor_;
   FakeVideoEffectsManagerImpl fake_video_effects_manager_;
+
   mojo::Receiver<media::mojom::VideoEffectsManager>
       video_effects_manager_receiver_{&fake_video_effects_manager_};
 
@@ -160,9 +167,21 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         std::move(controller), buffer_pool,
         base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
 #else
+
+    mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+        processor_receiver;
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        processor_remote(processor_receiver.InitWithNewPipeAndPassRemote());
+
+    mojo::PendingRemote<mojom::VideoEffectsManager> manager_remote =
+        video_effects_manager_receiver_.BindNewPipeAndPassRemote();
+
+    fake_video_effects_processor_.emplace(std::move(processor_receiver),
+                                          std::move(manager_remote));
+
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         std::move(controller), buffer_pool,
-        video_effects_manager_receiver_.BindNewPipeAndPassRemote());
+        media::VideoEffectsContext(std::move(processor_remote)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 };

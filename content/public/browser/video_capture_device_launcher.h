@@ -13,12 +13,12 @@
 #include "base/token.h"
 #include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -50,9 +50,10 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
   // The passed-in `done_cb` must guarantee that the context relevant
   // during the asynchronous processing stays alive.
   //
-  // The passed-in `video_effects_manager` remote is passed on to
-  // `VideoCaptureDeviceClient`, allowing it to get information about what
-  // effects (if any) should be applied to the video stream. The remote won't
+  // The passed-in `video_effects_processor` remote is passed on to
+  // `VideoCaptureDeviceClient`, allowing it to request post-processing of
+  // video frames according to the effects configuration set on the
+  // VideoEffectsProcessor by the Browser process. The remote won't
   // be bound to a receiver if the `VideoCaptureHost` couldn't get a valid
   // `content::BrowserContext`.
   virtual void LaunchDeviceAsync(
@@ -63,8 +64,8 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
       base::OnceClosure connection_lost_cb,
       Callbacks* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager) = 0;
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor) = 0;
 
   virtual void AbortLaunch() = 0;
 };

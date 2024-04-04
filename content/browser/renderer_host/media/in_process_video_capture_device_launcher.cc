@@ -25,7 +25,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -34,6 +33,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
@@ -231,8 +231,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure /* connection_lost_cb */,
     Callbacks* callbacks,
     base::OnceClosure done_cb,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        video_effects_processor) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -408,7 +408,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
 #else
   return std::make_unique<media::VideoCaptureDeviceClient>(
       std::move(receiver), std::move(buffer_pool),
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>{});
+      media::VideoEffectsContext({}));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

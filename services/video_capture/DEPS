@@ -7,5 +7,6 @@ include_rules = [
   "+media/mojo",
   "+media/capture",
   "+ui/gfx",
+  "+services/video_effects/public/mojom/video_effects_processor.mojom-forward.h",
   "+services/viz/public/cpp/gpu",
 ]

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
-#include "content/public/browser/video_capture_device_launcher.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
+#include "content/public/browser/video_capture_device_launcher.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 
 namespace content {
 
@@ -24,15 +24,16 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
 
   ~VideoCaptureDeviceLauncherSwitcher() override {}
 
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const media::VideoCaptureParams& params,
-                         base::WeakPtr<media::VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb,
-                         mojo::PendingRemote<media::mojom::VideoEffectsManager>
-                             video_effects_manager) override {
+  void LaunchDeviceAsync(
+      const std::string& device_id,
+      blink::mojom::MediaStreamType stream_type,
+      const media::VideoCaptureParams& params,
+      base::WeakPtr<media::VideoFrameReceiver> receiver,
+      base::OnceClosure connection_lost_cb,
+      Callbacks* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor) override {
     if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
       // Use of Unretained() is safe, because |media_device_launcher_| is owned
       // by |this|.
@@ -42,7 +43,7 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
       return media_device_launcher_->LaunchDeviceAsync(
           device_id, stream_type, params, std::move(receiver),
           std::move(connection_lost_cb), callbacks, std::move(done_cb),
-          std::move(video_effects_manager));
+          std::move(video_effects_processor));
     }
     // Use of Unretained() is safe, because |other_types_launcher_| is owned by
     // |this|.
@@ -52,7 +53,7 @@ class VideoCaptureDeviceLauncherSwitcher : public VideoCaptureDeviceLauncher {
     return other_types_launcher_->LaunchDeviceAsync(
         device_id, stream_type, params, std::move(receiver),
         std::move(connection_lost_cb), callbacks, std::move(done_cb),
-        std::move(video_effects_manager));
+        std::move(video_effects_processor));
   }
 
   void AbortLaunch() override {

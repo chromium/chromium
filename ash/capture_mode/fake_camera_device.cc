@@ -416,8 +416,8 @@ void FakeCameraDevice::CreatePushSubscription(
       requested_settings);
 }
 
-void FakeCameraDevice::RegisterVideoEffectsManager(
-    mojo::PendingRemote<::media::mojom::VideoEffectsManager> remote) {}
+void FakeCameraDevice::RegisterVideoEffectsProcessor(
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {}
 
 void FakeCameraDevice::OnFinishedConsumingBuffer(int32_t buffer_id) {
   auto iter = buffer_pool_.find(buffer_id);

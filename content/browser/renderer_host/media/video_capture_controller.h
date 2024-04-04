@@ -25,6 +25,7 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -136,8 +137,8 @@ class CONTENT_EXPORT VideoCaptureController
       const media::VideoCaptureParams& params,
       VideoCaptureDeviceLaunchObserver* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager);
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;
   void GetPhotoState(

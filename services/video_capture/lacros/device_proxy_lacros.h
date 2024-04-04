@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
+#include "media/capture/video/video_capture_device_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,8 +38,7 @@ class DeviceProxyLacros : public video_capture::Device {
   void StartInProcess(
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager) override;
+      media::VideoEffectsContext context) override;
   void MaybeSuspend() override;
   void Resume() override;
   void GetPhotoState(GetPhotoStateCallback callback) override;

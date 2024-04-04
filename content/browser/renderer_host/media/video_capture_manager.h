@@ -36,6 +36,7 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -123,9 +124,9 @@ class CONTENT_EXPORT VideoCaptureManager
   // StopCaptureForClient().
   //
   // `browser_context` is used to access the `MediaEffectsService` and pass a
-  // `VideoEffectsManager` remote for this device to the
+  // `VideoEffectsProcessor` remote for this device to the
   // `VideoCaptureDeviceClient`. If the `browser_context` is nullptr then the
-  // device won't get an effects manager.
+  // device won't get an effects processor.
   void ConnectClient(const media::VideoCaptureSessionId& session_id,
                      const media::VideoCaptureParams& capture_params,
                      VideoCaptureControllerID client_id,
@@ -304,14 +305,14 @@ class CONTENT_EXPORT VideoCaptureManager
   // To avoid multiple unnecessary start/stop commands to the OS, each start
   // request is queued in |device_start_request_queue_|.
   // QueueStartDevice creates a new entry in |device_start_request_queue_| and
-  // posts a
-  // request to start the device on the device thread unless there is
+  // posts a request to start the device on the device thread unless there is
   // another request pending start.
-  void QueueStartDevice(const media::VideoCaptureSessionId& session_id,
-                        VideoCaptureController* controller,
-                        const media::VideoCaptureParams& params,
-                        mojo::PendingRemote<media::mojom::VideoEffectsManager>
-                            video_effects_manager);
+  void QueueStartDevice(
+      const media::VideoCaptureSessionId& session_id,
+      VideoCaptureController* controller,
+      const media::VideoCaptureParams& params,
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor);
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 

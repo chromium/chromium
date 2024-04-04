@@ -64,8 +64,9 @@ class ASH_EXPORT FakeCameraDevice
           subscription,
       CreatePushSubscriptionCallback callback) override;
 
-  void RegisterVideoEffectsManager(
-      mojo::PendingRemote<::media::mojom::VideoEffectsManager> remote) override;
+  void RegisterVideoEffectsProcessor(
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
+      override;
 
   // video_capture::mojom::VideoFrameAccessHandler:
   void OnFinishedConsumingBuffer(int32_t buffer_id) override;

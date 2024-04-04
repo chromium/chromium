@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "media/capture/video/video_capture_device_client.h"
 #include "services/video_capture/lacros/video_frame_handler_proxy_lacros.h"
 
 namespace video_capture {
@@ -45,8 +46,7 @@ void DeviceProxyLacros::Start(
 void DeviceProxyLacros::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    media::VideoEffectsContext context) {
   mojo::PendingRemote<crosapi::mojom::VideoFrameHandler> proxy_handler_remote;
   handler_ = std::make_unique<VideoFrameHandlerProxyLacros>(
       proxy_handler_remote.InitWithNewPipeAndPassReceiver(),

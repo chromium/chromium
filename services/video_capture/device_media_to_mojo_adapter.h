@@ -54,8 +54,7 @@ class DeviceMediaToMojoAdapter : public Device {
   void StartInProcess(
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager) override;
+      media::VideoEffectsContext context) override;
   void StopInProcess() override;
   void MaybeSuspend() override;
   void Resume() override;
@@ -80,8 +79,7 @@ class DeviceMediaToMojoAdapter : public Device {
           handler_pending_remote,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
       bool start_in_process,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>
-          video_effects_manager);
+      media::VideoEffectsContext context);
 
   const std::unique_ptr<media::VideoCaptureDevice> device_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

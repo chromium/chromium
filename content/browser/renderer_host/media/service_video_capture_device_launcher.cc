@@ -13,13 +13,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/capture/capture_switches.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/media_switches.h"
@@ -87,8 +87,8 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        video_effects_processor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -127,8 +127,9 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   mojo::Remote<video_capture::mojom::VideoSource> source;
   service_connection_->source_provider()->GetVideoSource(
       device_id, source.BindNewPipeAndPassReceiver());
-  if (video_effects_manager) {
-    source->RegisterVideoEffectsManager(std::move(video_effects_manager));
+
+  if (video_effects_processor) {
+    source->RegisterVideoEffectsProcessor(std::move(video_effects_processor));
   }
 
   auto receiver_adapter =

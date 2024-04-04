@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace video_capture {
@@ -35,8 +36,9 @@ class MockVideoSource : public video_capture::mojom::VideoSource {
                video_capture::mojom::PushVideoStreamSubscription> subscription,
            CreatePushSubscriptionCallback& callback));
 
-  MOCK_METHOD1(RegisterVideoEffectsManager,
-               void(mojo::PendingRemote<media::mojom::VideoEffectsManager>));
+  MOCK_METHOD1(
+      RegisterVideoEffectsProcessor,
+      void(mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>));
 };
 
 }  // namespace video_capture

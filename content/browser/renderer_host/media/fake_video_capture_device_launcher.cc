@@ -89,8 +89,8 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        video_effects_processor) {
   auto device = system_->CreateDevice(device_id).ReleaseDevice();
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
@@ -114,8 +114,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
-      std::move(buffer_pool),
-      mojo::PendingRemote<media::mojom::VideoEffectsManager>{});
+      std::move(buffer_pool), media::VideoEffectsContext({}));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =

@@ -49,6 +49,8 @@ source_set("lib") {
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
+    "//services/video_effects:buildflags",
+    "//services/video_effects/public/mojom:mojom",
     "//services/viz/public/cpp/gpu",
   ]
 
