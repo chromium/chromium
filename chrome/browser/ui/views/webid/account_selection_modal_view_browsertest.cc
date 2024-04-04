@@ -125,8 +125,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void PerformHeaderChecks(views::View* header,
                            const std::u16string& expected_title,
-                           const std::u16string& expected_body,
-                           bool expect_brand_icon_update = false) {
+                           const std::u16string& expected_body) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -148,15 +147,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         header->children();
     ASSERT_EQ(header_children.size(), expected_class_names.size());
 
-    // Check if IDP brand icon is updated to RP icon, otherwise store the IDP
-    // brand icon to do the check later.
+    // Check IDP brand icon.
     BrandIconImageView* brand_icon =
         static_cast<BrandIconImageView*>(header_children[0]);
-    if (!idp_brand_icon_.IsEmpty() && expect_brand_icon_update) {
-      EXPECT_NE(brand_icon->GetImageModel(), idp_brand_icon_);
-    } else {
-      idp_brand_icon_ = brand_icon->GetImageModel();
-    }
+    ASSERT_TRUE(brand_icon);
 
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
@@ -295,8 +289,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         dialog()->children();
     // Order: Header, single account chooser, button row
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], expected_title, expected_body,
-                        /*expect_brand_icon_update=*/true);
+    PerformHeaderChecks(children[0], expected_title, expected_body);
 
     views::View* single_account_chooser = children[1];
     // Order: Account row, disclosure text

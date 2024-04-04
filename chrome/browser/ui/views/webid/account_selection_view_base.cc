@@ -421,7 +421,8 @@ void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
 
 void AccountSelectionViewBase::ConfigureBrandImageView(
     BrandIconImageView* image_view,
-    const GURL& brand_icon_url) {
+    const GURL& brand_icon_url,
+    int image_size) {
   // Show placeholder brand icon prior to brand icon being fetched so that
   // header text wrapping does not change when brand icon is fetched.
   bool has_icon = brand_icon_url.is_valid();
@@ -433,7 +434,7 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
   auto it = brand_icon_images_.find(brand_icon_url);
   if (it != brand_icon_images_.end()) {
     image_view->SetImage(ui::ImageModel::FromImageSkia(
-        CreateCircleCroppedImage(it->second, kDesiredIdpIconSize)));
+        CreateCircleCroppedImage(it->second, image_size)));
     return;
   }
 

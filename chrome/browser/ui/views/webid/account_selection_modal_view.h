@@ -121,6 +121,12 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       std::optional<views::Button::PressedCallback> use_other_account_callback,
       std::optional<views::Button::PressedCallback> back_callback);
 
+  // Returns a View containing the image of the icon fetched from
+  // `brand_icon_url`. If the image cannot be fetched, a globe icon is returned
+  // instead.
+  std::unique_ptr<views::View> CreateBrandIconImageView(
+      const GURL& brand_icon_url);
+
   // Adds a progress bar at the top of the modal dialog.
   void AddProgressBar();
 

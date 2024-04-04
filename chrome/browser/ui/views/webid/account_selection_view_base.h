@@ -311,7 +311,8 @@ class AccountSelectionViewBase {
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
-                               const GURL& brand_icon_url);
+                               const GURL& brand_icon_url,
+                               int image_size = kDesiredIdpIconSize);
 
   // Sets the badge of the AccountImageView, if available, or initiates the
   // fetch otherwise.

@@ -296,22 +296,7 @@ AccountSelectionModalView::CreateAccountChooserHeader(
                         /*right=*/kDialogMargin)));
 
   // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
-  std::unique_ptr<BrandIconImageView> image_view =
-      std::make_unique<BrandIconImageView>(
-          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                         weak_ptr_factory_.GetWeakPtr()),
-          kModalIconSize);
-  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_bottom(kVerticalPadding));
-  if (idp_metadata.brand_icon_url.is_valid()) {
-    ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
-  } else {
-    image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
-    image_view->SetVisible(true);
-  }
-  header->AddChildView(std::move(image_view));
+  header->AddChildView(CreateBrandIconImageView(idp_metadata.brand_icon_url));
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
@@ -507,23 +492,8 @@ AccountSelectionModalView::CreateRequestPermissionHeader(
                         /*bottom=*/0,
                         /*right=*/kDialogMargin)));
 
-  // Add RP icon, if available. Otherwise, fallback to the default globe icon.
-  std::unique_ptr<BrandIconImageView> image_view =
-      std::make_unique<BrandIconImageView>(
-          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                         weak_ptr_factory_.GetWeakPtr()),
-          kModalIconSize);
-  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_bottom(kVerticalPadding));
-  if (brand_icon_url.is_valid()) {
-    ConfigureBrandImageView(image_view.get(), brand_icon_url);
-  } else {
-    image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
-    image_view->SetVisible(true);
-  }
-  header->AddChildView(std::move(image_view));
+  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
+  header->AddChildView(CreateBrandIconImageView(brand_icon_url));
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
@@ -543,7 +513,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
                                       idp_display_data.idp_etld_plus_one);
   SetAccessibleTitle(title_);
   header_view_ = AddChildView(CreateRequestPermissionHeader(
-      idp_display_data.client_metadata.brand_icon_url));
+      idp_display_data.idp_metadata.brand_icon_url));
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,
@@ -559,6 +529,28 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
           base::Unretained(observer_))));
 
   InitDialogWidget();
+}
+
+std::unique_ptr<views::View>
+AccountSelectionModalView::CreateBrandIconImageView(
+    const GURL& brand_icon_url) {
+  std::unique_ptr<BrandIconImageView> image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalIconSize);
+  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_bottom(kVerticalPadding));
+  if (brand_icon_url.is_valid()) {
+    ConfigureBrandImageView(image_view.get(), brand_icon_url, kModalIconSize);
+  } else {
+    image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
+    image_view->SetVisible(true);
+  }
+
+  return image_view;
 }
 
 void AccountSelectionModalView::CloseDialog() {
