@@ -655,10 +655,10 @@ class TestImporterTest(LoggingTestCase):
                 # results: [ Failure Pass Timeout ]
                 # tags: [ Linux Mac ]
                 external/wpt/foo/new.html [ Failure ]
-                crbug.com/626703 [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
+                [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
                 crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
-                # Manually added expectation with existing bugs
-                crbug.com/626703 crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
+                # Manually added expectation with existing bug
+                crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
                 """))
         git.add_list([exp_path])
         git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
@@ -693,8 +693,8 @@ class TestImporterTest(LoggingTestCase):
                 crbug.com/111 external/wpt/foo/new.html [ Failure ]
                 crbug.com/111 [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
                 crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
-                # Manually added expectation with existing bugs
-                crbug.com/626703 crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
+                # Manually added expectation with existing bug
+                crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
                 """))
         expected_message = textwrap.dedent("""\
             [wpt-import] Update `TestExpectations` with bugs for new failures

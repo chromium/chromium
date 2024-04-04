@@ -43,7 +43,6 @@ _log = logging.getLogger(__name__)
 
 class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
-    UMBRELLA_BUG = 'crbug.com/626703'
 
     def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
@@ -468,7 +467,7 @@ class WPTExpectationsUpdater:
                 change += editor.update_versions(
                     test, {version},
                     statuses,
-                    reason=' '.join(result.bugs or {self.UMBRELLA_BUG}),
+                    reason=' '.join(result.bugs),
                     marker=self.MARKER_COMMENT[len('# '):])
             change += editor.merge_versions(test)
 

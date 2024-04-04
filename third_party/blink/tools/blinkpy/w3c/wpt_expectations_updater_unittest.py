@@ -240,7 +240,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 # results: [ Pass Timeout ]
 
                 # ====== New tests from wpt-importer added here ======
-                crbug.com/626703 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]
+                [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]
                 """))
 
     def test_run_chrome_only_failure(self):
@@ -295,8 +295,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             textwrap.dedent("""\
                 # results: [ Timeout ]
                 # ====== New tests from wpt-importer added here ======
-                crbug.com/626703 external/wpt/test/path.html [ Timeout ]
-                crbug.com/626703 external/wpt/webdriver/test.py [ Timeout ]
+                external/wpt/test/path.html [ Timeout ]
+                external/wpt/webdriver/test.py [ Timeout ]
                 """))
 
     def test_no_chrome_expectation_redundant_with_generic(self):
@@ -441,8 +441,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 # results: [ Timeout Crash Pass Failure Skip ]
 
                 # ====== New tests from wpt-importer added here ======
-                crbug.com/626703 [ Mac ] external/wpt/test/path.html [ Timeout ]
-                crbug.com/626703 [ Linux ] external/wpt/test/path.html [ Timeout ]
+                [ Mac ] external/wpt/test/path.html [ Timeout ]
+                [ Linux ] external/wpt/test/path.html [ Timeout ]
                 """))
 
     def test_run_single_flag_specific_failure(self):
@@ -493,7 +493,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             host.filesystem.read_text_file(expectations_path),
             '# ====== New tests from wpt-importer added here ======\n'
-            'crbug.com/626703 external/wpt/test/path.html [ Timeout ]\n')
+            'external/wpt/test/path.html [ Timeout ]\n')
 
     def test_filter_results_for_update_only_passing_results(self):
         host = self.mock_host()
@@ -564,7 +564,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_remove_configurations(self):
         host = self.mock_host()
 
@@ -584,8 +583,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             crbug.com/1235 [ Win10 ] external/wpt/test/bar.html [ Timeout ]
 
             # ====== New tests from wpt-importer added here ======
-            crbug.com/123 [ Win7 ] external/wpt/test/bar.html [ Failure Timeout ]
-            crbug.com/123 [ Win7 ] external/wpt/test/foo.html [ Failure Timeout ]
+            [ Win7 ] external/wpt/test/bar.html [ Failure Timeout ]
+            [ Win7 ] external/wpt/test/foo.html [ Failure Timeout ]
             """)
 
         # Fill in an initial value for TestExpectations
@@ -618,7 +617,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         value = host.filesystem.read_text_file(expectations_path)
         self.assertMultiLineEqual(value, final_expectations)
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_create_line_dict_for_flag_specific(self):
         # In this example, there are three unexpected results for wpt tests.
         # One of them has match results in generic test expectations,
@@ -668,16 +666,15 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 expectations_path, 'external/wpt/reftest.html'), [])
         (line, ) = expectations.get_expectations_from_file(
             expectations_path, 'external/wpt/test/path.html')
-        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.reason, '')
         self.assertEqual(line.tags, set())
         self.assertEqual(line.results, {ResultType.Crash})
         (line, ) = expectations.get_expectations_from_file(
             expectations_path, 'external/wpt/test/zzzz.html')
-        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.reason, '')
         self.assertEqual(line.tags, set())
         self.assertEqual(line.results, {ResultType.Crash})
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_create_line_dict_new_tests(self):
         # In this example, there are three unexpected results for wpt tests.
         # The new test expectation lines are sorted by test, and then specifier.
@@ -719,7 +716,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         path = updater.port.path_to_generic_test_expectations_file()
         (line, ) = expectations.get_expectations_from_file(
             path, 'external/wpt/test/zzzz.html')
-        self.assertEqual(line.reason, 'crbug.com/123')
+        self.assertEqual(line.reason, '')
         self.assertEqual(line.tags, {'mac10.10'})
         self.assertEqual(line.results, {ResultType.Crash})
 
@@ -727,14 +724,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             path, 'virtual/foo/external/wpt/test/zzzz.html')
         self.assertEqual(len(lines), 2)
         line1, line2 = sorted(lines, key=lambda line: line.tags)
-        self.assertEqual(line1.reason, 'crbug.com/123')
+        self.assertEqual(line1.reason, '')
         self.assertEqual(line1.tags, {'mac10.11'})
         self.assertEqual(line1.results, {ResultType.Timeout})
-        self.assertEqual(line2.reason, 'crbug.com/123')
+        self.assertEqual(line2.reason, '')
         self.assertEqual(line2.tags, {'trusty'})
         self.assertEqual(line2.results, {ResultType.Timeout})
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_create_line_dict_with_asterisks(self):
         # Literal asterisks in test names need to be escaped in expectations.
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -751,13 +747,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             line_dict, {
                 'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
                 [
-                    'crbug.com/123 external/wpt/html/dom/'
+                    'external/wpt/html/dom/'
                     'interfaces.https.html?exclude=(Document.\*|HTML.\*) '
                     '[ Failure ]',
                 ],
             })
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_unsimplifiable_specifiers(self):
         host = self.mock_host()
         updater = self.mock_updater(host)
@@ -953,7 +948,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
                     '[ linux ] external/wpt/fake/new.html?HelloWorld [ Failure ]\n'))
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_clean_expectations_for_deleted_test_harness(self):
         host = self.mock_host()
         port = host.port_factory.get()
@@ -1014,12 +1008,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 # results: [ Pass Failure ]
 
                 # ====== New tests from wpt-importer added here ======
-                crbug.com/123 external/wpt/fake/file/path.html [ Failure ]
+                external/wpt/fake/file/path.html [ Failure ]
                 """))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_write_to_test_expectations_and_cleanup_expectations(self):
         host = self.mock_host()
         expectations_path = \
@@ -1060,7 +1053,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             value,
             ('# tags: [ Linux ]\n' + '# results: [ Pass Failure ]\n' +
              WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
-             'crbug.com/123 external/wpt/fake/file/path.html [ Failure ]\n' +
+             'external/wpt/fake/file/path.html [ Failure ]\n' +
              '[ linux ] external/wpt/fake/new.html?HelloWorld [ Failure ]\n'))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
@@ -1080,7 +1073,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             host, ['--clean-up-affected-tests-only',
                    '--clean-up-test-expectations'])
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_write_to_test_expectations_with_marker_comment(self):
         host = self.mock_host()
         expectations_path = \
@@ -1112,12 +1104,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 # tags: [ Trusty ]
                 # results: [ Timeout ]
                 {WPTExpectationsUpdater.MARKER_COMMENT}
-                crbug.com/123 [ Trusty ] external/wpt/x/y.html [ Timeout ]
+                [ Trusty ] external/wpt/x/y.html [ Timeout ]
                 """))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_write_to_test_expectations_with_no_marker_comment(self):
         host = self.mock_host()
         expectations_path = \
@@ -1153,7 +1144,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 crbug.com/111 [ Trusty ] foo/bar.html [ Failure ]
 
                 # ====== New tests from wpt-importer added here ======
-                crbug.com/123 [ Trusty ] external/wpt/x/y.html [ Timeout ]
+                [ Trusty ] external/wpt/x/y.html [ Timeout ]
                 """))
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
@@ -1165,9 +1156,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         raw_exps = '# tags: [ Trusty ]\n# results: [ Pass ]\n'
         host.filesystem.write_text_file(
             expectations_path,
-            raw_exps + '\n' +
-            WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
-            'crbug.com/123 [ Trusty ] fake/file/path.html [ Pass ]\n')
+            raw_exps + '\n' + WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
+            '[ Trusty ] fake/file/path.html [ Pass ]\n')
         updater = self.mock_updater(host)
         updater.update_expectations()
 
@@ -1175,10 +1165,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         skip_value_origin = host.filesystem.read_text_file(skip_path)
         value = host.filesystem.read_text_file(expectations_path)
         self.assertMultiLineEqual(
-            value,
-            raw_exps + '\n' +
-            WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
-            'crbug.com/123 [ Trusty ] fake/file/path.html [ Pass ]\n')
+            value, raw_exps + '\n' + WPTExpectationsUpdater.MARKER_COMMENT +
+            '\n' + '[ Trusty ] fake/file/path.html [ Pass ]\n')
         skip_value = host.filesystem.read_text_file(skip_path)
         self.assertMultiLineEqual(skip_value, skip_value_origin)
 
@@ -1288,7 +1276,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 ['external/wpt/x-manual.html [ Skip ]']
             })
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_same_platform_one_without_results(self):
         # In this example, there are two configs using the same platform
         # (Mac10.10), and one of them has no results while the other one does.
@@ -1324,8 +1311,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'external/wpt/x.html': [
-                    'crbug.com/123 [ Linux ] external/wpt/x.html [ Timeout ]',
-                    'crbug.com/123 [ Mac10.10 ] external/wpt/x.html [ Timeout ]',
+                    '[ Linux ] external/wpt/x.html [ Timeout ]',
+                    '[ Mac10.10 ] external/wpt/x.html [ Timeout ]',
                 ],
             })
 
@@ -1425,7 +1412,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                                    'new/c\*.html [ Failure ]\n'
                                    'some/test/d.html [ Failure ]\n'))
 
-    @mock.patch.object(WPTExpectationsUpdater, 'UMBRELLA_BUG', 'crbug.com/123')
     def test_merging_platforms_if_possible(self):
         host = self.mock_host()
         updater = self.mock_updater(host)
@@ -1448,9 +1434,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'external/wpt/x.html': [
-                    'crbug.com/123 [ Linux ] external/wpt/x.html [ Timeout ]',
-                    'crbug.com/123 [ Mac ] external/wpt/x.html [ Timeout ]',
-                    'crbug.com/123 [ Win7 ] external/wpt/x.html [ Timeout ]',
+                    '[ Linux ] external/wpt/x.html [ Timeout ]',
+                    '[ Mac ] external/wpt/x.html [ Timeout ]',
+                    '[ Win7 ] external/wpt/x.html [ Timeout ]',
                 ],
             })
 

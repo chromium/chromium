@@ -803,18 +803,16 @@ class TestImporter:
     ) -> Optional[typ_types.Expectation]:
         """Add a bug for a matching line, if any, in a given file.
 
-        Also removes the umbrella bug, if present.
-
         Returns:
-            The new line if the update was done.
+            The new line if the update was done. The filed bug will not replace
+            an existing bug.
         """
         for current_line in expectations.get_expectations_from_file(
                 path, target_line.test):
             if (current_line.tags != target_line.tags
                     or current_line.results != target_line.results):
                 continue
-            bugs = set(current_line.reason.split())
-            if not bugs <= {WPTExpectationsUpdater.UMBRELLA_BUG}:
+            if current_line.reason.strip():
                 continue
             # Avoid `bug.link`, which includes `https://...` prefix.
             new_line = typ_types.Expectation(f'crbug.com/{bug.issue_id}',

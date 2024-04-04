@@ -29,11 +29,9 @@ from blinkpy.w3c.import_notifier import (
     ImportNotifier,
     CHECKS_URL_TEMPLATE,
 )
-from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.web_tests.models import typ_types
 from blinkpy.web_tests.models.testharness_results import parse_testharness_baseline
 
-UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 
 
@@ -591,8 +589,7 @@ class DirectoryFailuresTest(unittest.TestCase):
                 typ_types.Expectation('crbug.com/12345',
                                       'external/wpt/foo/bar.html', {'Linux'},
                                       {typ_types.ResultType.Failure}),
-                typ_types.Expectation(UMBRELLA_BUG,
-                                      'external/wpt/foo/baz.html',
+                typ_types.Expectation(test='external/wpt/foo/baz.html',
                                       results={typ_types.ResultType.Failure}),
             ],
         })

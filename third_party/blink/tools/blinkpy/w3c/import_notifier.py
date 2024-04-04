@@ -52,7 +52,6 @@ from blinkpy.w3c.common import (
 )
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, OutputOption
-from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
 
 _log = logging.getLogger(__name__)
@@ -470,9 +469,5 @@ class DirectoryFailures:
         lines = [str(failure) for failure in self.baseline_failures]
         for path in sorted(self.exp_by_file):
             for exp in self.exp_by_file[path]:
-                line = exp.to_string()
-                if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
-                    line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG
-                                    ):].lstrip()
-                lines.append(line)
+                lines.append(exp.to_string())
         return '\n'.join(lines) + '\n'
