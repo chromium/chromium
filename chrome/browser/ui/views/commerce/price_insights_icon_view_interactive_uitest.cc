@@ -153,8 +153,10 @@ class PriceInsightsIconViewInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
-  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
-  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
+      .Times(testing::AnyNumber());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   RunTestSequence(

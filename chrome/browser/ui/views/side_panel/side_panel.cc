@@ -9,9 +9,11 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -65,6 +67,8 @@ gfx::Insets GetBorderInsets() {
       border_thickness - views::Separator::kThickness - kOverlapFromToolbar,
       border_thickness, border_thickness, border_thickness);
 }
+
+constexpr int kAnimationDurationMs = 450;
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -222,11 +226,19 @@ END_METADATA
 
 SidePanel::SidePanel(BrowserView* browser_view,
                      HorizontalAlignment horizontal_alignment)
-    : border_view_(AddChildView(std::make_unique<BorderView>(browser_view))),
+    : views::AnimationDelegateViews(this),
       browser_view_(browser_view),
-      resize_area_(
-          AddChildView(std::make_unique<views::SidePanelResizeArea>(this))),
       horizontal_alignment_(horizontal_alignment) {
+  std::unique_ptr<BorderView> border_view =
+      std::make_unique<BorderView>(browser_view);
+  border_view_ = border_view.get();
+  AddChildView(std::move(border_view));
+
+  std::unique_ptr<views::SidePanelResizeArea> resize_area =
+      std::make_unique<views::SidePanelResizeArea>(this);
+  resize_area_ = resize_area.get();
+  AddChildView(std::move(resize_area));
+
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
   // base::Unretained is safe since the side panel must be attached to some
@@ -235,6 +247,10 @@ SidePanel::SidePanel(BrowserView* browser_view,
       prefs::kSidePanelHorizontalAlignment,
       base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
                           base::Unretained(browser_view)));
+
+  animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT);
+
+  animation_.SetSlideDuration(base::Milliseconds(kAnimationDurationMs));
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -246,13 +262,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
   SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
-
-  AddObserver(this);
 }
 
-SidePanel::~SidePanel() {
-  RemoveObserver(this);
-}
+SidePanel::~SidePanel() = default;
 
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
@@ -289,6 +301,10 @@ gfx::Size SidePanel::GetMinimumSize() const {
                    min_height);
 }
 
+bool SidePanel::IsClosing() {
+  return animation_.IsClosing();
+}
+
 void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   // If a header view already exists make sure we remove it so that it is
   // replaced.
@@ -321,7 +337,22 @@ void SidePanel::ChildVisibilityChanged(View* child) {
   UpdateVisibility();
 }
 
+double SidePanel::GetAnimationValue() const {
+  if (lens::features::IsLensOverlayEnabled()) {
+    return animation_.GetCurrentValue();
+  } else {
+    return 1;
+  }
+}
+
 void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
+  if (observed_view != this || child == border_view_ || child == resize_area_) {
+    return;
+  }
+  if (child != header_view_) {
+    content_view_observations_.AddObservation(child);
+  }
+
   UpdateVisibility();
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
@@ -347,7 +378,35 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
 }
 
 void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
+  if (observed_view != this) {
+    return;
+  }
+  if (content_view_observations_.IsObservingSource(child)) {
+    content_view_observations_.RemoveObservation(child);
+  }
   UpdateVisibility();
+}
+
+void SidePanel::OnViewPropertyChanged(View* observed_view,
+                                      const void* key,
+                                      int64_t old_value) {
+  if (key == kSidePanelContentStateKey &&
+      static_cast<SidePanelContentState>(
+          observed_view->GetProperty(kSidePanelContentStateKey)) !=
+          static_cast<SidePanelContentState>(old_value)) {
+    UpdateVisibility();
+  }
+}
+
+void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
+  InvalidateLayout();
+}
+
+void SidePanel::AnimationEnded(const gfx::Animation* animation) {
+  if (animation->GetCurrentValue() == 0) {
+    SetVisible(false);
+  }
+  InvalidateLayout();
 }
 
 void SidePanel::OnResize(int resize_amount, bool done_resizing) {
@@ -387,17 +446,26 @@ void SidePanel::RecordMetricsIfResized() {
 }
 
 void SidePanel::UpdateVisibility() {
-  bool any_child_visible = false;
+  bool should_be_open = false;
+  std::vector<views::View*> views_to_hide;
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
-  for (const views::View* view : children()) {
+  for (views::View* view : children()) {
     if (view == border_view_ || view == resize_area_ || view == header_view_) {
       continue;
     }
 
-    if (view->GetVisible()) {
-      any_child_visible = true;
-      break;
+    if (view->GetVisible() &&
+        static_cast<SidePanelContentState>(
+            view->GetProperty(kSidePanelContentStateKey)) ==
+            SidePanelContentState::kReadyToHide) {
+      views_to_hide.push_back(view);
+    }
+    if (view->GetVisible() &&
+        static_cast<SidePanelContentState>(
+            view->GetProperty(kSidePanelContentStateKey)) ==
+            SidePanelContentState::kReadyToShow) {
+      should_be_open = true;
     }
   }
   // Make sure the border visibility matches the side panel. Also dynamically
@@ -406,9 +474,10 @@ void SidePanel::UpdateVisibility() {
   // https://crbug.com/1269090.
   // TODO(pbos): Should layer visibility/painting be automatically tied to
   // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
-  if (any_child_visible != border_view_->GetVisible()) {
-    border_view_->SetVisible(any_child_visible);
-    if (any_child_visible) {
+  bool side_panel_open_or_closing = GetVisible() || should_be_open;
+  if (side_panel_open_or_closing != border_view_->GetVisible()) {
+    border_view_->SetVisible(side_panel_open_or_closing);
+    if (side_panel_open_or_closing) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
       if (header_view_) {
@@ -424,7 +493,24 @@ void SidePanel::UpdateVisibility() {
       border_view_->DestroyLayer();
     }
   }
-  SetVisible(any_child_visible);
+  if (lens::features::IsLensOverlayEnabled() &&
+      gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_) {
+    if (should_be_open) {
+      // If the side panel should remain open but there are views to hide, hide
+      // them immediately.
+      for (auto* view : views_to_hide) {
+        view->SetVisible(false);
+      }
+      SetVisible(should_be_open);
+      animation_.Show();
+    } else {
+      if (GetVisible() && !IsClosing()) {
+        animation_.Hide();
+      }
+    }
+  } else {
+    SetVisible(should_be_open);
+  }
 }
 
 BEGIN_METADATA(SidePanel)

@@ -736,9 +736,13 @@ void BrowserViewLayout::LayoutSidePanelView(
                contents_container_bounds.width() - GetMinWebContentsWidth() -
                    side_panel_separator->GetPreferredSize().width()));
 
+  double side_panel_visible_width =
+      side_panel_bounds.width() *
+      views::AsViewClass<SidePanel>(unified_side_panel_)->GetAnimationValue();
+
   // Shrink container bounds to fit the side panel.
   contents_container_bounds.set_width(
-      contents_container_bounds.width() - side_panel_bounds.width() -
+      contents_container_bounds.width() - side_panel_visible_width -
       side_panel_separator->GetPreferredSize().width());
 
   // In LTR, the point (0,0) represents the top left of the browser.
@@ -752,8 +756,10 @@ void BrowserViewLayout::LayoutSidePanelView(
     // to the ui direction, move `contents_container_bounds` after the side
     // panel. Also leave space for the separator.
     contents_container_bounds.set_x(
-        side_panel_bounds.width() +
+        side_panel_visible_width +
         side_panel_separator->GetPreferredSize().width());
+    side_panel_bounds.set_x(side_panel_bounds.x() - (side_panel_bounds.width() -
+                                                     side_panel_visible_width));
   } else {
     // When the side panel should appear after the main content area relative to
     // the ui direction, move `side_panel_bounds` after the main content area.

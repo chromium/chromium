@@ -8,18 +8,20 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/resize_area_delegate.h"
-#include "ui/views/view_observer.h"
 
 class BrowserView;
 
 class SidePanel : public views::AccessiblePaneView,
-                  public views::ViewObserver,
-                  public views::ResizeAreaDelegate {
+                  public views::ResizeAreaDelegate,
+                  public views::AnimationDelegateViews {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
  public:
@@ -36,12 +38,15 @@ class SidePanel : public views::AccessiblePaneView,
   ~SidePanel() override;
 
   void SetPanelWidth(int width);
+  double GetAnimationValue() const;
   gfx::RoundedCornersF background_radii() const { return background_radii_; }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
   void SetHorizontalAlignment(HorizontalAlignment alignment);
   HorizontalAlignment GetHorizontalAlignment();
   bool IsRightAligned();
   gfx::Size GetMinimumSize() const override;
+  bool IsClosing();
+  void DisableAnimationsForTesting() { animations_disabled_ = true; }
 
   // Add a header view that gets painted over the side panel border. The top
   // border area grows to accommodate the additional height of the header,
@@ -71,11 +76,17 @@ class SidePanel : public views::AccessiblePaneView,
   // views::ViewObserver:
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
+  void OnViewPropertyChanged(View* observed_view,
+                             const void* key,
+                             int64_t old_value) override;
 
-  const raw_ptr<View> border_view_;
+  // views::AnimationDelegateViews:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+
+  raw_ptr<View> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
-  const raw_ptr<View> resize_area_;
-
+  raw_ptr<View> resize_area_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;
 
   // -1 if a side panel resize is not in progress, otherwise the width of the
@@ -85,6 +96,15 @@ class SidePanel : public views::AccessiblePaneView,
   // Should be true if the side panel was resized since metrics were last
   // logged.
   bool did_resize_ = false;
+
+  bool animations_disabled_ = false;
+
+  // Animation controlling showing and hiding of the side panel.
+  gfx::SlideAnimation animation_{this};
+  // Monitors content views so we will be notified if their property
+  // state changes.
+  base::ScopedMultiSourceObservation<View, ViewObserver>
+      content_view_observations_{this};
 
   gfx::RoundedCornersF background_radii_;
 

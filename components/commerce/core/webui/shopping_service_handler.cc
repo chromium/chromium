@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -91,7 +92,11 @@ shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
     return insights_info;
   }
 
-  insights_info->cluster_id = info->product_cluster_id.value();
+  if (info->product_cluster_id.has_value()) {
+    insights_info->cluster_id = info->product_cluster_id.value();
+  } else {
+    CHECK_IS_TEST();
+  }
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
       std::make_unique<payments::CurrencyFormatter>(info->currency_code,

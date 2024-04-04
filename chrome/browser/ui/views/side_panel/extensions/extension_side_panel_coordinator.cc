@@ -337,10 +337,6 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   } else {
     entry->ClearCachedView();
   }
-
-  // Closing the panel or removing the view should synchronously result in
-  // the extension view being destroyed, which destroys `host_`.
-  DCHECK(!host_);
 }
 
 void ExtensionSidePanelCoordinator::NavigateIfNecessary() {

@@ -49,6 +49,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
                              kSidePanelOpenTriggerKey,
                              kInvalidSidePanelOpenTrigger)
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentState)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
+                             kSidePanelContentStateKey,
+                             std::underlying_type_t<SidePanelContentState>(
+                                 SidePanelContentState::kReadyToShow))
+
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
                                           SidePanelRegistry* global_registry) {
