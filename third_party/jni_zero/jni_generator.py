@@ -499,6 +499,7 @@ def _CreateSrcJar(srcjar_path,
 
 
 def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
+  already_added = set()
   with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
@@ -513,6 +514,11 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
             proxy_interface=jni_obj.proxy_interface,
             proxy_natives=jni_obj.proxy_natives)
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+        already_added.add(zip_path)
+      # Doing this in 2 phases to ensure that the Jni classes (the ones that
+      # can have @NativeMethods) all get added first, so we don't accidentally
+      # write a stubbed version of the class if it's imported by another class.
+      for jni_obj in jni_objs:
         placeholders = collections.defaultdict(list)
         for java_class in jni_obj.type_resolver.imports:
           # java.** are not separate deps and can be assumed to be available in
@@ -526,10 +532,12 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
             placeholders[java_class] = []
         for java_class, nested_classes in placeholders.items():
           zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
-          content = placeholder_java_type.Generate(java_class,
-                                                   nested_classes,
-                                                   script_name=script_name)
-          common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+          if zip_path not in already_added:
+            content = placeholder_java_type.Generate(java_class,
+                                                     nested_classes,
+                                                     script_name=script_name)
+            common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+            already_added.add(zip_path)
 
 
 def _WriteHeaders(jni_objs, output_names, output_dir):
