@@ -12,7 +12,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/types/optional_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
@@ -396,18 +395,16 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       return true;
     }
     case kWebMIdDiscardPadding: {
-      if (discard_padding_set_ || size <= 0 || size > 8)
+      if (discard_padding_set_ || data.empty() || data.size() > 8u) {
         return false;
+      }
       discard_padding_set_ = true;
 
-      // Read in the big-endian integer.
-      discard_padding_ = static_cast<int8_t>(data[0]);
-      for (int i = 1; i < size; ++i) {
-        // Multiplying instead of shifting, since the padding may be negative,
-        // and shifting a negative value is undefined.
-        discard_padding_ = (discard_padding_ * 256) | data[i];
-      }
-
+      // Read in the big-endian integer. There may be less than 8 bytes, so we
+      // place them at the back of the array, in the LSB positions.
+      uint8_t bytes[8u] = {};
+      base::span(bytes).last(data.size()).copy_from(data);
+      discard_padding_ = base::numerics::I64FromBigEndian(bytes);
       return true;
     }
     case kWebMIdReferenceBlock: {
