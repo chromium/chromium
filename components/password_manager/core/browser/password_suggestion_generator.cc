@@ -384,7 +384,7 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 std::vector<autofill::Suggestion>
 PasswordSuggestionGenerator::GetManualFallbackSuggestions(
-    const std::vector<CredentialUIEntry>& credentials,
+    base::span<const CredentialUIEntry> credentials,
     IsTriggeredOnPasswordForm on_password_form) const {
   std::vector<autofill::Suggestion> suggestions;
   for (const CredentialUIEntry& credential : credentials) {

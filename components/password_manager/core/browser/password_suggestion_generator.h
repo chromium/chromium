@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -54,7 +55,7 @@ class PasswordSuggestionGenerator {
   // Chrome context menu. Every suggestion will have several sub suggestions to
   // fill username, password and open credential details dialog.
   std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
-      const std::vector<CredentialUIEntry>& credentials,
+      base::span<const CredentialUIEntry> credentials,
       IsTriggeredOnPasswordForm on_password_form) const;
 
  private:

@@ -84,6 +84,13 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
     return CredentialUIEntry(std::move(form));
   }
 
+  std::vector<Suggestion> GenerateAllPasswordsSection(
+      const std::vector<CredentialUIEntry>& all_credentials,
+      IsTriggeredOnPasswordForm on_password_form) {
+    return generator().GetManualFallbackSuggestions(
+        base::make_span(all_credentials), on_password_form);
+  }
+
  private:
   gfx::Image favicon_;
 
@@ -102,9 +109,8 @@ TEST_F(PasswordSuggestionGeneratorTest, NoPasswordFormFillData) {
 }
 
 TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_NoCredentials) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions(std::vector<CredentialUIEntry>(),
-                                               IsTriggeredOnPasswordForm(true));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      std::vector<CredentialUIEntry>(), IsTriggeredOnPasswordForm(true));
   EXPECT_TRUE(suggestions.empty());
 }
 
@@ -112,9 +118,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_NoCredentials) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_SuggestionContent) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions({credential_ui_entry()},
-                                               IsTriggeredOnPasswordForm(true));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {credential_ui_entry()}, IsTriggeredOnPasswordForm(true));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsManualFallbackSuggestion(
@@ -128,9 +133,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_SuggestionContent) {
 
 TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_NoUsername_SuggestionContent) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions(
-          {credential_ui_entry_no_username()}, IsTriggeredOnPasswordForm(true));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {credential_ui_entry_no_username()}, IsTriggeredOnPasswordForm(true));
 
   EXPECT_THAT(
       suggestions,
@@ -146,9 +150,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_NonPasswordForm_SuggestionContent) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions(
-          {credential_ui_entry()}, IsTriggeredOnPasswordForm(false));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {credential_ui_entry()}, IsTriggeredOnPasswordForm(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsManualFallbackSuggestion(
@@ -169,8 +172,7 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_FirstDomainIsUsed) {
                   PasswordForm::MatchType::kExact);
   CredentialUIEntry entry({std::move(form_1), std::move(form_2)});
   std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions({entry},
-                                               IsTriggeredOnPasswordForm(true));
+      GenerateAllPasswordsSection({entry}, IsTriggeredOnPasswordForm(true));
 
   // Only the first domain is used to create the suggestion.
   EXPECT_THAT(suggestions,
@@ -199,12 +201,11 @@ TEST_F(PasswordSuggestionGeneratorTest,
                   PasswordForm::MatchType::kExact);
 
   std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions(
-          {CredentialUIEntry({std::move(form_1)}),
-           CredentialUIEntry({std::move(form_2)}),
-           CredentialUIEntry({std::move(form_3)}),
-           CredentialUIEntry({std::move(form_4)})},
-          IsTriggeredOnPasswordForm(true));
+      GenerateAllPasswordsSection({CredentialUIEntry({std::move(form_1)}),
+                                   CredentialUIEntry({std::move(form_2)}),
+                                   CredentialUIEntry({std::move(form_3)}),
+                                   CredentialUIEntry({std::move(form_4)})},
+                                  IsTriggeredOnPasswordForm(true));
 
   // Manual fallback suggestions are sorted by domain name.
   EXPECT_THAT(
@@ -231,9 +232,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 
 TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_ChildSuggestionContent) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions({credential_ui_entry()},
-                                               IsTriggeredOnPasswordForm(true));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {credential_ui_entry()}, IsTriggeredOnPasswordForm(true));
 
   // 1 password suggestion and 2 footer suggestions.
   EXPECT_EQ(suggestions.size(), 3u);
@@ -257,9 +257,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_ChildSuggestionContent) {
 
 TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_NoUsername_ChildSuggestionContent) {
-  std::vector<Suggestion> suggestions =
-      generator().GetManualFallbackSuggestions(
-          {credential_ui_entry_no_username()}, IsTriggeredOnPasswordForm(true));
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {credential_ui_entry_no_username()}, IsTriggeredOnPasswordForm(true));
 
   // 1 password suggestion and 2 footer suggestions.
   EXPECT_EQ(suggestions.size(), 3u);
