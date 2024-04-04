@@ -344,6 +344,17 @@ pass it along to / include someone who can direct it more precisely.
       Googlers can look at
       [the V8 security bug triage instructions](https://goto.google.com/v8-security-issue-triage-how-to)
       for lists of component owners, but this shouldn't normally be necessary.
+* **V8 Sandbox bypasses**. The V8 Sandbox is still under development, but V8
+  has begun accepting bypass submissions as low-severity security bugs with
+  specific submission rules. That being said, Chrome Shepherds are not expected
+  to fully triage these reports. You do not need to submit the sandbox bypasses
+  to Clusterfuzz. If the report is clearly a V8 sandbox bypass, simply:
+    * Set a provisional severity of Low (S3).
+    * Assign to the current [V8
+      Sheriff](https://goto.google.com/current-v8-sheriff).
+    * Apply the `Security_Impact-None` hotlist (hotlistID:5433277.
+    * If possible, please also apply the `V8 Sandbox` hotlist
+      (hotlistID:4802478).
 * **Skia bugs** can be assigned to hcm@chromium.org. Be careful while triaging
   these! The place where we're crashing isn't necessarily the place where the
   bug was introduced, so blame may be misleading. Skia fuzzing bugs can be
