@@ -8,12 +8,15 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_features.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/flex_layout.h"
@@ -22,15 +25,21 @@ namespace views {
 
 SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
     : side_panel_(side_panel) {
-  constexpr gfx::Size kPreferredResizeHandleSize(16, 24);
-  SetPreferredSize(kPreferredResizeHandleSize);
+  gfx::Size preferred_size((lens::features::IsLensOverlayEnabled() ? 4 : 16),
+                           24);
+  SetPreferredSize(preferred_size);
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   FocusRing::Install(this);
-
-  constexpr int kIconSize = 16;
-  SetImage(ui::ImageModel::FromVectorIcon(
-      kDragHandleIcon, kColorSidePanelResizeAreaHandle, kIconSize));
+  if (lens::features::IsLensOverlayEnabled()) {
+    const int resize_handle_left_margin = 2;
+    SetProperty(views::kMarginsKey,
+                gfx::Insets().set_left(resize_handle_left_margin));
+  } else {
+    constexpr int kIconSize = 16;
+    SetImage(ui::ImageModel::FromVectorIcon(
+        kDragHandleIcon, kColorSidePanelResizeAreaHandle, kIconSize));
+  }
 }
 
 void SidePanelResizeHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -48,7 +57,17 @@ void SidePanelResizeHandle::RemovedFromWidget() {
 }
 
 void SidePanelResizeHandle::OnWillChangeFocus(views::View* before,
-                                              views::View* now) {}
+                                              views::View* now) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    if (now == this) {
+      const SkColor resize_handle_color =
+          GetColorProvider()->GetColor(kColorSidePanelResizeAreaHandle);
+      SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
+    } else {
+      SetBackground(nullptr);
+    }
+  }
+}
 
 void SidePanelResizeHandle::OnDidChangeFocus(views::View* before,
                                              views::View* now) {

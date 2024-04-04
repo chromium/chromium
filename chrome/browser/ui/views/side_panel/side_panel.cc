@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
+#include "components/lens/lens_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -45,21 +46,25 @@ namespace {
 
 // This thickness includes the solid-color background and the inner round-rect
 // border-color stroke. It does not include the outer-color separator.
-constexpr int kBorderThickness = 16 + views::Separator::kThickness;
+int GetBorderThickness() {
+  return (lens::features::IsLensOverlayEnabled() ? 8 : 16) +
+         views::Separator::kThickness;
+}
 
 // This is how many units of the toolbar are essentially expected to be
 // background.
 constexpr int kOverlapFromToolbar = 4;
 
-// We want the border to visually look like kBorderThickness units on all sides.
-// On the top side, background is drawn on top of the top-content separator and
-// some units of background inside the toolbar (or bookmarks bar) itself.
-// Subtract both of those to not get visually-excessive padding.
-constexpr auto kBorderInsets = gfx::Insets::TLBR(
-    kBorderThickness - views::Separator::kThickness - kOverlapFromToolbar,
-    kBorderThickness,
-    kBorderThickness,
-    kBorderThickness);
+// We want the border to visually look like GetBorderThickness() units on all
+// sides. On the top side, background is drawn on top of the top-content
+// separator and some units of background inside the toolbar (or bookmarks bar)
+// itself. Subtract both of those to not get visually-excessive padding.
+gfx::Insets GetBorderInsets() {
+  int border_thickness = GetBorderThickness();
+  return gfx::Insets::TLBR(
+      border_thickness - views::Separator::kThickness - kOverlapFromToolbar,
+      border_thickness, border_thickness, border_thickness);
+}
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -154,9 +159,9 @@ class SidePanelBorder : public views::Border {
     // header to paint on top of the border area.
     int top_inset = views::Separator::kThickness + header_height_;
     if (features::IsSidePanelPinningEnabled()) {
-      top_inset -= kBorderThickness;
+      top_inset -= GetBorderThickness();
     }
-    return kBorderInsets + gfx::Insets::TLBR(top_inset, 0, 0, 0);
+    return GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
@@ -238,7 +243,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
   // accounting for the border into SetPanelWidth(), otherwise remove this TODO.
   SetPanelWidth(GetMinimumSize().width());
 
-  SetBorder(views::CreateEmptyBorder(kBorderInsets));
+  SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
 
@@ -280,7 +285,7 @@ bool SidePanel::IsRightAligned() {
 gfx::Size SidePanel::GetMinimumSize() const {
   const int min_side_panel_contents_width = 360;
   const int min_height = 0;
-  return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
+  return gfx::Size(min_side_panel_contents_width + GetBorderInsets().width(),
                    min_height);
 }
 
@@ -297,9 +302,9 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   // placed on top of the border.
   int top_inset = header_view_->height();
   if (features::IsSidePanelPinningEnabled()) {
-    top_inset -= kBorderThickness;
+    top_inset -= GetBorderThickness();
   }
-  SetBorder(views::CreateEmptyBorder(kBorderInsets +
+  SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
 }
 
@@ -308,8 +313,8 @@ gfx::Size SidePanel::GetContentSizeUpperBound() const {
   const int side_panel_height =
       height() > 0 ? height() : browser_view_->height();
 
-  return gfx::Size(std::max(0, side_panel_width - kBorderInsets.width()),
-                   std::max(0, side_panel_height - kBorderInsets.height()));
+  return gfx::Size(std::max(0, side_panel_width - GetBorderInsets().width()),
+                   std::max(0, side_panel_height - GetBorderInsets().height()));
 }
 
 void SidePanel::ChildVisibilityChanged(View* child) {
@@ -373,7 +378,7 @@ void SidePanel::RecordMetricsIfResized() {
         SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
             ->GetCurrentEntryId();
     CHECK(id.has_value());
-    int side_panel_contents_width = width() - kBorderInsets.width();
+    int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
     SidePanelUtil::RecordSidePanelResizeMetrics(
         id.value(), side_panel_contents_width, browser_window_width);
@@ -410,10 +415,10 @@ void SidePanel::UpdateVisibility() {
         static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
         int top_inset = header_view_->height();
         if (features::IsSidePanelPinningEnabled()) {
-          top_inset -= kBorderThickness;
+          top_inset -= GetBorderThickness();
         }
         SetBorder(views::CreateEmptyBorder(
-            kBorderInsets + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
+            GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
       }
     } else {
       border_view_->DestroyLayer();
