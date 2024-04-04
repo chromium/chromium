@@ -765,6 +765,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // kept here, and flushed in SetContainerReady().
   std::set<blink::mojom::WebFeature> buffered_used_features_;
 
+  // Until |container_| gets associated, postMessage will be queued.
+  std::vector<std::tuple<base::WeakPtr<ServiceWorkerObjectHost>,
+                         blink::TransferableMessage>>
+      buffered_messages_;
+
   // For worker clients only ---------------------------------------------------
 
   // The ID of the process where the container lives for worker clients. It is

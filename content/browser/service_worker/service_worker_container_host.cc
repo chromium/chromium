@@ -86,6 +86,14 @@ enum class CountFeatureDropOutReason {
   kMaxValue = kNotBoundOrNotConnected,
 };
 
+// Max number of messages that can be sent before |container_| gets ready.
+// I believe messages may not be sent in that situation for regular way, but
+// we technically do not prevent finding a client and send a message in that
+// phase.
+// 128 is picked randomly. We may need to run a experiment to decide the precise
+// number.
+constexpr size_t kMaxBufferedMessageSize = 128;
+
 }  // namespace
 
 // RAII helper class for keeping track of versions waiting for an update hint
@@ -625,9 +633,14 @@ void ServiceWorkerContainerHost::PostMessageToClient(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForClient());
 
-  blink::mojom::ServiceWorkerObjectInfoPtr info;
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
       GetOrCreateServiceWorkerObjectHost(version);
+  if (!is_container_ready_ &&
+      buffered_messages_.size() < kMaxBufferedMessageSize) {
+    buffered_messages_.emplace_back(object_host, std::move(message));
+    return;
+  }
+  blink::mojom::ServiceWorkerObjectInfoPtr info;
   if (object_host)
     info = object_host->CreateCompleteObjectInfoToSend();
   container_->PostMessageToClient(std::move(info), std::move(message));
@@ -2023,6 +2036,21 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
 void ServiceWorkerContainerHost::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_container_ready_ = true;
+  std::vector<std::tuple<base::WeakPtr<ServiceWorkerObjectHost>,
+                         blink::TransferableMessage>>
+      messages;
+
+  messages.swap(buffered_messages_);
+  base::UmaHistogramCounts1000("ServiceWorker.PostMessage.QueueSize",
+                               messages.size());
+  for (auto& [object_host, message] : messages) {
+    blink::mojom::ServiceWorkerObjectInfoPtr info;
+    if (object_host) {
+      info = object_host->CreateCompleteObjectInfoToSend();
+    }
+    container_->PostMessageToClient(std::move(info), std::move(message));
+  }
+  CHECK(buffered_messages_.empty());
 
   FlushFeatures();
 }
