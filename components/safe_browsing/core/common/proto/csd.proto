@@ -1610,6 +1610,12 @@ message ClientSafeBrowsingReportRequest {
     PHISHY_SITE_INTERACTIONS = 22;
     WARNING_SHOWN = 23;
     NOTIFICATION_PERMISSION_ACCEPTED = 24;
+    // This report is triggered if a download warning is not interacted in one
+    // hour and automatically deleted by Chrome.
+    DANGEROUS_DOWNLOAD_AUTO_DELETED = 25;
+    // This report is triggered if a download warning is not interacted when
+    // Chrome is closed.
+    DANGEROUS_DOWNLOAD_PROFILE_CLOSED = 26;
   }
 
   message HTTPHeader {

@@ -75,6 +75,7 @@
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "components/services/quarantine/quarantine_impl.h"
@@ -555,8 +556,7 @@ void ChromeDownloadManagerDelegate::OnDownloadCanceledAtShutdown(
   // Be careful, limited objects are still alive at this point. This function is
   // called at profile shutdown. Only keyed service, downloadItem and objects
   // directly owned by the browser process are available.
-  // TODO(crbug.com/329471668): Call SafeBrowsingService::SendDownloadReport
-  // here.
+  MaybeSendDangerousDownloadCanceledReport(item, /*is_shutdown=*/true);
 }
 
 content::DownloadIdCallback
@@ -1810,6 +1810,32 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
   }
 }
 
+void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(
+    DownloadItem* download,
+    bool is_shutdown) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  if (!DownloadProtectionService::ShouldSendDangerousDownloadReport(download) ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kDownloadReportWithoutUserDecision)) {
+    return;
+  }
+  safe_browsing::SafeBrowsingService* sb_service =
+      g_browser_process->safe_browsing_service();
+  if (sb_service) {
+    // Note: We cannot go through download_protection_service here, because this
+    // function may be called at shutdown. The download_protection_service
+    // object may already be deleted at this point.
+    sb_service->SendDownloadReport(
+        download,
+        is_shutdown ? safe_browsing::ClientSafeBrowsingReportRequest::
+                          DANGEROUS_DOWNLOAD_PROFILE_CLOSED
+                    : safe_browsing::ClientSafeBrowsingReportRequest::
+                          DANGEROUS_DOWNLOAD_AUTO_DELETED,
+        /*did_proceed=*/false, std::nullopt);
+  }
+#endif
+}
+
 void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     const content::WebContents::Getter& web_contents_getter,
     const GURL& url,
@@ -2015,6 +2041,7 @@ void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
     LogCancelEphemeralWarningEvent(
         CancelEphemeralWarningEvent::kCancellationSucceeded);
     download->Cancel(/*user_cancel=*/false);
+    MaybeSendDangerousDownloadCanceledReport(download, /*is_shutdown=*/false);
   } else {
     LogCancelEphemeralWarningEvent(
         CancelEphemeralWarningEvent::kCancellationFailedDownloadNotEphemeral);

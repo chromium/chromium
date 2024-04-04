@@ -6956,6 +6956,7 @@ test("unit_tests") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_search_api",
     "//components/safe_search_api:test_support",
     "//components/saved_tab_groups:core",
@@ -9505,7 +9506,6 @@ test("unit_tests") {
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/safe_browsing/core/browser:token_fetcher",
-      "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }
 
