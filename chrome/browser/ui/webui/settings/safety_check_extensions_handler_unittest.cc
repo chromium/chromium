@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -19,6 +20,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,20 +94,26 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  protected:
-  void AddExtension(const std::string& name, mojom::ManifestLocation location) {
+  void AddExtension(
+      const std::string& name,
+      mojom::ManifestLocation location,
+      std::string update_url = extension_urls::kChromeWebstoreUpdateURL) {
     const std::string kId = crx_file::id_util::GenerateId(name);
-    scoped_refptr<const Extension> extension = CreateExtension(name, location);
+    scoped_refptr<const Extension> extension =
+        CreateExtension(name, location, update_url);
     extensions::ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
   }
 
   scoped_refptr<const extensions::Extension> CreateExtension(
       const std::string& name,
-      mojom::ManifestLocation location) {
+      mojom::ManifestLocation location,
+      std::string update_url = extension_urls::kChromeWebstoreUpdateURL) {
     const std::string kId = crx_file::id_util::GenerateId(name);
     scoped_refptr<const extensions::Extension> extension =
         ExtensionBuilder(name)
             .SetManifestKey("host_permissions",
                             base::Value::List().Append(kAllHostsPermission))
+            .SetManifestKey(extensions::manifest_keys::kUpdateURL, update_url)
             .SetLocation(location)
             .SetID(kId)
             .Build();
@@ -138,6 +147,10 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
 void SafetyCheckExtensionsHandlerTest::SetUp() {
   TestingProfile::Builder builder;
   profile_ = builder.Build();
+  feature_list_.InitWithFeatures(
+      {features::kSafetyHubExtensionsUwSTrigger,
+       features::kSafetyHubExtensionsOffStoreTrigger},
+      /*disabled_features=*/{});
   safety_check_handler_ =
       std::make_unique<settings::SafetyCheckExtensionsHandler>(profile_.get());
   safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
@@ -155,26 +168,28 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   AddExtension("TestExtension4", ManifestLocation::kInternal);
   AddExtension("TestExtension5", ManifestLocation::kInternal);
   AddExtension("TestExtension6", ManifestLocation::kInternal);
+  AddExtension("TestExtension7", ManifestLocation::kInternal,
+               "https://example.com");
   // Extensions installed by policies will be ignored by the safety
-  // check. So extension 7 will not trigger the handler.
-  AddExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload);
+  // check. So extension 8 will not trigger the handler.
+  AddExtension("TestExtension8", ManifestLocation::kExternalPolicyDownload);
   // Ensure that the mock CWSInfo service returns the needed information.
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
-      .Times(6)
+      .Times(7)
       .WillOnce(testing::Return(cws_info_malware))
       .WillOnce(testing::Return(cws_info_policy))
       .WillOnce(testing::Return(cws_info_unpublished))
       .WillOnce(testing::Return(cws_info_multi))
       .WillOnce(testing::Return(cws_info_no_data))
+      .WillOnce(testing::Return(cws_info_no_trigger))
       .WillOnce(testing::Return(cws_info_no_trigger));
-  // There should be 4 triggering extensions based on the various cws_info
+  // There should be 5 triggering extensions based on the various cws_info
   // variables.
-  EXPECT_EQ(4, GetNumberOfExtensionsThatNeedReview());
+  EXPECT_EQ(5, GetNumberOfExtensionsThatNeedReview());
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest,
        GetNumberOfExtensionsThatNeedReview_BlocklistPrefs) {
-  feature_list_.InitAndEnableFeature(features::kSafetyHubExtensionsUwSTrigger);
   // Create 4 mock extensions, of which 3 are a blocklist triggers for review
   // (malware, policy violation, uws).
   const std::string extension_name_malware = "TestExtensionMalware";
@@ -207,6 +222,38 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
 
   // 3 triggering extensions based on blocklist prefs.
   EXPECT_EQ(3, GetNumberOfExtensionsThatNeedReview());
+}
+
+TEST_F(SafetyCheckExtensionsHandlerTest,
+       GetNumberOfExtensionsThatNeedReview_OffStore_Extension) {
+  // Create 2 mock extensions that both count as offstore.
+  const std::string extension_bad_url = "TestExtensionbadURL";
+  const std::string extension_unpacked = "TestExtensionUnpakced";
+  AddExtension(extension_bad_url, ManifestLocation::kInternal,
+               "https://example.com");
+  AddExtension(extension_unpacked, ManifestLocation::kUnpacked);
+
+  EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+      .Times(2)
+      .WillOnce(testing::Return(cws_info_no_trigger))
+      .WillOnce(testing::Return(cws_info_no_trigger));
+
+  EXPECT_EQ(2, GetNumberOfExtensionsThatNeedReview());
+}
+
+TEST_F(SafetyCheckExtensionsHandlerTest,
+       GetNumberOfExtensionsThatNeedReview_OffStore_Extension_Dev_Mode_On) {
+  // Create a mock offstore extension but dev mode is enabled.
+  profile_.get()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
+                                         true);
+  const std::string extension_unpacked = "TestExtensionUnpakced";
+  AddExtension(extension_unpacked, ManifestLocation::kUnpacked);
+
+  EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+      .Times(1)
+      .WillOnce(testing::Return(cws_info_no_trigger));
+
+  EXPECT_EQ(0, GetNumberOfExtensionsThatNeedReview());
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest, OnExtensionPrefsDeletedTest) {

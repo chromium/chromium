@@ -551,16 +551,18 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-  // Safety Hub Strings
-  info->safety_check_text =
-      CreateSafetyCheckDisplayString(extension, state, blocklist_state);
-
+  bool updates_from_web_store =
+      extension_management->UpdatesFromWebstore(extension);
   // ControlledInfo.
   bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
   if (is_policy_location) {
     info->controlled_info.emplace();
     info->controlled_info->text =
         l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
+  } else {
+    // Create Safety Hub strings for any non-enterprise extension.
+    info->safety_check_text = CreateSafetyCheckDisplayString(
+        extension, updates_from_web_store, state, blocklist_state);
   }
 
   bool is_enabled = state == developer::ExtensionState::kEnabled;
@@ -672,8 +674,6 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   }
 
   // Location.
-  bool updates_from_web_store =
-      extension_management->UpdatesFromWebstore(extension);
   if (extension.location() == mojom::ManifestLocation::kInternal &&
       updates_from_web_store) {
     info->location = developer::Location::kFromStore;
@@ -816,6 +816,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 developer::SafetyCheckStrings
 ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
     const Extension& extension,
+    bool updates_from_webstore,
     developer::ExtensionState state,
     BitMapBlocklistState blocklist_state) {
   developer::SafetyCheckStrings display_strings;
@@ -842,6 +843,31 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
       base::FeatureList::IsEnabled(features::kSafetyHubExtensionsUwSTrigger) &&
       blocklist_state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
 
+  bool warn_for_offstore_extension = false;
+  if (base::FeatureList::IsEnabled(
+          features::kSafetyHubExtensionsOffStoreTrigger)) {
+    bool dev_mode = Profile::FromBrowserContext(browser_context_)
+                        ->GetPrefs()
+                        ->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    if (Manifest::IsUnpackedLocation(extension.location())) {
+      // Extensions that are unpacked will only trigger a review if dev
+      // mode is not enabled.
+      warn_for_offstore_extension = !dev_mode;
+    } else {
+      if (updates_from_webstore) {
+        if (cws_info.has_value() && !cws_info->is_present) {
+          // If the extension has a webstore update URL but is not present
+          // in the webstore itself, then we will not consider it from
+          // the webstore.
+          warn_for_offstore_extension = true;
+        }
+      } else {
+        // extension does not update from the webstore.
+        warn_for_offstore_extension = true;
+      }
+    }
+  }
+
   if (malware) {
     detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
     panel_string_id = IDS_EXTENSIONS_SC_MALWARE;
@@ -857,6 +883,14 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
                           ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
                           : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
   } else if (valid_cws_info && cws_info->unpublished_long_ago) {
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+    panel_string_id = state == developer::ExtensionState::kEnabled
+                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+  } else if (warn_for_offstore_extension) {
+    // TODO(https://crbug.com/322898612): Update the detail and panel
+    // strings to their real values once they have been finalized.
+    // Currently using the unpublished strings as a placeholder.
     detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
     panel_string_id = state == developer::ExtensionState::kEnabled
                           ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON

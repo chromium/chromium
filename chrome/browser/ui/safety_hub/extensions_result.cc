@@ -11,11 +11,14 @@
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -28,8 +31,17 @@ constexpr extensions::PrefMap kPrefAcknowledgeSafetyCheckWarning = {
     "ack_safety_check_warning", extensions::PrefType::kBool,
     extensions::PrefScope::kExtensionSpecific};
 
+// Return true if an extension should be reviewed in the Safety Hub
+// Extension review panel. Any extensions that fall into one of the
+// following categories will return true.
+// -- Malware extensions
+// -- Extensions with a CWS policy violation
+// -- Extensions that have been unpublished
+// -- Extensions marked as unwanted
+// -- Offstore extensions
 bool ShouldExtensionBeReviewed(
     const extensions::Extension& extension,
+    Profile* profile,
     const extensions::ExtensionPrefs* extension_prefs,
     const extensions::CWSInfoService* extension_info_service,
     bool consider_unpublished_only) {
@@ -45,16 +57,17 @@ bool ShouldExtensionBeReviewed(
   }
   std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
       extension_info_service->GetCWSInfo(extension);
-  if (extension_info.has_value() && extension_info->is_present) {
-    // When only considering extensions that have been unpublished for a long
-    // time, discard any other review reason. Note that extensions can have
-    // multiple review reasons, and we're only returning the "main" one.
-    if (consider_unpublished_only) {
-      if (extension_info->unpublished_long_ago) {
-        return true;
-      }
-      return false;
+  // When only considering extensions that have been unpublished for a long
+  // time, discard any other review reason. Note that extensions can have
+  // multiple review reasons, and we're only returning the "main" one.
+  if (consider_unpublished_only) {
+    if (extension_info.has_value() && extension_info->unpublished_long_ago) {
+      return true;
     }
+    return false;
+  }
+
+  if (extension_info.has_value() && extension_info->is_present) {
     switch (extension_info->violation_type) {
       case extensions::CWSInfoService::CWSViolationType::kMalware:
       case extensions::CWSInfoService::CWSViolationType::kPolicy:
@@ -89,6 +102,28 @@ bool ShouldExtensionBeReviewed(
     case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       // no-op.
       break;
+  }
+
+  // Check to see if the extension is an offstore extension.
+  if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
+    // Only consider offstore extensions if developer mode is disabled.
+    bool dev_mode =
+        profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    if (!dev_mode) {
+      return true;
+    }
+  }
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  if (!extension_management->UpdatesFromWebstore(extension)) {
+    // Extension does not update from the webstore.
+    return true;
+  }
+
+  if (extension_info.has_value() && !extension_info->is_present) {
+    // Handles the edge case where Chrome thinks that the extension is
+    // updating from the webstore but CWS has no knowledge of the extension.
+    return true;
   }
 
   return false;
@@ -126,8 +161,7 @@ SafetyHubExtensionsResult::GetResult(
       if (extensions::Manifest::IsPolicyLocation(extension->location())) {
         continue;
       }
-
-      if (!ShouldExtensionBeReviewed(*extension.get(), extension_prefs,
+      if (!ShouldExtensionBeReviewed(*extension.get(), profile, extension_prefs,
                                      extension_info_service,
                                      only_unpublished_extensions)) {
         continue;

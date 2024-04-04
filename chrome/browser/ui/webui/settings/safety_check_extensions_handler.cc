@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/settings/safety_check_extensions_handler.h"
 
 #include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
@@ -52,6 +54,8 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
     const extensions::Extension& extension) {
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefsFactory::GetForBrowserContext(profile_);
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   bool warning_acked = false;
   extension_prefs->ReadPrefAsBoolean(
       extension.id(), kPrefAcknowledgeSafetyCheckWarning, &warning_acked);
@@ -99,6 +103,27 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
     case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       // no-op.
       break;
+  }
+
+  if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
+    bool dev_mode =
+        profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    if (!dev_mode) {
+      // Only show offstore extension in extension module if developer mode is
+      // disabled.
+      return true;
+    }
+  }
+
+  if (!extension_management->UpdatesFromWebstore(extension)) {
+    // extension does not update from the webstore.
+    return true;
+  }
+
+  if (cws_info.has_value() && !cws_info->is_present) {
+    // Handles the edge case where Chrome thinks that the extension is
+    // updating from the webstore but CWS has no knowledge of the extension.
+    return true;
   }
 
   return false;

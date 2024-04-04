@@ -52,6 +52,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -149,13 +150,17 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   ExtensionInfoGeneratorUnitTest& operator=(
       const ExtensionInfoGeneratorUnitTest&) = delete;
 
-  ~ExtensionInfoGeneratorUnitTest() override {}
+  ~ExtensionInfoGeneratorUnitTest() override = default;
 
  protected:
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(GetExtensionServiceInitParams());
     extension_action_test_util::CreateToolbarModelForProfile(profile());
+    feature_list_.InitWithFeatures(
+        {features::kSafetyHubExtensionsUwSTrigger,
+         features::kSafetyHubExtensionsOffStoreTrigger},
+        /*disabled_features=*/{});
   }
 
   // Returns the initialization parameters for the extension service.
@@ -189,6 +194,65 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     return info;
   }
 
+  // Used to represent all possible triggers for the extension safety
+  // check.
+  enum class SafetyCheckWarningReason {
+    kMalware,
+    kPolicy,
+    kUnpublished,
+    kOffstore,
+    kUnwantedSoftware,
+    kNone,
+  };
+
+  // Ensures that the warning_reason and the safety check strings inside
+  // the info variable match.
+  void CheckSafetyCheckDisplayString(SafetyCheckWarningReason warning_reason,
+                                     developer::ExtensionInfo* info,
+                                     bool extension_state = true) {
+    int detail_page_string;
+    int panel_string;
+    switch (warning_reason) {
+      case SafetyCheckWarningReason::kMalware:
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
+        panel_string = IDS_EXTENSIONS_SC_MALWARE;
+        break;
+      case SafetyCheckWarningReason::kPolicy:
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
+        panel_string = extension_state ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                                       : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+        break;
+      case SafetyCheckWarningReason::kUnpublished:
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+        panel_string = extension_state ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                                       : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        break;
+      case SafetyCheckWarningReason::kOffstore:
+        // TODO(https://crbug.com/322898612): Update the detail and panel
+        // strings to their real values once they have been finalized.
+        // Currently using the unpublished strings as a placeholder.
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+        panel_string = extension_state ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                                       : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        break;
+      case SafetyCheckWarningReason::kUnwantedSoftware:
+        // TODO(crbug.com/5327689): Update strings to real values once
+        // finalized.
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+        panel_string = extension_state ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                                       : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        break;
+      case SafetyCheckWarningReason::kNone:
+        EXPECT_FALSE(info->safety_check_text->detail_string.has_value());
+        EXPECT_FALSE(info->safety_check_text->panel_string.has_value());
+        return;
+    }
+    EXPECT_EQ(info->safety_check_text->detail_string,
+              l10n_util::GetStringUTF8(detail_page_string));
+    EXPECT_EQ(info->safety_check_text->panel_string,
+              l10n_util::GetStringUTF8(panel_string));
+  }
+
   void OnInfosGenerated(ExtensionInfoGenerator::ExtensionInfoList* out,
                         ExtensionInfoGenerator::ExtensionInfoList list) {
     *out = std::move(list);
@@ -212,7 +276,9 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   const scoped_refptr<const Extension> CreateExtension(
       const std::string& name,
       base::Value::List permissions,
-      mojom::ManifestLocation location) {
+      mojom::ManifestLocation location,
+      const std::string& update_url =
+          extension_urls::kChromeWebstoreUpdateURL) {
     const ExtensionId kId = crx_file::id_util::GenerateId(name);
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
@@ -221,7 +287,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
                              .Set("description", "an extension")
                              .Set("manifest_version", 2)
                              .Set("version", "1.0.0")
-                             .Set("permissions", std::move(permissions)))
+                             .Set("permissions", std::move(permissions))
+                             .Set("update_url", update_url))
             .SetLocation(location)
             .SetID(kId)
             .Build();
@@ -294,6 +361,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::OnceClosure quit_closure_;
 };
 
@@ -555,10 +623,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Malware) {
         .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoMalware()));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
-              info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE),
-              info->safety_check_text->panel_string);
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kMalware,
+                                  info.get());
   }
   {
     // Blocklist - Malware.
@@ -568,10 +634,69 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Malware) {
         .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoMalware()));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
-              info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE),
-              info->safety_check_text->panel_string);
+
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kMalware,
+                                  info.get());
+  }
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_OffStore) {
+  const scoped_refptr<const Extension> extension_unpacked =
+      CreateExtension("test", base::Value::List(), ManifestLocation::kUnpacked);
+  CWSInfoService::CWSInfo cws_no_trigger = {
+      /*is_present=*/true,
+      /*is_live=*/true,
+      /*last_update_time=*/base::Time::Now(),
+      /*violation_type=*/
+      extensions::CWSInfoService::CWSViolationType::kNone,
+      /*unpublished_long_ago=*/false,
+      /*no_privacy_practice=*/false};
+  {
+    // CWSInfo - No Trigger - Unpacked extension not in dev mode.
+    EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+        .Times(1)
+        .WillOnce(testing::Return(cws_no_trigger));
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension_unpacked->id());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kOffstore,
+                                  info.get());
+  }
+  {
+    // CWSInfo - No Trigger - Unpacked extension in dev mode.
+    profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+    EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+        .Times(1)
+        .WillOnce(testing::Return(cws_no_trigger));
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension_unpacked->id());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kNone, info.get());
+  }
+  {
+    // CWSInfo - No Trigger - Extension does not update from the webstore.
+    const scoped_refptr<const Extension> extension_not_webstore =
+        CreateExtension("test", base::Value::List(),
+                        ManifestLocation::kInternal, "https://example.com");
+    EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+        .Times(1)
+        .WillOnce(testing::Return(cws_no_trigger));
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension_not_webstore->id());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kOffstore,
+                                  info.get());
+  }
+  {
+    // CWSInfo - Normal extension without CWS info.
+    const scoped_refptr<const Extension> extension_normal = CreateExtension(
+        "test", base::Value::List(), ManifestLocation::kInternal);
+    CWSInfoService::CWSInfo cws_not_present;
+    profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
+    EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+        .Times(1)
+        .WillOnce(testing::Return(cws_not_present));
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension_normal->id());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kOffstore,
+                                  info.get());
   }
 }
 
@@ -593,11 +718,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_PolicyViolation) {
         .WillOnce(testing::Return(cws_info_policy));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION),
-        info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON),
-              info->safety_check_text->panel_string);
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kPolicy,
+                                  info.get());
   }
   {
     // Blocklist - Policy with disabled state.
@@ -609,17 +731,13 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_PolicyViolation) {
         .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoNone()));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION),
-        info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF),
-              info->safety_check_text->panel_string);
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kPolicy, info.get(),
+                                  false);
   }
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest,
        SafetyCheckStringsTest_PotentiallyUnwanted) {
-  feature_list_.InitAndEnableFeature(features::kSafetyHubExtensionsUwSTrigger);
   const scoped_refptr<const Extension> extension =
       CreateExtension("test", base::Value::List(), ManifestLocation::kInternal);
 
@@ -631,11 +749,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
       .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoNone()));
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
-  // TODO(crbug.com/5327689): Update strings to real values once finalized.
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
-            info->safety_check_text->detail_string);
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF),
-            info->safety_check_text->panel_string);
+  CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kUnwantedSoftware,
+                                info.get(), false);
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_DifferentStates) {
@@ -652,10 +767,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_DifferentStates) {
       GenerateExtensionInfo(extension->id());
 
   // Return the higher violation - malware.
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
-            info->safety_check_text->detail_string);
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE),
-            info->safety_check_text->panel_string);
+  CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kMalware, info.get());
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Unpublished) {
@@ -676,10 +788,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Unpublished) {
         .WillOnce(testing::Return(cws_info_unpublished));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
-              info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON),
-              info->safety_check_text->panel_string);
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kUnpublished,
+                                  info.get());
   }
   {
     // CWSInfo - Unpublished with disabled state.
@@ -691,10 +801,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Unpublished) {
         .WillOnce(testing::Return(cws_info_unpublished));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
-              info->safety_check_text->detail_string);
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF),
-              info->safety_check_text->panel_string);
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kUnpublished,
+                                  info.get(), false);
   }
 }
 
@@ -708,26 +816,15 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Empty) {
         .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoNone()));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_FALSE(info->safety_check_text->detail_string.has_value());
-    EXPECT_FALSE(info->safety_check_text->panel_string.has_value());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kNone, info.get());
   }
   {
-    // CWSInfo not present and no blocklist states.
-    CWSInfoService::CWSInfo cws_info_not_present = {
-        /*is_present=*/false,
-        /*is_live=*/false,
-        /*last_update_time=*/base::Time::Now(),
-        /*violation_type=*/
-        extensions::CWSInfoService::CWSViolationType::kNone,
-        /*unpublished_long_ago=*/false,
-        /*no_privacy_practice=*/false};
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
         .Times(1)
-        .WillOnce(testing::Return(cws_info_not_present));
+        .WillOnce(testing::Return(std::nullopt));
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    EXPECT_FALSE(info->safety_check_text->detail_string.has_value());
-    EXPECT_FALSE(info->safety_check_text->panel_string.has_value());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kNone, info.get());
   }
 }
 
@@ -1270,11 +1367,11 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
   if (AreExtensionPermissionsEnabled()) {
-    feature_list_.InitAndEnableFeature(
+    feature_list.InitAndEnableFeature(
         supervised_user::
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   } else {
-    feature_list_.InitAndDisableFeature(
+    feature_list.InitAndDisableFeature(
         supervised_user::
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   }

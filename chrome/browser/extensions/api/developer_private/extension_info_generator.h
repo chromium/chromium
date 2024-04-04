@@ -94,6 +94,7 @@ class ExtensionInfoGenerator {
   // extensions page.
   api::developer_private::SafetyCheckStrings CreateSafetyCheckDisplayString(
       const Extension& extension,
+      bool updates_from_webstore,
       api::developer_private::ExtensionState state,
       BitMapBlocklistState blocklist_state);
 

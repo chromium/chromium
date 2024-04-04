@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "extensions/common/extension_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace safety_hub_test_util {
@@ -45,9 +46,11 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
     bool with_calls = true);
 
 // Adds a testing extension with |name| and |location| to |profile|.
-void AddExtension(const std::string& name,
-                  extensions::mojom::ManifestLocation location,
-                  Profile* profile);
+void AddExtension(
+    const std::string& name,
+    extensions::mojom::ManifestLocation location,
+    Profile* profile,
+    std::string update_url = extension_urls::kChromeWebstoreUpdateURL);
 
 // Adds seven extensions, of which one is installed by an external policy.
 void CreateMockExtensions(Profile* profile);

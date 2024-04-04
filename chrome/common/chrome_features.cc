@@ -1110,6 +1110,11 @@ BASE_FEATURE(kSafetyCheckExtensions,
 BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
              "SafetyHubExtensionsUwSTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables offstore extensions to be shown in the Safety Hub Extension
+// review panel.
+BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
+             "SafetyHubExtensionsOffStoreTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables Safety Hub feature.

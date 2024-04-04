@@ -13,6 +13,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace {
@@ -85,14 +86,6 @@ static extensions::CWSInfoService::CWSInfo cws_info_no_trigger{
     extensions::CWSInfoService::CWSViolationType::kNone,
     false,
     false};
-// Is not a trigger: malware but not present.
-static extensions::CWSInfoService::CWSInfo cws_info_no_data{
-    false,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kMalware,
-    false,
-    false};
 
 }  // namespace
 
@@ -136,12 +129,13 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
       new testing::NiceMock<MockCWSInfoService>(profile));
   if (with_calls) {
     EXPECT_CALL(*mock_cws_info_service, GetCWSInfo)
-        .Times(6)
+        .Times(7)
         .WillOnce(testing::Return(cws_info_malware))
         .WillOnce(testing::Return(cws_info_policy))
         .WillOnce(testing::Return(cws_info_unpublished))
         .WillOnce(testing::Return(cws_info_multi))
-        .WillOnce(testing::Return(cws_info_no_data))
+        .WillOnce(testing::Return(std::nullopt))
+        .WillOnce(testing::Return(std::nullopt))
         .WillOnce(testing::Return(cws_info_no_trigger));
   }
   return mock_cws_info_service;
@@ -149,12 +143,14 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
 
 void AddExtension(const std::string& name,
                   extensions::mojom::ManifestLocation location,
-                  Profile* profile) {
+                  Profile* profile,
+                  std::string update_url) {
   const std::string kId = crx_file::id_util::GenerateId(name);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestKey("host_permissions",
                           base::Value::List().Append(kAllHostsPermission))
+          .SetManifestKey(extensions::manifest_keys::kUpdateURL, update_url)
           .SetLocation(location)
           .SetID(kId)
           .Build();
@@ -171,9 +167,11 @@ void CreateMockExtensions(Profile* profile) {
   AddExtension("TestExtension4", ManifestLocation::kInternal, profile);
   AddExtension("TestExtension5", ManifestLocation::kInternal, profile);
   AddExtension("TestExtension6", ManifestLocation::kInternal, profile);
+  AddExtension("TestExtension7", ManifestLocation::kInternal, profile,
+               "https://example.com");
   // Extensions installed by policies will be ignored by Safety Hub. So
   // extension 7 will not trigger the handler.
-  AddExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload,
+  AddExtension("TestExtension8", ManifestLocation::kExternalPolicyDownload,
                profile);
 }
 
@@ -184,7 +182,8 @@ void CleanAllMockExtensions(Profile* profile) {
   RemoveExtension("TestExtension4", ManifestLocation::kInternal, profile);
   RemoveExtension("TestExtension5", ManifestLocation::kInternal, profile);
   RemoveExtension("TestExtension6", ManifestLocation::kInternal, profile);
-  RemoveExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload,
+  RemoveExtension("TestExtension7", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension8", ManifestLocation::kExternalPolicyDownload,
                   profile);
 
   // Check that all extensions were successfully uninstalled.

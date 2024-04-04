@@ -6,22 +6,27 @@
 
 #include <memory>
 
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/extension_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SafetyHubExtensionsResultTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSafetyHubExtensionsUwSTrigger},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {features::kSafetyHubExtensionsUwSTrigger,
+         features::kSafetyHubExtensionsOffStoreTrigger},
+        /*disabled_features=*/{});
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
   }
 
@@ -56,8 +61,9 @@ TEST_F(SafetyHubExtensionsResultTest, CloneResult) {
 }
 
 TEST_F(SafetyHubExtensionsResultTest, GetResult) {
-  // Create mock extensions, of which four are a trigger for review (malware,
-  // policy violation, unpublished, and a combination of malware + unpublished).
+  // Create mock extensions, of which five are a trigger for review (malware,
+  // policy violation, unpublished, and a combination of malware + unpublished,
+  // and offstore extension).
   safety_hub_test_util::CreateMockExtensions(profile());
   std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
       cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
@@ -66,7 +72,7 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
                                            false);
   ASSERT_TRUE(sh_result.has_value());
   auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
-  EXPECT_EQ(4U, result->GetNumTriggeringExtensions());
+  EXPECT_EQ(5U, result->GetNumTriggeringExtensions());
 
   // Reset the same mock calls, of which two are unpublished extensions
   // (including one where this is combined with malware).
@@ -127,4 +133,64 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult_BlocklistPrefs) {
   ASSERT_TRUE(sh_result.has_value());
   auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
   EXPECT_EQ(3U, result->GetNumTriggeringExtensions());
+}
+
+TEST_F(SafetyHubExtensionsResultTest, GetResult_OffStore_Extensions) {
+  static extensions::CWSInfoService::CWSInfo cws_info_no_data;
+  // Create 3 mock extensions:
+  //    - One that lacks CWS data
+  //    - One with a non-CWS update URL
+  //    - One that is unpacked while Chrome's dev mode is false
+  const std::string extension_name_url = "TestExtensionNonCWSUpdateURL";
+  const std::string extension_name_no_cws_info = "TestExtensionCWSNoINFO";
+  const std::string extension_name_unpacked = "TestExtensionUnpacked";
+  safety_hub_test_util::AddExtension(
+      extension_name_url, extensions::mojom::ManifestLocation::kInternal,
+      profile(), "https://example.com");
+  safety_hub_test_util::AddExtension(
+      extension_name_unpacked, extensions::mojom::ManifestLocation::kUnpacked,
+      profile());
+  safety_hub_test_util::AddExtension(
+      extension_name_no_cws_info,
+      extensions::mojom::ManifestLocation::kInternal, profile());
+
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(
+          profile(), /*with_calls=*/false);
+  EXPECT_CALL(*cws_info_service, GetCWSInfo)
+      .Times(3)
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()))
+      .WillOnce(testing::Return(cws_info_no_data))
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()));
+
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
+                                           false);
+  ASSERT_TRUE(sh_result.has_value());
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+  EXPECT_EQ(3U, result->GetNumTriggeringExtensions());
+}
+
+TEST_F(SafetyHubExtensionsResultTest, GetResult_OffStore_Extensions_Dev_Mode) {
+  // Create one extension that is unpacked but installed while Chrome's
+  // dev mode is true.
+  const std::string extension_name_unpacked_dev_mode =
+      "TestExtensionUnpackedDevMode";
+  safety_hub_test_util::AddExtension(
+      extension_name_unpacked_dev_mode,
+      extensions::mojom::ManifestLocation::kUnpacked, profile(),
+      extension_urls::kChromeWebstoreUpdateURL);
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(
+          profile(), /*with_calls=*/false);
+  EXPECT_CALL(*cws_info_service, GetCWSInfo)
+      .Times(1)
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()));
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
+                                           false);
+  ASSERT_TRUE(sh_result.has_value());
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+  EXPECT_EQ(0U, result->GetNumTriggeringExtensions());
 }
