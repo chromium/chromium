@@ -40,7 +40,7 @@ bool IsPolicyTestingEnabled(PrefService* pref_service,
   }
 #endif
 
-#if defined(DEBUG)
+#if !defined(NDEBUG)
   // The page should be available in debug builds.
   return true;
 #else
