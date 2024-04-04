@@ -69,6 +69,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -386,9 +387,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 }
 
 void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged() &&
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
       KioskChromeAppManager::IsConsumerKioskEnabled()) {
     ShowEnableConsumerKioskScreen();
   }

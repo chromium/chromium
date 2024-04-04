@@ -80,6 +80,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -594,9 +595,7 @@ void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsDeviceEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
@@ -692,10 +691,9 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
 bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
     const AccountId& account_id) const {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   const bool device_is_owned =
-      connector->IsDeviceEnterpriseManaged() || GetOwnerAccountId().is_valid();
+      ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
+      GetOwnerAccountId().is_valid();
 
   return device_is_owned &&
          GetEphemeralModeConfig().IsAccountIdIncluded(account_id);

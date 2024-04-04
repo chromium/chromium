@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -55,6 +54,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -78,15 +78,11 @@ enum KioskLaunchType {
   KIOSK_LAUNCH_TYPE_COUNT  // This must be the last entry.
 };
 
-bool IsDeviceEnterpriseManaged() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->IsDeviceEnterpriseManaged();
-}
-
 void RecordKioskLaunchUMA(bool is_auto_launch) {
+  bool is_enterprise_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
   const KioskLaunchType launch_type =
-      IsDeviceEnterpriseManaged()
+      is_enterprise_managed
           ? (is_auto_launch ? KIOSK_LAUNCH_ENTERPRISE_AUTO_LAUNCH
                             : KIOKS_LAUNCH_ENTERPRISE_MANUAL_LAUNCH)
           : (is_auto_launch ? KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH
@@ -95,7 +91,7 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
   UMA_HISTOGRAM_ENUMERATION("Kiosk.LaunchType", launch_type,
                             KIOSK_LAUNCH_TYPE_COUNT);
 
-  if (IsDeviceEnterpriseManaged()) {
+  if (is_enterprise_managed) {
     enterprise_user_session_metrics::RecordSignInEvent(
         is_auto_launch
             ? enterprise_user_session_metrics::SignInEventType::AUTOMATIC_KIOSK

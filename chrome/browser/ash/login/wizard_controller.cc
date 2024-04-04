@@ -454,15 +454,14 @@ void WizardController::Init(OobeScreenId first_screen) {
 
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded
-  // synchronously and at the first demand. IsDeviceEnterpriseManaged()
-  // check is required because currently powerwash is disabled for
-  // enterprise-enrolled devices.
+  // synchronously and at the first demand.
+  // ash::InstallAttributes::IsEnterpriseManaged() check is required
+  // because currently powerwash is disabled for enterprise-enrolled devices.
   //
   // TODO (ygorshenin@): implement handling of the local state
   // corruption in the case of asynchronous loading.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
+  bool is_enterprise_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
   if (!is_enterprise_managed) {
     const PrefService::PrefInitializationStatus status =
         GetLocalState()->GetInitializationStatus();
@@ -2211,9 +2210,7 @@ void WizardController::OnEnrollmentDone() {
 
   if (auto app = KioskController::Get().GetAutoLaunchApp(); app.has_value()) {
     AutoLaunchKioskApp(app.value());
-  } else if (g_browser_process->platform_part()
-                 ->browser_policy_connector_ash()
-                 ->IsDeviceEnterpriseManaged()) {
+  } else if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Could be not managed in tests.
     DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
               OobeUI::kOobeDisplay);
@@ -3337,9 +3334,7 @@ void WizardController::OnTimezoneResolved(
     return;
   }
 
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsDeviceEnterpriseManaged()) {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     std::string policy_timezone;
     if (CrosSettings::Get()->GetString(kSystemTimezonePolicy,
                                        &policy_timezone) &&
@@ -3434,9 +3429,8 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
 }
 
 void WizardController::ShowEnrollmentScreenIfEligible() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  const bool enterprise_managed = connector->IsDeviceEnterpriseManaged();
+  const bool enterprise_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
   const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);

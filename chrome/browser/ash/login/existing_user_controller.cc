@@ -776,9 +776,8 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   login_performer_->set_delegate(nullptr);
   std::ignore = login_performer_.release();
 
-  const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_ash()
-                                         ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
@@ -854,14 +853,14 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 }
 
 void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  DCHECK(connector->IsDeviceEnterpriseManaged());
+  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON)));
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_TITLE);
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
       base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()));

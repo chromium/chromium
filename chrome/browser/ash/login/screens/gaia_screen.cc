@@ -15,13 +15,12 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -397,10 +396,7 @@ void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
 
 bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     const std::string& user_email) {
-  const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_ash()
-                                         ->IsDeviceEnterpriseManaged();
-  if (is_enterprise_managed) {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Device either already went through enterprise enrollment flow or goes
     // through it right now. No need for nudging.
     return false;

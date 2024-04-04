@@ -10,12 +10,10 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
 
@@ -68,10 +66,8 @@ bool HWDataCollectionScreen::MaybeSkip(WizardContext& context) {
   } else {
     // If no, check that the device is not managed and user is either already
     // marked as an owner in user_manager or is the first on the device.
-    policy::BrowserPolicyConnectorAsh* connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
     auto* user_manager = user_manager::UserManager::Get();
-    is_owner = !connector->IsDeviceEnterpriseManaged() &&
+    is_owner = !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
                (user_manager->IsCurrentUserOwner() ||
                 user_manager->GetUsers().size() == 1);
   }

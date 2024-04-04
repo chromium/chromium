@@ -18,13 +18,10 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -441,11 +438,8 @@ void ResetScreen::UpdateStatusChanged(
 // Invoked from call to CanRollbackCheck upon completion of the DBus call.
 void ResetScreen::OnRollbackCheck(bool can_rollback) {
   VLOG(1) << "Callback from CanRollbackCheck, result " << can_rollback;
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-
   const bool rollback_available =
-      !connector->IsDeviceEnterpriseManaged() && can_rollback;
+      !ash::InstallAttributes::Get()->IsEnterpriseManaged() && can_rollback;
 
   view_->SetIsRollbackAvailable(rollback_available);
 }

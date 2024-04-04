@@ -134,6 +134,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/authenticator_builder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
@@ -501,10 +502,7 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   // that the EULA is marked as accepted when reven device is managed. For
   // managed devices all the terms are accepted by the admin so we can simply
   // mark it here.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_device_managed = connector->IsDeviceEnterpriseManaged();
-  if (is_device_managed) {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     StartupUtils::MarkEulaAccepted();
     network_portal_detector::GetInstance()->Enable();
     return false;

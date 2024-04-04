@@ -22,9 +22,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -35,6 +32,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/common/content_switches.h"
@@ -177,11 +175,9 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 
 // static
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
-  bool isEnterpriseManaged = !g_browser_process->platform_part()
-                                  ->browser_policy_connector_ash()
-                                  ->IsDeviceEnterpriseManaged();
-  return isEnterpriseManaged ? UserCreationView::kScreenId
-                             : GaiaView::kScreenId;
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged()
+             ? GaiaView::kScreenId
+             : UserCreationView::kScreenId;
 }
 
 void OobeBaseTest::MaybeWaitForLoginScreenLoad() {

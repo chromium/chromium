@@ -26,11 +26,10 @@
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -311,10 +310,8 @@ void StartupUtils::SetInitialLocale(const std::string& locale) {
 
 // static
 bool StartupUtils::IsDeviceOwned() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   return !user_manager::UserManager::Get()->GetUsers().empty() ||
-         connector->IsDeviceEnterpriseManaged();
+         ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 }  // namespace ash

@@ -25,13 +25,11 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -42,6 +40,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -317,9 +316,7 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // If no ownership is established yet, then the current user is the first
   // user to sign in. Therefore, the current user would be the owner if the
   // device is not enterprise managed.
-  policy::BrowserPolicyConnectorAsh* policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
+  bool is_managed = ash::InstallAttributes::Get()->IsEnterpriseManaged();
   if (status == DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     is_owner_ = !is_managed;
   } else if (status ==

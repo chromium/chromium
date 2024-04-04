@@ -80,6 +80,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -174,14 +175,11 @@ bool HasManagedDeviceSettings() {
 // Even if oobe is complete we may still want to show it, for example, if there
 // are no users registered then the user may want to enterprise enroll.
 bool IsOobeComplete() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return StartupUtils::IsOobeCompleted() &&
          ((!user_manager::UserManager::Get()->GetUsers().empty() &&
            !HasManagedDeviceSettings()) ||
-          connector->IsDeviceEnterpriseManaged());
+          ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
 // Returns true if signin (not oobe) should be displayed.

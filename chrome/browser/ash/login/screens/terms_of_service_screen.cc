@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/http/http_response_headers.h"
@@ -145,7 +146,7 @@ void TermsOfServiceScreen::ShowImpl() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   // Show the screen.
   view_->Show(
-      connector->IsDeviceEnterpriseManaged()
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()
           ? connector->GetEnterpriseDomainManager()
           : chrome::enterprise_util::GetDomainFromEmail(
                 ProfileManager::GetActiveUserProfile()->GetProfileUserName()));

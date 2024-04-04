@@ -12,10 +12,8 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/network_service_instance.h"
@@ -28,12 +26,6 @@ constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 std::optional<bool> g_can_configure_network_for_testing;
-
-bool IsDeviceEnterpriseManaged() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->IsDeviceEnterpriseManaged();
-}
 
 bool CanConfigureNetworkForEnterpriseKiosk() {
   bool should_prompt;
@@ -236,7 +228,8 @@ bool NetworkUiController::CanConfigureNetwork() {
     return g_can_configure_network_for_testing.value();
   }
 
-  return IsDeviceEnterpriseManaged() && CanConfigureNetworkForEnterpriseKiosk();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
+         CanConfigureNetworkForEnterpriseKiosk();
 }
 
 // static

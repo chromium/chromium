@@ -23,14 +23,13 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -128,9 +127,7 @@ ConsumerUpdateScreen::ConsumerUpdateScreen(
 ConsumerUpdateScreen::~ConsumerUpdateScreen() = default;
 
 bool ConsumerUpdateScreen::MaybeSkip(WizardContext& context) {
-  CHECK(!g_browser_process->platform_part()
-             ->browser_policy_connector_ash()
-             ->IsDeviceEnterpriseManaged());
+  CHECK(!ash::InstallAttributes::Get()->IsEnterpriseManaged());
   if (context.skip_to_login_for_tests || context.is_add_person_flow) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

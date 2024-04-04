@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
+
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 namespace ash {
 
@@ -39,9 +41,7 @@ GaiaInfoScreen::GaiaInfoScreen(base::WeakPtr<GaiaInfoScreenView> view,
 GaiaInfoScreen::~GaiaInfoScreen() = default;
 
 bool GaiaInfoScreen::MaybeSkip(WizardContext& context) {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged() ||
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
       context.is_add_person_flow || context.skip_to_login_for_tests) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;

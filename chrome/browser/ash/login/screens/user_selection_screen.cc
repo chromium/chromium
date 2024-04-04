@@ -52,6 +52,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
@@ -153,12 +154,6 @@ AccountId GetOwnerAccountId() {
   return owner;
 }
 
-bool IsDeviceEnterpriseManaged() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsDeviceEnterpriseManaged();
-}
-
 bool IsSigninToAdd() {
   return LoginDisplayHost::default_host() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
@@ -171,7 +166,7 @@ bool CanRemoveUser(const user_manager::User* user) {
   // Single user check here is necessary because owner info might not be
   // available when running into login screen on first boot.
   // See http://crosbug.com/12723
-  if (is_single_user && !IsDeviceEnterpriseManaged()) {
+  if (is_single_user && !ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   if (!user->GetAccountId().is_valid()) {
