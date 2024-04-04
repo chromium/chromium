@@ -95,7 +95,8 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
         float interpolatedFraction = mAnimation.getInterpolatedFraction();
         mListPropertyModel.set(SuggestionListProperties.ALPHA, interpolatedFraction);
         float verticalTranslationOfOmnibox = mOmniboxVerticalTranslationSupplier.get();
-        if (verticalTranslationOfOmnibox > 0.0f) {
+        if (verticalTranslationOfOmnibox > 0.0f
+                || mListPropertyModel.get(SuggestionListProperties.TRANSLATION_Y) > 0.0f) {
             mListPropertyModel.set(
                     SuggestionListProperties.TRANSLATION_Y,
                     verticalTranslationOfOmnibox

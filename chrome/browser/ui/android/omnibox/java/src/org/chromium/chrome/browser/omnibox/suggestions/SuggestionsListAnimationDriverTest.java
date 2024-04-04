@@ -82,6 +82,16 @@ public class SuggestionsListAnimationDriverTest {
                 100.0f + VERTICAL_OFFSET * 0.3f,
                 MathUtils.EPSILON);
 
+        mTranslation = 0.0f;
+        mImeAnimation.setFraction(0.95f);
+        mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
+        assertEquals(
+                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                VERTICAL_OFFSET * 0.05f,
+                MathUtils.EPSILON);
+
+        // Reported omnibox translation no longer matters once the animation is complete.
+        mTranslation = 10.0f;
         mDriver.onEnd(mImeAnimation);
         verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriver);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
