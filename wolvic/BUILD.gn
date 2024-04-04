@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//tools/grit/repack.gni")
 
 assert(enable_vr)
 assert(is_android)
@@ -108,6 +109,60 @@ shared_library("libcontent_native") {
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 }
 
+repack("pak") {
+  sources = [
+    "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
+    "$root_gen_dir/content/aggregation_service_internals_resources.pak",
+    "$root_gen_dir/content/attribution_internals_resources.pak",
+    "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
+    "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
+    "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/content/gpu_resources.pak",
+    "$root_gen_dir/content/histograms_resources.pak",
+    "$root_gen_dir/content/process_resources.pak",
+    "$root_gen_dir/content/quota_internals_resources.pak",
+    "$root_gen_dir/content/service_worker_resources.pak",
+    "$root_gen_dir/content/test/web_ui_mojo_test_resources.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+    "$root_gen_dir/net/net_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_accessibility_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+  ]
+
+  deps = [
+    "//base/tracing/protos:chrome_track_event_resources",
+    "//components/strings:components_strings",
+    "//content:content_resources",
+    "//content/browser/resources:resources",
+    "//content/browser/resources/media:resources",
+    "//content/browser/webrtc/resources",
+    "//content/test:web_ui_mojo_test_resources",
+    "//mojo/public/js:resources",
+    "//net:net_resources",
+    "//third_party/blink/public:devtools_inspector_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:accessibility_strings",
+    "//ui/resources",
+    "//ui/strings",
+  ]
+
+  if (enable_vr) {
+    sources += [ "$root_gen_dir/content/webxr_internals_resources.pak" ]
+  }
+
+  output = "$root_out_dir/wolvic.pak"
+}
+
 static_library("content_native_lib") {
   configs += [ "//build/config:precompiled_headers" ]
 
@@ -130,6 +185,7 @@ static_library("content_native_lib") {
     "//services/network:network_service",
   ]
   deps = [
+   ":pak",
     "//base",
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
