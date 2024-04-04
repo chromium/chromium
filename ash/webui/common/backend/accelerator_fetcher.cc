@@ -16,6 +16,7 @@
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shell.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
@@ -62,6 +63,15 @@ AcceleratorFetcher::~AcceleratorFetcher() {
         ->accelerator_configuration()
         ->RemoveObserver(this);
   }
+}
+
+void AcceleratorFetcher::BindInterface(
+    mojo::PendingReceiver<common::mojom::AcceleratorFetcher> receiver) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+  if (accelerator_fetcher_receiver_.is_bound()) {
+    accelerator_fetcher_receiver_.reset();
+  }
+  accelerator_fetcher_receiver_.Bind(std::move(receiver));
 }
 
 void AcceleratorFetcher::ObserveAcceleratorChanges(

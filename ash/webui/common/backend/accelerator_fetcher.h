@@ -10,6 +10,7 @@
 #include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
@@ -23,6 +24,9 @@ class AcceleratorFetcher : public common::mojom::AcceleratorFetcher,
   AcceleratorFetcher();
 
   ~AcceleratorFetcher() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<common::mojom::AcceleratorFetcher> receiver);
 
   // common::mojom::AcceleratorFetcher:
   void ObserveAcceleratorChanges(
@@ -38,6 +42,9 @@ class AcceleratorFetcher : public common::mojom::AcceleratorFetcher,
  private:
   // Handlers for disconnection of observers.
   void OnObserverDisconnect(mojo::RemoteSetElementId id);
+
+  mojo::Receiver<common::mojom::AcceleratorFetcher>
+      accelerator_fetcher_receiver_{this};
 
   // Storage of accelerator actions for each remote receiver, keyed by
   // mojo::RemoteSetElementId in |accelerator_observers_|.

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.h"
+#include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
@@ -311,6 +312,14 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver) {
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->display_settings_provider()
+      ->BindInterface(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<::ash::common::mojom::AcceleratorFetcher> receiver) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+      ->accelerator_fetcher()
       ->BindInterface(std::move(receiver));
 }
 

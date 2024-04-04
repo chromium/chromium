@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/backend/accelerator_fetcher.h"
 #include "ash/webui/common/backend/shortcut_input_provider.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
@@ -128,6 +129,10 @@ class OsSettingsManager : public KeyedService {
     return settings_user_action_tracker_.get();
   }
 
+  AcceleratorFetcher* accelerator_fetcher() {
+    return accelerator_fetcher_.get();
+  }
+
   ShortcutInputProvider* shortcut_input_provider() {
     return shortcut_input_provider_.get();
   }
@@ -150,6 +155,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<InputDeviceSettingsProvider> input_device_settings_provider_;
   std::unique_ptr<DisplaySettingsProvider> display_settings_provider_;
   std::unique_ptr<ShortcutInputProvider> shortcut_input_provider_;
+  std::unique_ptr<AcceleratorFetcher> accelerator_fetcher_;
 };
 
 }  // namespace settings

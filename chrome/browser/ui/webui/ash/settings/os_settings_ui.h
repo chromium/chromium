@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom-forward.h"
+#include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "base/time/time.h"
@@ -139,6 +140,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);
+
+  // Instantiates implementor of the mojom::AcceleratorFetcher mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<::ash::common::mojom::AcceleratorFetcher> receiver);
 
   // Instantiates implementor of the mojom::ShortcutInputProvider mojo
   // interface passing the pending receiver that will be internally bound.

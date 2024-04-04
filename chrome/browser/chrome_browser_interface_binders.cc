@@ -258,6 +258,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/mojom/color_internals.mojom.h"
+#include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
@@ -1424,6 +1425,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::settings::mojom::DisplaySettingsProvider,
       ash::settings::OSSettingsUI>(map);
+
+  if (::features::IsShortcutCustomizationEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::common::mojom::AcceleratorFetcher, ash::settings::OSSettingsUI>(
+        map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI,
