@@ -200,8 +200,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // normal tabbed browsers will be exlcuded in a later check.
   const bool is_window_height_too_small =
       !CanWindowHeightFitPrivacySandboxPrompt(browser);
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.DialogWindowTooSmall",
-                            is_window_height_too_small);
   // If the windows height is too small, it is difficult to read or interact
   // with the dialog. The dialog is blocking modal, that is why we want to
   // prevent it from showing if there isn't enough space.
