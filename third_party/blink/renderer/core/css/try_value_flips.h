@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/style/position_try_options.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -29,11 +31,13 @@ class CORE_EXPORT TryValueFlips {
   DISALLOW_NEW();
 
  public:
-  // Generate a CSSPropertyValueSet containing CSSFlipRevertValue,
-  // corresponding to the incoming TryTacticList.
+  // Returns a CSSPropertyValueSet containing CSSFlipRevertValues
+  // corresponding to the incoming TryTacticList. TryTacticLists which
+  // represents the same transform (see TryTacticTransform) will return
+  // the same CSSPropertyValueSet pointer.
   //
   // This will end up in OutOfFlowData::try_tactics_set_.
-  const CSSPropertyValueSet* FlipSet(const TryTacticList&);
+  const CSSPropertyValueSet* FlipSet(const TryTacticList&) const;
 
   // If the specified TryTacticTransform affects the CSSValue, returns
   // a rewritten value according to that transform. Otherwise, returns
@@ -43,8 +47,18 @@ class CORE_EXPORT TryValueFlips {
                                    const TryTacticTransform&,
                                    const WritingDirectionMode&);
 
-  // TODO(crbug.com/40279608): This will contain some cached
-  // CSSPropertyValueSets in the future.
+  void Trace(Visitor*) const;
+
+ private:
+  const CSSPropertyValueSet* CreateFlipSet(const TryTacticTransform&) const;
+
+  // There are only seven possible transforms, plus the initial state
+  // (see TryTacticTransform). The CSSPropertyValueSets corresponding to
+  // these transforms are independent of the underlying style being
+  // transformed, which makes it trivial to cache the sets.
+  static constexpr wtf_size_t kCachedFlipSetsSize = 7;
+  mutable HeapVector<Member<const CSSPropertyValueSet>, kCachedFlipSetsSize>
+      cached_flip_sets_;
 };
 
 }  // namespace blink

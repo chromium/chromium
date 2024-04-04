@@ -18,12 +18,25 @@
 namespace blink {
 
 const CSSPropertyValueSet* TryValueFlips::FlipSet(
-    const TryTacticList& tactic_list) {
+    const TryTacticList& tactic_list) const {
   if (tactic_list == kNoTryTactics) {
     return nullptr;
   }
 
   TryTacticTransform transform(tactic_list);
+  // We don't store the kNoTryTactics/nullptr case explicitly, i.e. the entry
+  // at cached_flip_sets_[0] corresponds to CacheIndex()==1.
+  unsigned index = transform.CacheIndex() - 1;
+  cached_flip_sets_.resize(kCachedFlipSetsSize);
+  CHECK_LT(index, cached_flip_sets_.size());
+  if (!cached_flip_sets_[index]) {
+    cached_flip_sets_[index] = CreateFlipSet(transform);
+  }
+  return cached_flip_sets_[index];
+}
+
+const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
+    const TryTacticTransform& transform) const {
   constexpr wtf_size_t kMaxDeclarations = 10;
   HeapVector<CSSPropertyValue, kMaxDeclarations> declarations;
 
@@ -653,6 +666,10 @@ const CSSValue* TryValueFlips::FlipValue(
     return TransformInsetArea(value, transform, writing_direction);
   }
   return value;
+}
+
+void TryValueFlips::Trace(Visitor* visitor) const {
+  visitor->Trace(cached_flip_sets_);
 }
 
 }  // namespace blink

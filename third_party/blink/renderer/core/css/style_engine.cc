@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
-#include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -3485,9 +3484,8 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
         out_of_flow_data->GetTryTacticsPropertyValueSet();
   }
 
-  // TODO(crbug.com/40279608): Store on StyleEngine to allow caching.
-  TryValueFlips flips;
-  const CSSPropertyValueSet* try_tactics_set = flips.FlipSet(tactic_list);
+  const CSSPropertyValueSet* try_tactics_set =
+      try_value_flips_.FlipSet(tactic_list);
 
   bool needs_update = false;
 
@@ -4253,6 +4251,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);
+  visitor->Trace(try_value_flips_);
   FontSelectorClient::Trace(visitor);
 }
 

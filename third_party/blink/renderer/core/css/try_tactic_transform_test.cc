@@ -292,4 +292,12 @@ TEST_F(TryTacticTransformTest, Inverse_Block_Inline_Start) {
                 transform.Transform(InitialLogicalSides())));
 }
 
+// CacheIndex
+TEST_F(TryTacticTransformTest, NoTacticsCacheIndex) {
+  TryTacticTransform transform(kNoTryTactics);
+  // TryValueFlips::FlipSet relies on the kNoTryTactics transform having
+  // a CacheIndex of zero.
+  EXPECT_EQ(0u, transform.CacheIndex());
+}
+
 }  // namespace blink

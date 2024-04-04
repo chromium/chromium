@@ -161,6 +161,10 @@ class CORE_EXPORT TryTacticTransform {
   bool FlippedInline() const { return bits_ & kInline; }
   bool FlippedStart() const { return bits_ & kStart; }
 
+  // Returns an integer in the range [0,7] which uniquely identifies the
+  // transform. Useful as a cache key, see TryValueFlips::cached_flip_sets_.
+  unsigned CacheIndex() const { return bits_; }
+
  private:
   explicit TryTacticTransform(unsigned bits) : bits_(bits) {}
 

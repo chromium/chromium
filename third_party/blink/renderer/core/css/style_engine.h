@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/css/style_image_cache.h"
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
 #include "third_party/blink/renderer/core/css/style_recalc_root.h"
+#include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1076,6 +1077,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Cached because it can be expensive to compute anew for each element.
   // You must call UpdateViewportSize() once before resolving style.
   CSSToLengthConversionData::ViewportSize viewport_size_;
+
+  // Stores various "flip sets" used to implement <try-tactic> from
+  // CSS Anchor Positioning.
+  TryValueFlips try_value_flips_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);
