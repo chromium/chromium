@@ -163,7 +163,7 @@ LEGACY_USER_POLICY_NAME_OFFENDERS = [
 # List of policies where not all properties are required to be presented in the
 # example value. This could be useful e.g. in case of mutually exclusive fields.
 # See crbug.com/1068257 for the details.
-OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = ['ProxySettings']
+OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = ['DataControlsRules', 'ProxySettings']
 
 # Each policy must have a description message shorter than 4096 characters in
 # all its translations (ADM format limitation). However, translations of the
