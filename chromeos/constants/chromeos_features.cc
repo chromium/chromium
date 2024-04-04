@@ -35,7 +35,7 @@ BASE_FEATURE(kBluetoothPhoneFilter,
 // Enables show captive portal signin in a specially flagged popup window.
 BASE_FEATURE(kCaptivePortalPopupWindow,
              "CaptivePortalPopupWindow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables updated UI for the clipboard history menu and new system behavior
 // related to clipboard history.

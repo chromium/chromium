@@ -104,10 +104,9 @@ class NetworkPortalSigninControllerTest : public testing::TestWithParam<bool> {
   ~NetworkPortalSigninControllerTest() override = default;
 
   void SetUp() override {
-    if (CaptivePortalPopupWindowEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          chromeos::features::kCaptivePortalPopupWindow);
-    }
+    feature_list_.InitWithFeatureState(
+        chromeos::features::kCaptivePortalPopupWindow,
+        CaptivePortalPopupWindowEnabled());
 
     network_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     controller_ = std::make_unique<TestSigninController>();

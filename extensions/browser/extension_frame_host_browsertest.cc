@@ -10,6 +10,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -140,8 +141,12 @@ class ExtensionFrameHostBrowserTest : public ShellApiTest {
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
+
     extensions_browser_client_ =
         std::make_unique<ExtensionFrameHostTestExtensionsBrowserClient>();
+    extensions_browser_client_->InitWithBrowserContext(
+        browser_context(),
+        ExtensionPrefs::Get(browser_context())->pref_service());
     ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 
     extension_ = LoadExtension("extension");

@@ -34,10 +34,11 @@ const NetworkState& GetDefaultNetwork() {
 
 }  // namespace
 
-class NetworkPortalSigninControllerBrowserTest : public InProcessBrowserTest {
+class NetworkPortalSigninControllerBrowserTestBase
+    : public InProcessBrowserTest {
  public:
-  NetworkPortalSigninControllerBrowserTest() = default;
-  ~NetworkPortalSigninControllerBrowserTest() override = default;
+  NetworkPortalSigninControllerBrowserTestBase() = default;
+  ~NetworkPortalSigninControllerBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -53,8 +54,21 @@ class NetworkPortalSigninControllerBrowserTest : public InProcessBrowserTest {
         base::Value(shill::kStateRedirectFound));
   }
 
+  void SetupFeature(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        chromeos::features::kCaptivePortalPopupWindow, enabled);
+  }
+
  protected:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_helper_;
+};
+
+class NetworkPortalSigninControllerBrowserTest
+    : public NetworkPortalSigninControllerBrowserTestBase {
+ public:
+  NetworkPortalSigninControllerBrowserTest() { SetupFeature(false); }
+  ~NetworkPortalSigninControllerBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
@@ -72,16 +86,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
 }
 
 class NetworkPortalSigninControllerPopupWindowBrowserTest
-    : public NetworkPortalSigninControllerBrowserTest {
+    : public NetworkPortalSigninControllerBrowserTestBase {
  public:
-  NetworkPortalSigninControllerPopupWindowBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCaptivePortalPopupWindow);
-  }
+  NetworkPortalSigninControllerPopupWindowBrowserTest() { SetupFeature(true); }
   ~NetworkPortalSigninControllerPopupWindowBrowserTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerPopupWindowBrowserTest,
