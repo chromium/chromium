@@ -322,6 +322,11 @@ void TabStripControlButton::NotifyClick(const ui::Event& event) {
 void TabStripControlButton::SetFlatEdgeFactor(float factor) {
   flat_edge_factor_ = factor;
   UpdateBackground();
+  // The ink drop doesn't automatically pick up on rounded corner changes, so
+  // we need to manually notify it here.
+  // TODO(crbug.com/332937585): Clean up once this is no longer necessary or
+  // there is a better API for updating.
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 }
 
 void TabStripControlButton::AnimateToStateForTesting(
