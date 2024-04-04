@@ -34,7 +34,7 @@ sys.path.append(
 # In the case that a Rust roll fails and you want to roll Clang alone, reset
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
-RUST_REVISION = 'b13a71a2e77f4625d1a2b8a5b9488414686ebca9'
+RUST_REVISION = 'ceab6128fa48a616bfd3e3adf4bc80133b8ee223'
 RUST_SUB_REVISION = 1  # Bumped to package and distribute `cargo-vet`
 
 # If not None, this overrides the `CLANG_REVISION` in
