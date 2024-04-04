@@ -167,7 +167,8 @@ ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()));
+      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
+      /*decrypt_shared_credential=*/nullptr);
 }
 
 }  // namespace

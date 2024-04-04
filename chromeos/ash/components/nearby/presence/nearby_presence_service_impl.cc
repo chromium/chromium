@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
@@ -68,9 +69,11 @@ namespace {
     presence_device.AddAction(static_cast<uint32_t>(action));
   }
 
-  // TODO(b/328450930): Introduce decrypted shared credential to the mojom
-  // representation of `PresenceDevice` and properly convert it via
-  // `SetDecryptSharedCredential()` here.
+  if (device->decrypt_shared_credential.get()) {
+    presence_device.SetDecryptSharedCredential(
+        ash::nearby::presence::proto::SharedCredentialFromMojom(
+            device->decrypt_shared_credential.get()));
+  }
 
   return presence_device;
 }

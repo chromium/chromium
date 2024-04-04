@@ -37,6 +37,8 @@ mojom::PrivateKeyPtr PrivateKeyToMojom(
     mojom::IdentityType identity_type);
 ::nearby::internal::LocalCredential::PrivateKey PrivateKeyFromMojom(
     mojom::PrivateKey* private_key);
+::nearby::internal::CredentialType CredentialTypeFromMojom(
+    mojom::CredentialType credential_type);
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
     mojom::SharedCredential* shared_credential);
 ::nearby::internal::LocalCredential LocalCredentialFromMojom(
@@ -44,6 +46,8 @@ mojom::PrivateKeyPtr PrivateKeyToMojom(
 
 mojom::IdentityType IdentityTypeToMojom(
     ::nearby::internal::IdentityType identity_type);
+mojom::CredentialType CredentialTypeToMojom(
+    ::nearby::internal::CredentialType credential_type);
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential);
 mojom::LocalCredentialPtr LocalCredentialToMojom(

@@ -147,6 +147,62 @@ ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
                            metadata.bluetooth_mac_address().end()));
 }
 
+ash::nearby::presence::mojom::CredentialType CredentialTypeToMojom(
+    ::nearby::internal::CredentialType credential_type) {
+  switch (credential_type) {
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN:
+      return ash::nearby::presence::mojom::CredentialType::
+          kCredentialTypeUnknown;
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE:
+      return ash::nearby::presence::mojom::CredentialType::
+          kCredentialTypeDevice;
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA:
+      return ash::nearby::presence::mojom::CredentialType::kCredentialTypeGaia;
+    default:
+      return ash::nearby::presence::mojom::CredentialType::
+          kCredentialTypeUnknown;
+  }
+}
+
+ash::nearby::presence::mojom::SharedCredentialPtr SharedCredentialToMojom(
+    ::nearby::internal::SharedCredential shared_credential) {
+  return ash::nearby::presence::mojom::SharedCredential::New(
+      std::vector<uint8_t>(shared_credential.secret_id().begin(),
+                           shared_credential.secret_id().end()),
+      std::vector<uint8_t>(shared_credential.key_seed().begin(),
+                           shared_credential.key_seed().end()),
+      shared_credential.start_time_millis(),
+      shared_credential.end_time_millis(),
+      std::vector<uint8_t>(
+          shared_credential.encrypted_metadata_bytes_v0().begin(),
+          shared_credential.encrypted_metadata_bytes_v0().end()),
+      std::vector<uint8_t>(
+          shared_credential.metadata_encryption_key_tag_v0().begin(),
+          shared_credential.metadata_encryption_key_tag_v0().end()),
+      std::vector<uint8_t>(
+          shared_credential.connection_signature_verification_key().begin(),
+          shared_credential.connection_signature_verification_key().end()),
+      std::vector<uint8_t>(
+          shared_credential.advertisement_signature_verification_key().begin(),
+          shared_credential.advertisement_signature_verification_key().end()),
+      ash::nearby::presence::proto::IdentityTypeToMojom(
+          shared_credential.identity_type()),
+      std::vector<uint8_t>(shared_credential.version().begin(),
+                           shared_credential.version().end()),
+      CredentialTypeToMojom(shared_credential.credential_type()),
+      std::vector<uint8_t>(
+          shared_credential.encrypted_metadata_bytes_v1().begin(),
+          shared_credential.encrypted_metadata_bytes_v1().end()),
+      std::vector<uint8_t>(
+          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
+              .begin(),
+          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
+              .end()),
+      shared_credential.id(), shared_credential.dusi(),
+      std::vector<uint8_t>(shared_credential.signature_version().begin(),
+                           shared_credential.signature_version().end()));
+}
+
 ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
     nearby::presence::PresenceDevice device) {
   std::vector<ash::nearby::presence::mojom::ActionType> actions;
@@ -156,7 +212,10 @@ ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()));
+      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
+      device.GetDecryptSharedCredential()
+          ? SharedCredentialToMojom(device.GetDecryptSharedCredential().value())
+          : nullptr);
 }
 
 }  // namespace

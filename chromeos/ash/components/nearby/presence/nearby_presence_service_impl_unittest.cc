@@ -154,7 +154,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
               kEndpointId, actions, kStableDeviceId,
               mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
                                    kAccountName, kDeviceName, kUserName,
-                                   kDeviceProfileUrl, kMacAddress)));
+                                   kDeviceProfileUrl, kMacAddress),
+              /*decrypt_shared_credential=*/nullptr));
       run_loop.Run();
     }
 
@@ -263,7 +264,8 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
             kEndpointId, actions, kStableDeviceId,
             mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
                                  kAccountName, kDeviceName, kUserName,
-                                 kDeviceProfileUrl, kMacAddress)));
+                                 kDeviceProfileUrl, kMacAddress),
+            /*decrypt_shared_credential=*/nullptr));
     run_loop.Run();
   }
 
@@ -299,7 +301,8 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
             kEndpointId, actions, kStableDeviceId,
             mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
                                  kAccountName, kDeviceName, kUserName,
-                                 kDeviceProfileUrl, kMacAddress)));
+                                 kDeviceProfileUrl, kMacAddress),
+            /*decrypt_shared_credential=*/nullptr));
     run_loop.Run();
   }
 
@@ -337,7 +340,8 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
             kEndpointId, actions, kStableDeviceId,
             mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
                                  kAccountName, kDeviceName, kUserName,
-                                 kDeviceProfileUrl, kMacAddress)));
+                                 kDeviceProfileUrl, kMacAddress),
+            /*decrypt_shared_credential=*/nullptr));
 
     // Allow the ScanObserver function to finish before checking EXPECTs.
     run_loop.Run();

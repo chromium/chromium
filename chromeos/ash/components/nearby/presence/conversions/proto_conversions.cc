@@ -106,6 +106,20 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   return proto;
 }
 
+::nearby::internal::CredentialType CredentialTypeFromMojom(
+    mojom::CredentialType credential_type) {
+  switch (credential_type) {
+    case mojom::CredentialType::kCredentialTypeUnknown:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN;
+    case mojom::CredentialType::kCredentialTypeDevice:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE;
+    case mojom::CredentialType::kCredentialTypeGaia:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA;
+    default:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN;
+  }
+}
+
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
     mojom::SharedCredential* shared_credential) {
   ::nearby::internal::SharedCredential proto;
@@ -116,11 +130,11 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   proto.set_start_time_millis(shared_credential->start_time_millis);
   proto.set_end_time_millis(shared_credential->end_time_millis);
   proto.set_encrypted_metadata_bytes_v0(
-      std::string(shared_credential->encrypted_metadata_bytes.begin(),
-                  shared_credential->encrypted_metadata_bytes.end()));
+      std::string(shared_credential->encrypted_metadata_bytes_v0.begin(),
+                  shared_credential->encrypted_metadata_bytes_v0.end()));
   proto.set_metadata_encryption_key_tag_v0(
-      std::string(shared_credential->metadata_encryption_key_tag.begin(),
-                  shared_credential->metadata_encryption_key_tag.end()));
+      std::string(shared_credential->metadata_encryption_key_tag_v0.begin(),
+                  shared_credential->metadata_encryption_key_tag_v0.end()));
   proto.set_connection_signature_verification_key(std::string(
       shared_credential->connection_signature_verification_key.begin(),
       shared_credential->connection_signature_verification_key.end()));
@@ -131,6 +145,19 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
       IdentityTypeFromMojom(shared_credential->identity_type));
   proto.set_version(std::string(shared_credential->version.begin(),
                                 shared_credential->version.end()));
+  proto.set_credential_type(
+      CredentialTypeFromMojom(shared_credential->credential_type));
+  proto.set_encrypted_metadata_bytes_v1(
+      std::string(shared_credential->encrypted_metadata_bytes_v1.begin(),
+                  shared_credential->encrypted_metadata_bytes_v1.end()));
+  proto.set_metadata_encryption_key_unsigned_adv_tag_v1(std::string(
+      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.begin(),
+      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.end()));
+  proto.set_id(shared_credential->id);
+  proto.set_dusi(shared_credential->dusi);
+  proto.set_signature_version(
+      std::string(shared_credential->signature_version.begin(),
+                  shared_credential->signature_version.end()));
   return proto;
 }
 
@@ -190,6 +217,20 @@ mojom::IdentityType IdentityTypeToMojom(
   }
 }
 
+mojom::CredentialType CredentialTypeToMojom(
+    ::nearby::internal::CredentialType credential_type) {
+  switch (credential_type) {
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN:
+      return mojom::CredentialType::kCredentialTypeUnknown;
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE:
+      return mojom::CredentialType::kCredentialTypeDevice;
+    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA:
+      return mojom::CredentialType::kCredentialTypeGaia;
+    default:
+      return mojom::CredentialType::kCredentialTypeUnknown;
+  }
+}
+
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential) {
   return mojom::SharedCredential::New(
@@ -213,7 +254,19 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
           shared_credential.advertisement_signature_verification_key().end()),
       IdentityTypeToMojom(shared_credential.identity_type()),
       std::vector<uint8_t>(shared_credential.version().begin(),
-                           shared_credential.version().end()));
+                           shared_credential.version().end()),
+      CredentialTypeToMojom(shared_credential.credential_type()),
+      std::vector<uint8_t>(
+          shared_credential.encrypted_metadata_bytes_v1().begin(),
+          shared_credential.encrypted_metadata_bytes_v1().end()),
+      std::vector<uint8_t>(
+          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
+              .begin(),
+          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
+              .end()),
+      shared_credential.id(), shared_credential.dusi(),
+      std::vector<uint8_t>(shared_credential.signature_version().begin(),
+                           shared_credential.signature_version().end()));
 }
 
 mojom::LocalCredentialPtr LocalCredentialToMojom(
