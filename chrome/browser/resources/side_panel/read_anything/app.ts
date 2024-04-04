@@ -630,17 +630,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   defaultVoice(): SpeechSynthesisVoice|undefined {
     // TODO(crbug.com/1474951): Additional logic to find default voice if there
     // isn't a voice marked as default
-
-    // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
-    // voices from loading on Linux, which slows down development.
     const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices =
+    const voicesForLanguage =
         this.getVoices().filter(voice => voice.lang.startsWith(languageCode));
 
-    if (!voices || (voices.length === 0)) {
+    if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
       // If no voices in the given language are found, use the default voice.
       return this.getVoices().find(
           ({default: isDefaultVoice}) => isDefaultVoice);
@@ -648,17 +645,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // The default voice doesn't always match with the actual default voice
     // of the device, therefore use the language code to find a voice first.
-    const voice = voices.find(({default: isDefaultVoice}) => isDefaultVoice);
-    if (!voice) {
-      return voices[0];
-    }
+    const defaultVoiceForLanguage =
+        voicesForLanguage.find(({default: isDefaultVoice}) => isDefaultVoice);
 
-    return voice;
+    return defaultVoiceForLanguage ? defaultVoiceForLanguage :
+                                     voicesForLanguage[0];
   }
 
   private getVoicesByLanguage(): VoicesByLanguage {
-    // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
-    // voices from loading on Linux, which slows down development.
     return this.getVoices().reduce(
         (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
           (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
@@ -1323,17 +1317,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices: VoicesByLanguage = this.getVoicesByLanguage();
-    const entry =
-        Object.entries(voices).find(([key, _]) => key.startsWith(storedLang));
-    let voice;
-    if (entry) {
-      const voicesForLang: SpeechSynthesisVoice[] = entry[1];
-      if (voicesForLang) {
-        voice = voicesForLang.find(voice => voice.name === storedVoice);
-      }
-    }
-    this.selectedVoice = (voice === null) ? this.defaultVoice() : voice;
+    const selectedVoice =
+        Object.entries(this.getVoicesByLanguage())
+            .filter(([lang, _]) => lang.startsWith(storedLang))
+            .flatMap(([_, voices]) => voices)
+            .filter(voice => voice.name === storedVoice);
+
+    assert(selectedVoice, 'Could not find stored selected voice');
+    this.selectedVoice = selectedVoice ? selectedVoice[0] : this.defaultVoice();
   }
 
   updateLineSpacing(newLineHeight: number) {
