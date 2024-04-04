@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.AppCompatLayersRemoved" enum="Boolean"
-    expires_after="2024-04-30">
+    expires_after="2024-07-30">
   <owner>grt@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
