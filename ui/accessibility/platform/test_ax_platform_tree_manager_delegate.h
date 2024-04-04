@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_TEST_AX_PLATFORM_TREE_MANAGER_DELEGATE_H_
+#define UI_ACCESSIBILITY_PLATFORM_TEST_AX_PLATFORM_TREE_MANAGER_DELEGATE_H_
 
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+namespace ui {
 
-namespace content {
-
-// TODO(nektar): Rename this class to `TestAXPlatformTreeManagerDelegate`.
-class TestBrowserAccessibilityDelegate
+class TestAXPlatformTreeManagerDelegate
     : public ui::AXPlatformTreeManagerDelegate {
  public:
-  TestBrowserAccessibilityDelegate();
+  TestAXPlatformTreeManagerDelegate();
 
   void AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool AccessibilityViewHasFocus() override;
@@ -37,12 +35,13 @@ class TestBrowserAccessibilityDelegate
   bool CanFireAccessibilityEvents() const override;
   bool AccessibilityIsRootFrame() const override;
   bool ShouldSuppressAXLoadComplete() override;
-  WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
+  content::WebContentsAccessibility*
+    AccessibilityGetWebContentsAccessibility() override;
 
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_TEST_AX_PLATFORM_TREE_MANAGER_DELEGATE_H_

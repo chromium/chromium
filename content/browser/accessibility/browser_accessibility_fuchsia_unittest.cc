@@ -10,10 +10,10 @@
 #include <memory>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 namespace {
@@ -121,7 +121,7 @@ class BrowserAccessibilityFuchsiaTest : public testing::Test {
   void SetUp() override;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -136,7 +136,7 @@ class BrowserAccessibilityFuchsiaTest : public testing::Test {
 
 void BrowserAccessibilityFuchsiaTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {

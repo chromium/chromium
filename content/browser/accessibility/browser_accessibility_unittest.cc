@@ -6,11 +6,11 @@
 
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
@@ -26,7 +26,7 @@ class BrowserAccessibilityTest : public ::testing::Test {
   ~BrowserAccessibilityTest() override;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -43,7 +43,7 @@ BrowserAccessibilityTest::~BrowserAccessibilityTest() = default;
 
 void BrowserAccessibilityTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {

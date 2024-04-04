@@ -15,12 +15,12 @@
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #endif
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/test_ax_tree_update.h"
 
 namespace content {
@@ -71,7 +71,7 @@ class BrowserAccessibilityManagerTest : public testing::Test {
  protected:
   void SetUp() override;
 
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
   const content::BrowserTaskEnvironment task_environment_;
 };
@@ -79,7 +79,7 @@ class BrowserAccessibilityManagerTest : public testing::Test {
 void BrowserAccessibilityManagerTest::SetUp() {
   testing::Test::SetUp();
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityManagerTest, TestErrorOnCreateIsFatal) {

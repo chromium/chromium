@@ -244,6 +244,7 @@ fuzzer_test("browser_accessibility_fuzzer") {
     "//mojo/core/embedder",
     "//services/network:test_support",
     "//storage/browser:test_support",
+    "//ui/accessibility:test_support",
   ]
 }
 

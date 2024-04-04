@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/events/base_event_utils.h"
 
 namespace content {
@@ -43,7 +44,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
   raw_ptr<BrowserAccessibilityStateImpl> state_;
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 };
 

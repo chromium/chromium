@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/browser_accessibility_manager.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -14,6 +14,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace {
 
@@ -53,7 +54,7 @@ class BrowserAccessibilityManagerWinTest : public testing::Test {
   ~BrowserAccessibilityManagerWinTest() override = default;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -66,7 +67,7 @@ class BrowserAccessibilityManagerWinTest : public testing::Test {
 
 void BrowserAccessibilityManagerWinTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
@@ -101,8 +102,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   // Simulate the case where an iframe is created but the update to add the
   // element to the root frame's document has not yet come through.
-  std::unique_ptr<TestBrowserAccessibilityDelegate> iframe_delegate =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate> iframe_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
   iframe_delegate->is_root_frame_ = false;
   iframe_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
 
@@ -159,8 +160,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
             root_document_root_node->GetNativeViewAccessible());
 
   // Add the child tree.
-  std::unique_ptr<TestBrowserAccessibilityDelegate> child_tree_delegate =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate> child_tree_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
   child_tree_delegate->is_root_frame_ = false;
   child_tree_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
   std::unique_ptr<BrowserAccessibilityManager> child_manager(

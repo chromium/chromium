@@ -8,13 +8,13 @@
 
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
   ~BrowserAccessibilityManagerAuraLinuxTest() override = default;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -43,7 +43,7 @@ class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
   ax_mode_override_ =
       std::make_unique<ScopedAccessibilityModeOverride>(ui::kAXModeComplete);
 }

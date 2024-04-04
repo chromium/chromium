@@ -4,16 +4,15 @@
 
 #include "content/browser/accessibility/browser_accessibility_win.h"
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include <objbase.h>
+
 #include <stdint.h>
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,12 +22,12 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/base/win/atl_module.h"
 
 namespace content {
@@ -106,7 +105,7 @@ class BrowserAccessibilityWinTest : public ::testing::Test {
   ~BrowserAccessibilityWinTest() override;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -122,7 +121,7 @@ BrowserAccessibilityWinTest::~BrowserAccessibilityWinTest() {}
 void BrowserAccessibilityWinTest::SetUp() {
   ui::win::CreateATLModuleIfNeeded();
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 // Actual tests ---------------------------------------------------------------

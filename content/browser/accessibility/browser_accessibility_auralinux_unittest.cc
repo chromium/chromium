@@ -5,16 +5,17 @@
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 
 #include <atk/atk.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
@@ -30,7 +31,7 @@ class BrowserAccessibilityAuraLinuxTest : public ::testing::Test {
   ~BrowserAccessibilityAuraLinuxTest() override;
 
  protected:
-  std::unique_ptr<TestBrowserAccessibilityDelegate>
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
 
  private:
@@ -48,7 +49,7 @@ BrowserAccessibilityAuraLinuxTest::~BrowserAccessibilityAuraLinuxTest() =
 
 void BrowserAccessibilityAuraLinuxTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<TestBrowserAccessibilityDelegate>();
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityAuraLinuxTest, TestSimpleAtkText) {

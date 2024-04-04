@@ -49,8 +49,6 @@ static_library("test_support") {
   }
 
   sources = [
-    "../browser/accessibility/test_browser_accessibility_delegate.cc",
-    "../browser/accessibility/test_browser_accessibility_delegate.h",
     "../browser/aggregation_service/aggregation_service_test_utils.cc",
     "../browser/aggregation_service/aggregation_service_test_utils.h",
     "../browser/attribution_reporting/attribution_interop_parser.cc",

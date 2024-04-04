@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/browser_accessibility.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 struct Env {
   Env() { base::CommandLine::Init(0, nullptr); }
@@ -148,7 +149,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   VLOG(1) << child_tree.ToString();
 
-  TestBrowserAccessibilityDelegate delegate;
+  ui::TestAXPlatformTreeManagerDelegate delegate;
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(tree, &delegate));
   std::unique_ptr<BrowserAccessibilityManager> child_manager(

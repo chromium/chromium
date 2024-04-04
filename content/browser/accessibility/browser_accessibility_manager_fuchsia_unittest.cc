@@ -10,7 +10,6 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
@@ -20,12 +19,13 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 namespace {
 
 class MockBrowserAccessibilityDelegate
-    : public TestBrowserAccessibilityDelegate {
+    : public ui::TestAXPlatformTreeManagerDelegate {
  public:
   void AccessibilityPerformAction(const ui::AXActionData& data) override {
     last_action_data_ = data;
