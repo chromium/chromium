@@ -87,13 +87,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        getContext(),
-                        this,
-                        profile,
-                        SigninAccessPoint.START_PAGE,
-                        false,
-                        false,
-                        null);
+                        getContext(), this, profile, SigninAccessPoint.START_PAGE, false, false);
         mFragmentView.removeAllViews();
         mFragmentView.addView(mHistorySyncCoordinator.getView());
     }

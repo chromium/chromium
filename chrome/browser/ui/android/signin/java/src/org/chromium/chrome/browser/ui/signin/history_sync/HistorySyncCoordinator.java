@@ -9,8 +9,6 @@ import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -26,10 +24,8 @@ public class HistorySyncCoordinator {
     }
 
     private final HistorySyncMediator mMediator;
-    private final HistorySyncDelegate mDelegate;
-    private final boolean mUseLandscapeLayout;
-    private HistorySyncView mView;
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private final HistorySyncView mView;
+    private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private boolean mIsDestroyed;
 
     /**
@@ -43,8 +39,6 @@ public class HistorySyncCoordinator {
      *     email is non-displayable, it won't be shown regardless of this value.
      * @param shouldSignOutOnDecline Whether the user should be signed out if they decline history
      *     sync.
-     * @param view The view that will be controlled by the coordinator. If null, the coordinator
-     *     will inflate its own view.
      */
     public HistorySyncCoordinator(
             Context context,
@@ -52,8 +46,7 @@ public class HistorySyncCoordinator {
             Profile profile,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
-            boolean shouldSignOutOnDecline,
-            @Nullable View view) {
+            boolean shouldSignOutOnDecline) {
         mMediator =
                 new HistorySyncMediator(
                         context,
@@ -62,18 +55,8 @@ public class HistorySyncCoordinator {
                         accessPoint,
                         showEmailInFooter,
                         shouldSignOutOnDecline);
-        mDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
-        mUseLandscapeLayout =
-                !delegate.isLargeScreen()
-                        && context.getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_LANDSCAPE;
-        if (view == null) {
-            mView = inflateView(inflater);
-        } else {
-            mView = (HistorySyncView) view;
-            mView.createButtons(mDelegate.isLargeScreen() || mUseLandscapeLayout);
-        }
+        mView = inflateView(inflater, delegate);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, HistorySyncViewBinder::bind);
@@ -83,10 +66,7 @@ public class HistorySyncCoordinator {
 
     public void destroy() {
         assert !mIsDestroyed;
-        if (mPropertyModelChangeProcessor != null) {
-            mPropertyModelChangeProcessor.destroy();
-            mPropertyModelChangeProcessor = null;
-        }
+        mPropertyModelChangeProcessor.destroy();
         mMediator.destroy();
         mIsDestroyed = true;
     }
@@ -95,11 +75,16 @@ public class HistorySyncCoordinator {
         return mView;
     }
 
-    private HistorySyncView inflateView(LayoutInflater inflater) {
+    private HistorySyncView inflateView(LayoutInflater inflater, HistorySyncDelegate delegate) {
+        Configuration configuration = inflater.getContext().getResources().getConfiguration();
+        boolean useLandscapeLayout =
+                !delegate.isLargeScreen()
+                        && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
+
         HistorySyncView view =
                 (HistorySyncView)
                         inflater.inflate(
-                                mUseLandscapeLayout
+                                useLandscapeLayout
                                         ? R.layout.history_sync_landscape_view
                                         : R.layout.history_sync_portrait_view,
                                 null,
@@ -107,7 +92,7 @@ public class HistorySyncCoordinator {
 
         // For phones in portrait mode, the UI shows two vertically stacked full-width buttons. In
         // other cases, we use a horizontally stacked button bar.
-        view.createButtons(/* isButtonBar= */ mDelegate.isLargeScreen() || mUseLandscapeLayout);
+        view.createButtons(/* isButtonBar= */ delegate.isLargeScreen() || useLandscapeLayout);
         return view;
     }
 }

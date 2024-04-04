@@ -97,7 +97,7 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         onView(withId(R.id.sync_consent_title)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_consent_subtitle)).check(matches(isDisplayed()));
-        onView(withId(R.id.history_sync_account_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.account_image)).check(matches(isDisplayed()));
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
         onView(withText(R.string.no_thanks)).check(matches(isDisplayed()));
@@ -206,8 +206,7 @@ public class HistorySyncTest {
                                     ProfileManager.getLastUsedRegularProfile(),
                                     SIGNIN_ACCESS_POINT,
                                     showEmailInFooter,
-                                    shouldSignOutOnDecline,
-                                    null);
+                                    shouldSignOutOnDecline);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());

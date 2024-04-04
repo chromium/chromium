@@ -73,11 +73,4 @@ public interface SigninAndHistoryOptInActivityLauncher {
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint);
-
-    /**
-     * Launches the upgrade promo flavor of the {@link SigninAndHistoryOptInActivity} if sign-in and
-     * history opt-in are allowed.
-     */
-    @MainThread
-    void launchUpgradePromoActivityIfAllowed(Context context, Profile profile);
 }

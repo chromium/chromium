@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,11 +30,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Helper class responsible of launching the full screen sync promo, i.e. {@link
- * SyncConsentActivity}. After UNO, this will launch the re-FRE with {@link
- * SigninAndHistoryOptInActivity}.
+ * Helper class responsible of launching the full screen sync promo, i.e.
+ * {@link SyncConsentActivity}.
  */
-// TODO(b/41493788): Consider renaming this to UpgradePromoUtil.
 public final class FullScreenSyncPromoUtil {
     /**
      * Launches the {@link SyncConsentActivity} if it needs to be displayed.
@@ -43,8 +40,6 @@ public final class FullScreenSyncPromoUtil {
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
      * @param profile The active user profile.
      * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
-     * @param signinAndHistoryOptInActivityLauncher launcher used to launch the {@link
-     *     SigninAndHistoryOptInActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
@@ -52,19 +47,11 @@ public final class FullScreenSyncPromoUtil {
             Context context,
             Profile profile,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
-            SigninAndHistoryOptInActivityLauncher signinAndHistoryOptInActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
         if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
-            if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                    && !BuildInfo.getInstance().isAutomotive) {
-                signinAndHistoryOptInActivityLauncher.launchUpgradePromoActivityIfAllowed(
-                        context, profile);
-            } else {
-                syncConsentActivityLauncher.launchActivityIfAllowed(
-                        context, SigninAccessPoint.SIGNIN_PROMO);
-            }
+            syncConsentActivityLauncher.launchActivityIfAllowed(
+                    context, SigninAccessPoint.SIGNIN_PROMO);
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
             final List<CoreAccountInfo> coreAccountInfos =
                     AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
@@ -76,7 +63,6 @@ public final class FullScreenSyncPromoUtil {
         return false;
     }
 
-    // TODO(b/41493788): Check the PRD to see if the conditions on showing this promo have changed.
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
