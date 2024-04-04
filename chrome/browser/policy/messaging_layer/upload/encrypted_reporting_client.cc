@@ -597,17 +597,14 @@ void EncryptedReportingClient::CreateUploadJob(
                               priority, generation_id));
 
   // Store or increment upload counter for every event included in the upload.
-  for (const auto& [sequence_id, _] : state->cached_records) {
-    if (sequence_id <= last_sequence_id) {
-      continue;  // Older event, not included.
-    }
-    if (events_to_send == 0u) {
-      break;  // All events accounted for.
-    }
+  // `BuildPayload` included `events_to_send` events up to `last_sequence_id`
+  // (inclusive); now we need to sample all events in
+  // (last_sequence_id - events_to_send, last_sequence_id] range.
+  while (events_to_send > 0u) {
     --events_to_send;
     // Set or increment uploads counter of the event.
-    const auto [it, inserted] =
-        state->upload_counters.try_emplace(sequence_id, 1u);
+    const auto [it, inserted] = state->upload_counters.try_emplace(
+        last_sequence_id - events_to_send, 1u);
     if (!inserted) {
       ++(it->second);
     }
