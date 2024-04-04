@@ -114,3 +114,9 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
 
+# Gardener 2024-04-04
+crbug.com/331926164 [ Linux ] http/tests/inspector-protocol/accessibility/accessibility-query-axtree.js [ Crash ]
+crbug.com/331926164 [ Linux ] external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html [ Timeout ]
+crbug.com/331926164 [ Linux ] external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html [ Timeout ]
+crbug.com/331926164 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.html [ Timeout ]
+crbug.com/331926164 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.worker.html [ Timeout ]
