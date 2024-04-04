@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
@@ -59,6 +60,10 @@ class NetworkScreen : public BaseScreen,
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
+  }
+
+  void set_no_quickstart_delay_for_testing() {
+    quickstart_stabilization_period_ = base::Seconds(0);
   }
 
  protected:
@@ -166,6 +171,16 @@ class NetworkScreen : public BaseScreen,
   // Indicates whether the device has already been connected to Ethernet in this
   // session or not.
   bool first_ethernet_connection_ = true;
+
+  // Whether wifi credentials were automatically received via Quick Start.
+  bool did_receive_quickstart_wifi_credentials_ = false;
+
+  // Whether the network screen is waiting the QuickStart stabilization period
+  // before proceeding to the next screen.
+  bool waiting_for_quickstart_stabilization_period_ = false;
+
+  // Default period to wait when going through QuickStart. Overridden in tests.
+  base::TimeDelta quickstart_stabilization_period_ = base::Seconds(2);
 
   // Timer for connection timeout.
   base::OneShotTimer connection_timer_;

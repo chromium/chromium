@@ -117,6 +117,12 @@ class NetworkScreen extends NetworkScreenBase {
         type: Boolean,
         value: false,
       },
+
+      // Whether the QuickStart 'Cancel' button is visible.
+      quickStartCancelButtonVisible: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -134,6 +140,7 @@ class NetworkScreen extends NetworkScreenBase {
   private enableWifiScans: boolean;
   private isQuickStartVisible: boolean;
   private useQuickStartSubtitle: boolean;
+  private quickStartCancelButtonVisible: boolean;
 
   constructor() {
     super();
@@ -169,6 +176,7 @@ class NetworkScreen extends NetworkScreenBase {
     }
     if (this.ssid) {
       this.setUIStep(NetworkScreenStates.QUICK_START_CONNECTING);
+      this.quickStartCancelButtonVisible = true;
       return;
     }
 
@@ -300,9 +308,10 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   /**
-   * Cancels ongoing connection.
+   * Cancels ongoing connection with the phone for QuickStart.
    */
   private onCancelClicked() {
+    this.quickStartCancelButtonVisible = false;
     this.userActed('cancel');
   }
 
