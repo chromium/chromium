@@ -30,7 +30,7 @@ class SafeBrowsingDatabaseManager;
 
 namespace subresource_filter {
 
-class SubresourceFilterSafeBrowsingActivationThrottle;
+class SafeBrowsingPageActivationThrottle;
 class SubresourceFilterSafeBrowsingClientRequest;
 
 // This is used to communicate with the safe browsing service.
@@ -57,7 +57,7 @@ class SubresourceFilterSafeBrowsingClient {
   SubresourceFilterSafeBrowsingClient(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      base::WeakPtr<SubresourceFilterSafeBrowsingActivationThrottle> throttle,
+      base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner);
 
@@ -83,9 +83,9 @@ class SubresourceFilterSafeBrowsingClient {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   // TODO(crbug.com/1057253): once kSafeBrowsingOnUIThread ships, make this
-  // object owned by SubresourceFilterSafeBrowsingActivationThrottle and then
+  // object owned by SafeBrowsingPageActivationThrottle and then
   // we can replace the weak pointer with a raw pointer to its owning class.
-  base::WeakPtr<SubresourceFilterSafeBrowsingActivationThrottle> throttle_;
+  base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner_;
 };

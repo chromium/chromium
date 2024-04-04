@@ -14,7 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"

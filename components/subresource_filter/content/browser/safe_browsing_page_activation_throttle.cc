@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 
 #include <optional>
 #include <sstream>
@@ -22,6 +22,7 @@
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
+#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -64,10 +65,10 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
 
 }  // namespace
 
-SubresourceFilterSafeBrowsingActivationThrottle::
-    SubresourceFilterSafeBrowsingActivationThrottle(
+SafeBrowsingPageActivationThrottle::
+    SafeBrowsingPageActivationThrottle(
         content::NavigationHandle* handle,
-        Delegate* delegate,
+        PageActivationThrottleDelegate* delegate,
         scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager)
@@ -78,25 +79,27 @@ SubresourceFilterSafeBrowsingActivationThrottle::
                            base::SequencedTaskRunner::GetCurrentDefault())),
       delegate_(delegate) {
   database_client_.reset(new SubresourceFilterSafeBrowsingClient(
-      std::move(database_manager), weak_ptr_factory_.GetWeakPtr(),
-      io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault()));
+      std::move(database_manager),
+      weak_ptr_factory_.GetWeakPtr(),
+      io_task_runner_,
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   DCHECK(IsInSubresourceFilterRoot(handle));
   CheckCurrentUrl();
   DCHECK(!check_results_.empty());
 }
 
-SubresourceFilterSafeBrowsingActivationThrottle::
-    ~SubresourceFilterSafeBrowsingActivationThrottle() = default;
+SafeBrowsingPageActivationThrottle::
+    ~SafeBrowsingPageActivationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
-SubresourceFilterSafeBrowsingActivationThrottle::WillRedirectRequest() {
+SafeBrowsingPageActivationThrottle::WillRedirectRequest() {
   CheckCurrentUrl();
   return PROCEED;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SubresourceFilterSafeBrowsingActivationThrottle::WillProcessResponse() {
+SafeBrowsingPageActivationThrottle::WillProcessResponse() {
   // No need to defer the navigation if the check already happened.
   if (HasFinishedAllSafeBrowsingChecks()) {
     NotifyResult();
@@ -109,11 +112,11 @@ SubresourceFilterSafeBrowsingActivationThrottle::WillProcessResponse() {
 }
 
 const char*
-SubresourceFilterSafeBrowsingActivationThrottle::GetNameForLogging() {
-  return "SubresourceFilterSafeBrowsingActivationThrottle";
+SafeBrowsingPageActivationThrottle::GetNameForLogging() {
+  return "SafeBrowsingPageActivationThrottle";
 }
 
-void SubresourceFilterSafeBrowsingActivationThrottle::OnCheckUrlResultOnUI(
+void SafeBrowsingPageActivationThrottle::OnCheckUrlResultOnUI(
     const SubresourceFilterSafeBrowsingClient::CheckResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   size_t request_id = result.request_id;
@@ -133,7 +136,7 @@ void SubresourceFilterSafeBrowsingActivationThrottle::OnCheckUrlResultOnUI(
   }
 }
 
-SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult::ConfigResult(
+SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult(
     Configuration config,
     bool warning,
     bool matched_valid_configuration,
@@ -143,16 +146,16 @@ SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult::ConfigResult(
       matched_valid_configuration(matched_valid_configuration),
       matched_list(matched_list) {}
 
-SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult::ConfigResult() =
+SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult() =
     default;
 
-SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult::ConfigResult(
+SafeBrowsingPageActivationThrottle::ConfigResult::ConfigResult(
     const ConfigResult&) = default;
 
-SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult::~ConfigResult() =
+SafeBrowsingPageActivationThrottle::ConfigResult::~ConfigResult() =
     default;
 
-void SubresourceFilterSafeBrowsingActivationThrottle::CheckCurrentUrl() {
+void SafeBrowsingPageActivationThrottle::CheckCurrentUrl() {
   DCHECK(database_client_);
   check_results_.emplace_back();
   size_t id = check_results_.size() - 1;
@@ -160,9 +163,9 @@ void SubresourceFilterSafeBrowsingActivationThrottle::CheckCurrentUrl() {
                              base::TimeTicks::Now());
 }
 
-void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {
+void SafeBrowsingPageActivationThrottle::NotifyResult() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
-               "SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult");
+               "SafeBrowsingPageActivationThrottle::NotifyResult");
   DCHECK(!check_results_.empty());
 
   // Determine which results to consider for safebrowsing/abusive enforcement.
@@ -220,7 +223,7 @@ void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {
           selection.config.GetActivationState(activation_level));
 }
 
-void SubresourceFilterSafeBrowsingActivationThrottle::
+void SafeBrowsingPageActivationThrottle::
     LogMetricsOnChecksComplete(ActivationList matched_list,
                                ActivationDecision decision,
                                mojom::ActivationLevel level) const {
@@ -254,7 +257,7 @@ void SubresourceFilterSafeBrowsingActivationThrottle::
                             static_cast<int>(ActivationList::LAST) + 1);
 }
 
-bool SubresourceFilterSafeBrowsingActivationThrottle::
+bool SafeBrowsingPageActivationThrottle::
     HasFinishedAllSafeBrowsingChecks() const {
   for (const auto& check_result : check_results_) {
     if (!check_result.finished) {
@@ -264,8 +267,8 @@ bool SubresourceFilterSafeBrowsingActivationThrottle::
   return true;
 }
 
-SubresourceFilterSafeBrowsingActivationThrottle::ConfigResult
-SubresourceFilterSafeBrowsingActivationThrottle::
+SafeBrowsingPageActivationThrottle::ConfigResult
+SafeBrowsingPageActivationThrottle::
     GetHighestPriorityConfiguration(
         const SubresourceFilterSafeBrowsingClient::CheckResult& result) {
   DCHECK(result.finished);
@@ -289,7 +292,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
     }
   }
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-               "SubresourceFilterSafeBrowsingActivationThrottle::"
+               "SafeBrowsingPageActivationThrottle::"
                "GetHighestPriorityConfiguration",
                "selected_config",
                !matched ? selected_config.ToTracedValue()
@@ -298,7 +301,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
 }
 
 ActivationDecision
-SubresourceFilterSafeBrowsingActivationThrottle::GetActivationDecision(
+SafeBrowsingPageActivationThrottle::GetActivationDecision(
     const ConfigResult& config) {
   if (!config.matched_valid_configuration) {
     return ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET;
@@ -309,7 +312,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::GetActivationDecision(
              : ActivationDecision::ACTIVATED;
 }
 
-bool SubresourceFilterSafeBrowsingActivationThrottle::
+bool SafeBrowsingPageActivationThrottle::
     DoesRootFrameURLSatisfyActivationConditions(
         const Configuration::ActivationConditions& conditions,
         ActivationList matched_list) const {
@@ -320,7 +323,7 @@ bool SubresourceFilterSafeBrowsingActivationThrottle::
     return matched_list_stream.str();
   };
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("loading"),
-               "SubresourceFilterSafeBrowsingActivationThrottle::"
+               "SafeBrowsingPageActivationThrottle::"
                "DoesRootFrameURLSatisfyActivationConditions",
                "matched_list", list_to_string(matched_list), "conditions",
                conditions.ToTracedValue());

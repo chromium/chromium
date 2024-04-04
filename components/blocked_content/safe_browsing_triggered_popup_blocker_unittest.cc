@@ -22,8 +22,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -146,7 +146,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
     // a root).
     if (subresource_filter::IsInSubresourceFilterRoot(handle)) {
       return std::make_unique<
-          subresource_filter::SubresourceFilterSafeBrowsingActivationThrottle>(
+          subresource_filter::SafeBrowsingPageActivationThrottle>(
           handle, /*delegate=*/nullptr, content::GetIOThreadTaskRunner({}),
           fake_safe_browsing_database_);
     }

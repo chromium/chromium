@@ -20,7 +20,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/page_load_statistics.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -575,10 +575,9 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   DCHECK(!ShouldInheritActivation(navigation_handle->GetURL()));
 
   if (IsInSubresourceFilterRoot(navigation_handle) && database_manager_) {
-    throttles->push_back(
-        std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
-            navigation_handle, profile_interaction_manager_.get(),
-            content::GetIOThreadTaskRunner({}), database_manager_));
+    throttles->push_back(std::make_unique<SafeBrowsingPageActivationThrottle>(
+        navigation_handle, profile_interaction_manager_.get(),
+        content::GetIOThreadTaskRunner({}), database_manager_));
   }
 
   if (!dealer_handle_)

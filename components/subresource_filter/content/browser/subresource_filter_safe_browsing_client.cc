@@ -13,7 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client_request.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -33,7 +33,7 @@ SubresourceFilterSafeBrowsingClient::CheckResult::ToTracedValue() const {
 
 SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    base::WeakPtr<SubresourceFilterSafeBrowsingActivationThrottle> throttle,
+    base::WeakPtr<SafeBrowsingPageActivationThrottle> throttle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner)
     : database_manager_(std::move(database_manager)),

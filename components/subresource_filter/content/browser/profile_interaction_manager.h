@@ -7,7 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
+#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
@@ -28,8 +29,7 @@ class SubresourceFilterProfileContext;
 // Class that manages interaction between the per-navigation/per-page
 // subresource filter objects (i.e., the throttles and throttle manager) and
 // the per-profile objects (e.g., content settings).
-class ProfileInteractionManager
-    : public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
+class ProfileInteractionManager : public PageActivationThrottleDelegate {
  public:
   explicit ProfileInteractionManager(
       SubresourceFilterProfileContext* profile_context);
@@ -56,7 +56,7 @@ class ProfileInteractionManager
   // has been installed in web_contents() by the embedder.
   void MaybeShowNotification();
 
-  // SubresourceFilterSafeBrowsingActivationThrottle::Delegate:
+  // PageActivationThrottleDelegate:
   mojom::ActivationLevel OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
       mojom::ActivationLevel initial_activation_level,

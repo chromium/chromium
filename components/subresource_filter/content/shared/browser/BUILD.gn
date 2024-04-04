@@ -2,6 +2,7 @@ import("//build/config/features.gni")
 
 static_library("browser") {
   sources = [
+    "page_activation_throttle_delegate.h",
     "ruleset_publisher_impl.cc",
     "ruleset_publisher_impl.h",
     "ruleset_service.cc",

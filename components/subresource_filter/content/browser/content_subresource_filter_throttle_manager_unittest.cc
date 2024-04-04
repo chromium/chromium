@@ -382,7 +382,7 @@ class ContentSubresourceFilterThrottleManagerTest
     created_safe_browsing_throttle_for_last_navigation_ = false;
     for (auto& it : throttles) {
       if (strcmp(it->GetNameForLogging(),
-                 "SubresourceFilterSafeBrowsingActivationThrottle") == 0) {
+                 "SafeBrowsingPageActivationThrottle") == 0) {
         created_safe_browsing_throttle_for_last_navigation_ = true;
       }
 
