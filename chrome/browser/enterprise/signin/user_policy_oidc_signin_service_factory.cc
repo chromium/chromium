@@ -24,7 +24,7 @@ GetCloudPolicyManager(Profile* profile) {
   auto* entry = g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetProfileAttributesWithPath(profile->GetPath());
-  if (entry->IsDasherlessManagement()) {
+  if (entry && entry->IsDasherlessManagement()) {
     return profile->GetProfileCloudPolicyManager();
   }
   return profile->GetUserCloudPolicyManager();
