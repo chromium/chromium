@@ -9,7 +9,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/prefs/pref_service.h"
 #import "components/search_engines/choice_made_location.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -56,7 +55,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
       _searchEngineChoiceService;                   // weak
   raw_ptr<TemplateURLService> _templateURLService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observerTemplateURLService;
-  raw_ptr<PrefService> _prefService;
   // The template URLs to be shown on the choice screen and some associated
   // data.
   std::unique_ptr<search_engines::ChoiceScreenData> _choiceScreenData;
@@ -66,13 +64,11 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 - (instancetype)
     initWithTemplateURLService:(TemplateURLService*)templateURLService
      searchEngineChoiceService:
-         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
-                   prefService:(PrefService*)prefService {
+         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService {
   self = [super init];
   if (self) {
     _templateURLService = templateURLService;
     _searchEngineChoiceService = searchEngineChoiceService;
-    _prefService = prefService;
     _observerTemplateURLService =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _templateURLService->Load();
@@ -110,7 +106,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   _searchEngineChoiceService = nullptr;
   _templateURLService = nullptr;
   _observerTemplateURLService.reset();
-  _prefService = nullptr;
 }
 
 #pragma mark - Properties

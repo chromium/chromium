@@ -9,7 +9,6 @@
 
 #import <UIKit/UIKit.h>
 
-class PrefService;
 class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
 
@@ -27,7 +26,6 @@ class SearchEngineChoiceService;
     initWithTemplateURLService:(TemplateURLService*)templateURLService
      searchEngineChoiceService:
          (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
-                   prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

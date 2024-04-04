@@ -79,18 +79,20 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  // Make sure we use the original browser state (non-incognito).
+  ChromeBrowserState* originalBrowserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   _viewController =
       [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
   _viewController.actionDelegate = self;
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForBrowserState(originalBrowserState);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
+          originalBrowserState);
   _mediator = [[SearchEngineChoiceMediator alloc]
       initWithTemplateURLService:templateURLService
-       searchEngineChoiceService:searchEngineChoiceService
-                     prefService:browserState->GetPrefs()];
+       searchEngineChoiceService:searchEngineChoiceService];
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.modalInPresentation = YES;
