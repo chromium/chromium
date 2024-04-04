@@ -240,8 +240,9 @@ ci.builder(
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
+            archive_subdir = "media",
             gs_acl = "public-read",
-            gs_bucket = "chrome-test-builds/media",
+            gs_bucket = "chromium-browser-asan",
         ),
     ),
     gn_args = gn_args.config(
@@ -308,9 +309,9 @@ ci.builder(
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan-v8-arm",
-            archive_subdir = "v8-arm",
+            archive_subdir = "v8-arm-media",
             gs_acl = "public-read",
-            gs_bucket = "chrome-test-builds/media",
+            gs_bucket = "chromium-browser-asan",
         ),
     ),
     gn_args = gn_args.config(
@@ -522,8 +523,9 @@ ci.builder(
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
+            archive_subdir = "media",
             gs_acl = "public-read",
-            gs_bucket = "chrome-test-builds/media",
+            gs_bucket = "chromium-browser-asan",
         ),
     ),
     gn_args = gn_args.config(
@@ -757,8 +759,9 @@ ci.builder(
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
+            archive_subdir = "media",
             gs_acl = "public-read",
-            gs_bucket = "chrome-test-builds/media",
+            gs_bucket = "chromium-browser-asan",
         ),
     ),
     gn_args = gn_args.config(
