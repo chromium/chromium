@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that AudioDecoder.isConfigSupported() rejects invalid config: Valid configuration except detached description
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] Test that AudioDecoder.configure() rejects invalid config: Valid configuration except detached description
-  assert_throws_js: function "() => {\n          codec.configure(entry.config);\n        }" did not throw
-Harness: the test ran to completion.
-

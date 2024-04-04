@@ -363,7 +363,7 @@ std::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
     if (!desc_wrapper.data()) {
-      *js_error_message = "description is detached.";
+      *js_error_message = "Invalid config, description is detached.";
       return std::nullopt;
     }
   }
