@@ -1,17 +1,21 @@
 caption: Sets a list of Data Controls rules.
 desc: |-
-  Configures a list of Data Control rules to prevent data leaks.
+  Configures a list of Data Control rules to prevent data leaks. Data leaks can happen by copying and pasting data, attaching files to web pages, printing, downloading, ...etc.
 
         Each rule consists of the following:
-        - Condition fields to trigger that rule. A rule will only trigger if a user action matches all the fields populated in its <ph name="DATA_CONTROLS_SOURCES">sources</ph>, <ph name="DATA_CONTROLS_DESTINATIONS">destinations</ph>, <ph name="DATA_CONTROLS_AND">and</ph>, <ph name="DATA_CONTROLS_OR">or</ph> and <ph name="DATA_CONTROLS_NOT">not</ph> fields. For list sub-fields, only one entry needs to be matched, for example only one URL pattern needs to match to trigger the rule.
-        - A list of restrictions to be applied. Depending on the restriction, only <ph name="DATA_CONTROLS_SOURCES">sources</ph> or <ph name="DATA_CONTROLS_DESTINATIONS">destinations</ph> conditions may be available.
+        - Properties of the source of an action. A rule will only trigger if a user action matches all the fields populated in its <ph name="DATA_CONTROLS_SOURCES">sources</ph> field. For list sub-fields, only one entry needs to be matched, for example only one URL pattern needs to match to trigger the rule.
+        - Properties of the destination of an action. A rule will only trigger if a user action matches all the fields populated in its <ph name="DATA_CONTROLS_DESTINATIONS">destinations</ph> field. For list sub-fields, only one entry needs to be matched, for example only one URL pattern needs to match to trigger the rule.
+        - A list of restrictions to be applied on the data of the sources.
 
         Rules can be added to:
         - Control the clipboard data shared between the sources and the destinations.
-        - Control blocking screenshots based on the source tabs.
+        - Control printing from any of the sources.
+        - Control files being attached to any of the destinations.
+        - Control files being downloaded from any of the sources.
 
         If <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is set to True, triggered rules be reported to the admin.
-        The restriction level can be set to BLOCK, WARN, or REPORT.
+        The restriction level can be set to ALLOW, BLOCK, WARN, REPORT.
+        - If the restriction level is set to ALLOW, the action will be allowed. This also overrides restrictions applied by other rules.
         - If the restriction level is set to BLOCK, the action won't be allowed.
         - If the restriction level is set to WARN, a user will be warned and may choose to proceed with or cancel the action.
         - If the restriction level is set to REPORT, the user action will not be interrupted, but a report will be sent if <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is enabled.
@@ -22,6 +26,31 @@ desc: |-
 
         If the policy is left not set, no restrictions will be applied.
 example_value:
+- description: Block executables of a few select types
+  name: Block .exe files
+  rule_id: rule1
+  restrictions:
+  - class: FILE_DOWNLOAD
+    level: BLOCK
+  sources:
+    urls:
+    - salesforce.com
+    - gmail.com
+    - docs.google.com
+    - drive.google.com
+    - company.com
+    byte_size_higher_than: 100
+    byte_size_lower_than: 5000000
+    file_type:
+    - exe
+    - bat
+    - msi
+    - dmg
+    mime_type:
+    - application/vnd.microsoft.portable-executable
+    - video/avi
+    file_number_higher_than: 0
+    file_number_lower_than: 2
 - description: Block copying from internal sites to the OS clipboard
   name: Block copying from corp sites to OS
   destinations:
@@ -67,6 +96,17 @@ example_value:
   restrictions:
   - class: CLIPBOARD
     level: BLOCK
+- description: Block pasting in several cases using an if condition
+  or:
+    - destinations:
+        incognito: true
+    - destinations:
+        os_clipboard: true
+    - destinations:
+        other_profile: true
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
 - description: Block pasting to incognito with an exception of corp sites
   and:
     - destinations:
@@ -86,6 +126,17 @@ example_value:
   restrictions:
   - class: CLIPBOARD
     level: BLOCK
+- description: Block copying in several cases using an if condition
+  or:
+    - sources:
+        incognito: true
+    - sources:
+        os_clipboard: true
+    - sources:
+        other_profile: true
+  restrictions:
+  - class: CLIPBOARD
+    level: BLOCK
 - description: Block copying from incognito with an exception of corp sites
   and:
     - sources:
@@ -97,22 +148,55 @@ example_value:
   restrictions:
   - class: CLIPBOARD
     level: BLOCK
-- description: Prevent clipboard data from leaving a specified set of corp sites
+- description: Block clipboard interactions with several nested conditions
   and:
-    - sources:
-        urls:
-        - corp1.com
-        - corp2.com
+    - and:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - not:
+        destinations:
+          incognito: true
+        sources:
+          incognito: true
     - or:
-      - not:
-          destinations:
-            urls:
-              - corp1.com
-              - corp2.com
       - destinations:
-          os_clipboard: true
+          incognito: true
+        sources:
+          incognito: true
+  or:
+    - and:
       - destinations:
-          other_profile: true
+          incognito: true
+        sources:
+          incognito: true
+    - not:
+        destinations:
+          incognito: true
+        sources:
+          incognito: true
+    - or:
+      - destinations:
+          incognito: true
+        sources:
+          incognito: true
+  not:
+    and:
+    - destinations:
+        incognito: true
+      sources:
+        incognito: true
+    not:
+      destinations:
+        incognito: true
+      sources:
+        incognito: true
+    or:
+    - destinations:
+        incognito: true
+      sources:
+        incognito: true
   restrictions:
   - class: CLIPBOARD
     level: BLOCK
@@ -160,6 +244,9 @@ schema:
             class:
               enum:
               - CLIPBOARD
+              - FILE_ATTACH
+              - FILE_DOWNLOAD
+              - PRINTING
               - SCREENSHOT
               type: string
             level:
@@ -174,12 +261,32 @@ schema:
         type: string
       sources:
         properties:
+          file_number_higher_than:
+            minimum: 0
+            type: integer
+          file_number_lower_than:
+            minimum: 0
+            type: integer
+          file_type:
+            items:
+              type: string
+            type: array
           incognito:
             type: boolean
+          mime_type:
+            items:
+              type: string
+            type: array
           os_clipboard:
             type: boolean
           other_profile:
             type: boolean
+          byte_size_higher_than:
+            minimum: 0
+            type: integer
+          byte_size_lower_than:
+            minimum: 0
+            type: integer
           urls:
             items:
               type: string
