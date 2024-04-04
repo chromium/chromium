@@ -30,6 +30,9 @@ static_assert(kOrientationEulerRoundingMultiple > 0.0,
 static_assert(kOrientationQuaternionRoundingMultiple > 0.0,
               "Rounding multiple must be positive.");
 
+static_assert(kMagnetometerRoundingMultiple > 0.0,
+              "Rounding multiple must be positive.");
+
 // Check that threshold value is at least half of rounding multiple.
 static_assert(kAlsSignificanceThreshold >= (kAlsRoundingMultiple / 2),
               "Threshold must be at least half of rounding multiple.");
@@ -112,6 +115,12 @@ void RoundOrientationEulerReading(SensorReadingXYZ* reading) {
   reading->z = RoundToMultiple(reading->z, kOrientationEulerRoundingMultiple);
 }
 
+void RoundMagnetometerReading(SensorReadingXYZ* reading) {
+  reading->x = RoundToMultiple(reading->x, kMagnetometerRoundingMultiple);
+  reading->y = RoundToMultiple(reading->y, kMagnetometerRoundingMultiple);
+  reading->z = RoundToMultiple(reading->z, kMagnetometerRoundingMultiple);
+}
+
 void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
   switch (sensor_type) {
     case mojom::SensorType::ACCELEROMETER:
@@ -139,6 +148,9 @@ void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
       break;
 
     case mojom::SensorType::MAGNETOMETER:
+      RoundMagnetometerReading(&reading->magn);
+      break;
+
     case mojom::SensorType::PRESSURE:
     case mojom::SensorType::PROXIMITY:
       break;

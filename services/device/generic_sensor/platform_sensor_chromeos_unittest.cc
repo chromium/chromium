@@ -328,6 +328,7 @@ class PlatformSensorChromeOSAxesTest
         RoundGyroscopeReading(reading_xyz);
         break;
       case mojom::SensorType::MAGNETOMETER:
+        RoundMagnetometerReading(reading_xyz);
         break;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;

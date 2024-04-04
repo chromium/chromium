@@ -23,24 +23,28 @@ namespace device {
 // to record audio. Additional info at https://crbug.com/1031190.
 
 // Units are SI meters per second squared (m/s^2).
-constexpr double kAccelerometerRoundingMultiple = 0.1;
+inline constexpr double kAccelerometerRoundingMultiple = 0.1;
 
 // Units are luxes (lx).
-constexpr int kAlsRoundingMultiple = 50;
+inline constexpr int kAlsRoundingMultiple = 50;
 
 // Units are radians/second. This value corresponds to 0.1 deg./sec.
-constexpr double kGyroscopeRoundingMultiple = 0.00174532925199432963;
+inline constexpr double kGyroscopeRoundingMultiple = 0.00174532925199432963;
 
 // Units are degrees.
-constexpr double kOrientationEulerRoundingMultiple = 0.1;
+inline constexpr double kOrientationEulerRoundingMultiple = 0.1;
 
 // Units are radians. This value corresponds to 0.1 degrees.
-constexpr double kOrientationQuaternionRoundingMultiple = 0.0017453292519943296;
+inline constexpr double kOrientationQuaternionRoundingMultiple =
+    0.0017453292519943296;
+
+// Units are micro Teslas (μT).
+inline constexpr double kMagnetometerRoundingMultiple = 0.01;
 
 // Some sensor types also ignore value changes below a certain threshold to
 // avoid exposing whether a value is too close to the limit between one
 // rounded value and the next.
-constexpr int kAlsSignificanceThreshold = kAlsRoundingMultiple / 2;
+inline constexpr int kAlsSignificanceThreshold = kAlsRoundingMultiple / 2;
 
 // Round |value| to be a multiple of |multiple|.
 //
@@ -69,6 +73,9 @@ void RoundOrientationEulerReading(SensorReadingXYZ* reading);
 // Round orientation quaternion sensor reading to guard user privacy.
 // |reading| is assumed to be unscaled (unit length).
 void RoundOrientationQuaternionReading(SensorReadingQuat* reading);
+
+// Round magnetometer reading to guard user privacy.
+void RoundMagnetometerReading(SensorReadingXYZ* reading);
 
 // Round the sensor reading to guard user privacy.
 void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type);
