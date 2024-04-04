@@ -718,8 +718,9 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
 }
 
 // Regression test for crbug.com/1366513.
+// TODO(b/331159758): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
-                       AttributionSrcInSandboxedIframe_NoCrash) {
+                       DISABLED_AttributionSrcInSandboxedIframe_NoCrash) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
