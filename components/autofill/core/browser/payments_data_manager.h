@@ -244,6 +244,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // present in the cache, this function will return a nullptr.
   gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
+  // Checks if the user is in an experiment for seeing credit card benefits.
+  bool IsCardBenefitsFeatureEnabled();
+
   // Returns the value of the AutofillPaymentMethodsEnabled pref.
   virtual bool IsAutofillPaymentMethodsEnabled() const;
 

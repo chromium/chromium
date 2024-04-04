@@ -239,4 +239,9 @@ void LogAcceptanceLatency(base::TimeDelta latency,
   }
 }
 
+void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled) {
+  base::UmaHistogramBoolean(
+      "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", enabled);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
@@ -263,6 +264,11 @@ PaymentsDataManager::PaymentsDataManager(
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
   SetPrefService(pref_service);
+  if (pref_service_ && IsAutofillPaymentMethodsEnabled() &&
+      IsCardBenefitsFeatureEnabled()) {
+    autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
+        prefs::IsPaymentCardBenefitsEnabled(pref_service_));
+  }
 }
 
 PaymentsDataManager::~PaymentsDataManager() {
@@ -727,6 +733,13 @@ void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
       base::BindRepeating(
           &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
           base::Unretained(this)));
+}
+
+bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableCardBenefitsForCapitalOne);
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
