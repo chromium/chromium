@@ -194,8 +194,6 @@ class AuthenticatorRequestBubbleDelegate
     SizeToContents();
   }
 
-  void OnSheetModelChanged() override {}
-
  private:
   void UpdateHeader() {
     if (!GetWidget()) {
