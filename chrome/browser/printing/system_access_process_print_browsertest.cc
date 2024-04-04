@@ -1325,15 +1325,18 @@ INSTANTIATE_TEST_SUITE_P(
     /*EarlyStartService=*/testing::Bool(),
     GetServiceLaunchTimingTestSuffix);
 
-class SystemAccessProcessServicePrintBrowserTest
+class SystemAccessProcessPrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
       public testing::WithParamInterface<
           PrintBackendAndPlatformPrintApiVariation> {
  public:
-  SystemAccessProcessServicePrintBrowserTest() = default;
-  ~SystemAccessProcessServicePrintBrowserTest() override = default;
+  SystemAccessProcessPrintBrowserTest() = default;
+  ~SystemAccessProcessPrintBrowserTest() override = default;
 
-  bool UseService() override { return true; }
+  bool UseService() override {
+    return GetParam().print_backend !=
+           PrintBackendFeatureVariation::kInBrowserProcess;
+  }
   bool SandboxService() override {
     return GetParam().print_backend ==
            PrintBackendFeatureVariation::kOopSandboxedService;
@@ -1364,6 +1367,18 @@ class SystemAccessProcessServicePrintBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
+    SystemAccessProcessPrintBrowserTest,
+    testing::ValuesIn(GeneratePrintBackendAndPlatformPrintApiVariations(
+        {PrintBackendFeatureVariation::kInBrowserProcess,
+         PrintBackendFeatureVariation::kOopSandboxedService,
+         PrintBackendFeatureVariation::kOopUnsandboxedService})),
+    GetPrintBackendAndPlatformPrintApiTestSuffix);
+
+using SystemAccessProcessServicePrintBrowserTest =
+    SystemAccessProcessPrintBrowserTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
     SystemAccessProcessServicePrintBrowserTest,
     testing::ValuesIn(GeneratePrintBackendAndPlatformPrintApiVariations(
         {PrintBackendFeatureVariation::kOopSandboxedService,
@@ -1387,38 +1402,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest,
     testing::ValuesIn(kSandboxedServicePlatformPrintLanguageApiVariations),
-    GetPrintBackendAndPlatformPrintApiTestSuffix);
-
-class SystemAccessProcessPrintBrowserTest
-    : public SystemAccessProcessPrintBrowserTestBase,
-      public testing::WithParamInterface<
-          PrintBackendAndPlatformPrintApiVariation> {
- public:
-  SystemAccessProcessPrintBrowserTest() = default;
-  ~SystemAccessProcessPrintBrowserTest() override = default;
-
-  bool UseService() override {
-    return GetParam().print_backend !=
-           PrintBackendFeatureVariation::kInBrowserProcess;
-  }
-  bool SandboxService() override {
-    return GetParam().print_backend ==
-           PrintBackendFeatureVariation::kOopSandboxedService;
-  }
-#if BUILDFLAG(IS_WIN)
-  bool UseXps() override {
-    return GetParam().platform_api == PlatformPrintApiVariation::kXps;
-  }
-#endif
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SystemAccessProcessPrintBrowserTest,
-    testing::ValuesIn(GeneratePrintBackendAndPlatformPrintApiVariations(
-        {PrintBackendFeatureVariation::kInBrowserProcess,
-         PrintBackendFeatureVariation::kOopSandboxedService,
-         PrintBackendFeatureVariation::kOopUnsandboxedService})),
     GetPrintBackendAndPlatformPrintApiTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(
