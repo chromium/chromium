@@ -740,6 +740,28 @@ TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/true);
 }
 
+TEST(PNGCodec, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
+  const int w = 20, h = 20;
+
+  // Create an RGBA image with all opaque pixels.
+  std::vector<unsigned char> original;
+  MakeRGBAImage(w, h, /*use_transparency=*/false, &original);
+
+  // Encode the image, without discarding transparency.
+  std::vector<unsigned char> png_data;
+  ASSERT_TRUE(PNGCodec::Encode(&original.front(), PNGCodec::FORMAT_RGBA,
+                               gfx::Size(w, h), w * 4,
+                               /*discard_transparency=*/false,
+                               std::vector<PNGCodec::Comment>{}, &png_data));
+
+  // Decode the image into an SkBitmap.
+  SkBitmap bitmap;
+  ASSERT_TRUE(PNGCodec::Decode(&png_data.front(), png_data.size(), &bitmap));
+
+  // Verify that the bitmap is opaque, despite coming from RGBA data.
+  EXPECT_EQ(bitmap.info().alphaType(), kOpaque_SkAlphaType);
+}
+
 // Test that corrupted data decompression causes failures.
 TEST(PNGCodec, DecodeCorrupted) {
   int w = 20, h = 20;

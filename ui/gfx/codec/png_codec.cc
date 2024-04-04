@@ -196,6 +196,17 @@ bool EncodeSkPixmap(const SkPixmap& src,
     return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
                           disable_filters);
   }
+
+  // If the image's pixels are all opaque, encode the PNG as opaque, regardless
+  // of the pixmap's alphaType.
+  if (src.info().alphaType() != kOpaque_SkAlphaType && src.computeIsOpaque()) {
+    SkPixmap opaque_pixmap{src.info().makeAlphaType(kOpaque_SkAlphaType),
+                           src.addr(), src.rowBytes()};
+    return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
+                          disable_filters);
+  }
+
+  // Encode the PNG without any conversions.
   return EncodeSkPixmap(src, comments, output, zlib_level, disable_filters);
 }
 
