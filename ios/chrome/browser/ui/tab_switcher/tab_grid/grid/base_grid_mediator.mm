@@ -1057,6 +1057,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection {
+  int webStateListIndex =
+      [self webStateListIndexFromItemIndex:destinationIndex];
+
   // Tab move operations only originate from Chrome so a local object is used.
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
@@ -1074,7 +1077,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
-        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
+        MoveTabToBrowser(tabInfo.tabID, self.browser, webStateListIndex);
         return;
       }
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
@@ -1085,7 +1088,13 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     }
 
     // Reorder tab within same grid.
-    [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+    int sourceIndex =
+        GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                                .identifier = tabInfo.tabID,
+                                            });
+    if (sourceIndex != WebStateList::kInvalidIndex) {
+      self.webStateList->MoveWebStateAt(sourceIndex, webStateListIndex);
+    }
     return;
   }
   base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
@@ -1093,9 +1102,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
-    [self insertNewWebStateAtIndex:
-              [self webStateListIndexFromItemIndex:destinationIndex]
-                           withURL:droppedURL.URL];
+    [self insertNewWebStateAtIndex:webStateListIndex withURL:droppedURL.URL];
     return;
   }
 }
@@ -1109,13 +1116,14 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return;
   }
 
+  int webStateListIndex =
+      [self webStateListIndexFromItemIndex:destinationIndex];
   auto loadHandler =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewWebStateAtIndex:
-                    [self webStateListIndexFromItemIndex:destinationIndex]
+          [self insertNewWebStateAtIndex:webStateListIndex
                                  withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
@@ -1391,23 +1399,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   [self.consumer insertItem:item
                 beforeItemID:nextItemIdentifier
       selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
-}
-
-// Moves the item with identifier `itemID` to `index`. If there is no item with
-// that identifier, no move should be made. It is an error to pass a value for
-// `index` outside of the bounds of the web state list.
-- (void)moveItemWithID:(web::WebStateID)itemID
-               toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex =
-      GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
-                                              .identifier = itemID,
-                                          });
-  if (sourceIndex != WebStateList::kInvalidIndex) {
-    int destinationWebStateListIndex =
-        [self webStateListIndexFromItemIndex:destinationIndex];
-    self.webStateList->MoveWebStateAt(sourceIndex,
-                                      destinationWebStateListIndex);
-  }
 }
 
 // Updates the cell of the given `group`.
