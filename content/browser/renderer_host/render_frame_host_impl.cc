@@ -784,6 +784,16 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
         browser_side_origin_and_debug_info.first->GetDebugString());
     SCOPED_CRASH_KEY_STRING256("", "browser_debug_info",
                                browser_side_origin_and_debug_info.second);
+    auto* parent_rfh = navigation_request->GetRenderFrameHost()->GetParent();
+    SCOPED_CRASH_KEY_STRING256(
+        "", "parent_rfh_origin",
+        parent_rfh ? parent_rfh->GetLastCommittedOrigin().GetDebugString()
+                   : "");
+    SCOPED_CRASH_KEY_STRING256("", "parent_rs_origin",
+                               parent_rfh ? parent_rfh->browsing_context_state()
+                                                ->current_replication_state()
+                                                .origin.GetDebugString()
+                                          : "");
 
     SCOPED_CRASH_KEY_STRING256(
         "", "browser_ready_to_commit_origin",
