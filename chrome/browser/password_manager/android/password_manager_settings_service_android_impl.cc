@@ -9,7 +9,6 @@
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -92,8 +91,8 @@ bool DoesUpmPrefAllowForSettingsMigration(PrefService* pref_service) {
          UseUpmLocalAndSeparateStoresState::kOff;
 }
 
-bool ShouldMigrateSettings(PrefService* pref_service,
-                           bool is_password_sync_enabled) {
+bool ShouldMigrateLocalSettings(PrefService* pref_service,
+                                bool is_password_sync_enabled) {
   // Settings should be migrated if the user is enrolled in UPM with local
   // passwords and they have never successfully completed settings migration.
   return !is_password_sync_enabled &&
@@ -152,7 +151,19 @@ void RecordFailedMigrationMetric(std::string_view infix_for_setting,
 
 void RecordMigrationResult(bool result) {
   base::UmaHistogramBoolean(
-      "PasswordManager.PasswordSettingsMigrationSucceeded", result);
+      "PasswordManager.PasswordSettingsMigrationSucceeded2", result);
+}
+
+void MarkSettingsMigrationAsSuccessfulIfNothingToMigrate(PrefService* prefs) {
+  if (GetRegularPrefFromSetting(prefs, PasswordManagerSetting::kAutoSignIn)
+          ->IsDefaultValue() &&
+      GetRegularPrefFromSetting(prefs,
+                                PasswordManagerSetting::kOfferToSavePasswords)
+          ->IsDefaultValue()) {
+    RecordMigrationResult(true);
+    prefs->SetBoolean(password_manager::prefs::kSettingsMigratedToUPMLocal,
+                      true);
+  }
 }
 
 }  // namespace
@@ -210,6 +221,14 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
   }
 
   if (regular_pref->IsManaged() || regular_pref->IsManagedByCustodian()) {
+    return regular_pref->GetValue()->GetBool();
+  }
+
+  // Until the settings migration finished successfully, Chrome's setting value
+  // will be returned.
+  if (!is_password_sync_enabled_ &&
+      !pref_service_->GetBoolean(
+          password_manager::prefs::kSettingsMigratedToUPMLocal)) {
     return regular_pref->GetValue()->GetBool();
   }
 
@@ -277,12 +296,16 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
                               OnUnenrollmentPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  start_migration_callback_ =
-      base::BarrierCallback<PasswordManagerSettingGmsAccessResult>(
-          2,
-          base::BindOnce(
-              &PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded,
-              weak_ptr_factory_.GetWeakPtr()));
+  if (ShouldMigrateLocalSettings(pref_service_, is_password_sync_enabled_)) {
+    MarkSettingsMigrationAsSuccessfulIfNothingToMigrate(pref_service_);
+    // TODO: b/332843285 - Don't create the migration callback when there's
+    // nothing to migrate.
+    start_migration_callback_ = base::BarrierCallback<
+        PasswordManagerSettingGmsAccessResult>(
+        2, base::BindOnce(
+               &PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded,
+               weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Unset the pref that marks the settings migration done, if the user is not
   // eligible for split stores and UPM for local. This is useful in case of
@@ -501,7 +524,7 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
     const std::vector<PasswordManagerSettingGmsAccessResult>& results) {
   start_migration_callback_.Reset();
   // Check if migration should happen.
-  if (!ShouldMigrateSettings(pref_service_, is_password_sync_enabled_)) {
+  if (!ShouldMigrateLocalSettings(pref_service_, is_password_sync_enabled_)) {
     return;
   }
 
