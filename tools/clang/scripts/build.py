@@ -1499,7 +1499,6 @@ def main():
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
   if not args.build_mac_arm and args.run_tests:
-    env = os.environ.copy()
     lit_excludes = []
     if sys.platform.startswith('linux'):
       lit_excludes += [
@@ -1518,7 +1517,10 @@ def main():
           # Fails on macOS 14, crbug.com/332589870
           '^.*Sanitizer.*Darwin/malloc_zone.cpp$'
       ]
-    env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
+    env = None
+    if lit_excludes:
+      env = os.environ.copy()
+      env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=env,
                setenv=True)
