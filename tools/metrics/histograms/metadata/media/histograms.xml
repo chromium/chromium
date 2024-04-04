@@ -6621,23 +6621,6 @@ chromium-metrics-reviews@google.com.
   <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
-<histogram name="Media.YouTube.TimeToBufferAv" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Time needed to pre-buffer A/V data before the actual playback for the
-    YouTube application.
-  </summary>
-</histogram>
-
-<histogram name="Media.YouTube.TimeToBufferAvAfterUnderrun" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Time needed to buffer A/V data after an underrun for the YouTube
-    application.
-  </summary>
-</histogram>
-
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
     expires_after="2024-09-22">
   <owner>mcasas@chromium.org</owner>
