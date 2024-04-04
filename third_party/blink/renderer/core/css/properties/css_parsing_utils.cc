@@ -1662,6 +1662,14 @@ static bool ConsumeColorInterpolationSpace(
     read_color_space = Color::ColorSpace::kXYZD65;
   } else if (ConsumeIdent<CSSValueID::kSRGBLinear>(args)) {
     read_color_space = Color::ColorSpace::kSRGBLinear;
+  } else if (ConsumeIdent<CSSValueID::kDisplayP3>(args)) {
+    read_color_space = Color::ColorSpace::kDisplayP3;
+  } else if (ConsumeIdent<CSSValueID::kA98Rgb>(args)) {
+    read_color_space = Color::ColorSpace::kA98RGB;
+  } else if (ConsumeIdent<CSSValueID::kProphotoRgb>(args)) {
+    read_color_space = Color::ColorSpace::kProPhotoRGB;
+  } else if (ConsumeIdent<CSSValueID::kRec2020>(args)) {
+    read_color_space = Color::ColorSpace::kRec2020;
   } else if (ConsumeIdent<CSSValueID::kLab>(args)) {
     read_color_space = Color::ColorSpace::kLab;
   } else if (ConsumeIdent<CSSValueID::kOklab>(args)) {

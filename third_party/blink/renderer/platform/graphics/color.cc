@@ -1364,12 +1364,17 @@ String Color::SerializeInterpolationSpace(
     case Color::ColorSpace::kNone:
       result.Append("none");
       break;
-    // These are not yet implemented as interpolation spaces.
     case ColorSpace::kDisplayP3:
+      result.Append("display-p3");
+      break;
     case ColorSpace::kA98RGB:
+      result.Append("a98-rgb");
+      break;
     case ColorSpace::kProPhotoRGB:
+      result.Append("prophoto-rgb");
+      break;
     case ColorSpace::kRec2020:
-      NOTREACHED();
+      result.Append("rec2020");
       break;
   }
 
