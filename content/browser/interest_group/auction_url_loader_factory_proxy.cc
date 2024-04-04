@@ -122,7 +122,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   bool is_request_allowed = false;
-  bool is_trusted_bidding_signals_request = false;
+  bool is_trusted_signals_request = false;
   std::optional<InterestGroupAuctionFetchType> event_type;
 
   const SubresourceUrlBuilder::BundleSubresourceInfo* maybe_subresource_info =
@@ -144,7 +144,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
                      ? InterestGroupAuctionFetchType::kSellerTrustedSignals
                      : InterestGroupAuctionFetchType::kBidderTrustedSignals;
     is_request_allowed = true;
-    is_trusted_bidding_signals_request = true;
+    is_trusted_signals_request = true;
   } else {
     maybe_subresource_info =
         subresource_url_authorizations_.GetAuthorizationInfo(url_request.url);
@@ -206,7 +206,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
         *new_request.devtools_request_id, relevant_auction_ids);
   }
 
-  if (is_trusted_bidding_signals_request) {
+  if (is_trusted_signals_request) {
     std::optional<std::string> maybe_deprecation_label =
         get_cookie_deprecation_label_.Run();
     if (maybe_deprecation_label) {
@@ -247,7 +247,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   GetUrlLoaderFactoryCallback url_loader_factory_getter =
       get_trusted_url_loader_factory_;
   if (is_for_seller_) {
-    if (!is_trusted_bidding_signals_request && !maybe_subresource_info) {
+    if (!is_trusted_signals_request && !maybe_subresource_info) {
       // The script URL is provided in its entirety by the frame initiating the
       // auction, so just use its URLLoaderFactory for those requests.
       url_loader_factory_getter = get_frame_url_loader_factory_;
