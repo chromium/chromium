@@ -2162,10 +2162,16 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
     return false;
   }
 
-  // Keep tracks of operands as they are visited in order to assert that they
+  // Keeps track of operands as they are visited in order to assert that they
   // are topologically sorted with inputs pointing to predecessor's outputs or
   // graph inputs.
   base::flat_set<uint64_t> processed_operands;
+
+  // Keeps track of input and output names in order to assert they are unique.
+  std::vector<std::string_view> input_names;
+  input_names.reserve(graph_info->input_operands.size());
+  std::vector<std::string_view> output_names;
+  output_names.reserve(graph_info->output_operands.size());
 
   // Validate all operands in the graph for the dimensions and the byte length
   // of operand that can't be out of range, and hold the temporary information
@@ -2190,6 +2196,7 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
           // The name of input is empty.
           return false;
         }
+        input_names.push_back(name.value());
         graph_inputs.push_back(id);
         processed_operands.insert(id);
         break;
@@ -2202,6 +2209,7 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
             // The name of output is empty.
             return false;
           }
+          output_names.push_back(name.value());
           graph_outputs.push_back(id);
         } else {
           // The intermediate operand that connects with two operators has no
@@ -2227,6 +2235,16 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
   // in blink side.
   if (graph_info->input_operands != graph_inputs ||
       graph_info->output_operands != graph_outputs) {
+    return false;
+  }
+
+  // Validate that input and output names are unique.
+  base::ranges::sort(input_names);
+  if (base::ranges::adjacent_find(input_names) != input_names.end()) {
+    return false;
+  }
+  base::ranges::sort(output_names);
+  if (base::ranges::adjacent_find(output_names) != output_names.end()) {
     return false;
   }
 
