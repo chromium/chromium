@@ -477,13 +477,16 @@ void StyledLabel::CalculateLayout(int width) const {
           chunk = substrings[0];
         }
 
-        if ((custom_view &&
-             line_size.width() + custom_view->GetPreferredSize().width() >
-                 content_width) &&
-            position == range.start() && line_size.width() != 0) {
-          // If the chunk should not be wrapped, try to fit it entirely on the
-          // next line.
-          break;
+        if (custom_view && position == range.start() &&
+            line_size.width() != 0) {
+          SizeBounds chunk_size(content_width - line_size.width(), {});
+          int custom_view_width =
+              custom_view->GetPreferredSize(chunk_size).width();
+          if (line_size.width() + custom_view_width > content_width) {
+            // If the chunk should not be wrapped, try to fit it entirely on the
+            // next line.
+            break;
+          }
         }
 
         if (chunk.size() > range.end() - position)
@@ -512,7 +515,8 @@ void StyledLabel::CalculateLayout(int width) const {
       }
 
       View* child_view = custom_view ? custom_view : label.get();
-      const gfx::Size child_size = child_view->GetPreferredSize();
+      const gfx::Size child_size = child_view->GetPreferredSize(
+          SizeBounds(content_width - line_size.width(), {}));
       // A custom view could be wider than the available width.
       line_size.SetSize(
           std::min(line_size.width() + child_size.width(), content_width),
@@ -652,7 +656,7 @@ void StyledLabel::RecreateChildViews() {
       const auto& line_size = layout_size_info_.line_sizes[line];
       int x = StartX(width() - line_size.width());
       for (views::View* view : layout_views_->views_per_line[line]) {
-        gfx::Size size = view->GetPreferredSize();
+        gfx::Size size = view->GetPreferredSize(SizeBounds(line_size));
         size.set_width(std::min(size.width(), width() - x));
         // Compute the view y such that the view center y and the line center y
         // match.  Because of added rounding errors, this is not the same as
@@ -694,7 +698,7 @@ void StyledLabel::RecreateChildViews() {
       line_bottom += line_size.height();
       for (; (i != children().end()) && ((*i)->y() < line_bottom); ++i) {
         (*i)->SetX(x);
-        x += (*i)->GetPreferredSize().width();
+        x += (*i)->GetPreferredSize(SizeBounds(line_size)).width();
       }
     }
     DCHECK(i == children().end());  // Should not be short any lines.

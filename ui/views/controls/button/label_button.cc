@@ -319,7 +319,8 @@ gfx::Size LabelButton::CalculatePreferredSize() const {
         label_->SetMaximumWidthSingleLine(max_size_.width() - size.width());
     }
 
-    const gfx::Size preferred_label_size = label_->GetPreferredSize();
+    const gfx::Size preferred_label_size =
+        label_->GetPreferredSize(SizeBounds(label_->width(), {}));
     size.Enlarge(preferred_label_size.width(), 0);
     size.SetToMax(
         gfx::Size(0, preferred_label_size.height() + GetInsets().height()));
@@ -339,9 +340,9 @@ gfx::Size LabelButton::CalculatePreferredSize() const {
 
 gfx::Size LabelButton::GetMinimumSize() const {
   if (label_->GetElideBehavior() == gfx::ElideBehavior::NO_ELIDE)
-    return GetPreferredSize();
+    return GetPreferredSize({0, 0});
 
-  gfx::Size size = image_container_view()->GetPreferredSize();
+  gfx::Size size = image_container_view()->GetPreferredSize({});
   const gfx::Insets insets(GetInsets());
   size.Enlarge(insets.width(), insets.height());
 
@@ -389,7 +390,8 @@ void LabelButton::Layout(PassKey) {
   // is no need to allow the label to take up the complete horizontal space.
   gfx::Rect label_area = image_area;
 
-  gfx::Size image_size = image_container_view()->GetPreferredSize();
+  gfx::Size image_size =
+      image_container_view()->GetPreferredSize(SizeBounds(image_area.size()));
   image_size.SetToMin(image_area.size());
 
   const auto horizontal_alignment = GetHorizontalAlignment();
@@ -402,7 +404,8 @@ void LabelButton::Layout(PassKey) {
   }
 
   gfx::Size label_size(
-      std::min(label_area.width(), label_->GetPreferredSize().width()),
+      std::min(label_area.width(),
+               label_->GetPreferredSize(SizeBounds(label_area.size())).width()),
       label_area.height());
 
   gfx::Point image_origin = image_area.origin();
@@ -606,7 +609,7 @@ void LabelButton::SetTextInternal(const std::u16string& text) {
 }
 
 void LabelButton::ClearTextIfShrunkDown() {
-  const gfx::Size preferred_size = GetPreferredSize();
+  const gfx::Size preferred_size = GetPreferredSize({});
   if (shrinking_down_label_ && width() <= preferred_size.width() &&
       height() <= preferred_size.height()) {
     // Once the button shrinks down to its preferred size (that disregards the
@@ -616,7 +619,7 @@ void LabelButton::ClearTextIfShrunkDown() {
 }
 
 gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
-  const gfx::Size image_size = image_container_view()->GetPreferredSize();
+  const gfx::Size image_size = image_container_view()->GetPreferredSize({});
   gfx::Size size = image_size;
   const gfx::Insets insets(GetInsets());
   size.Enlarge(insets.width(), insets.height());

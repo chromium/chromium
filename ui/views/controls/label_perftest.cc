@@ -31,7 +31,7 @@ TEST_F(LabelPerfTest, GetPreferredSize) {
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
     label.SetText(i % 2 == 0 ? string1 : string2);
-    label.GetPreferredSize();
+    label.GetPreferredSize({});
     timer.NextLap();
   }
   perf_test::PerfResultReporter reporter("LabelPerfTest", "GetPreferredSize");

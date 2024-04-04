@@ -519,7 +519,7 @@ void TableView::Layout(PassKey) {
     }
   }
   // We have to override Layout like this since we're contained in a ScrollView.
-  gfx::Size pref = GetPreferredSize();
+  gfx::Size pref = GetPreferredSize({});
   int width = pref.width();
   int height = pref.height();
   if (parent()) {
@@ -530,7 +530,7 @@ void TableView::Layout(PassKey) {
   if (header_) {
     header_->SetBoundsRect(
         gfx::Rect(header_->bounds().origin(),
-                  gfx::Size(width, header_->GetPreferredSize().height())));
+                  gfx::Size(width, header_->GetPreferredSize({}).height())));
   }
 
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();

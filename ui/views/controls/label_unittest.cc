@@ -431,7 +431,7 @@ TEST_F(LabelTest, ElideBehavior) {
   std::u16string text(u"This is example text.");
   label()->SetText(text);
   EXPECT_EQ(gfx::ELIDE_TAIL, label()->GetElideBehavior());
-  gfx::Size size = label()->GetPreferredSize();
+  gfx::Size size = label()->GetPreferredSize({});
   label()->SetBoundsRect(gfx::Rect(size));
   EXPECT_EQ(text, label()->GetDisplayTextForTesting());
 
@@ -591,7 +591,7 @@ TEST_F(LabelTest, SingleLineGetHeightForWidth) {
 
   // Given any amount of width, the label should take one line.
   label()->SetText(u"This is an example.");
-  const int width = label()->GetPreferredSize().width();
+  const int width = label()->GetPreferredSize({}).width();
   EXPECT_EQ(line_height, label()->GetHeightForWidth(width));
   EXPECT_EQ(line_height, label()->GetHeightForWidth(width * 2));
   EXPECT_EQ(line_height, label()->GetHeightForWidth(width / 2));
@@ -606,7 +606,7 @@ TEST_F(LabelTest, MultiLineGetHeightForWidth) {
 
   // Given its preferred width or more, the label should take one line.
   label()->SetText(u"This is an example.");
-  const int width = label()->GetPreferredSize().width();
+  const int width = label()->GetPreferredSize({}).width();
   EXPECT_EQ(line_height, label()->GetHeightForWidth(width));
   EXPECT_EQ(line_height, label()->GetHeightForWidth(width * 2));
 
@@ -662,7 +662,8 @@ TEST_F(LabelTest, TooltipProperty) {
   EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
 
   // Shrinking the single-line label's height shouldn't trigger a tooltip.
-  label()->SetBounds(0, 0, 1000, label()->GetPreferredSize().height() / 2);
+  label()->SetBounds(
+      0, 0, 1000, label()->GetPreferredSize(SizeBounds(1000, {})).height() / 2);
   EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
 
   // Verify that explicitly set tooltip text is shown, regardless of size.
@@ -815,24 +816,25 @@ TEST_F(LabelTest, AccessibleNameAndRole) {
 
 TEST_F(LabelTest, EmptyLabelSizing) {
   const gfx::Size expected_size(0, label()->font_list().GetHeight());
-  EXPECT_EQ(expected_size, label()->GetPreferredSize());
+  EXPECT_EQ(expected_size, label()->GetPreferredSize({}));
   label()->SetMultiLine(!label()->GetMultiLine());
-  EXPECT_EQ(expected_size, label()->GetPreferredSize());
+  EXPECT_EQ(expected_size, label()->GetPreferredSize({}));
 }
 
 TEST_F(LabelTest, SingleLineSizing) {
   label()->SetText(u"A not so random string in one line.");
-  const gfx::Size size = label()->GetPreferredSize();
+  const gfx::Size size = label()->GetPreferredSize({});
   EXPECT_GT(size.height(), kMinTextDimension);
   EXPECT_GT(size.width(), kMinTextDimension);
 
   // Setting a size smaller than preferred should not change the preferred size.
   label()->SetSize(gfx::Size(size.width() / 2, size.height() / 2));
-  EXPECT_EQ(size, label()->GetPreferredSize());
+  EXPECT_EQ(size, label()->GetPreferredSize(SizeBounds(label()->size())));
 
   const auto border = gfx::Insets::TLBR(10, 20, 30, 40);
   label()->SetBorder(CreateEmptyBorder(border));
-  const gfx::Size size_with_border = label()->GetPreferredSize();
+  const gfx::Size size_with_border =
+      label()->GetPreferredSize(SizeBounds(label()->size()));
   EXPECT_EQ(size_with_border.height(), size.height() + border.height());
   EXPECT_EQ(size_with_border.width(), size.width() + border.width());
   EXPECT_EQ(size.height() + border.height(),
@@ -847,7 +849,7 @@ TEST_F(LabelTest, MultilineSmallAvailableWidthSizing) {
   // Check that Label can be laid out at a variety of small sizes,
   // splitting the words into up to one character per line if necessary.
   // Incorrect word splitting may cause infinite loops in text layout.
-  gfx::Size required_size = label()->GetPreferredSize();
+  gfx::Size required_size = label()->GetPreferredSize({});
   for (int i = 1; i < required_size.width(); ++i)
     EXPECT_GT(label()->GetHeightForWidth(i), 0);
 }
@@ -856,11 +858,11 @@ TEST_F(LabelTest, MultilineSmallAvailableWidthSizing) {
 // See crbug.com/469559
 TEST_F(LabelTest, PreferredSizeForAllowCharacterBreak) {
   label()->SetText(u"Example");
-  gfx::Size preferred_size = label()->GetPreferredSize();
+  gfx::Size preferred_size = label()->GetPreferredSize({});
 
   label()->SetMultiLine(true);
   label()->SetAllowCharacterBreak(true);
-  EXPECT_EQ(preferred_size, label()->GetPreferredSize());
+  EXPECT_EQ(preferred_size, label()->GetPreferredSize({}));
 }
 
 TEST_F(LabelTest, MultiLineSizing) {
@@ -868,7 +870,7 @@ TEST_F(LabelTest, MultiLineSizing) {
   label()->SetMultiLine(true);
 
   // GetPreferredSize
-  gfx::Size required_size = label()->GetPreferredSize();
+  gfx::Size required_size = label()->GetPreferredSize({});
   EXPECT_GT(required_size.height(), kMinTextDimension);
   EXPECT_GT(required_size.width(), kMinTextDimension);
 
@@ -932,9 +934,7 @@ TEST_F(LabelTest, MultiLineSizing) {
 #endif
   EXPECT_EQ(height1, height_for_constrained_width + border.height());
 
-  // GetPreferredSize and borders.
-  label()->SetBounds(0, 0, 0, 0);
-  gfx::Size required_size_with_border = label()->GetPreferredSize();
+  gfx::Size required_size_with_border = label()->GetPreferredSize({});
   EXPECT_EQ(required_size_with_border.height(),
             required_size.height() + border.height());
   EXPECT_EQ(required_size_with_border.width(),
@@ -948,9 +948,9 @@ TEST_F(LabelTest, MultiLineSetMaxLines) {
   // Ensure SetMaxLines clamps the line count of a string with returns.
   label()->SetText(u"first line\nsecond line\nthird line");
   label()->SetMultiLine(true);
-  gfx::Size string_size = label()->GetPreferredSize();
+  gfx::Size string_size = label()->GetPreferredSize({});
   label()->SetMaxLines(2);
-  gfx::Size two_line_size = label()->GetPreferredSize();
+  gfx::Size two_line_size = label()->GetPreferredSize({});
   EXPECT_EQ(string_size.width(), two_line_size.width());
   EXPECT_GT(string_size.height(), two_line_size.height());
 
@@ -962,20 +962,20 @@ TEST_F(LabelTest, MultiLineSetMaxLines) {
   label()->SetText(u"A long string that will be wrapped");
   label()->SetMaxLines(0);  // Used to get the uncapped height.
   label()->SizeToFit(0);    // Used to get the uncapped width.
-  label()->SizeToFit(label()->GetPreferredSize().width() / 4);
-  string_size = label()->GetPreferredSize();
+  label()->SizeToFit(label()->GetPreferredSize({}).width() / 4);
+  string_size = label()->GetPreferredSize({});
   label()->SetMaxLines(2);
-  two_line_size = label()->GetPreferredSize();
+  two_line_size = label()->GetPreferredSize({});
   EXPECT_EQ(string_size.width(), two_line_size.width());
   EXPECT_GT(string_size.height(), two_line_size.height());
 
   // Ensure SetMaxLines also works with line wrapping for SetMaximumWidth.
   label()->SetMaxLines(0);  // Used to get the uncapped height.
   label()->SizeToFit(0);    // Used to get the uncapped width.
-  label()->SetMaximumWidth(label()->GetPreferredSize().width() / 4);
-  string_size = label()->GetPreferredSize();
+  label()->SetMaximumWidth(label()->GetPreferredSize({}).width() / 4);
+  string_size = label()->GetPreferredSize({});
   label()->SetMaxLines(2);
-  two_line_size = label()->GetPreferredSize();
+  two_line_size = label()->GetPreferredSize({});
   EXPECT_EQ(string_size.width(), two_line_size.width());
   EXPECT_GT(string_size.height(), two_line_size.height());
 
@@ -983,7 +983,7 @@ TEST_F(LabelTest, MultiLineSetMaxLines) {
   const auto border = gfx::Insets::TLBR(1, 2, 3, 4);
   label()->SetBorder(CreateEmptyBorder(border));
   EXPECT_EQ(two_line_size.height() + border.height(),
-            label()->GetPreferredSize().height());
+            label()->GetPreferredSize({}).height());
 }
 #endif
 
@@ -995,28 +995,31 @@ TEST_F(LabelTest, MultiLineSizingWithElide) {
   label()->SetText(text);
   label()->SetMultiLine(true);
 
-  gfx::Size required_size = label()->GetPreferredSize();
+  gfx::Size required_size = label()->GetPreferredSize({});
   EXPECT_GT(required_size.height(), kMinTextDimension);
   EXPECT_GT(required_size.width(), kMinTextDimension);
   label()->SetBoundsRect(gfx::Rect(required_size));
 
   label()->SetElideBehavior(gfx::ELIDE_TAIL);
-  EXPECT_EQ(required_size, label()->GetPreferredSize());
+  EXPECT_EQ(required_size,
+            label()->GetPreferredSize(SizeBounds(required_size)));
   EXPECT_EQ(text, label()->GetDisplayTextForTesting());
 
-  label()->SizeToFit(required_size.width() - 1);
-  gfx::Size narrow_size = label()->GetPreferredSize();
+  gfx::Size narrow_size =
+      label()->GetPreferredSize(SizeBounds(required_size.width() - 1, {}));
   EXPECT_GT(required_size.width(), narrow_size.width());
   EXPECT_LT(required_size.height(), narrow_size.height());
 
   // SetBounds() doesn't change the preferred size.
   label()->SetBounds(0, 0, narrow_size.width() - 1, narrow_size.height());
-  EXPECT_EQ(narrow_size, label()->GetPreferredSize());
+  EXPECT_EQ(narrow_size, label()->GetPreferredSize(
+                             SizeBounds(required_size.width() - 1, {})));
 
   // Paint() doesn't change the preferred size.
   gfx::Canvas canvas;
   label()->OnPaint(&canvas);
-  EXPECT_EQ(narrow_size, label()->GetPreferredSize());
+  EXPECT_EQ(narrow_size, label()->GetPreferredSize(
+                             SizeBounds(required_size.width() - 1, {})));
 }
 
 // Check that labels support GetTooltipHandlerForPoint.
@@ -1068,7 +1071,7 @@ TEST_F(LabelTest, GetTooltipHandlerForPoint) {
 TEST_F(LabelTest, ResetRenderTextData) {
   label()->SetText(u"Example");
   label()->SizeToPreferredSize();
-  gfx::Size preferred_size = label()->GetPreferredSize();
+  gfx::Size preferred_size = label()->GetPreferredSize({});
 
   EXPECT_NE(gfx::Size(), preferred_size);
   EXPECT_FALSE(label()->display_text_);
@@ -1087,7 +1090,7 @@ TEST_F(LabelTest, ResetRenderTextData) {
   EXPECT_EQ(u"Example", label()->GetText());
   EXPECT_FALSE(label()->display_text_);
 
-  EXPECT_EQ(preferred_size, label()->GetPreferredSize());
+  EXPECT_EQ(preferred_size, label()->GetPreferredSize({}));
   EXPECT_FALSE(label()->display_text_);
 
   // RenderText data should be back when it's necessary.
@@ -1111,7 +1114,7 @@ TEST_F(LabelTest, MultilineSupportedRenderText) {
   label()->SetMultiLine(true);
   label()->SizeToPreferredSize();
 
-  gfx::Canvas canvas(label()->GetPreferredSize(), 1.0f, true);
+  gfx::Canvas canvas(label()->GetPreferredSize({}), 1.0f, true);
   label()->OnPaint(&canvas);
 
   // There's only RenderText instance, which should have multiple lines.
@@ -1161,7 +1164,7 @@ TEST_F(LabelTest, EmptyLabel) {
 
   // With no text, neither links nor labels have a size in any dimension.
   Link concrete_link;
-  EXPECT_TRUE(concrete_link.GetPreferredSize().IsEmpty());
+  EXPECT_TRUE(concrete_link.GetPreferredSize({}).IsEmpty());
 }
 
 TEST_F(LabelTest, CanForceDirectionality) {
@@ -1377,7 +1380,7 @@ TEST_F(LabelTest, AccessibleGraphemeOffsetsElided) {
   const std::u16string text = u"This is a string";
 
   label()->SetText(text);
-  gfx::Size size = label()->GetPreferredSize();
+  gfx::Size size = label()->GetPreferredSize({});
   label()->SetBoundsRect(gfx::Rect(size));
   EXPECT_EQ(text, label()->GetDisplayTextForTesting());
 

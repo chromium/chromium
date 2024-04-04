@@ -2387,7 +2387,8 @@ gfx::Rect MenuController::CalculateMenuBounds(
   SetAnchorParametersForItem(item, anchor_bounds.origin(), anchor);
 
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
-  gfx::Rect menu_bounds = gfx::Rect(scroll_view_container->GetPreferredSize());
+  gfx::Rect menu_bounds =
+      gfx::Rect(scroll_view_container->GetPreferredSize({}));
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
 
@@ -2568,7 +2569,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   SubmenuView* submenu = item->GetSubmenu();
   CHECK(submenu);
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
-  gfx::Size menu_size = scroll_view_container->GetPreferredSize();
+  gfx::Size menu_size = scroll_view_container->GetPreferredSize({});
   // Respect the delegate's maximum width.
   menu_size.set_width(std::min(menu_size.width(),
                                item->GetDelegate()->GetMaxWidthForMenu(item)));

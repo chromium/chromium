@@ -619,7 +619,7 @@ base::CallbackListSubscription ScrollView::AddContentsScrollEndedCallback(
 }
 
 gfx::Size ScrollView::CalculatePreferredSize() const {
-  gfx::Size size = contents_ ? contents_->GetPreferredSize() : gfx::Size();
+  gfx::Size size = contents_ ? contents_->GetPreferredSize({}) : gfx::Size();
   if (is_bounded()) {
     size.SetToMax(gfx::Size(size.width(), min_height_));
     size.SetToMin(gfx::Size(size.width(), max_height_));
@@ -693,7 +693,7 @@ void ScrollView::Layout(PassKey) {
 
   const int header_height =
       std::min(viewport_bounds.height(),
-               header_ ? header_->GetPreferredSize().height() : 0);
+               header_ ? header_->GetPreferredSize({}).height() : 0);
   viewport_bounds.set_height(
       std::max(0, viewport_bounds.height() - header_height));
   viewport_bounds.set_y(viewport_bounds.y() + header_height);

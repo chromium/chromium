@@ -124,7 +124,7 @@ class FixedView : public View {
   ~FixedView() override = default;
 
   void Layout(PassKey) override {
-    gfx::Size pref = GetPreferredSize();
+    gfx::Size pref = GetPreferredSize({});
     SetBounds(x(), y(), pref.width(), pref.height());
   }
 
@@ -148,7 +148,7 @@ class CustomView : public View {
   const gfx::Point last_location() const { return last_location_; }
 
   void Layout(PassKey) override {
-    gfx::Size pref = GetPreferredSize();
+    gfx::Size pref = GetPreferredSize({});
     int width = pref.width();
     int height = pref.height();
     if (parent()) {
@@ -1132,7 +1132,7 @@ TEST_F(ScrollViewTest, ClipHeightToNormalContentHeight) {
       gfx::Size(kWidth, kNormalContentHeight)));
 
   EXPECT_EQ(gfx::Size(kWidth, kNormalContentHeight),
-            scroll_view_->GetPreferredSize());
+            scroll_view_->GetPreferredSize({}));
 
   scroll_view_->SizeToPreferredSize();
   views::test::RunScheduledLayout(scroll_view_.get());
@@ -1152,7 +1152,7 @@ TEST_F(ScrollViewTest, ClipHeightToShortContentHeight) {
       scroll_view_->SetContents(std::make_unique<views::StaticSizedView>(
           gfx::Size(kWidth, kShortContentHeight)));
 
-  EXPECT_EQ(gfx::Size(kWidth, kMinHeight), scroll_view_->GetPreferredSize());
+  EXPECT_EQ(gfx::Size(kWidth, kMinHeight), scroll_view_->GetPreferredSize({}));
 
   scroll_view_->SizeToPreferredSize();
   views::test::RunScheduledLayout(scroll_view_.get());
@@ -1176,7 +1176,7 @@ TEST_F(ScrollViewTest, ClipHeightToTallContentHeight) {
   scroll_view_->SetContents(std::make_unique<views::StaticSizedView>(
       gfx::Size(kWidth, kTallContentHeight)));
 
-  EXPECT_EQ(gfx::Size(kWidth, kMaxHeight), scroll_view_->GetPreferredSize());
+  EXPECT_EQ(gfx::Size(kWidth, kMaxHeight), scroll_view_->GetPreferredSize({}));
 
   scroll_view_->SizeToPreferredSize();
   views::test::RunScheduledLayout(scroll_view_.get());
@@ -1198,7 +1198,7 @@ TEST_F(ScrollViewTest, ClipHeightToScrollbarUsesWidth) {
 
   // Without any width, it will default to 0,0 but be overridden by min height.
   scroll_view_->SizeToPreferredSize();
-  EXPECT_EQ(gfx::Size(0, kMinHeight), scroll_view_->GetPreferredSize());
+  EXPECT_EQ(gfx::Size(0, kMinHeight), scroll_view_->GetPreferredSize({}));
 
   gfx::Size new_size(kWidth, scroll_view_->GetHeightForWidth(kWidth));
   scroll_view_->SetSize(new_size);
@@ -1221,12 +1221,12 @@ TEST_F(ScrollViewTest, ClipHeightToUpdatesPreferredSize) {
   constexpr int kMaxHeight1 = 80;
   scroll_view_->ClipHeightTo(kMinHeight1, kMaxHeight1);
   EXPECT_TRUE(scroll_view_->is_bounded());
-  EXPECT_EQ(scroll_view_->GetPreferredSize().height(), kMaxHeight1);
+  EXPECT_EQ(scroll_view_->GetPreferredSize({}).height(), kMaxHeight1);
 
   constexpr int kMinHeight2 = 200;
   constexpr int kMaxHeight2 = 300;
   scroll_view_->ClipHeightTo(kMinHeight2, kMaxHeight2);
-  EXPECT_EQ(scroll_view_->GetPreferredSize().height(), kMinHeight2);
+  EXPECT_EQ(scroll_view_->GetPreferredSize({}).height(), kMinHeight2);
 }
 
 TEST_F(ScrollViewTest, CornerViewVisibility) {
@@ -2627,13 +2627,13 @@ TEST_F(WidgetScrollViewTest, UnboundedScrollViewUsesContentPreferredSize) {
   contents->SetPreferredSize(kContentsPreferredSize);
   ScrollView* scroll_view =
       AddScrollViewWithContents(std::move(contents), true);
-  EXPECT_EQ(kContentsPreferredSize, scroll_view->GetPreferredSize());
+  EXPECT_EQ(kContentsPreferredSize, scroll_view->GetPreferredSize({}));
 
   constexpr gfx::Insets kInsets(20);
   scroll_view->SetBorder(CreateEmptyBorder(kInsets));
   gfx::Size preferred_size_with_insets(kContentsPreferredSize);
   preferred_size_with_insets.Enlarge(kInsets.width(), kInsets.height());
-  EXPECT_EQ(preferred_size_with_insets, scroll_view->GetPreferredSize());
+  EXPECT_EQ(preferred_size_with_insets, scroll_view->GetPreferredSize({}));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

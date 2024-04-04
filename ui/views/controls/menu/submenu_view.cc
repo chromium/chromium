@@ -89,7 +89,7 @@ MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
 int SubmenuView::GetPreferredItemHeight() const {
   EmptyMenuMenuItem menu_item(parent_menu_item_);
   menu_item.set_controller(parent_menu_item_->GetMenuController());
-  return menu_item.GetPreferredSize().height();
+  return menu_item.GetPreferredSize({}).height();
 }
 
 PrefixSelector* SubmenuView::GetPrefixSelector() {
@@ -189,7 +189,7 @@ void SubmenuView::Layout(PassKey) {
   }
 
   // Use our current y, unless it means part of the menu isn't visible anymore.
-  const int pref_height = GetPreferredSize().height();
+  const int pref_height = GetPreferredSize(SizeBounds(size())).height();
   SetBounds(x(),
             (pref_height > parent()->height())
                 ? std::max(parent()->height() - pref_height, y())
@@ -252,7 +252,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
       touchable_minimum_width = dimensions.standard_width;
     } else {
       max_complex_width =
-          std::max(max_complex_width, child->GetPreferredSize().width());
+          std::max(max_complex_width, child->GetPreferredSize({}).width());
     }
   }
   const auto& config = MenuConfig::instance();

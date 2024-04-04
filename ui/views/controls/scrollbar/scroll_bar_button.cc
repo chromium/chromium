@@ -60,7 +60,7 @@ void ScrollBarButton::OnThemeChanged() {
 }
 
 void ScrollBarButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::Rect bounds(GetPreferredSize());
+  gfx::Rect bounds(GetPreferredSize({}));
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           GetNativeThemePart(), GetNativeThemeState(), bounds,
                           GetNativeThemeParams());

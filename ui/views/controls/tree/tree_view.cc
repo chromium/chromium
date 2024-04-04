@@ -188,7 +188,7 @@ void TreeView::StartEditing(TreeModelNode* node) {
     // not parented.
     AddChildView(editor_.get());
     editor_->SetFontList(font_list_);
-    empty_editor_size_ = editor_->GetPreferredSize();
+    empty_editor_size_ = editor_->GetPreferredSize({});
     editor_->set_controller(this);
   }
   editor_->SetText(selected_node_->model_node()->GetTitle());

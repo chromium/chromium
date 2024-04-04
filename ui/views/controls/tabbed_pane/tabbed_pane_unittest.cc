@@ -107,9 +107,9 @@ TEST_F(TabbedPaneTest, SizeAndLayoutInVerticalOrientation) {
   tabbed_pane->SelectTabAt(0);
 
   // |tabbed_pane_| reserves extra width for the tab strip in vertical mode.
-  EXPECT_GT(tabbed_pane->GetPreferredSize().width(), 20);
+  EXPECT_GT(tabbed_pane->GetPreferredSize({}).width(), 20);
   // |tabbed_pane_| height should match the largest child in vertical mode.
-  EXPECT_EQ(tabbed_pane->GetPreferredSize().height(), 10);
+  EXPECT_EQ(tabbed_pane->GetPreferredSize({}).height(), 10);
 
   // The child views should resize to fit in larger tabbed panes.
   tabbed_pane->SetBounds(0, 0, 100, 200);
@@ -187,17 +187,17 @@ TEST_F(TabbedPaneWithWidgetTest, SizeAndLayout) {
 
   // In horizontal mode, |tabbed_pane_| width should match the largest child or
   // the minimum size necessary to display the tab titles, whichever is larger.
-  EXPECT_EQ(tabbed_pane_->GetPreferredSize().width(),
-            tabbed_pane_->GetTabAt(0)->GetPreferredSize().width() +
-                tabbed_pane_->GetTabAt(1)->GetPreferredSize().width());
+  EXPECT_EQ(tabbed_pane_->GetPreferredSize({}).width(),
+            tabbed_pane_->GetTabAt(0)->GetPreferredSize({}).width() +
+                tabbed_pane_->GetTabAt(1)->GetPreferredSize({}).width());
   // |tabbed_pane_| reserves extra height for the tab strip in horizontal mode.
-  EXPECT_GT(tabbed_pane_->GetPreferredSize().height(), 10);
+  EXPECT_GT(tabbed_pane_->GetPreferredSize({}).height(), 10);
 
   // Test that the preferred size is now the size of the size of the largest
   // child.
   View* child3 = tabbed_pane_->AddTab(
       u"tab3", std::make_unique<StaticSizedView>(gfx::Size(150, 5)));
-  EXPECT_EQ(tabbed_pane_->GetPreferredSize().width(), 150);
+  EXPECT_EQ(tabbed_pane_->GetPreferredSize({}).width(), 150);
 
   // The child views should resize to fit in larger tabbed panes.
   widget_->SetBounds(gfx::Rect(0, 0, 300, 200));

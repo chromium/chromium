@@ -179,7 +179,7 @@ void SliderTest::SetUp() {
     default:
       NOTREACHED_NORETURN();
   }
-  gfx::Size size = slider->GetPreferredSize();
+  gfx::Size size = slider->GetPreferredSize({});
   slider->SetSize(size);
   max_x_ = size.width() - 1;
   max_y_ = size.height() - 1;

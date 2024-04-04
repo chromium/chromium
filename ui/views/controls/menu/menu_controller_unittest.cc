@@ -106,7 +106,7 @@ bool ShouldIgnoreScreenBoundsForMenus() {
 }
 
 gfx::Size GetPreferredSizeForSubmenu(SubmenuView& submenu) {
-  auto size = submenu.GetPreferredSize();
+  auto size = submenu.GetPreferredSize({});
   const auto insets = submenu.GetScrollViewContainer()->GetInsets();
   size.Enlarge(insets.width(), insets.height());
   return size;

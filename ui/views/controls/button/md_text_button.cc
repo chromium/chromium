@@ -216,7 +216,7 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
   int target_height = LayoutProvider::GetControlHeightForFont(
       label()->GetTextContext(), style::STYLE_PRIMARY, label()->font_list());
 
-  int label_height = label()->GetPreferredSize().height();
+  int label_height = label()->GetPreferredSize({}).height();
   DCHECK_GE(target_height, label_height);
   int top_padding = (target_height - label_height) / 2;
   int bottom_padding = (target_height - label_height + 1) / 2;

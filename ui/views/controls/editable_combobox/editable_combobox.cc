@@ -605,7 +605,7 @@ void EditableCombobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
 void EditableCombobox::UpdateTextfieldInsets() {
   textfield_->SetExtraInsets(gfx::Insets::TLBR(
       0, 0, 0,
-      std::max(control_elements_container_->GetPreferredSize().width() -
+      std::max(control_elements_container_->GetPreferredSize({}).width() -
                    kComboboxArrowPaddingWidth,
                0)));
 }

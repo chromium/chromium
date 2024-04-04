@@ -1233,7 +1233,7 @@ void Textfield::WriteDragDataForView(View* sender,
   Label label(selected_text, {GetFontList()});
   label.SetBackgroundColor(GetBackgroundColor());
   label.SetSubpixelRenderingEnabled(false);
-  gfx::Size size(label.GetPreferredSize());
+  gfx::Size size(label.GetPreferredSize({}));
   gfx::NativeView native_view = GetWidget()->GetNativeView();
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestView(native_view);

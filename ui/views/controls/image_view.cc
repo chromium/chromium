@@ -29,11 +29,12 @@ ImageView::ImageView(const ui::ImageModel& image_model) {
 ImageView::~ImageView() = default;
 
 void ImageView::SetImage(const ui::ImageModel& image_model) {
-  const gfx::Size pref_size = GetPreferredSize();
+  const gfx::Size pref_size = GetPreferredSize({});
   image_model_ = image_model;
   scaled_image_ = gfx::ImageSkia();
-  if (pref_size != GetPreferredSize())
+  if (pref_size != GetPreferredSize({})) {
     PreferredSizeChanged();
+  }
   SchedulePaint();
 }
 

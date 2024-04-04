@@ -216,24 +216,24 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
 }
 
 int ScrollBarViews::GetThickness() const {
-  const gfx::Size size = GetPreferredSize();
+  const gfx::Size size = GetPreferredSize({});
   return GetOrientation() == ScrollBar::Orientation::kHorizontal ? size.height()
                                                                  : size.width();
 }
 
 gfx::Rect ScrollBarViews::GetTrackBounds() const {
   gfx::Rect bounds = GetLocalBounds();
-  gfx::Size size = prev_button_->GetPreferredSize();
+  gfx::Size size = prev_button_->GetPreferredSize({});
   BaseScrollBarThumb* thumb = GetThumb();
 
   if (GetOrientation() == ScrollBar::Orientation::kHorizontal) {
     bounds.set_x(bounds.x() + size.width());
     bounds.set_width(std::max(0, bounds.width() - 2 * size.width()));
-    bounds.set_height(thumb->GetPreferredSize().height());
+    bounds.set_height(thumb->GetPreferredSize({}).height());
   } else {
     bounds.set_y(bounds.y() + size.height());
     bounds.set_height(std::max(0, bounds.height() - 2 * size.height()));
-    bounds.set_width(thumb->GetPreferredSize().width());
+    bounds.set_width(thumb->GetPreferredSize({}).width());
   }
 
   return bounds;
