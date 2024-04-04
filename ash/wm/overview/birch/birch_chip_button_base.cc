@@ -22,13 +22,11 @@ constexpr ui::ColorId kBackgroundColorId =
 }  // namespace
 
 BirchChipButtonBase::BirchChipButtonBase() {
-  // Build up the chip's contents.
-  views::Builder<views::Button>(this)
-      .SetBorder(std::make_unique<views::HighlightBorder>(
-          kRoundedCornerRadius,
-          views::HighlightBorder::Type::kHighlightBorderNoShadow))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
-          kBackgroundColorId, kRoundedCornerRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kRoundedCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColorId,
+                                                         kRoundedCornerRadius));
 
   // Install and stylize the focus ring.
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
