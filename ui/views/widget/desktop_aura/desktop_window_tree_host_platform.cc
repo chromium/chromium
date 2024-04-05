@@ -620,10 +620,6 @@ bool DesktopWindowTreeHostPlatform::IsActive() const {
   return is_active_;
 }
 
-bool DesktopWindowTreeHostPlatform::CanMaximize() {
-  return GetWidget()->widget_delegate()->CanMaximize();
-}
-
 void DesktopWindowTreeHostPlatform::Maximize() {
   platform_window()->Maximize();
   if (IsMinimized())
@@ -757,10 +753,6 @@ void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
   // the button assets don't update otherwise.
   if (GetWidget()->non_client_view())
     GetWidget()->non_client_view()->UpdateFrame();
-}
-
-bool DesktopWindowTreeHostPlatform::CanFullscreen() {
-  return GetWidget()->widget_delegate()->CanFullscreen();
 }
 
 void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
@@ -979,13 +971,21 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
 }
 
 std::optional<gfx::Size>
-DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
+DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() const {
   return native_widget_delegate_->GetMinimumSize();
 }
 
 std::optional<gfx::Size>
-DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
+DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() const {
   return native_widget_delegate_->GetMaximumSize();
+}
+
+bool DesktopWindowTreeHostPlatform::CanMaximize() const {
+  return GetWidget()->widget_delegate()->CanMaximize();
+}
+
+bool DesktopWindowTreeHostPlatform::CanFullscreen() const {
+  return GetWidget()->widget_delegate()->CanFullscreen();
 }
 
 SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {

@@ -59,19 +59,21 @@ void PlatformWindowDelegate::OnFullscreenTypeChanged(
     PlatformFullscreenType new_type) {}
 #endif
 
-std::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
+std::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow()
+    const {
   return std::nullopt;
 }
 
-std::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
+std::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow()
+    const {
   return std::nullopt;
 }
 
-bool PlatformWindowDelegate::CanMaximize() {
+bool PlatformWindowDelegate::CanMaximize() const {
   return false;
 }
 
-bool PlatformWindowDelegate::CanFullscreen() {
+bool PlatformWindowDelegate::CanFullscreen() const {
   return false;
 }
 

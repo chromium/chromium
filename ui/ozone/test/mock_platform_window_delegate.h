@@ -48,8 +48,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
-  MOCK_METHOD0(GetMinimumSizeForWindow, std::optional<gfx::Size>());
-  MOCK_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
+  MOCK_CONST_METHOD0(GetMinimumSizeForWindow, std::optional<gfx::Size>());
+  MOCK_CONST_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                std::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
@@ -59,8 +59,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
-  MOCK_METHOD0(CanMaximize, bool());
-  MOCK_METHOD0(CanFullscreen, bool());
+  MOCK_CONST_METHOD0(CanMaximize, bool());
+  MOCK_CONST_METHOD0(CanFullscreen, bool());
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& a,
