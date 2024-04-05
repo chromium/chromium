@@ -4317,45 +4317,6 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Wifi.Channel" enum="NetworkChannelType"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    ChromeOS network usage metric. The channel used for each successful WiFi
-    connection.
-  </summary>
-</histogram>
-
-<histogram name="Network.Wifi.PhyMode" enum="NetworkPhyModeType"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    ChromeOS network usage metric. The channel type used for each successful
-    WiFi connection.
-  </summary>
-</histogram>
-
-<histogram name="Network.Wifi.RoundTripTime" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    Network metric reporting the average round trip time to the WiFi gateway.
-    Recorded at least once per day.
-  </summary>
-</histogram>
-
-<histogram name="Network.Wifi.Security" enum="NetworkSecurityType"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    ChromeOS network usage metric. The security setting for each successful WiFi
-    connection.
-  </summary>
-</histogram>
-
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2024-08-25">
   <owner>jonmann@chromium.org</owner>
