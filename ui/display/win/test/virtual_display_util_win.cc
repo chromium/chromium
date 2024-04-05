@@ -194,4 +194,19 @@ const DisplayParams VirtualDisplayUtilWin::k1920x1080 =
 const DisplayParams VirtualDisplayUtilWin::k1024x768 =
     DisplayParams(MonitorConfig::k1024x768);
 
+// VirtualDisplayUtil definitions:
+const DisplayParams VirtualDisplayUtil::k1920x1080 =
+    VirtualDisplayUtilWin::k1920x1080;
+const DisplayParams VirtualDisplayUtil::k1024x768 =
+    VirtualDisplayUtilWin::k1024x768;
+
+// static
+std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(
+    Screen* screen) {
+  if (!VirtualDisplayUtilWin::IsAPIAvailable()) {
+    return nullptr;
+  }
+  return std::make_unique<VirtualDisplayUtilWin>(screen);
+}
+
 }  // namespace display::test

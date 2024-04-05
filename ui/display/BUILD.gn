@@ -284,7 +284,7 @@ static_library("test_support") {
     public_deps += [ "//ui/display:managed_display_info" ]
   }
 
-  if (!is_mac) {
+  if (!is_mac && !is_win) {
     sources += [
       # Virtual display util stub for unimplemented platforms.
       "test/virtual_display_util_stub.cc",

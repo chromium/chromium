@@ -28,19 +28,21 @@ constexpr const char kExampleURL[] = "http://example.org/";
 
 class WebAppInteractiveUiTest : public WebAppControllerBrowserTest {};
 
-// Disabled everywhere except ChromeOS and Mac because those are the only
-// platforms with functional display mocking at the moment. While a partial
+// Disabled everywhere except ChromeOS, Mac and Windows because those are the
+// only platforms with functional display mocking at the moment. While a partial
 // solution is possible using display::Screen::SetScreenInstance on other
 // platforms, window placement doesn't work right with a faked Screen
 // instance.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_TabOpensOnCorrectDisplay TabOpensOnCorrectDisplay
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
+  TabOpensOnCorrectDisplayMultiScreen
 #else
-#define MAYBE_TabOpensOnCorrectDisplay DISABLED_TabOpensOnCorrectDisplay
+#define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
+  DISABLED_TabOpensOnCorrectDisplayMultiScreen
 #endif
 // Tests that PWAs that open in a tab open tabs on the correct display.
 IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
-                       MAYBE_TabOpensOnCorrectDisplay) {
+                       MAYBE_TabOpensOnCorrectDisplayMultiScreen) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("801x802,802x803");

@@ -996,7 +996,7 @@ class TestScreenEnvironment {
     // Disable `NSWindowFakedForTesting` to wait for actual async fullscreen on
     // Mac via `FullscreenWaiter`.
     ui::NSWindowFakedForTesting::SetEnabled(false);
-#else
+#elif !BUILDFLAG(IS_WIN)
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::PRIMARY);
     display::Screen::SetScreenInstance(&screen_);
@@ -1005,7 +1005,7 @@ class TestScreenEnvironment {
   ~TestScreenEnvironment() {
 #if BUILDFLAG(IS_MAC)
     ui::NSWindowFakedForTesting::SetEnabled(ns_window_faked_for_testing_);
-#else
+#elif !BUILDFLAG(IS_WIN)
     display::Screen::SetScreenInstance(nullptr);
 #endif  // BUILDFLAG(IS_MAC)
   }
@@ -1022,7 +1022,7 @@ class TestScreenEnvironment {
         .UpdateDisplay("100+100-801x802,901+0-802x803");
     secondary_display_id_ =
         ash::Shell::Get()->display_manager()->GetConnectedDisplayIdList()[1];
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       secondary_display_id_ = virtual_display_util_->AddDisplay(
@@ -1041,16 +1041,16 @@ class TestScreenEnvironment {
   // Tear down the test Screen environment before `display::Screen` has shut
   // down.
   void TearDown() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     virtual_display_util_.reset();
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   }
 
   void RemoveSecondDisplay() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("100+100-801x802");
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     virtual_display_util_->RemoveDisplay(secondary_display_id_);
 #else
     screen_.display_list().RemoveDisplay(2);
@@ -1063,10 +1063,12 @@ class TestScreenEnvironment {
   int64_t secondary_display_id_ = display::kInvalidDisplayId;
 #if BUILDFLAG(IS_MAC)
   bool ns_window_faked_for_testing_ = false;
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util_;
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
   display::ScreenBase screen_;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 };
 
 // Tests fullscreen with multi-screen features from the Window Management API.
@@ -1074,7 +1076,7 @@ class TestScreenEnvironment {
 // specific screen, move fullscreen windows to different displays, and more.
 // Tests must run in series to manage virtual displays on supported platforms.
 // Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_MultiScreenFullscreenControllerInteractiveTest \
   MultiScreenFullscreenControllerInteractiveTest
 #else
