@@ -2534,19 +2534,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="SodaInstaller.BinaryInstallationFailureTime" units="ms"
-    expires_after="2025-02-28">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>yilkal@chromium.org</owner>
-  <summary>
-    Soda Installation is triggered when one of the features using SODA (e.g.
-    Live Caption, Projector, Offline Dictation) are enabled. Records the time
-    taken to get to SODA binary installation error. This is recorded once when
-    SODA installation attempt fails.
-  </summary>
-</histogram>
-
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
     expires_after="2025-02-28">
   <owner>abigailbklein@google.com</owner>
@@ -2560,7 +2547,7 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="SodaInstaller.BinaryInstallationSuccessTime" units="ms"
+<histogram name="SodaInstaller.BinaryInstallation{Result}Time" units="ms"
     expires_after="2025-02-28">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -2568,24 +2555,13 @@ even if they fit the naming pattern. -->
   <summary>
     Soda Installation is triggered when one of the features using SODA (e.g.
     Live Caption, Projector, Offline Dictation) are enabled. Records the time
-    taken to successfully install SODA binary. This is recorded once when SODA
-    installation attempt succeedes.
+    taken for the binary installation to complete with {Result}, recorded at the
+    end of the attempt.
   </summary>
-</histogram>
-
-<histogram
-    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationFailureTime"
-    units="ms" expires_after="2025-02-28">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>yilkal@chromium.org</owner>
-  <summary>
-    Soda Installation is triggered when one of the features using SODA (e.g.
-    Live Caption, Projector, Offline Dictation) are enabled. Records the time
-    taken to get to SODA language pack installation error. This is recorded once
-    when SODA language pack installation attempt fails.
-  </summary>
-  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
 </histogram>
 
 <histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
@@ -2604,7 +2580,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationSuccessTime"
+    name="SodaInstaller.Language.{SodaLanguageCode}.Installation{Result}Time"
     units="ms" expires_after="2025-02-28">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -2612,10 +2588,14 @@ even if they fit the naming pattern. -->
   <summary>
     Soda Installation is triggered when one of the features using SODA (e.g.
     Live Caption, Projector, Offline Dictation) are enabled. Records the time
-    taken to successfully install SODA language pack. This is recorded once when
-    SODA language pack installation succeedes.
+    taken for the SODA language pack installation for {SodaLanguageCode} to
+    complete with {Result}, recorded at the end of the attempt.
   </summary>
   <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
