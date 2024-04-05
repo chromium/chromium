@@ -12,6 +12,55 @@
 
 namespace blink {
 
+namespace {
+
+constexpr UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
+
+void JustifyResults(const String& line_text,
+                    unsigned line_text_start_offset,
+                    ShapeResultSpacing<String>& spacing,
+                    InlineItemResults& results) {
+  for (InlineItemResult& item_result : results) {
+    if (item_result.has_only_pre_wrap_trailing_spaces) {
+      break;
+    }
+    if (item_result.shape_result) {
+      ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
+      DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
+      DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
+      shape_result->ApplySpacing(spacing, item_result.StartOffset() -
+                                              line_text_start_offset -
+                                              shape_result->StartIndex());
+      item_result.inline_size = shape_result->SnappedWidth();
+      if (UNLIKELY(item_result.is_hyphenated)) {
+        item_result.inline_size += item_result.hyphen.InlineSize();
+      }
+      item_result.shape_result = ShapeResultView::Create(shape_result);
+    } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
+      float spacing_before = 0.0f;
+      DCHECK_LE(line_text_start_offset, item_result.StartOffset());
+      const unsigned line_text_offset =
+          item_result.StartOffset() - line_text_start_offset;
+      const float spacing_after =
+          spacing.ComputeSpacing(line_text_offset, spacing_before);
+      if (UNLIKELY(item_result.item->IsTextCombine())) {
+        // |spacing_before| is non-zero if this |item_result| is after
+        // non-CJK character. See "text-combine-justify.html".
+        DCHECK_EQ(kTextCombineItemMarker, line_text[line_text_offset]);
+        item_result.inline_size += spacing_after;
+        item_result.spacing_before = LayoutUnit(spacing_before);
+      } else {
+        DCHECK_EQ(kObjectReplacementCharacter, line_text[line_text_offset]);
+        item_result.inline_size += spacing_after;
+        // |spacing_before| is non-zero only before CJK characters.
+        DCHECK_EQ(spacing_before, 0.0f);
+      }
+    }
+  }
+}
+
+}  // namespace
+
 std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
                                              JustificationTarget target,
                                              LineInfo* line_info) {
@@ -32,8 +81,6 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   if (end_offset == line_info->StartOffset()) {
     return std::nullopt;
   }
-
-  const UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
 
   // Note: |line_info->StartOffset()| can be different from
   // |ItemsResults[0].StartOffset()|, e.g. <b><input> <input></b> when
@@ -119,43 +166,8 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
     spacing.SetExpansion(space - inset, line_info->BaseDirection());
   }
 
-  for (InlineItemResult& item_result : *line_info->MutableResults()) {
-    if (item_result.has_only_pre_wrap_trailing_spaces) {
-      break;
-    }
-    if (item_result.shape_result) {
-      ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
-      DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
-      DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
-      shape_result->ApplySpacing(spacing, item_result.StartOffset() -
-                                              line_text_start_offset -
-                                              shape_result->StartIndex());
-      item_result.inline_size = shape_result->SnappedWidth();
-      if (UNLIKELY(item_result.is_hyphenated)) {
-        item_result.inline_size += item_result.hyphen.InlineSize();
-      }
-      item_result.shape_result = ShapeResultView::Create(shape_result);
-    } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
-      float spacing_before = 0.0f;
-      DCHECK_LE(line_text_start_offset, item_result.StartOffset());
-      const unsigned line_text_offset =
-          item_result.StartOffset() - line_text_start_offset;
-      const float spacing_after =
-          spacing.ComputeSpacing(line_text_offset, spacing_before);
-      if (UNLIKELY(item_result.item->IsTextCombine())) {
-        // |spacing_before| is non-zero if this |item_result| is after
-        // non-CJK character. See "text-combine-justify.html".
-        DCHECK_EQ(kTextCombineItemMarker, line_text[line_text_offset]);
-        item_result.inline_size += spacing_after;
-        item_result.spacing_before = LayoutUnit(spacing_before);
-      } else {
-        DCHECK_EQ(kObjectReplacementCharacter, line_text[line_text_offset]);
-        item_result.inline_size += spacing_after;
-        // |spacing_before| is non-zero only before CJK characters.
-        DCHECK_EQ(spacing_before, 0.0f);
-      }
-    }
-  }
+  JustifyResults(line_text, line_text_start_offset, spacing,
+                 *line_info->MutableResults());
   return inset / 2;
 }
 
