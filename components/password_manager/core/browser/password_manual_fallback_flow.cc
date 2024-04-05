@@ -194,8 +194,11 @@ void PasswordManualFallbackFlow::RunFlowImpl(
   IsTriggeredOnPasswordForm on_password_form(
       password_form_cache_->HasPasswordForm(password_manager_driver_,
                                             saved_field_id_));
+  // TODO(b/331409076): Fetch suggested passwords and pass them to the
+  // suggestion generator.
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
+          /*suggested_credentials=*/base::span<const PasswordForm>(),
           base::make_span(passwords_presenter_->GetSavedPasswords()),
           on_password_form);
   // TODO(crbug.com/991253): Set the right `form_control_ax_id`.

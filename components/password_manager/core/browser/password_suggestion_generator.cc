@@ -384,18 +384,44 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 std::vector<autofill::Suggestion>
 PasswordSuggestionGenerator::GetManualFallbackSuggestions(
+    base::span<const PasswordForm> suggested_credentials,
     base::span<const CredentialUIEntry> credentials,
     IsTriggeredOnPasswordForm on_password_form) const {
   std::vector<autofill::Suggestion> suggestions;
+  const bool generate_sections =
+      !suggested_credentials.empty() && !credentials.empty();
+  if (generate_sections) {
+    suggestions.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE),
+        autofill::PopupItemId::kTitle);
+  }
+
+  for (const auto& form : suggested_credentials) {
+    suggestions.emplace_back(
+        GetManualFallbackSuggestion(CredentialUIEntry(form), on_password_form));
+  }
+
+  if (generate_sections) {
+    suggestions.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE),
+        autofill::PopupItemId::kTitle);
+  }
+
+  // Only the "All passwords" section should be sorted alphabetically.
+  const size_t relevant_section_offset = suggestions.size();
+
   for (const CredentialUIEntry& credential : credentials) {
-    suggestions.push_back(
+    suggestions.emplace_back(
         GetManualFallbackSuggestion(credential, on_password_form));
   }
 
-  base::ranges::sort(suggestions, [](const autofill::Suggestion& a,
-                                     const autofill::Suggestion& b) {
-    return a.main_text.value < b.main_text.value;
-  });
+  base::ranges::sort(suggestions.begin() + relevant_section_offset,
+                     suggestions.end(), base::ranges::less(),
+                     [](const autofill::Suggestion& suggestion) {
+                       return suggestion.main_text.value;
+                     });
 
   // Add "Manage all passwords" link to settings.
   MaybeAppendManagePasswordsEntry(&suggestions);
