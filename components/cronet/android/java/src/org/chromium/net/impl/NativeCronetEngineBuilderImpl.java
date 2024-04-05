@@ -9,6 +9,7 @@ import android.os.SystemClock;
 
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,13 +21,26 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
 
     /**
-     * Builder for Native Cronet Engine.
-     * Default config enables SPDY, disables QUIC and HTTP cache.
+     * Builder for Native Cronet Engine. Default config enables SPDY, disables QUIC and HTTP cache.
      *
      * @param context Android {@link Context} for engine to use.
      */
     public NativeCronetEngineBuilderImpl(Context context) {
-        super(context);
+        super(context, computeCronetSource());
+    }
+
+    private static CronetSource computeCronetSource() {
+        ClassLoader implClassLoader = CronetEngineBuilderImpl.class.getClassLoader();
+        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
+            return CronetSource.CRONET_SOURCE_PLATFORM;
+        }
+
+        ClassLoader apiClassLoader = ExperimentalCronetEngine.class.getClassLoader();
+        if (!apiClassLoader.equals(implClassLoader)) {
+            return CronetSource.CRONET_SOURCE_PLAY_SERVICES;
+        }
+
+        return CronetSource.CRONET_SOURCE_STATICALLY_LINKED;
     }
 
     @Override
@@ -43,12 +57,12 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
             setUserAgent(getDefaultUserAgent());
         }
 
-        ExperimentalCronetEngine builder = new CronetUrlRequestContext(this, startUptimeMillis);
+        ExperimentalCronetEngine engine = new CronetUrlRequestContext(this, startUptimeMillis);
 
         // Clear MOCK_CERT_VERIFIER reference if there is any, since
         // the ownership has been transferred to the engine.
         mMockCertVerifier = 0;
 
-        return builder;
+        return engine;
     }
 }

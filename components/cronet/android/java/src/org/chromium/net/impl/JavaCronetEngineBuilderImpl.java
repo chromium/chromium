@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,7 +22,7 @@ public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
      * @param context Android {@link Context} for engine to use.
      */
     public JavaCronetEngineBuilderImpl(Context context) {
-        super(context);
+        super(context, CronetSource.CRONET_SOURCE_FALLBACK);
     }
 
     @Override

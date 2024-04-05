@@ -21,6 +21,8 @@ public abstract class CronetLogger {
         CRONET_SOURCE_FALLBACK,
         // The library is loaded through the bootclasspath.
         CRONET_SOURCE_PLATFORM,
+        // The application is using the fake implementation.
+        CRONET_SOURCE_FAKE,
     }
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */

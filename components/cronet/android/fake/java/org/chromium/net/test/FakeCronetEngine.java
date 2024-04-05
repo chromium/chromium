@@ -17,6 +17,7 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.impl.CronetEngineBase;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.ImplVersion;
 import org.chromium.net.impl.RefCountDelegate;
 import org.chromium.net.impl.UrlRequestBase;
@@ -51,7 +52,7 @@ final class FakeCronetEngine extends CronetEngineBase {
          * @param context Android {@link Context}.
          */
         Builder(Context context) {
-            super(context);
+            super(context, CronetSource.CRONET_SOURCE_FAKE);
         }
 
         @Override

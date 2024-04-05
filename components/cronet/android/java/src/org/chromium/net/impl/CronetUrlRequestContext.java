@@ -268,17 +268,12 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
         }
-        mLogger =
-                CronetLoggerFactory.createLogger(
-                        builder.getContext(), CronetEngineBuilderImpl.getCronetSource());
+        mLogger = CronetLoggerFactory.createLogger(builder.getContext(), builder.getCronetSource());
         mLogId = mLogger.generateId();
         var builderLoggerInfo = builder.toLoggerInfo();
         try {
             mLogger.logCronetEngineCreation(
-                    getLogId(),
-                    builderLoggerInfo,
-                    buildCronetVersion(),
-                    CronetEngineBuilderImpl.getCronetSource());
+                    getLogId(), builderLoggerInfo, buildCronetVersion(), builder.getCronetSource());
         } catch (RuntimeException e) {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
