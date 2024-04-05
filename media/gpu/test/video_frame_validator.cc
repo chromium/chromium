@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -323,13 +322,17 @@ MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
   // devices, we also filter by the processor.
   const static std::string kernel_version = base::SysInfo::KernelVersion();
   if (base::StartsWith(kernel_version, "3.18")) {
-    constexpr int kPentiumAndLaterFamily = 0x06;
-    constexpr int kSkyLakeModelId = 0x5E;
-    constexpr int kSkyLake_LModelId = 0x4E;
-    static base::NoDestructor<base::CPU> cpuid;
-    static bool is_skylake = cpuid->family() == kPentiumAndLaterFamily &&
-                             (cpuid->model() == kSkyLakeModelId ||
-                              cpuid->model() == kSkyLake_LModelId);
+    static const bool is_skylake = []() {
+      constexpr int kPentiumAndLaterFamily = 0x06;
+      constexpr int kSkyLakeModelId = 0x5E;
+      constexpr int kSkyLake_LModelId = 0x4E;
+
+      const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+      return cpuid.family() == kPentiumAndLaterFamily &&
+             (cpuid.model() == kSkyLakeModelId ||
+              cpuid.model() == kSkyLake_LModelId);
+    }();
+
     if (is_skylake)
       usleep(10);
   }

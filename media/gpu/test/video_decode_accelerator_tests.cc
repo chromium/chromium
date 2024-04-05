@@ -11,7 +11,6 @@
 #include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -169,17 +168,19 @@ class VideoDecoderTest : public ::testing::Test {
 
  private:
   bool IsSlowMappingDevice() const {
-    static const base::NoDestructor<base::CPU> cpuid;
-    constexpr int kPentiumAndLaterFamily = 0x06;
-    constexpr int kGeminiLakeModelId = 0x7A;
-    constexpr int kApolloLakeModelId = 0x5c;
-    static const bool is_glk_device =
-        cpuid->family() == kPentiumAndLaterFamily &&
-        cpuid->model() == kGeminiLakeModelId;
-    static const bool is_apl_device =
-        cpuid->family() == kPentiumAndLaterFamily &&
-        cpuid->model() == kApolloLakeModelId;
-    return is_glk_device || is_apl_device;
+    static const bool is_slow_mapping_device = []() {
+      const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+      constexpr int kPentiumAndLaterFamily = 0x06;
+      constexpr int kGeminiLakeModelId = 0x7A;
+      constexpr int kApolloLakeModelId = 0x5c;
+      const bool is_glk_device = cpuid.family() == kPentiumAndLaterFamily &&
+                                 cpuid.model() == kGeminiLakeModelId;
+      const bool is_apl_device = cpuid.family() == kPentiumAndLaterFamily &&
+                                 cpuid.model() == kApolloLakeModelId;
+      return is_glk_device || is_apl_device;
+    }();
+
+    return is_slow_mapping_device;
   }
 
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.

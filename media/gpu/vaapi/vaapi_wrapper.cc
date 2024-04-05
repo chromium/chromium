@@ -32,7 +32,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -522,65 +521,82 @@ constexpr VAEntrypoint kVAEntrypointInvalid = static_cast<VAEntrypoint>(0);
 // Returns true if the SoC has a Gen8 GPU. CPU model ID's are referenced from
 // the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen8Gpu() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kBroadwellCoreModelId = 0x3D;
-  constexpr int kBroadwellGT3EModelId = 0x47;
-  constexpr int kBroadwellXModelId = 0x4F;
-  constexpr int kBroadwellXeonDModelId = 0x56;
-  constexpr int kBraswellModelId = 0x4C;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gen8_gpu = cpuid->family() == kPentiumAndLaterFamily &&
-                                  (cpuid->model() == kBroadwellCoreModelId ||
-                                   cpuid->model() == kBroadwellGT3EModelId ||
-                                   cpuid->model() == kBroadwellXModelId ||
-                                   cpuid->model() == kBroadwellXeonDModelId ||
-                                   cpuid->model() == kBraswellModelId);
+  static const bool is_gen8_gpu = []() {
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kBroadwellCoreModelId = 0x3D;
+    constexpr int kBroadwellGT3EModelId = 0x47;
+    constexpr int kBroadwellXModelId = 0x4F;
+    constexpr int kBroadwellXeonDModelId = 0x56;
+    constexpr int kBraswellModelId = 0x4C;
+    const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+
+    return cpuid.family() == kPentiumAndLaterFamily &&
+           (cpuid.model() == kBroadwellCoreModelId ||
+            cpuid.model() == kBroadwellGT3EModelId ||
+            cpuid.model() == kBroadwellXModelId ||
+            cpuid.model() == kBroadwellXeonDModelId ||
+            cpuid.model() == kBraswellModelId);
+  }();
+
   return is_gen8_gpu;
 }
 
 // Returns true if the SoC has a Gen9 GPU. CPU model ID's are referenced from
 // the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen9Gpu() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kSkyLakeModelId = 0x5E;
-  constexpr int kSkyLake_LModelId = 0x4E;
-  constexpr int kApolloLakeModelId = 0x5c;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gen9_gpu = cpuid->family() == kPentiumAndLaterFamily &&
-                                  (cpuid->model() == kSkyLakeModelId ||
-                                   cpuid->model() == kSkyLake_LModelId ||
-                                   cpuid->model() == kApolloLakeModelId);
+  static const bool is_gen9_gpu = []() {
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kSkyLakeModelId = 0x5E;
+    constexpr int kSkyLake_LModelId = 0x4E;
+    constexpr int kApolloLakeModelId = 0x5c;
+    const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+
+    return cpuid.family() == kPentiumAndLaterFamily &&
+           (cpuid.model() == kSkyLakeModelId ||
+            cpuid.model() == kSkyLake_LModelId ||
+            cpuid.model() == kApolloLakeModelId);
+  }();
+
   return is_gen9_gpu;
 }
 
 // Returns true if the SoC has a Gen9.5 GPU. CPU model IDs are referenced from
 // the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen95Gpu() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kKabyLakeModelId = 0x9E;
-  // Amber Lake, Whiskey Lake and some Comet Lake CPU IDs are the same as KBL L.
-  constexpr int kKabyLake_LModelId = 0x8E;
-  constexpr int kGeminiLakeModelId = 0x7A;
-  constexpr int kCometLakeModelId = 0xA5;
-  constexpr int kCometLake_LModelId = 0xA6;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gen95_gpu = cpuid->family() == kPentiumAndLaterFamily &&
-                                   (cpuid->model() == kKabyLakeModelId ||
-                                    cpuid->model() == kKabyLake_LModelId ||
-                                    cpuid->model() == kGeminiLakeModelId ||
-                                    cpuid->model() == kCometLakeModelId ||
-                                    cpuid->model() == kCometLake_LModelId);
+  static const bool is_gen95_gpu = []() {
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kKabyLakeModelId = 0x9E;
+    // Amber Lake, Whiskey Lake and some Comet Lake CPU IDs are the same as KBL
+    // L.
+    constexpr int kKabyLake_LModelId = 0x8E;
+    constexpr int kGeminiLakeModelId = 0x7A;
+    constexpr int kCometLakeModelId = 0xA5;
+    constexpr int kCometLake_LModelId = 0xA6;
+    const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+
+    return cpuid.family() == kPentiumAndLaterFamily &&
+           (cpuid.model() == kKabyLakeModelId ||
+            cpuid.model() == kKabyLake_LModelId ||
+            cpuid.model() == kGeminiLakeModelId ||
+            cpuid.model() == kCometLakeModelId ||
+            cpuid.model() == kCometLake_LModelId);
+  }();
+
   return is_gen95_gpu;
 }
 
 // Returns true if the SoC has a Gen11 GPU. CPU model IDs are referenced from
 // the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen11Gpu() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kJasperLakeModelId = 0x9C;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gen11_gpu = cpuid->family() == kPentiumAndLaterFamily &&
-                                   (cpuid->model() == kJasperLakeModelId);
+  static const bool is_gen11_gpu = []() {
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kJasperLakeModelId = 0x9C;
+    const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+
+    return cpuid.family() == kPentiumAndLaterFamily &&
+           (cpuid.model() == kJasperLakeModelId);
+  }();
+
   return is_gen11_gpu;
 }
 
@@ -599,15 +615,18 @@ bool IsUsingHybridDriverForDecoding(VAProfile va_profile) {
 // Pentium, Celeron, or a Core Y-series. See go/intel-socs-101 or
 // https://www.intel.com/content/www/us/en/processors/processor-numbers.html.
 bool IsLowPowerIntelProcessor() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_core_y_processor =
-      base::MatchPattern(cpuid->cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
+  static const bool is_low_power_intel = []() {
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
+    const bool is_core_y_processor =
+        base::MatchPattern(cpuid.cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
 
-  static const bool is_low_power_intel =
-      cpuid->family() == kPentiumAndLaterFamily &&
-      (base::Contains(cpuid->cpu_brand(), "Pentium") ||
-       base::Contains(cpuid->cpu_brand(), "Celeron") || is_core_y_processor);
+    return cpuid.family() == kPentiumAndLaterFamily &&
+           (base::Contains(cpuid.cpu_brand(), "Pentium") ||
+            base::Contains(cpuid.cpu_brand(), "Celeron") ||
+            is_core_y_processor);
+  }();
+
   return is_low_power_intel;
 }
 
