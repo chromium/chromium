@@ -93,7 +93,10 @@ void SuggestionWindowView::Show(const SuggestionDetails& details) {
   completion_view_->SetVisible(true);
   completion_view_->SetView(details);
   if (details.show_setting_link)
-    completion_view_->SetMinWidth(setting_link_->GetPreferredSize().width());
+    completion_view_->SetMinWidth(
+        setting_link_
+            ->GetPreferredSize(views::SizeBounds(setting_link_->width(), {}))
+            .width());
 
   setting_link_->SetVisible(details.show_setting_link);
 

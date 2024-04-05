@@ -159,8 +159,14 @@ CandidateView::CandidateView(PressedCallback callback,
 
 void CandidateView::GetPreferredWidths(int* shortcut_width,
                                        int* candidate_width) {
-  *shortcut_width = shortcut_label_->GetPreferredSize().width();
-  *candidate_width = candidate_label_->GetPreferredSize().width();
+  *shortcut_width =
+      shortcut_label_
+          ->GetPreferredSize(views::SizeBounds(shortcut_label_->width(), {}))
+          .width();
+  *candidate_width =
+      candidate_label_
+          ->GetPreferredSize(views::SizeBounds(candidate_label_->width(), {}))
+          .width();
 }
 
 void CandidateView::SetWidths(int shortcut_width, int candidate_width) {
@@ -269,16 +275,19 @@ gfx::Size CandidateView::CalculatePreferredSize() const {
       orientation_ == ui::CandidateWindow::VERTICAL ? 4 : 6;
   gfx::Size size;
   if (shortcut_label_->GetVisible()) {
-    size = shortcut_label_->GetPreferredSize();
+    size = shortcut_label_->GetPreferredSize(
+        views::SizeBounds(shortcut_label_->width(), {}));
     size.SetToMax(gfx::Size(shortcut_width_, 0));
     size.Enlarge(padding_width, 0);
   }
-  gfx::Size candidate_size = candidate_label_->GetPreferredSize();
+  gfx::Size candidate_size = candidate_label_->GetPreferredSize(
+      views::SizeBounds(candidate_label_->width(), {}));
   candidate_size.SetToMax(gfx::Size(candidate_width_, 0));
   size.Enlarge(candidate_size.width() + padding_width, 0);
   size.SetToMax(candidate_size);
   if (annotation_label_->GetVisible()) {
-    gfx::Size annotation_size = annotation_label_->GetPreferredSize();
+    gfx::Size annotation_size = annotation_label_->GetPreferredSize(
+        views::SizeBounds(annotation_label_->width(), {}));
     size.Enlarge(annotation_size.width() + padding_width, 0);
     size.SetToMax(annotation_size);
   }

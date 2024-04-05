@@ -99,8 +99,8 @@ void ActionTypeButton::Layout(PassKey) {
   ink_drop_container()->SetBoundsRect(local_bounds);
 
   views::Label* label = this->label();
-  gfx::Size label_size(label->GetPreferredSize().width(),
-                       label->GetPreferredSize().height());
+  gfx::Size label_size(
+      label->GetPreferredSize(views::SizeBounds(label->width(), {})));
 
   gfx::Point image_origin = local_content_bounds.origin();
   image_origin.Offset((local_content_bounds.width() - kActionTypeIconSize) / 2,

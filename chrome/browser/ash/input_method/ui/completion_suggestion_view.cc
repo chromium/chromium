@@ -144,7 +144,10 @@ CompletionSuggestionView::CreateTabAnnotationLabel() {
 
 void CompletionSuggestionView::SetView(const SuggestionDetails& details) {
   SetSuggestionText(details.text, details.confirmed_length);
-  suggestion_width_ = suggestion_label_->GetPreferredSize().width();
+  suggestion_width_ =
+      suggestion_label_
+          ->GetPreferredSize(views::SizeBounds(suggestion_label_->width(), {}))
+          .width();
   down_and_enter_annotation_label_->SetVisible(details.show_accept_annotation);
   tab_annotation_label_->SetVisible(details.show_quick_accept_annotation);
   annotation_container_->SetVisible(details.show_accept_annotation ||
@@ -206,7 +209,8 @@ void CompletionSuggestionView::Layout(PassKey) {
 
 gfx::Size CompletionSuggestionView::CalculatePreferredSize() const {
   gfx::Size size;
-  gfx::Size suggestion_size = suggestion_label_->GetPreferredSize();
+  gfx::Size suggestion_size = suggestion_label_->GetPreferredSize(
+      views::SizeBounds(suggestion_label_->width(), {}));
   suggestion_size.SetToMax(gfx::Size(suggestion_width_, 0));
   size.Enlarge(suggestion_size.width() + 2 * kPadding, 0);
   size.SetToMax(suggestion_size);
