@@ -655,12 +655,6 @@ ci.builder(
             category = "ToT Fuchsia",
             short_name = "x64",
         ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|clang",
-            short_name = "x64",
-        ),
     ],
     contact_team_email = "lexan@google.com",
 )
@@ -702,12 +696,6 @@ ci.builder(
         consoles.console_view_entry(
             category = "ToT Fuchsia",
             short_name = "off",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|clang",
-            short_name = "arm64-off",
         ),
     ],
     contact_team_email = "lexan@google.com",
