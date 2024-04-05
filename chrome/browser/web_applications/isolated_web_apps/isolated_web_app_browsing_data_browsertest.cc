@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -238,7 +239,7 @@ class IsolatedWebAppBrowsingDataClearingTest
     run_loop.Run();
 
     browsing_data_remover->SetWouldCompleteCallbackForTesting(
-        base::DoNothing());
+        base::NullCallback());
   }
 
   void ClearTimeRangedData(browsing_data::TimePeriod time_period) {
@@ -282,6 +283,8 @@ class IsolatedWebAppBrowsingDataClearingTest
         rfh->GetLastCommittedURL(), "clearBrowsingData", std::move(list_args));
 
     run_loop.Run();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::NullCallback());
   }
 
   void ClearAllTimeData() {

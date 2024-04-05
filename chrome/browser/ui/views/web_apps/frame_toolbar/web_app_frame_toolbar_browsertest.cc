@@ -87,6 +87,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
@@ -1383,6 +1384,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 #endif  // BUILDFLAG(IS_WIN)
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
 
   // A point inside the widget is not draggable and returns `HTCLIENT` and not
   // e.g. `HTCAPTION`.
@@ -1390,6 +1392,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   gfx::Point point_in_widget = widget_in_screen_bounds.CenterPoint();
   views::View::ConvertPointToTarget(
       browser_view, browser_view->contents_web_view(), &point_in_widget);
+  EXPECT_TRUE(browser_view->browser()
+                  ->app_controller()
+                  ->draggable_region()
+                  .has_value());
   EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
       browser_view->GetWidget()->GetNativeView(), point_in_widget));
   EXPECT_EQ(frame_view->NonClientHitTest(point_in_widget), HTCLIENT);

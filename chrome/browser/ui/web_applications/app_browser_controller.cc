@@ -101,6 +101,9 @@ Browser* AppBrowserController::FindForWebApp(const Profile& profile,
   for (auto it = browser_list->begin_browsers_ordered_by_activation();
        it != browser_list->end_browsers_ordered_by_activation(); ++it) {
     Browser* browser = *it;
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
     if (browser->type() == Browser::TYPE_POPUP)
       continue;
     if (browser->profile() != &profile)

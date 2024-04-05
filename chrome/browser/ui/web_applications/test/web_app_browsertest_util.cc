@@ -134,7 +134,10 @@ webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
   Browser* app_browser = observer.Wait();
   DCHECK_NE(app_browser, browser);
   DCHECK(AppBrowserController::IsForWebApp(app_browser, app_id));
+  ui_test_utils::BrowserChangeObserver on_close(
+      app_browser, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   chrome::CloseWindow(app_browser);
+  on_close.Wait();
 
   return app_id;
 }
@@ -359,6 +362,9 @@ void CloseAndWait(Browser* browser) {
 
 bool IsBrowserOpen(const Browser* test_browser) {
   for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
     if (browser == test_browser)
       return true;
   }

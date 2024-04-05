@@ -110,7 +110,9 @@ void AppShimRegistry::GetProfilesSetForApp(
     const std::string& app_id,
     const std::string& profiles_key,
     std::set<base::FilePath>* profiles) const {
-  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
+  PrefService* pref_service = GetPrefService();
+  CHECK(pref_service);
+  const base::Value::Dict& cache = pref_service->GetDict(kAppShims);
   const base::Value::Dict* app_info = cache.FindDict(app_id);
   if (!app_info)
     return;

@@ -2718,7 +2718,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
       [](base::FilePath filename, std::string xdg_command,
          std::string file_contents) {
-        EXPECT_TRUE(file_contents.empty());
+        EXPECT_TRUE(file_contents.empty()) << "'" << file_contents << "'";
         return true;
       }));
 #endif
@@ -4783,6 +4783,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerImmediateUpdateBrowserTest,
         icon_load.QuitClosure());
     UpdateCheckResultAwaiter result_awaiter(app_url);
 
+    // Synchronize os integration to ensure that mac app shim is created.
+    GetProvider().scheduler().SynchronizeOsIntegration(app_id,
+                                                       base::DoNothing());
     app_browser = LaunchWebAppBrowserAndWait(app_id);
 
     icon_load.Run();
