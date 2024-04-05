@@ -21,7 +21,10 @@ static_library("print_compositor") {
   ]
 
   if (is_win) {
-    deps += [ "//content/public/child" ]
+    deps += [
+      "//content/public/child",
+      "//printing:printing_base",
+    ]
   }
 
   public_deps = [

@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/public/child/dwrite_font_proxy_init_win.h"
+#include "printing/backend/win_helper.h"  // nogncheck
 #elif BUILDFLAG(IS_APPLE)
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -43,6 +44,29 @@ using MojoDiscardableSharedMemoryManager =
     discardable_memory::mojom::DiscardableSharedMemoryManager;
 
 namespace printing {
+
+namespace {
+
+sk_sp<SkDocument> MakeDocument(
+    const std::string& creator,
+    const std::string& title,
+    ui::AXTreeUpdate* accessibility_tree,
+    GeneratePdfDocumentOutline generate_document_outline,
+    mojom::PrintCompositor::DocumentType document_type,
+    SkWStream& stream) {
+#if BUILDFLAG(IS_WIN)
+  if (document_type == mojom::PrintCompositor::DocumentType::kXPS) {
+    return MakeXpsDocument(&stream);
+  }
+#endif
+  CHECK_EQ(document_type, mojom::PrintCompositor::DocumentType::kPDF);
+  return MakePdfDocument(
+      creator, title,
+      accessibility_tree ? *accessibility_tree : ui::AXTreeUpdate(),
+      generate_document_outline, &stream);
+}
+
+}  // namespace
 
 PrintCompositorImpl::PrintCompositorImpl(
     mojo::PendingReceiver<mojom::PrintCompositor> receiver,
@@ -184,6 +208,11 @@ void PrintCompositorImpl::PrepareToCompositeDocument(
     mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
   DCHECK(!docinfo_);
+#if BUILDFLAG(IS_WIN)
+  if (document_type == mojom::PrintCompositor::DocumentType::kXPS) {
+    xps_initializer_ = std::make_unique<ScopedXPSInitializer>();
+  }
+#endif
   docinfo_ = std::make_unique<DocumentInfo>(document_type);
   std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess);
 }
@@ -197,9 +226,10 @@ void PrintCompositorImpl::FinishDocumentComposition(
   docinfo_->callback = std::move(callback);
 
   if (!docinfo_->doc) {
-    docinfo_->doc = MakePdfDocument(creator_, title_, accessibility_tree_,
-                                    GeneratePdfDocumentOutline::kNone,
-                                    &docinfo_->compositor_stream);
+    docinfo_->doc =
+        MakeDocument(creator_, title_, &accessibility_tree_,
+                     GeneratePdfDocumentOutline::kNone, docinfo_->document_type,
+                     docinfo_->compositor_stream);
   }
 
   HandleDocumentCompletionRequest();
@@ -366,9 +396,9 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   // document composition is not in effect, i.e. when handling
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
-  sk_sp<SkDocument> doc = MakePdfDocument(
-      creator_, title_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_,
-      GeneratePdfDocumentOutline::kNone, &wstream);
+  sk_sp<SkDocument> doc =
+      MakeDocument(creator_, title_, docinfo_ ? nullptr : &accessibility_tree_,
+                   GeneratePdfDocumentOutline::kNone, document_type, wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
@@ -378,11 +408,10 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     if (docinfo_) {
       // Create full document if needed.
       if (!docinfo_->doc) {
-        // TODO(crbug.com/1008222) Make use of `document_type` parameter once
-        // `MakeXpsDocument()` is available.
-        docinfo_->doc = MakePdfDocument(creator_, title_, accessibility_tree_,
-                                        GeneratePdfDocumentOutline::kNone,
-                                        &docinfo_->compositor_stream);
+        docinfo_->doc =
+            MakeDocument(creator_, title_, &accessibility_tree_,
+                         GeneratePdfDocumentOutline::kNone,
+                         docinfo_->document_type, docinfo_->compositor_stream);
       }
 
       // Collect this page into full document.

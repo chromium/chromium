@@ -6,11 +6,13 @@
 #define PRINTING_COMMON_METAFILE_UTILS_H_
 
 #include <stdint.h>
+
 #include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -47,6 +49,10 @@ sk_sp<SkDocument> MakePdfDocument(
     const ui::AXTreeUpdate& accessibility_tree,
     GeneratePdfDocumentOutline generate_document_outline,
     SkWStream* stream);
+
+#if BUILDFLAG(IS_WIN)
+sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream);
+#endif
 
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
                                  TypefaceSerializationContext* typeface_ctx);

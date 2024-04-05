@@ -6,6 +6,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/utility",
   "+mojo/public/cpp",
+  "+printing/backend",
   "+printing/buildflags",
   "+printing/common",
   "+skia",

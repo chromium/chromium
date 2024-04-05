@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
@@ -28,6 +29,20 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+#if BUILDFLAG(IS_WIN)
+// XpsObjectModel.h indirectly includes <wincrypt.h> which is
+// incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
+// first, problems are avoided.
+// clang-format off
+#include "base/win/wincrypt_shim.h"
+
+#include <XpsObjectModel.h>
+#include <objbase.h>
+// clang-format on
+
+#include "third_party/skia/include/docs/SkXPSDocument.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -249,6 +264,21 @@ sk_sp<SkDocument> MakePdfDocument(
 
   return SkPDF::MakeDocument(stream, metadata);
 }
+
+#if BUILDFLAG(IS_WIN)
+sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream) {
+  IXpsOMObjectFactory* factory = nullptr;
+  HRESULT hr = CoCreateInstance(CLSID_XpsOMObjectFactory, nullptr,
+                                CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory));
+  if (FAILED(hr) || !factory) {
+    DLOG(ERROR) << "Unable to create XPS object factory: "
+                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  return SkXPS::MakeDocument(stream, factory);
+}
+#endif
 
 sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);

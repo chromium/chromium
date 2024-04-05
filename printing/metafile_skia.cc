@@ -208,9 +208,7 @@ bool MetafileSkia::FinishDocument() {
       break;
 #if BUILDFLAG(IS_WIN)
     case mojom::SkiaDocumentType::kXPS:
-      // TODO(crbug.com/1008222) Update to use MakeXpsDocument() once it is
-      // available.
-      NOTIMPLEMENTED();
+      doc = MakeXpsDocument(&stream);
       break;
 #endif
     case mojom::SkiaDocumentType::kMSKP:

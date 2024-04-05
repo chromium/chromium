@@ -108,6 +108,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/printing_utils.h"
+#include "sandbox/policy/switches.h"
 #endif
 
 namespace printing {
@@ -2206,6 +2207,16 @@ class PrintCompositorDocumentDataTypeBrowserTest
     PrintBrowserTest::SetUp();
   }
 
+  // TODO(crbug.com/40100562):  Tests that generate XPS currently only succeed
+  // if the test is run with sandboxing disabled.  Remove this once sandboxing
+  // changes for XPS are applied to the PrintCompositor service.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrintBrowserTest::SetUpCommandLine(command_line);
+    if (GetParam() == DocumentDataType::kXps) {
+      command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2228,10 +2239,8 @@ IN_PROC_BROWSER_TEST_P(PrintCompositorDocumentDataTypeBrowserTest,
                               "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
 
-  // TODO(crbug.com/40100562):  Update to expect XPS data once Print Compositor
-  // is updated for generating XPS.
   EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
-              testing::Optional(DocumentDataType::kPdf));
+              testing::Optional(GetParam()));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

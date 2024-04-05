@@ -162,6 +162,8 @@ component("metafile") {
       "emf_win.cc",
       "emf_win.h",
     ]
+
+    libs = [ "xpsprint.lib" ]
   }
 }
 

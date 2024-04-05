@@ -425,6 +425,7 @@ config("delayloads") {
     "/DELAYLOAD:dxgi.dll",
     "/DELAYLOAD:dxva2.dll",
     "/DELAYLOAD:esent.dll",
+    "/DELAYLOAD:fontsub.dll",
     "/DELAYLOAD:gdi32.dll",
     "/DELAYLOAD:hid.dll",
     "/DELAYLOAD:imagehlp.dll",

@@ -133,7 +133,8 @@ class PrintCompositeClient
   // Returns the created composite request.
   mojom::PrintCompositor* CreateCompositeRequest(
       int cookie,
-      content::RenderFrameHost* initiator_frame);
+      content::RenderFrameHost* initiator_frame,
+      mojom::PrintCompositor::DocumentType document_type);
 
   // Remove the existing composite request.
   void RemoveCompositeRequest(int cookie);

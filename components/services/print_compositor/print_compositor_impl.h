@@ -41,6 +41,10 @@ class ClientDiscardableSharedMemoryManager;
 
 namespace printing {
 
+#if BUILDFLAG(IS_WIN)
+class ScopedXPSInitializer;
+#endif
+
 class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
   // Creates an instance with an optional Mojo receiver (may be null) and
@@ -238,6 +242,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       const ContentToFrameMap& subframe_content_map);
 
   mojo::Receiver<mojom::PrintCompositor> receiver_{this};
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<ScopedXPSInitializer> xps_initializer_;
+#endif
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>

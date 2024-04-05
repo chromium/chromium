@@ -234,7 +234,8 @@ void PrintCompositeClient::PrepareToCompositeDocument(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+  auto* compositor =
+      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
   is_doc_concurrently_composited_ = true;
   compositor->PrepareToCompositeDocument(
       document_type,
@@ -274,7 +275,8 @@ void PrintCompositeClient::CompositeDocument(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+  auto* compositor =
+      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
   compositor->SetAccessibilityTree(accessibility_tree);
 
   for (auto& requested : requested_subframes_) {
@@ -344,7 +346,8 @@ bool PrintCompositeClient::GetIsDocumentConcurrentlyComposited(
 
 mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
     int cookie,
-    content::RenderFrameHost* initiator_frame) {
+    content::RenderFrameHost* initiator_frame,
+    mojom::PrintCompositor::DocumentType document_type) {
   DCHECK(initiator_frame);
 
   if (document_cookie_ != 0) {
