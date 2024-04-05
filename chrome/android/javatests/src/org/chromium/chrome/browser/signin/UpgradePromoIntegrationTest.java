@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -65,6 +66,7 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_refuseSignin() {
         launchActivity();
 
@@ -80,6 +82,7 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_signIn_refuseHistorySync() {
         launchActivity();
 
@@ -103,6 +106,7 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_signIn_acceptHistorySync() {
         launchActivity();
 
