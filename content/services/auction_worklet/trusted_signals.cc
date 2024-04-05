@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
@@ -213,9 +215,9 @@ std::optional<base::TimeDelta> ParseUpdateIfOlderThan(
 
 // Attempts to parse the `perInterestGroupData` value in `v8_object`, extracting
 // the `priorityVector` fields of all interest group in `interest_group_names`,
-// and putting them all in the returned PerInterestGroupDataMap.
-TrustedSignals::Result::PerInterestGroupDataMap
-ParsePriorityVectorsInPerInterestGroupMap(
+// along with `updateIfOlderThanMs`, and putting them all in the returned
+// PerInterestGroupDataMap.
+TrustedSignals::Result::PerInterestGroupDataMap ParsePerInterestGroupMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
     const std::set<std::string>& interest_group_names) {
@@ -254,8 +256,13 @@ ParsePriorityVectorsInPerInterestGroupMap(
         per_interest_group_data_value.As<v8::Object>();
     std::optional<TrustedSignals::Result::PriorityVector> priority_vector =
         ParsePriorityVector(v8_helper, v8_per_interest_group_data);
-    std::optional<base::TimeDelta> update_if_older_than =
-        ParseUpdateIfOlderThan(v8_helper, v8_per_interest_group_data);
+    std::optional<base::TimeDelta> update_if_older_than;
+
+    if (base::FeatureList::IsEnabled(
+            features::kInterestGroupUpdateIfOlderThan)) {
+      update_if_older_than =
+          ParseUpdateIfOlderThan(v8_helper, v8_per_interest_group_data);
+    }
     if (priority_vector || update_if_older_than) {
       out.emplace(interest_group_name, TrustedSignals::Result::PerGroupData(
                                            std::move(priority_vector),
@@ -678,8 +685,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     } else {
       DCHECK_EQ(format_version, 2);
       result = base::MakeRefCounted<Result>(
-          ParsePriorityVectorsInPerInterestGroupMap(v8_helper.get(), v8_object,
-                                                    *interest_group_names),
+          ParsePerInterestGroupMap(v8_helper.get(), v8_object,
+                                   *interest_group_names),
           ParseChildKeyValueMap(v8_helper.get(), v8_object, "keys",
                                 *bidding_signals_keys),
           maybe_data_version);

@@ -67,6 +67,7 @@
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_priority_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
@@ -1190,6 +1191,7 @@ class InterestGroupAuction::BuyerHelper
         trusted_signals_fetch_latency;
     auction_->ReportTrustedSignalsFetchLatency(interest_group,
                                                trusted_signals_fetch_latency);
+    auction_->HandleUpdateIfOlderThan(interest_group, update_if_older_than);
     std::optional<double> new_priority;
     if (!priority_vector.empty()) {
       new_priority = CalculateInterestGroupPriority(
@@ -4129,6 +4131,24 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
   // No more unscored bids should be added, once the seller worklet has been
   // received.
   DCHECK(unscored_bids_.empty());
+}
+
+void InterestGroupAuction::HandleUpdateIfOlderThan(
+    const blink::InterestGroup& interest_group,
+    std::optional<base::TimeDelta> update_if_older_than) {
+  if (!base::FeatureList::IsEnabled(
+          features::kInterestGroupUpdateIfOlderThan)) {
+    return;
+  }
+  if (!update_if_older_than) {
+    return;
+  }
+  if (*update_if_older_than < base::Minutes(10)) {
+    *update_if_older_than = base::Minutes(10);
+  }
+  interest_group_manager_->AllowUpdateIfOlderThan(
+      blink::InterestGroupKey(interest_group.owner, interest_group.name),
+      *update_if_older_than);
 }
 
 void InterestGroupAuction::HandleAdditionalBidError(AdditionalBidResult result,

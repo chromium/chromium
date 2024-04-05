@@ -146,6 +146,10 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void UpdateInterestGroup(const blink::InterestGroupKey& group_key,
                            InterestGroupUpdate update,
                            base::OnceCallback<void(bool)> callback);
+  // Allows the interest group specified by `group_key` to be updated if it was
+  // last updated before `update_if_older_than`.
+  void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
+                              base::TimeDelta update_if_older_than);
   // Report that updating of the interest group with owner `owner` and name
   // `name` failed. With the exception of parse failures, the rate limit
   // duration for failed updates is shorter than for those that succeed -- for

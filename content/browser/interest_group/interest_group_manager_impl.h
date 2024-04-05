@@ -233,6 +233,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       AreReportingOriginsAttestedCallback callback,
       const base::TimeDelta& delay);
 
+  // Allows the interest group specified by `group_key` to be updated if it was
+  // last updated before `update_if_older_than`.
+  void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
+                              base::TimeDelta update_if_older_than);
+
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.
   void set_max_update_round_duration_for_testing(base::TimeDelta delta) {

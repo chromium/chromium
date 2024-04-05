@@ -2849,6 +2849,31 @@ bool DoUpdateInterestGroup(sql::Database& db,
   return transaction.Commit();
 }
 
+bool DoAllowUpdateIfOlderThan(sql::Database& db,
+                              const PassKey& passkey,
+                              const blink::InterestGroupKey& group_key,
+                              base::TimeDelta update_if_older_than,
+                              base::Time now) {
+  sql::Statement allow_update_if_older_than(
+      db.GetCachedStatement(SQL_FROM_HERE, R"(
+UPDATE interest_groups SET
+  next_update_after=?
+WHERE owner=? AND name=? AND ? - last_updated >= ?)"));
+
+  if (!allow_update_if_older_than.is_valid()) {
+    return false;
+  }
+
+  allow_update_if_older_than.Reset(true);
+  allow_update_if_older_than.BindTime(0, now);
+  allow_update_if_older_than.BindString(1, Serialize(group_key.owner));
+  allow_update_if_older_than.BindString(2, group_key.name);
+  allow_update_if_older_than.BindTime(3, now);
+  allow_update_if_older_than.BindTimeDelta(4, update_if_older_than);
+
+  return allow_update_if_older_than.Run();
+}
+
 bool DoReportUpdateFailed(sql::Database& db,
                           const blink::InterestGroupKey& group_key,
                           bool parse_failure,
@@ -4734,6 +4759,22 @@ bool InterestGroupStorage::UpdateInterestGroup(
                 << db_->GetErrorMessage();
   }
   return success;
+}
+
+void InterestGroupStorage::AllowUpdateIfOlderThan(
+    const blink::InterestGroupKey& group_key,
+    base::TimeDelta update_if_older_than) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  bool success = DoAllowUpdateIfOlderThan(
+      *db_, PassKey(), group_key, update_if_older_than, base::Time::Now());
+  if (!success) {
+    DLOG(ERROR) << "Could not process update_if_older_than: "
+                << db_->GetErrorMessage();
+  }
 }
 
 void InterestGroupStorage::ReportUpdateFailed(

@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -270,6 +271,8 @@ class BidderWorkletTest : public testing::Test {
                         TaskEnvironment::TimeSource::SYSTEM_TIME)
       : task_environment_(time_source) {
     SetDefaultParameters();
+    feature_list_.InitAndEnableFeature(
+        features::kInterestGroupUpdateIfOlderThan);
   }
 
   ~BidderWorkletTest() override = default;
@@ -1025,6 +1028,8 @@ class BidderWorkletTest : public testing::Test {
   // a ClosePipeCallback which behaves just like the one in
   // AuctionWorkletServiceImpl, to better match production behavior.
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class BidderWorkletCustomAdComponentLimitTest : public BidderWorkletTest {

@@ -277,6 +277,14 @@ BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
              "InnerFrameCompositorSurfaceEviction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the ability to use the updateIfOlderThanMs field in the trusted
+// bidding response to trigger a post-auction update if the group has been
+// updated more recently than updateIfOlderThanMs milliseconds, bypassing the
+// typical 24 hour wait.
+BASE_FEATURE(kInterestGroupUpdateIfOlderThan,
+             "InterestGroupUpdateIfOlderThan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable IOSurface based screen capturer.
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kIOSurfaceCapturer,

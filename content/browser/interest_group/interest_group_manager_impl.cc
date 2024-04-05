@@ -345,6 +345,12 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
       delay);
 }
 
+void InterestGroupManagerImpl::AllowUpdateIfOlderThan(
+    const blink::InterestGroupKey& group_key,
+    base::TimeDelta update_if_older_than) {
+  caching_storage_.AllowUpdateIfOlderThan(group_key, update_if_older_than);
+}
+
 void InterestGroupManagerImpl::RecordInterestGroupBids(
     const blink::InterestGroupSet& group_keys) {
   if (group_keys.empty()) {

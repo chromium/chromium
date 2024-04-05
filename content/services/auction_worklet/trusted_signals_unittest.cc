@@ -10,13 +10,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -161,6 +164,8 @@ class TrustedSignalsTest : public testing::Test {
  public:
   TrustedSignalsTest() {
     v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+    feature_list_.InitAndEnableFeature(
+        features::kInterestGroupUpdateIfOlderThan);
   }
 
   ~TrustedSignalsTest() override { task_environment_.RunUntilIdle(); }
@@ -352,6 +357,8 @@ class TrustedSignalsTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TrustedSignalsTest, BiddingSignalsNetworkError) {

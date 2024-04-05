@@ -930,6 +930,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // are ready.
   void ScoreQueuedBidsIfReady();
 
+  void HandleUpdateIfOlderThan(
+      const blink::InterestGroup& interest_group,
+      std::optional<base::TimeDelta> update_if_older_than);
+
   // Performs errors handling when an error is encountered while decoding an
   // additional bid. The caller of this should return immediately after calling
   // this function.
