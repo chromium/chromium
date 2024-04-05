@@ -47,14 +47,14 @@ message LocaleContext {
 }
 
 // The possible rendering environments.
-enum RenderingEnvironment {
+enum LensRenderingEnvironment {
   RENDERING_ENV_UNSPECIFIED = 0;
-  RENDERING_ENV_CHROMNIENT = 14;
+  RENDERING_ENV_LENS_OVERLAY = 14;
 }
 
 message RenderingContext {
   // The rendering environment.
-  RenderingEnvironment rendering_environment = 2;
+  LensRenderingEnvironment rendering_environment = 2;
 
   reserved 1;
 }
