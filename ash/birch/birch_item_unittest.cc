@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -117,8 +118,10 @@ TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
 // When both conference URL and calendar URL are set, the conference URL is
 // preferred.
 TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
-  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
-                         /*end_time=*/base::Time(),
+  // Create an event that is happening now so the "Join" action is enabled.
+  base::Time now = base::Time::Now();
+  BirchCalendarItem item(u"item", /*start_time=*/now - base::Minutes(30),
+                         /*end_time=*/now + base::Minutes(30),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL("http://meet.com"),
                          /*event_id=*/"000");
@@ -175,6 +178,41 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
                          /*event_id=*/"000");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+}
+
+TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
+  base::Time now = base::Time::Now();
+
+  // Create an event with a conference URL, but in the future.
+  BirchCalendarItem item0(u"item0", /*start_time=*/now + base::Hours(1),
+                          /*end_time=*/now + base::Hours(2),
+                          /*calendar_url=*/GURL("http://calendar.com"),
+                          /*conference_url=*/GURL("http://meet.com"),
+                          /*event_id=*/"000");
+
+  // The meeting is in the future, so don't show the "Join" button.
+  EXPECT_FALSE(item0.secondary_action().has_value());
+
+  // Create a meeting happening right now.
+  BirchCalendarItem item1(u"item1",
+                          /*start_time=*/now - base::Minutes(30),
+                          /*end_time=*/now + base::Minutes(30),
+                          /*calendar_url=*/GURL("http://calendar.com"),
+                          /*conference_url=*/GURL("http://meet.com"),
+                          /*event_id=*/"001");
+
+  // The meeting is happening now, so show the "Join" button.
+  EXPECT_TRUE(item1.secondary_action().has_value());
+
+  // Create a meeting starting in the next few minutes.
+  BirchCalendarItem item2(u"item2", /*start_time=*/now + base::Minutes(3),
+                          /*end_time=*/now + base::Minutes(33),
+                          /*calendar_url=*/GURL("http://calendar.com"),
+                          /*conference_url=*/GURL("http://meet.com"),
+                          /*event_id=*/"002");
+
+  // The meeting is very soon, so show the "Join" button.
+  EXPECT_TRUE(item2.secondary_action().has_value());
 }
 
 TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {

@@ -130,6 +130,10 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   static std::u16string GetStartEndString(base::Time start_time,
                                           base::Time end_time);
 
+  // Returns true if the "Join" button should be shown (i.e. the event has a
+  // conference URL and the event is ongoing or happening soon).
+  bool ShouldShowJoinButton() const;
+
   base::Time start_time_;
   base::Time end_time_;
   // Link to the event in the Google Calendar UI.

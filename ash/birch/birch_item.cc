@@ -113,7 +113,7 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
       calendar_url_(calendar_url),
       conference_url_(conference_url),
       event_id_(event_id) {
-  if (conference_url_.is_valid()) {
+  if (ShouldShowJoinButton()) {
     set_secondary_action(
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON));
   }
@@ -205,6 +205,16 @@ std::u16string BirchCalendarItem::GetStartEndString(base::Time start_time,
   // Return "10:00 AM - 10:30 AM".
   return base::TimeFormatTimeOfDay(start_time) + u" - " +
          base::TimeFormatTimeOfDay(end_time);
+}
+
+bool BirchCalendarItem::ShouldShowJoinButton() const {
+  if (!conference_url_.is_valid()) {
+    return false;
+  }
+  // Only show "Join" if the meeting is starting soon or happening right now.
+  base::Time start_adjusted = start_time_ - base::Minutes(5);
+  base::Time now = base::Time::Now();
+  return start_adjusted < now && now < end_time_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
