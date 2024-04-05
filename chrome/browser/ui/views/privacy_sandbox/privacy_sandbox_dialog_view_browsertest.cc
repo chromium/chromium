@@ -116,3 +116,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       InvokeUi_RestrictedNotice) {
+  EXPECT_CALL(
+      *mock_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kRestrictedNoticeShown));
+  EXPECT_CALL(
+      *mock_service(),
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kRestrictedNoticeClosedNoInteraction));
+  ShowAndVerifyUi();
+}
