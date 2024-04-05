@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/picker/picker_controller.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/fileapi/test/fake_recent_source.h"
@@ -21,12 +25,16 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +57,14 @@ using ::testing::VariantWith;
 using MockSearchResultsCallback =
     testing::MockFunction<PickerClientImpl::CrosSearchResultsCallback>;
 
+bool CreateTestFile(const base::FilePath& path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!base::WriteFile(path, "test_file")) {
+    return false;
+  }
+  return true;
+}
+
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     base::FilePath profile_path,
     content::BrowserContext* context) {
@@ -69,6 +85,31 @@ std::unique_ptr<KeyedService> BuildTestRecentModelFactory(
   std::vector<std::unique_ptr<ash::RecentSource>> sources;
   sources.push_back(std::move(source));
   return ash::RecentModel::CreateForTest(std::move(sources), max_files);
+}
+
+std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
+    const base::FilePath& profile_path,
+    std::unique_ptr<drive::FakeDriveFsHelper>& fake_drivefs_helper,
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath mount_path = profile_path.Append("drivefs");
+  static_cast<ash::disks::FakeDiskMountManager*>(
+      ash::disks::DiskMountManager::GetInstance())
+      ->RegisterMountPointForNetworkStorageScheme("drivefs",
+                                                  mount_path.value());
+  fake_drivefs_helper =
+      std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
+  auto service = std::make_unique<drive::DriveIntegrationService>(
+      profile, "drivefs", mount_path,
+      fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
+
+  // Wait until the DriveIntegrationService is initialized.
+  while (!service->IsMounted() || !service->GetDriveFsInterface()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  return service;
 }
 
 void AddSearchToHistory(TestingProfile* profile, GURL url) {
@@ -106,17 +147,37 @@ void SetRecentFiles(TestingProfile* profile,
       base::BindRepeating(BuildTestRecentModelFactory, std::move(files)));
 }
 
+drivefs::FakeMetadata CreateFakeDriveFsMetadata(const base::FilePath& path) {
+  drivefs::FakeMetadata metadata;
+  metadata.path = path;
+  return metadata;
+}
+
 class PickerClientImplTest : public BrowserWithTestWindowTest {
  public:
   PickerClientImplTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ash::CrosDisksClient::InitializeFake();
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new ash::disks::FakeDiskMountManager());
+
     BrowserWithTestWindowTest::SetUp();
   }
-  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
+  void TearDown() override {
+    BrowserWithTestWindowTest::TearDown();
+
+    ash::disks::DiskMountManager::Shutdown();
+    ash::CrosDisksClient::Shutdown();
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
     return test_shared_url_loader_factory_;
+  }
+
+  drivefs::FakeDriveFs& GetFakeDriveFs() {
+    return fake_drivefs_helper_->fake_drivefs();
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -137,13 +198,31 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
         {ash::RecentModelFactory::GetInstance(),
          base::BindRepeating(&BuildTestRecentModelFactory,
-                             std::vector<ash::RecentFile>{})}};
+                             std::vector<ash::RecentFile>{})},
+        {drive::DriveIntegrationServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildTestDriveIntegrationService,
+                             temp_dir_.GetPath(),
+                             std::ref(fake_drivefs_helper_))}};
+  }
+
+  void LogIn(const std::string& email) override {
+    // DriveFS needs the account to have an ID.
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(email, "test gaia");
+    user_manager()->AddUser(account_id);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
  private:
   base::ScopedTempDir temp_dir_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
+  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
 
 TEST_F(PickerClientImplTest, GetsSharedURLLoaderFactory) {
@@ -258,6 +337,93 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
                  {
                      CreateRecentFile(base::FilePath("abc.jpg"),
                                       storage::kFileSystemTypeLocal,
+                                      base::Time::Now() - base::Days(31)),
+                 });
+
+  client.GetRecentDriveFileResults(future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(PickerClientImplTest, GetRecentDriveFilesWithNoFiles) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+
+  client.GetRecentLocalFileResults(future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsDriveFiles) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  const base::FilePath mount_path = GetFakeDriveFs().mount_path();
+  ASSERT_TRUE(CreateTestFile(mount_path.AppendASCII("aaa.jpg")));
+  ASSERT_TRUE(CreateTestFile(mount_path.AppendASCII("bbb.mp4")));
+  ASSERT_TRUE(CreateTestFile(mount_path.AppendASCII("ccc.png")));
+  GetFakeDriveFs().SetMetadata(
+      CreateFakeDriveFsMetadata(base::FilePath("aaa.jpg")));
+  GetFakeDriveFs().SetMetadata(
+      CreateFakeDriveFsMetadata(base::FilePath("bbb.mp4")));
+  GetFakeDriveFs().SetMetadata(
+      CreateFakeDriveFsMetadata(base::FilePath("ccc.png")));
+  SetRecentFiles(profile(),
+                 {
+                     CreateRecentFile(mount_path.AppendASCII("aaa.jpg"),
+                                      storage::kFileSystemTypeDriveFs),
+                     CreateRecentFile(mount_path.AppendASCII("bbb.mp4"),
+                                      storage::kFileSystemTypeDriveFs),
+                     CreateRecentFile(mount_path.AppendASCII("ccc.png"),
+                                      storage::kFileSystemTypeLocal),
+                 });
+
+  client.GetRecentDriveFileResults(future.GetCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      UnorderedElementsAre(
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::DriveFileData>(AllOf(
+                  Field("title", &ash::PickerSearchResult::DriveFileData::title,
+                        u"aaa.jpg"),
+                  Field("url", &ash::PickerSearchResult::DriveFileData::url,
+                        GURL("https://file_alternate_link/aaa.jpg"))))),
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::DriveFileData>(AllOf(
+                  Field("title", &ash::PickerSearchResult::DriveFileData::title,
+                        u"bbb.mp4"),
+                  Field("url", &ash::PickerSearchResult::DriveFileData::url,
+                        GURL("https://file_alternate_link/bbb.mp4")))))));
+}
+
+TEST_F(PickerClientImplTest,
+       GetRecentDriveFilesDoesNotReturnFilesWithNoMetadata) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  SetRecentFiles(profile(),
+                 {
+                     CreateRecentFile(base::FilePath("abc.jpg"),
+                                      storage::kFileSystemTypeDriveFs),
+                 });
+
+  client.GetRecentLocalFileResults(future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  SetRecentFiles(profile(),
+                 {
+                     CreateRecentFile(base::FilePath("abc.jpg"),
+                                      storage::kFileSystemTypeDriveFs,
                                       base::Time::Now() - base::Days(31)),
                  });
 
