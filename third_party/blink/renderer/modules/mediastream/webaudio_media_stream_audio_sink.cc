@@ -24,17 +24,17 @@ const int WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize = 128;
 WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
     MediaStreamComponent* component,
     int context_sample_rate,
-    uint32_t context_buffer_size)
+    base::TimeDelta platform_buffer_duration)
     : is_enabled_(false),
       component_(component),
       track_stopped_(false),
-      sink_context_buffer_size_(context_buffer_size),
+      platform_buffer_duration_(platform_buffer_duration),
       sink_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                    media::ChannelLayoutConfig::Stereo(),
                    context_sample_rate,
                    kWebAudioRenderBufferSize) {
   CHECK(sink_params_.IsValid());
-  CHECK(sink_context_buffer_size_);
+  CHECK_GT(platform_buffer_duration_, base::TimeDelta());
 
   // Connect the source provider to the track as a sink.
   WebMediaStreamAudioSink::AddToAudioTrack(
@@ -73,16 +73,14 @@ void WebAudioMediaStreamAudioSink::OnSetFormat(
   // same size. `audio_converter_` resamples from source_params_.sample_rate()
   // to sink_params_.sample_rate() and rebuffers into kWebAudioRenderBufferSize
   // chunks. However `audio_converter_->Convert()` are not spaced evenly: they
-  // will come in batches as the audio context is filling up the output buffer
-  // of `sink_context_buffer_size_' while rendering the media stream via
-  // AudioContext.
+  // will come in batches as the audio destination is filling up the output
+  // buffer of `platform_buffer_duration_' while rendering the media stream via
+  // an output device.
 
-  // To ensure ChunkSize() is correct: see AudioConverter documentation.
   audio_converter_->PrimeWithSilence();
-  const int chunk_size = audio_converter_->ChunkSize();
-  CHECK_GT(chunk_size, 0);
   const int max_batch_read_count =
-      ceil(static_cast<double>(sink_context_buffer_size_) / chunk_size);
+      ceil(platform_buffer_duration_.InMicrosecondsF() /
+           source_params_.GetBufferDuration().InMicrosecondsF());
 
   // Due to resampling/rebuffering, audio consumption irregularities, and
   // possible misalignments of audio production/consumption callbacks, we should
@@ -93,13 +91,13 @@ void WebAudioMediaStreamAudioSink::OnSetFormat(
                                      source_params_.frames_per_buffer());
 
   DVLOG(1) << "FIFO size: " << fifo_->max_frames()
-           << " source buffer size: " << source_params_.frames_per_buffer()
-           << " sink context buffer size: " << sink_context_buffer_size_
-           << " chunk size " << chunk_size
+           << " source buffer duration ms: "
+           << source_params_.GetBufferDuration().InMillisecondsF()
+           << " platform buffer duration ms: "
+           << platform_buffer_duration_.InMillisecondsF()
            << " max batch read count: " << max_batch_read_count
-           << " FIFO duration: "
-           << fifo_->max_frames() * 1000 / source_params_.sample_rate()
-           << " ms ";
+           << " FIFO duration ms: "
+           << fifo_->max_frames() * 1000 / source_params_.sample_rate();
 }
 
 void WebAudioMediaStreamAudioSink::OnReadyStateChanged(

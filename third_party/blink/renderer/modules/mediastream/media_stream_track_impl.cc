@@ -160,9 +160,10 @@ bool ConstraintsHaveImageCapture(const MediaTrackConstraints* constraints) {
 // Caller must take the ownership of the returned |WebAudioSourceProvider|
 // object.
 std::unique_ptr<WebAudioSourceProvider>
-CreateWebAudioSourceFromMediaStreamTrack(MediaStreamComponent* component,
-                                         int context_sample_rate,
-                                         uint32_t context_buffer_size) {
+CreateWebAudioSourceFromMediaStreamTrack(
+    MediaStreamComponent* component,
+    int context_sample_rate,
+    base::TimeDelta platform_buffer_duration) {
   MediaStreamTrackPlatform* media_stream_track = component->GetPlatformTrack();
   if (!media_stream_track) {
     DLOG(ERROR) << "Native track missing for webaudio source.";
@@ -173,7 +174,7 @@ CreateWebAudioSourceFromMediaStreamTrack(MediaStreamComponent* component,
   DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
 
   return std::make_unique<WebAudioMediaStreamAudioSink>(
-      component, context_sample_rate, context_buffer_size);
+      component, context_sample_rate, platform_buffer_duration);
 }
 
 void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
@@ -960,10 +961,10 @@ bool MediaStreamTrackImpl::HasPendingActivity() const {
 
 std::unique_ptr<AudioSourceProvider> MediaStreamTrackImpl::CreateWebAudioSource(
     int context_sample_rate,
-    uint32_t context_buffer_size) {
+    base::TimeDelta platform_buffer_duration) {
   return std::make_unique<MediaStreamWebAudioSource>(
       CreateWebAudioSourceFromMediaStreamTrack(Component(), context_sample_rate,
-                                               context_buffer_size));
+                                               platform_buffer_duration));
 }
 
 std::optional<const MediaStreamDevice> MediaStreamTrackImpl::device() const {

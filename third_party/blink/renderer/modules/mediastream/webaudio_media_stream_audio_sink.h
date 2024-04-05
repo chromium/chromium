@@ -49,7 +49,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                int context_sample_rate,
-                               uint32_t context_buffer_size);
+                               base::TimeDelta platform_buffer_duration);
 
   WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
   WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =
@@ -108,10 +108,11 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // and OnReadyStateChanged().
   bool track_stopped_;
 
-  // Buffer size of the audio context the sink delivers audio to. Affects how
-  // many public ProvideInput() calls can be received in one batch, and thus
-  // needs to be taken into account when configuring `fifo_`.
-  const uint32_t sink_context_buffer_size_;
+  // Buffer duration of the output backing up the audio context the sink
+  // delivers audio to. Affects how many public ProvideInput() calls can be
+  // received in one batch, and thus needs to be taken into account when
+  // configuring `fifo_`.
+  const base::TimeDelta platform_buffer_duration_;
 
   // Parameters at which audio is delivered to the WebAudio graph, i.e. of the
   // public ProvideInput() call.

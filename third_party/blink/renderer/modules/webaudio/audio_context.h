@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-blink.h"
@@ -104,9 +105,9 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   AudioCallbackMetric GetCallbackMetric() const;
 
-  // Returns the audio buffer size set for the underlying audio callback in the
-  // AudioDestination under blink/renderer/platform.
-  uint32_t PlatformBufferSize() const;
+  // Returns the audio buffer duration of the output driving playout of
+  // AudioDestination.
+  base::TimeDelta PlatformBufferDuration() const;
 
   // mojom::blink::PermissionObserver
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;

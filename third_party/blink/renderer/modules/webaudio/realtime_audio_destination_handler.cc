@@ -328,6 +328,14 @@ int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
   return platform_destination_ ? platform_destination_->FramesPerBuffer() : 0;
 }
 
+base::TimeDelta RealtimeAudioDestinationHandler::GetPlatformBufferDuration()
+    const {
+  DCHECK(IsMainThread());
+  DCHECK(IsInitialized());
+
+  return platform_destination_->GetPlatformBufferDuration();
+}
+
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
   DCHECK(IsMainThread());
 

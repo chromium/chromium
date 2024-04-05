@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
@@ -74,6 +75,8 @@ class RealtimeAudioDestinationHandler final
 
   // Returns a given frames-per-buffer size from audio infra.
   int GetFramesPerBuffer() const;
+
+  base::TimeDelta GetPlatformBufferDuration() const;
 
   bool IsPullingAudioGraphAllowed() const {
     return allow_pulling_audio_graph_.load(std::memory_order_acquire);

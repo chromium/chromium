@@ -37,6 +37,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -123,6 +124,9 @@ class PLATFORM_EXPORT AudioDestination final
   // Returns the audio buffer size in frames used by the underlying audio
   // hardware.
   int FramesPerBuffer() const;
+
+  // Returns the audio buffer duration used by the underlying sink.
+  base::TimeDelta GetPlatformBufferDuration() const;
 
   // The maximum channel count of the current audio sink device.
   uint32_t MaxChannelCount();

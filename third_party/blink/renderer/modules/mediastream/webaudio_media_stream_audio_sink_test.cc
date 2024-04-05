@@ -15,6 +15,7 @@
 #include "media/base/audio_pull_fifo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -34,7 +35,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
   void Configure(int source_sample_rate,
                  int source_buffer_size,
                  int context_sample_rate,
-                 int context_buffer_size) {
+                 base::TimeDelta platform_buffer_duration) {
     source_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          media::ChannelLayoutConfig::Mono(), source_sample_rate,
                          source_buffer_size);
@@ -51,7 +52,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
         String::FromUTF8("audio_track"), audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
-        component_, context_sample_rate, context_buffer_size);
+        component_, context_sample_rate, platform_buffer_duration);
     source_provider_->OnSetFormat(source_params_);
   }
 
@@ -65,7 +66,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
 
 TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
-            /*context_sample_rate=*/44100, /*context_buffer_size=*/100);
+            /*context_sample_rate=*/44100,
+            /*platform_buffer_duration=*/base::Milliseconds(10));
 
   // Point the WebVector into memory owned by |sink_bus_|.
   WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
@@ -123,7 +125,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
 TEST_F(WebAudioMediaStreamAudioSinkTest,
        DeleteSourceProviderBeforeStoppingTrack) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
-            /*context_sample_rate=*/44100, /*context_buffer_size=*/100);
+            /*context_sample_rate=*/44100,
+            /*platform_buffer_duration=*/base::Milliseconds(10));
 
   source_provider_.reset();
 
@@ -134,7 +137,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest,
 TEST_F(WebAudioMediaStreamAudioSinkTest,
        StopTrackBeforeDeletingSourceProvider) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
-            /*context_sample_rate=*/44100, /*context_buffer_size=*/100);
+            /*context_sample_rate=*/44100,
+            /*platform_buffer_duration=*/base::Milliseconds(10));
 
   // Stop the audio track.
   MediaStreamAudioTrack::From(component_.Get())->Stop();
@@ -158,8 +162,9 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   int context_buffer_size =
       media::AudioLatency::GetHighLatencyBufferSize(context_sample_rate, 0);
 
-  Configure(source_sample_rate, source_buffer_size, context_sample_rate,
-            context_buffer_size);
+  Configure(
+      source_sample_rate, source_buffer_size, context_sample_rate,
+      audio_utilities::FramesToTime(context_buffer_size, context_sample_rate));
 
   // 1. Source preparation.
   std::unique_ptr<media::AudioBus> source_bus =

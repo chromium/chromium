@@ -988,10 +988,10 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   return callback_metric_;
 }
 
-uint32_t AudioContext::PlatformBufferSize() const {
+base::TimeDelta AudioContext::PlatformBufferDuration() const {
   return (static_cast<RealtimeAudioDestinationHandler&>(
               destination()->GetAudioDestinationHandler()))
-      .GetCallbackBufferSize();
+      .GetPlatformBufferDuration();
 }
 
 void AudioContext::OnPermissionStatusChange(
