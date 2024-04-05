@@ -8071,7 +8071,8 @@
                         "IPH_ScalableIphGaming_x_CustomNotificationId": "scalable_iph_gaming",
                         "IPH_ScalableIphGaming_x_CustomNotificationImageType": "Minecraft",
                         "IPH_ScalableIphGaming_x_CustomNotificationTitle": "Get 3 months of Minecraft Realms+ at no cost on your Chromebook",
-                        "IPH_ScalableIphGaming_x_CustomUiType": "Notification"
+                        "IPH_ScalableIphGaming_x_CustomUiType": "Notification",
+                        "IPH_ScalableIphGaming_x_CustomVersionNumber": "1"
                     },
                     "enable_features": [
                         "IPH_ScalableIphGaming"
