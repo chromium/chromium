@@ -107,9 +107,9 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   // Element overrides:
   void SetHovered(bool hovered) override;
 
-  Element* interestTargetElement();
+  Element* interestTargetElement() override;
 
-  AtomicString interestAction() const;
+  AtomicString interestAction() const override;
 
   void Trace(Visitor*) const override;
 

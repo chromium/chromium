@@ -127,6 +127,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
+#include "third_party/blink/renderer/core/events/interest_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -1182,6 +1183,53 @@ PopoverData* Element::GetPopoverData() const {
     return data->GetPopoverData();
   }
   return nullptr;
+}
+
+void Element::InterestGained() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+
+  if (!IsInTreeScope()) {
+    return;
+  }
+
+  Element* interest_target_element = this->interestTargetElement();
+  AtomicString interest_action = this->interestAction();
+  if (interest_target_element && !interest_action.IsNull()) {
+    // TODO(crbug.com/326681249): This should only fire if action is valid.
+    Event* interest_event = InterestEvent::Create(event_type_names::kInterest,
+                                                  interest_action, this);
+    interest_target_element->DispatchEvent(*interest_event);
+    if (!interest_event->defaultPrevented()) {
+      if (auto* popover = DynamicTo<HTMLElement>(interest_target_element);
+          popover && popover->PopoverType() != PopoverValueType::kNone) {
+        if (!(interest_action.empty() ||
+              EqualIgnoringASCIICase(interest_action,
+                                     keywords::kTogglePopover))) {
+          return;
+        }
+
+        // TODO(crbug.com/326681249): This might need to queue a task with a
+        // delay based on CSS properties.
+        auto& document = GetDocument();
+        bool can_show = popover->IsPopoverReady(
+            PopoverTriggerAction::kShow,
+            /*exception_state=*/nullptr,
+            /*include_event_handler_text=*/true, &document);
+        bool can_hide = popover->IsPopoverReady(
+            PopoverTriggerAction::kHide,
+            /*exception_state=*/nullptr,
+            /*include_event_handler_text=*/true, &document);
+        if (can_hide) {
+          popover->HidePopoverInternal(
+              HidePopoverFocusBehavior::kFocusPreviousElement,
+              HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+              /*exception_state=*/nullptr);
+        } else if (can_show) {
+          popover->InvokePopover(*this);
+        }
+      }
+    }
+  }
 }
 
 Element* Element::anchorElement() const {
@@ -6068,6 +6116,11 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
 
   FocusStateChanged();
 
+  if (received &&
+      RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    InterestGained();
+  }
+
   if (GetLayoutObject() || received) {
     return;
   }
@@ -9259,6 +9312,10 @@ void Element::SetHovered(bool hovered) {
   PseudoStateChanged(CSSSelector::kPseudoHover);
 
   InvalidateIfHasEffectiveAppearance();
+
+  if (hovered && RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    InterestGained();
+  }
 }
 
 void Element::SetActive(bool active) {

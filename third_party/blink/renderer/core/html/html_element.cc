@@ -2276,6 +2276,13 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
   if (!RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled()) {
     return;
   }
+  // If either element has an interest target, do nothing.
+  // TODO(crbug.com/326681249): This will be handled in future by a separate
+  // InterestLost() function.
+  if ((old_element && old_element->interestTargetElement()) ||
+      (new_element && new_element->interestTargetElement())) {
+    return;
+  }
   if (old_element) {
     // For the previously-hovered element: loop through all showing popovers
     // (including popover=manual) and see if the element that just lost focus

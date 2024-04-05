@@ -118,12 +118,12 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   Element* invokeTargetElement();
 
-  Element* interestTargetElement();
-
   AtomicString invokeAction() const;
   InvokeAction GetInvokeAction() const;
 
-  AtomicString interestAction() const;
+  Element* interestTargetElement() override;
+
+  AtomicString interestAction() const override;
 
   void DefaultEventHandler(Event&) override;
 

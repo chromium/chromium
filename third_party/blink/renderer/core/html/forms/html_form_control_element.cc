@@ -411,7 +411,7 @@ Element* HTMLFormControlElement::invokeTargetElement() {
 }
 
 Element* HTMLFormControlElement::interestTargetElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
 
   if (!IsInTreeScope() || IsDisabledFormControl()) {
     return nullptr;
@@ -627,6 +627,11 @@ void HTMLFormControlElement::SetHovered(bool hovered) {
 
 void HTMLFormControlElement::HandlePopoverInvokerHovered(bool hovered) {
   if (!IsInTreeScope()) {
+    return;
+  }
+  if (invokeTargetElement() ||
+      (RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled() &&
+       interestTargetElement())) {
     return;
   }
   auto target_info = popoverTargetElement();

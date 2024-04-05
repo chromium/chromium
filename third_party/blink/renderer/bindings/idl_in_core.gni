@@ -227,6 +227,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/events/hash_change_event_init.idl",
   "//third_party/blink/renderer/core/events/input_event.idl",
   "//third_party/blink/renderer/core/events/input_event_init.idl",
+  "//third_party/blink/renderer/core/events/interest_event.idl",
   "//third_party/blink/renderer/core/events/invoke_event.idl",
   "//third_party/blink/renderer/core/events/keyboard_event.idl",
   "//third_party/blink/renderer/core/events/keyboard_event_init.idl",

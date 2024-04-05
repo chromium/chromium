@@ -971,6 +971,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return false;
   }
 
+  void InterestGained();
+
+  virtual Element* interestTargetElement() { return nullptr; }
+  virtual AtomicString interestAction() const { return g_null_atom; }
+
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
   // Avoids layout update.
