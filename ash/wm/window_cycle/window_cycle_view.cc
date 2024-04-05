@@ -715,7 +715,8 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {
   const bool empty_mirror_container = mirror_container_->children().empty();
   if (empty_mirror_container && no_recent_items_label_)
-    return gfx::Rect(no_recent_items_label_->GetPreferredSize());
+    return gfx::Rect(no_recent_items_label_->GetPreferredSize(
+        views::SizeBounds(no_recent_items_label_->width(), {})));
   return gfx::Rect(mirror_container_->GetPreferredSize());
 }
 

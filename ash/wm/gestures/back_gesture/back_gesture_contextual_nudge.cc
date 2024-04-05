@@ -232,7 +232,8 @@ class BackGestureContextualNudge::ContextualNudgeView
     void Layout(PassKey) override {
       const gfx::Rect bounds = GetLocalBounds();
       gfx::Rect label_rect(bounds);
-      label_rect.ClampToCenteredSize(label_->GetPreferredSize());
+      label_rect.ClampToCenteredSize(
+          label_->GetPreferredSize(views::SizeBounds(label_->width(), {})));
       label_rect.set_x(bounds.x() + 2 * kCircleRadius +
                        kPaddingBetweenCircleAndLabel + kLabelCornerRadius);
       label_->SetBoundsRect(label_rect);

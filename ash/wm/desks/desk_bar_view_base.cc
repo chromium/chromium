@@ -215,7 +215,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
         icon_button_bounds.width() - desk_name_view->GetInsets().width(),
         gfx::ELIDE_TAIL));
 
-    const gfx::Size button_label_size = label->GetPreferredSize();
+    const gfx::Size button_label_size =
+        label->GetPreferredSize(views::SizeBounds(label->width(), {}));
 
     label->SetBoundsRect(gfx::Rect(
         gfx::Point(
