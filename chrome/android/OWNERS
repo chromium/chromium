@@ -7,6 +7,7 @@ nyquist@chromium.org
 peconn@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
+wenyufu@google.com
 yfriedman@chromium.org
 
 per-file static_initializers.gni=file://build/OWNERS
