@@ -7607,6 +7607,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL" desc="Screen size settings button a11y label. Spoken by screen readers when the screen size settings button button gets focus but not visually rendered.">
         Edit screen size
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_FEATURE_NOT_AVAILABLE_TOOLTIP" desc="Tooltip for when a feature in the Game Dashboard is unavailable.">
+        Not available for this game
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
       </message>

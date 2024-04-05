@@ -324,6 +324,7 @@ class ScreenSizeRow : public views::Button {
         break;
       case ArcResizeLockType::NONE:
         enabled = false;
+        tooltip = IDS_ASH_GAME_DASHBOARD_FEATURE_NOT_AVAILABLE_TOOLTIP;
         break;
     }
 
@@ -420,9 +421,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
                                  gfx::Insets::TLBR(0, 20, 0, 0));
       setup_button_->SetEnabled(is_available);
       if (!is_available) {
-        // TODO(b/274690042): Replace it with localized strings.
-        setup_button_->SetTooltipText(
-            u"This game does not support Game controls");
+        setup_button_->SetTooltipText(l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_FEATURE_NOT_AVAILABLE_TOOLTIP));
       }
     } else {
       const bool is_feature_enabled = IsGameControlsFeatureEnabled(*flags);
