@@ -41,14 +41,14 @@ public class CommerceSubscriptionsServiceFactory {
         if (sSubscriptionsServiceForTesting != null) return sSubscriptionsServiceForTesting;
         Profile originalProfile = profile.getOriginalProfile();
         return mProfileToSubscriptionsService.getForProfile(
-                originalProfile,
-                () -> {
-                    PriceDropNotificationManager priceDropNotificationManager =
-                            PriceDropNotificationManagerFactory.create();
-                    return new CommerceSubscriptionsService(
-                            ShoppingServiceFactory.getForProfile(originalProfile),
-                            priceDropNotificationManager);
-                });
+                originalProfile, CommerceSubscriptionsServiceFactory::buildForProfile);
+    }
+
+    private static CommerceSubscriptionsService buildForProfile(Profile profile) {
+        PriceDropNotificationManager priceDropNotificationManager =
+                PriceDropNotificationManagerFactory.create();
+        return new CommerceSubscriptionsService(
+                ShoppingServiceFactory.getForProfile(profile), priceDropNotificationManager);
     }
 
     /** Sets the CommerceSubscriptionsService for testing. */

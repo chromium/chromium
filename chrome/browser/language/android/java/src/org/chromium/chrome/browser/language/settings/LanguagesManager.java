@@ -402,8 +402,7 @@ public class LanguagesManager {
             sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         Profile originalProfile = profile.getOriginalProfile();
-        return sProfileMap.getForProfile(
-                originalProfile, () -> new LanguagesManager(originalProfile));
+        return sProfileMap.getForProfile(originalProfile, LanguagesManager::new);
     }
 
     /** Called to release unused resources. */

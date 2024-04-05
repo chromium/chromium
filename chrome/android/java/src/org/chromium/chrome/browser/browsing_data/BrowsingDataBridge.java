@@ -73,17 +73,17 @@ public final class BrowsingDataBridge {
         if (sProfileMap == null) {
             sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
-        return sProfileMap.getForProfile(profile, () -> new BrowsingDataBridge(profile));
+        return sProfileMap.getForProfile(profile, BrowsingDataBridge::new);
     }
 
     /**
-     * Clear the specified types of browsing data asynchronously.
-     * |listener| is an object to be notified when clearing completes.
-     * It can be null, but many operations (e.g. navigation) are
+     * Clear the specified types of browsing data asynchronously. |listener| is an object to be
+     * notified when clearing completes. It can be null, but many operations (e.g. navigation) are
      * ill-advised while browsing data is being cleared.
+     *
      * @param listener A listener to call back when the clearing is finished.
-     * @param dataTypes An array of browsing data types to delete, represented as values from
-     *                  the shared enum {@link BrowsingDataType}.
+     * @param dataTypes An array of browsing data types to delete, represented as values from the
+     *     shared enum {@link BrowsingDataType}.
      * @param timePeriod The time period for which to delete the data.
      */
     public void clearBrowsingData(

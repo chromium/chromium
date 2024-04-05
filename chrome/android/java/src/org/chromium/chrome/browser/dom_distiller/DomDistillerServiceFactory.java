@@ -26,10 +26,12 @@ public class DomDistillerServiceFactory {
     /** Returns Java DomDistillerService for given Profile. */
     public static DomDistillerService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        Profile originalProfile = profile.getOriginalProfile();
         return sServiceMap.getForProfile(
-                originalProfile,
-                () -> DomDistillerServiceFactoryJni.get().getForProfile(originalProfile));
+                profile.getOriginalProfile(), DomDistillerServiceFactory::buildForProfile);
+    }
+
+    private static DomDistillerService buildForProfile(Profile profile) {
+        return DomDistillerServiceFactoryJni.get().getForProfile(profile);
     }
 
     @NativeMethods

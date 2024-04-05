@@ -35,15 +35,15 @@ public class OptimizationGuideBridgeFactory {
      * @return {@link OptimizationGuideBridge} for the current last used regular profile
      */
     public OptimizationGuideBridge create() {
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return mProfileToOptimizationGuideBridgeMap.getForProfile(
-                profile,
-                () -> {
-                    OptimizationGuideBridge optimizationGuideBridge = new OptimizationGuideBridge();
-                    if (mOptimizationTypes.size() > 0) {
-                        optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
-                    }
-                    return optimizationGuideBridge;
-                });
+                ProfileManager.getLastUsedRegularProfile(), this::buildForProfile);
+    }
+
+    private OptimizationGuideBridge buildForProfile(Profile profile) {
+        OptimizationGuideBridge optimizationGuideBridge = new OptimizationGuideBridge();
+        if (mOptimizationTypes.size() > 0) {
+            optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
+        }
+        return optimizationGuideBridge;
     }
 }

@@ -20,8 +20,7 @@ public class PersonalDataManagerFactory {
         if (sManagerForTesting != null) return sManagerForTesting;
         ThreadUtils.assertOnUiThread();
         Profile originalProfile = profile.getOriginalProfile();
-        return sProfileMap.getForProfile(
-                originalProfile, () -> new PersonalDataManager(originalProfile));
+        return sProfileMap.getForProfile(originalProfile, PersonalDataManager::new);
     }
 
     public static void setInstanceForTesting(PersonalDataManager manager) {

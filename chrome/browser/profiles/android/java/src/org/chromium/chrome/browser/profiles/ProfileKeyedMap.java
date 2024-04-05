@@ -12,12 +12,13 @@ import org.chromium.base.supplier.Supplier;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * A Profile-lifetime aware data structure that allows mapping objects to Profile and handling the
  * necessary cleanup when a Profile is destroyed.
  *
- * This data structure owns the objects associated with the Profile and will delete them when
+ * <p>This data structure owns the objects associated with the Profile and will delete them when
  * appropriate.
  *
  * @param <T> The type of object being mapped to the Profile.
@@ -51,15 +52,49 @@ public class ProfileKeyedMap<T> {
     }
 
     /**
-     * Gets (and lazily constructs if needed) the mapped object  for a given Profile.
+     * Gets (and lazily constructs if needed) the mapped object for a given Profile.
+     *
      * @param profile The Profile the object is associated with.
      * @param factory The factory that will construct the object if it does not already exist.
      * @return The object associated with the passed in Profile.
+     * @deprecated Use {@link #getForProfile(Profile, Function)} instead.
      */
+    @Deprecated
     public T getForProfile(Profile profile, Supplier<T> factory) {
         T obj = mData.get(profile);
         if (obj == null) {
             obj = factory.get();
+            mData.put(profile, obj);
+        }
+        if (mProfileManagerObserver == null) {
+            mProfileManagerObserver =
+                    new ProfileManager.Observer() {
+                        @Override
+                        public void onProfileAdded(Profile profile) {}
+
+                        @Override
+                        public void onProfileDestroyed(Profile destroyedProfile) {
+                            T obj = mData.remove(destroyedProfile);
+                            if (obj == null) return;
+                            if (mDestroyAction != null) mDestroyAction.onResult(obj);
+                        }
+                    };
+            ProfileManager.addObserver(mProfileManagerObserver);
+        }
+        return obj;
+    }
+
+    /**
+     * Gets (and lazily constructs if needed) the mapped object for a given Profile.
+     *
+     * @param profile The Profile the object is associated with.
+     * @param factory The factory that will construct the object if it does not already exist.
+     * @return The object associated with the passed in Profile.
+     */
+    public T getForProfile(Profile profile, Function<Profile, T> factory) {
+        T obj = mData.get(profile);
+        if (obj == null) {
+            obj = factory.apply(profile);
             mData.put(profile, obj);
         }
         if (mProfileManagerObserver == null) {

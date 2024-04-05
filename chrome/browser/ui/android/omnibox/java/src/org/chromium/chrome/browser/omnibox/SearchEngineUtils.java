@@ -94,8 +94,11 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
         assert profile != null;
-        return sProfileKeyedUtils.getForProfile(
-                profile, () -> new SearchEngineUtils(profile, new FaviconHelper()));
+        return sProfileKeyedUtils.getForProfile(profile, SearchEngineUtils::buildForProfile);
+    }
+
+    private static SearchEngineUtils buildForProfile(Profile profile) {
+        return new SearchEngineUtils(profile, new FaviconHelper());
     }
 
     @Override

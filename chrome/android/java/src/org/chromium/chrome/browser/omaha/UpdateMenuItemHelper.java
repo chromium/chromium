@@ -86,7 +86,7 @@ public class UpdateMenuItemHelper {
             if (sProfileMap == null) {
                 sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
             }
-            return sProfileMap.getForProfile(profile, () -> new UpdateMenuItemHelper(profile));
+            return sProfileMap.getForProfile(profile, UpdateMenuItemHelper::new);
         }
     }
 

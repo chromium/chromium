@@ -23,6 +23,6 @@ public class LevelDBPersistedTabDataStorageFactory
     public LevelDBPersistedTabDataStorage create() {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         return sProfileToLevelDBStorageMap.getForProfile(
-                profile, () -> new LevelDBPersistedTabDataStorage(profile));
+                profile, LevelDBPersistedTabDataStorage::new);
     }
 }

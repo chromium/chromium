@@ -78,7 +78,7 @@ public class SimpleHttpClient implements Destroyable {
     }
 
     public static SimpleHttpClient getForProfile(Profile profile) {
-        return sClients.getForProfile(profile, () -> new SimpleHttpClient((profile)));
+        return sClients.getForProfile(profile, SimpleHttpClient::new);
     }
 
     /**

@@ -95,7 +95,7 @@ public class ShoppingPersistedTabDataService {
                     new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileToPriceDropService.getForProfile(
-                profile, ShoppingPersistedTabDataService::new);
+                profile, (unused) -> new ShoppingPersistedTabDataService());
     }
 
     /**

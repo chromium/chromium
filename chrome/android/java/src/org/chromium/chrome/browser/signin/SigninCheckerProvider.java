@@ -26,17 +26,17 @@ public final class SigninCheckerProvider {
     @MainThread
     public static SigninChecker get(Profile profile) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
-        return sProfileMap.getForProfile(
-                profile,
-                () -> {
-                    // SyncErrorNotifier must be explicitly initialized.
-                    // TODO(crbug.com/1156620): Move the initializations elsewhere.
-                    SyncErrorNotifier.getForProfile(profile);
-                    return new SigninChecker(
-                            IdentityServicesProvider.get().getSigninManager(profile),
-                            IdentityServicesProvider.get().getAccountTrackerService(profile),
-                            SyncServiceFactory.getForProfile(profile));
-                });
+        return sProfileMap.getForProfile(profile, SigninCheckerProvider::buildForProfile);
+    }
+
+    private static SigninChecker buildForProfile(Profile profile) {
+        // SyncErrorNotifier must be explicitly initialized.
+        // TODO(crbug.com/1156620): Move the initializations elsewhere.
+        SyncErrorNotifier.getForProfile(profile);
+        return new SigninChecker(
+                IdentityServicesProvider.get().getSigninManager(profile),
+                IdentityServicesProvider.get().getAccountTrackerService(profile),
+                SyncServiceFactory.getForProfile(profile));
     }
 
     @MainThread

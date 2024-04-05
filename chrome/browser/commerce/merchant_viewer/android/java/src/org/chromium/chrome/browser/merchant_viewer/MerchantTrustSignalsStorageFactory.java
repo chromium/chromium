@@ -39,8 +39,7 @@ class MerchantTrustSignalsStorageFactory {
             return null;
         }
 
-        return sProfileToStorage.getForProfile(
-                profile, () -> new MerchantTrustSignalsEventStorage(profile));
+        return sProfileToStorage.getForProfile(profile, MerchantTrustSignalsEventStorage::new);
     }
 
     /**

@@ -77,15 +77,14 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         ThreadUtils.assertOnUiThread();
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) return null;
-        return sProfileMap.getForProfile(
-                profile,
-                () -> {
-                    return new SyncErrorNotifier(
-                            BaseNotificationManagerProxyFactory.create(
-                                    ContextUtils.getApplicationContext()),
-                            syncService,
-                            TrustedVaultClient.get());
-                });
+        return sProfileMap.getForProfile(profile, SyncErrorNotifier::buildForProfile);
+    }
+
+    private static SyncErrorNotifier buildForProfile(Profile profile) {
+        return new SyncErrorNotifier(
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()),
+                SyncServiceFactory.getForProfile(profile),
+                TrustedVaultClient.get());
     }
 
     @VisibleForTesting
