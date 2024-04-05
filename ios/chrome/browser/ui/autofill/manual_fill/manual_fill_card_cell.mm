@@ -391,7 +391,7 @@ using autofill::CreditCard::RecordType::kVirtualCard;
   }
 
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
-                                           verticalViews, self.contentView);
+                                           verticalViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 

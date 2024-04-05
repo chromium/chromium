@@ -7,17 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-// Left and right margins of the cell content.
-extern const CGFloat kCellHorizontalMargin;
+// Margins of the cell content.
+extern const CGFloat kCellMargin;
 
 // Left and right margins for the chips.
 extern const CGFloat kChipsHorizontalMargin;
-
-// The multiplier for the base system spacing at the top margin.
-extern const CGFloat TopSystemSpacingMultiplier;
-
-// The multiplier for the base system spacing at the bottom margin.
-extern const CGFloat BottomSystemSpacingMultiplier;
 
 // Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
@@ -32,22 +26,23 @@ typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);
 
 // Adds vertical constraints to given list, laying `views` vertically (based on
-// firstBaselineAnchor for the buttons or labels) inside `container`, starting
-// at its topAnchor. Constrainst are not activated.  Default multipliers are
-// applied.
+// firstBaselineAnchor for the buttons or labels) following the `layout_guide`.
+// Constraints are not activated.
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* container);
+    UILayoutGuide* layout_guide);
 
 // Adds vertical constraints like `AppendVerticalConstraintsSpacingForViews`
-// above but using given mutipliers at top, bottom and in-between rows.
+// above but using an `offset` to shift the first view's top anchor upwards when
+// displaying a password cell that is connected to the previous one.
+// TODO(crbug.com/326398845): Remove the `offset` parameter once the Keyboard
+// Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* container,
-    CGFloat topSystemSpacingMultiplier,
-    CGFloat BottomSystemSpacingMultiplier);
+    UILayoutGuide* layout_guide,
+    CGFloat offset);
 
 // Adds constraints to the given list, for the given `views`, so as to lay them
 // out horizontally, aligned with the `layout_guide`. Constraints are not
@@ -75,7 +70,7 @@ void AppendHorizontalConstraintsForViews(
     AppendConstraints options);
 
 // Adds all baseline anchor constraints for the given `views` to match the first
-// one. Constrainst are not activated.
+// one. Constraints are not activated.
 void AppendEqualBaselinesConstraints(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views);

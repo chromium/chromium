@@ -96,12 +96,9 @@ CGFloat GetFaviconSize() {
 
 namespace {
 
-// The multiplier for the base system spacing at the top margin for connected
-// cells.
-static const CGFloat TopSystemSpacingMultiplierForConnectedCell = 1.28;
-
-// When no extra multiplier is required.
-static const CGFloat NoMultiplier = 1.0;
+// The offset to apply to a cell's top margin when connected to the previous
+// cell.
+static const CGFloat kOffsetForConnectedCell = 16;
 
 }  // namespace
 
@@ -244,16 +241,11 @@ static const CGFloat NoMultiplier = 1.0;
     self.grayLine.hidden = YES;
   }
 
-  CGFloat topSystemSpacingMultiplier =
-      isConnectedToPreviousCell ? TopSystemSpacingMultiplierForConnectedCell
-                                : TopSystemSpacingMultiplier;
-  CGFloat bottomSystemSpacingMultiplier =
-      isConnectedToNextCell ? NoMultiplier : BottomSystemSpacingMultiplier;
+  CGFloat offset = isConnectedToPreviousCell ? -kOffsetForConnectedCell : 0;
 
   self.dynamicConstraints = [[NSMutableArray alloc] init];
   AppendVerticalConstraintsSpacingForViews(
-      self.dynamicConstraints, verticalLeadViews, self.contentView,
-      topSystemSpacingMultiplier, bottomSystemSpacingMultiplier);
+      self.dynamicConstraints, verticalLeadViews, self.layoutGuide, offset);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 

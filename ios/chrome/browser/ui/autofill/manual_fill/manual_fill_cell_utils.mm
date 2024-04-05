@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -14,14 +15,22 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// Horizontal spacing between views in `AppendHorizontalConstraintsForViews`.
+
+// Bottom margin for the cell content. Used when the Keyboard Accessory Upgrade
+// feature is disabled.
+constexpr CGFloat kCellBottomMargin = 18;
+
+// Horizontal spacing between views used in
+// `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
+
+// Vertical spacing between views used in `AppendVerticalConstraintsForViews`.
+constexpr CGFloat kVerticalSpacing = 8;
+
 }  // namespace
 
-const CGFloat kCellHorizontalMargin = 16;
+const CGFloat kCellMargin = 16;
 const CGFloat kChipsHorizontalMargin = -1;
-const CGFloat TopSystemSpacingMultiplier = 2;
-const CGFloat BottomSystemSpacingMultiplier = 2.26;
 
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
   UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];
@@ -36,35 +45,28 @@ UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* container) {
-  AppendVerticalConstraintsSpacingForViews(constraints, views, container,
-                                           TopSystemSpacingMultiplier,
-                                           BottomSystemSpacingMultiplier);
+    UILayoutGuide* layout_guide) {
+  AppendVerticalConstraintsSpacingForViews(constraints, views, layout_guide, 0);
 }
 
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* container,
-    CGFloat topSystemSpacingMultiplier,
-    CGFloat bottomSystemSpacingMultiplier) {
-  // Multipliers of these constraints are calculated based on a 24 base
-  // system spacing.
-  NSLayoutYAxisAnchor* previousAnchor = container.topAnchor;
-  CGFloat multiplier = topSystemSpacingMultiplier;
+    UILayoutGuide* layout_guide,
+    CGFloat offset) {
+  NSLayoutYAxisAnchor* previous_anchor = layout_guide.topAnchor;
+  CGFloat spacing = offset;
   for (UIView* view in views) {
     [constraints
-        addObject:[view.topAnchor
-                      constraintEqualToSystemSpacingBelowAnchor:previousAnchor
-                                                     multiplier:multiplier]];
-    multiplier = 1.0;
-    previousAnchor = view.bottomAnchor;
+        addObject:[view.topAnchor constraintEqualToAnchor:previous_anchor
+                                                 constant:spacing]];
+    spacing = kVerticalSpacing;
+    previous_anchor = view.bottomAnchor;
   }
-  multiplier = bottomSystemSpacingMultiplier;
+
   [constraints
-      addObject:[container.bottomAnchor
-                    constraintEqualToSystemSpacingBelowAnchor:previousAnchor
-                                                   multiplier:multiplier]];
+      addObject:[previous_anchor
+                    constraintEqualToAnchor:layout_guide.bottomAnchor]];
 }
 
 void AppendHorizontalConstraintsForViews(
@@ -173,9 +175,9 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
     [grayLine.heightAnchor constraintEqualToConstant:1],
     // Horizontal constraints.
     [grayLine.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor
-                                           constant:kCellHorizontalMargin],
+                                           constant:kCellMargin],
     [safeArea.trailingAnchor constraintEqualToAnchor:grayLine.trailingAnchor
-                                            constant:kCellHorizontalMargin],
+                                            constant:kCellMargin],
   ]];
 
   return grayLine;
@@ -186,15 +188,18 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view) {
   [content_view addLayoutGuide:layout_guide];
 
   id<LayoutGuideProvider> safe_area = content_view.safeAreaLayoutGuide;
+  CGFloat bottom_margin =
+      IsKeyboardAccessoryUpgradeEnabled() ? kCellMargin : kCellBottomMargin;
   [NSLayoutConstraint activateConstraints:@[
-    [layout_guide.topAnchor constraintEqualToAnchor:content_view.topAnchor],
-    [layout_guide.bottomAnchor
-        constraintEqualToAnchor:content_view.bottomAnchor],
+    [layout_guide.topAnchor constraintEqualToAnchor:content_view.topAnchor
+                                           constant:kCellMargin],
+    [layout_guide.bottomAnchor constraintEqualToAnchor:content_view.bottomAnchor
+                                              constant:-bottom_margin],
     [layout_guide.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
-                                               constant:kCellHorizontalMargin],
+                                               constant:kCellMargin],
     [layout_guide.trailingAnchor
         constraintEqualToAnchor:safe_area.trailingAnchor
-                       constant:-kCellHorizontalMargin],
+                       constant:-kCellMargin],
   ]];
 
   return layout_guide;
