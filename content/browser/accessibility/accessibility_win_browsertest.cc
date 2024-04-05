@@ -1212,9 +1212,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, NoFocusEventOnRootChange) {
 
   // Adding an iframe as a direct descendant of the root will reserialize the
   // root node.
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLayoutComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
   ExecuteScript(
       u"let iframe = document.createElement('iframe');"
       u"iframe.srcdoc = '<button>Button</button>';"
@@ -1272,9 +1270,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   }
 
   {
-    AccessibilityNotificationWaiter iframe_waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kLayoutComplete);
+    AccessibilityNotificationWaiter iframe_waiter(shell()->web_contents());
     ExecuteScript(u"document.body.removeChild(iframe);");
     WaitForAccessibilityFocusChange();
     ASSERT_TRUE(iframe_waiter.WaitForNotification());
@@ -1304,9 +1300,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ASSERT_NE(nullptr, outer_button_win);
 
   {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
     ExecuteScript(
         u"let iframe = document.createElement('iframe');"
         u"iframe.srcdoc = '<button>Inner button</button>';"
@@ -1321,9 +1315,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   }
 
   {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
     ExecuteScript(u"document.body.removeChild(iframe);");
     ASSERT_TRUE(waiter.WaitForNotification());
 
@@ -5045,9 +5037,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   ASSERT_NE(nullptr, root_element.Get());
 
   // Insert a new iframe and wait for tree update.
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLayoutComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
   ExecuteScript(
       u"let new_frame = document.createElement('iframe');"
       u"new_frame.setAttribute('src', 'about:blank');"
@@ -5776,9 +5766,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FixedRuntimeId) {
       u"let parent = document.getElementById('newParent');"
       u"parent.appendChild(target);");
 
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLayoutComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
   ASSERT_TRUE(waiter.WaitForNotification());
 
   target = FindNode(ax::mojom::Role::kStaticText, "foo");

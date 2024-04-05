@@ -2117,8 +2117,10 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
-    // Run test for 1 second, counting the number of layout completes.
+                                           ax::mojom::Event::kLocationChanged);
+    // Run test for 1 second, counting the number of location change events.
+    // Number of location change events is used as a measure to count number of
+    // serializations.
     while (timer.Elapsed().InMilliseconds() < 1000) {
       std::ignore = waiter.WaitForNotificationWithTimeout(
           base::Milliseconds(1000) - timer.Elapsed());
@@ -2579,16 +2581,24 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       <div style="display: flex; min-height: 90vh;">
         <div style="display: flex; flex-grow: 1; align-items: flex-end;">
           <div>
-            <button style="display: inline-flex; will-change: transform;">
+            <button aria-label='NextButton' style="display: inline-flex;
+                will-change: transform;">
               Next
             </button>
           </div>
         </div>
       </div>)HTML");
 
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "NextButton");
+
   BrowserAccessibility* button =
       FindFirstNodeWithRole(ax::mojom::Role::kButton);
   gfx::Rect bounds0 = button->GetUnclippedRootFrameBoundsRect();
+
+  // Wait for any event.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
+                                         ax::mojom::Event::kNone);
 
   // Resize the viewport, making it half the height.
   gfx::Rect view_bounds = shell()->web_contents()->GetViewBounds();
@@ -2597,9 +2607,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   gfx::Rect bounds1;
   do {
-    // Wait for any event
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::AXMode(), ax::mojom::Event::kNone);
     ASSERT_TRUE(waiter.WaitForNotification());
     bounds1 = button->GetUnclippedRootFrameBoundsRect();
   } while (bounds1.y() == bounds0.y());

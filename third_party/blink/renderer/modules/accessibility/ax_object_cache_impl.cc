@@ -5574,11 +5574,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   if (need_to_send_location_changes_) {
     need_to_send_location_changes_ = false;  // Class member is now clear.
     need_to_send_location_changes = true;    // Reference parameter.
-    // TODO(accessibility) Remove the layout complete event, which is only
-    // used by tests and as a signal to serialize location data.
-    ui::AXEvent layout_complete_event(Root()->AXObjectID(),
-                                      ax::mojom::blink::Event::kLayoutComplete);
-    pending_events_.push_back(layout_complete_event);
   }
 
   // Loop over each event and generate an updated event message.

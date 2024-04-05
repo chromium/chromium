@@ -3657,8 +3657,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     ASSERT_NE(nullptr, text_range_provider.Get());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
 
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+    AccessibilityNotificationWaiter waiter(web_contents);
 
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
@@ -3685,8 +3684,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         /*expected_text*/ L"Before frame\nText ",
         /*expected_count*/ 1);
 
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
+    AccessibilityNotificationWaiter waiter(web_contents);
 
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
@@ -4108,9 +4106,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_HRESULT_SUCCEEDED(deletion_text_range_provider->Select());
 
   // Now we delete "world".
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLayoutComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::BACKSPACE,
                    ui::DomCode::BACKSPACE, ui::VKEY_BACK, false, false, false,
                    false);
@@ -4225,9 +4221,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ASSERT_TRUE(sel_waiter.WaitForNotification());
 
   // Now we delete "hello".
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLayoutComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::BACKSPACE,
                    ui::DomCode::BACKSPACE, ui::VKEY_BACK, /* control */ false,
                    /* shift */ false, /* alt */ false,

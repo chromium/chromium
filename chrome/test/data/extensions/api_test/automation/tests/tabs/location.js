@@ -24,12 +24,16 @@ var allTests = [
     assertTrue('height' in okButton.location, 'no height in location');
     assertTrue('width' in okButton.location, 'no width in location');
 
-    rootNode.addEventListener(
-        EventType.LAYOUT_COMPLETE, assertOkButtonLocation);
+    okButton.addEventListener(
+        EventType.FOCUS, assertOkButtonLocation);
+
     chrome.tabs.executeScript({ 'code':
           'document.querySelector("button")' +
           '.setAttribute("style", "position: absolute; left: 100; top: 150; ' +
           'width: 300; height: 350;");' });
+
+    // Just to ensure all pending a11y code is done.
+    okButton.focus();
   }
 ];
 
