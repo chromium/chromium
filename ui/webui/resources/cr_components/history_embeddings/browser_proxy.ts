@@ -6,7 +6,6 @@ import type {PageHandlerRemote, SearchQuery, SearchResult} from './history_embed
 import {PageHandler} from './history_embeddings.mojom-webui.js';
 
 export interface HistoryEmbeddingsBrowserProxy {
-  doSomething(): Promise<boolean>;
   search(query: SearchQuery): Promise<SearchResult>;
 }
 
@@ -27,10 +26,6 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
 
   static setInstance(newInstance: HistoryEmbeddingsBrowserProxy) {
     HistoryEmbeddingsBrowserProxyImpl.instance = newInstance;
-  }
-
-  doSomething() {
-    return this.handler.doSomething().then(response => response.success);
   }
 
   search(query: SearchQuery) {

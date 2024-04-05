@@ -62,17 +62,6 @@ class HistoryEmbeddingsHandlerTest : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
-TEST_F(HistoryEmbeddingsHandlerTest, DoesSomething) {
-  base::MockCallback<HistoryEmbeddingsHandler::DoSomethingCallback> callback;
-  bool did_something = false;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([&](bool response) { did_something = response; }));
-  handler_->DoSomething(callback.Get());
-  ASSERT_TRUE(did_something);
-}
-
 TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
   auto query = history_embeddings::mojom::SearchQuery::New();
   query->query = "search query for empty result";

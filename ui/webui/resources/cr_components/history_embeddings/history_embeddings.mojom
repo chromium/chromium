@@ -43,9 +43,6 @@ struct SearchResult {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Temporary method to see successful interaction between WebUI and handler.
-  DoSomething() => (bool success);
-
   // Search method to retrieve history embeddings search results.
   Search(SearchQuery query) => (SearchResult result);
 };

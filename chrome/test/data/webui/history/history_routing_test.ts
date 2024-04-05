@@ -282,7 +282,6 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     const handler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
-    handler.setResultFor('doSomething', Promise.resolve(true));
 
     app = document.createElement('history-app');
     document.body.appendChild(app);

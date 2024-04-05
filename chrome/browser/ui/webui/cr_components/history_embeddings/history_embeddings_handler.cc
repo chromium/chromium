@@ -52,10 +52,6 @@ HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
 
 HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
 
-void HistoryEmbeddingsHandler::DoSomething(DoSomethingCallback callback) {
-  std::move(callback).Run(true);
-}
-
 void HistoryEmbeddingsHandler::Search(
     history_embeddings::mojom::SearchQueryPtr query,
     SearchCallback callback) {

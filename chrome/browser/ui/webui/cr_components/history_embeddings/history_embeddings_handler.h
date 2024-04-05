@@ -25,7 +25,6 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   ~HistoryEmbeddingsHandler() override;
 
   // history_embeddings::mojom::PageHandler:
-  void DoSomething(DoSomethingCallback callback) override;
   void Search(history_embeddings::mojom::SearchQueryPtr query,
               SearchCallback callback) override;
 
