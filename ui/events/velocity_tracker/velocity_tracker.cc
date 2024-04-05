@@ -10,6 +10,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/events/velocity_tracker/motion_event.h"
@@ -246,6 +247,18 @@ VelocityTrackerStrategy* CreateStrategy(VelocityTracker::Strategy strategy) {
   return CreateStrategy(VelocityTracker::STRATEGY_DEFAULT);
 }
 
+// We updated the timestamp used in AddMovement to correctly use the latest.
+// However we would like to confirm if an increase in jank seen is a measurement
+// only change caused by the timestamp accuracy. This feature re-enables using
+// the oldest timestamp from the event for the purpose of validation.
+//
+// This is only to validate whether this change was the cause of the jank
+// regression.
+//
+// TODO(b/332930087): clean this up after the validation has been completed.
+BASE_DECLARE_FEATURE(kUseOldestTimestamp){"UseOldestTimestamp",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 // --- VelocityTracker ---
@@ -370,7 +383,10 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
     positions[index].x = event.GetX(i);
     positions[index].y = event.GetY(i);
   }
-  AddMovement(event.GetLatestEventTime(), id_bits, positions);
+  AddMovement(base::FeatureList::IsEnabled(kUseOldestTimestamp)
+                  ? event.GetEventTime()
+                  : event.GetLatestEventTime(),
+              id_bits, positions);
 }
 
 bool VelocityTracker::GetVelocity(uint32_t id,
