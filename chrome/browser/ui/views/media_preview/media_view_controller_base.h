@@ -54,16 +54,25 @@ class MediaViewControllerBase {
   // Shows the combobox if `device_count` > 1.
   void OnDeviceListChanged(size_t device_count);
 
- private:
-  friend class MediaViewControllerBaseTestParameterized;
+  const raw_ref<views::Combobox> GetComboboxForTesting() {
+    return device_selector_combobox_;
+  }
+  const raw_ref<views::Label> GetDeviceNameLabelViewForTesting() {
+    return device_name_label_;
+  }
+  const raw_ref<views::Label> GetNoDeviceLabelViewForTesting() {
+    return no_devices_found_label_;
+  }
 
+  // Only made public for testing purposes.
+  void OnComboboxMenuWillShow();
+
+ private:
   void OnComboboxSelection(bool due_to_user_action);
 
   void UpdateDeviceNameLabel();
 
   void AnnounceDynamicChangeIfNeeded(std::u16string announcement);
-
-  void OnComboboxMenuWillShow();
 
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;
