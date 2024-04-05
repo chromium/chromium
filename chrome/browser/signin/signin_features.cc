@@ -121,5 +121,5 @@ extern const base::FeatureParam<bool>
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kPreconnectAccountCapabilitiesBeforeSignIn,
              "PreconnectAccountCapabilitiesBeforeSignIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
