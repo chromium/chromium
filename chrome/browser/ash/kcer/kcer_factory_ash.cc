@@ -85,17 +85,42 @@ void KcerFactoryAsh::EnsureFactoryBuilt() {
   }
 }
 
+PrefService* GetActiveUserPrefs() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    return nullptr;
+  }
+  user_manager::UserManager* manager = user_manager::UserManager::Get();
+  if (!manager) {
+    return nullptr;
+  }
+  user_manager::User* user = manager->GetActiveUser();
+  if (!user) {
+    return nullptr;
+  }
+  return user->GetProfilePrefs();
+}
+
 void KcerFactoryAsh::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (ash::Shell::HasInstance() && ash::Shell::Get()->session_controller()) {
-    ash::Shell::Get()->session_controller()->AddObserver(this);
-  } else {
-    CHECK_IS_TEST();
-  }
   if (UseKcerWithoutNss()) {
     StartInitializingDeviceKcerWithoutNss();
   } else {
     StartInitializingDeviceKcerForNss();
+  }
+
+  // Check whether prefs for the active user are already available. If yes,
+  // continue with the potential rollback, otherwise observe session_controller
+  // and wait for the user. In Lacros Chrome is restarted with the correct user
+  // instead of adding a new one on user login, so
+  // OnActiveUserPrefServiceChanged() is not called.
+  PrefService* pref_service = GetActiveUserPrefs();
+  if (pref_service) {
+    return MaybeScheduleRollbackForCertDoubleWrite(pref_service);
+  }
+  if (ash::Shell::HasInstance() && ash::Shell::Get()->session_controller()) {
+    ash::Shell::Get()->session_controller()->AddObserver(this);
+  } else {
+    CHECK_IS_TEST();
   }
 }
 
@@ -342,6 +367,11 @@ bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
 }
 
 void KcerFactoryAsh::OnActiveUserPrefServiceChanged(PrefService* pref_service) {
+  MaybeScheduleRollbackForCertDoubleWrite(pref_service);
+}
+
+void KcerFactoryAsh::MaybeScheduleRollbackForCertDoubleWrite(
+    PrefService* pref_service) {
   if (rollback_helper_) {
     rollback_helper_.reset();
   }
