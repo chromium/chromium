@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -18,7 +19,6 @@ class LineInfo;
 class LogicalLineItems;
 class PhysicalBoxFragment;
 class ShapeResultView;
-struct FontHeight;
 struct InlineItemResult;
 struct LogicalRubyColumn;
 struct PhysicalRect;
@@ -128,10 +128,20 @@ class CORE_EXPORT RubyBlockPositionCalculator {
 
     const RubyLevel& Level() const { return level_; }
     bool IsBaseLevel() const { return level_.empty(); }
+    bool IsFirstOverLevel() const {
+      return level_.size() == 1u && level_[0] == 1;
+    }
+    bool IsFirstUnderLevel() const {
+      return level_.size() == 1u && level_[0] == -1;
+    }
     const Vector<wtf_size_t> BaseIndexList() const { return base_index_list_; }
+    // This operator defines lines below are smaller than lines above.
+    bool operator<(const RubyLine& another) const;
 
     void Append(LogicalRubyColumn& logical_column);
     void MaybeRecordBaseIndexes(const LogicalRubyColumn& logical_column);
+    FontHeight UpdateMetrics();
+    void MoveInBlockDirection(LayoutUnit offset);
 
     const HeapVector<Member<LogicalRubyColumn>>& ColumnListForTesting() const {
       return column_list_;
@@ -146,6 +156,8 @@ class CORE_EXPORT RubyBlockPositionCalculator {
     // annotations of the base level because other levels don't touch the base
     // level.
     Vector<wtf_size_t> base_index_list_;
+
+    FontHeight metrics_ = FontHeight::Empty();
   };
 
   // Represents the maximum number of over/under annotations attached to the
@@ -167,8 +179,11 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   RubyBlockPositionCalculator& GroupLines(
       const HeapVector<Member<LogicalRubyColumn>>& column_list);
 
-  // TODO(crbug.com/324111880): Add methods to compute block offsets
-  // of RubyLines.
+  // Update block offset values of annotation LogicalRubyColumns. This must be
+  // called after GroupLines().
+  RubyBlockPositionCalculator& PlaceLines(
+      const LogicalLineItems& base_line_items,
+      const FontHeight& line_box_metrics);
 
   const HeapVector<Member<RubyLine>, 2>& RubyLineListForTesting() const {
     return ruby_lines_;

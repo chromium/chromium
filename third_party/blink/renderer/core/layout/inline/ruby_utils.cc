@@ -798,6 +798,68 @@ void UpdateRubyColumnInlinePositions(
 
 // ================================================================
 
+namespace {
+
+FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
+  if (const auto& shape_result_view = line_item.shape_result) {
+    const ComputedStyle* style = line_item.Style();
+    const SimpleFontData* primary_font_data = style->GetFont().PrimaryFont();
+    if (!primary_font_data) {
+      return FontHeight();
+    }
+    const auto font_baseline = style->GetFontBaseline();
+    const FontHeight primary_height =
+        primary_font_data->GetFontMetrics().GetFloatFontHeight(font_baseline);
+    FontHeight result_height;
+    // We don't use ShapeResultView::FallbackFonts() because we can't know if
+    // the primary font is actually used with FallbackFonts().
+    HeapVector<ShapeResult::RunFontData> run_fonts;
+    ClearCollectionScope clear_scope(&run_fonts);
+    shape_result_view->GetRunFontData(&run_fonts);
+    for (const auto& run_font : run_fonts) {
+      const SimpleFontData* font_data = run_font.font_data_;
+      if (!font_data) {
+        continue;
+      }
+      result_height.Unite(
+          font_data->NormalizedTypoAscentAndDescent(font_baseline));
+    }
+    result_height.ascent =
+        std::min(result_height.ascent, primary_height.ascent);
+    result_height.descent =
+        std::min(result_height.descent, primary_height.descent);
+    return result_height;
+  }
+  if (const auto& layout_result = line_item.layout_result) {
+    // Assume 0 is the baseline.  BlockOffset() is always negative.
+    return FontHeight(-line_item.BlockOffset(),
+                      line_item.Size().block_size + line_item.BlockOffset());
+  }
+  return FontHeight();
+}
+
+FontHeight ComputeLogicalLineEmHeight(const LogicalLineItems& line_items) {
+  FontHeight height;
+  for (const auto& item : line_items) {
+    height.Unite(ComputeEmHeight(item));
+  }
+  return height;
+}
+
+FontHeight ComputeLogicalLineEmHeight(const LogicalLineItems& line_items,
+                                      const Vector<wtf_size_t>& index_list) {
+  if (index_list.empty()) {
+    return ComputeLogicalLineEmHeight(line_items);
+  }
+  FontHeight height;
+  for (const auto index : index_list) {
+    height.Unite(ComputeEmHeight(line_items[index]));
+  }
+  return height;
+}
+
+}  // namespace
+
 RubyBlockPositionCalculator::RubyBlockPositionCalculator() = default;
 
 RubyBlockPositionCalculator& RubyBlockPositionCalculator::GroupLines(
@@ -876,6 +938,64 @@ RubyBlockPositionCalculator::EnsureRubyLine(const RubyLevel& level) {
   return *ruby_lines_.back();
 }
 
+RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
+    const LogicalLineItems& base_line_items,
+    const FontHeight& line_box_metrics) {
+  DCHECK(!ruby_lines_.empty()) << "This must be called after GroupLines().";
+
+  // Sort `ruby_lines` from the lowest to the highest.
+  base::ranges::sort(ruby_lines_, [](const Member<RubyLine>& line1,
+                                     const Member<RubyLine>& line2) {
+    return *line1 < *line2;
+  });
+
+  auto base_iterator = base::ranges::find_if(
+      ruby_lines_,
+      [](const Member<RubyLine>& line) { return line->Level().empty(); });
+  CHECK_NE(base_iterator, ruby_lines_.end());
+
+  // Place "under" annotations from the base level to the lowest one.
+  if (base_iterator != ruby_lines_.begin()) {
+    auto first_under_iterator = base::ranges::find_if(
+        ruby_lines_.begin(), base_iterator,
+        [](const Member<RubyLine>& line) { return line->IsFirstUnderLevel(); });
+    FontHeight em_height = ComputeLogicalLineEmHeight(
+        base_line_items, (**first_under_iterator).BaseIndexList());
+    if (!em_height.LineHeight()) {
+      em_height = line_box_metrics;
+    }
+    LayoutUnit offset = em_height.descent;
+    for (auto it = base_iterator; it != ruby_lines_.begin(); --it) {
+      RubyLine& ruby_line = **std::prev(it);
+      FontHeight metrics = ruby_line.UpdateMetrics();
+      offset += metrics.ascent;
+      ruby_line.MoveInBlockDirection(offset);
+      offset += metrics.descent;
+    }
+  }
+
+  // Place "over" annotations from the base level to the highest one.
+  if (std::next(base_iterator) != ruby_lines_.end()) {
+    auto first_over_iterator = base::ranges::find_if(
+        base_iterator, ruby_lines_.end(),
+        [](const Member<RubyLine>& line) { return line->IsFirstOverLevel(); });
+    FontHeight em_height = ComputeLogicalLineEmHeight(
+        base_line_items, (**first_over_iterator).BaseIndexList());
+    if (!em_height.LineHeight()) {
+      em_height = line_box_metrics;
+    }
+    LayoutUnit offset = -em_height.ascent;
+    for (auto it = std::next(base_iterator); it != ruby_lines_.end(); ++it) {
+      RubyLine& ruby_line = **it;
+      FontHeight metrics = ruby_line.UpdateMetrics();
+      offset -= metrics.descent;
+      ruby_line.MoveInBlockDirection(offset);
+      offset -= metrics.ascent;
+    }
+  }
+  return *this;
+}
+
 // ================================================================
 
 RubyBlockPositionCalculator::RubyLine::RubyLine(const RubyLevel& level)
@@ -885,6 +1005,19 @@ void RubyBlockPositionCalculator::RubyLine::Trace(Visitor* visitor) const {
   visitor->Trace(column_list_);
 }
 
+bool RubyBlockPositionCalculator::RubyLine::operator<(
+    const RubyLine& another) const {
+  const RubyLevel& level1 = Level();
+  const RubyLevel& level2 = another.Level();
+  wtf_size_t i = 0;
+  while (i < level1.size() && i < level2.size() && level1[i] == level2[i]) {
+    ++i;
+  }
+  RubyLevel::ValueType value1 = i < level1.size() ? level1[i] : 0;
+  RubyLevel::ValueType value2 = i < level2.size() ? level2[i] : 0;
+  return value1 < value2;
+}
+
 void RubyBlockPositionCalculator::RubyLine::Append(
     LogicalRubyColumn& logical_column) {
   column_list_.push_back(logical_column);
@@ -892,11 +1025,27 @@ void RubyBlockPositionCalculator::RubyLine::Append(
 
 void RubyBlockPositionCalculator::RubyLine::MaybeRecordBaseIndexes(
     const LogicalRubyColumn& logical_column) {
-  if (level_.size() == 1 && (level_[0] == 1 || level_[0] == -1)) {
+  if (IsFirstOverLevel() || IsFirstUnderLevel()) {
     for (wtf_size_t item_index = logical_column.start_index;
          item_index < logical_column.EndIndex(); ++item_index) {
       base_index_list_.push_back(item_index);
     }
+  }
+}
+
+FontHeight RubyBlockPositionCalculator::RubyLine::UpdateMetrics() {
+  DCHECK(metrics_.IsEmpty());
+  metrics_ = FontHeight();
+  for (auto& column : column_list_) {
+    metrics_.Unite(ComputeLogicalLineEmHeight(*column->annotation_items));
+  }
+  return metrics_;
+}
+
+void RubyBlockPositionCalculator::RubyLine::MoveInBlockDirection(
+    LayoutUnit offset) {
+  for (auto& column : column_list_) {
+    column->annotation_items->MoveInBlockDirection(offset);
   }
 }
 
