@@ -29,7 +29,8 @@ class PolicyMap;
 extern const char hostNameRegex[];
 
 // Decodes a JSON string to a base::Value and validates it against the schema
-// defined in policy_templates.json for the policy named |policy_name|. Unknown
+// defined in POLICY_NAME.yaml in
+// //components/policy/resources/templates/policy_definitions/. Unknown
 // properties are dropped. Returns nullptr if the input cannot be parsed as
 // valid JSON string or doesn't comply with the declared schema (e.g. mismatched
 // type, missing required field, etc.). Any warning or error messages from the
