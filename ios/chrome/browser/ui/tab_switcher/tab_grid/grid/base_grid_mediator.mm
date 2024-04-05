@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -149,9 +148,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
 }  // namespace
 
-@interface BaseGridMediator () <CRWWebStateObserver,
-                                SnapshotStorageObserver,
-                                WebStateListObserving>
+@interface BaseGridMediator () <CRWWebStateObserver, SnapshotStorageObserver>
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 
@@ -318,6 +315,23 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
 }
 
+- (void)addWebStateObservations {
+  int firstIndex =
+      IsPinnedTabsEnabled() ? self.webStateList->pinned_tabs_count() : 0;
+  for (int i = firstIndex; i < self.webStateList->count(); i++) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    [self addObservationForWebState:webState];
+  }
+}
+
+- (void)addObservationForWebState:(web::WebState*)webState {
+  _scopedWebStateObservation->AddObservation(webState);
+}
+
+- (void)removeObservationForWebState:(web::WebState*)webState {
+  _scopedWebStateObservation->RemoveObservation(webState);
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -328,27 +342,31 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return;
   }
 
-  // Get the identifier to remove.
-  web::WebState* detachedWebState = detachChange.detached_web_state();
-  GridItemIdentifier* identifierToRemove =
-      [GridItemIdentifier tabIdentifier:detachedWebState];
+  if (detachChange.group()) {
+    [self updateCellGroup:detachChange.group()];
+  } else {
+    // Get the identifier to remove.
+    web::WebState* detachedWebState = detachChange.detached_web_state();
+    GridItemIdentifier* identifierToRemove =
+        [GridItemIdentifier tabIdentifier:detachedWebState];
 
-  // Get the selected identifier.
-  GridItemIdentifier* selectedIdentifier =
-      GetActiveNonPinnedIdentifier(webStateList);
+    // Get the selected identifier.
+    GridItemIdentifier* selectedIdentifier =
+        GetActiveNonPinnedIdentifier(webStateList);
 
-  // If the WebState is pinned and it is not in the consumer's items list,
-  // consumer will filter it out in the method's implementation.
-  [self.consumer removeItemWithIdentifier:identifierToRemove
-                   selectedItemIdentifier:selectedIdentifier];
-  [self removeFromSelectionItemID:identifierToRemove];
+    // If the WebState is pinned and it is not in the consumer's items list,
+    // consumer will filter it out in the method's implementation.
+    [self.consumer removeItemWithIdentifier:identifierToRemove
+                     selectedItemIdentifier:selectedIdentifier];
+    [self removeFromSelectionItemID:identifierToRemove];
+  }
 
   // The pinned WebState could be detached only in case it was displayed in
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
   // remove one.
   if (![self isPinnedWebState:detachChange.detached_from_index()]) {
-    _scopedWebStateObservation->RemoveObservation(detachedWebState);
+    [self removeObservationForWebState:detachChange.detached_web_state()];
   }
 }
 
@@ -406,7 +424,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       break;
     }
     case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
+      // Do nothing when a WebState is detached, as this is already handled in
+      // `-willChangeWebStateList:change:status:` function.
       break;
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
@@ -453,8 +472,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
              withReplacementItem:[GridItemIdentifier
                                      tabIdentifier:insertedWebState]];
 
-      _scopedWebStateObservation->RemoveObservation(replacedWebState);
-      _scopedWebStateObservation->AddObservation(insertedWebState);
+      [self removeObservationForWebState:replacedWebState];
+      [self addObservationForWebState:insertedWebState];
       break;
     }
     case WebStateListChange::Type::kInsert: {
@@ -472,9 +491,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         web::WebState* insertedWebState = insertChange.inserted_web_state();
         [self insertItem:[GridItemIdentifier tabIdentifier:insertedWebState]
             beforeWebStateIndex:insertChange.index() + 1];
-
-        _scopedWebStateObservation->AddObservation(insertedWebState);
       }
+      [self addObservationForWebState:insertChange.inserted_web_state()];
       break;
     }
     case WebStateListChange::Type::kGroupCreate: {
@@ -1138,16 +1156,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
 #pragma mark - Private
 
-// Adds an observations to every non-pinned WebState.
-- (void)addWebStateObservations {
-  int firstIndex =
-      IsPinnedTabsEnabled() ? self.webStateList->pinned_tabs_count() : 0;
-  for (int i = firstIndex; i < self.webStateList->count(); i++) {
-    web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    _scopedWebStateObservation->AddObservation(webState);
-  }
-}
-
 // Returns a SnapshotStorageWrapper for the current browser.
 - (SnapshotStorageWrapper*)snapshotStorage {
   if (!self.browser) {
@@ -1215,11 +1223,11 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         [GridItemIdentifier tabIdentifier:webState];
     [self.consumer removeItemWithIdentifier:identifierToRemove
                      selectedItemIdentifier:selectedItemIdentifier];
-    _scopedWebStateObservation->RemoveObservation(webState);
+    [self removeObservationForWebState:webState];
   } else {
     [self insertItem:[GridItemIdentifier tabIdentifier:webState]
         beforeWebStateIndex:index + 1];
-    _scopedWebStateObservation->AddObservation(webState);
+    [self addObservationForWebState:webState];
   }
 }
 

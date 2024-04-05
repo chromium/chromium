@@ -89,6 +89,7 @@
   // No-op
 }
 
+// Overrides the parent to only display tabs from the group.
 - (void)populateConsumerItems {
   if (!self.webStateList || !_tabGroup) {
     return;
@@ -105,6 +106,42 @@
   [self.consumer populateItems:CreateTabItems(self.webStateList,
                                               _tabGroup->range())
         selectedItemIdentifier:identifier];
+}
+
+// Overrides the parent observations: only observe the group `WebState`s.
+- (void)addWebStateObservations {
+  for (int index : _tabGroup->range()) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(index);
+    [self addObservationForWebState:webState];
+  }
+}
+
+#pragma mark - WebStateListObserving override
+
+// Overrides the parent observations. The parent treats a group as one cell,
+// whereas this TabGroupMediator only cares about one group, and shows grouped
+// tabs as many cells.
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                        status:(const WebStateListStatus&)status {
+  DCHECK_EQ(self.webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+  CHECK(detachChange.group() == _tabGroup);
+
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  GridItemIdentifier* identifierToRemove =
+      [GridItemIdentifier tabIdentifier:detachedWebState];
+  GridItemIdentifier* selectedIdentifier;
+  if (self.webStateList->GetGroupOfWebStateAt(webStateList->active_index()) ==
+      _tabGroup) {
+    selectedIdentifier =
+        [GridItemIdentifier tabIdentifier:webStateList->GetActiveWebState()];
+  }
+  [self.consumer removeItemWithIdentifier:identifierToRemove
+                   selectedItemIdentifier:selectedIdentifier];
+  [self removeObservationForWebState:detachedWebState];
 }
 
 @end

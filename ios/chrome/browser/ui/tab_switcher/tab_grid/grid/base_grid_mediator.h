@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
@@ -26,6 +27,10 @@ class Browser;
 @protocol TabGroupsCommands;
 @protocol TabPresentationDelegate;
 class WebStateList;
+
+namespace web {
+class WebState;
+}
 
 // Mediates between model layer and tab grid UI layer.
 @interface BaseGridMediator : NSObject <BaseGridMediatorItemProvider,
@@ -60,7 +65,7 @@ class WebStateList;
 
 @end
 
-@interface BaseGridMediator (Subclassing)
+@interface BaseGridMediator (Subclassing) <WebStateListObserving>
 
 // Current mode.
 @property(nonatomic, assign) TabGridMode currentMode;
@@ -82,6 +87,15 @@ class WebStateList;
 
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems;
+
+// Adds an observation to every non-pinned WebState. Subclasses can override
+// this to observe a different set of `WebState`s. It's not necessary to call
+// the parent class implementation if not desired.
+- (void)addWebStateObservations;
+
+// Adds or removes observation to the given `webState`.
+- (void)addObservationForWebState:(web::WebState*)webState;
+- (void)removeObservationForWebState:(web::WebState*)webState;
 
 @end
 
