@@ -4428,8 +4428,15 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Drags from browser to another browser on a second display and releases input.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/333006829):
+#define MAYBE_DragTabToWindowOnSecondDisplay \
+  DISABLED_DragTabToWindowOnSecondDisplay
+#else
+#define MAYBE_DragTabToWindowOnSecondDisplay DragTabToWindowOnSecondDisplay
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       DragTabToWindowOnSecondDisplay) {
+                       MAYBE_DragTabToWindowOnSecondDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -4490,8 +4497,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 
 // Drags from a maximized browser to another non-maximized browser on a second
 // display and releases input.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/333006829):
+#define MAYBE_DragMaxTabToNonMaxWindowInSeparateDisplay \
+  DISABLED_DragMaxTabToNonMaxWindowInSeparateDisplay
+#else
+#define MAYBE_DragMaxTabToNonMaxWindowInSeparateDisplay \
+  DragMaxTabToNonMaxWindowInSeparateDisplay
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       DragMaxTabToNonMaxWindowInSeparateDisplay) {
+                       MAYBE_DragMaxTabToNonMaxWindowInSeparateDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   browser()->window()->Maximize();
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
