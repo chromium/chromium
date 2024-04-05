@@ -22,6 +22,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -261,6 +262,8 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
 
 // Helper to copy PaintOps to the GPU service over the transfer buffer.
 class RasterImplementation::PaintOpSerializer {
+  STACK_ALLOCATED();
+
  public:
   PaintOpSerializer(uint32_t initial_size,
                     RasterImplementation* ri,
@@ -386,16 +389,16 @@ class RasterImplementation::PaintOpSerializer {
   bool valid() const { return !!buffer_; }
 
  private:
-  const raw_ptr<RasterImplementation> ri_;
-  raw_ptr<char, AllowPtrArithmetic | AcrossTasksDanglingUntriaged> buffer_;
-  const raw_ptr<cc::DecodeStashingImageProvider> stashing_image_provider_;
-  const raw_ptr<TransferCacheSerializeHelperImpl> transfer_cache_helper_;
-  raw_ptr<ClientFontManager> font_manager_;
+  RasterImplementation* const ri_;
+  char* buffer_;
+  cc::DecodeStashingImageProvider* const stashing_image_provider_;
+  TransferCacheSerializeHelperImpl* const transfer_cache_helper_;
+  ClientFontManager* font_manager_;
 
   uint32_t written_bytes_ = 0;
   uint32_t free_bytes_ = 0;
 
-  raw_ptr<size_t> max_op_size_hint_;
+  size_t* max_op_size_hint_;
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(
