@@ -54,6 +54,7 @@ include_rules = [
   "+third_party/icu",
   "+third_party/khronos/GLES2",
   "+third_party/re2",
+  "+third_party/rust/fend_core/v1/wrapper/fend_core.h",
   "+third_party/skia",
   "+net",
   "+ui",
