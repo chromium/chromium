@@ -17,6 +17,7 @@
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
 #include "components/media_effects/test/scoped_media_device_info.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -85,6 +86,8 @@ class PageInfoPermissionContentViewTestMediaPreview
     web_contents_tester_ = content::WebContentsTester::For(web_contents_.get());
     web_contents_tester_->SetMediaCaptureRawDeviceIdsOpened(
         GetStreamTypeFromSettingsType(type), {});
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents_.get());
 
     presenter_ui_ = std::make_unique<PageInfoUI>();
     auto delegate =
