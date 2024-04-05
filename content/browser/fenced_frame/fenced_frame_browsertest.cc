@@ -2245,7 +2245,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
          {blink::features::kFencedFramesM120FeaturesPart2, {}},
          {blink::features::kFencedFramesReportingAttestationsChanges, {}},
-         {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}}},
+         {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
+         {blink::features::kFencedFramesCrossOriginEventReporting, {}}},
         {/* disabled_features */});
   }
 
