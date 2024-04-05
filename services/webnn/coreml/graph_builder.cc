@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <fstream>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/bits.h"
 #include "base/containers/fixed_flat_set.h"
@@ -215,6 +217,137 @@ base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
 base::unexpected<mojom::ErrorPtr> NewUnknownError(std::string message) {
   return base::unexpected(
       mojom::Error::New(mojom::Error::Code::kUnknownError, std::move(message)));
+}
+
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+struct MilDataTypeMap;
+
+template <>
+struct MilDataTypeMap<int8_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::INT8;
+};
+template <>
+struct MilDataTypeMap<uint8_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::UINT8;
+};
+template <>
+struct MilDataTypeMap<int32_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::INT32;
+};
+template <>
+struct MilDataTypeMap<uint32_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::UINT32;
+};
+template <>
+struct MilDataTypeMap<int64_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::INT64;
+};
+template <>
+struct MilDataTypeMap<uint64_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::UINT64;
+};
+template <>
+struct MilDataTypeMap<Float16> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::FLOAT16;
+};
+template <>
+struct MilDataTypeMap<float> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::FLOAT32;
+};
+template <>
+struct MilDataTypeMap<char> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::STRING;
+};
+
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+void SetTensorValueForImmediateValue(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const DataType> value);
+
+// As per
+// https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/helper.py#L23,
+// float16, int8, uint8, uint32 are stored in bytes.
+template <>
+void SetTensorValueForImmediateValue<Float16>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const Float16> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(
+      base::as_string_view(base::as_bytes(value)));
+}
+
+template <>
+void SetTensorValueForImmediateValue<int8_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const int8_t> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(
+      base::as_string_view(base::as_bytes(value)));
+}
+template <>
+void SetTensorValueForImmediateValue<uint8_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const uint8_t> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(base::as_string_view(value));
+}
+template <>
+void SetTensorValueForImmediateValue<uint32_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const uint32_t> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(
+      base::as_string_view(base::as_bytes(value)));
+}
+
+template <>
+void SetTensorValueForImmediateValue<float>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const float> value) {
+  for (auto next : value) {
+    tensor.mutable_floats()->add_values(next);
+  }
+}
+
+template <>
+void SetTensorValueForImmediateValue<int32_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const int32_t> value) {
+  for (auto next : value) {
+    tensor.mutable_ints()->add_values(next);
+  }
+}
+
+template <>
+void SetTensorValueForImmediateValue<int64_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const int64_t> value) {
+  for (auto next : value) {
+    tensor.mutable_longints()->add_values(next);
+  }
+}
+template <>
+void SetTensorValueForImmediateValue<uint64_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const uint64_t> value) {
+  for (auto next : value) {
+    tensor.mutable_longints()->add_values(next);
+  }
+}
+
+template <>
+void SetTensorValueForImmediateValue<char>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const char> value) {
+  tensor.mutable_strings()->add_values(
+      std::string(base::as_string_view(value)));
 }
 
 }  // namespace
@@ -619,12 +752,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   base::ranges::transform(
       operation.permutation, std::back_inserter(permutation),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
-  AddConstantImmediateValue(
+  AddConstantImmediateValue<int32_t>(
       block, perm_op_output_name,
-      CoreML::Specification::MILSpec::DataType::INT32,
       base::span<const uint32_t>(
           {base::checked_cast<uint32_t>(permutation.size())}),
-      base::as_byte_span(permutation));
+      permutation);
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
@@ -684,18 +816,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   std::array<int32_t, 2> strides = {
       base::checked_cast<int32_t>(operation.strides->height),
       base::checked_cast<int32_t>(operation.strides->width)};
-  AddConstantImmediateValue(
+  AddConstantImmediateValue<int32_t>(
       block, strides_output_name,
-      CoreML::Specification::MILSpec::DataType::INT32,
       base::span<const uint32_t>({static_cast<uint32_t>(strides.size())}),
-      base::as_byte_span(strides));
+      strides);
 
   const std::string pad_type_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamPadType);
-  AddConstantImmediateValue(block, pad_type_output_name,
-                            CoreML::Specification::MILSpec::DataType::STRING,
-                            base::span<const uint32_t>(),
-                            base::as_byte_span(kParamPadTypeValue));
+  AddConstantImmediateValue<char>(block, pad_type_output_name,
+                                  base::span<const uint32_t>(),
+                                  std::string_view(kParamPadTypeValue));
 
   const std::string pad_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamPad);
@@ -704,28 +834,25 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
       base::checked_cast<int32_t>(operation.padding->ending->height),
       base::checked_cast<int32_t>(operation.padding->beginning->width),
       base::checked_cast<int32_t>(operation.padding->ending->width)};
-  AddConstantImmediateValue(
-      block, pad_output_name, CoreML::Specification::MILSpec::DataType::INT32,
-      base::span<const uint32_t>({static_cast<uint32_t>(pad.size())}),
-      base::as_byte_span(pad));
+  AddConstantImmediateValue<int32_t>(
+      block, pad_output_name,
+      base::span<const uint32_t>({static_cast<uint32_t>(pad.size())}), pad);
 
   const std::string dilations_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamDilations);
   std::array<int32_t, 2> dilations = {
       base::checked_cast<int32_t>(operation.dilations->height),
       base::checked_cast<int32_t>(operation.dilations->width)};
-  AddConstantImmediateValue(
+  AddConstantImmediateValue<int32_t>(
       block, dilations_output_name,
-      CoreML::Specification::MILSpec::DataType::INT32,
       base::span<const uint32_t>({static_cast<uint32_t>(dilations.size())}),
-      base::as_byte_span(dilations));
+      dilations);
 
   const std::string groups_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamGroups);
-  AddConstantImmediateValue(block, groups_output_name,
-                            CoreML::Specification::MILSpec::DataType::INT32,
-                            base::span<const uint32_t>(),
-                            base::as_byte_span({operation.groups}));
+  AddConstantImmediateValue<int32_t>(
+      block, groups_output_name, base::span<const uint32_t>(),
+      base::span({base::checked_cast<int32_t>(operation.groups)}));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpConv2dTypeName);
@@ -750,13 +877,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   return base::ok();
 }
 
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
 void GraphBuilder::AddConstantImmediateValue(
     CoreML::Specification::MILSpec::Block& block,
     std::string_view name,
-    CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions,
-    base::span<const uint8_t> value) {
+    base::span<const DataType> value) {
   auto* op = block.add_operations();
+  CoreML::Specification::MILSpec::DataType mil_data_type =
+      MilDataTypeMap<DataType>::value;
 
   op->set_type(kOpConstTypeName);
 
@@ -765,62 +895,8 @@ void GraphBuilder::AddConstantImmediateValue(
   attributes["name"] = CreateStringValue(name);
   CoreML::Specification::MILSpec::Value immediate_value{};
   PopulateValueType(mil_data_type, dimensions, *immediate_value.mutable_type());
-  auto* data = immediate_value.mutable_immediatevalue()->mutable_tensor();
-
-  switch (mil_data_type) {
-    case CoreML::Specification::MILSpec::DataType::FLOAT32: {
-      base::SpanReader<const uint8_t> reader(value);
-      while (auto next = reader.Read<4u>()) {
-        data->mutable_floats()->add_values(
-            base::numerics::FloatFromNativeEndian(*next));
-      }
-      break;
-    }
-    // As per
-    // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/helper.py#L23,
-    // these types are stored in bytes.
-    case CoreML::Specification::MILSpec::DataType::FLOAT16:
-    case CoreML::Specification::MILSpec::DataType::INT8:
-    case CoreML::Specification::MILSpec::DataType::UINT8:
-    case CoreML::Specification::MILSpec::DataType::UINT32:
-      data->mutable_bytes()->mutable_values()->assign(
-          base::as_string_view(value));
-      break;
-    case CoreML::Specification::MILSpec::DataType::INT32: {
-      base::SpanReader<const uint8_t> reader(value);
-      while (auto next = reader.Read<4u>()) {
-        data->mutable_ints()->add_values(
-            base::numerics::I32FromNativeEndian(*next));
-      }
-      break;
-    }
-    case CoreML::Specification::MILSpec::DataType::INT64:
-    case CoreML::Specification::MILSpec::DataType::UINT64: {
-      base::SpanReader<const uint8_t> reader(value);
-      while (std::optional<base::span<const uint8_t, 8u>> next =
-                 reader.Read<8u>()) {
-        data->mutable_longints()->add_values(
-            base::numerics::I64FromNativeEndian(*next));
-      }
-      break;
-    }
-    case CoreML::Specification::MILSpec::DataType::STRING: {
-      data->mutable_strings()->add_values(base::as_string_view(value).data());
-      break;
-    }
-    case CoreML::Specification::MILSpec::DataType::UNUSED_TYPE:
-    case CoreML::Specification::MILSpec::DataType::BOOL:
-    case CoreML::Specification::MILSpec::DataType::FLOAT64:
-    case CoreML::Specification::MILSpec::DataType::BFLOAT16:
-    case CoreML::Specification::MILSpec::DataType::INT16:
-    case CoreML::Specification::MILSpec::DataType::UINT16:
-    case CoreML::Specification::MILSpec::DataType::
-        DataType_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case CoreML::Specification::MILSpec::DataType::
-        DataType_INT_MAX_SENTINEL_DO_NOT_USE_: {
-      NOTREACHED_NORETURN() << "Unsupported data type";
-    }
-  }
+  auto* tensor = immediate_value.mutable_immediatevalue()->mutable_tensor();
+  SetTensorValueForImmediateValue(*tensor, value);
   attributes["val"] = std::move(immediate_value);
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(name, mil_data_type, dimensions, output);
@@ -832,10 +908,87 @@ void GraphBuilder::AddConstantImmediateValue(
   auto& operand = GetOperand(constant_id);
 
   std::string name = GetCoreMLNameFromOperand(constant_id);
-  AddConstantImmediateValue(
-      block, name, OperandTypeToMILDataType(operand.data_type),
-      operand.dimensions,
-      base::make_span(graph_info_->constant_id_to_buffer_map.at(constant_id)));
+  base::span<const uint8_t> value(
+      graph_info_->constant_id_to_buffer_map.at(constant_id));
+  switch (operand.data_type) {
+    case mojom::Operand::DataType::kFloat32: {
+      std::vector<float> floats(value.size() / sizeof(float));
+      for (size_t i = 0u; i < floats.size(); ++i) {
+        floats[i] = base::FloatFromNativeEndian(
+            value.subspan(i * sizeof(float)).first<4u>());
+      }
+      AddConstantImmediateValue<float>(block, name, operand.dimensions, floats);
+      break;
+    }
+    case mojom::Operand::DataType::kFloat16: {
+      std::vector<Float16> float16s(value.size() / sizeof(Float16));
+      for (size_t i = 0u; i < float16s.size(); ++i) {
+        float16s[i].data = base::U16FromNativeEndian(
+            value.subspan(i * sizeof(Float16)).first<2u>());
+      }
+      AddConstantImmediateValue<Float16>(block, name, operand.dimensions,
+                                         float16s);
+      break;
+    }
+    case mojom::Operand::DataType::kInt32: {
+      std::vector<int32_t> ints(value.size() / sizeof(int32_t));
+      for (size_t i = 0u; i < ints.size(); ++i) {
+        ints[i] = base::I32FromNativeEndian(
+            value.subspan(i * sizeof(int32_t)).first<4u>());
+      }
+      AddConstantImmediateValue<int32_t>(block, name, operand.dimensions, ints);
+      break;
+    }
+    case mojom::Operand::DataType::kUint32: {
+      std::vector<uint32_t> uints(value.size() / sizeof(uint32_t));
+      for (size_t i = 0u; i < uints.size(); ++i) {
+        uints[i] = base::U32FromNativeEndian(
+            value.subspan(i * sizeof(uint32_t)).first<4u>());
+      }
+      AddConstantImmediateValue<uint32_t>(block, name, operand.dimensions,
+                                          uints);
+      break;
+    }
+    case mojom::Operand::DataType::kInt64: {
+      std::vector<int64_t> longints(value.size() / sizeof(int64_t));
+      for (size_t i = 0u; i < longints.size(); ++i) {
+        longints[i] = base::I64FromNativeEndian(
+            value.subspan(i * sizeof(int64_t)).first<8u>());
+      }
+      AddConstantImmediateValue<int64_t>(block, name, operand.dimensions,
+                                         longints);
+      break;
+    }
+    case mojom::Operand::DataType::kUint64: {
+      std::vector<uint64_t> ulongints(value.size() / sizeof(uint64_t));
+      for (size_t i = 0u; i < ulongints.size(); ++i) {
+        ulongints[i] = base::U64FromNativeEndian(
+            value.subspan(i * sizeof(uint64_t)).first<8u>());
+      }
+      AddConstantImmediateValue<uint64_t>(block, name, operand.dimensions,
+                                          ulongints);
+      break;
+    }
+    case mojom::Operand::DataType::kInt8: {
+      std::vector<int8_t> int8s(value.size() / sizeof(int8_t));
+      for (size_t i = 0u; i < int8s.size(); ++i) {
+        int8s[i] = base::I8FromNativeEndian(
+            value.subspan(i * sizeof(int8_t)).first<1u>());
+      }
+      AddConstantImmediateValue<int8_t>(block, name, operand.dimensions, int8s);
+      break;
+    }
+    case mojom::Operand::DataType::kUint8: {
+      std::vector<uint8_t> uint8s(value.size() / sizeof(uint8_t));
+      for (size_t i = 0u; i < uint8s.size(); ++i) {
+        uint8s[i] = base::U8FromNativeEndian(
+            value.subspan(i * sizeof(uint8_t)).first<1u>());
+      }
+      AddConstantImmediateValue<uint8_t>(block, name, operand.dimensions,
+                                         uint8s);
+      break;
+    }
+  }
 }
 
 void GraphBuilder::AddConstantFileValue(

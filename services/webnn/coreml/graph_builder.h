@@ -19,6 +19,28 @@
 
 namespace webnn::coreml {
 
+struct Float16 {
+  uint16_t data;
+};
+
+namespace internal {
+// Supported tensor types for immediate values. The list can be expanded as
+// needed.
+template <typename T, typename... U>
+concept IsAnyOf = (std::same_as<T, U> || ...);
+template <typename T>
+concept IsSupportedTensorType = IsAnyOf<T,
+                                        Float16,
+                                        float,
+                                        int8_t,
+                                        uint8_t,
+                                        int32_t,
+                                        uint32_t,
+                                        int64_t,
+                                        uint64_t,
+                                        char>;
+}  // namespace internal
+
 inline constexpr char kPlaceholderInputName[] = "placeholder";
 
 // Get name identifiers used in CoreML model files for input/output operands.
@@ -99,12 +121,14 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
       const mojom::Conv2d& operation,
       CoreML::Specification::MILSpec::Block& block);
+
   // Add constants as immediate values in the model file.
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
   void AddConstantImmediateValue(CoreML::Specification::MILSpec::Block& block,
                                  std::string_view name,
-                                 CoreML::Specification::MILSpec::DataType,
                                  base::span<const uint32_t> dimensions,
-                                 base::span<const uint8_t> value);
+                                 base::span<const DataType> value);
   void AddConstantImmediateValue(uint32_t constant_id,
                                  CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
