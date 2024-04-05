@@ -381,7 +381,8 @@ bool Rule::ValidateRuleValue(const char* policy_name,
   auto restrictions = GetRestrictions(root_value);
 
   if (!AddUnsupportedRestrictionErrors(policy_name, restrictions, error_path,
-                                       errors)) {
+                                       errors) ||
+      restrictions.empty()) {
     return false;
   }
 
@@ -445,7 +446,7 @@ void Rule::AddMutuallyExclusiveErrors(
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  if (oneof_conditions.size() == 0) {
+  if (!errors || oneof_conditions.size() == 0) {
     return;
   }
 
@@ -500,19 +501,23 @@ bool Rule::AddUnsupportedAttributeErrors(
 
     for (const auto& attribute : anyof_conditions) {
       if (!kSupportedAttributes.at(restriction.first).contains(attribute)) {
-        errors->AddError(policy_name,
-                         IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
-                         std::string(attribute),
-                         RestrictionToString(restriction.first), error_path);
+        if (errors) {
+          errors->AddError(policy_name,
+                           IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
+                           std::string(attribute),
+                           RestrictionToString(restriction.first), error_path);
+        }
         valid = false;
       }
     }
     for (const auto& attribute : oneof_conditions) {
       if (!kSupportedAttributes.at(restriction.first).contains(attribute)) {
-        errors->AddError(policy_name,
-                         IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
-                         std::string(attribute),
-                         RestrictionToString(restriction.first), error_path);
+        if (errors) {
+          errors->AddError(policy_name,
+                           IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
+                           std::string(attribute),
+                           RestrictionToString(restriction.first), error_path);
+        }
         valid = false;
       }
     }
@@ -537,17 +542,22 @@ bool Rule::AddUnsupportedRestrictionErrors(
   bool valid = true;
   for (const auto& restriction : restrictions) {
     if (!kSupportedRestrictions.contains(restriction.first)) {
-      errors->AddError(policy_name,
-                       IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION,
-                       RestrictionToString(restriction.first), error_path);
+      if (errors) {
+        errors->AddError(policy_name,
+                         IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION,
+                         RestrictionToString(restriction.first), error_path);
+      }
       valid = false;
       continue;
     }
     if (!kSupportedRestrictions.at(restriction.first)
              .contains(restriction.second)) {
-      errors->AddError(policy_name, IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL,
-                       RestrictionToString(restriction.first),
-                       LevelToString(restriction.second), error_path);
+      if (errors) {
+        errors->AddError(policy_name,
+                         IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL,
+                         RestrictionToString(restriction.first),
+                         LevelToString(restriction.second), error_path);
+      }
       valid = false;
     }
   }

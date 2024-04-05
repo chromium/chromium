@@ -249,9 +249,6 @@ constexpr char kSchema[] = R"(
                 "class": {
                   "enum": [
                     "CLIPBOARD",
-                    "FILE_ATTACH",
-                    "FILE_DOWNLOAD",
-                    "PRINTING",
                     "SCREENSHOT"
                   ],
                   "type": "string"
@@ -274,36 +271,8 @@ constexpr char kSchema[] = R"(
           },
           "sources": {
             "properties": {
-              "byte_size_higher_than": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "byte_size_lower_than": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "file_number_higher_than": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "file_number_lower_than": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "file_type": {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
               "incognito": {
                 "type": "boolean"
-              },
-              "mime_type": {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
               },
               "os_clipboard": {
                 "type": "boolean"
@@ -334,14 +303,68 @@ constexpr char kValidPolicy[] = R"(
       "destinations": {
         "urls": ["https://google.com"],
         "incognito": true,
-      }
+      },
+      "restrictions": [
+        {
+          "class": "CLIPBOARD",
+          "level": "BLOCK"
+        }
+      ]
     },
     {
       "sources": {
         "urls": ["https://foo.com"],
         "incognito": false,
-      }
+      },
+      "restrictions": [
+        {
+          "class": "CLIPBOARD",
+          "level": "WARN"
+        }
+      ]
     }
+  ]
+)";
+
+// Only the first entry is valid, the second one is not a dict, the third one
+// has an invalid condition and the fourth one has an unsupported restriction.
+constexpr char kPartiallyValidPolicy[] = R"(
+  [
+    {
+      "destinations": {
+        "urls": ["https://google.com"],
+        "incognito": true,
+      },
+      "restrictions": [
+        {
+          "class": "CLIPBOARD",
+          "level": "BLOCK"
+        }
+      ]
+    },
+    1234,
+    {
+      "and": [],
+      "or": [],
+      "restrictions": [
+        {
+          "class": "CLIPBOARD",
+          "level": "BLOCK"
+        }
+      ]
+    },
+    {
+      "sources": {
+        "urls": ["https://google.com"],
+        "incognito": true,
+      },
+      "restrictions": [
+        {
+          "class": "PRINT",
+          "level": "BLOCK"
+        }
+      ]
+    },
   ]
 )";
 
@@ -366,6 +389,12 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
             {
               "or": [],
               "and": [],
+              "restrictions": [
+                {
+                  "class": "SCREENSHOT",
+                  "level": "BLOCK"
+                }
+              ]
             }
           ])",
         u"Error at PolicyForTesting[0]: Keys \"and, or\" cannot be set in the "
@@ -375,7 +404,13 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
         R"([
             {
               "not": {},
-              "destinations": {}
+              "destinations": {},
+              "restrictions": [
+                {
+                  "class": "SCREENSHOT",
+                  "level": "BLOCK"
+                }
+              ]
             }
           ])",
         u"Error at PolicyForTesting[0]: Keys \"destinations\" cannot be set in "
@@ -386,7 +421,13 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
               "sources": {
                 "os_clipboard": true,
                 "incognito": true
-              }
+              },
+              "restrictions": [
+                {
+                  "class": "SCREENSHOT",
+                  "level": "BLOCK"
+                }
+              ]
             }
           ])",
         u"Error at PolicyForTesting[0].sources: Keys \"incognito\" cannot be "
@@ -430,6 +471,8 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
                ]
              }
           ])",
+        u"Error at PolicyForTesting[0].restrictions[0].class: Schema "
+        u"validation error: Invalid value for string\n"
         u"Error at PolicyForTesting[0]: \"PRINTING\" is not a supported "
         u"restriction on this platform"},
 };
@@ -513,20 +556,70 @@ TEST_F(DataControlsPolicyHandlerTest, BlocksNonCloudSources) {
   }
 }
 
-TEST_F(DataControlsPolicyHandlerTest, BlocksInvalidSchema) {
+TEST_F(DataControlsPolicyHandlerTest, WarnInvalidSchema) {
   for (auto scope : kCloudSources) {
     policy::PolicyMap map = CreatePolicyMap(kInvalidPolicy, scope);
     auto handler = std::make_unique<DataControlsPolicyHandler>(
         kPolicyName, kTestPref, schema());
 
     policy::PolicyErrorMap errors;
-    ASSERT_FALSE(handler->CheckPolicySettings(map, &errors));
+
+    // Invalid list entries are tolerated, so in that case `CheckPolicySettings`
+    // will still return true.
+    ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+
     ASSERT_FALSE(errors.empty());
     ASSERT_TRUE(errors.HasError(kPolicyName));
     std::u16string messages = errors.GetErrorMessages(kPolicyName);
     ASSERT_EQ(messages,
-              u"Error at PolicyForTesting[0]: Schema validation error: Policy "
+              u"Error at PolicyForTesting[2]: Schema validation error: Policy "
               u"type mismatch: expected: \"dictionary\", actual: \"integer\".");
+  }
+}
+
+TEST_F(DataControlsPolicyHandlerTest, AllowsPartiallyValidRules) {
+  for (auto scope : kCloudSources) {
+    policy::PolicyMap map = CreatePolicyMap(kPartiallyValidPolicy, scope);
+    auto handler = std::make_unique<DataControlsPolicyHandler>(
+        kPolicyName, kTestPref, schema());
+
+    policy::PolicyErrorMap errors;
+    ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+    ASSERT_FALSE(errors.empty());
+    ASSERT_TRUE(errors.HasError(kPolicyName));
+    std::u16string messages = errors.GetErrorMessages(kPolicyName);
+    ASSERT_EQ(
+        messages,
+        u"Error at PolicyForTesting[3].restrictions[0].class: Schema "
+        u"validation error: Invalid value for string\n"
+        u"Error at PolicyForTesting[2]: Keys \"and, or\" cannot be set in the "
+        u"same dictionary");
+
+    PrefValueMap prefs;
+    base::Value* value_set_in_pref;
+    handler->ApplyPolicySettings(map, &prefs);
+
+    ASSERT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
+
+    // Only the valid rule in `kPartiallyValidPolicy` should have been applied.
+    ASSERT_EQ(*base::JSONReader::Read(
+                  R"(
+                  [
+                    {
+                      "destinations": {
+                        "urls": ["https://google.com"],
+                        "incognito": true,
+                      },
+                      "restrictions": [
+                        {
+                          "class": "CLIPBOARD",
+                          "level": "BLOCK"
+                        }
+                      ]
+                    }
+                  ])",
+                  base::JSON_ALLOW_TRAILING_COMMAS),
+              *value_set_in_pref);
   }
 }
 
@@ -537,9 +630,14 @@ TEST_P(DataControlsPolicyHandlerInvalidKeysTest, Test) {
       kPolicyName, kTestPref, schema());
 
   policy::PolicyErrorMap errors;
-  ASSERT_FALSE(handler->CheckPolicySettings(map, &errors));
+
+  // Invalid list entries are tolerated, so in that case `CheckPolicySettings`
+  // will still return true.
+  ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+
   ASSERT_FALSE(errors.empty());
   ASSERT_TRUE(errors.HasError(kPolicyName));
+
   std::u16string messages = errors.GetErrorMessages(kPolicyName);
   ASSERT_EQ(messages, expected_messages());
 }
