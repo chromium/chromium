@@ -226,6 +226,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_INSECURE_CONTENT_MID_SENTENCE" desc="The label used for the insecure content site settings controls when used mid-sentence. This setting controls whether HTTP content will be displayed on HTTPS sites.">
     insecure content
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK" desc="The label used for the keyboard lock site settings controls.">
+    Keyboard lock
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE" desc="The label used for the keyboard lock site settings controls when used mid-sentence.">
+    keyboard lock
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER" desc="The label used for the payment handler site settings controls.">
     Payment handlers
   </message>
@@ -234,6 +240,12 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PDF_DOCUMENTS" desc="The label used for the PDF documents site settings controls.">
     PDF documents
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK" desc="The label used for the pointer lock site settings controls.">
+    Pointer lock
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK_MID_SENTENCE" desc="The label used for the pointer lock site settings controls when used mid-sentence.">
+    pointer lock
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS" desc="The label used for the serial ports site settings controls.">
     Serial ports
