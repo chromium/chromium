@@ -128,7 +128,7 @@ namespace official_build {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace official_build
 
@@ -214,7 +214,7 @@ namespace default_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace default_keys
 
@@ -271,7 +271,7 @@ namespace override_some_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_some_keys
 
@@ -333,7 +333,7 @@ namespace override_all_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys
 
@@ -398,7 +398,7 @@ namespace override_all_keys_env {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_env
 
@@ -475,7 +475,7 @@ namespace override_all_keys_setters {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_setters
 
@@ -550,7 +550,7 @@ namespace override_all_keys_config {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_config
 
