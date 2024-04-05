@@ -2,24 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+
 #include <limits>
+#include <memory>
 
 #include "base/android/build_info.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,9 +40,14 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -1085,11 +1094,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
                                     GetIdentityTestEnvironmentFactories());
     builder.AddTestingFactories(
-        {{ProfilePasswordStoreFactory::GetInstance(),
-          ProfilePasswordStoreFactory::GetDefaultFactoryForTesting()},
-         {AccountPasswordStoreFactory::GetInstance(),
-          AccountPasswordStoreFactory::GetDefaultFactoryForTesting()},
-         {TrustedVaultServiceFactory::GetInstance(),
+        {{TrustedVaultServiceFactory::GetInstance(),
           TrustedVaultServiceFactory::GetDefaultFactory()},
          // Unretained() is safe because `this` outlives `profile_`.
          {SyncServiceFactory::GetInstance(),
@@ -1098,11 +1103,50 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
               base::Unretained(this))}});
     profile_ = builder.Build();
 
+    SetUpPasswordStores(profile_.get());
+
     // `identity_test_env_adaptor_` is initialized lazily with the SyncService,
     // force it to happen now.
     ASSERT_FALSE(identity_test_env_adaptor_);
     sync_service();
     ASSERT_TRUE(identity_test_env_adaptor_);
+  }
+
+  void SetUpPasswordStores(Profile* profile) {
+    // This block of tests is designed to test the behavior of login database
+    // (namely that the profile database file is renamed to be the account
+    // database file when using the split stores feature).
+    auto is_profile_db_empty_cb =
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+            &PrefService::SetBoolean, base::Unretained(profile->GetPrefs()),
+            password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+    std::unique_ptr<password_manager::PasswordStoreBackend> profile_backend =
+        std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+            password_manager::CreateLoginDatabaseForProfileStorage(
+                profile->GetPath(), std::move(is_profile_db_empty_cb)),
+            syncer::WipeModelUponSyncDisabledBehavior::kNever,
+            profile->GetPrefs());
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
+        profile,
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreWithArgs<
+                content::BrowserContext, password_manager::PasswordStore,
+                std::unique_ptr<password_manager::PasswordStoreBackend>>,
+            base::Passed(std::move(profile_backend))));
+
+    std::unique_ptr<password_manager::PasswordStoreBackend> account_backend =
+        std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+            password_manager::CreateLoginDatabaseForAccountStorage(
+                profile->GetPath()),
+            syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+            profile->GetPrefs());
+    AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
+        profile,
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreWithArgs<
+                content::BrowserContext, password_manager::PasswordStore,
+                std::unique_ptr<password_manager::PasswordStoreBackend>>,
+            base::Passed(std::move(account_backend))));
   }
 
   void DestroyProfile() {
