@@ -70,7 +70,7 @@ std::optional<TimeDelta> ParseTotalCPUTimeFromStats(
   }
   const std::optional<int64_t> stime =
       internal::GetProcStatsFieldAsOptionalInt64(proc_stats,
-                                                 internal::VM_UTIME);
+                                                 internal::VM_STIME);
   if (stime.value_or(-1) < 0) {
     return std::nullopt;
   }
