@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -32,7 +33,6 @@ constexpr char kAppId[] = "app-id";
 class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
  public:
   void TearDown() override {
-    ASSERT_TRUE(base::DeleteFile(GetPathToAutoStartFile()));
     WebAppTest::TearDown();
   }
 
@@ -52,9 +52,8 @@ class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
   }
 
   base::FilePath GetPathToAutoStartFile() {
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env.get());
-    EXPECT_FALSE(autostart_path.empty());
+    base::FilePath autostart_path =
+        OsIntegrationTestOverrideImpl::Get()->startup();
 
     base::FilePath shortcut_filename =
         GetAppShortcutFilename(profile()->GetPath(), kAppId);
@@ -62,6 +61,10 @@ class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
 
     return autostart_path.Append(shortcut_filename);
   }
+
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      os_integration_override_{
+          OsIntegrationTestOverrideImpl::OverrideForTesting()};
 };
 
 TEST_F(WebAppRunOnOsLoginLinuxTest, Register) {
