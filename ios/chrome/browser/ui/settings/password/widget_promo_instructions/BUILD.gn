@@ -26,11 +26,11 @@ source_set("widget_promo_instructions_ui") {
   ]
   deps = [
     ":widget_promo_instructions_constants",
-    "resources:widget_promo_instructions_banner",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/settings/password/widget_promo_instructions/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",

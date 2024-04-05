@@ -2,54 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("enterprise_icon") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "enterprise_icon.imageset/Contents.json",
-    "enterprise_icon.imageset/enterprise_icon@2x.png",
-    "enterprise_icon.imageset/enterprise_icon@3x.png",
-  ]
-}
-
-imageset("family_link_icon") {
-  sources = [
-    "family_link_icon.imageset/Contents.json",
-    "family_link_icon.imageset/family_link_icon@2x.png",
-    "family_link_icon.imageset/family_link_icon@3x.png",
-  ]
-}
-
-imageset("settings") {
-  sources = [
-    "settings.imageset/Contents.json",
-    "settings.imageset/settings@2x.png",
-    "settings.imageset/settings@3x.png",
-  ]
-}
-
-imageset("settings_accounts_add_account") {
-  sources = [
-    "settings_accounts_add_account.imageset/Contents.json",
-    "settings_accounts_add_account.imageset/settings_accounts_add_account@2x.png",
-    "settings_accounts_add_account.imageset/settings_accounts_add_account@3x.png",
-  ]
-}
-
-imageset("settings_passwords_in_other_apps_banner") {
-  sources = [
-    "settings_passwords_in_other_apps_banner.imageset/Contents.json",
-    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@2x.png",
-    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@3x.png",
-    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@2x.png",
-    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@3x.png",
-  ]
-}
-
-imageset("settings_safe_state") {
-  sources = [
-    "settings_safe_state.imageset/Contents.json",
-    "settings_safe_state.imageset/settings_safe_state@2x.png",
-    "settings_safe_state.imageset/settings_safe_state@3x.png",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/enterprise_icon.imageset/Contents.json",
+    "Assets.xcassets/enterprise_icon.imageset/enterprise_icon@2x.png",
+    "Assets.xcassets/enterprise_icon.imageset/enterprise_icon@3x.png",
+    "Assets.xcassets/family_link_icon.imageset/Contents.json",
+    "Assets.xcassets/family_link_icon.imageset/family_link_icon@2x.png",
+    "Assets.xcassets/family_link_icon.imageset/family_link_icon@3x.png",
+    "Assets.xcassets/settings.imageset/Contents.json",
+    "Assets.xcassets/settings.imageset/settings@2x.png",
+    "Assets.xcassets/settings.imageset/settings@3x.png",
+    "Assets.xcassets/settings_accounts_add_account.imageset/Contents.json",
+    "Assets.xcassets/settings_accounts_add_account.imageset/settings_accounts_add_account@2x.png",
+    "Assets.xcassets/settings_accounts_add_account.imageset/settings_accounts_add_account@3x.png",
+    "Assets.xcassets/settings_passwords_in_other_apps_banner.imageset/Contents.json",
+    "Assets.xcassets/settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@2x.png",
+    "Assets.xcassets/settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@3x.png",
+    "Assets.xcassets/settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@2x.png",
+    "Assets.xcassets/settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@3x.png",
+    "Assets.xcassets/settings_safe_state.imageset/Contents.json",
+    "Assets.xcassets/settings_safe_state.imageset/settings_safe_state@2x.png",
+    "Assets.xcassets/settings_safe_state.imageset/settings_safe_state@3x.png",
   ]
 }

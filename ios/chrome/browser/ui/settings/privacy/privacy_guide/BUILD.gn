@@ -50,9 +50,6 @@ source_set("privacy_guide_ui") {
   ]
   deps = [
     ":privacy_guide_constants",
-    "resources:history_sync_illustration",
-    "resources:url_usage_illustration",
-    "resources:welcome_illustration",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
@@ -60,6 +57,7 @@ source_set("privacy_guide_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/privacy/privacy_guide/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",

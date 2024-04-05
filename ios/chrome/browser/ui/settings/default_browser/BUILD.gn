@@ -8,7 +8,6 @@ source_set("default_browser") {
     "default_browser_settings_table_view_controller.mm",
   ]
   deps = [
-    "resources:chrome_icon",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
@@ -19,7 +18,8 @@ source_set("default_browser") {
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/resources:settings",
+    "//ios/chrome/browser/ui/settings/default_browser/resources",
+    "//ios/chrome/browser/ui/settings/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",

@@ -99,7 +99,6 @@ source_set("password_sharing_ui") {
   deps = [
     ":password_sharing_constants",
     ":password_sharing_metrics",
-    "resources:password_sharing_family_promo",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
     "//components/strings",
@@ -111,6 +110,7 @@ source_set("password_sharing_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password/password_sharing/resources",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

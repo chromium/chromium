@@ -47,11 +47,6 @@ source_set("password_checkup_ui") {
   ]
   deps = [
     ":password_checkup_constants",
-    "resources:password_checkup_header_background_color",
-    "resources:password_checkup_header_green",
-    "resources:password_checkup_header_loading",
-    "resources:password_checkup_header_red",
-    "resources:password_checkup_header_yellow",
     "//base",
     "//components/google/core/common",
     "//components/strings",
@@ -64,6 +59,7 @@ source_set("password_checkup_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password/password_checkup/resources",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
