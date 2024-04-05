@@ -1642,6 +1642,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cros-soul-gd",
+    "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-web-app-install-dialog",
     "owners": [ "loubrett@google.com", "cros-apps-platform-core@google.com" ],
     "expiry_milestone": 130

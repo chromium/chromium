@@ -3391,6 +3391,9 @@ extern const char kCrosShortstandDescription[];
 extern const char kCrosSoulName[];
 extern const char kCrosSoulDescription[];
 
+extern const char kCrosSoulGravediggerName[];
+extern const char kCrosSoulGravediggerDescription[];
+
 extern const char kCrosWebAppShortcutUiUpdateName[];
 extern const char kCrosWebAppShortcutUiUpdateDescription[];
 

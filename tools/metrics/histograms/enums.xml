@@ -18699,6 +18699,7 @@ from previous Chrome versions.
   <int value="-1024687559" label="ShortcutCustomization:enabled"/>
   <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
+  <int value="-1024018413" label="CrOSLateBootGravedigger:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022290134" label="WebApkInstallFailureRetry:disabled"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
@@ -23922,6 +23923,7 @@ from previous Chrome versions.
   <int value="1319725131" label="enable-distance-field-text"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>
+  <int value="1322013438" label="CrOSLateBootGravedigger:enabled"/>
   <int value="1323808967" label="PlaybackSpeedButton:disabled"/>
   <int value="1324043544" label="SyncSettingsCategorization:enabled"/>
   <int value="1324080668" label="VcControlsUi:disabled"/>

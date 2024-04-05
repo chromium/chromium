@@ -5834,6 +5834,9 @@ const char kCrosBatterySaverAlwaysOnDescription[] =
 const char kCrosSoulName[] = "CrOS SOUL";
 const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
 
+const char kCrosSoulGravediggerName[] = "CrOS SOUL Gravedigger";
+const char kCrosSoulGravediggerDescription[] = "Use Gravedigger.";
+
 const char kCrosBatterySaverName[] =
     "Enable ChromeOS Battery Saver Mode Support";
 const char kCrosBatterySaverDescription[] =
