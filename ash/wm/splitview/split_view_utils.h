@@ -221,8 +221,9 @@ int GetDividerPositionUpperLimit(aura::Window* root_window);
 int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 
 // Returns the target divider position for `root_window` for `snap_ratio` at
-// `snap_position`. `account_for_divider_width` will decide whether the divider
-// shorter side width will be subtracted or not.
+// `snap_position`, clamped between 0 and the upper limit of `root_window`.
+// `account_for_divider_width` will decide whether the divider shorter side
+// width will be subtracted or not.
 int CalculateDividerPosition(aura::Window* root_window,
                              SnapPosition snap_position,
                              float snap_ratio,
