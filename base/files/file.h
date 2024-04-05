@@ -326,6 +326,12 @@ class BASE_EXPORT File {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+#if BUILDFLAG(IS_APPLE)
+  // Initializes experiments. Must be invoked early in process startup, but
+  // after `FeatureList` initialization.
+  static void InitializeFeatures();
+#endif  // BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(IS_WIN)
   // Sets or clears the DeleteFile disposition on the file. Returns true if
   // the disposition was set or cleared, as indicated by |delete_on_close|.
@@ -359,9 +365,7 @@ class BASE_EXPORT File {
   //   deleted in the event of untimely process termination, and then clearing
   //   this state once the file is suitable for persistence.
   bool DeleteOnClose(bool delete_on_close);
-#endif
 
-#if BUILDFLAG(IS_WIN)
   // Precondition: last_error is not 0, also known as ERROR_SUCCESS.
   static Error OSErrorToFileError(DWORD last_error);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

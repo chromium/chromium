@@ -18,9 +18,12 @@
 
 static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
+#include <atomic>
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -41,6 +44,30 @@ static_assert(File::FROM_BEGIN == SEEK_SET && File::FROM_CURRENT == SEEK_CUR &&
               "whence mapping must match the system headers");
 
 namespace {
+
+#if BUILDFLAG(IS_APPLE)
+// When enabled, `F_FULLFSYNC` is not used in `File::Flush`. Instead,
+// `F_BARRIERFSYNC` or `flush()` is used (depending on the
+// "MacEfficientFileFlushUseBarrier" param). The feature exists to measure the
+// cost of `F_FULLFSYNC` compared to other solutions (not ready to enable by
+// default as-is). See
+// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
+BASE_FEATURE(kMacEfficientFileFlush,
+             "MacEfficientFileFlush",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
+    &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};
+
+enum class MacFileFlushMechanism {
+  kFlush,
+  kFullFsync,
+  kBarrierFsync,
+};
+
+std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
+    MacFileFlushMechanism::kFullFsync};
+#endif  // BUILDFLAG(IS_APPLE)
 
 // NaCl doesn't provide the following system calls, so either simulate them or
 // wrap them in order to minimize the number of #ifdef's in this file.
@@ -439,6 +466,22 @@ File File::Duplicate() const {
   return File(std::move(other_fd), async());
 }
 
+#if BUILDFLAG(IS_APPLE)
+void File::InitializeFeatures() {
+  if (FeatureList::IsEnabled(kMacEfficientFileFlush)) {
+    // "relaxed" because there is no dependency between these memory operations
+    // and other memory operations.
+    if (kMacEfficientFileFlushUseBarrier.Get()) {
+      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kBarrierFsync,
+                                       std::memory_order_relaxed);
+    } else {
+      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kFlush,
+                                       std::memory_order_relaxed);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
 // Static.
 File::Error File::OSErrorToFileError(int saved_errno) {
   switch (saved_errno) {
@@ -576,18 +619,41 @@ bool File::Flush() {
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
-  // unexpected data loss.
-  // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-  if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC)))
-    return true;
-
-  // Some filesystms do not support fcntl(F_FULLFSYNC). We handle these cases by
-  // falling back to fsync(). Unfortunately, lack of F_FULLFSYNC support results
-  // in various error codes, so we cannot use the error code as a definitive
-  // indicator that F_FULLFSYNC was not supported. So, if fcntl() errors out for
-  // any reason, we may end up making an unnecessary system call.
+  // unexpected data loss. Depending on experiment state, this function may use
+  // F_BARRIERFSYNC or F_FULLFSYNC to provide stronger guarantees than fsync().
   //
-  // See the CL description at https://crrev.com/c/1400159 for details.
+  // See documentation:
+  // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
+  //
+  // "relaxed" because there is no dependency between this memory operation and
+  // other memory operations.
+  switch (g_mac_file_flush_mechanism.load(std::memory_order_relaxed)) {
+    case MacFileFlushMechanism::kBarrierFsync: {
+      if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
+        return true;
+      }
+      // Fall back to `fsync()` in case of failure.
+      break;
+    }
+    case MacFileFlushMechanism::kFullFsync: {
+      if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC))) {
+        return true;
+      }
+      // Fall back to `fsync()` in case of failure.
+      break;
+    }
+    case MacFileFlushMechanism::kFlush: {
+      // Fall back to `fsync()`.
+      break;
+    }
+  }
+
+  // `fsync()` if `F_BARRIERFSYNC` or `F_FULLFSYNC` failed, or if the mechanism
+  // is `kFlush`. Some file systems do not support `F_FULLFSYNC` /
+  // `F_BARRIERFSYNC` but we cannot use the error code as a definitive indicator
+  // that it's the case, so we'll keep trying `F_FULLFSYNC` / `F_BARRIERFSYNC`
+  // for every call to this method when it's the case. See the CL description at
+  // https://crrev.com/c/1400159 for details.
   return !HANDLE_EINTR(fsync(file_.get()));
 #else
   return !HANDLE_EINTR(fsync(file_.get()));

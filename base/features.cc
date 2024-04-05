@@ -14,6 +14,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
+#include "base/files/file.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/message_pump_kqueue.h"
 #include "base/synchronization/condition_variable.h"
@@ -107,6 +108,7 @@ void Init(EmitThreadControllerProfilerMetadata
 
 #if BUILDFLAG(IS_APPLE)
   ConditionVariable::InitializeFeatures();
+  File::InitializeFeatures();
   MessagePumpCFRunLoopBase::InitializeFeatures();
   MessagePumpKqueue::InitializeFeatures();
 #endif
