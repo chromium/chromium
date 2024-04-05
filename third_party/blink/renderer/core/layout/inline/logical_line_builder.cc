@@ -35,8 +35,6 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
                                     InlineLayoutAlgorithm* main_line_helper) {
   // Needs MutableResults to move ShapeResult out of the LineInfo.
   InlineItemResults* line_items = line_info->MutableResults();
-  // Clear the current line without releasing the buffer.
-  line_box->Shrink(0);
 
   // Compute heights of all inline items by placing the dominant baseline at 0.
   // The baseline is adjusted after the height of the line box is computed.

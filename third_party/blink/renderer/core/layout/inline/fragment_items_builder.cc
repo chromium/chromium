@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
@@ -47,68 +48,71 @@ FragmentItemsBuilder::FragmentItemsBuilder(
 }
 
 FragmentItemsBuilder::~FragmentItemsBuilder() {
-  ReleaseCurrentLogicalLineItems();
+  ReleaseCurrentLogicalLineContainer();
 
   // Delete leftovers that were associated, but were not added. Clear() is
   // explicitly called here for memory performance.
-  DCHECK(line_items_pool_);
-  line_items_pool_->clear();
-  for (const auto& i : line_items_map_) {
-    if (i.value != line_items_pool_)
-      i.value->clear();
+  DCHECK(line_container_pool_);
+  line_container_pool_->Clear();
+  for (const auto& i : line_container_map_) {
+    if (i.value != line_container_pool_) {
+      i.value->Clear();
+    }
   }
 }
 
-void FragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
-  if (!current_line_items_)
+void FragmentItemsBuilder::ReleaseCurrentLogicalLineContainer() {
+  if (!current_line_container_) {
     return;
-  if (current_line_items_ == line_items_pool_) {
+  }
+  if (current_line_container_ == line_container_pool_) {
     DCHECK(is_line_items_pool_acquired_);
     is_line_items_pool_acquired_ = false;
   } else {
-    current_line_items_->clear();
+    current_line_container_->Clear();
   }
-  current_line_items_ = nullptr;
+  current_line_container_ = nullptr;
 }
 
 void FragmentItemsBuilder::MoveCurrentLogicalLineItemsToMap() {
-  if (!current_line_items_) {
+  if (!current_line_container_) {
     DCHECK(!current_line_fragment_);
     return;
   }
   DCHECK(current_line_fragment_);
-  line_items_map_.insert(current_line_fragment_, current_line_items_);
+  line_container_map_.insert(current_line_fragment_, current_line_container_);
   current_line_fragment_ = nullptr;
-  current_line_items_ = nullptr;
+  current_line_container_ = nullptr;
 }
 
-LogicalLineItems* FragmentItemsBuilder::AcquireLogicalLineItems() {
-  if (line_items_pool_ && !is_line_items_pool_acquired_) {
+LogicalLineContainer* FragmentItemsBuilder::AcquireLogicalLineContainer() {
+  if (line_container_pool_ && !is_line_items_pool_acquired_) {
     is_line_items_pool_acquired_ = true;
-    return line_items_pool_;
+    return line_container_pool_;
   }
   MoveCurrentLogicalLineItemsToMap();
-  DCHECK(!current_line_items_);
-  current_line_items_ = MakeGarbageCollected<LogicalLineItems>();
-  return current_line_items_;
+  DCHECK(!current_line_container_);
+  current_line_container_ = MakeGarbageCollected<LogicalLineContainer>();
+  return current_line_container_;
 }
 
 const LogicalLineItems& FragmentItemsBuilder::GetLogicalLineItems(
     const PhysicalLineBoxFragment& line_fragment) const {
   if (&line_fragment == current_line_fragment_) {
-    DCHECK(current_line_items_);
-    return *current_line_items_;
+    DCHECK(current_line_container_);
+    return current_line_container_->BaseLine();
   }
-  const LogicalLineItems* items = line_items_map_.at(&line_fragment);
-  DCHECK(items);
-  return *items;
+  const LogicalLineContainer* container =
+      line_container_map_.at(&line_fragment);
+  DCHECK(container);
+  return container->BaseLine();
 }
 
-void FragmentItemsBuilder::AssociateLogicalLineItems(
-    LogicalLineItems* line_items,
+void FragmentItemsBuilder::AssociateLogicalLineContainer(
+    LogicalLineContainer* line_container,
     const PhysicalFragment& line_fragment) {
-  DCHECK(!current_line_items_ || current_line_items_ == line_items);
-  current_line_items_ = line_items;
+  DCHECK(!current_line_container_ || current_line_container_ == line_container);
+  current_line_container_ = line_container;
   DCHECK(!current_line_fragment_);
   current_line_fragment_ = &line_fragment;
 }
@@ -117,19 +121,21 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
                                    const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
   if (&line_fragment == current_line_fragment_) {
-    DCHECK(current_line_items_);
+    DCHECK(current_line_container_);
     current_line_fragment_ = nullptr;
   } else {
     MoveCurrentLogicalLineItemsToMap();
-    DCHECK(!current_line_items_);
-    current_line_items_ = line_items_map_.Take(&line_fragment);
-    DCHECK(current_line_items_);
+    DCHECK(!current_line_container_);
+    current_line_container_ = line_container_map_.Take(&line_fragment);
+    DCHECK(current_line_container_);
   }
-  LogicalLineItems* line_items = current_line_items_;
+  LogicalLineContainer* line_container = current_line_container_;
+  LogicalLineItems& line_items = line_container->BaseLine();
 
   // Reserve the capacity for (children + line box item).
   const wtf_size_t size_before = items_.size();
-  const wtf_size_t estimated_size = size_before + line_items->size() + 1;
+  const wtf_size_t estimated_size =
+      size_before + line_container->EstimatedFragmentItemCount();
   const wtf_size_t old_capacity = items_.capacity();
   if (estimated_size > old_capacity)
     items_.reserve(std::max(estimated_size, old_capacity * 2));
@@ -138,7 +144,10 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
   const wtf_size_t line_start_index = items_.size();
   items_.emplace_back(offset, line_fragment);
 
-  AddItems(line_items->begin(), line_items->end());
+  AddItems(line_items.begin(), line_items.end());
+
+  // TODO(crbug.com/324111880): Add nested line items for
+  // line_container->annotation_line_list_.
 
   // All children are added. Create an item for the start of the line.
   FragmentItem& line_item = items_[line_start_index].item;
@@ -149,7 +158,7 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
   // Keep children's offsets relative to |line|. They will be adjusted later in
   // |ConvertToPhysical()|.
 
-  ReleaseCurrentLogicalLineItems();
+  ReleaseCurrentLogicalLineContainer();
 
   DCHECK_LE(items_.size(), estimated_size);
 }

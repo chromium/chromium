@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_truncator.h"
 #include "third_party/blink/renderer/core/layout/inline/line_widths.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
 #include "third_party/blink/renderer/core/layout/inline/paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/score_line_breaker.h"
@@ -366,10 +367,14 @@ ALWAYS_INLINE bool InlineLayoutAlgorithm::ShouldLineClamp(
 
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
                                        LineInfo* line_info,
-                                       LogicalLineItems* line_box) {
+                                       LogicalLineContainer* line_container) {
+  LogicalLineItems* line_box = &line_container->BaseLine();
   // Apply justification before placing items, because it affects size/position
   // of items, which are needed to compute inline static positions.
   LayoutUnit line_offset_for_text_align = ApplyTextAlign(line_info);
+
+  // Clear the current line without releasing the buffer.
+  line_container->Shrink();
 
   LogicalLineBuilder line_builder(Node(), GetConstraintSpace(), box_states_,
                                   context_);
@@ -577,12 +582,12 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
         AdjustInitialLetterInTextPosition(line_box_metrics, line_box);
     if (!adjusted_metrics.IsEmpty()) {
       container_builder_.SetMetrics(adjusted_metrics);
-      line_box->MoveInBlockDirection(adjusted_metrics.ascent);
+      line_container->MoveInBlockDirection(adjusted_metrics.ascent);
     }
   } else if (LIKELY(!Node().IsSvgText())) {
     // Convert baseline relative block offset of `LogicalLineItem::rect` to
     // to line box relative block offset.
-    line_box->MoveInBlockDirection(line_box_metrics.ascent);
+    line_container->MoveInBlockDirection(line_box_metrics.ascent);
   }
 
   container_builder_.SetInlineSize(inline_size);
@@ -1022,8 +1027,9 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
   FragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
   DCHECK(items_builder);
-  LogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
-  DCHECK(line_box);
+  LogicalLineContainer* const line_container =
+      items_builder->AcquireLogicalLineContainer();
+  DCHECK(line_container);
   // Determine which line breaker to use.
   LineBreakStrategy line_break_strategy(context_, Node(), Style(), break_token,
                                         column_spanner_path_);
@@ -1100,7 +1106,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (block_in_inline_result) {
       if (UNLIKELY(block_in_inline_result->Status() !=
                    LayoutResult::kSuccess)) {
-        items_builder->ReleaseCurrentLogicalLineItems();
+        items_builder->ReleaseCurrentLogicalLineContainer();
         return block_in_inline_result;
       }
 
@@ -1128,7 +1134,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       // Abort if something before needs to know the correct BFC block-offset.
       if (container_builder_.GetAdjoiningObjectTypes() &&
           bfc_block_offset != constraint_space.ExpectedBfcBlockOffset()) {
-        items_builder->ReleaseCurrentLogicalLineItems();
+        items_builder->ReleaseCurrentLogicalLineContainer();
         return container_builder_.Abort(LayoutResult::kBfcBlockOffsetResolved);
       }
     }
@@ -1166,7 +1172,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
     PrepareBoxStates(line_info, break_token);
 
-    CreateLine(line_opportunity, &line_info, line_box);
+    CreateLine(line_opportunity, &line_info, line_container);
     is_line_created = true;
     is_end_paragraph = line_info.IsEndParagraph();
 
@@ -1297,10 +1303,10 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
   DCHECK(items_builder);
-  container_builder_.PropagateChildrenData(*line_box);
+  container_builder_.PropagateChildrenData(line_container->BaseLine());
   const LayoutResult* layout_result = container_builder_.ToLineBoxFragment();
-  items_builder->AssociateLogicalLineItems(
-      line_box, layout_result->GetPhysicalFragment());
+  items_builder->AssociateLogicalLineContainer(
+      line_container, layout_result->GetPhysicalFragment());
   line_break_strategy.DidCreateLine(is_end_paragraph);
   return layout_result;
 }

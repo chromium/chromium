@@ -18,6 +18,7 @@ namespace blink {
 class FragmentItem;
 class FragmentItems;
 class InlineNode;
+class LogicalLineContainer;
 
 // This class builds |FragmentItems|.
 //
@@ -52,26 +53,28 @@ class CORE_EXPORT FragmentItemsBuilder {
   // creates and positions children within a line box, but its parent algorithm
   // positions the line box.
   //
-  // 1. |AcquireLogicalLineItems| to get an instance of |LogicalLineItems|.
-  // 2. Add items to |LogicalLineItems| and create |PhysicalFragment|,
-  //    then associate them by |AssociateLogicalLineItems|.
+  // 1. |AcquireLogicalLineContainer| to get an instance of
+  //    |LogicalLineContainer|.
+  // 2. Add items to |LogicalLineContainer::BaseLine()| and create
+  //    |PhysicalFragment|, then associate them by
+  //    |AssociateLogicalLineContainer|.
   // 3. |AddLine| adds the |PhysicalLineBoxFragment|.
   //
   // |BlockLayoutAlgorithm| runs these phases in the order for each line. In
-  // this case, one instance of |LogicalLineItems| is reused for all lines to
-  // reduce memory allocations.
+  // this case, one instance of |LogicalLineContainer| is reused for all lines
+  // to reduce memory allocations.
   //
   // Custom layout produces all line boxes first by running only 1 and 2 (in
   // |InlineLayoutAlgorithm|). Then after worklet determined the position and
   // the order of line boxes, it runs 3 for each line. In this case,
   // |FragmentItemsBuilder| allocates new instance for each line, and keeps
   // them alive until |AddLine|.
-  LogicalLineItems* AcquireLogicalLineItems();
-  void ReleaseCurrentLogicalLineItems();
+  LogicalLineContainer* AcquireLogicalLineContainer();
+  void ReleaseCurrentLogicalLineContainer();
   const LogicalLineItems& GetLogicalLineItems(
       const PhysicalLineBoxFragment&) const;
-  void AssociateLogicalLineItems(LogicalLineItems* line_items,
-                                 const PhysicalFragment& line_fragment);
+  void AssociateLogicalLineContainer(LogicalLineContainer* line_container,
+                                     const PhysicalFragment& line_fragment);
   void AddLine(const PhysicalLineBoxFragment& line,
                const LogicalOffset& offset);
 
@@ -152,13 +155,13 @@ class CORE_EXPORT FragmentItemsBuilder {
   String first_line_text_content_;
 
   // Keeps children of a line until the offset is determined. See |AddLine|.
-  LogicalLineItems* current_line_items_ = nullptr;
+  LogicalLineContainer* current_line_container_ = nullptr;
   const PhysicalFragment* current_line_fragment_ = nullptr;
 
-  HeapHashMap<Member<const PhysicalFragment>, Member<LogicalLineItems>>
-      line_items_map_;
-  LogicalLineItems* const line_items_pool_ =
-      MakeGarbageCollected<LogicalLineItems>();
+  HeapHashMap<Member<const PhysicalFragment>, Member<LogicalLineContainer>>
+      line_container_map_;
+  LogicalLineContainer* const line_container_pool_ =
+      MakeGarbageCollected<LogicalLineContainer>();
 
   InlineNode node_;
 

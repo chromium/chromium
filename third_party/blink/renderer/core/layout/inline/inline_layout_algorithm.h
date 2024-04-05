@@ -28,6 +28,7 @@ class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
+class LogicalLineContainer;
 struct InlineItemResult;
 struct LeadingFloats;
 
@@ -51,7 +52,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
 
   void CreateLine(const LineLayoutOpportunity&,
                   LineInfo*,
-                  LogicalLineItems* line_box);
+                  LogicalLineContainer* line_container);
 
   const LayoutResult* Layout();
 

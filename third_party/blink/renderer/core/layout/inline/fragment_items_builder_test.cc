@@ -48,15 +48,17 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // 3. |AddLine|.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
+    auto* line_container1 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container1,
+                                                *line_fragment1);
     items_builder.AddLine(*line_fragment1, LogicalOffset());
-    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
+    auto* line_container2 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container2,
+                                                *line_fragment2);
     items_builder.AddLine(*line_fragment2, LogicalOffset());
 
-    // In this case, we should reuse one |LogicalLineItems| instance.
-    EXPECT_EQ(line_items1, line_items2);
+    // In this case, we should reuse one |LogicalLineContainer| instance.
+    EXPECT_EQ(line_container1, line_container2);
 
     const auto& items = items_builder.Items(PhysicalSize());
     EXPECT_EQ(items.size(), 2u);
@@ -69,14 +71,16 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // box.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
+    auto* line_container1 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container1,
+                                                *line_fragment1);
+    auto* line_container2 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container2,
+                                                *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should
     // be allocated for line 2.
-    EXPECT_NE(line_items1, line_items2);
+    EXPECT_NE(line_container1, line_container2);
 
     items_builder.AddLine(*line_fragment1, LogicalOffset());
     items_builder.AddLine(*line_fragment2, LogicalOffset());
@@ -90,14 +94,16 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // to the container box in the reverse order.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
+    auto* line_container1 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container1,
+                                                *line_fragment1);
+    auto* line_container2 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container2,
+                                                *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should
     // be allocated for line 2.
-    EXPECT_NE(line_items1, line_items2);
+    EXPECT_NE(line_container1, line_container2);
 
     // Add lines in the reverse order.
     items_builder.AddLine(*line_fragment2, LogicalOffset());
@@ -111,14 +117,16 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // Custom layout may not add all line boxes.
     FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
-    LogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
-    LogicalLineItems* line_items2 = items_builder.AcquireLogicalLineItems();
-    items_builder.AssociateLogicalLineItems(line_items2, *line_fragment2);
+    auto* line_container1 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container1,
+                                                *line_fragment1);
+    auto* line_container2 = items_builder.AcquireLogicalLineContainer();
+    items_builder.AssociateLogicalLineContainer(line_container2,
+                                                *line_fragment2);
 
     // Because |AcquireLogicalLineItems| without |AddLine|, new instances should
     // be allocated for line 2.
-    EXPECT_NE(line_items1, line_items2);
+    EXPECT_NE(line_container1, line_container2);
 
     // Add line2, but not line1.
     items_builder.AddLine(*line_fragment2, LogicalOffset());
