@@ -37,7 +37,6 @@ BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApi);
 BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApiBlinkExtension);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewMuteAudio);
-BASE_DECLARE_FEATURE(kWebViewOriginTrials);
 BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
 BASE_DECLARE_FEATURE(kWebViewRestrictSensitiveContent);
 BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteDetection);
