@@ -177,108 +177,30 @@ void CSSGroupingRule::deleteRule(unsigned index,
   UseCountForSignalAffected();
 }
 
-// Returns true if this is a style rule whose selector is & {} and has no
-// children. We take these (rightfully or not) as being implicitly inserted
-// during parsing, and show their declarations directly instead of having the
-// (unneeded) selector wrap them. See
-// https://github.com/w3c/csswg-drafts/issues/7850.
-static bool IsImplicitlyInsertedParentRule(CSSRule* rule) {
-  CSSStyleRule* style_rule = DynamicTo<CSSStyleRule>(rule);
-  if (style_rule == nullptr) {
-    return false;
-  }
-  if (style_rule->GetStyleRule()->ChildRules()) {
-    return false;
-  }
-  const CSSSelector* selector = style_rule->GetStyleRule()->FirstSelector();
-  return selector->IsLastInSelectorList() &&
-         selector->Match() == CSSSelector::kPseudoClass &&
-         selector->GetPseudoType() == CSSSelector::kPseudoParent;
-}
-
 void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
-  // Very similar to https://drafts.csswg.org/cssom-1/#serialize-a-css-rule.
-  // This is not official spec language (yet), so we write out the text in full.
+  // https://drafts.csswg.org/cssom-1/#serialize-a-css-rule,
+  // using CSSMediaRule as an example:
 
-  // 1. Let s initially be the string "@media", followed by a single SPACE
-  //    (U+0020).
-  // 2. Append the result of performing serialize a media query list on rule’s
-  //    media query list to s.
+  // The result of concatenating the following:
+  // 1. The string "@media", followed by a single SPACE (U+0020).
+  // 2. The result of performing serialize a media query list on rule’s media
+  //    query list.
   // [1–2 is done in the parent, and is different for @container etc.]
 
-  // 3. Append a single SPACE (U+0020) to s, followed by the string "{", i.e.,
-  //    LEFT CURLY BRACKET (U+007B).
-  result.Append(" {");
+  // 3. A single SPACE (U+0020), followed by the string "{", i.e., LEFT CURLY
+  //    BRACKET (U+007B), followed by a newline.
+  result.Append(" {\n");
 
-  // 4. If there is at least one rule in the rule's cssRules list,
-  //    and the first rule is a CSSStyleRule with a single selector
-  //    that would serialize to exactly “&”, and that rule has no children:
-  unsigned size = length();
-  if (size > 0 && IsImplicitlyInsertedParentRule(ItemInternal(0))) {
-    // 4.1. Let decls be the result of performing serialize a CSS declaration
-    // block on the first rule’s associated declarations.
-    CSSRule* rule = ItemInternal(0);
-    String decls =
-        DynamicTo<CSSStyleRule>(rule)->GetStyleRule()->Properties().AsText();
-
-    // 4.2. Let rules be the result of performing serialize a CSS
-    //      rule on each rule in the rule’s cssRules list except the first,
-    //      or null if there are no such rules.
-    StringBuilder rules;
-    for (unsigned i = 1; i < size; ++i) {
-      // Step 4.4.2 for rules.
-      rules.Append("\n  ");
-      rules.Append(ItemInternal(i)->cssText());
-    }
-
-    // 4.3. If rules is null:
-    if (rules.empty()) {
-      // 4.3.4. Append a single SPACE (U+0020) to s.
-      result.Append(' ');
-
-      // 4.3.2. Append decls to s.
-      result.Append(decls);
-
-      // 4.3.3. Append " }" to s (i.e. a single SPACE (U+0020) followed by RIGHT
-      // CURLY BRACKET (U+007D)).
-      result.Append(" }");
-
-      // 4.3.4. Return s.
-      return;
-    }
-
-    // 4.4. Otherwise:
-    // 4.4.1. Prepend decls to rules.
-    // 4.4.2. For each rule in rules: [done above]
-    //   4.4.2.1. Append a newline followed by two spaces to s.
-    //   4.4.2.2. Append rule to s.
-
-    result.Append("\n  ");
-    result.Append(decls);
-
-    result.Append(rules);
-
-    // 4.4.3. Append a newline followed by RIGHT CURLY BRACKET (U+007D) to s.
-    // 4.4.4. Return s.
-    result.Append("\n}");
-    return;
-  }
-
-  // 5. Otherwise:
-  //   5.1. Append a newline to s.
-  result.Append('\n');
-
-  //   5.2. Append the result of performing serialize a CSS rule on each
-  //        rule in the rule’s cssRules list to s, separated by a newline and
-  //        indented by two spaces.
-  //   5.3. Append a newline to s, followed by the string "}", i.e., RIGHT CURLY
-  //        BRACKET (U+007D)
-  for (unsigned i = 0; i < size; ++i) {
+  // 4. The result of performing serialize a CSS rule on each rule in the rule’s
+  //    cssRules list, separated by a newline and indented by two spaces.
+  for (unsigned i = 0; i < length(); ++i) {
     CSSRule* child = ItemInternal(i);
     result.Append("  ");
     result.Append(child->cssText());
     result.Append('\n');
   }
+
+  // A newline, followed by the string "}", i.e., RIGHT CURLY BRACKET (U+007D)
   result.Append('}');
 }
 

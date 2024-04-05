@@ -1215,7 +1215,9 @@ TEST(CSSParserImplTest, IntermediateAndTrailingBareDeclarationsMultiple) {
 TEST(CSSParserImplTest, BareDeclarationsWithAdjacentNestedGroupRule) {
   test::TaskEnvironment task_environment;
   EXPECT_EQ(
-      "@media (width) { color: orchid; }"
+      "@media (width) {\n"
+      "  & { color: orchid; }\n"
+      "}"
       "div { color: plum; width: 10px; } (invisible)"
       "& .b { color: coral; }"
       "& .c { color: pink; }"
