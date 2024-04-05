@@ -5237,8 +5237,7 @@ bool Element::CanAttachShadowRoot() const {
   // Checking IsCustomElement() here is just an optimization
   // because IsValidName is not cheap.
   return (IsCustomElement() && CustomElement::IsValidName(local_name)) ||
-         IsValidShadowHostName(local_name) ||
-         local_name == html_names::kSelectlistTag;
+         IsValidShadowHostName(local_name);
 }
 
 const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
