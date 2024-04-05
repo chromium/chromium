@@ -262,6 +262,24 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   return status;
 }
 
+// static
+bool ShelfControllerHelper::IsAppDefaultInstalled(Profile* profile,
+                                                  const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  bool default_installed = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&default_installed](const apps::AppUpdate& update) {
+        default_installed =
+            update.InstallReason() == apps::InstallReason::kDefault ||
+            update.InstallReason() == apps::InstallReason::kSystem;
+      });
+  return default_installed;
+}
+
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
   return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());

@@ -60,6 +60,10 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "extensions/common/constants.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#endif  // GOOGLE_CHROME_BRANDING
+
 namespace {
 
 // Returns pinned app position even if app is not currently visible on device
@@ -281,6 +285,50 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   }
 }
 
+void AddContainerAppPinIfNeeded(
+    Profile* profile,
+    ShelfControllerHelper* helper,
+    app_list::AppListSyncableService* syncable_service) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!chromeos::features::IsContainerAppPreinstallEnabled()) {
+    return;
+  }
+
+  if (!profile->GetPrefs()
+           ->GetList(prefs::kShelfContainerAppPinRolls)
+           .empty()) {
+    return;
+  }
+
+  const std::string app_id = web_app::kContainerAppId;
+
+  if (!helper->IsAppDefaultInstalled(profile, app_id)) {
+    return;
+  }
+
+  const app_list::AppListSyncableService::SyncItem* sync_item =
+      syncable_service->GetSyncItem(app_id);
+  if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
+    if (sync_item->is_user_pinned.value_or(true)) {
+      ScopedListPrefUpdate update(profile->GetPrefs(),
+                                  prefs::kShelfContainerAppPinRolls);
+      update->Append("v1");
+    }
+    return;
+  }
+
+  // Pin the container app before chrome.
+  syncable_service->SetPinPosition(app_id,
+                                   CreateFirstPinPosition(syncable_service),
+                                   /*is_policy_initiated=*/false);
+  {
+    ScopedListPrefUpdate update(profile->GetPrefs(),
+                                prefs::kShelfContainerAppPinRolls);
+    update->Append("v1");
+  }
+#endif  // GOOGLE_CHROME_BRANDING
+}
+
 // Ensures the Mall app is pinned to the shelf after Chrome, when Mall is
 // enabled.
 void AddMallPin(app_list::AppListSyncableService* syncable_service) {
@@ -305,6 +353,9 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterListPref(
+      prefs::kShelfContainerAppPinRolls,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
       PrefRegistry::NO_REGISTRATION_FLAGS);
@@ -400,6 +451,10 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   }
 
   AddMallPin(syncable_service);
+
+  if (IsSafeToApplyDefaultPinLayout(profile_)) {
+    AddContainerAppPinIfNeeded(profile_, helper, syncable_service);
+  }
 
   // Handle pins, forced by policy. In case Chrome is first app they are added
   // after Chrome, otherwise they are added to the front. Note, we handle apps

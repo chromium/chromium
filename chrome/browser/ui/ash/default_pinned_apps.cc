@@ -14,6 +14,10 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/constants.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 bool ShouldAddHelpApp(content::BrowserContext* browser_context) {
@@ -46,6 +50,12 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
 
       arc::kGooglePhotosAppId,
   };
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+    app_ids.insert(app_ids.begin(), web_app::kContainerAppId);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     app_ids.push_back(web_app::kNvidiaGeForceNowAppId);

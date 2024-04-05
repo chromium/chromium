@@ -107,6 +107,7 @@ include_rules = [
   "+chrome/browser/profiles/profile_test_util.h",
   "+chrome/browser/profiles/profiles_state.h",
   "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+  "+chrome/browser/resources/preinstalled_web_apps/internal/container.h",
   "+chrome/browser/search_engines/template_url_service_factory.h",
   "+chrome/browser/scalable_iph/scalable_iph_factory.h",
   "+chrome/browser/sessions/session_restore.h",

@@ -62,6 +62,10 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus GetAppStatus(Profile* profile,
                                      const std::string& app_id);
 
+  // Returns whether the app with `app_id` was installed by default.
+  static bool IsAppDefaultInstalled(Profile* profile,
+                                    const std::string& app_id);
+
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);
