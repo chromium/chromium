@@ -918,7 +918,8 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
       "A", "B", "www.foo.com", "/bar", creation_time, base::Time::Max(),
       base::Time(), base::Time(), false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 443);
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 443,
+      CookieSourceType::kUnknown);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
@@ -1004,7 +1005,7 @@ TEST(CanonicalCookieTest, CreateWithLastUpdate) {
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT,
       /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure,
-      /*source_port=*/443);
+      /*source_port=*/443, CookieSourceType::kUnknown);
   ASSERT_TRUE(cookie.get());
   EXPECT_EQ(last_update_time, cookie->LastUpdateDate());
 }
@@ -4819,7 +4820,8 @@ TEST(CanonicalCookieTest, FromStorage) {
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87);
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown);
   EXPECT_TRUE(cc);
   EXPECT_EQ("A", cc->Name());
   EXPECT_EQ("B", cc->Value());
@@ -4844,7 +4846,8 @@ TEST(CanonicalCookieTest, FromStorage) {
       "A\n", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80));
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80,
+      CookieSourceType::kUnknown));
 
   // If the port information gets corrupted out of the valid range
   // FromStorage() should result in a PORT_INVALID.
@@ -4852,7 +4855,8 @@ TEST(CanonicalCookieTest, FromStorage) {
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80000);
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80000,
+      CookieSourceType::kUnknown);
 
   EXPECT_EQ(cc2->SourcePort(), url::PORT_INVALID);
 
@@ -4862,7 +4866,7 @@ TEST(CanonicalCookieTest, FromStorage) {
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, CookieSourceScheme::kSecure,
-      url::PORT_UNSPECIFIED);
+      url::PORT_UNSPECIFIED, CookieSourceType::kUnknown);
   EXPECT_EQ(cc3->SourcePort(), url::PORT_UNSPECIFIED);
 
   // Test port edge cases: invalid.
@@ -4871,7 +4875,7 @@ TEST(CanonicalCookieTest, FromStorage) {
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, CookieSourceScheme::kSecure,
-      url::PORT_INVALID);
+      url::PORT_INVALID, CookieSourceType::kUnknown);
   EXPECT_EQ(cc4->SourcePort(), url::PORT_INVALID);
 }
 
@@ -5834,7 +5838,8 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87));
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown));
 
   histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
                                0);
@@ -5847,12 +5852,14 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
       kCookieBig, "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87));
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown));
   EXPECT_TRUE(CanonicalCookie::FromStorage(
       "A", kCookieBig, "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87));
+      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown));
 
   histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
                                2);

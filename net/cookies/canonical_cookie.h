@@ -147,6 +147,9 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // already in the store.
   // Returns nullptr if the resulting cookie is not canonical,
   // i.e. cc->IsCanonical() returns false.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> FromStorage(
       std::string name,
       std::string value,
@@ -163,7 +166,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port,
-      CookieSourceType source_type = CookieSourceType::kUnknown);
+      CookieSourceType source_type);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
   // for tests. Use this only if you want to bypass parameter validation to
