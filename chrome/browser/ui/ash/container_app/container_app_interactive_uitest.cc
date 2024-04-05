@@ -11,6 +11,7 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
@@ -37,14 +38,22 @@
 #include "components/app_constants/constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 // Aliases.
+using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::Eq;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::Pointer;
 using ::testing::Property;
 
 // Elements --------------------------------------------------------------------
@@ -84,6 +93,18 @@ std::optional<size_t> FindIndex(const Range& range, const Value* value) {
              : std::make_optional<size_t>();
 }
 
+// Returns the `views::MenuItemView`s for the currently showing menu.
+std::vector<raw_ptr<const views::MenuItemView>> FindMenuItemViews() {
+  if (auto* menu_controller = views::MenuController::GetActiveInstance()) {
+    if (auto* menu_item_view = menu_controller->GetSelectedMenuItem()) {
+      std::vector<raw_ptr<const views::MenuItemView>> items;
+      FindDescendantsOfClass(menu_item_view->parent(), items);
+      return items;
+    }
+  }
+  return {};
+}
+
 // Returns the `ash::ShelfItem` for the given web app `id`.
 const ash::ShelfItem* FindShelfItemForWebApp(std::string_view id) {
   const ash::ShelfItems& items = ash::ShelfModel::Get()->items();
@@ -101,6 +122,12 @@ bool IsAppListItemViewForWebApp(std::string_view id, const views::View* view) {
 // Returns if `browser` is the `Browser` for the given web app `id`.
 bool IsBrowserForWebApp(const webapps::AppId& id, const Browser* browser) {
   return web_app::AppBrowserController::IsForWebApp(browser, id);
+}
+
+// Returns if the menu is currently showing.
+bool IsMenuShowing() {
+  auto* menu_controller = views::MenuController::GetActiveInstance();
+  return menu_controller && menu_controller->GetSelectedMenuItem();
 }
 
 // Returns if `view` is the `ash::ShelfAppButton` for the given web app `id`.
@@ -159,6 +186,14 @@ class ContainerAppInteractiveUiTest : public InteractiveBrowserTest {
   // Returns the expected title for the container app.
   const std::u16string& GetContainerAppTitle() const {
     return container_app_install_info_->title;
+  }
+
+  // Returns a builder for a step which presses and releases the given `key`.
+  [[nodiscard]] static auto PressAndReleaseKey(ui::KeyboardCode key) {
+    return Do([key]() {
+      ui::test::EventGenerator(ash::Shell::GetPrimaryRootWindow())
+          .PressAndReleaseKeyAndModifierKeys(key, ui::EF_NONE);
+    });
   }
 
   // Returns a builder for a step which resets the specified `ptr`.
@@ -372,6 +407,71 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
                               GetContainerAppLaunchUrl()));
 }
 
+// Verifies that the container app cannot be uninstalled from the app list.
+IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromAppList) {
+  RunTestSequence(
+      // Launch app list.
+      DoDefaultAction(ash::kHomeButtonElementId),
+
+      // Find apps page.
+      NameDescendantViewByType<ash::AppListBubbleAppsPage>(
+          ash::kAppListBubbleViewElementId, kAppListBubbleAppsPageElementName),
+
+      // Find apps grid.
+      NameDescendantViewByType<ash::AppsGridView>(
+          kAppListBubbleAppsPageElementName, kAppsGridViewElementName),
+
+      // Find container app.
+      NameDescendantView(kAppsGridViewElementName, kContainerAppElementName,
+                         base::BindRepeating(&IsAppListItemViewForWebApp,
+                                             web_app::kContainerAppId)),
+
+      // Open menu.
+      MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
+      Check(&IsMenuShowing),
+
+      // Activate menu.
+      PressAndReleaseKey(ui::VKEY_DOWN),
+
+      // Check container app cannot be uninstalled.
+      CheckResult(
+          &FindMenuItemViews,
+          AllOf(Not(IsEmpty()),
+                Not(Contains(Pointer(Property(&views::MenuItemView::GetCommand,
+                                              Eq(ash::UNINSTALL))))))));
+}
+
+// Verifies that the container app cannot be uninstalled from the shelf.
+IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromShelf) {
+  // Views.
+  raw_ptr<ash::ShelfView> shelf = nullptr;
+
+  // Test.
+  RunTestSequence(
+      // Cache shelf.
+      AssignView(ash::kShelfViewElementId, std::ref(shelf)),
+
+      // Find container app.
+      NameDescendantView(
+          ash::kShelfViewElementId, kContainerAppElementName,
+          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
+                              web_app::kContainerAppId)),
+
+      // Open menu.
+      MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
+      Check(&IsMenuShowing),
+
+      // Activate menu.
+      PressAndReleaseKey(ui::VKEY_DOWN),
+
+      // Check container app cannot be uninstalled.
+      CheckResult(
+          &FindMenuItemViews,
+          AllOf(Not(IsEmpty()),
+                Not(Contains(Pointer(Property(&views::MenuItemView::GetCommand,
+                                              Eq(ash::UNINSTALL))))))));
+}
+
 // TODO(http://b/331668699): Test container app position for existing users.
 // TODO(http://b/331668699): Test container app preinstall ineligibility.
-// TODO(http://b/331668699): Test container app uninstallability.
+// TODO(http://b/331668699): Test container app uninstallability from Settings.
