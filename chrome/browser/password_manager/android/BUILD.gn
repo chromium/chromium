@@ -101,6 +101,7 @@ source_set("backend") {
     ":unified_password_manager_proto",
     ":utils",
     "//components/autofill/core/browser:browser",
+    "//components/browser_sync",
     "//components/browser_ui/device_lock/android:android",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",

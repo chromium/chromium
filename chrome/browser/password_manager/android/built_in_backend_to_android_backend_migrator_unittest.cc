@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -11,6 +12,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
@@ -22,7 +25,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/pref_names.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,6 +107,16 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kEmptyProfileStoreLoginDatabase, false);
+    prefs_.registry()->RegisterBooleanPref(
+        syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
+    prefs_.registry()->RegisterBooleanPref(
+        syncer::prefs::internal::kSyncKeepEverythingSynced, false);
+    prefs_.registry()->RegisterBooleanPref(
+        base::StrCat({syncer::prefs::internal::
+                          kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
+                      ".",
+                      syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+        false);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -114,6 +130,27 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
           /*sync_everything=*/false, /*types=*/{});
     }
     migrator()->OnSyncServiceInitialized(&sync_service_);
+  }
+
+  // BuiltInBackendToAndroidBackendMigrator reads whether password sync is
+  // enabled from a pref rather than the SyncService. This helper sets such
+  // pref.
+  void SetPasswordSyncEnabledPref(bool enabled) {
+    if (enabled) {
+      prefs_.SetBoolean(
+          syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
+      prefs_.SetBoolean(syncer::prefs::internal::kSyncKeepEverythingSynced,
+                        true);
+      prefs_.SetBoolean(
+          base::StrCat(
+              {syncer::prefs::internal::
+                   kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
+               ".", syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+          true);
+    } else {
+      prefs_.SetBoolean(
+          syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
+    }
   }
 
   void CreateMigrator(PasswordStoreBackend* built_in_backend,
@@ -224,6 +261,70 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                       true);
 
   InitSyncService(/*is_password_sync_enabled=*/false);
+
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
+}
+
+// The user was syncing and got unenrolled, but then disabled sync and the
+// unenrollment pref wasn't reset.
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       PostMigrationSheetIsScheduledForLocalUnenrolledUsers) {
+  Init();
+  SetPasswordSyncEnabledPref(false);
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       PostMigrationSheetIsNotScheduledForUnenrolledUsers) {
+  Init();
+  SetPasswordSyncEnabledPref(true);
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       PostMigrationSheetIsNotScheduledForNotMigratedUsers) {
+  Init();
+  SetPasswordSyncEnabledPref(true);
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+
+  InitSyncService(/*is_password_sync_enabled=*/true);
 
   migrator()->StartMigrationOfLocalPasswords();
   RunUntilIdle();

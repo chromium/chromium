@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/pref_names.h"
 
 namespace password_manager {
 
@@ -102,6 +104,43 @@ void ResetUnenrollmentStatus(PrefService* prefs) {
       prefs::kTimesReenrolledToGoogleMobileServices,
       prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
   prefs->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
+}
+
+bool IsPasswordSyncEnabled(PrefService* pref_service) {
+  switch (browser_sync::GetSyncToSigninMigrationDataTypeDecision(
+      pref_service, syncer::PASSWORDS,
+      syncer::prefs::internal::kSyncPasswords)) {
+    // In particular, in the
+    // prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending
+    // state, kDontMigrateTypeNotActive is reported and we wish to return true.
+    case browser_sync::SyncToSigninMigrationDataTypeDecision::
+        kDontMigrateTypeNotActive:
+    case browser_sync::SyncToSigninMigrationDataTypeDecision::kMigrate:
+      return true;
+    case browser_sync::SyncToSigninMigrationDataTypeDecision::
+        kDontMigrateTypeDisabled:
+      return false;
+  }
+}
+
+void SchedulePostMigrationBottomSheet(PrefService* prefs) {
+  // There is no need to show the sheet if no passwords were migrated.
+  if (prefs->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
+    return;
+  }
+
+  // As part of M4 syncing users who were unenrolled migrate their passwords to
+  // local GMSCore storage. They shouldn't see the sheet either.
+  if (IsPasswordSyncEnabled(prefs) &&
+      (prefs->GetBoolean(
+           prefs::kUnenrolledFromGoogleMobileServicesDueToErrors) ||
+       prefs->GetInteger(
+           prefs::kCurrentMigrationVersionToGoogleMobileServices) == 0)) {
+    return;
+  }
+
+  prefs->SetBoolean(prefs::kShouldShowPostPasswordMigrationSheetAtStartup,
+                    true);
 }
 
 }  // namespace
@@ -570,6 +609,7 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
             kRequiredMigrationVersion);
         break;
       case MigrationType::kForLocalUsers:
+        SchedulePostMigrationBottomSheet(prefs_);
         prefs_->SetInteger(
             prefs::kCurrentMigrationVersionToGoogleMobileServices,
             kRequiredMigrationVersion);
@@ -577,11 +617,6 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
             prefs::kPasswordsUseUPMLocalAndSeparateStores,
             static_cast<int>(password_manager::prefs::
                                  UseUpmLocalAndSeparateStoresState::kOn));
-        if (!prefs_->GetBoolean(
-                password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
-          prefs_->SetBoolean(
-              prefs::kShouldShowPostPasswordMigrationSheetAtStartup, true);
-        }
         break;
       case MigrationType::kInitialForSyncUsers:
       case MigrationType::kNonSyncableToAndroidBackend:
