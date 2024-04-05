@@ -557,11 +557,6 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   [self.overscrollActionsController clear];
 }
 
-- (void)stopScrolling {
-  UIScrollView* scrollView = self.collectionView;
-  [scrollView setContentOffset:scrollView.contentOffset animated:NO];
-}
-
 - (BOOL)isNTPScrolledToTop {
   return [self scrollPosition] <= -[self heightAboveFeed];
 }

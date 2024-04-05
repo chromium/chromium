@@ -590,7 +590,6 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
-  ExpectMethodToProxyToVC(@selector(stopScrolling), @selector(stopScrolling));
   ExpectMethodToProxyToVC(@selector(isScrolledToTop),
                           @selector(isNTPScrolledToTop));
   ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),

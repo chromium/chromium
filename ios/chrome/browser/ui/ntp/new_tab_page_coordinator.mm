@@ -424,13 +424,6 @@
   return NTPHelper && NTPHelper->IsActive();
 }
 
-- (void)stopScrolling {
-  if (!self.contentSuggestionsCoordinator) {
-    return;
-  }
-  [self.NTPViewController stopScrolling];
-}
-
 - (BOOL)isScrolledToTop {
   return [self.NTPViewController isNTPScrolledToTop];
 }

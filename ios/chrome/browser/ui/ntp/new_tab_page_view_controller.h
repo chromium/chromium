@@ -98,9 +98,6 @@
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
-// Stops scrolling in the scroll view.
-- (void)stopScrolling;
-
 // Lays out content above feed and adjusts content suggestions.
 - (void)updateNTPLayout;
 
