@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenTermsOfServiceDialogElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenIntroductionDialogElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -20,13 +20,13 @@ suite('SeaPenRouterElementTest', function() {
   let seaPenProvider: TestSeaPenProvider;
   let routerElement: SeaPenRouterElement|null = null;
 
-  async function clickSeaPenTermsDialogButton(id: string) {
-    const termsDialog = routerElement!.shadowRoot!
-                            .querySelector<SeaPenTermsOfServiceDialogElement>(
-                                SeaPenTermsOfServiceDialogElement.is);
-    assertTrue(!!termsDialog, 'dialog element must exist to click button');
-    const button = termsDialog!.shadowRoot!.getElementById(id);
-    assertTrue(!!button, `button with id ${id} must exist`);
+  async function clickSeaPenIntroDialogCloseButton() {
+    const introDialog = routerElement!.shadowRoot!
+                            .querySelector<SeaPenIntroductionDialogElement>(
+                                SeaPenIntroductionDialogElement.is);
+    assertTrue(!!introDialog, 'dialog element must exist to click button');
+    const button = introDialog!.shadowRoot!.getElementById('close');
+    assertTrue(!!button, `close button must exist`);
     button!.click();
     await waitAfterNextRender(routerElement!);
   }
@@ -279,43 +279,41 @@ suite('SeaPenRouterElementTest', function() {
   });
 
 
-  test('shows SeaPen terms dialog', async () => {
+  test('shows SeaPen introduction dialog', async () => {
     personalizationStore.setReducersEnabled(true);
     routerElement = initElement(SeaPenRouterElement, {
       basePath: '/base',
     });
 
-    await seaPenProvider.whenCalled('shouldShowSeaPenTermsOfServiceDialog');
+    await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
     await waitAfterNextRender(routerElement);
 
-    const seaPenTermsDialog = routerElement.shadowRoot!.querySelector(
-        SeaPenTermsOfServiceDialogElement.is);
-    assertTrue(
-        !!seaPenTermsDialog, 'SeaPen terms of service dialog is displayed');
+    const seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+        SeaPenIntroductionDialogElement.is);
+    assertTrue(!!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
   });
 
   test(
-      'accepts the SeaPen wallpaper terms and closes the terms dialog',
-      async () => {
+      'closes Sea Pen introduction dialog', async () => {
         personalizationStore.setReducersEnabled(true);
         routerElement = initElement(SeaPenRouterElement, {
           basePath: '/base',
         });
 
-        await seaPenProvider.whenCalled('shouldShowSeaPenTermsOfServiceDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
         await waitAfterNextRender(routerElement);
 
-        let seaPenTermsDialog = routerElement.shadowRoot!.querySelector(
-            SeaPenTermsOfServiceDialogElement.is);
+        let seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
         assertTrue(
-            !!seaPenTermsDialog, 'SeaPen terms of service dialog is displayed');
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
 
-        await clickSeaPenTermsDialogButton('accept');
+        await clickSeaPenIntroDialogCloseButton();
 
-        seaPenTermsDialog = routerElement.shadowRoot!.querySelector(
-            SeaPenTermsOfServiceDialogElement.is);
+        seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
         assertFalse(
-            !!seaPenTermsDialog, 'Sea Pen wallpaper terms dialog is closed');
+            !!seaPenIntroDialog, 'Sea Pen introduction dialog is closed');
 
         assertEquals(
             '/base',

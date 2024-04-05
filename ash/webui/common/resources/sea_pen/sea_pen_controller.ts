@@ -171,28 +171,28 @@ export function openFeedbackDialog(
   provider.openFeedbackDialog(metadata);
 }
 
-export async function getShouldShowSeaPenTermsOfServiceDialog(
+export async function getShouldShowSeaPenIntroductionDialog(
     provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   const {shouldShowDialog} =
-      await provider.shouldShowSeaPenTermsOfServiceDialog();
+      await provider.shouldShowSeaPenIntroductionDialog();
 
   // Dispatch action to set the should show dialog boolean.
-  store.dispatch(seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(
+  store.dispatch(seaPenAction.setShouldShowSeaPenIntroductionDialogAction(
       shouldShowDialog));
 }
 
-export async function acceptSeaPenTermsOfService(
+export async function closeSeaPenIntroductionDialog(
     provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  if (!store.data.shouldShowSeaPenTermsOfServiceDialog) {
-    // Do nothing if the terms are already accepted;
+  if (!store.data.shouldShowSeaPenIntroductionDialog) {
+    // Do nothing if the introduction dialog is already closed;
     return;
   }
 
-  await provider.handleSeaPenTermsOfServiceAccepted();
+  await provider.handleSeaPenIntroductionDialogClosed();
 
   // Dispatch action to set the should show dialog boolean.
   store.dispatch(
-      seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(false));
+      seaPenAction.setShouldShowSeaPenIntroductionDialogAction(false));
 }

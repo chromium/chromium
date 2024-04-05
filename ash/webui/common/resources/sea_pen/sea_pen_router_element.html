@@ -111,10 +111,10 @@
       </sea-pen-images>
     </template>
   </div>
-  <template is="dom-if" if="[[showSeaPenTermsOfServiceDialog_]]" restamp>
-    <sea-pen-terms-of-service-dialog
-        on-sea-pen-terms-dialog-accept="onAcceptSeaPenTerms_">
-    </sea-pen-terms-of-service-dialog>
+  <template is="dom-if" if="[[showSeaPenIntroductionDialog_]]" restamp>
+    <sea-pen-introduction-dialog
+        on-sea-pen-introduction-dialog-close="onCloseSeaPenIntroductionDialog_">
+    </sea-pen-introduction-dialog>
   </template>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div class="rightspacerbottom"></div>

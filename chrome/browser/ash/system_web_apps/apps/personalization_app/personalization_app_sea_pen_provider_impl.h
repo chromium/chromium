@@ -56,6 +56,11 @@ class PersonalizationAppSeaPenProviderImpl
       uint32_t id,
       SeaPenWallpaperManager::GetImageAndMetadataCallback callback) override;
 
+  void ShouldShowSeaPenIntroductionDialogInternal(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
+
+  void HandleSeaPenIntroductionDialogClosedInternal() override;
+
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,

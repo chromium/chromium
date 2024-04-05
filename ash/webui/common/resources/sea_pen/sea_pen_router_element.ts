@@ -10,14 +10,14 @@ import './sea_pen_input_query_element.js';
 import './sea_pen_recent_wallpapers_element.js';
 import './sea_pen_template_query_element.js';
 import './sea_pen_templates_element.js';
-import './sea_pen_terms_of_service_dialog_element.js';
+import './sea_pen_introduction_dialog_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
-import {acceptSeaPenTermsOfService, getShouldShowSeaPenTermsOfServiceDialog} from './sea_pen_controller.js';
+import {closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
@@ -60,7 +60,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
         observer: 'onRelativePathChanged_',
       },
 
-      showSeaPenTermsOfServiceDialog_: Boolean,
+      showSeaPenIntroductionDialog_: Boolean,
     };
   }
 
@@ -74,17 +74,17 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private query_: string;
   private queryParams_: SeaPenQueryParams;
   private relativePath_: string|null;
-  private showSeaPenTermsOfServiceDialog_: boolean;
+  private showSeaPenIntroductionDialog_: boolean;
 
   override connectedCallback() {
     assert(isSeaPenEnabled(), 'sea pen must be enabled');
     super.connectedCallback();
     instance = this;
-    this.watch<SeaPenRouterElement['showSeaPenTermsOfServiceDialog_']>(
-        'showSeaPenTermsOfServiceDialog_',
-        state => state.shouldShowSeaPenTermsOfServiceDialog);
+    this.watch<SeaPenRouterElement['showSeaPenIntroductionDialog_']>(
+        'showSeaPenIntroductionDialog_',
+        state => state.shouldShowSeaPenIntroductionDialog);
     this.updateFromStore();
-    this.fetchTermsOfServiceDialogStatus();
+    this.fetchIntroductionDialogStatus();
     logSeaPenVisited();
   }
 
@@ -193,18 +193,26 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     return parseInt(templateId) as SeaPenTemplateId;
   }
 
-  private async fetchTermsOfServiceDialogStatus() {
-    await getShouldShowSeaPenTermsOfServiceDialog(
+  private async fetchIntroductionDialogStatus() {
+    await getShouldShowSeaPenIntroductionDialog(
         getSeaPenProvider(), this.getStore());
+    console.log(
+        'fetchIntroductionDialogStatus, should show? :',
+        this.showSeaPenIntroductionDialog_);
   }
 
-  private async onAcceptSeaPenTerms_() {
-    await acceptSeaPenTermsOfService(getSeaPenProvider(), this.getStore());
+  private async onCloseSeaPenIntroductionDialog_() {
+    await closeSeaPenIntroductionDialog(getSeaPenProvider(), this.getStore());
+    this.focusOnFirstTemplate_();
   }
 
   private onRecentImageDelete_() {
     // focus on the first template if the deleted recent image is the only image
     // or the last image of recent images list.
+    this.focusOnFirstTemplate_();
+  }
+
+  private focusOnFirstTemplate_() {
     const seaPenTemplates =
         this.shadowRoot!.querySelector<HTMLElement>('sea-pen-templates');
     const firstTemplate =

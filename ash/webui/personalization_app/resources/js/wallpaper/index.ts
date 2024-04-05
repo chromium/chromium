@@ -9,7 +9,7 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_templates_element.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_terms_of_service_dialog_element.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_introduction_dialog_element.js';
 import './google_photos_albums_element.js';
 import './google_photos_collection_element.js';
 import './google_photos_photos_by_album_id_element.js';

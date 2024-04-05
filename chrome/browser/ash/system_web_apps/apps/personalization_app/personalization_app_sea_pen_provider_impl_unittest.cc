@@ -672,23 +672,23 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       ShouldShowSeaPenTermsOfServiceDialog) {
+       ShouldShowSeaPenIntroductionDialog) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   test_wallpaper_controller()->ClearCounts();
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kSeaPen}, {});
 
   base::test::TestFuture<bool> should_show_dialog_future;
-  sea_pen_provider_remote()->ShouldShowSeaPenTermsOfServiceDialog(
+  sea_pen_provider_remote()->ShouldShowSeaPenIntroductionDialog(
       should_show_dialog_future.GetCallback());
-  // Expects to return true before the terms are accepted.
+  // Expects to return true before the dialog is closed.
   EXPECT_TRUE(should_show_dialog_future.Take());
 
-  sea_pen_provider_remote()->HandleSeaPenTermsOfServiceAccepted();
+  sea_pen_provider_remote()->HandleSeaPenIntroductionDialogClosed();
 
-  sea_pen_provider_remote()->ShouldShowSeaPenTermsOfServiceDialog(
+  sea_pen_provider_remote()->ShouldShowSeaPenIntroductionDialog(
       should_show_dialog_future.GetCallback());
-  // Expects to return false after the terms are accepted.
+  // Expects to return false after the dialog is closed.
   EXPECT_FALSE(should_show_dialog_future.Take());
 }
 

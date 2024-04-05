@@ -70,7 +70,7 @@ suite('SeaPen reducers', () => {
               thumbnails: null,
               pendingSelected: null,
               currentSelected: null,
-              shouldShowSeaPenTermsOfServiceDialog: false,
+              shouldShowSeaPenIntroductionDialog: false,
             }),
           },
           {
@@ -88,7 +88,7 @@ suite('SeaPen reducers', () => {
               thumbnails: null,
               pendingSelected: null,
               currentSelected: null,
-              shouldShowSeaPenTermsOfServiceDialog: false,
+              shouldShowSeaPenIntroductionDialog: false,
             }),
           },
           {
@@ -106,7 +106,7 @@ suite('SeaPen reducers', () => {
               thumbnails: seaPenProvider.images,
               pendingSelected: null,
               currentSelected: null,
-              shouldShowSeaPenTermsOfServiceDialog: false,
+              shouldShowSeaPenIntroductionDialog: false,
             }),
           },
         ],

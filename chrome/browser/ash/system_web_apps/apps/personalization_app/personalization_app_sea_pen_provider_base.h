@@ -76,10 +76,10 @@ class PersonalizationAppSeaPenProviderBase
 
   void OpenFeedbackDialog(mojom::SeaPenFeedbackMetadataPtr metadata) override;
 
-  void ShouldShowSeaPenTermsOfServiceDialog(
-      ShouldShowSeaPenTermsOfServiceDialogCallback callback) override;
+  void ShouldShowSeaPenIntroductionDialog(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
 
-  void HandleSeaPenTermsOfServiceAccepted() override;
+  void HandleSeaPenIntroductionDialogClosed() override;
 
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
@@ -94,6 +94,11 @@ class PersonalizationAppSeaPenProviderBase
   virtual void GetRecentSeaPenImageThumbnailInternal(
       uint32_t id,
       SeaPenWallpaperManager::GetImageAndMetadataCallback callback) = 0;
+
+  virtual void ShouldShowSeaPenIntroductionDialogInternal(
+      ShouldShowSeaPenIntroductionDialogCallback callback) = 0;
+
+  virtual void HandleSeaPenIntroductionDialogClosedInternal() = 0;
 
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,

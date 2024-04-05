@@ -28,8 +28,8 @@ export enum SeaPenActionName {
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
-  SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG =
-      'set_should_show_sea_pen_terms_of_service_dialog',
+  SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG =
+      'set_should_show_sea_pen_introduction_dialog',
 }
 
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
@@ -39,8 +39,7 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
     SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
     SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|
-    SetShouldShowSeaPenTermsOfServiceDialogAction;
+    EndSelectSeaPenThumbnailAction|SetShouldShowSeaPenIntroductionDialogAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -250,20 +249,20 @@ export function clearSeaPenThumbnailsAction(): ClearSeaPenThumbnailsAction {
   return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS};
 }
 
-export interface SetShouldShowSeaPenTermsOfServiceDialogAction extends Action {
-  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG;
+export interface SetShouldShowSeaPenIntroductionDialogAction extends Action {
+  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG;
   shouldShowDialog: boolean;
 }
 
 /**
- * Sets the boolean that determines whether to show the Sea Pen terms of service
+ * Sets the boolean that determines whether to show the Sea Pen introduction
  * dialog.
  */
-export function setShouldShowSeaPenTermsOfServiceDialogAction(
-    shouldShowDialog: boolean): SetShouldShowSeaPenTermsOfServiceDialogAction {
+export function setShouldShowSeaPenIntroductionDialogAction(
+    shouldShowDialog: boolean): SetShouldShowSeaPenIntroductionDialogAction {
   assert(typeof shouldShowDialog === 'boolean');
   return {
-    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG,
+    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG,
     shouldShowDialog,
   };
 }

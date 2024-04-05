@@ -75,7 +75,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       ReturnType<SeaPenProviderInterface['selectRecentSeaPenImage']> =
           Promise.resolve({success: true});
 
-  shouldShowSeaPenTermsOfServiceDialogResponse = true;
+  shouldShowSeaPenIntroductionDialogResponse = true;
 
   constructor() {
     super([
@@ -85,8 +85,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'getRecentSeaPenImages',
       'getRecentSeaPenImageThumbnail',
       'deleteRecentSeaPenImage',
-      'shouldShowSeaPenTermsOfServiceDialog',
-      'handleSeaPenTermsOfServiceAccepted',
+      'shouldShowSeaPenIntroductionDialog',
+      'handleSeaPenIntroductionDialogClosed',
     ]);
   }
 
@@ -139,14 +139,14 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     return;
   }
 
-  shouldShowSeaPenTermsOfServiceDialog() {
-    this.methodCalled('shouldShowSeaPenTermsOfServiceDialog');
+  shouldShowSeaPenIntroductionDialog() {
+    this.methodCalled('shouldShowSeaPenIntroductionDialog');
     return Promise.resolve(
-        {shouldShowDialog: this.shouldShowSeaPenTermsOfServiceDialogResponse});
+        {shouldShowDialog: this.shouldShowSeaPenIntroductionDialogResponse});
   }
 
-  handleSeaPenTermsOfServiceAccepted() {
-    this.methodCalled('handleSeaPenTermsOfServiceAccepted');
-    this.shouldShowSeaPenTermsOfServiceDialogResponse = false;
+  handleSeaPenIntroductionDialogClosed() {
+    this.methodCalled('handleSeaPenIntroductionDialogClosed');
+    this.shouldShowSeaPenIntroductionDialogResponse = false;
   }
 }

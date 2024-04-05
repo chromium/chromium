@@ -144,10 +144,10 @@ class MockSeaPenProvider
               (mojom::SeaPenFeedbackMetadataPtr metadata),
               (override));
   MOCK_METHOD(void,
-              ShouldShowSeaPenTermsOfServiceDialog,
-              (ShouldShowSeaPenTermsOfServiceDialogCallback callback),
+              ShouldShowSeaPenIntroductionDialog,
+              (ShouldShowSeaPenIntroductionDialogCallback callback),
               (override));
-  MOCK_METHOD(void, HandleSeaPenTermsOfServiceAccepted, (), (override));
+  MOCK_METHOD(void, HandleSeaPenIntroductionDialogClosed, (), (override));
 };
 
 class MockPersonalizationAppThemeProvider

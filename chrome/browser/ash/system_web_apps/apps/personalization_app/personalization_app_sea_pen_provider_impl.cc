@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -85,6 +86,22 @@ void PersonalizationAppSeaPenProviderImpl::
   DCHECK(sea_pen_wallpaper_manager);
   sea_pen_wallpaper_manager->GetImageAndMetadata(GetAccountId(profile_), id,
                                                  std::move(callback));
+}
+
+void PersonalizationAppSeaPenProviderImpl::
+    ShouldShowSeaPenIntroductionDialogInternal(
+        ShouldShowSeaPenIntroductionDialogCallback callback) {
+  std::move(callback).Run(contextual_tooltip::ShouldShowNudge(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenWallpaperIntroDialog,
+      /*recheck_delay=*/nullptr));
+}
+
+void PersonalizationAppSeaPenProviderImpl::
+    HandleSeaPenIntroductionDialogClosedInternal() {
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenWallpaperIntroDialog);
 }
 
 void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(

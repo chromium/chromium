@@ -156,9 +156,9 @@ interface SeaPenProvider {
     // Pops up a feedback dialog when user clicks feedback buttons.
     OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
 
-    // Determines whether to show the reviewing SeaPen terms of service dialog.
-    ShouldShowSeaPenTermsOfServiceDialog() => (bool should_show_dialog);
+    // Determines whether to show the SeaPen introduction dialog.
+    ShouldShowSeaPenIntroductionDialog() => (bool should_show_dialog);
 
-    // Called when the user accepts the terms of service for SeaPen wallpaper.
-    HandleSeaPenTermsOfServiceAccepted();
+    // Called when the user close the introduction dialog for SeaPen feature.
+    HandleSeaPenIntroductionDialogClosed();
 };

@@ -629,12 +629,12 @@ suite('sea pen', () => {
   test('show more option chips', async () => {
     const seaPenRouter = await getSeaPenRouter();
 
-    const acceptTermsButton = await waitUntil(
+    const closeIntroductionButton = await waitUntil(
         () => seaPenRouter.shadowRoot
-                  ?.querySelector('sea-pen-terms-of-service-dialog')
-                  ?.shadowRoot?.querySelector<HTMLElement>('#accept'),
-        'wait for accept button to load');
-    acceptTermsButton.click();
+                  ?.querySelector('sea-pen-introduction-dialog')
+                  ?.shadowRoot?.querySelector<HTMLElement>('#close'),
+        'wait for close button to load');
+    closeIntroductionButton.click();
 
     const seaPenTemplateQuery = await getSeaPenTemplateQuery(5);
     assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
