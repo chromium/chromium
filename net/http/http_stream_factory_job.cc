@@ -81,27 +81,6 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
   return "";
 }
 
-// Returns parameters associated with the start of a HTTP stream job.
-base::Value::Dict NetLogHttpStreamJobParams(const NetLogSource& source,
-                                            const GURL& original_url,
-                                            const GURL& url,
-                                            bool expect_spdy,
-                                            bool using_quic,
-                                            HttpStreamFactory::JobType job_type,
-                                            RequestPriority priority) {
-  base::Value::Dict dict;
-  if (source.IsValid()) {
-    source.AddToEventParameters(dict);
-  }
-  dict.Set("original_url", original_url.DeprecatedGetOriginAsURL().spec());
-  dict.Set("url", url.DeprecatedGetOriginAsURL().spec());
-  dict.Set("expect_spdy", expect_spdy);
-  dict.Set("using_quic", using_quic);
-  dict.Set("priority", RequestPriorityToString(priority));
-  dict.Set("type", NetLogHttpStreamJobType(job_type));
-  return dict;
-}
-
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
 base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   base::Value::Dict dict;
@@ -136,7 +115,7 @@ HttpStreamFactory::Job::Job(
       connection_(std::make_unique<ClientSocketHandle>()),
       session_(session),
       destination_(std::move(destination)),
-      origin_url_(origin_url),
+      origin_url_(std::move(origin_url)),
       is_websocket_(is_websocket),
       try_websocket_over_http2_(is_websocket_ &&
                                 origin_url_.SchemeIs(url::kWssScheme)),
@@ -219,9 +198,19 @@ HttpStreamFactory::Job::Job(
   const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
   if (delegate_net_log) {
     net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
-      return NetLogHttpStreamJobParams(
-          delegate_net_log->source(), request_info_.url, origin_url_,
-          expect_spdy_, using_quic_, job_type_, priority_);
+      base::Value::Dict dict;
+      const auto& source = delegate_net_log->source();
+      if (source.IsValid()) {
+        source.AddToEventParameters(dict);
+      }
+      dict.Set("logical_destination",
+               url::SchemeHostPort(origin_url_).Serialize());
+      dict.Set("destination", destination_.Serialize());
+      dict.Set("expect_spdy", expect_spdy_);
+      dict.Set("using_quic", using_quic_);
+      dict.Set("priority", RequestPriorityToString(priority_));
+      dict.Set("type", NetLogHttpStreamJobType(job_type_));
+      return dict;
     });
     delegate_net_log->AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());

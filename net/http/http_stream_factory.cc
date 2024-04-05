@@ -54,8 +54,7 @@ HttpStreamFactory::StreamRequestInfo::StreamRequestInfo() = default;
 
 HttpStreamFactory::StreamRequestInfo::StreamRequestInfo(
     const HttpRequestInfo& http_request_info)
-    : url(http_request_info.url),
-      method(http_request_info.method),
+    : method(http_request_info.method),
       network_anonymization_key(http_request_info.network_anonymization_key),
       is_http1_allowed(!http_request_info.upload_data_stream ||
                        http_request_info.upload_data_stream->AllowHTTP1()),

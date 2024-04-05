@@ -35,7 +35,6 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "url/gurl.h"
 
 namespace net {
 
@@ -84,7 +83,6 @@ class NET_EXPORT HttpStreamFactory {
 
     ~StreamRequestInfo();
 
-    GURL url;
     std::string method;
     NetworkAnonymizationKey network_anonymization_key;
 

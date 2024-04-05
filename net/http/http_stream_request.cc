@@ -17,15 +17,13 @@
 namespace net {
 
 HttpStreamRequest::HttpStreamRequest(
-    const GURL& url,
     Helper* helper,
     HttpStreamRequest::Delegate* delegate,
     WebSocketHandshakeStreamBase::CreateHelper*
         websocket_handshake_stream_create_helper,
     const NetLogWithSource& net_log,
     StreamType stream_type)
-    : url_(url),
-      helper_(helper),
+    : helper_(helper),
       websocket_handshake_stream_create_helper_(
           websocket_handshake_stream_create_helper),
       net_log_(net_log),

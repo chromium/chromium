@@ -131,8 +131,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   // Request will notify |job_controller| when it's destructed.
   // Thus |job_controller| is valid for the lifetime of the |this| Request.
-  HttpStreamRequest(const GURL& url,
-                    Helper* helper,
+  HttpStreamRequest(Helper* helper,
                     HttpStreamRequest::Delegate* delegate,
                     WebSocketHandshakeStreamBase::CreateHelper*
                         websocket_handshake_stream_create_helper,
@@ -180,9 +179,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   WebSocketHandshakeStreamBase::CreateHelper*
   websocket_handshake_stream_create_helper() const;
 
-  // The GURL from the HttpRequestInfo the started the Request.
-  const GURL& url() const { return url_; }
-
   const NetLogWithSource& net_log() const { return net_log_; }
 
   StreamType stream_type() const { return stream_type_; }
@@ -190,8 +186,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   bool completed() const { return completed_; }
 
  private:
-  const GURL url_;
-
   // Unowned. The helper must not be destroyed before this object is.
   raw_ptr<Helper> helper_;
 

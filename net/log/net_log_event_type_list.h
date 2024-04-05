@@ -1204,9 +1204,17 @@ EVENT_TYPE(HTTP_STREAM_REQUEST)
 //   {
 //      "source_dependency": <Source identifier for the Request with started
 //                            this Job>,
-//      "original_url": <The URL to create a stream for>,
-//      "url": <The URL actually being used, possibly different from
-//              original_url if using an alternate service>,
+//      "logical_destination":
+//          <The scheme + origin + port that the connection is logically to.
+//           This has any host mapping rules already applied, and for https/wss
+//           is the host required for certificate validation>,
+//      "destination":
+//          <The scheme + origin + port that the connection will actually be
+//           made to. The difference from `logical_destination` is that
+//           this is after applying alternate protocol, if applicable, and
+//           replacing ws/wss with http/https. Host mappy rules have also been
+//           applied a second time, if there was an applicable alternate
+//           protocol applied>,
 //      "expect_spdy": <Boolean indicating whether the Job will use SPDY>,
 //      "using_quic": <Boolean indicating whether the Job will use QUIC>,
 //      "priority": <The priority of the Job>,
@@ -1289,6 +1297,8 @@ EVENT_TYPE(HTTP_STREAM_JOB_RESUMED)
 // The following parameters are attached:
 //   {
 //      "url": <String of request URL>,
+//      "url_after_host_mapping": <URL after applying hostmapping.
+//                                 Only present if different from URL>,
 //      "is_preconnect": <True if controller is created for a preconnect>,
 //      "private_mode": <Privacy mode of the request>,
 //   }
