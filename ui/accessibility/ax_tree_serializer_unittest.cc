@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node.h"
@@ -362,16 +363,8 @@ class AXTreeSourceWithInvalidId
   int invalid_id_;
 };
 
-// Test that the serializer DCHECKs when it finds invalid children, or skips
-// them when DCHECKs are off.
-// TODO(https://crbug.com/331226146): Reenable on all platforms -- it is
-// currently disabled because of an issue with EXPECT_DEATH_IF_SUPPORTED.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InvalidChild InvalidChild
-#else
-#define MAYBE_InvalidChild DISABLED_InvalidChild
-#endif  // BUILDFLAG(IS_LINUX)
-TEST(AXTreeSerializerInvalidTest, MAYBE_InvalidChild) {
+// Test that the serializer CHECKs when it finds invalid children.
+TEST(AXTreeSerializerInvalidDeathTest, InvalidChild) {
   // (1 (2 3))
   AXTreeUpdate treedata;
   treedata.root_id = 1;
@@ -387,8 +380,8 @@ TEST(AXTreeSerializerInvalidTest, MAYBE_InvalidChild) {
 
   BasicAXTreeSerializer serializer(&source);
   AXTreeUpdate update;
-  EXPECT_DEATH_IF_SUPPORTED(serializer.SerializeChanges(tree.root(), &update),
-                            "child");
+  EXPECT_CHECK_DEATH_WITH(serializer.SerializeChanges(tree.root(), &update),
+                          "child");
 }
 
 // Test that we can set a maximum number of nodes to serialize.
