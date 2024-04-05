@@ -21176,7 +21176,7 @@
                     "name": "EnabledAllUsers",
                     "params": {
                         "for_tagged_profiles_only": "false",
-                        "reprompt": "{\"*\": \"124.0.6365.0\"}"
+                        "reprompt": "NO_REPROMPT"
                     },
                     "enable_features": [
                         "SearchEngineChoiceTrigger"
