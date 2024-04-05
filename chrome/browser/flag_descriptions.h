@@ -1152,6 +1152,9 @@ extern const char kStartSurfaceReturnTimeDescription[];
 extern const char kHideIncognitoMediaMetadataName[];
 extern const char kHideIncognitoMediaMetadataDescription[];
 
+extern const char kHistoryEmbeddingsName[];
+extern const char kHistoryEmbeddingsDescription[];
+
 extern const char kHttpsFirstModeIncognitoName[];
 extern const char kHttpsFirstModeIncognitoDescription[];
 

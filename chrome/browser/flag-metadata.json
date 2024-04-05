@@ -4757,6 +4757,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "history-embeddings",
+    "owners": [ "tommycli@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "history-journeys",
     "owners": [ "tommycli@chromium.org", "chrome-journeys@google.com" ],
     "expiry_milestone": 125

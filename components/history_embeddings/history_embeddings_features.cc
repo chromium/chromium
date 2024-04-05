@@ -21,4 +21,8 @@ const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
                                                      "SearchResultItemCount",
                                                      3);
 
+const base::FeatureParam<bool> kAtKeywordAcceleration(&kHistoryEmbeddings,
+                                                      "AtKeywordAcceleration",
+                                                      false);
+
 }  // namespace history_embeddings

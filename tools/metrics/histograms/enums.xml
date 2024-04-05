@@ -18486,6 +18486,7 @@ from previous Chrome versions.
   <int value="-1122895401"
       label="EnableExternalKeyboardsInDiagnosticsApp:disabled"/>
   <int value="-1122853453" label="LazyImageLoading:enabled"/>
+  <int value="-1122637862" label="HistoryEmbeddings:disabled"/>
   <int value="-1122458028" label="UnifiedMediaView:enabled"/>
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
   <int value="-1121780009" label="AutofillEnableManuallFallbackIPH:enabled"/>
@@ -18868,6 +18869,7 @@ from previous Chrome versions.
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
   <int value="-952971446" label="WebAssemblyCodeProtection:disabled"/>
+  <int value="-951891352" label="HistoryEmbeddings:enabled"/>
   <int value="-951394314" label="top-chrome-md"/>
   <int value="-950793721" label="TranslateUI2016Q2:disabled"/>
   <int value="-950411190"
