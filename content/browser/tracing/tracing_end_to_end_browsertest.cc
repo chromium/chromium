@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_test_utils.h"
 #include "build/build_config.h"
@@ -75,6 +76,17 @@ perfetto::protos::gen::TraceConfig TraceConfigWithMemoryDumps(
   return perfetto_config;
 }
 
+perfetto::protos::gen::TraceConfig TraceConfigWithMetadata(
+    const std::string& category_filter_string) {
+  auto perfetto_config =
+      base::test::DefaultTraceConfig(category_filter_string, false);
+
+  auto* data_source = perfetto_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("org.chromium.trace_metadata");
+
+  return perfetto_config;
+}
 }  // namespace
 
 class TracingEndToEndBrowserTest : public ContentBrowserTest {};
@@ -99,6 +111,101 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"name"},
                                      std::vector<std::string>{"test_event"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, Metadata) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithMetadata("-*"));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery(
+      "SELECT str_value IS NOT NULL AS has_os_name "
+      "FROM metadata WHERE name = 'cr-os-name'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_os_name"},
+                                     std::vector<std::string>{"1"}));
+
+  result = ttp.RunQuery(
+      "SELECT str_value IS NOT NULL AS has_revision "
+      "FROM metadata WHERE name = 'cr-revision'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_revision"},
+                                     std::vector<std::string>{"1"}));
+
+  result = ttp.RunQuery(
+      "SELECT int_value > 0 AS has_num_cpus "
+      "FROM metadata WHERE name = 'cr-num-cpus'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_num_cpus"},
+                                     std::vector<std::string>{"1"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TaskExecutionEvent) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("toplevel");
+
+  {
+    base::TaskAnnotator task_annotator;
+    base::PendingTask task;
+    task.task = base::DoNothing();
+    task.posted_from = base::Location::CreateForTesting(
+        "my_func", "my_file", 0, /*program_counter=*/&task);
+    // TaskAnnotator::RunTask is responsible for emitting the task execution
+    // event.
+    task_annotator.RunTask("RunTaskForTesting", task);
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query =
+      "SELECT "
+      "EXTRACT_ARG(arg_set_id, 'task.posted_from.file_name') AS file_name, "
+      "EXTRACT_ARG(arg_set_id, 'task.posted_from.function_name') AS func_name "
+      "FROM slice WHERE cat = 'toplevel' AND name = 'RunTaskForTesting'";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"file_name", "func_name"},
+                             std::vector<std::string>{"my_file", "my_func"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, ThreadAndProcessName) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("foo");
+
+  {
+    base::PlatformThread::SetName("FooThread");
+    TRACE_EVENT("foo", "test_event");
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query =
+      "SELECT "
+      "thread.name AS thread_name, "
+      "process.name AS process_name "
+      "FROM slice "
+      "JOIN thread_track ON thread_track.id = slice.track_id "
+      "JOIN thread ON thread.utid = thread_track.utid "
+      "JOIN process_track ON process_track.id = thread_track.parent_id "
+      "JOIN process ON process.upid = process_track.upid "
+      "WHERE slice.cat = 'foo'";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"thread_name", "process_name"},
+                  std::vector<std::string>{"FooThread", "Browser"}));
 }
 
 #if defined(TEST_TRACE_PROCESSOR_ENABLED)
