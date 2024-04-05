@@ -4,13 +4,14 @@
 
 #include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
 
+#include <atomic>
 #include <limits>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -29,7 +30,7 @@ namespace performance_manager {
 
 namespace {
 
-bool g_use_in_memory_db_for_testing = false;
+std::atomic<bool> g_use_in_memory_db_for_testing = false;
 
 // The name of the following histograms is the same as the one used in the
 // //c/b/resource_coordinator version of this file. It's fine to keep the same
@@ -396,7 +397,7 @@ LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabaseImpl() {
   leveldb_env::Options options;
   options.create_if_missing = true;
 
-  if (g_use_in_memory_db_for_testing) {
+  if (g_use_in_memory_db_for_testing.load(std::memory_order_relaxed)) {
     env_for_testing_ = leveldb_chrome::NewMemEnv("LevelDBSiteDataStore");
     options.env = env_for_testing_.get();
   }
@@ -560,10 +561,11 @@ void LevelDBSiteDataStore::RunTaskWithRawDBForTesting(
 }
 
 // static
-std::unique_ptr<base::AutoReset<bool>>
-LevelDBSiteDataStore::UseInMemoryDBForTesting() {
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_use_in_memory_db_for_testing, true);
+base::ScopedClosureRunner LevelDBSiteDataStore::UseInMemoryDBForTesting() {
+  g_use_in_memory_db_for_testing.store(true, std::memory_order_relaxed);
+  return base::ScopedClosureRunner(base::BindOnce([] {
+    g_use_in_memory_db_for_testing.store(false, std::memory_order_relaxed);
+  }));
 }
 
 }  // namespace performance_manager

@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
@@ -163,6 +162,10 @@ class SiteDataCacheFacadeBrowserTest
                       bool expected_is_dirty) {
     const std::string browser_context_id = browser()->profile()->UniqueId();
     const url::Origin origin = embedded_test_server()->GetOrigin(site);
+
+    // Look up the reader and writer for `origin`.
+    std::unique_ptr<SiteDataReader> reader;
+    std::unique_ptr<SiteDataWriter> writer;
     RunInGraph([&](base::OnceClosure quit_closure) {
       // Remember to quit the RunLoop on early return.
       base::ScopedClosureRunner quit_on_exit(std::move(quit_closure));
@@ -173,32 +176,25 @@ class SiteDataCacheFacadeBrowserTest
       ASSERT_TRUE(inspector);
       SiteDataCache* cache = inspector->GetDataCache();
       ASSERT_TRUE(cache);
-      std::unique_ptr<SiteDataReader> reader =
-          cache->GetReaderForOrigin(origin);
+      reader = cache->GetReaderForOrigin(origin);
       ASSERT_TRUE(reader);
-      std::unique_ptr<SiteDataWriter> writer =
-          cache->GetWriterForOrigin(origin);
+      writer = cache->GetWriterForOrigin(origin);
       ASSERT_TRUE(writer);
 
       // Wait until the reader finishes asynchronously loading data.
-      // Save the reader pointer to avoid use-after-move when it's bound to the
-      // loaded callback.
-      SiteDataReader* reader_ptr = reader.get();
-      reader_ptr->RegisterDataLoadedCallback(
-          base::BindOnce(
-              [](std::unique_ptr<SiteDataReader> reader,
-                 std::unique_ptr<SiteDataWriter> writer,
-                 SiteFeatureUsage expected_updates_title_in_background,
-                 bool expected_is_dirty) {
-                EXPECT_EQ(reader->UpdatesTitleInBackground(),
-                          expected_updates_title_in_background);
-                EXPECT_EQ(writer->impl_for_testing()->is_dirty(),
-                          expected_is_dirty);
-              },
-              std::move(reader), std::move(writer),
-              expected_updates_title_in_background, expected_is_dirty)
-              // Now quit the RunLoop once RegisterDataLoadedCallback fires.
-              .Then(quit_on_exit.Release()));
+      // The reader and writer can't be destroyed inside the callback, so exit
+      // the runloop and start a new one when it fires.
+      reader->RegisterDataLoadedCallback(quit_on_exit.Release());
+    });
+
+    RunInGraph([&] {
+      EXPECT_EQ(reader->UpdatesTitleInBackground(),
+                expected_updates_title_in_background);
+      EXPECT_EQ(writer->impl_for_testing()->is_dirty(), expected_is_dirty);
+
+      // The reader and writer must be destroyed on the graph sequence.
+      reader.reset();
+      writer.reset();
     });
   }
 

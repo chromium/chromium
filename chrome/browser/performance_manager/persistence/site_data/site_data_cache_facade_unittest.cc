@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -104,7 +104,7 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
   }
 
   void TearDown() override {
-    use_in_memory_db_for_testing_.reset();
+    use_in_memory_db_for_testing_.RunAndReset();
     profile_.reset();
     testing::TestWithPerformanceManager::TearDown();
   }
@@ -135,7 +135,7 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
 
  private:
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<base::AutoReset<bool>> use_in_memory_db_for_testing_;
+  base::ScopedClosureRunner use_in_memory_db_for_testing_;
 };
 
 TEST_F(SiteDataCacheFacadeTest, IsDataCacheRecordingForTesting) {
