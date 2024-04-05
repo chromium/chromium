@@ -9,7 +9,6 @@
 
 import '../cr_button/cr_button.js';
 import '../cr_grid/cr_grid.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {assert} from '//resources/js/assert.js';
