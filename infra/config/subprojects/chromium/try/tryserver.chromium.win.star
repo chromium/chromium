@@ -49,6 +49,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-build-team@google.com",
 )
 
