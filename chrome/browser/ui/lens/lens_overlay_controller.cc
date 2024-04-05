@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -205,6 +206,7 @@ void LensOverlayController::BindOverlay(
   }
   receiver_.Bind(std::move(receiver));
   page_.Bind(std::move(page));
+  base::UmaHistogramBoolean("Desktop.LensOverlay.Shown", true);
   state_ = State::kOverlay;
 
   lens_overlay_query_controller_->StartQueryFlow(current_screenshot_);
