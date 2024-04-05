@@ -6,6 +6,7 @@
     "is_debug": false,
     "proprietary_codecs": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "use_v4l2_codec": true,
     "use_vaapi": false
   }

@@ -4,6 +4,7 @@
     "is_clang": false,
     "is_component_build": false,
     "is_debug": false,
-    "symbol_level": 1
+    "symbol_level": 1,
+    "use_siso": true
   }
 }
