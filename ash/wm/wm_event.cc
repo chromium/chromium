@@ -114,14 +114,14 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& bounds,
                                    bool animate,
                                    base::TimeDelta duration)
     : WMEvent(WM_EVENT_SET_BOUNDS),
-      requested_bounds_(bounds),
+      requested_bounds_in_parent_(bounds),
       animate_(animate),
       duration_(duration) {}
 
-SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
+SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds_in_parent,
                                    int64_t display_id)
     : WMEvent(WM_EVENT_SET_BOUNDS),
-      requested_bounds_(requested_bounds),
+      requested_bounds_in_parent_(requested_bounds_in_parent),
       display_id_(display_id),
       animate_(false) {}
 

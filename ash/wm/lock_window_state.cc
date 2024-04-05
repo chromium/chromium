@@ -70,7 +70,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
         UpdateBounds(window_state);
       } else {
         window_state->SetBoundsConstrained(
-            event->AsSetBoundsWMEvent()->requested_bounds());
+            event->AsSetBoundsWMEvent()->requested_bounds_in_parent());
       }
       break;
     case WM_EVENT_ADDED_TO_WORKSPACE:

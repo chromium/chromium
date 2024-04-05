@@ -358,7 +358,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SET_BOUNDS: {
       gfx::Rect bounds_in_parent =
-          event->AsSetBoundsWMEvent()->requested_bounds();
+          event->AsSetBoundsWMEvent()->requested_bounds_in_parent();
       if (bounds_in_parent.IsEmpty())
         break;
 

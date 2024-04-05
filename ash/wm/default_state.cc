@@ -449,18 +449,18 @@ void DefaultState::SetBounds(WindowState* window_state,
 
   if (is_dragged || window_state->allow_set_bounds_direct()) {
     if (event->animate()) {
-      window_state->SetBoundsDirectAnimated(event->requested_bounds(),
+      window_state->SetBoundsDirectAnimated(event->requested_bounds_in_parent(),
                                             event->duration());
     } else {
       // TODO(oshima|varkha): Is this still needed? crbug.com/485612.
-      window_state->SetBoundsDirect(event->requested_bounds());
+      window_state->SetBoundsDirect(event->requested_bounds_in_parent());
     }
   } else if (!SetMaximizedOrFullscreenBounds(window_state)) {
     if (event->animate()) {
-      window_state->SetBoundsDirectAnimated(event->requested_bounds(),
+      window_state->SetBoundsDirectAnimated(event->requested_bounds_in_parent(),
                                             event->duration());
     } else {
-      window_state->SetBoundsConstrained(event->requested_bounds());
+      window_state->SetBoundsConstrained(event->requested_bounds_in_parent());
       // Update the restore size if the bounds is updated by PIP itself.
       if (window_state->IsPip() && window_state->HasRestoreBounds()) {
         gfx::Rect restore_bounds = window_state->GetRestoreBoundsInScreen();
