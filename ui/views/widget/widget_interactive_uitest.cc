@@ -2405,8 +2405,16 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
   base::RunLoop drag_wait_loop_;
 };
 
+// TODO(crbug.com/333076102): Re-enable flaky tests
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_CancelShellDrag DISABLED_CancelShellDrag
+#else
+#define MAYBE_CancelShellDrag CancelShellDrag
+#endif
+
 // Cancels a DnD session started by `RunShellDrag()`.
-TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
+TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
   WidgetAutoclosePtr widget(new Widget);
 
   auto cancel = [&]() {
