@@ -1517,6 +1517,10 @@
       status: "experimental",
     },
     {
+      name: "ExcludeTransparentTextsFromBeingLcpEligible",
+      status: "experimental",
+    },
+    {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
       base_feature: "none",

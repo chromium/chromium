@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -154,6 +155,15 @@ void TextPaintTimingDetector::RecordAggregatedText(
     const LayoutBoxModelObject& aggregator,
     const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state) {
+  if (RuntimeEnabledFeatures::
+          ExcludeTransparentTextsFromBeingLcpEligibleEnabled()) {
+    if (aggregator.StyleRef()
+            .VisitedDependentColor(GetCSSPropertyColor())
+            .IsFullyTransparent()) {
+      return;
+    }
+  }
+
   DCHECK(ShouldWalkObject(aggregator));
 
   // The caller should check this.
