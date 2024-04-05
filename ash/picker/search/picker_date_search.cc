@@ -66,7 +66,7 @@ PickerSearchResult MakeResult(const base::Time time,
                               std::u16string_view secondary_text = u"") {
   return PickerSearchResult::Text(
       base::LocalizedTimeFormatWithPattern(time, "LLLd"), secondary_text,
-      ui::ImageModel::FromVectorIcon(kPickerCalendarTodayIcon,
+      ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface));
 }
 

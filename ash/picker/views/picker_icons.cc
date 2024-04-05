@@ -28,8 +28,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kLocalFiles:
       return kPickerLocalFilesIcon;
     case PickerCategory::kDatesTimes:
-      // TODO: b/322926823 - Use correct icons.
-      return kCalendarEventIcon;
+      return kPickerCalendarIcon;
     case PickerCategory::kUnitsMaths:
       return kPickerUnitsMathsIcon;
   }
