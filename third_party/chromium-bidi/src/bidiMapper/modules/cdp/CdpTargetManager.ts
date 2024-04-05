@@ -235,6 +235,7 @@ export class CdpTargetManager {
       this.#realmStorage,
       this.#eventManager,
       this.#preloadScriptStorage,
+      this.#browsingContextStorage,
       this.#networkStorage,
       this.#acceptInsecureCerts,
       this.#logger
@@ -268,21 +269,23 @@ export class CdpTargetManager {
     });
   }
 
-  #handleDetachedFromTargetEvent(
-    params: Protocol.Target.DetachedFromTargetEvent
-  ) {
-    const context = this.#browsingContextStorage.findContextBySession(
-      params.sessionId
-    );
+  #handleDetachedFromTargetEvent({
+    sessionId,
+    targetId,
+  }: Protocol.Target.DetachedFromTargetEvent) {
+    if (targetId) {
+      this.#preloadScriptStorage.find({targetId}).map((preloadScript) => {
+        preloadScript.dispose(targetId);
+      });
+    }
+    const context =
+      this.#browsingContextStorage.findContextBySession(sessionId);
     if (context) {
       context.dispose();
-      this.#preloadScriptStorage
-        .find({targetId: context.id})
-        .map((preloadScript) => preloadScript.dispose(context.id));
       return;
     }
 
-    const worker = this.#workers.get(params.sessionId);
+    const worker = this.#workers.get(sessionId);
     if (worker) {
       this.#realmStorage.deleteRealms({
         cdpSessionId: worker.cdpClient.sessionId,

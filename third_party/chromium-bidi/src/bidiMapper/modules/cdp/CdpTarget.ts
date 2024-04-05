@@ -23,6 +23,7 @@ import type {ChromiumBidi} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {ChannelProxy} from '../script/ChannelProxy.js';
@@ -37,10 +38,12 @@ export class CdpTarget {
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
+
   #networkDomainEnabled = false;
   #fetchDomainStages = {
     request: false,
@@ -55,6 +58,7 @@ export class CdpTarget {
     realmStorage: RealmStorage,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
+    browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean,
     logger?: LoggerFn
@@ -65,6 +69,7 @@ export class CdpTarget {
       browserCdpClient,
       eventManager,
       preloadScriptStorage,
+      browsingContextStorage,
       networkStorage,
       acceptInsecureCerts
     );
@@ -86,6 +91,7 @@ export class CdpTarget {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
+    browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean
   ) {
@@ -95,6 +101,7 @@ export class CdpTarget {
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#browsingContextStorage = browsingContextStorage;
     this.#acceptInsecureCerts = acceptInsecureCerts;
   }
 
@@ -171,7 +178,7 @@ export class CdpTarget {
   }
 
   async toggleFetchIfNeeded() {
-    const stages = this.#networkStorage.getInterceptionStages(this.id);
+    const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
 
     if (
       // Only toggle interception when Network is enabled
@@ -260,17 +267,29 @@ export class CdpTarget {
 
   /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
-    for (const script of this.#preloadScriptStorage.find({
-      global: true,
-    })) {
-      await script.initInTarget(this, true);
-    }
+    await Promise.all(
+      this.#preloadScriptStorage
+        .find({
+          // Needed for OOPIF
+          targetId: this.topLevelId,
+          global: true,
+        })
+        .map((script) => {
+          return script.initInTarget(this, true);
+        })
+    );
+  }
+
+  get topLevelId() {
+    return (
+      this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id
+    );
   }
 
   isSubscribedTo(moduleOrEvent: ChromiumBidi.EventNames): boolean {
     return this.#eventManager.subscriptionManager.isSubscribedTo(
       moduleOrEvent,
-      this.id
+      this.topLevelId
     );
   }
 }
