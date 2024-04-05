@@ -37,6 +37,8 @@ class CONTENT_EXPORT TracingScenarioBase {
   virtual bool OnStopTrigger(const BackgroundTracingRule* rule) = 0;
   virtual bool OnUploadTrigger(const BackgroundTracingRule* rule) = 0;
 
+  uint32_t TriggerNameHash(const BackgroundTracingRule* triggered_rule) const;
+
   std::vector<std::unique_ptr<BackgroundTracingRule>> start_rules_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> stop_rules_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> upload_rules_;

@@ -9,6 +9,7 @@
 #include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
 #include "base/tracing/trace_time.h"
@@ -90,6 +91,12 @@ void TracingScenarioBase::Enable() {
   }
 }
 
+uint32_t TracingScenarioBase::TriggerNameHash(
+    const BackgroundTracingRule* triggered_rule) const {
+  return variations::HashName(
+      base::StrCat({scenario_name(), ".", triggered_rule->rule_id()}));
+}
+
 TracingScenarioBase::TracingScenarioBase(const std::string scenario_name)
     : scenario_name_(scenario_name),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
@@ -151,6 +158,8 @@ bool NestedTracingScenario::OnStartTrigger(
     return false;
   }
   tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Start",
+                           TriggerNameHash(triggered_rule));
   for (auto& rule : start_rules_) {
     rule->Uninstall();
   }
@@ -171,6 +180,8 @@ bool NestedTracingScenario::OnStopTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Stop",
+                           TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
@@ -432,6 +443,8 @@ bool TracingScenario::OnStartTrigger(
   tracing_session_->Start();
   if (triggered_rule) {
     tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+    base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Start",
+                             TriggerNameHash(triggered_rule));
   }
   return true;
 }
@@ -441,6 +454,8 @@ bool TracingScenario::OnStopTrigger(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Stop",
+                           TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
@@ -476,6 +491,8 @@ bool TracingScenario::OnUploadTrigger(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
+                           TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }

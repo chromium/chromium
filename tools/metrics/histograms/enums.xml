@@ -1812,7 +1812,16 @@ Called by update_autofill_enums.py.-->
     The hash of a Background Tracing Scenario name generated using
     `variations::HashName()`.
   </summary>
-  <int value="1173339970" label="007_GenericPool"/>
+  <int value="-2031636326" label="GenericPool"/>
+  <int value="-1787584346" label="FledgeBAServerAuction"/>
+  <int value="-1405528390" label="FledgeLocalAuction"/>
+  <int value="-1211991201" label="Jank_Detailed"/>
+  <int value="-371809034" label="NonTabWebUIFCP"/>
+  <int value="-216837157" label="Jank"/>
+  <int value="124291608" label="SlowInteractionToNextPaint"/>
+  <int value="785318863" label="Navigation"/>
+  <int value="1640401204" label="MediaFoundationD3D11VideoCapture"/>
+  <int value="1882443385" label="Startup"/>
 </enum>
 
 <enum name="BackgroundTracingState">
@@ -1838,6 +1847,26 @@ Called by update_autofill_enums.py.-->
   <int value="18" label="Failed to clean the trace report database"/>
   <int value="19" label="Saving trace failed"/>
   <int value="20" label="Saving trace succeeded"/>
+</enum>
+
+<enum name="BackgroundTracingTriggerNameHash">
+  <summary>
+    The hash of a Background Tracing Trigger name generated using
+    `variations::HashName({Scenario}.{Trigger}`)`.
+  </summary>
+  <int value="-1623843694"
+      label="Jank_Detailed.org.chromium.background_tracing.navigation-start"/>
+  <int value="-818596785"
+      label="NonTabWebUIFCP.org.chromium.background_tracing.non-tab-webui-creation"/>
+  <int value="-725424469" label="Jank.org.chromium.background_tracing.timer"/>
+  <int value="-84416026" label="Jank.Browser.MainThreadsCongestion"/>
+  <int value="445229567"
+      label="NonTabWebUIFCP.org.chromium.background_tracing.show-tab-search-bubble"/>
+  <int value="1736308284" label="Jank_Detailed.Browser.MainThreadsCongestion"/>
+  <int value="2096426123"
+      label="Jank.org.chromium.background_tracing.navigation-start"/>
+  <int value="2121705289"
+      label="Jank_Detailed.org.chromium.background_tracing.timer"/>
 </enum>
 
 <enum name="BatteryDischargeMode">

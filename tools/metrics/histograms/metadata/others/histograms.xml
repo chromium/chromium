@@ -11165,6 +11165,20 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="Tracing.Background.Scenario.Trigger.{Type}"
+    enum="BackgroundTracingTriggerNameHash" expires_after="2024-09-22">
+  <owner>etiennep@chromium.org</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Records Background Tracing {Type} Trigger name hash when they occur.
+  </summary>
+  <token key="Type">
+    <variant name="Start"/>
+    <variant name="Stop"/>
+    <variant name="Upload"/>
+  </token>
+</histogram>
+
 <histogram name="Tracing.Background.Scenario.{Event}"
     enum="BackgroundTracingScenarioNameHash" expires_after="2024-09-22">
   <owner>etiennep@chromium.org</owner>
