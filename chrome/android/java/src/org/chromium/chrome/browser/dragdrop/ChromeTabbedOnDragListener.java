@@ -114,7 +114,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         // We should only attempt to access this while we know there's an active drag.
         assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
         if (globalState.getData() instanceof ChromeDropDataAndroid) {
-            return ((ChromeDropDataAndroid) globalState.getData()).mTab;
+            return ((ChromeDropDataAndroid) globalState.getData()).tab;
         } else {
             return null;
         }

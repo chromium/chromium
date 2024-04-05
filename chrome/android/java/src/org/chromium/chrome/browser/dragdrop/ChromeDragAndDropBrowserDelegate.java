@@ -49,6 +49,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     private final String[] mSupportedMimeTypes;
 
     private final Context mContext;
+    private final Activity mActivity;
     private final boolean mSupportDropInChrome;
     private final boolean mSupportAnimatedImageDragShadow;
 
@@ -57,6 +58,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
      */
     public ChromeDragAndDropBrowserDelegate(Context context) {
         mContext = context;
+        mActivity = ContextUtils.activityFromContext(mContext);
         mSupportDropInChrome =
                 ContentFeatureMap.getInstance()
                         .getFieldTrialParamByFeatureAsBoolean(
@@ -101,11 +103,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
         assert mSupportDropInChrome : "Should only be accessed when drop in Chrome.";
 
-        Activity activity = ContextUtils.activityFromContext(mContext);
-        if (activity == null) {
+        if (mActivity == null) {
             return null;
         }
-        return activity.requestDragAndDropPermissions(dropEvent);
+        return mActivity.requestDragAndDropPermissions(dropEvent);
     }
 
     @Override
@@ -116,8 +117,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                     DragAndDropLauncherActivity.getLinkLauncherIntent(
                             mContext,
                             urlString,
-                            MultiWindowUtils.getInstanceIdForLinkIntent(
-                                    ContextUtils.activityFromContext(mContext)),
+                            MultiWindowUtils.getInstanceIdForLinkIntent(mActivity),
                             intentSrc);
         }
         return intent;
@@ -128,8 +128,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
 
-        if (chromeDropDataAndroid.hasTab() && TabUiFeatureUtilities.isTabTearingEnabled()) {
-            Tab tab = chromeDropDataAndroid.mTab;
+        if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabTearing) {
+            Tab tab = chromeDropDataAndroid.tab;
             ClipData clipData = buildClipDataForTabTearing(tab.getContext(), tab);
             if (clipData != null) return clipData;
         }
@@ -138,7 +138,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         if (!TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue()) {
             intent =
                     createUrlIntent(
-                            chromeDropDataAndroid.mTab.getUrl().getSpec(),
+                            chromeDropDataAndroid.tab.getUrl().getSpec(),
                             UrlIntentSource.TAB_IN_STRIP);
         }
         return new ClipData(
@@ -163,17 +163,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
 
     @Override
     public int buildFlags(int originalFlag, DropDataAndroid dropData) {
-        if (!TabUiFeatureUtilities.isTabTearingEnabled()) {
-            return originalFlag;
-        }
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropData = (ChromeDropDataAndroid) dropData;
-        if (!chromeDropData.hasTab()) {
+        if (!chromeDropData.hasTab() || !chromeDropData.allowTabTearing) {
             return originalFlag;
         }
 
-        // TODO (crbug/331276611): Do not add these flags if the dragged tab is the only tab in the
-        // window, to avoid creating a new window from this tab.
         return originalFlag
                 | ClipDataItemBuilder.DRAG_FLAG_GLOBAL_SAME_APPLICATION
                 | ClipDataItemBuilder.DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG;
@@ -182,8 +177,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     /** Wrapper class over the invocation class. */
     // TODO(crbug.com/328511660): Replace with OS provided values / APIs when available.
     static class ClipDataItemBuilder {
-        private static final int DRAG_FLAG_GLOBAL_SAME_APPLICATION = 1 << 12;
-        private static final int DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG = 1 << 13;
+        static final int DRAG_FLAG_GLOBAL_SAME_APPLICATION = 1 << 12;
+        static final int DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG = 1 << 13;
 
         static ClipData.Item buildClipDataItemWithPendingIntent(PendingIntent pendingIntent) {
             ClipData.Item item;

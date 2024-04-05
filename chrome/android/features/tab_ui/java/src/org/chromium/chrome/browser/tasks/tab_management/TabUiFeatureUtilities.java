@@ -183,6 +183,7 @@ public class TabUiFeatureUtilities {
     public static boolean isTabTearingEnabled() {
         // TODO(crbug/328511660): Add OS version check once available.
         return ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+                && !DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue();
     }
 }

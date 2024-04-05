@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -138,7 +139,8 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean shouldAllowTabDrag() {
-        return TabUiFeatureUtilities.isTabTearingEnabled()
+        // TODO (crbug/331980663): Prevent OEM-agnostic single tab drag on Android V+.
+        return ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector)
                 || mManufacturerAllowlist.contains(getCurrManufacturer());
     }
 
@@ -169,9 +171,8 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
 
-        // Do not allow drag when we are in non-split screen mode on non-Samsung device since we
-        // don't support tab drag to open new instances of Chrome given OS/OEM limitations (the drag
-        // won't actually create a new instance on any OEM besides Samsung).
+        // Do not allow drag if the tab is the only tab in non-split screen mode on a non-Samsung
+        // device.
         // @TODO(crbug.com/1520080): Make this configurable via Finch in case we find more OEMs
         // where this works.
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
@@ -185,7 +186,11 @@ public class TabDragSource implements View.OnDragListener {
 
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
-                new ChromeDropDataAndroid.Builder().withTab(tabBeingDragged).build();
+                new ChromeDropDataAndroid.Builder()
+                        .withTab(tabBeingDragged)
+                        .withAllowTabTearing(
+                                ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector))
+                        .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =
                 createDragShadowBuilder(dragSourceView, startPoint, tabPositionX);
@@ -500,7 +505,7 @@ public class TabDragSource implements View.OnDragListener {
         assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
         assert globalState.getData() instanceof ChromeDropDataAndroid
                 : "Attempting to access dragged tab with wrong data type";
-        return ((ChromeDropDataAndroid) globalState.getData()).mTab;
+        return ((ChromeDropDataAndroid) globalState.getData()).tab;
     }
 
     private boolean isDragSource() {
