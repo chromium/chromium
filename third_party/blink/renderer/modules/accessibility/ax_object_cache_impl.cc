@@ -3269,29 +3269,36 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   {
     base::AutoReset<bool> processing(&processing_deferred_events_, true);
 
-    // Ensure root exists.
-    GetOrCreate(document_);
+    {
+      // Start traces after early returns, including all all significant work.
+      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+          "Accessibility.Performance.ProcessDeferredAccessibilityEvents2");
+      TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents2");
 
-    // If this is the first update, ensure relation cache exists and is
-    // initialized. Any existing content with aria-owns will be added to the
-    // aria-owns queue in the relations cache for processing.
-    EnsureRelationCache();
+      // Ensure root exists.
+      GetOrCreate(document_);
 
-    // Update (create or remove) validation child of root, if it is needed, so
-    // that the tree can be frozen in the correct state.
-    ValidationMessageObjectIfInvalid();
+      // If this is the first update, ensure relation cache exists and is
+      // initialized. Any existing content with aria-owns will be added to the
+      // aria-owns queue in the relations cache for processing.
+      EnsureRelationCache();
 
-    // If MarkDocumentDirty() was called, do it now, so that the entire tree is
-    // invalidated before updating it.
-    if (mark_all_dirty_) {
-      MarkDocumentDirtyWithCleanLayout();
-    }
+      // Update (create or remove) validation child of root, if it is needed, so
+      // that the tree can be frozen in the correct state.
+      ValidationMessageObjectIfInvalid();
 
-    if (IsDirty()) {
-      if (GetPopupDocumentIfShowing()) {
-        ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+      // If MarkDocumentDirty() was called, do it now, so that the entire tree
+      // is invalidated before updating it.
+      if (mark_all_dirty_) {
+        MarkDocumentDirtyWithCleanLayout();
       }
-      ProcessDeferredAccessibilityEventsImpl(document);
+
+      if (IsDirty()) {
+        if (GetPopupDocumentIfShowing()) {
+          ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+        }
+        ProcessDeferredAccessibilityEventsImpl(document);
+      }
     }
 
     // At this point, the popup queue should be clear, and we must ensure this
@@ -3304,43 +3311,49 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // For now, keep this line in order to pass CheckTreeIsUpdated().
     tree_update_callback_queue_popup_.clear();
 
+    {
+      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+          "Accessibility.Performance.UpdateTreeIfNeeded");
+      TRACE_EVENT0("accessibility", "UpdateTreeIfNeeded");
+
 #if defined(REDUCE_AX_INLINE_TEXTBOXES)
-    // On Android, the inline textboxes of focused editable subtrees are always
-    // loaded, but only if inline text boxes are enabled.
-    if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
-      AXObject* focus = FocusedObject();
-      if (focus && focus->IsEditableRoot()) {
-        focus->LoadInlineTextBoxes();
+      // On Android, the inline textboxes of focused editable subtrees are
+      // always loaded, but only if inline text boxes are enabled.
+      if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
+        AXObject* focus = FocusedObject();
+        if (focus && focus->IsEditableRoot()) {
+          focus->LoadInlineTextBoxes();
+        }
       }
-    }
 #endif
 
-    mark_all_dirty_ = false;
+      mark_all_dirty_ = false;
 
-    // All tree updates have been processed.
-    DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
-    DUMP_WILL_BE_CHECK(!IsPopupDocumentDirty());
+      // All tree updates have been processed.
+      DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
+      DUMP_WILL_BE_CHECK(!IsPopupDocumentDirty());
 
-    // Clean up any remaining unprocessed aria-owns relations, which can result
-    // from processing deferred tree updates. For example, if an object is
-    // created without a parent, RepairChildrenOfIncludedParent() may be called,
-    // which in some cases can queue multiple aria-owns relations that point to
-    // the same node to be added to the processing queue.
-    relation_cache_->ProcessUpdatesWithCleanLayout();
+      // Clean up any remaining unprocessed aria-owns relations, which can
+      // result from processing deferred tree updates. For example, if an object
+      // is created without a parent, RepairChildrenOfIncludedParent() may be
+      // called, which in some cases can queue multiple aria-owns relations that
+      // point to the same node to be added to the processing queue.
+      relation_cache_->ProcessUpdatesWithCleanLayout();
 
-    CHECK(tree_update_callback_queue_main_.empty());
-    CHECK(tree_update_callback_queue_popup_.empty());
-    CHECK(nodes_with_pending_children_changed_.empty());
+      CHECK(tree_update_callback_queue_main_.empty());
+      CHECK(tree_update_callback_queue_popup_.empty());
+      CHECK(nodes_with_pending_children_changed_.empty());
 
-    // Build out tree, such that each node has computed its children.
-    UpdateTreeIfNeeded();
+      // Build out tree, such that each node has computed its children.
+      UpdateTreeIfNeeded();
 
-    CHECK(tree_update_callback_queue_main_.empty());
-    CHECK(tree_update_callback_queue_popup_.empty());
-    CHECK(nodes_with_pending_children_changed_.empty());
+      CHECK(tree_update_callback_queue_main_.empty());
+      CHECK(tree_update_callback_queue_popup_.empty());
+      CHECK(nodes_with_pending_children_changed_.empty());
 
-    // Updating the tree did not add dirty objects.
-    DUMP_WILL_BE_CHECK(!IsDirty());
+      // Updating the tree did not add dirty objects.
+      DUMP_WILL_BE_CHECK(!IsDirty());
+    }
   }
 
   // Serialize the current tree changes unless not enough time has passed, or
@@ -3464,7 +3477,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   // There should be no more dirty objects.
   CHECK(!HasDirtyObjects());
 
-  /* ACTUAL SERIALIZE */
+  /* Send the actual serialization message.*/
   bool success = client->SendAccessibilitySerialization(
       std::move(updates), std::move(events), had_load_complete_messages);
 
@@ -3483,11 +3496,6 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     Document& document) {
-  TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Accessibility.Performance.ProcessDeferredAccessibilityEvents");
-
   // Call the queued callback methods that do processing which must occur when
   // layout is clean. These callbacks are stored in
   // tree_update_callback_queue_, and have names like
@@ -5355,6 +5363,11 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
   CHECK(GetDocument().IsActive());
   if (changed_bounds_ids_.empty())
     return;
+
+  TRACE_EVENT0("accessibility", "SerializeLocationChanges");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.SerializeLocationChanges");
+
   Vector<mojom::blink::LocationChangesPtr> changes;
   changes.reserve(changed_bounds_ids_.size());
   for (AXID changed_bounds_id : changed_bounds_ids_) {
@@ -5456,6 +5469,10 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
+  TRACE_EVENT0("accessibility", "GetUpdatesAndEventsForSerialization");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.GetUpdatesAndEventsForSerialization");
+
   HashSet<int32_t> already_serialized_ids;
 
   DCHECK_GE(GetDocument().Lifecycle().GetState(),

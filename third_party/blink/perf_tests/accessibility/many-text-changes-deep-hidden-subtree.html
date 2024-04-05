@@ -57,21 +57,25 @@ function changeLeafText(text) {
 
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when changing text inside a hidden subtree.',
-    unit: 'ms',
-    done: function () {
-      isDone = true;
-    },
-    run: function() {
-      runTest();
-    },
-    iterationCount: 6,
-    tracingCategories: 'accessibility',
-    traceEventsToMeasure: [
-      'BrowserAccessibilityManager::OnAccessibilityEvents',
-      'ProcessDeferredAccessibilityEvents',
-      'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
-    ]
+  description: 'Test accessibility performance when changing text inside a hidden subtree.',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 6,
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+    'ProcessDeferredAccessibilityEvents2',
+    'UpdateTreeIfNeeded',
+    'GetUpdatesAndEventsForSerialization',
+    'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    'BrowserAccessibilityManager::OnAccessibilityEvents',
+    'SerializeLocationChanges',
+    "BrowserAccessibilityManager::OnLocationChanges"
+  ]
 });
 </script>
 

@@ -485,8 +485,6 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
     bool had_load_complete_messages) {
-  // TODO(accessibility) Do we want to get rid of this trace event now that it's
-  // part of the same callstack as the ProcessDeferredAccessibilityEvents trace?
   TRACE_EVENT0("accessibility",
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;

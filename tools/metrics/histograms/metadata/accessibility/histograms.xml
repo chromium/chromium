@@ -1778,9 +1778,13 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents2"
-    units="microseconds" expires_after="2025-02-28">
+    units="microseconds" expires_after="never">
+<!-- expires-never: vital accessibility performance metric -->
+
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the browser main thread handling accessibility events
@@ -1792,6 +1796,46 @@ even if they fit the naming pattern. -->
     histogram only measures events which are processed by
     BrowserAccessibilityManager and thus should have a better histogram to
     understand the cost of doing so, and be used to meaure optimizations.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Performance.BrowserAccessibilityManager::OnLocationChanges"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser main thread handling location changes sent
+    from the renderer process and processed by BrowserAccessibilityManager.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.GetUpdatesAndEventsForSerialization"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process collecting nodes, node data and
+    events for the next serialization. Logged each time the method is run during
+    post-lifecycle steps.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -1824,11 +1868,11 @@ even if they fit the naming pattern. -->
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the render process processing deferred accessibility
-    events. Logged each time the method is run during the accessbility document
-    lifecycle.
+    events.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -1844,6 +1888,7 @@ even if they fit the naming pattern. -->
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the render process sending pending accessibility
@@ -1859,10 +1904,13 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.SendPendingAccessibilityEvents2"
-    units="microseconds" expires_after="2025-02-28">
+    units="microseconds" expires_after="never">
+<!-- expires-never: vital accessibility performance metric -->
+
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the render process sending pending accessibility
@@ -1876,14 +1924,55 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.SerializeLocationChanges"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process sending pending accessibility
+    location changes. Logged each time the method is run without returning
+    early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.Tree.Unserialize2"
     units="microseconds" expires_after="2025-02-28">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the browser process unserializing accessibility
     updates. Logged each time the method is run without returning early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.UpdateTreeIfNeeded"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process ensuring the tree is fully updated
+    so that it can be frozen for the next serialization.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports

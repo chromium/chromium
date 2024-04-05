@@ -671,6 +671,11 @@ void BrowserAccessibilityManager::FinalizeAccessibilityEvents() {}
 
 void BrowserAccessibilityManager::OnLocationChanges(
     const std::vector<blink::mojom::LocationChangesPtr>& changes) {
+  TRACE_EVENT0("accessibility",
+               "BrowserAccessibilityManager::OnLocationChanges");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.BrowserAccessibilityManager::"
+      "OnLocationChanges");
   for (auto& change : changes) {
     BrowserAccessibility* obj = GetFromID(change->id);
     if (!obj)

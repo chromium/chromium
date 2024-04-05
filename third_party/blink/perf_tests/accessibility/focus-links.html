@@ -71,9 +71,13 @@ PerfTestRunner.startMeasureValuesAsync({
     iterationCount: 6,
     tracingCategories: 'accessibility',
     traceEventsToMeasure: [
-        'BrowserAccessibilityManager::OnAccessibilityEvents',
-        'ProcessDeferredAccessibilityEvents',
+        'ProcessDeferredAccessibilityEvents2',
+        'UpdateTreeIfNeeded',
+        'GetUpdatesAndEventsForSerialization',
         'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+        'BrowserAccessibilityManager::OnAccessibilityEvents',
+        'SerializeLocationChanges',
+        "BrowserAccessibilityManager::OnLocationChanges"
     ]
 });
 </script>
