@@ -2085,13 +2085,17 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
           "      message, type_url_field, value_field);\n"
           "}\n");
     }
-    format(
-        "bool $classname$::ParseAnyTypeUrl(\n"
-        "    ::PROTOBUF_NAMESPACE_ID::ConstStringParam type_url,\n"
-        "    std::string* full_type_name) {\n"
-        "  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);\n"
-        "}\n"
-        "\n");
+    // TODO(crbug.com/332939935): Remove this workaround when the AnyLite patch
+    // can go away.
+    if (descriptor_->name() != "AnyLite") {
+      format(
+          "bool $classname$::ParseAnyTypeUrl(\n"
+          "    ::PROTOBUF_NAMESPACE_ID::ConstStringParam type_url,\n"
+          "    std::string* full_type_name) {\n"
+          "  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);\n"
+          "}\n"
+          "\n");
+    }
   }
 
   format(

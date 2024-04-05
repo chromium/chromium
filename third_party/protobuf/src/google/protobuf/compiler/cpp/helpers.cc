@@ -72,6 +72,14 @@ namespace {
 static const char kAnyMessageName[] = "Any";
 static const char kAnyProtoFile[] = "google/protobuf/any.proto";
 
+// TODO(crbug.com/332939935): This is used to allow generating an AnyLite proto
+// compatible with /third_party/medialite instead of checking in compiled
+// protobufs that complicate rolling.
+// Upstream should be fixed so that we don't need to generate a separate
+// AnyLite, then this patch/change should be dropped.
+static const char kAnyLiteMessageName[] = "AnyLite";
+static const char kAnyLiteProtoFile[] = "google/protobuf/any_lite.proto";
+
 std::string DotsToColons(const std::string& name) {
   return StringReplace(name, ".", "::", true);
 }
@@ -1082,11 +1090,13 @@ FieldOptions::CType EffectiveStringCType(const FieldDescriptor* field,
 }
 
 bool IsAnyMessage(const FileDescriptor* descriptor, const Options& options) {
-  return descriptor->name() == kAnyProtoFile;
+  return descriptor->name() == kAnyProtoFile ||
+         descriptor->name() == kAnyLiteProtoFile;
 }
 
 bool IsAnyMessage(const Descriptor* descriptor, const Options& options) {
-  return descriptor->name() == kAnyMessageName &&
+  return (descriptor->name() == kAnyMessageName ||
+          descriptor->name() == kAnyLiteMessageName) &&
          IsAnyMessage(descriptor->file(), options);
 }
 

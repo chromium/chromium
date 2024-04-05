@@ -82,15 +82,11 @@ config("mediapipe_flags") {
   }
 }
 
-source_set("any_lite_proto_impl") {
-  visibility = [ ":*" ]
-  sources = [
-    "shims/protobuf/google/protobuf/any_lite.pb.cc",
-    "shims/protobuf/google/protobuf/any_lite.pb.h",
-  ]
-  include_dirs = [ "shims/protobuf" ]
-  public_configs = [ ":mediapipe_config" ]
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+proto_library("any_lite_proto_impl") {
+  proto_in_dir = "shims/protobuf"
+  cc_generator_options = "lite=true:"
+  sources = [ "shims/protobuf/google/protobuf/any_lite.proto" ]
+  import_dirs = [ "shims/protobuf" ]
 }
 
 proto_library("mediapipe_proto") {

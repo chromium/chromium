@@ -218,3 +218,10 @@ Description of the patches:
 
   Silences -Wshorten-64-to-32 for now. Fixed in upstream
   https://github.com/protocolbuffers/protobuf/commit/d85c9944c55fb38f4eae149979a0f680ea125ecb
+
+- 0039-generate-mediapipe-anylite.patch
+
+  Workaround to allow generating protobuf code compatible with
+  third_party/mediapipe. This replaces checked-in precompiled .pb.cc files. See
+  https://crbug.com/332939935, which when/if resolved should make this patch
+  obsolete.
