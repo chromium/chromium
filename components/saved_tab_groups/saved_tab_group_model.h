@@ -45,6 +45,10 @@ class SavedTabGroupModel {
   std::optional<int> GetIndexOf(const LocalTabGroupID local_group_id) const;
   std::optional<int> GetIndexOf(const base::Uuid& id) const;
 
+  // Return weather the group is pinned if it exists in the vector. Else
+  // std::nullopt.
+  std::optional<bool> IsGroupPinned(const base::Uuid& id) const;
+
   // Get a pointer to the SavedTabGroup from an ID. Returns nullptr if not in
   // vector.
   const SavedTabGroup* Get(const LocalTabGroupID local_group_id) const;
@@ -72,6 +76,9 @@ class SavedTabGroupModel {
                         const tab_groups::TabGroupVisualData* visual_data);
   void UpdateVisualData(const base::Uuid& id,
                         const tab_groups::TabGroupVisualData* visual_data);
+
+  // Pin SavedTabGroup if it's unpinned. Unpin SavedTabGroup if it's pinned.
+  void TogglePinState(base::Uuid id);
 
   // Similar to the Add/Remove/Update but originate from sync. As such, these
   // function do not notify sync observers of these changes to avoid looping

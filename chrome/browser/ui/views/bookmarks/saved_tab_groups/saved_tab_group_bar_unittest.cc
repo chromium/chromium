@@ -452,13 +452,37 @@ TEST_P(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   saved_tab_group_model()->Add(kSavedTabGroup2);
   saved_tab_group_model()->Add(kSavedTabGroup3);
 
-  ASSERT_THAT(get_button_guids(), testing::ElementsAre(guid_1, guid_2, guid_3));
-  saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(), 2);
-  EXPECT_THAT(get_button_guids(), testing::ElementsAre(guid_1, guid_3, guid_2));
-  saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(), 0);
-  EXPECT_THAT(get_button_guids(), testing::ElementsAre(guid_2, guid_1, guid_3));
-  saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(), 1);
-  EXPECT_THAT(get_button_guids(), testing::ElementsAre(guid_1, guid_2, guid_3));
+  if (IsV2UIEnabled()) {
+    ASSERT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_3, guid_2, guid_1));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 2);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_3, guid_1, guid_2));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 0);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_2, guid_3, guid_1));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 1);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_3, guid_2, guid_1));
+  } else {
+    ASSERT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_1, guid_2, guid_3));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 2);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_1, guid_3, guid_2));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 0);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_2, guid_1, guid_3));
+    saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
+                                                 1);
+    EXPECT_THAT(get_button_guids(),
+                testing::ElementsAre(guid_1, guid_2, guid_3));
+  }
 }
 
 // If the restriction is exactly the expected size all should be visible

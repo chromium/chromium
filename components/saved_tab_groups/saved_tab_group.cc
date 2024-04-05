@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -319,7 +320,13 @@ SavedTabGroup SavedTabGroup::FromSpecifics(
   const tab_groups::TabGroupColorId color =
       SyncColorToTabGroupColor(specific.group().color());
   const std::u16string& title = base::UTF8ToUTF16(specific.group().title());
-  const size_t position = specific.group().position();
+  // In v1 we always set tab group position even if the proto is not set, which
+  // gives a default position of 0. In v2 we leave the position unset if the
+  // proto is not set for unpinned tab groups.
+  const std::optional<size_t> position =
+      !IsTabGroupsSaveUIUpdateEnabled() || specific.group().has_position()
+          ? std::optional<size_t>(specific.group().position())
+          : std::nullopt;
 
   const base::Uuid guid = base::Uuid::ParseLowercase(specific.guid());
   const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -350,7 +357,9 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::ToSpecifics()
   sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
   pb_group->set_color(TabGroupColorToSyncColor(color()));
   pb_group->set_title(base::UTF16ToUTF8(title()));
-  pb_group->set_position(position().value());
+  if (position().has_value()) {
+    pb_group->set_position(position().value());
+  }
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
   return pb_specific;
