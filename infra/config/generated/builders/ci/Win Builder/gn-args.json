@@ -7,6 +7,7 @@
     "proprietary_codecs": true,
     "symbol_level": 0,
     "target_cpu": "x86",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
