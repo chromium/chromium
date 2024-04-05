@@ -351,6 +351,7 @@ void RecordPermissionActionUkm(
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
     std::optional<bool> has_three_consecutive_denies,
     std::optional<bool> has_previously_revoked_permission,
     std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
@@ -472,6 +473,36 @@ void RecordPermissionActionUkm(
     builder.SetPermissionAutoRevocationHistory(previously_revoked_permission);
   }
 
+  if (ui_disposition == PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE &&
+      variants.has_value()) {
+    // Variant can have a maximum of 3 values, one per site level and 2 for OS
+    // level.
+    CHECK_LE(variants->size(), 3U);
+
+    const std::vector<ElementAnchoredBubbleVariant>& variant_array =
+        variants.value();
+
+    for (ElementAnchoredBubbleVariant variant : variant_array) {
+      switch (variant) {
+        case ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED:
+        case ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED:
+        case ElementAnchoredBubbleVariant::ASK:
+        case ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED:
+        case ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED:
+          builder.SetSiteLevelScreen(static_cast<int64_t>(variant));
+          break;
+        case ElementAnchoredBubbleVariant::OS_PROMPT:
+          builder.SetOsPromptScreen(static_cast<int64_t>(variant));
+          break;
+
+        case ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS:
+          builder.SetOsSystemSettingsScreen(static_cast<int64_t>(variant));
+          break;
+        case ElementAnchoredBubbleVariant::UNINITIALIZED:
+          break;
+      }
+    }
+  }
   if (!time_to_decision.is_zero()) {
     builder.SetTimeToDecision(ukm::GetExponentialBucketMinForUserTiming(
         time_to_decision.InMilliseconds()));
@@ -730,7 +761,8 @@ void PermissionUmaUtil::PermissionRevoked(
                          PermissionRequestGestureType::UNKNOWN,
                          /*time_to_decision=*/base::TimeDelta(),
                          PermissionPromptDisposition::NOT_APPLICABLE,
-                         /*ui_reason=*/std::nullopt, revoked_origin,
+                         /*ui_reason=*/std::nullopt, /*variants=*/std::nullopt,
+                         revoked_origin,
                          /*web_contents=*/nullptr, browser_context,
                          /*render_frame_host*/ nullptr,
                          /*predicted_grant_likelihood=*/std::nullopt,
@@ -861,6 +893,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
     std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
     std::optional<bool> prediction_decision_held_back,
     std::optional<permissions::PermissionIgnoredReason> ignored_reason,
@@ -906,8 +939,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
     RecordPermissionAction(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
-        time_to_decision, ui_disposition, ui_reason, requesting_origin,
-        web_contents, web_contents->GetBrowserContext(),
+        time_to_decision, ui_disposition, ui_reason, variants,
+        requesting_origin, web_contents, web_contents->GetBrowserContext(),
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, prediction_decision_held_back);
 
@@ -1129,6 +1162,7 @@ void PermissionUmaUtil::RecordPermissionAction(
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
     const GURL& requesting_origin,
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
@@ -1188,7 +1222,7 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
           dismiss_count, ignore_count, source_ui, time_to_decision,
-          ui_disposition, ui_reason,
+          ui_disposition, ui_reason, variants,
           permission == ContentSettingsType::NOTIFICATIONS
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(

@@ -21218,6 +21218,18 @@ be describing additional metrics about the same event.
       initiated by a user gesture.
     </summary>
   </metric>
+  <metric name="OsPromptScreen" enum="ElementAnchoredBubbleVariant">
+    <summary>
+      An enum of type ElementAnchoredBubbleVariant. The screen that prompts the
+      user for the OS screen, if applicable.
+    </summary>
+  </metric>
+  <metric name="OsSystemSettingsScreen" enum="ElementAnchoredBubbleVariant">
+    <summary>
+      An enum of type ElementAnchoredBubbleVariant. The screen that directs the
+      user to the OS Settings, if applicable.
+    </summary>
+  </metric>
   <metric name="PermissionAutoRevocationHistory"
       enum="PermissionAutoRevocationHistory">
     <summary>
@@ -21275,6 +21287,12 @@ be describing additional metrics about the same event.
       is set if the corresponding adaptive triggering condition has been
       satisfied at least once in the past for the user. This metric is not
       recorded for users who don't have the activation dry run enabled.
+    </summary>
+  </metric>
+  <metric name="SiteLevelScreen" enum="ElementAnchoredBubbleVariant">
+    <summary>
+      An enum of type ElementAnchoredBubbleVariant. The site level screen shown
+      to the user, if any.
     </summary>
   </metric>
   <metric name="Source">

@@ -323,6 +323,37 @@ enum class OneTimePermissionEvent {
   kMaxValue = EXPIRED_ON_SUSPEND
 };
 
+// Prompt views shown after the user clicks on the embedded permission prompt.
+// The values represent the priority of each variant, higher number means
+// higher priority.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ElementAnchoredBubbleVariant {
+  // Default when conditions are not met to show any of the permission views.
+  UNINITIALIZED = 0,
+  // Informs the user that the permission was allowed by their administrator.
+  ADMINISTRATOR_GRANTED = 1,
+  // Permission prompt that informs the user they already granted permission.
+  // Offers additional options to modify the permission decision.
+  PREVIOUSLY_GRANTED = 2,
+  // Informs the user that they need to go to OS system settings to grant
+  // access to Chrome.
+  OS_SYSTEM_SETTINGS = 3,
+  // Informs the user that Chrome needs permission from the OS level, in order
+  // for the site to be able to access a permission.
+  OS_PROMPT = 4,
+  // Permission prompt that asks the user for site-level permission.
+  ASK = 5,
+  // Permission prompt that additionally informs the user that they have
+  // previously denied permission to the site. May offer different options
+  // (buttons) to the site-level prompt |kAsk|.
+  PREVIOUSLY_DENIED = 6,
+  // Informs the user that the permission was denied by their administrator.
+  ADMINISTRATOR_DENIED = 7,
+
+  kMaxValue = ADMINISTRATOR_DENIED
+};
+
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
   NONE = 0,
@@ -566,6 +597,7 @@ class PermissionUmaUtil {
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,
+      std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
       std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
       std::optional<bool> prediction_decision_held_back,
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
@@ -740,6 +772,7 @@ class PermissionUmaUtil {
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,
+      std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
       const GURL& requesting_origin,
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,

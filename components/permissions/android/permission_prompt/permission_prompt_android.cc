@@ -45,6 +45,11 @@ bool PermissionPromptAndroid::ShouldFinalizeRequestAfterDecided() const {
   return true;
 }
 
+std::vector<permissions::ElementAnchoredBubbleVariant>
+PermissionPromptAndroid::GetPromptVariants() const {
+  return {};
+}
+
 void PermissionPromptAndroid::Closing() {
   delegate_->Dismiss();
 }

@@ -67,7 +67,8 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
   bool ShouldFinalizeRequestAfterDecided() const override;
-
+  std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
+      const override;
   // EmbeddedPermissionPromptBaseView::Delegate
   void Allow() override;
   void AllowThisTime() override;
@@ -87,7 +88,7 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
       ContentSetting setting,
       const content_settings::SettingInfo& info,
       ContentSettingsType type);
-
+  void PrecalculateVariantsForMetrics();
   void PrioritizeAndMergeNewVariant(Variant new_variant,
                                     ContentSettingsType type);
 
@@ -104,6 +105,11 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
 #endif
 
   void CloseView();
+
+  // Store precalculated OS variants for metrics
+  Variant site_level_prompt_variant_ = Variant::kUninitialized;
+  Variant os_prompt_variant_ = Variant::kUninitialized;
+  Variant os_system_settings_variant_ = Variant::kUninitialized;
 
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
   views::UniqueWidgetPtr content_scrim_widget_;

@@ -5499,6 +5499,17 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Error"/>
 </enum>
 
+<enum name="ElementAnchoredBubbleVariant">
+  <int value="0" label="UNINITIALIZED"/>
+  <int value="1" label="ADMINISTRATOR_GRANTED"/>
+  <int value="2" label="PREVIOUSLY_GRANTED"/>
+  <int value="3" label="OS_SYSTEM_SETTINGS"/>
+  <int value="4" label="OS_PROMPT"/>
+  <int value="5" label="ASK"/>
+  <int value="6" label="PREVIOUSLY_DENIED"/>
+  <int value="7" label="ADMINISTRATOR_DENIED"/>
+</enum>
+
 <enum name="EmailPredictionConfusionMatrix">
   <int value="0"
       label="TruePositive: overall_type=email, submitted text matches email

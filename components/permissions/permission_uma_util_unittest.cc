@@ -357,6 +357,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
+      /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
@@ -668,6 +669,54 @@ TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
 }
 #endif
 
+// Inside your PermissionRecorderTest test fixture from earlier
+TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
+  std::vector<ElementAnchoredBubbleVariant> variant_vector = {
+      ElementAnchoredBubbleVariant::ASK};
+
+#if BUILDFLAG(IS_MAC)
+  variant_vector.push_back(ElementAnchoredBubbleVariant::OS_PROMPT);
+  variant_vector.push_back(ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS);
+#endif
+
+  std::optional<std::vector<ElementAnchoredBubbleVariant>> variants =
+      variant_vector;
+
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
+
+  auto* permission_request_manager = SetupRequestManager(web_contents());
+  PermissionRequestWrapper* request_owner =
+      new PermissionRequestWrapper(RequestType::kCameraStream, kTopLevelUrl);
+  permission_request_manager->AddRequest(main_frame, request_owner->request());
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      {request_owner->request()}, web_contents(), PermissionAction::GRANTED,
+      /*time_to_decision*/ base::TimeDelta(),
+      PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
+      /* ui_reason*/ std::nullopt, variants,
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
+      /*did_click_managed*/ false,
+      /*did_click_learn_more*/ false);
+
+  const auto entries = ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries.back().get();
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "SiteLevelScreen"),
+            static_cast<int64_t>(ElementAnchoredBubbleVariant::ASK));
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "OsPromptScreen"),
+            static_cast<int64_t>(ElementAnchoredBubbleVariant::OS_PROMPT));
+  EXPECT_EQ(
+      *ukm_recorder.GetEntryMetric(entry, "OsSystemSettingsScreen"),
+      static_cast<int64_t>(ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS));
+#endif
+}
+
 TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
@@ -694,6 +743,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
+      /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
@@ -868,6 +918,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
+      /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
@@ -1065,5 +1116,4 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
   const auto entries = ukm_recorder.GetEntriesByName("PermissionUsage");
   ASSERT_EQ(0u, entries.size());
 }
-
 }  // namespace permissions

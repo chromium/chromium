@@ -68,6 +68,11 @@ bool PermissionPromptNotificationsMac::ShouldFinalizeRequestAfterDecided()
   return true;
 }
 
+std::vector<permissions::ElementAnchoredBubbleVariant>
+PermissionPromptNotificationsMac::GetPromptVariants() const {
+  return {};
+}
+
 void PermissionPromptNotificationsMac::ShowPrompt() {
   apps::AppShimManager::Get()->ShowNotificationPermissionRequest(
       app_id_,

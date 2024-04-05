@@ -164,8 +164,12 @@ class PermissionPrompt {
   // decision is transmitted. If this returns `false` the delegate should wait
   // for an explicit |Delegate::FinalizeCurrentRequests()| call to be made.
   virtual bool ShouldFinalizeRequestAfterDecided() const = 0;
-};
 
+  // Return what variant of the secondary UI is shown for Page Embedded
+  // Permission Element.
+  virtual std::vector<permissions::ElementAnchoredBubbleVariant>
+  GetPromptVariants() const = 0;
+};
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_H_

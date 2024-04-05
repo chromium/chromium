@@ -40,6 +40,8 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
       const override = 0;
   std::optional<gfx::Rect> GetViewBoundsInScreen() const override;
   bool ShouldFinalizeRequestAfterDecided() const override;
+  std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
+      const override;
 
   virtual views::Widget* GetPromptBubbleWidgetForTesting();
 

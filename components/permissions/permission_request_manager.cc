@@ -1085,6 +1085,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
       requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
+      view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
       prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
       did_show_prompt_, did_click_manage_, did_click_learn_more_);
 

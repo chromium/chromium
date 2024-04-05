@@ -84,6 +84,30 @@ bool ShouldShowOSPromptViewOnMacOS(ContentSettingsType type) {
 }
 #endif
 
+permissions::ElementAnchoredBubbleVariant GetVariant(
+    EmbeddedPermissionPrompt::Variant variant) {
+  switch (variant) {
+    case EmbeddedPermissionPrompt::Variant::kUninitialized:
+      return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
+    case EmbeddedPermissionPrompt::Variant::kAdministratorGranted:
+      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED;
+    case EmbeddedPermissionPrompt::Variant::kPreviouslyGranted:
+      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED;
+    case EmbeddedPermissionPrompt::Variant::kOsSystemSettings:
+      return permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS;
+    case EmbeddedPermissionPrompt::Variant::kOsPrompt:
+      return permissions::ElementAnchoredBubbleVariant::OS_PROMPT;
+    case EmbeddedPermissionPrompt::Variant::kAsk:
+      return permissions::ElementAnchoredBubbleVariant::ASK;
+    case EmbeddedPermissionPrompt::Variant::kPreviouslyDenied:
+      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED;
+    case EmbeddedPermissionPrompt::Variant::kAdministratorDenied:
+      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
+  }
+
+  NOTREACHED();
+  return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
+}
 }  // namespace
 
 EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
@@ -149,7 +173,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   content_settings::SettingInfo info;
 
-  for (const permissions::PermissionRequest* request : delegate()->Requests()) {
+  for (const auto& request : delegate()->Requests()) {
     ContentSettingsType type = request->GetContentSettingsType();
     ContentSetting setting =
         map->GetContentSetting(delegate()->GetRequestingOrigin(),
@@ -232,17 +256,71 @@ bool EmbeddedPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
   return false;
 }
 
+void EmbeddedPermissionPrompt::PrecalculateVariantsForMetrics() {
+  if (embedded_prompt_variant_ == Variant::kUninitialized) {
+    return;
+  }
+
+  site_level_prompt_variant_ = embedded_prompt_variant_;
+
+#if BUILDFLAG(IS_MAC)
+  if (os_prompt_variant_ == Variant::kUninitialized) {
+    for (const auto& request : delegate()->Requests()) {
+      if (ShouldShowOSPromptViewOnMacOS(request->GetContentSettingsType())) {
+        os_prompt_variant_ = Variant::kOsPrompt;
+        break;
+      }
+    }
+  }
+
+  if (os_system_settings_variant_ == Variant::kUninitialized) {
+    for (const auto& request : delegate()->Requests()) {
+      if (ShouldShowSystemSettingsViewOnMacOS(
+              request->GetContentSettingsType())) {
+        os_system_settings_variant_ = Variant::kOsSystemSettings;
+        break;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+std::vector<permissions::ElementAnchoredBubbleVariant>
+EmbeddedPermissionPrompt::GetPromptVariants() const {
+  std::vector<permissions::ElementAnchoredBubbleVariant> variants;
+
+  // Current prompt variant when the user takes an action on a site level
+  // prompt.
+  if (embedded_prompt_variant_ != Variant::kUninitialized) {
+    variants.push_back(GetVariant(embedded_prompt_variant_));
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (os_prompt_variant_ != Variant::kUninitialized) {
+    variants.push_back(GetVariant(os_prompt_variant_));
+  }
+  if (os_system_settings_variant_ != Variant::kUninitialized) {
+    variants.push_back(GetVariant(os_system_settings_variant_));
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  return variants;
+}
+
 void EmbeddedPermissionPrompt::Allow() {
+  PrecalculateVariantsForMetrics();
   delegate_->Accept();
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
 void EmbeddedPermissionPrompt::AllowThisTime() {
+  PrecalculateVariantsForMetrics();
   delegate_->AcceptThisTime();
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
 void EmbeddedPermissionPrompt::Dismiss() {
+  PrecalculateVariantsForMetrics();
   delegate_->Dismiss();
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_X_BUTTON);
@@ -257,6 +335,7 @@ void EmbeddedPermissionPrompt::Acknowledge() {
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
+  PrecalculateVariantsForMetrics();
   delegate_->Deny();
   delegate_->FinalizeCurrentRequests();
 }
@@ -281,6 +360,7 @@ void EmbeddedPermissionPrompt::DismissScrim() {
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
   CloseView();
+  PrecalculateVariantsForMetrics();
   delegate_->Dismiss();
   delegate_->FinalizeCurrentRequests();
 }
