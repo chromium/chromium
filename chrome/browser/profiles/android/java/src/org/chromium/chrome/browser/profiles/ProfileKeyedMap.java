@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,39 +48,6 @@ public class ProfileKeyedMap<T> {
      */
     public static <T extends Destroyable> ProfileKeyedMap<T> createMapOfDestroyables() {
         return new ProfileKeyedMap<>((e) -> e.destroy());
-    }
-
-    /**
-     * Gets (and lazily constructs if needed) the mapped object for a given Profile.
-     *
-     * @param profile The Profile the object is associated with.
-     * @param factory The factory that will construct the object if it does not already exist.
-     * @return The object associated with the passed in Profile.
-     * @deprecated Use {@link #getForProfile(Profile, Function)} instead.
-     */
-    @Deprecated
-    public T getForProfile(Profile profile, Supplier<T> factory) {
-        T obj = mData.get(profile);
-        if (obj == null) {
-            obj = factory.get();
-            mData.put(profile, obj);
-        }
-        if (mProfileManagerObserver == null) {
-            mProfileManagerObserver =
-                    new ProfileManager.Observer() {
-                        @Override
-                        public void onProfileAdded(Profile profile) {}
-
-                        @Override
-                        public void onProfileDestroyed(Profile destroyedProfile) {
-                            T obj = mData.remove(destroyedProfile);
-                            if (obj == null) return;
-                            if (mDestroyAction != null) mDestroyAction.onResult(obj);
-                        }
-                    };
-            ProfileManager.addObserver(mProfileManagerObserver);
-        }
-        return obj;
     }
 
     /**
