@@ -124,15 +124,16 @@ base::WeakPtr<DisplayResourceProvider> DisplayResourceProvider::GetWeakPtr() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->transferable.is_backed_by_surface_texture;
 }
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-bool DisplayResourceProvider::DoesResourceWantPromotionHint(ResourceId id) {
-  ChildResource* resource = TryGetResource(id);
+bool DisplayResourceProvider::DoesResourceWantPromotionHint(
+    ResourceId id) const {
+  const ChildResource* resource = TryGetResource(id);
   // TODO(ericrk): We should never fail TryGetResource, but we appear to
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
@@ -140,54 +141,61 @@ bool DisplayResourceProvider::DoesResourceWantPromotionHint(ResourceId id) {
 }
 #endif
 
-bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) {
-  ChildResource* resource = TryGetResource(id);
+bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
+  const ChildResource* resource = TryGetResource(id);
   // TODO(ericrk): We should never fail TryGetResource, but we appear to
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
   return resource && resource->transferable.is_overlay_candidate;
 }
 
-SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) {
-  ChildResource* resource = GetResource(id);
-  return children_[resource->child_id].surface_id;
+SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
+  return children_.contains(resource->child_id)
+             ? children_.at(resource->child_id).surface_id
+             : SurfaceId();
 }
 
-int DisplayResourceProvider::GetChildId(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+int DisplayResourceProvider::GetChildId(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->child_id;
 }
 
-bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) {
+bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) const {
   return GetResource(id)->transferable.is_software;
 }
 
-const gfx::Size DisplayResourceProvider::GetResourceBackedSize(ResourceId id) {
+const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
+    ResourceId id) const {
   return GetResource(id)->transferable.size;
 }
 
-gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(
+    ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return gpu::ToBufferFormat(resource->transferable.format);
 }
 
-SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(
+    ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->transferable.format;
 }
 
-const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(
+    ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->transferable.color_space;
 }
 
-bool DisplayResourceProvider::GetNeedsDetiling(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+bool DisplayResourceProvider::GetNeedsDetiling(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->transferable.needs_detiling;
 }
 
-const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(
+    ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->transferable.hdr_metadata;
 }
 
@@ -272,8 +280,8 @@ void DisplayResourceProvider::DeclareUsedResourcesFromChild(
   DeleteAndReturnUnusedResourcesToChild(child_it, NORMAL, unused);
 }
 
-gpu::Mailbox DisplayResourceProvider::GetMailbox(ResourceId resource_id) {
-  ChildResource* resource = TryGetResource(resource_id);
+gpu::Mailbox DisplayResourceProvider::GetMailbox(ResourceId resource_id) const {
+  const ChildResource* resource = TryGetResource(resource_id);
   if (!resource)
     return gpu::Mailbox();
   return resource->transferable.mailbox_holder.mailbox;
@@ -288,13 +296,13 @@ DisplayResourceProvider::GetChildToParentMap(int child) const {
   return it->second.child_to_parent_map;
 }
 
-bool DisplayResourceProvider::InUse(ResourceId id) {
-  ChildResource* resource = GetResource(id);
+bool DisplayResourceProvider::InUse(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
   return resource->InUse();
 }
 
-DisplayResourceProvider::ChildResource* DisplayResourceProvider::GetResource(
-    ResourceId id) {
+const DisplayResourceProvider::ChildResource*
+DisplayResourceProvider::GetResource(ResourceId id) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(id);
   auto it = resources_.find(id);
@@ -302,8 +310,14 @@ DisplayResourceProvider::ChildResource* DisplayResourceProvider::GetResource(
   return &it->second;
 }
 
-DisplayResourceProvider::ChildResource* DisplayResourceProvider::TryGetResource(
+DisplayResourceProvider::ChildResource* DisplayResourceProvider::GetResource(
     ResourceId id) {
+  return const_cast<DisplayResourceProvider::ChildResource*>(
+      const_cast<const DisplayResourceProvider*>(this)->GetResource(id));
+}
+
+const DisplayResourceProvider::ChildResource*
+DisplayResourceProvider::TryGetResource(ResourceId id) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!id)
     return nullptr;
@@ -311,6 +325,12 @@ DisplayResourceProvider::ChildResource* DisplayResourceProvider::TryGetResource(
   if (it == resources_.end())
     return nullptr;
   return &it->second;
+}
+
+DisplayResourceProvider::ChildResource* DisplayResourceProvider::TryGetResource(
+    ResourceId id) {
+  return const_cast<DisplayResourceProvider::ChildResource*>(
+      const_cast<const DisplayResourceProvider*>(this)->TryGetResource(id));
 }
 
 void DisplayResourceProvider::OnResourceFencePassed(
@@ -335,14 +355,14 @@ void DisplayResourceProvider::TryReleaseResource(ResourceId id,
 }
 
 bool DisplayResourceProvider::ResourceFenceHasPassed(
-    const ChildResource* resource) {
+    const ChildResource* resource) const {
   return !resource->resource_fence || resource->resource_fence->HasPassed();
 }
 
 DisplayResourceProvider::CanDeleteNowResult
 DisplayResourceProvider::CanDeleteNow(const Child& child_info,
                                       const ChildResource& resource,
-                                      DeleteStyle style) {
+                                      DeleteStyle style) const {
   if (resource.InUse()) {
     // We can't postpone the deletion, so we'll have to lose it.
     if (style == FOR_SHUTDOWN)

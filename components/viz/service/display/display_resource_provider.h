@@ -75,38 +75,38 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 #if BUILDFLAG(IS_ANDROID)
   // Indicates if this resource is backed by an Android SurfaceTexture, and thus
   // can't really be promoted to an overlay.
-  bool IsBackedBySurfaceTexture(ResourceId id);
+  bool IsBackedBySurfaceTexture(ResourceId id) const;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // Indicates if this resource wants to receive promotion hints.
-  bool DoesResourceWantPromotionHint(ResourceId id);
+  bool DoesResourceWantPromotionHint(ResourceId id) const;
 #endif
 
   // Returns the size in pixels of the underlying gpu mailbox/software bitmap.
-  const gfx::Size GetResourceBackedSize(ResourceId id);
+  const gfx::Size GetResourceBackedSize(ResourceId id) const;
 
-  bool IsResourceSoftwareBacked(ResourceId id);
+  bool IsResourceSoftwareBacked(ResourceId id) const;
   // Return the BufferFormat of the underlying buffer that can be used for
   // scanout.
-  gfx::BufferFormat GetBufferFormat(ResourceId id);
+  gfx::BufferFormat GetBufferFormat(ResourceId id) const;
   // Return the SharedImageFormat of the underlying buffer that can be used for
   // scanout.
-  SharedImageFormat GetSharedImageFormat(ResourceId id);
+  SharedImageFormat GetSharedImageFormat(ResourceId id) const;
   // Returns the color space of the resource.
-  const gfx::ColorSpace& GetColorSpace(ResourceId id);
+  const gfx::ColorSpace& GetColorSpace(ResourceId id) const;
   // Returns true if the resource needs a detiling pass before scanout.
-  bool GetNeedsDetiling(ResourceId id);
+  bool GetNeedsDetiling(ResourceId id) const;
 
-  const gfx::HDRMetadata& GetHDRMetadata(ResourceId id);
+  const gfx::HDRMetadata& GetHDRMetadata(ResourceId id) const;
 
   // Indicates if this resource may be used for a hardware overlay plane.
-  bool IsOverlayCandidate(ResourceId id);
-  SurfaceId GetSurfaceId(ResourceId id);
-  int GetChildId(ResourceId id);
+  bool IsOverlayCandidate(ResourceId id) const;
+  SurfaceId GetSurfaceId(ResourceId id) const;
+  int GetChildId(ResourceId id) const;
 
   // Checks whether a resource is in use.
-  bool InUse(ResourceId id);
+  bool InUse(ResourceId id) const;
 
   // Try removing the resources that are pending the |resource_fence|.
   void OnResourceFencePassed(ResourceFence* resource_fence,
@@ -206,7 +206,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
                                      const ResourceIdSet& resources_from_child);
 
   // Returns the mailbox corresponding to a resource id.
-  gpu::Mailbox GetMailbox(ResourceId resource_id);
+  gpu::Mailbox GetMailbox(ResourceId resource_id) const;
 
   // Sets if the GPU thread is available (it always is for Chrome, but for
   // WebView it happens only when Android calls us on RenderThread.
@@ -321,15 +321,17 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   explicit DisplayResourceProvider(Mode mode);
 
+  const ChildResource* GetResource(ResourceId id) const;
   ChildResource* GetResource(ResourceId id);
 
   // TODO(ericrk): TryGetResource is part of a temporary workaround for cases
   // where resources which should be available are missing. This version may
   // return nullptr if a resource is not found. https://crbug.com/811858
+  const ChildResource* TryGetResource(ResourceId id) const;
   ChildResource* TryGetResource(ResourceId id);
 
   void TryReleaseResource(ResourceId id, ChildResource* resource);
-  bool ResourceFenceHasPassed(const ChildResource* resource);
+  bool ResourceFenceHasPassed(const ChildResource* resource) const;
 
   void DeleteAndReturnUnusedResourcesToChild(
       ChildMap::iterator child_it,
@@ -342,7 +344,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
       const std::vector<ResourceId>& unused) = 0;
   CanDeleteNowResult CanDeleteNow(const Child& child_info,
                                   const ChildResource& resource,
-                                  DeleteStyle style);
+                                  DeleteStyle style) const;
 
   // Destroys DisplayResourceProvider, must be called before destructor because
   // it might call virtual functions from inside.
