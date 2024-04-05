@@ -751,6 +751,28 @@ std::wstring GetWindowObjectName(HANDLE handle) {
   return object_name;
 }
 
+bool GetPointerDevice(HANDLE device, POINTER_DEVICE_INFO& result) {
+  return ::GetPointerDevice(device, &result);
+}
+
+std::optional<std::vector<POINTER_DEVICE_INFO>> GetPointerDevices() {
+  uint32_t device_count;
+  if (!::GetPointerDevices(&device_count, nullptr)) {
+    return std::nullopt;
+  }
+
+  std::vector<POINTER_DEVICE_INFO> pointer_devices(device_count);
+  if (!::GetPointerDevices(&device_count, pointer_devices.data())) {
+    return std::nullopt;
+  }
+  return pointer_devices;
+}
+
+bool RegisterPointerDeviceNotifications(HWND hwnd,
+                                        bool notify_proximity_changes) {
+  return ::RegisterPointerDeviceNotifications(hwnd, notify_proximity_changes);
+}
+
 bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   HDESK thread_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
   if (!thread_desktop)

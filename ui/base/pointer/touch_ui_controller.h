@@ -10,7 +10,13 @@
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "ui/base/pointer/pointer_device.h"
+#endif  // BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_WIN)
 namespace gfx {
@@ -54,7 +60,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
   explicit TouchUiController(TouchUiState touch_ui_state = TouchUiState::kAuto);
   TouchUiController(const TouchUiController&) = delete;
   TouchUiController& operator=(const TouchUiController&) = delete;
-  ~TouchUiController();
+  virtual ~TouchUiController();
 
   bool touch_ui() const {
     return (touch_ui_state_ == TouchUiState::kEnabled) ||
@@ -66,19 +72,40 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
 
   void OnTabletModeToggled(bool enabled);
 
- private:
+#if BUILDFLAG(USE_BLINK)
+  void OnPointerDeviceConnected(PointerDevice::Key key);
+  void OnPointerDeviceDisconnected(PointerDevice::Key key);
+#endif  // BUILDFLAG(USE_BLINK)
+
+ protected:
   TouchUiState SetTouchUiState(TouchUiState touch_ui_state);
 
+#if BUILDFLAG(USE_BLINK)
+  virtual int MaxTouchPoints() const;
+  virtual std::optional<PointerDevice> GetPointerDevice(
+      PointerDevice::Key key) const;
+  virtual std::vector<PointerDevice> GetPointerDevices() const;
+  const std::vector<PointerDevice>& GetLastKnownPointerDevicesForTesting()
+      const;
+#endif  // BUILDFLAG(USE_BLINK)
+
+ private:
   void TouchUiChanged();
 
   bool tablet_mode_ = false;
   TouchUiState touch_ui_state_;
+
+#if BUILDFLAG(USE_BLINK)
+  void OnInitializePointerDevices();
+  std::vector<PointerDevice> last_known_pointer_devices_;
+#endif  // BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 #endif
 
   CallbackList callback_list_;
+  base::WeakPtrFactory<TouchUiController> weak_factory_{this};
 };
 
 }  // namespace ui

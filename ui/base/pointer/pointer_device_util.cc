@@ -11,6 +11,7 @@ namespace {
 int available_pointer_types_for_testing = POINTER_TYPE_NONE;
 int available_hover_types_for_testing = HOVER_TYPE_NONE;
 bool return_available_pointer_and_hover_types_for_testing = false;
+
 }  // namespace
 
 void SetAvailablePointerAndHoverTypesForTesting(int available_pointer_types,

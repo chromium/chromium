@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -34,6 +35,8 @@
 struct IPropertyStore;
 struct _tagpropertykey;
 using PROPERTYKEY = _tagpropertykey;
+struct tagPOINTER_DEVICE_INFO;
+using POINTER_DEVICE_INFO = tagPOINTER_DEVICE_INFO;
 
 namespace base {
 
@@ -219,6 +222,23 @@ BASE_EXPORT void* GetUser32FunctionPointer(
 
 // Returns the name of a desktop or a window station.
 BASE_EXPORT std::wstring GetWindowObjectName(HANDLE handle);
+
+// Gets information about the pointer device. When successful, updates `result`
+// and returns true, otherwise returns false without modifying `result`.
+// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getpointerdevice
+BASE_EXPORT bool GetPointerDevice(HANDLE device, POINTER_DEVICE_INFO& result);
+
+// Gets information about the pointer devices attached to the system.
+// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getpointerdevices
+BASE_EXPORT std::optional<std::vector<POINTER_DEVICE_INFO>> GetPointerDevices();
+
+// Registers a window to process the WM_POINTERDEVICECHANGE event, and
+// optionally WM_POINTERDEVICEINRANGE and WM_POINTERDEVICEOUTOFRANGE events when
+// `notify_proximity_changes` is set.
+// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerpointerdevicenotifications
+BASE_EXPORT bool RegisterPointerDeviceNotifications(
+    HWND hwnd,
+    bool notify_proximity_changes = false);
 
 // Checks if the calling thread is running under a desktop with the name
 // given by |desktop_name|. |desktop_name| is ASCII case insensitive (non-ASCII

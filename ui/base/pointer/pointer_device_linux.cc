@@ -98,4 +98,12 @@ HoverType GetPrimaryHoverType(int available_hover_types) {
   return HOVER_TYPE_NONE;
 }
 
+std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
+  return std::nullopt;
+}
+
+std::vector<PointerDevice> GetPointerDevices() {
+  return {};
+}
+
 }  // namespace ui

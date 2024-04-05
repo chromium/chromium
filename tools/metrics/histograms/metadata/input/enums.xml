@@ -481,6 +481,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="page-down"/>
 </enum>
 
+<enum name="PointerDigitizerType">
+  <int value="0" label="Unknown digitizer type"/>
+  <int value="1" label="Direct pen digitizer (integrated into display)"/>
+  <int value="2" label="Indirect pen digitizer (not integrated into display)"/>
+  <int value="3" label="Touch digitizer"/>
+  <int value="4" label="Touchpad digitizer"/>
+</enum>
+
 <enum name="PrimaryPointerType">
   <int value="0" label="No pointer"/>
   <int value="1" label="Coarse pointer"/>

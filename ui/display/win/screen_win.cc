@@ -422,23 +422,14 @@ gfx::Vector2dF GetDefaultMonitorPhysicalPixelsPerInch() {
 // Retrieves PPI for |monitor| based on touch pointer device handles.  Returns
 // nullopt if a pointer device for |monitor| can't be found.
 std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
-  static const auto get_pointer_devices =
-      reinterpret_cast<decltype(&::GetPointerDevices)>(
-          base::win::GetUser32FunctionPointer("GetPointerDevices"));
-  uint32_t pointer_device_count = 0;
-  if (!get_pointer_devices ||
-      !get_pointer_devices(&pointer_device_count, nullptr) ||
-      (pointer_device_count == 0))
-    return std::nullopt;
-
-  std::vector<POINTER_DEVICE_INFO> pointer_devices(pointer_device_count);
-  if (!get_pointer_devices(&pointer_device_count, pointer_devices.data()))
-    return std::nullopt;
-
-  for (const auto& device : pointer_devices) {
-    if (device.pointerDeviceType == POINTER_DEVICE_TYPE_TOUCH &&
-        device.monitor == monitor)
-      return GetPixelsPerInchForPointerDevice(device.device);
+  if (const std::optional<std::vector<POINTER_DEVICE_INFO>> pointer_devices =
+          base::win::GetPointerDevices()) {
+    for (const auto& device : *pointer_devices) {
+      if (device.pointerDeviceType == POINTER_DEVICE_TYPE_TOUCH &&
+          device.monitor == monitor) {
+        return GetPixelsPerInchForPointerDevice(device.device);
+      }
+    }
   }
   return std::nullopt;
 }

@@ -4,7 +4,10 @@
 
 #include "ui/base/pointer/pointer_device.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/win/win_util.h"
 #include "ui/base/win/hidden_window.h"
 
@@ -16,6 +19,28 @@ bool IsTouchDevicePresent() {
   int value = GetSystemMetrics(SM_DIGITIZER);
   return (value & NID_READY) &&
          ((value & NID_INTEGRATED_TOUCH) || (value & NID_EXTERNAL_TOUCH));
+}
+
+PointerDigitizerType ToPointerDigitizerType(
+    POINTER_DEVICE_TYPE pointer_device_type) {
+  switch (pointer_device_type) {
+    case POINTER_DEVICE_TYPE_INTEGRATED_PEN:
+      return PointerDigitizerType::kDirectPen;
+    case POINTER_DEVICE_TYPE_EXTERNAL_PEN:
+      return PointerDigitizerType::kIndirectPen;
+    case POINTER_DEVICE_TYPE_TOUCH:
+      return PointerDigitizerType::kTouch;
+    case POINTER_DEVICE_TYPE_TOUCH_PAD:
+      return PointerDigitizerType::kTouchPad;
+    default:
+      return PointerDigitizerType::kUnknown;
+  }
+}
+
+PointerDevice ToPointerDevice(const POINTER_DEVICE_INFO& device) {
+  return {.key = device.device,
+          .digitizer = ToPointerDigitizerType(device.pointerDeviceType),
+          .max_active_contacts = device.maxActiveContacts};
 }
 
 }  // namespace
@@ -73,10 +98,7 @@ TouchScreensAvailability GetTouchScreensAvailability() {
 }
 
 int MaxTouchPoints() {
-  if (!IsTouchDevicePresent())
-    return 0;
-
-  return GetSystemMetrics(SM_MAXIMUMTOUCHES);
+  return IsTouchDevicePresent() ? GetSystemMetrics(SM_MAXIMUMTOUCHES) : 0;
 }
 
 PointerType GetPrimaryPointerType(int available_pointer_types) {
@@ -93,6 +115,24 @@ HoverType GetPrimaryHoverType(int available_hover_types) {
     return HOVER_TYPE_HOVER;
   DCHECK_EQ(available_hover_types, HOVER_TYPE_NONE);
   return HOVER_TYPE_NONE;
+}
+
+std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
+  POINTER_DEVICE_INFO device;
+  return base::win::GetPointerDevice(key, device)
+             ? std::make_optional(ToPointerDevice(device))
+             : std::nullopt;
+}
+
+std::vector<PointerDevice> GetPointerDevices() {
+  std::vector<PointerDevice> result;
+  if (std::optional<std::vector<POINTER_DEVICE_INFO>> pointer_devices =
+          base::win::GetPointerDevices()) {
+    result.reserve(pointer_devices->size());
+    std::transform(pointer_devices->cbegin(), pointer_devices->cend(),
+                   std::back_inserter(result), &ToPointerDevice);
+  }
+  return result;
 }
 
 }  // namespace ui
