@@ -1118,6 +1118,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Calendar Event"/>
   <int value="10" label="Chrome Actions"/>
   <int value="11" label="Mini Maps"/>
+  <int value="12" label="Lens Search"/>
+  <int value="13" label="Bottom Omnibox"/>
+  <int value="14" label="Enhanced Safe Browsing"/>
+  <int value="15" label="Password Manager Widget"/>
+  <int value="16" label="Pinned Tabs"/>
+  <int value="17" label="Inactive Tabs"/>
 </enum>
 
 <enum name="WindowActivityOrigin">

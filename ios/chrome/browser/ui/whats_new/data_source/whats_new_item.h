@@ -28,7 +28,10 @@ enum class WhatsNewType {
   kLensSearch = 12,
   kBottomOmnibox = 13,
   kESB = 14,
-  kMaxValue = kESB
+  kPWMWidget = 15,
+  kPinnedTabs = 16,
+  kInactiveTabs = 17,
+  kMaxValue = kInactiveTabs
 };
 
 // An enum representing the different primary button actions for features in

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_TITLE" desc="PWMWidget Title displayed in What's New. [iOS only]">
+        Google Password Manager Widget
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_SUBTITLE" desc="PWMWidget Subtitle displayed in What's New. [iOS only]">
+        Easy and secure access to your passwords from the home screen.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PWMWidget in What's New. [iOS only]">
+        Touch and hold the home screen.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PWMWidget in What's New. [iOS only]">
+        At the top left of the screen, tap +.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PWMWidget in What's New. [iOS only]">
+        In the Search Widgets box, enter Chrome.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of PWMWidget in What's New. [iOS only]">
+        Select Password Manager, then tap Add Widget.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PWMWIDGET_SCREENSHOT_TEXT_1" desc="Text in image displaying: Search Passwords for the feature: PWMWidget in What's New. [iOS only]">
+        Search Passwords
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_TITLE" desc="PinnedTabs Title displayed in What's New. [iOS only]">
+        Pinned Tabs
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_SUBTITLE" desc="PinnedTabs Subtitle displayed in What's New. [iOS only]">
+        You can pin your favorite sites for easy access later.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PinnedTabs in What's New. [iOS only]">
+        Go to your open tabs.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PinnedTabs in What's New. [iOS only]">
+        Press and hold on the tab you want to pin.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PinnedTabs in What's New. [iOS only]">
+        Select “Pin Tab” from the menu.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of PinnedTabs in What's New. [iOS only]">
+        You'll see your tab pinned to the bottom of your screen.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PINNEDTABS_SCREENSHOT_TEXT_1" desc="Text in image displaying: Drag tab here to pin it. for the feature: PinnedTabs in What's New. [iOS only]">
+        Drag tab here to pin it.
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_TITLE" desc="InactiveTabs Title displayed in What's New. [iOS only]">
+        Inactive Tabs
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_SUBTITLE" desc="InactiveTabs Subtitle displayed in What's New. [iOS only]">
+        If you have tabs that haven't been used in a while, they'll now be moved to the Inactive Tabs section.
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of InactiveTabs in What's New. [iOS only]">
+        Scroll up to the top of your Tabs.
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of InactiveTabs in What's New. [iOS only]">
+        Tap Inactive Tabs (if available).
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of InactiveTabs in What's New. [iOS only]">
+        Open or close your tabs as you wish.
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of InactiveTabs in What's New. [iOS only]">
+        Manage Inactive Tabs settings under Settings > Tabs.
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_SCREENSHOT_TEXT_1" desc="Text in image displaying: Inactive Tabs for the feature: InactiveTabs in What's New. [iOS only]">
+        Inactive Tabs
+</message>
+<message name="IDS_IOS_WHATS_NEW_INACTIVETABS_SCREENSHOT_TEXT_2" desc="Text in image displaying: Not used for 14 days or more for the feature: InactiveTabs in What's New. [iOS only]">
+        Not used for 14 days or more
+</message>
+</grit-part>

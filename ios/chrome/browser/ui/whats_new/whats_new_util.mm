@@ -73,6 +73,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "BottomOmnibox";
     case WhatsNewType::kESB:
       return "ESB";
+    case WhatsNewType::kPWMWidget:
+      return "PWMWidget";
+    case WhatsNewType::kPinnedTabs:
+      return "PinnedTabs";
+    case WhatsNewType::kInactiveTabs:
+      return "InactiveTabs";
     case WhatsNewType::kError:
       return nil;
   };

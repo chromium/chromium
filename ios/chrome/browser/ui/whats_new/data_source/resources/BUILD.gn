@@ -61,6 +61,12 @@ screenshots_lists = [
   "m122/BottomOmnibox_darkmode.json",
   "m122/ESB.json",
   "m122/ESB_darkmode.json",
+  "m125/PWMWidget.json",
+  "m125/PWMWidget_darkmode.json",
+  "m125/PinnedTabs.json",
+  "m125/PinnedTabs_darkmode.json",
+  "m125/InactiveTabs.json",
+  "m125/InactiveTabs_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {
