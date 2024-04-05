@@ -584,8 +584,6 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   AddChildViewAt(
       std::make_unique<SavedTabGroupButton>(
           group,
-          base::BindRepeating(&SavedTabGroupBar::page_navigator,
-                              base::Unretained(this)),
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.saved_guid()),
           browser_, animations_enabled_),
@@ -772,8 +770,6 @@ void SavedTabGroupBar::UpdateOverflowMenu() {
 
     overflow_menu_->AddChildView(std::make_unique<SavedTabGroupButton>(
         *group,
-        base::BindRepeating(&SavedTabGroupBar::page_navigator,
-                            base::Unretained(this)),
         base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                             base::Unretained(this), group->saved_guid()),
         browser_, animations_enabled_));

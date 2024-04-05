@@ -7,6 +7,8 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -23,9 +25,33 @@ class SavedTabGroupTab;
 
 class SavedTabGroupUtils {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
+
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
+
+  // Open the `url` to the end of `browser` tab strip.
+  static void OpenUrlToBrowser(Browser* browser,
+                               const GURL& url,
+                               int event_flags);
+
+  static void OpenOrMoveSavedGroupToNewWindow(Browser* browser,
+                                              const SavedTabGroup* saved_group,
+                                              int event_flags);
+
+  // Delete the `saved_group`.
+  static void DeleteSavedTabGroup(Browser* browser,
+                                  const SavedTabGroup* saved_group,
+                                  int event_flags);
+
+  // Create the the context menu model for a saved tab group button or a saved
+  // tab group menu item in the Everything menu. `browser` is the one from
+  // which this method is invoked. `saved_guid` is the saved tab group's Uuid.
+  static std::unique_ptr<ui::DialogModel> CreateSavedTabGroupContextMenuModel(
+      Browser* browser,
+      const base::Uuid& saved_guid);
 
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(

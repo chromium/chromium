@@ -11,6 +11,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/dialog_model_context_menu_controller.h"
 
 namespace tab_groups {
 
@@ -56,12 +57,21 @@ class STGEverythingMenu : public views::MenuDelegate,
 
   // override views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool ShowContextMenu(views::MenuItemView* source,
+                       int command_id,
+                       const gfx::Point& p,
+                       ui::MenuSourceType source_type) override;
 
   // Saved tab groups with the most recently created as the first.
   std::vector<const SavedTabGroup*> sorted_tab_groups_;
 
   // Owned by the Everything button.
   raw_ptr<views::MenuButtonController> menu_button_controller_;
+
+  // The convenient controller that runs a context menu for saved tab group menu
+  // items.
+  std::unique_ptr<views::DialogModelContextMenuController>
+      context_menu_controller_;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::SimpleMenuModel> model_;

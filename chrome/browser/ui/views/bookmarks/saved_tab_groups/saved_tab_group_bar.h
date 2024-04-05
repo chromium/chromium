@@ -51,7 +51,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   SavedTabGroupBar& operator=(const SavedTabGroupBar&) = delete;
   ~SavedTabGroupBar() override;
 
-  // Sets the stored page navigator
+  // Sets the stored page navigator.
+  // TODO(pengchaocai): Navigator seems not needed. Investigate and remove.
   void SetPageNavigator(content::PageNavigator* page_navigator) {
     page_navigator_ = page_navigator;
   }

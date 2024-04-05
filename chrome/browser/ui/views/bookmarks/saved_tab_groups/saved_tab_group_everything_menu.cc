@@ -10,11 +10,14 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/widget/widget.h"
 
 namespace tab_groups {
 
@@ -125,6 +128,27 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
     keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
   }
+}
+
+bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
+                                        int command_id,
+                                        const gfx::Point& p,
+                                        ui::MenuSourceType source_type) {
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
+    return false;
+  }
+
+  const auto* const group = sorted_tab_groups_[command_id];
+  context_menu_controller_ =
+      std::make_unique<views::DialogModelContextMenuController>(
+          widget_->GetRootView(),
+          base::BindRepeating(
+              &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
+              browser_, group->saved_guid()),
+          views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+  context_menu_controller_->ShowContextMenuForViewImpl(widget_->GetRootView(),
+                                                       p, source_type);
+  return true;
 }
 
 STGEverythingMenu::~STGEverythingMenu() = default;

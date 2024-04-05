@@ -49,10 +49,12 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/url_constants.h"
 
 namespace tab_groups {
@@ -266,10 +268,42 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the delete group menu item.
-      EnsurePresent(SavedTabGroupButton::kDeleteGroupMenuItem), FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem), FlushEvents(),
+      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       ContextMenuShowForEverythingMenuTabGroupItem) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      WithElement(
+          STGEverythingMenu::kTabGroup,
+          [](ui::TrackedElement* el) {
+            ui::test::EventGenerator event_generator(
+                views::GetRootWindow(AsView<views::View>(el)->GetWidget()));
+            event_generator.MoveMouseTo(
+                AsView<views::View>(el)->GetBoundsInScreen().CenterPoint());
+            event_generator.ClickRightButton();
+          }),
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
 }
 
 // TODO(crbug.com/1487362): Deflake this test before enabling
@@ -312,9 +346,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -357,9 +391,9 @@ IN_PROC_BROWSER_TEST_P(
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -577,8 +611,8 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the delete group menu item.
-      EnsurePresent(SavedTabGroupButton::kDeleteGroupMenuItem), FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem), FlushEvents(),
+      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
       CheckEverythingButtonVisibility(is_v2_ui_enabled));
