@@ -135,6 +135,13 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/client_certificates_service.h"
+#include "components/enterprise/client_certificates/core/features.h"
+#endif
+
 namespace {
 
 bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
@@ -274,6 +281,27 @@ void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
             ->SetContentSettings(type, settings, base::NullCallback());
       });
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+std::unique_ptr<net::ClientCertStore> GetWrappedCertStore(
+    Profile* profile,
+    std::unique_ptr<net::ClientCertStore> platform_store) {
+  if (!profile || !client_certificates::features::
+                      IsManagedClientCertificateForUserEnabled()) {
+    return platform_store;
+  }
+
+  auto* provisioning_service =
+      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
+          profile);
+  if (!provisioning_service) {
+    return platform_store;
+  }
+
+  return client_certificates::ClientCertificatesService::Create(
+      provisioning_service, std::move(platform_store));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -916,9 +944,11 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   return store;
 #elif BUILDFLAG(IS_WIN)
-  return std::make_unique<net::ClientCertStoreWin>();
+  return GetWrappedCertStore(profile_,
+                             std::make_unique<net::ClientCertStoreWin>());
 #elif BUILDFLAG(IS_MAC)
-  return std::make_unique<net::ClientCertStoreMac>();
+  return GetWrappedCertStore(profile_,
+                             std::make_unique<net::ClientCertStoreMac>());
 #elif BUILDFLAG(IS_ANDROID)
   // Android does not use the ClientCertStore infrastructure. On Android client
   // cert matching is done by the OS as part of the call to show the cert
