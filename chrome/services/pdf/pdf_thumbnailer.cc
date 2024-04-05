@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/printing/pdf_thumbnailer.h"
+#include "chrome/services/pdf/pdf_thumbnailer.h"
 
 #include <string.h>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "pdf/pdf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace printing {
+namespace pdf {
 
 namespace {
 
@@ -29,7 +29,7 @@ PdfThumbnailer::PdfThumbnailer() = default;
 
 PdfThumbnailer::~PdfThumbnailer() = default;
 
-void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
+void PdfThumbnailer::GetThumbnail(pdf::mojom::ThumbParamsPtr params,
                                   base::ReadOnlySharedMemoryRegion pdf_region,
                                   GetThumbnailCallback callback) {
   // Vet the requested thumbnail size.
@@ -86,4 +86,4 @@ void PdfThumbnailer::SetUseSkiaRendererPolicy(bool use_skia) {
   chrome_pdf::SetUseSkiaRendererPolicy(use_skia);
 }
 
-}  // namespace printing
+}  // namespace pdf

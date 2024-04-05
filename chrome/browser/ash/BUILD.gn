@@ -3763,6 +3763,7 @@ source_set("ash") {
     "//chrome/services/keymint/public/mojom",
     "//chrome/services/media_gallery_util/public/cpp",
     "//chrome/services/media_gallery_util/public/mojom:mojom_headers",
+    "//chrome/services/pdf/public/mojom",
     "//chrome/services/printing/public/mojom",
     "//chromeos:chromeos_export",
     "//chromeos/ash/components/attestation",

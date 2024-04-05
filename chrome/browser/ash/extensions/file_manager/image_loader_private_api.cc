@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/extensions/file_manager/image_loader_private_api.h"
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -256,7 +258,7 @@ void ImageLoaderPrivateGetPdfThumbnailFunction::FetchThumbnail(
     pdf_thumbnailer_->SetUseSkiaRendererPolicy(
         prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled));
   }
-  auto params = printing::mojom::ThumbParams::New(
+  auto params = pdf::mojom::ThumbParams::New(
       /*size_px=*/size, /*dpi=*/gfx::Size(kDpi, kDpi),
       /*stretch_to_bounds=*/false, /*keep_aspect_ratio=*/true);
   pdf_thumbnailer_->GetThumbnail(

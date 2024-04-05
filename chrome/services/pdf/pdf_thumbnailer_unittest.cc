@@ -4,19 +4,21 @@
 
 #include <stdint.h>
 #include <string.h>
+
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/services/printing/pdf_thumbnailer.h"
+#include "chrome/services/pdf/pdf_thumbnailer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
-namespace printing {
+namespace pdf {
 
 namespace {
 
@@ -207,4 +209,4 @@ TEST_F(PdfThumbnailerTest, CreatePdfThumbnailWithSkiaPolicyDisabled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-}  // namespace printing
+}  // namespace pdf

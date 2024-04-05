@@ -22,7 +22,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/services/printing/pdf_thumbnailer.h"
+#include "chrome/services/pdf/pdf_thumbnailer.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -90,8 +90,8 @@ void PrintingService::BindPdfFlattener(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintingService::BindPdfThumbnailer(
-    mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfThumbnailer>(),
+    mojo::PendingReceiver<pdf::mojom::PdfThumbnailer> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<pdf::PdfThumbnailer>(),
                               std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

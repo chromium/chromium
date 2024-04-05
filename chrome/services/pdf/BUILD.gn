@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+assert(enable_pdf)
+assert(is_chromeos_ash)
+
+source_set("lib") {
+  sources = [
+    "pdf_thumbnailer.cc",
+    "pdf_thumbnailer.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/services/pdf/public/mojom",
+  ]
+
+  deps = [ "//pdf" ]
+}
+
+source_set("pdf_thumbnailer_test") {
+  testonly = true
+  sources = [ "pdf_thumbnailer_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//skia",
+    "//testing/gtest",
+  ]
+}

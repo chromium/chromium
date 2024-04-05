@@ -43,7 +43,7 @@ class PrintingService : public mojom::PrintingService {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindPdfThumbnailer(
-      mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) override;
+      mojo::PendingReceiver<pdf::mojom::PdfThumbnailer> receiver) override;
 #endif
 #if BUILDFLAG(IS_WIN)
   void BindPdfToEmfConverterFactory(

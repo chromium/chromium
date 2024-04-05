@@ -6,4 +6,7 @@ include_rules = [
   "+content/public/child/child_thread.h",
   "+content/public/utility/utility_thread.h",
   "+pdf/pdf.h",
+
+  # TODO(crbug.com/332743737): Remove this.
+  "+chrome/services/pdf",
 ]

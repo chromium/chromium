@@ -32,8 +32,7 @@ mojom("mojom") {
   }
 
   if (is_chromeos_ash) {
-    sources += [ "pdf_thumbnailer.mojom" ]
-    deps += [ "//skia/public/mojom" ]
+    deps += [ "//chrome/services/pdf/public/mojom" ]
   }
 
   if (is_win) {
