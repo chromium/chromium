@@ -167,7 +167,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, kKeyNamePaddingPx), kKeyNameImageSpacingPx);
   key_name_layout->set_minimum_cross_axis_size(
-      label->GetPreferredSize().height() + kKeyNamePaddingPx * 2);
+      label->GetPreferredSize({}).height() + kKeyNamePaddingPx * 2);
   key->SetLayoutManager(std::move(key_name_layout));
   if (key_image)
     key->AddChildView(std::move(key_image));

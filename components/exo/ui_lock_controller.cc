@@ -148,7 +148,7 @@ views::Widget* CreateEscNotification(
       l10n_util::GetStringFUTF16(message_id, key_names, nullptr),
       std::move(icons));
 
-  gfx::Size size = content_view->GetPreferredSize();
+  gfx::Size size = content_view->GetPreferredSize({});
   views::Widget* popup = SubtleNotificationView::CreatePopupWidget(
       parent, std::move(content_view));
   popup->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);

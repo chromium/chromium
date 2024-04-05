@@ -120,7 +120,7 @@ void FullscreenControlPopup::AnimationProgressed(
       animation_->CurrentValueBetween(kInitialOpacity, kFinalOpacity));
   popup_->SetOpacity(opacity);
 
-  int initial_offset = -control_view_->GetPreferredSize().height();
+  int initial_offset = -control_view_->GetPreferredSize({}).height();
   popup_->SetBounds(CalculateBounds(
       animation_->CurrentValueBetween(initial_offset, kFinalOffset)));
 }
@@ -141,9 +141,9 @@ gfx::Rect FullscreenControlPopup::CalculateBounds(int y_offset) const {
     return gfx::Rect();
 
   gfx::Point origin(parent_bounds_in_screen_.CenterPoint().x() -
-                        control_view_->GetPreferredSize().width() / 2,
+                        control_view_->GetPreferredSize({}).width() / 2,
                     parent_bounds_in_screen_.y() + y_offset);
-  return {origin, control_view_->GetPreferredSize()};
+  return {origin, control_view_->GetPreferredSize({})};
 }
 
 void FullscreenControlPopup::OnVisibilityChanged() {

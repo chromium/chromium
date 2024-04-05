@@ -121,7 +121,8 @@ void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
   const gfx::Rect contents_bounds = GetContentsBounds();
   int extra_width = 0;
   if (badge_placement_ == BadgePlacement::kImmediatelyAfterText)
-    extra_width = std::max(0, width() - GetPreferredSize().width());
+    extra_width = std::max(
+        0, width() - GetPreferredSize(views::SizeBounds(width(), {})).width());
   const int badge_x = views::BadgePainter::kBadgeHorizontalMargin -
                       extra_width +
                       (base::i18n::IsRTL() ? width() - contents_bounds.x()

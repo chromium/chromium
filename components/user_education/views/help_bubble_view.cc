@@ -958,7 +958,7 @@ void HelpBubbleView::OnThemeChanged() {
       color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
   if (icon_view_) {
     icon_view_->SetBackground(views::CreateRoundedRectBackground(
-        foreground_color, icon_view_->GetPreferredSize().height() / 2));
+        foreground_color, icon_view_->GetPreferredSize({}).height() / 2));
   }
 
   for (views::Label* label : labels_) {

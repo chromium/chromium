@@ -63,8 +63,11 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
 
 TEST_F(NewBadgeLabelTest, NoBadgeReportsSameSizes) {
   new_badge_label()->SetDisplayNewBadge(false);
-  const gfx::Size preferred_size = control_label()->GetPreferredSize();
-  EXPECT_EQ(preferred_size, new_badge_label()->GetPreferredSize());
+  const gfx::Size preferred_size = control_label()->GetPreferredSize(
+      views::SizeBounds(control_label()->width(), {}));
+  EXPECT_EQ(preferred_size,
+            new_badge_label()->GetPreferredSize(
+                views::SizeBounds(new_badge_label()->width(), {})));
   EXPECT_EQ(control_label()->GetMinimumSize(),
             new_badge_label()->GetMinimumSize());
   EXPECT_EQ(control_label()->GetHeightForWidth(preferred_size.width()),
@@ -85,14 +88,24 @@ TEST_F(NewBadgeLabelTest, NoBadgeLayoutsAreTheSame) {
 
 TEST_F(NewBadgeLabelTest, WithBadgeReportsDifferentSizes) {
   // Width should be less for the control than for the new badge label.
-  EXPECT_LT(control_label()->GetPreferredSize().width(),
-            new_badge_label()->GetPreferredSize().width());
+  EXPECT_LT(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .width(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .width());
   EXPECT_LT(control_label()->GetMinimumSize().width(),
             new_badge_label()->GetMinimumSize().width());
   // Height should be less or the same for the control than for the new badge
   // label.
-  EXPECT_LE(control_label()->GetPreferredSize().height(),
-            new_badge_label()->GetPreferredSize().height());
+  EXPECT_LE(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .height(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .height());
   EXPECT_LE(control_label()->GetMinimumSize().height(),
             new_badge_label()->GetMinimumSize().height());
 }
@@ -118,26 +131,46 @@ TEST_F(NewBadgeLabelTest, SetDisplayNewBadgeCorrectlyAffectsCalculations) {
   // Default is true. Setting it again should have no effect.
   new_badge_label()->SetDisplayNewBadge(true);
   EXPECT_TRUE(new_badge_label()->GetDisplayNewBadge());
-  EXPECT_LT(control_label()->GetPreferredSize().width(),
-            new_badge_label()->GetPreferredSize().width());
+  EXPECT_LT(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .width(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .width());
 
   // Toggle to false, observe correct behavior.
   new_badge_label()->SetDisplayNewBadge(false);
   EXPECT_FALSE(new_badge_label()->GetDisplayNewBadge());
-  EXPECT_EQ(control_label()->GetPreferredSize().width(),
-            new_badge_label()->GetPreferredSize().width());
+  EXPECT_EQ(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .width(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .width());
 
   // Set to false again, no change.
   new_badge_label()->SetDisplayNewBadge(false);
   EXPECT_FALSE(new_badge_label()->GetDisplayNewBadge());
-  EXPECT_EQ(control_label()->GetPreferredSize().width(),
-            new_badge_label()->GetPreferredSize().width());
+  EXPECT_EQ(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .width(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .width());
 
   // Set back to true and verify default behavior.
   new_badge_label()->SetDisplayNewBadge(true);
   EXPECT_TRUE(new_badge_label()->GetDisplayNewBadge());
-  EXPECT_LT(control_label()->GetPreferredSize().width(),
-            new_badge_label()->GetPreferredSize().width());
+  EXPECT_LT(
+      control_label()
+          ->GetPreferredSize(views::SizeBounds(control_label()->width(), {}))
+          .width(),
+      new_badge_label()
+          ->GetPreferredSize(views::SizeBounds(new_badge_label()->width(), {}))
+          .width());
 }
 
 }  // namespace user_education

@@ -479,7 +479,8 @@ void MediaItemUIView::OnSizeChanged() {
   // If this view is present, we should query it for its preferred height and
   // include that in |new_size|.
   if (device_selector_view_) {
-    auto device_selector_view_size = device_selector_view_->GetPreferredSize();
+    auto device_selector_view_size =
+        device_selector_view_->GetPreferredSize({});
     CHECK(device_selector_view_size.width() == kWidth);
     if (device_selector_view_size.height() > 0) {
       new_size.set_height(new_size.height() +
