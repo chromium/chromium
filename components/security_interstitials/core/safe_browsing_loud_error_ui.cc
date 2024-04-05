@@ -90,12 +90,9 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
   load_time_data.Set(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data.Set(
-      security_interstitials::kEnhancedProtectionMessage,
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW
-              : IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
+  load_time_data.Set(security_interstitials::kEnhancedProtectionMessage,
+                     l10n_util::GetStringUTF16(
+                         IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW));
 
   if (always_show_back_to_safety()) {
     load_time_data.Set("hide_primary_button", false);
@@ -123,11 +120,6 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
       PopulateBillingLoadTimeData(load_time_data);
       break;
   }
-
-  // Change UI based on whether the facelift feature is enabled.
-  load_time_data.Set(
-      "shouldUseNewDangerIcon",
-      base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift));
 
   // Not used by this interstitial.
   load_time_data.Set("recurrentErrorParagraph", "");
@@ -264,129 +256,61 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
 void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", false);
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
   load_time_data.Set(
-      "heading",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_HEADING_NEW
-              : IDS_MALWARE_V3_HEADING));
-  if (base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)) {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringUTF16(IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW));
-    load_time_data.Set(
-        "explanationParagraph",
-        is_subresource()
-            ? l10n_util::GetStringFUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url()))
-            : l10n_util::GetStringUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW));
-  } else {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_MALWARE_V3_PRIMARY_PARAGRAPH,
-            common_string_util::GetFormattedHostName(request_url())));
-    load_time_data.Set(
-        "explanationParagraph",
-        is_subresource()
-            ? l10n_util::GetStringFUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
-                  base::UTF8ToUTF16(main_frame_url().host()),
-                  common_string_util::GetFormattedHostName(request_url()))
-            : l10n_util::GetStringFUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH,
-                  common_string_util::GetFormattedHostName(request_url())));
-  }
+      "primaryParagraph",
+      l10n_util::GetStringUTF16(IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW));
+  load_time_data.Set(
+      "explanationParagraph",
+      is_subresource()
+          ? l10n_util::GetStringFUTF16(
+                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                common_string_util::GetFormattedHostName(request_url()))
+          : l10n_util::GetStringUTF16(
+                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW));
   load_time_data.Set(
       "finalParagraph",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW
-              : IDS_MALWARE_V3_PROCEED_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", false);
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
   load_time_data.Set(
-      "heading",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_HEADING_NEW
-              : IDS_HARMFUL_V3_HEADING));
-  if (base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)) {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW));
-    load_time_data.Set(
-        "explanationParagraph",
-        is_subresource()
-            ? l10n_util::GetStringFUTF16(
-                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url()))
-            : l10n_util::GetStringUTF16(
-                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW));
-  } else {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_HARMFUL_V3_PRIMARY_PARAGRAPH,
-            common_string_util::GetFormattedHostName(request_url())));
-    load_time_data.Set(
-        "explanationParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH,
-            common_string_util::GetFormattedHostName(request_url())));
-  }
+      "primaryParagraph",
+      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW));
+  load_time_data.Set(
+      "explanationParagraph",
+      is_subresource()
+          ? l10n_util::GetStringFUTF16(
+                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                common_string_util::GetFormattedHostName(request_url()))
+          : l10n_util::GetStringUTF16(
+                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW));
   load_time_data.Set(
       "finalParagraph",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW
-              : IDS_HARMFUL_V3_PROCEED_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW));
 }
 
 void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", true);
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
   load_time_data.Set(
-      "heading",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_HEADING_NEW
-              : IDS_PHISHING_V4_HEADING));
-  if (base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)) {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW));
-    load_time_data.Set(
-        "explanationParagraph",
-        is_subresource()
-            ? l10n_util::GetStringFUTF16(
-                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url()))
-            : l10n_util::GetStringUTF16(
-                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW));
-  } else {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_PHISHING_V4_PRIMARY_PARAGRAPH,
-            common_string_util::GetFormattedHostName(request_url())));
-    load_time_data.Set(
-        "explanationParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_PHISHING_V4_EXPLANATION_PARAGRAPH,
-            common_string_util::GetFormattedHostName(request_url())));
-  }
+      "primaryParagraph",
+      l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW));
+  load_time_data.Set(
+      "explanationParagraph",
+      is_subresource()
+          ? l10n_util::GetStringFUTF16(
+                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                common_string_util::GetFormattedHostName(request_url()))
+          : l10n_util::GetStringUTF16(
+                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW));
   load_time_data.Set(
       "finalParagraph",
-      l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW
-              : IDS_PHISHING_V4_PROCEED_AND_REPORT_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(

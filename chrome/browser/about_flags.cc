@@ -8614,11 +8614,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
 
-    {"enable-red-interstitial-facelift",
-     flag_descriptions::kEnableRedInterstitialFaceliftName,
-     flag_descriptions::kEnableRedInterstitialFaceliftDescription, kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kRedInterstitialFacelift)},
-
     {"enable-suspicious-site-detection-rt-lookups",
      flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsName,
      flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsDescription,

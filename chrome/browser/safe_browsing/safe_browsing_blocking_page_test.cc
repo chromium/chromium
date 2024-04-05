@@ -2335,24 +2335,7 @@ IN_PROC_BROWSER_TEST_P(TrustSafetySentimentSurveyV2BrowserTest,
   observer.WaitForNavigationFinished();
 }
 
-class RedInterstitialFaceliftBrowserTest
-    : public SafeBrowsingBlockingPageBrowserTest {
- public:
-  RedInterstitialFaceliftBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kRedInterstitialFacelift);
-  }
-  ~RedInterstitialFaceliftBrowserTest() override = default;
-
-  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using RedInterstitialFaceliftBrowserTest = SafeBrowsingBlockingPageBrowserTest;
 
 INSTANTIATE_TEST_SUITE_P(
     RedInterstitialFaceliftBrowserTestWithThreatTypeAndIsolationSetting,
@@ -2366,7 +2349,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool()));  // If isolate all sites for testing.
 
 IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
-                       TestNewInterstitialPageStringsEnhancedEnabled) {
+                       TestInterstitialPageStringsEnhancedEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -2426,7 +2409,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
-                       TestNewInterstitialPageStringsStandardEnabled) {
+                       TestInterstitialPageStringsStandardEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);

@@ -150,9 +150,6 @@ BASE_DECLARE_FEATURE(kNestedArchives);
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
 
-// Controls whether we are using red interstitial facelift updates.
-BASE_DECLARE_FEATURE(kRedInterstitialFacelift);
-
 // Enables modifying key parameters on the navigation event collection used to
 // populate referrer chains.
 BASE_DECLARE_FEATURE(kReferrerChainParameters);

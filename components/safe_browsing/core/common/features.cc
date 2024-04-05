@@ -200,10 +200,6 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
-BASE_FEATURE(kRedInterstitialFacelift,
-             "RedInterstitialFacelift",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReferrerChainParameters,
              "SafeBrowsingReferrerChainParameters",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -364,7 +360,6 @@ constexpr struct {
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
     {&kRealTimeUrlFilteringCustomMessage, true},
-    {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSkipSubresources2, true},
