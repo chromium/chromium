@@ -308,6 +308,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
     case PlatformWindowType::kTooltip:
       window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_TOOLTIP");
       break;
+    case PlatformWindowType::kBubble:
     case PlatformWindowType::kPopup:
       window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_NOTIFICATION");
       break;
