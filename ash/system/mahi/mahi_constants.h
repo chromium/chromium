@@ -46,6 +46,9 @@ enum ViewId {
 // The size of the icon that appears in the panel's source row.
 inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 
+inline constexpr int kPanelDefaultWidth = 360;
+inline constexpr int kPanelDefaultHeight = 492;
+
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 
 // TODO(b/319264190): Replace the string here with the correct URL.

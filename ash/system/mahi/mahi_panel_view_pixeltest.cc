@@ -20,6 +20,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -45,7 +46,10 @@ class MahiPanelViewPixelTest : public AshTestBase {
         &mock_mahi_manager_);
 
     widget_ = CreateFramelessTestWidget();
-    widget_->SetFullscreen(true);
+    widget_->SetBounds(
+        gfx::Rect(/*x=*/0, /*y=*/0,
+                  /*width=*/mahi_constants::kPanelDefaultWidth,
+                  /*height=*/mahi_constants::kPanelDefaultHeight));
     panel_view_ = widget_->SetContentsView(
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
@@ -60,6 +64,8 @@ class MahiPanelViewPixelTest : public AshTestBase {
 
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
 
+  MahiUiController* ui_controller() { return &ui_controller_; }
+
   MahiPanelView* panel_view() { return panel_view_; }
 
   views::Widget* widget() { return widget_.get(); }
@@ -72,6 +78,22 @@ class MahiPanelViewPixelTest : public AshTestBase {
   raw_ptr<MahiPanelView> panel_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
+
+TEST_F(MahiPanelViewPixelTest, SummaryView) {
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(
+            base::StrCat(std::vector<std::u16string>(35, u"Summary text ")),
+            chromeos::MahiResponseStatus::kSuccess);
+      });
+
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "summary_view", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollViewContents)));
+}
 
 TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   auto* const question_answer_view =
@@ -101,7 +123,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_basic", /*revision_number=*/0,
+      "question_answer_view_basic", /*revision_number=*/1,
       question_answer_view));
 }
 
@@ -135,7 +157,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/0,
+      "question_answer_view_long_text", /*revision_number=*/1,
       question_answer_view));
 }
 

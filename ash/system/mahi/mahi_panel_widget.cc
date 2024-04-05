@@ -23,8 +23,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPanelDefaultWidth = 360;
-constexpr int kPanelDefaultHeight = 492;
 constexpr int kPanelHeightWithRefreshBanner = 524;
 constexpr int kPanelBoundsPadding = 8;
 
@@ -36,14 +34,15 @@ gfx::Rect CalculateWidgetBounds(aura::Window* root_window,
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
   auto bottom_right = display.work_area().bottom_right();
   int height = refresh_banner_shown ? kPanelHeightWithRefreshBanner
-                                    : kPanelDefaultHeight;
+                                    : mahi_constants::kPanelDefaultHeight;
 
   // The panel is positioned at the bottom right corner of the screen.
   // TODO(b/319476980): Make sure Mahi main panel bounds work when shelf
   // alignment changes.
-  return gfx::Rect(bottom_right.x() - kPanelDefaultWidth - kPanelBoundsPadding,
+  return gfx::Rect(bottom_right.x() - mahi_constants::kPanelDefaultWidth -
+                       kPanelBoundsPadding,
                    bottom_right.y() - height - kPanelBoundsPadding,
-                   kPanelDefaultWidth, height);
+                   mahi_constants::kPanelDefaultWidth, height);
 }
 
 }  // namespace
