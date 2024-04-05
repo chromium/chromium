@@ -68,12 +68,6 @@ const char kWebViewSelectiveImageInversionDarkening[] =
 // Enables FencedFrames. This also enables PrivacySandboxAdsAPIsOverride.
 const char kWebViewFencedFrames[] = "webview-fenced-frames";
 
-// Disables WebView from checking for app recovery mitigations.
-const char kWebViewDisableAppRecovery[] = "webview-disable-app-recovery";
-
-// Enables WebView to check for app recovery mitigations.
-const char kWebViewEnableAppRecovery[] = "webview-enable-app-recovery";
-
 // Enables downloading TrustTokenKeyCommitmentsComponent by the component
 // updater downloading service in nonembedded WebView. See
 // https://crbug.com/1170468.
