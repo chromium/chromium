@@ -1109,6 +1109,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     cflags = []
 
     sources = [
+      "src/src/enums/allocation-type.c",
       "src/src/enums/datatype-strings.c",
       "src/src/enums/microkernel-type.c",
       "src/src/enums/node-type.c",
@@ -1134,6 +1135,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     cflags = []
 
     sources = [
+      "src/src/enums/allocation-type.c",
       "src/src/enums/datatype-strings.c",
       "src/src/enums/microkernel-type.c",
       "src/src/enums/node-type.c",
@@ -1292,6 +1294,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reciprocal-square-root.c",
       "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
@@ -1364,6 +1367,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reciprocal-square-root.c",
       "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
@@ -1821,6 +1825,7 @@ if (current_cpu == "arm64") {
     cflags = []
 
     sources = [
+      "src/src/enums/allocation-type.c",
       "src/src/enums/datatype-strings.c",
       "src/src/enums/microkernel-type.c",
       "src/src/enums/node-type.c",
@@ -1846,6 +1851,7 @@ if (current_cpu == "arm64") {
     cflags = []
 
     sources = [
+      "src/src/enums/allocation-type.c",
       "src/src/enums/datatype-strings.c",
       "src/src/enums/microkernel-type.c",
       "src/src/enums/node-type.c",
@@ -3166,12 +3172,6 @@ if (current_cpu == "arm64") {
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a75.S",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64-prfm.S",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-fp32-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-fp32-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3201,12 +3201,6 @@ if (current_cpu == "arm64") {
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a75.S",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64-prfm.S",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-fp32-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-fp32-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-gemm/gen/qu8-gemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3239,12 +3233,6 @@ if (current_cpu == "arm64") {
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a75.S",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64-prfm.S",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-fp32-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-fp32-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3274,12 +3262,6 @@ if (current_cpu == "arm64") {
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a75.S",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64-prfm.S",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-ld64.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-fp32-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-fp32-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x16c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-cortex-a55.S",
-      "src/src/qu8-igemm/gen/qu8-igemm-4x8c4-minmax-rndnu-asm-aarch64-neondot-ld128.S",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3335,6 +3317,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reciprocal-square-root.c",
       "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
@@ -3407,6 +3390,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reciprocal-square-root.c",
       "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
