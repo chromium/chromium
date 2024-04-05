@@ -5318,9 +5318,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
 }
 
-// TODO(crbug.com/332989700): The test is flaky.
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/332989700): Disabled due to flakiness on Mac.
+#define MAYBE_HasSkippedForEmptyFetchHandlerMetrics \
+  DISABLED_HasSkippedForEmptyFetchHandlerMetrics
+#else
+#define MAYBE_HasSkippedForEmptyFetchHandlerMetrics \
+  HasSkippedForEmptyFetchHandlerMetrics
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
-                       DISABLED_HasSkippedForEmptyFetchHandlerMetrics) {
+                       MAYBE_HasSkippedForEmptyFetchHandlerMetrics) {
   base::HistogramTester tester;
 
   const GURL create_service_worker_url(embedded_test_server()->GetURL(
