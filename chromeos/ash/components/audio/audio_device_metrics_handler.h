@@ -18,11 +18,11 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
     AudioDeviceMetricsHandler {
  public:
-  AudioDeviceMetricsHandler() = default;
+  AudioDeviceMetricsHandler();
   AudioDeviceMetricsHandler(const AudioDeviceMetricsHandler&) = delete;
   AudioDeviceMetricsHandler& operator=(const AudioDeviceMetricsHandler&) =
       delete;
-  ~AudioDeviceMetricsHandler() = default;
+  ~AudioDeviceMetricsHandler();
 
   // Minimum/maximum bucket value of user overriding system decision of
   // switching or not switching audio device.
@@ -31,6 +31,75 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // The histogram bucket count of user overriding system decision.
   static constexpr int kUserOverrideSystemDecisionTimeDeltaBucketCount = 100;
+
+  // Maximum number of connected input or output audio devices to record
+  // histogram metrics.
+  static constexpr uint32_t kMaxAudioDevicesCount = 10;
+
+  // A series of user action metrics to record when user switches the
+  // input/output audio device and if this switch overrides the system decision.
+  static constexpr char kUserActionSwitchInput[] =
+      "StatusArea_Audio_SwitchInputDevice";
+  static constexpr char kUserActionSwitchOutput[] =
+      "StatusArea_Audio_SwitchOutputDevice";
+  static constexpr char kUserActionSwitchInputOverridden[] =
+      "StatusArea_Audio_AutoInputSelectionOverridden";
+  static constexpr char kUserActionSwitchOutputOverridden[] =
+      "StatusArea_Audio_AutoOutputSelectionOverridden";
+
+  // A series of histogram metrics to record system selection decision after
+  // audio device has changed. And the time delta if user has overridden the
+  // system selection afterwards.
+  static constexpr char kSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio";
+  static constexpr char kSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio";
+  static constexpr char kUserOverrideSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemNotSwitchTimeElapsed";
+
+  // A series of histogram metrics to record the audio device count when the
+  // system selection decision is made after audio device has changed.
+  static constexpr char kSystemSwitchInputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemNotSwitchInputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemSwitchOutputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceCount";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceCount[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceCount";
+
+  // A series of histogram metrics to record the audio device types when the
+  // system selection decision is made after audio device has changed.
+  static constexpr char kSystemSwitchInputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemNotSwitchInputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemSwitchOutputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet";
+
+  // A series of histogram metrics to record the before and after condition
+  // of audio device types when the system selection decision is made after
+  // audio device has changed.
+  static constexpr char kSystemSwitchInputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
 
   // A series of histogram metrics to record system selection decision after
   // audio device has changed.
@@ -181,6 +250,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   static constexpr char kConsecutiveOutputDevicsAdded[] =
       "ChromeOS.AudioSelection.Output.ConsecutiveDevicesChangeTimeElapsed.Add";
 
+  // Record the histogram of system decision of switching or not switching after
+  // audio device is added or removed. Only record if there are more than one
+  // available devices.
+  void MaybeRecordSystemSwitchDecisionAndContext(
+      bool is_input,
+      bool has_alternative_device,
+      bool is_switched,
+      const AudioDeviceMap& audio_devices_,
+      const AudioDeviceMap& previous_audio_devices_);
+
+  // Record metrics when user switches audio device.
+  void RecordUserSwitchAudioDevice(bool is_input);
+
   // Record system selection related metrics in the case of chrome restarts,
   // including system boots and users sign out, as well as the case of normal
   // user hotplug or unplug.
@@ -209,7 +291,40 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void RecordConsecutiveAudioDevicsChangeTimeElapsed(bool is_input,
                                                      bool is_device_added);
 
+  void set_is_chrome_restarts(bool is_chrome_restarts) {
+    is_chrome_restarts_ = is_chrome_restarts;
+  }
+
+  void set_input_device_selected_by_user(bool input_device_selected_by_user) {
+    input_device_selected_by_user_ = input_device_selected_by_user;
+  }
+
+  void set_output_device_selected_by_user(bool output_device_selected_by_user) {
+    output_device_selected_by_user_ = output_device_selected_by_user;
+  }
+
  private:
+  // Clear the timer of system switch/not switch decision.
+  void ResetSystemSwitchTimestamp(bool is_input);
+
+  // Maybe record the histogram metrics of user overriding system decision of
+  // switching or not switching audio device. Do not record if user doesn't
+  // override system decision but override previous user action.
+  void MaybeRecordUserOverrideSystemDecision(
+      bool is_input,
+      bool is_system_decision_at_chrome_restarts,
+      std::optional<base::TimeTicks>& switched_by_system_at,
+      std::optional<base::TimeTicks>& not_switched_by_system_at);
+
+  // The timestamp for recording the metrics of user overriding system decision
+  // of switching or not switching the active audio device.
+  std::optional<base::TimeTicks> input_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> input_not_switched_by_system_at_ =
+      std::nullopt;
+  std::optional<base::TimeTicks> output_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> output_not_switched_by_system_at_ =
+      std::nullopt;
+
   // The timestamp when devices have changed, including devices added/removed
   // and devices changed. Used for recording the time elaspsed between two
   // consecutive devices change event.
@@ -217,6 +332,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   std::optional<base::TimeTicks> output_devices_changed_at_ = std::nullopt;
   std::optional<base::TimeTicks> input_devices_added_at_ = std::nullopt;
   std::optional<base::TimeTicks> output_devices_added_at_ = std::nullopt;
+
+  // Whether the audio device was selected by user, to track user overrides
+  bool input_device_selected_by_user_ = false;
+  bool output_device_selected_by_user_ = false;
+
+  // A boolean flag used to tell if system audio selection happens for the first
+  // time when system boots or chrome restarts.
+  bool is_chrome_restarts_ = true;
+
+  // A boolean indicating if the system makes the switch or not switch decision
+  // in the case of chrome restarts. Used for recording user override histogram
+  // metrics.
+  bool is_system_decision_at_chrome_restarts_ = true;
 };
 
 }  // namespace ash

@@ -10,6 +10,203 @@
 
 namespace ash {
 
+AudioDeviceMetricsHandler::AudioDeviceMetricsHandler() = default;
+AudioDeviceMetricsHandler::~AudioDeviceMetricsHandler() = default;
+
+void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
+    bool is_input,
+    bool has_alternative_device,
+    bool is_switched,
+    const AudioDeviceMap& audio_devices_,
+    const AudioDeviceMap& previous_audio_devices_) {
+  if (is_input) {
+    // Do not record if there is only one audio device since it will definitely
+    // be activated. The metric aims to measure how well the system selection
+    // works when there are more than one available devices.
+    if (!has_alternative_device) {
+      // Reset timestamp since no interested system selection decision is made
+      // and to prevent previous system decision from being used to record the
+      // user override.
+      ResetSystemSwitchTimestamp(is_input);
+      return;
+    }
+
+    base::UmaHistogramBoolean(kSystemSwitchInputAudio, is_switched);
+
+    AudioDeviceList input_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/true);
+    // Record the number of audio devices at the moment.
+    base::UmaHistogramExactLinear(is_switched
+                                      ? kSystemSwitchInputAudioDeviceCount
+                                      : kSystemNotSwitchInputAudioDeviceCount,
+                                  input_devices.size(), kMaxAudioDevicesCount);
+
+    // Record the encoded device set.
+    base::UmaHistogramSparse(is_switched ? kSystemSwitchInputAudioDeviceSet
+                                         : kSystemNotSwitchInputAudioDeviceSet,
+                             EncodeAudioDeviceSet(input_devices));
+
+    AudioDeviceList previous_input_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
+                                                     /*is_input=*/true);
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_switched ? kSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                    : kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
+        EncodeBeforeAndAfterAudioDeviceSets(previous_input_devices,
+                                            input_devices));
+
+    // Record chrome restarts related metrics.
+    RecordAudioSelectionMetricsSeparatedByChromeRestarts(
+        /*is_input=*/true, is_switched, is_chrome_restarts_,
+        /*previous_device_list=*/previous_input_devices,
+        /*current_device_list=*/input_devices);
+
+    // Set up timestamp. Make sure setting one timestamp will reset the other,
+    // since only one decision can be made either switching or not switching.
+    input_switched_by_system_at_ =
+        is_switched ? std::make_optional(base::TimeTicks::Now()) : std::nullopt;
+    input_not_switched_by_system_at_ =
+        is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
+    is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
+  } else {
+    // Do not record if there is only one audio device. Same as above.
+    if (!has_alternative_device) {
+      // Reset timestamp. Same as above.
+      ResetSystemSwitchTimestamp(is_input);
+      return;
+    }
+
+    base::UmaHistogramBoolean(kSystemSwitchOutputAudio, is_switched);
+
+    AudioDeviceList output_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/false);
+    // Record the number of audio devices at the moment.
+    base::UmaHistogramExactLinear(is_switched
+                                      ? kSystemSwitchOutputAudioDeviceCount
+                                      : kSystemNotSwitchOutputAudioDeviceCount,
+                                  output_devices.size(), kMaxAudioDevicesCount);
+
+    // Record the encoded device set.
+    base::UmaHistogramSparse(is_switched ? kSystemSwitchOutputAudioDeviceSet
+                                         : kSystemNotSwitchOutputAudioDeviceSet,
+                             EncodeAudioDeviceSet(output_devices));
+    AudioDeviceList previous_output_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
+                                                     /*is_input=*/false);
+
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_switched ? kSystemSwitchOutputBeforeAndAfterAudioDeviceSet
+                    : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet,
+        EncodeBeforeAndAfterAudioDeviceSets(previous_output_devices,
+                                            output_devices));
+
+    // Record chrome restarts related metrics.
+    RecordAudioSelectionMetricsSeparatedByChromeRestarts(
+        /*is_input=*/false, is_switched, is_chrome_restarts_,
+        /*previous_device_list=*/previous_output_devices,
+        /*current_device_list=*/output_devices);
+
+    // Set up timestamp. Make sure setting one timestamp will reset the other,
+    // same as above.
+    output_switched_by_system_at_ =
+        is_switched ? std::make_optional(base::TimeTicks::Now()) : std::nullopt;
+    output_not_switched_by_system_at_ =
+        is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
+    is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
+  }
+}
+
+void AudioDeviceMetricsHandler::ResetSystemSwitchTimestamp(bool is_input) {
+  if (is_input) {
+    input_switched_by_system_at_ = std::nullopt;
+    input_not_switched_by_system_at_ = std::nullopt;
+  } else {
+    output_switched_by_system_at_ = std::nullopt;
+    output_not_switched_by_system_at_ = std::nullopt;
+  }
+}
+
+void AudioDeviceMetricsHandler::RecordUserSwitchAudioDevice(bool is_input) {
+  if (is_input) {
+    base::RecordAction(base::UserMetricsAction(kUserActionSwitchInput));
+    if (!input_device_selected_by_user_) {
+      base::RecordAction(
+          base::UserMetricsAction(kUserActionSwitchInputOverridden));
+    }
+
+    MaybeRecordUserOverrideSystemDecision(
+        is_input, is_system_decision_at_chrome_restarts_,
+        input_switched_by_system_at_, input_not_switched_by_system_at_);
+  } else {
+    base::RecordAction(base::UserMetricsAction(kUserActionSwitchOutput));
+    if (!output_device_selected_by_user_) {
+      base::RecordAction(
+          base::UserMetricsAction(kUserActionSwitchOutputOverridden));
+    }
+
+    MaybeRecordUserOverrideSystemDecision(
+        is_input, is_system_decision_at_chrome_restarts_,
+        output_switched_by_system_at_, output_not_switched_by_system_at_);
+  }
+}
+
+void AudioDeviceMetricsHandler::MaybeRecordUserOverrideSystemDecision(
+    bool is_input,
+    bool is_system_decision_at_chrome_restarts,
+    std::optional<base::TimeTicks>& switched_by_system_at,
+    std::optional<base::TimeTicks>& not_switched_by_system_at) {
+  if (switched_by_system_at.has_value()) {
+    // There should be only one decision made by system, either switching or not
+    // switching the audio device.
+    CHECK(!not_switched_by_system_at.has_value());
+
+    const std::string& histogram_name_switched =
+        is_input ? kUserOverrideSystemSwitchInputAudio
+                 : kUserOverrideSystemSwitchOutputAudio;
+    int time_delta =
+        (base::TimeTicks::Now() - switched_by_system_at.value()).InMinutes();
+    RecordUserOverrideMetrics(histogram_name_switched, time_delta);
+
+    // Record user override metrics separated by chrome restarts.
+
+    RecordUserOverrideMetricsSeparatedByChromeRestarts(
+        is_input, /*is_switched=*/true,
+        /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
+        time_delta);
+
+    // Reset the system_switch timestamp since user has activated an audio
+    // device now. User activating again is not considered overriding system
+    // decision, thus not recorded.
+    switched_by_system_at = std::nullopt;
+  } else if (not_switched_by_system_at.has_value()) {
+    // There should be only one decision made by system, same as above.
+    CHECK(!switched_by_system_at.has_value());
+
+    const std::string& histogram_name_not_switched =
+        is_input ? kUserOverrideSystemNotSwitchInputAudio
+                 : kUserOverrideSystemNotSwitchOutputAudio;
+    int time_delta =
+        (base::TimeTicks::Now() - not_switched_by_system_at.value())
+            .InMinutes();
+    RecordUserOverrideMetrics(histogram_name_not_switched, time_delta);
+
+    // Record user override metrics separated by chrome restarts.
+
+    RecordUserOverrideMetricsSeparatedByChromeRestarts(
+        is_input, /*is_switched=*/false,
+        /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
+        time_delta);
+
+    // Reset the system_not_switch timestamp since user has activated an audio
+    // device now.
+    not_switched_by_system_at = std::nullopt;
+  }
+}
+
 void AudioDeviceMetricsHandler::
     RecordAudioSelectionMetricsSeparatedByChromeRestarts(
         bool is_input,
@@ -23,88 +220,60 @@ void AudioDeviceMetricsHandler::
   std::string before_and_after_device_set_histogram_name;
 
   if (is_chrome_restarts) {
-    system_switch_histogram_name =
-        is_input
-            ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioChromeRestarts
-            : AudioDeviceMetricsHandler::kSystemSwitchOutputAudioChromeRestarts;
+    system_switch_histogram_name = is_input
+                                       ? kSystemSwitchInputAudioChromeRestarts
+                                       : kSystemSwitchOutputAudioChromeRestarts;
 
     if (is_switched) {
       device_count_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemSwitchInputAudioDeviceCountChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemSwitchOutputAudioDeviceCountChromeRestarts;
+          is_input ? kSystemSwitchInputAudioDeviceCountChromeRestarts
+                   : kSystemSwitchOutputAudioDeviceCountChromeRestarts;
       device_set_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemSwitchInputAudioDeviceSetChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemSwitchOutputAudioDeviceSetChromeRestarts;
+          is_input ? kSystemSwitchInputAudioDeviceSetChromeRestarts
+                   : kSystemSwitchOutputAudioDeviceSetChromeRestarts;
       before_and_after_device_set_histogram_name =
           is_input
-              ? AudioDeviceMetricsHandler::
-                    kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
-              : AudioDeviceMetricsHandler::
-                    kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
+              ? kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+              : kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
     } else {
       device_count_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemNotSwitchInputAudioDeviceCountChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemNotSwitchOutputAudioDeviceCountChromeRestarts;
+          is_input ? kSystemNotSwitchInputAudioDeviceCountChromeRestarts
+                   : kSystemNotSwitchOutputAudioDeviceCountChromeRestarts;
       device_set_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemNotSwitchInputAudioDeviceSetChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemNotSwitchOutputAudioDeviceSetChromeRestarts;
+          is_input ? kSystemNotSwitchInputAudioDeviceSetChromeRestarts
+                   : kSystemNotSwitchOutputAudioDeviceSetChromeRestarts;
       before_and_after_device_set_histogram_name =
           is_input
-              ? AudioDeviceMetricsHandler::
-                    kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
-              : AudioDeviceMetricsHandler::
-                    kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
+              ? kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+              : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
     }
   } else {
     system_switch_histogram_name =
-        is_input ? AudioDeviceMetricsHandler::
-                       kSystemSwitchInputAudioNonChromeRestarts
-                 : AudioDeviceMetricsHandler::
-                       kSystemSwitchOutputAudioNonChromeRestarts;
+        is_input ? kSystemSwitchInputAudioNonChromeRestarts
+                 : kSystemSwitchOutputAudioNonChromeRestarts;
 
     if (is_switched) {
       device_count_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemSwitchInputAudioDeviceCountNonChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemSwitchOutputAudioDeviceCountNonChromeRestarts;
+          is_input ? kSystemSwitchInputAudioDeviceCountNonChromeRestarts
+                   : kSystemSwitchOutputAudioDeviceCountNonChromeRestarts;
       device_set_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemSwitchInputAudioDeviceSetNonChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemSwitchOutputAudioDeviceSetNonChromeRestarts;
+          is_input ? kSystemSwitchInputAudioDeviceSetNonChromeRestarts
+                   : kSystemSwitchOutputAudioDeviceSetNonChromeRestarts;
       before_and_after_device_set_histogram_name =
           is_input
-              ? AudioDeviceMetricsHandler::
-                    kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
-              : AudioDeviceMetricsHandler::
-                    kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
+              ? kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+              : kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
     } else {
       device_count_histogram_name =
-          is_input
-              ? AudioDeviceMetricsHandler::
-                    kSystemNotSwitchInputAudioDeviceCountNonChromeRestarts
-              : AudioDeviceMetricsHandler::
-                    kSystemNotSwitchOutputAudioDeviceCountNonChromeRestarts;
+          is_input ? kSystemNotSwitchInputAudioDeviceCountNonChromeRestarts
+                   : kSystemNotSwitchOutputAudioDeviceCountNonChromeRestarts;
       device_set_histogram_name =
-          is_input ? AudioDeviceMetricsHandler::
-                         kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts
-                   : AudioDeviceMetricsHandler::
-                         kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts;
+          is_input ? kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts
+                   : kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts;
       before_and_after_device_set_histogram_name =
           is_input
-              ? AudioDeviceMetricsHandler::
-                    kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
-              : AudioDeviceMetricsHandler::
-                    kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
+              ? kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+              : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
     }
   }
 
@@ -114,7 +283,7 @@ void AudioDeviceMetricsHandler::
   // Record the number of audio devices.
   base::UmaHistogramExactLinear(device_count_histogram_name,
                                 current_device_list.size(),
-                                CrasAudioHandler::kMaxAudioDevicesCount);
+                                kMaxAudioDevicesCount);
 
   // Record the encoded device set.
   base::UmaHistogramSparse(device_set_histogram_name,

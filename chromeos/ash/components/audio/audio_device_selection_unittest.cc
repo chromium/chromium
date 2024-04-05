@@ -31,18 +31,18 @@ void ExpectSystemDecisionHistogramCount(
     uint16_t expected_system_switch_output_count,
     uint16_t expected_system_not_switch_output_count,
     bool is_chrome_restarts) {
-  histogram_tester.ExpectBucketCount(CrasAudioHandler::kSystemSwitchInputAudio,
-                                     kSystemSwitchSample,
-                                     expected_system_switch_input_count);
-  histogram_tester.ExpectBucketCount(CrasAudioHandler::kSystemSwitchInputAudio,
-                                     kSystemNotSwitchSample,
-                                     expected_system_not_switch_input_count);
-  histogram_tester.ExpectBucketCount(CrasAudioHandler::kSystemSwitchOutputAudio,
-                                     kSystemSwitchSample,
-                                     expected_system_switch_output_count);
-  histogram_tester.ExpectBucketCount(CrasAudioHandler::kSystemSwitchOutputAudio,
-                                     kSystemNotSwitchSample,
-                                     expected_system_not_switch_output_count);
+  histogram_tester.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudio, kSystemSwitchSample,
+      expected_system_switch_input_count);
+  histogram_tester.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudio,
+      kSystemNotSwitchSample, expected_system_not_switch_input_count);
+  histogram_tester.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudio, kSystemSwitchSample,
+      expected_system_switch_output_count);
+  histogram_tester.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudio,
+      kSystemNotSwitchSample, expected_system_not_switch_output_count);
 
   if (is_chrome_restarts) {
     histogram_tester.ExpectBucketCount(
@@ -82,16 +82,16 @@ void ExpectUserOverrideSystemDecisionHistogramCount(
     uint16_t expected_user_override_system_not_switch_output_count,
     bool is_chrome_restarts) {
   histogram_tester.ExpectTotalCount(
-      CrasAudioHandler::kUserOverrideSystemSwitchInputAudio,
+      AudioDeviceMetricsHandler::kUserOverrideSystemSwitchInputAudio,
       expected_user_override_system_switch_input_count);
   histogram_tester.ExpectTotalCount(
-      CrasAudioHandler::kUserOverrideSystemNotSwitchInputAudio,
+      AudioDeviceMetricsHandler::kUserOverrideSystemNotSwitchInputAudio,
       expected_user_override_system_not_switch_input_count);
   histogram_tester.ExpectTotalCount(
-      CrasAudioHandler::kUserOverrideSystemSwitchOutputAudio,
+      AudioDeviceMetricsHandler::kUserOverrideSystemSwitchOutputAudio,
       expected_user_override_system_switch_output_count);
   histogram_tester.ExpectTotalCount(
-      CrasAudioHandler::kUserOverrideSystemNotSwitchOutputAudio,
+      AudioDeviceMetricsHandler::kUserOverrideSystemNotSwitchOutputAudio,
       expected_user_override_system_not_switch_output_count);
 
   if (is_chrome_restarts) {
@@ -143,13 +143,14 @@ void ExpectUserOverrideSystemDecisionTimeDelta(
   if (is_input) {
     histogram_name =
         system_has_switched
-            ? CrasAudioHandler::kUserOverrideSystemSwitchInputAudio
-            : CrasAudioHandler::kUserOverrideSystemNotSwitchInputAudio;
+            ? AudioDeviceMetricsHandler::kUserOverrideSystemSwitchInputAudio
+            : AudioDeviceMetricsHandler::kUserOverrideSystemNotSwitchInputAudio;
   } else {
     histogram_name =
         system_has_switched
-            ? CrasAudioHandler::kUserOverrideSystemSwitchOutputAudio
-            : CrasAudioHandler::kUserOverrideSystemNotSwitchOutputAudio;
+            ? AudioDeviceMetricsHandler::kUserOverrideSystemSwitchOutputAudio
+            : AudioDeviceMetricsHandler::
+                  kUserOverrideSystemNotSwitchOutputAudio;
   }
 
   histogram_tester.ExpectTimeBucketCount(
@@ -239,15 +240,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
     // Automatic switches should not generate events.
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
-              0);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchInput),
               0);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutput),
               0);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchInputOverridden),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutputOverridden),
               0);
   }
 
@@ -256,15 +259,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(input1);
     ASSERT_EQ(ActiveInputNodeId(), input1.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchInput),
               1);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutput),
               0);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchInputOverridden),
               1);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutputOverridden),
               0);
   }
 
@@ -273,15 +278,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(output3);
     ASSERT_EQ(ActiveInputNodeId(), input1.id);
     ASSERT_EQ(ActiveOutputNodeId(), output3.id);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchInput),
               0);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutput),
               1);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchInputOverridden),
               0);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutputOverridden),
               1);
   }
 
@@ -291,16 +298,18 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(output4);
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchInput),
               1);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutput),
               1);
     // Switching back and forth should not be counted.
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchInputOverridden),
               0);
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutputOverridden),
               0);
   }
 
@@ -310,11 +319,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Plug(input1);
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     Select(input1);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchInput),
               1);
     // Switching after the system decides to do nothing, should be counted.
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchInputOverridden),
               1);
   }
 
@@ -324,11 +334,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Plug(output3);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
     Select(output3);
-    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+    EXPECT_EQ(actions.GetActionCount(
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutput),
               1);
     // Switching after the system decides to do nothing, should be counted.
     EXPECT_EQ(actions.GetActionCount(
-                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+                  AudioDeviceMetricsHandler::kUserActionSwitchOutputOverridden),
               1);
   }
 }
@@ -396,10 +407,10 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/false);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount,
       num_of_input_devices, /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceCount,
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
@@ -412,12 +423,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_USB)}),
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(output_internal), AudioDevice(output_USB)}),
       /*bucket_count=*/1);
@@ -436,14 +447,15 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(output_internal)},
           /*device_set_after=*/{AudioDevice(output_internal),
                                 AudioDevice(output_USB)}),
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(output_internal)},
           /*device_set_after=*/{AudioDevice(output_internal),
@@ -528,7 +540,7 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/false);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemNotSwitchInputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemNotSwitchInputAudioDeviceCount,
       num_of_input_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
@@ -537,7 +549,7 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_input_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemNotSwitchInputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemNotSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet({AudioDevice(input_internal), AudioDevice(input_USB),
                             AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
@@ -550,7 +562,8 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::
+          kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(output_internal),
                                  AudioDevice(output_USB)},
@@ -604,7 +617,7 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/false);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount,
       num_of_input_devices, /*bucket_count=*/2);
 
   histogram_tester().ExpectBucketCount(
@@ -613,7 +626,7 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_input_devices, /*bucket_count=*/2);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
@@ -626,7 +639,7 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(input_internal),
                                  AudioDevice(input_bluetooth_nb),
@@ -716,10 +729,10 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/true);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount,
       num_of_input_devices, /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputAudioDeviceCount,
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceCount,
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
@@ -732,12 +745,12 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_USB)}),
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_USB)}),
       /*bucket_count=*/1);
@@ -755,14 +768,15 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{},
           /*device_set_after=*/{AudioDevice(input_internal),
                                 AudioDevice(input_USB)}),
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{},
           /*device_set_after=*/{AudioDevice(input_internal),
