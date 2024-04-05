@@ -3407,7 +3407,6 @@ class AcceleratorControllerGameDashboardTests
   ~AcceleratorControllerGameDashboardTests() override = default;
 
   void SetUp() override {
-    EXPECT_FALSE(features::IsGameDashboardEnabled());
     scoped_feature_list_.InitAndEnableFeature(features::kGameDashboard);
     AcceleratorControllerTest::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());

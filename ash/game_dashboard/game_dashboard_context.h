@@ -204,9 +204,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // recording session duration.
   void OnUpdateRecordingTimer();
 
-  // Closes and deletes the Game Dashboard welcome dialog once it's no longer
-  // needed.
-  void CloseWelcomeDialogIfAny();
+  // Closes and deletes the Game Dashboard welcome dialog. After closing the
+  // dialog, if `show_toolbar` is true, call `MaybeShowToolbar`.
+  void CloseWelcomeDialogIfAny(bool show_toolbar = true);
 
   // Callback when the `GameDashboardWelcomeDialog`'s timer has completed.
   void OnWelcomeDialogTimerCompleted();

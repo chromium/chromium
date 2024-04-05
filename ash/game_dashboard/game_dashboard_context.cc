@@ -117,7 +117,7 @@ GameDashboardContext::~GameDashboardContext() {
   if (main_menu_widget_) {
     main_menu_widget_->CloseNow();
   }
-  CloseWelcomeDialogIfAny();
+  CloseWelcomeDialogIfAny(/*show_toolbar=*/false);
 }
 
 const std::u16string& GameDashboardContext::GetRecordingDuration() const {
@@ -663,14 +663,16 @@ void GameDashboardContext::OnUpdateRecordingTimer() {
   }
 }
 
-void GameDashboardContext::CloseWelcomeDialogIfAny() {
+void GameDashboardContext::CloseWelcomeDialogIfAny(bool show_toolbar) {
   if (welcome_dialog_widget_) {
     welcome_dialog_widget_->SetVisibilityAnimationDuration(
         base::Milliseconds(300));
     welcome_dialog_widget_->Hide();
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
-    MaybeShowToolbar();
+    if (show_toolbar) {
+      MaybeShowToolbar();
+    }
   }
 }
 

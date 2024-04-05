@@ -1336,9 +1336,7 @@ BASE_FEATURE(kGaiaReauthEndpoint,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Game Dashboard.
-BASE_FEATURE(kGameDashboard,
-             "GameDashboard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
