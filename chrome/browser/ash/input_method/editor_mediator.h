@@ -76,6 +76,7 @@ class EditorMediator : public EditorEventSink,
   EditorOpportunityMode GetEditorOpportunityMode() const override;
   std::vector<EditorBlockedReason> GetBlockedReasons() const override;
   void CacheContext() override;
+  void FetchAndUpdateInputContext() override;
   EditorMetricsRecorder* GetMetricsRecorder() override;
 
   // display::DisplayObserver overrides

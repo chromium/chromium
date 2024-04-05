@@ -46,6 +46,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
     virtual std::vector<EditorBlockedReason> GetBlockedReasons() const = 0;
 
+    virtual void FetchAndUpdateInputContext() = 0;
     virtual void CacheContext() = 0;
   };
 

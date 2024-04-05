@@ -2208,6 +2208,11 @@ BASE_FEATURE(kOrcaUseAccountCapabilities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Orca on Workspace.
+BASE_FEATURE(kOrcaForceFetchContextOnGetEditorPanelContext,
+             "OrcaForceFetchContextOnGetEditorPanelContext",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, we force fetching input context
 BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
