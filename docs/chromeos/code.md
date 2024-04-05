@@ -132,3 +132,15 @@ such work, but efforts to improve the situation are welcome.
 The plan is to increase the requirements over time to move in the direction of
 the architectural goal. This will likely take the form of additional levels of
 review for new includes of browser headers from OS code.
+
+## Best practices
+
+### Where should ChromeOS-only code be placed?
+
+- **Ash-Chrome-only code:** //chromeos/ash/components
+- **Lacros-only code:** Match other platform code for that component, consult
+  with chrome-cros@google.com if unsure.
+- **Both Ash-Chrome and Lacros:**
+  - **UI code:** //chromeos/ui
+  - **Non-UI code:** //chromeos/components
+
