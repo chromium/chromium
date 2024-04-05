@@ -142,7 +142,7 @@ NSInteger kFeedSymbolPointSize = 17;
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self updateSegmentedControlFont:self.segmentedControl];
   } else {
-    UIFont* font = [self fontForTitle];
+    UIFont* font = [self fontForTitleLabel];
     self.titleLabel.font = font;
   }
 }
@@ -423,8 +423,8 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [self fontForTitle];
-  titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  titleLabel.font = [self fontForTitleLabel];
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.accessibilityIdentifier =
       ntp_home::DiscoverHeaderTitleAccessibilityID();
   titleLabel.text = [self feedHeaderTitleText];
@@ -458,7 +458,12 @@ NSInteger kFeedSymbolPointSize = 17;
   return segmentedControl;
 }
 
-- (UIFont*)fontForTitle {
+- (UIFont*)fontForTitleLabel {
+  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold,
+                           self.view);
+}
+
+- (UIFont*)fontForSegmentedControl {
   return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium,
                            self.view);
 }
@@ -501,13 +506,15 @@ NSInteger kFeedSymbolPointSize = 17;
 // current dynamic sizing.
 - (void)updateSegmentedControlFont:(UISegmentedControl*)segmentedControl {
   NSDictionary* normalAttributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:[self fontForTitle], NSFontAttributeName,
+      dictionaryWithObjectsAndKeys:[self fontForSegmentedControl],
+                                   NSFontAttributeName,
                                    [UIColor colorNamed:kTextSecondaryColor],
                                    NSForegroundColorAttributeName, nil];
   [segmentedControl setTitleTextAttributes:normalAttributes
                                   forState:UIControlStateNormal];
   NSDictionary* selectedAttributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:[self fontForTitle], NSFontAttributeName,
+      dictionaryWithObjectsAndKeys:[self fontForSegmentedControl],
+                                   NSFontAttributeName,
                                    [UIColor colorNamed:kTextPrimaryColor],
                                    NSForegroundColorAttributeName, nil];
   [segmentedControl setTitleTextAttributes:selectedAttributes
