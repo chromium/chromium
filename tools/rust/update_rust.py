@@ -35,7 +35,7 @@ sys.path.append(
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
 RUST_REVISION = 'ceab6128fa48a616bfd3e3adf4bc80133b8ee223'
-RUST_SUB_REVISION = 1  # Bumped to package and distribute `cargo-vet`
+RUST_SUB_REVISION = 1
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that
