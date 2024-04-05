@@ -10,10 +10,10 @@
 #include <compare>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
@@ -55,13 +55,13 @@ class BASE_EXPORT Uuid {
   // Returns a valid Uuid if the input string conforms to the Uuid format, and
   // an invalid Uuid otherwise. Note that this does NOT check if the hexadecimal
   // values "a" through "f" are in lower case characters.
-  static Uuid ParseCaseInsensitive(StringPiece input);
-  static Uuid ParseCaseInsensitive(StringPiece16 input);
+  static Uuid ParseCaseInsensitive(std::string_view input);
+  static Uuid ParseCaseInsensitive(std::u16string_view input);
 
   // Similar to ParseCaseInsensitive(), but all hexadecimal values "a" through
   // "f" must be lower case characters.
-  static Uuid ParseLowercase(StringPiece input);
-  static Uuid ParseLowercase(StringPiece16 input);
+  static Uuid ParseLowercase(std::string_view input);
+  static Uuid ParseLowercase(std::u16string_view input);
 
   // Constructs an invalid Uuid.
   Uuid();

@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <set>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/strings/string_util.h"
@@ -44,7 +45,9 @@ TEST(UuidTest, UuidBasicUniqueness) {
 
 namespace {
 
-void TestUuidValidity(StringPiece input, bool case_insensitive, bool strict) {
+void TestUuidValidity(std::string_view input,
+                      bool case_insensitive,
+                      bool strict) {
   SCOPED_TRACE(input);
   {
     const Uuid guid = Uuid::ParseCaseInsensitive(input);
@@ -65,7 +68,7 @@ TEST(UuidTest, Validity) {
   enum Parsability { kDoesntParse, kParsesCaseInsensitiveOnly, kAlwaysParses };
 
   static constexpr struct {
-    StringPiece input;
+    std::string_view input;
     Parsability parsability;
   } kUuidValidity[] = {
       {"invalid", kDoesntParse},
