@@ -164,10 +164,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAdjustFastMainThreadThreshold);
 // that haven't been imported into viz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 
-// Re-enables legacy cc/metrics V1 termination path, to validate if some shifts
-// in V3 metrics were from the interactions of these paths.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseV1MetricsTermination);
-
 // Currently CC Metrics does a lot of calculations for UMA and Tracing. While
 // Traces themselves won't run when we are not tracing, some of the calculation
 // work is done regardless. When enabled this feature reduces extra calculation

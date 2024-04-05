@@ -15,12 +15,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
-namespace gfx {
-struct PresentationFeedback;
-}
-
 namespace viz {
-struct BeginFrameAck;
 struct BeginFrameArgs;
 }  // namespace viz
 
@@ -81,25 +76,9 @@ class CC_EXPORT FrameSequenceTrackerCollection {
 
   // Notifies all trackers of various events.
   void NotifyBeginImplFrame(const viz::BeginFrameArgs& args);
-  void NotifyBeginMainFrame(const viz::BeginFrameArgs& args);
-  void NotifyMainFrameProcessed(const viz::BeginFrameArgs& args);
-  void NotifyImplFrameCausedNoDamage(const viz::BeginFrameAck& ack);
-  void NotifyMainFrameCausedNoDamage(const viz::BeginFrameArgs& args,
-                                     bool aborted);
   void NotifyPauseFrameProduction();
-  void NotifySubmitFrame(uint32_t frame_token,
-                         bool has_missing_content,
-                         const viz::BeginFrameAck& ack,
-                         const viz::BeginFrameArgs& origin_args);
   void NotifyFrameEnd(const viz::BeginFrameArgs& args,
                       const viz::BeginFrameArgs& main_args);
-  // Note that this notifies the trackers of the presentation-feedbacks, and
-  // destroys any tracker that had been scheduled for destruction (using
-  // |ScheduleRemoval()|) if it has no more pending frames. Data from non
-  // kCustom typed trackers are reported to UMA. Data from kCustom typed
-  // trackers are added to |custom_tracker_results_| for caller to pick up.
-  void NotifyFramePresented(uint32_t frame_token,
-                            const gfx::PresentationFeedback& feedback);
 
   // Return the type of each active frame tracker, encoded into a 16 bit
   // integer with the bit at each position corresponding to the enum value of

@@ -731,7 +731,6 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
       FROM_HERE,
       base::BindOnce(&ProxyMain::BeginMainFrame, proxy_main_weak_ptr_,
                      std::move(begin_main_frame_state)));
-  host_impl_->DidSendBeginMainFrame(args);
   devtools_instrumentation::DidRequestMainThreadFrame(layer_tree_host_id_);
 }
 

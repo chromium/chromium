@@ -181,10 +181,6 @@ BASE_FEATURE(kClearCanvasResourcesInBackground,
              "ClearCanvasResourcesInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseV1MetricsTermination,
-             "UseV1MetricsTermination",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMetricsTracingCalculationReduction,
              "MetricsTracingCalculationReduction",
              base::FEATURE_DISABLED_BY_DEFAULT);
