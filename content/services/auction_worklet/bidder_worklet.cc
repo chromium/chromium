@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -760,12 +760,9 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
       reject_reason(reject_reason),
       error_msgs(std::move(error_msgs)) {
   // TODO(https://crbug.com/41496188): Remove when bug has been fixed.
-  if (this->debug_loss_report_url && !this->debug_loss_report_url->is_valid()) {
-    base::debug::DumpWithoutCrashing();
-  }
-  if (this->debug_win_report_url && !this->debug_win_report_url->is_valid()) {
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(!this->debug_loss_report_url ||
+        this->debug_loss_report_url->is_valid());
+  CHECK(!this->debug_win_report_url || this->debug_win_report_url->is_valid());
 }
 
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
@@ -2236,6 +2233,10 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  // TODO(https://crbug.com): Remove once bug is identified and fixed.
+  CHECK(!debug_loss_report_url || debug_loss_report_url->is_valid());
+  CHECK(!debug_win_report_url || debug_win_report_url->is_valid());
 
   error_msgs.insert(error_msgs.end(), load_code_error_msgs_.begin(),
                     load_code_error_msgs_.end());
