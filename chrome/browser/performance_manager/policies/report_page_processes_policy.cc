@@ -54,7 +54,8 @@ void ReportPageProcessesOnUIThread(
     processes.emplace_back(page_process.first,
                            page_process.second.host_protected_page,
                            page_process.second.host_visible_page,
-                           page_process.second.host_focused_page);
+                           page_process.second.host_focused_page,
+                           page_process.second.last_visible);
   }
 
   client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
@@ -89,6 +90,8 @@ void ReportPageProcessesOnUIThread(
     process->host_protected_page = page_process.second.host_protected_page;
     process->host_visible_page = page_process.second.host_visible_page;
     process->host_focused_page = page_process.second.host_focused_page;
+    process->last_visible_ms =
+        page_process.second.last_visible.since_origin().InMilliseconds();
     processes.push_back(std::move(process));
   }
 
@@ -205,6 +208,8 @@ void ReportPageProcessesPolicy::ListPageProcesses(
     const std::vector<PageNodeSortProxy>& candidates) {
   base::flat_map<base::ProcessId, PageState> current_pages;
 
+  base::TimeTicks report_time = base::TimeTicks::Now();
+
   for (auto candidate : candidates) {
     // Marked tabs are ones that were previously attempted to be discarded. Do
     // not include their processes with the process list reported to resourced
@@ -224,11 +229,11 @@ void ReportPageProcessesPolicy::ListPageProcesses(
       // Insert the process in `current_pages` if not already there. Note: This
       // is a no-op if the process was already added for a previously visited
       // (more important) page.
-      current_pages.emplace(std::piecewise_construct,
-                            std::forward_as_tuple(pid),
-                            std::forward_as_tuple(candidate.is_protected(),
-                                                  candidate.is_visible(),
-                                                  candidate.is_focused()));
+      current_pages.emplace(
+          std::piecewise_construct, std::forward_as_tuple(pid),
+          std::forward_as_tuple(candidate.is_protected(),
+                                candidate.is_visible(), candidate.is_focused(),
+                                report_time - candidate.last_visible()));
     }
   }
 

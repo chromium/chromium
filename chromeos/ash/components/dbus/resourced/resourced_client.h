@@ -148,15 +148,18 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     Process(base::ProcessHandle pid,
             bool is_protected,
             bool is_visible,
-            bool is_focused)
+            bool is_focused,
+            base::TimeTicks last_visible)
         : pid(pid),
           is_protected(is_protected),
           is_visible(is_visible),
-          is_focused(is_focused) {}
+          is_focused(is_focused),
+          last_visible(last_visible) {}
     base::ProcessHandle pid;
     bool is_protected;
     bool is_visible;
     bool is_focused;
+    base::TimeTicks last_visible;
   };
 
   virtual void ReportBrowserProcesses(

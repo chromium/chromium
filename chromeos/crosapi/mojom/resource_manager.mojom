@@ -30,7 +30,7 @@ struct MemoryPressure {
 
 // A renderer process hosting a frame of a page for browser memory usage
 // estimation.
-// Next MinVersion: 2
+// Next MinVersion: 3
 [Stable]
 struct PageProcess {
   int32 pid@0;
@@ -49,6 +49,10 @@ struct PageProcess {
   // page will more negatively impact the user than discarding a visible but
   // not focused page.
   [MinVersion=1] bool host_focused_page@3;
+
+  // Obtained from CLOCK_MONOTONIC. The ms value at which the tab was last
+  // visible.
+  [MinVersion=2] int64 last_visible_ms@4;
 };
 
 // Interface for memory pressure observers. Implemented by lacros-chrome. Used

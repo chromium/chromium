@@ -30,6 +30,7 @@ class ReportPageProcessesPolicy : public GraphOwned,
     bool host_protected_page;
     bool host_visible_page;
     bool host_focused_page;
+    base::TimeTicks last_visible;
 
     friend bool operator==(const PageState&, const PageState&) = default;
   };

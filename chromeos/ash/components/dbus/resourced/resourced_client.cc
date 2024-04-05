@@ -467,6 +467,8 @@ void ResourcedClientImpl::ReportBrowserProcesses(
     process->set_protected_(it->is_protected);
     process->set_visible(it->is_visible);
     process->set_focused(it->is_focused);
+    process->set_last_visible_ms(
+        it->last_visible.since_origin().InMilliseconds());
   }
 
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,

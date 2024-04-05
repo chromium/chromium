@@ -938,7 +938,11 @@ void TabManagerDelegate::ListProcesses() {
     // (more important) page.
     current_pages.emplace(
         std::piecewise_construct, std::forward_as_tuple(pid),
-        std::forward_as_tuple(is_protected, is_visible, is_focused));
+        std::forward_as_tuple(
+            is_protected, is_visible, is_focused,
+            lifecycle_unit->GetLastFocusedTime() == base::TimeTicks::Max()
+                ? base::TimeTicks::Now()
+                : lifecycle_unit->GetLastFocusedTime()));
   }
 
   if (current_pages != previously_reported_pages_) {
@@ -953,9 +957,9 @@ void TabManagerDelegate::ReportProcesses(
   reported_processes.reserve(processes.size());
 
   for (const auto& process : processes) {
-    reported_processes.emplace_back(process.first, process.second.is_protected,
-                                    process.second.is_visible,
-                                    process.second.is_focused);
+    reported_processes.emplace_back(
+        process.first, process.second.is_protected, process.second.is_visible,
+        process.second.is_focused, process.second.last_visible);
   }
 
   ash::ResourcedClient* client = ash::ResourcedClient::Get();

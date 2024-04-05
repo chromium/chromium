@@ -59,9 +59,10 @@ void ResourceManagerAsh::ReportPageProcesses(
 
   std::vector<ash::ResourcedClient::Process> processes;
   for (auto& page_process : page_processes) {
-    processes.emplace_back(page_process->pid, page_process->host_protected_page,
-                           page_process->host_visible_page,
-                           page_process->host_focused_page);
+    processes.emplace_back(
+        page_process->pid, page_process->host_protected_page,
+        page_process->host_visible_page, page_process->host_focused_page,
+        base::TimeTicks::FromUptimeMillis(page_process->last_visible_ms));
   }
 
   client->ReportBrowserProcesses(ash::ResourcedClient::Component::kLacros,

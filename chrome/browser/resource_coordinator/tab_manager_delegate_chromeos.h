@@ -355,6 +355,7 @@ struct TabManagerDelegate::PageState {
   bool is_protected;
   bool is_visible;
   bool is_focused;
+  base::TimeTicks last_visible;
 
   friend bool operator==(const PageState&, const PageState&) = default;
 };

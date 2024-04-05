@@ -351,4 +351,65 @@ TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
   ASSERT_TRUE(processes.contains(kProcessId2));
 }
 
+TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimeCurrent) {
+  constexpr base::ProcessId kProcessId1 = 6;
+
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node1->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+  // Set page node 6 focused to raise its priority.
+  page_node1->SetIsVisible(true);
+  page_node1->SetIsFocused(true);
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Processes with descending importance.
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+
+  ASSERT_TRUE(processes.contains(kProcessId1));
+  ASSERT_EQ(processes[kProcessId1].last_visible, base::TimeTicks::Now());
+}
+
+TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimePast) {
+  constexpr base::ProcessId kProcessId1 = 6;
+
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node1->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+  // Set page node 6 focused to raise its priority.
+  page_node1->SetIsVisible(true);
+  page_node1->SetIsFocused(true);
+  AdvanceClock(base::Minutes(30));
+  page_node1->SetIsVisible(false);
+  page_node1->SetIsFocused(false);
+  AdvanceClock(base::Minutes(30));
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Processes with descending importance.
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+
+  ASSERT_TRUE(processes.contains(kProcessId1));
+  ASSERT_EQ(processes[kProcessId1].last_visible,
+            base::TimeTicks::Now() - base::Minutes(30));
+}
+
 }  // namespace performance_manager::policies
