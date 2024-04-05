@@ -541,38 +541,43 @@ void ProfileMenuView::BuildIdentity() {
             ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
             : base::UTF8ToUTF16(account_info.email);
     auto account_manager = chrome::GetAccountManagerIdentity(profile);
-    management_label_ =
-        account_manager
-            ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,
-                                         base::UTF8ToUTF16(*account_manager))
-            : std::u16string();
-
-    auto management_environment =
-        chrome::enterprise_util::GetManagementEnvironment(
-            profile, identity_manager->FindExtendedAccountInfoByAccountId(
-                         identity_manager->GetPrimaryAccountId(
-                             signin::ConsentLevel::kSignin)));
-
+    std::u16string management_label;
     ui::ImageModel badge_image_model;
-    if (management_environment !=
-        chrome::enterprise_util::ManagementEnvironment::kNone) {
-      policy::BrowserManagementService* management_service =
-          static_cast<policy::BrowserManagementService*>(
-              policy::ManagementServiceFactory::GetForProfile(
-                  browser()->profile()));
-      if (management_service->GetMetadata().GetManagementLogo().IsEmpty()) {
-        badge_image_model = ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
-      } else {
-        badge_image_model = ui::ImageModel::FromImage(
-            management_service->GetMetadata().GetManagementLogo());
+
+    if (chrome::enterprise_util::CanShowEnterpriseBadging(
+            browser()->profile())) {
+      management_label =
+          account_manager
+              ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,
+                                           base::UTF8ToUTF16(*account_manager))
+              : std::u16string();
+
+      auto management_environment =
+          chrome::enterprise_util::GetManagementEnvironment(
+              profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                           identity_manager->GetPrimaryAccountId(
+                               signin::ConsentLevel::kSignin)));
+
+      if (management_environment !=
+          chrome::enterprise_util::ManagementEnvironment::kNone) {
+        policy::BrowserManagementService* management_service =
+            static_cast<policy::BrowserManagementService*>(
+                policy::ManagementServiceFactory::GetForProfile(
+                    browser()->profile()));
+        if (management_service->GetMetadata().GetManagementLogo().IsEmpty()) {
+          badge_image_model = ui::ImageModel::FromVectorIcon(
+              vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
+        } else {
+          badge_image_model = ui::ImageModel::FromImage(
+              management_service->GetMetadata().GetManagementLogo());
+        }
       }
     }
 
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(account_info.account_image),
-        badge_image_model, menu_title_, menu_subtitle_, management_label_);
+        badge_image_model, menu_title_, menu_subtitle_, management_label);
   } else {
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
             switches::ExplicitBrowserSigninPhase::kExperimental) &&
@@ -585,7 +590,7 @@ void ProfileMenuView::BuildIdentity() {
     menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     // The email may be empty.
     menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
-    management_label_ = std::u16string();
+    std::u16string management_label;
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
@@ -599,7 +604,7 @@ void ProfileMenuView::BuildIdentity() {
             !account_info.IsEmpty()
                 ? account_info.account_image
                 : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
-        ui::ImageModel(), menu_title_, menu_subtitle_, management_label_);
+        ui::ImageModel(), menu_title_, menu_subtitle_, management_label);
   }
 }
 
@@ -608,7 +613,7 @@ void ProfileMenuView::BuildGuestIdentity() {
 
   menu_title_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
   menu_subtitle_ = std::u16string();
-  management_label_ = std::u16string();
+  std::u16string management_label;
   if (guest_window_count > 1) {
     menu_subtitle_ = l10n_util::GetPluralStringFUTF16(
         IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
@@ -620,7 +625,7 @@ void ProfileMenuView::BuildGuestIdentity() {
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
-      ui::ImageModel(), menu_title_, menu_subtitle_, management_label_,
+      ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
       header_art_icon);
 }
 

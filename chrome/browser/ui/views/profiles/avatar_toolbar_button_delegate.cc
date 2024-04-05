@@ -98,7 +98,7 @@ bool IsErrorSyncPaused(Profile* profile) {
 // - true for Work.
 // - false for School.
 bool IsManagementWork(Profile* profile) {
-  CHECK(base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging));
+  CHECK(chrome::enterprise_util::CanShowEnterpriseBadging(profile));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto management_environment =
       chrome::enterprise_util::GetManagementEnvironment(
@@ -534,14 +534,16 @@ class ManagementStateProvider : public StateProvider,
       const AvatarToolbarButton& avatar_toolbar_button)
       : StateProvider(state_observer),
         profile_(profile),
-        avatar_toolbar_button_(avatar_toolbar_button),
-        user_accepted_account_management_(
-            chrome::enterprise_util::UserAcceptedAccountManagement(
-                &profile_.get())) {
+        avatar_toolbar_button_(avatar_toolbar_button) {
     BrowserList::AddObserver(this);
     profile_observation_.Observe(&GetProfileAttributesStorage());
 
     pref_change_registrar_.Init(profile_->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kEnterpriseBadgingTemporarySetting,
+        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            ElementToUpdate::kText));
     pref_change_registrar_.Add(
         prefs::kCustomProfileLabel,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
@@ -558,7 +560,7 @@ class ManagementStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
-    return user_accepted_account_management_ &&
+    return chrome::enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
            (!IsTransient() || temporarily_showing_);
   }
 
@@ -572,9 +574,7 @@ class ManagementStateProvider : public StateProvider,
   // ProfileAttributesStorage::Observer:
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override {
-    user_accepted_account_management_ =
-        chrome::enterprise_util::UserAcceptedAccountManagement(&profile_.get());
-    if (!user_accepted_account_management_) {
+    if (!chrome::enterprise_util::CanShowEnterpriseBadging(&profile_.get())) {
       RequestUpdate(ElementToUpdate::kAll);
       return;
     }

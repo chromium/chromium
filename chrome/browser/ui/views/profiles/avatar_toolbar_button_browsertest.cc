@@ -40,6 +40,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -927,43 +928,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Test suite for testing `AvatarToolbarButton`'s responsibility of updating
-// color information in `ProfileAttributesStorage`.
-class AvatarToolbarButtonEnterpriseBadgingParamBrowserTest
-    : public AvatarToolbarButtonBrowserTest,
-      public base::test::WithFeatureOverride {
- public:
-  AvatarToolbarButtonEnterpriseBadgingParamBrowserTest()
-      : base::test::WithFeatureOverride(features::kEnterpriseProfileBadging) {}
-};
-
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
-                       WorkProfileTextBadging) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
-  std::u16string work_label = u"Work";
-  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
-    EXPECT_EQ(avatar_button->GetText(), work_label);
-    auto clear_closure = avatar_button->ShowExplicitText(u"Explicit text");
-    EXPECT_NE(avatar_button->GetText(), work_label);
-    clear_closure.RunAndReset();
-    EXPECT_EQ(avatar_button->GetText(), work_label);
-  } else {
-    EXPECT_NE(avatar_button->GetText(), work_label);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    auto clear_closure = avatar_button->ShowExplicitText(u"Explicit text");
-    EXPECT_NE(avatar_button->GetText(), work_label);
-    clear_closure.RunAndReset();
-    EXPECT_NE(avatar_button->GetText(), work_label);
-#endif
-  }
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    AvatarToolbarButtonEnterpriseBadgingParamBrowserTest);
-
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
@@ -991,6 +955,15 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
+  void SetUpOnMainThread() override {
+    // // Ensure enterprise badging can be shown.
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kEnterpriseBadgingTemporarySetting,
+        chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::
+            kShowOnAllDevices);
+    AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
+  }
+
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -998,14 +971,60 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTranientModeTimesOut) {
+                       WorkProfileTextBadging) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-
+  // Ensure enterprise badging can be shown.
   std::u16string work_label = u"Work";
+
+  {
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+        browser()->profile(), true);
+    EXPECT_EQ(avatar_button->GetText(), work_label);
+    auto clear_closure = avatar_button->ShowExplicitText(u"Explicit text");
+    EXPECT_NE(avatar_button->GetText(), work_label);
+    clear_closure.RunAndReset();
+    EXPECT_EQ(avatar_button->GetText(), work_label);
+  }
+
+  {
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+        browser()->profile(), false);
+    EXPECT_NE(avatar_button->GetText(), work_label);
+    auto clear_closure = avatar_button->ShowExplicitText(u"Explicit text");
+    EXPECT_NE(avatar_button->GetText(), work_label);
+    clear_closure.RunAndReset();
+    EXPECT_NE(avatar_button->GetText(), work_label);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkProfileTextBadgingUpdating) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Ensure enterprise badging can be shown.
+  std::u16string work_label = u"Work";
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kEnterpriseBadgingTemporarySetting,
+      chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::kHide);
+  EXPECT_NE(avatar_button->GetText(), work_label);
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kEnterpriseBadgingTemporarySetting,
+      chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::
+          kShowOnAllDevices);
+
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkBadgeOnTransientModeTimesOut) {
+  std::u16string work_label = u"Work";
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   AvatarToolbarButtonTestObserver observer(avatar_button);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);

@@ -395,10 +395,7 @@ class AvatarImageView : public views::ImageView {
                   const ui::ImageModel& management_badge,
                   const ProfileMenuViewBase* root_view)
       : avatar_image_(avatar_image),
-        management_badge_(
-            base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)
-                ? management_badge
-                : ui::ImageModel()),
+        management_badge_(management_badge),
         root_view_(root_view) {
     if (avatar_image_.IsEmpty()) {
       // This can happen if the account image hasn't been fetched yet, if there
