@@ -110,8 +110,9 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
 
 void MemoryPressureLevelReporter::StartPeriodicTimer() {
   // Don't try to start the timer in tests that don't support it.
-  if (!base::SequencedTaskRunner::HasCurrentDefault())
+  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
     return;
+  }
   periodic_reporting_timer_.Start(
       FROM_HERE, base::Minutes(5),
       base::BindOnce(&MemoryPressureLevelReporter::OnMemoryPressureLevelChanged,

@@ -79,10 +79,12 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   // memory model.
   int GenerateTotalMemoryMb(bool large_memory) {
     int total_mb = 64;
-    while (total_mb < SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb)
+    while (total_mb < SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb) {
       total_mb *= 2;
-    if (large_memory)
+    }
+    if (large_memory) {
       return total_mb * 2;
+    }
     return total_mb / 2;
   }
 

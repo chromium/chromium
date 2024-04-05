@@ -5,6 +5,7 @@
 #include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 
 #include <windows.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -59,8 +60,9 @@ MemoryPressureWatcherDelegate::~MemoryPressureWatcherDelegate() = default;
 
 void MemoryPressureWatcherDelegate::ReplaceWatchedHandleForTesting(
     base::win::ScopedHandle handle) {
-  if (watcher_.IsWatching())
+  if (watcher_.IsWatching()) {
     watcher_.StopWatching();
+  }
   handle_ = std::move(handle);
   CHECK(watcher_.StartWatchingOnce(handle_.Get(), this));
 }
@@ -284,8 +286,9 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   MEMORYSTATUSEX mem_status = {};
-  if (!GetSystemMemoryStatus(&mem_status))
+  if (!GetSystemMemoryStatus(&mem_status)) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
 
   // How much system memory is actively available for use right now, in MBs.
   int phys_free = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
@@ -299,12 +302,14 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   // system memory pressure.
 
   // Determine if the physical memory is under critical memory pressure.
-  if (phys_free <= critical_threshold_mb_)
+  if (phys_free <= critical_threshold_mb_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  }
 
   // Determine if the physical memory is under moderate memory pressure.
-  if (phys_free <= moderate_threshold_mb_)
+  if (phys_free <= moderate_threshold_mb_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+  }
 
   // No memory pressure was detected.
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
@@ -314,8 +319,9 @@ bool SystemMemoryPressureEvaluator::GetSystemMemoryStatus(
     MEMORYSTATUSEX* mem_status) {
   DCHECK(mem_status);
   mem_status->dwLength = sizeof(*mem_status);
-  if (!::GlobalMemoryStatusEx(mem_status))
+  if (!::GlobalMemoryStatusEx(mem_status)) {
     return false;
+  }
   return true;
 }
 
