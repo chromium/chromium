@@ -1405,6 +1405,7 @@ public class TabGridDialogTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
+    @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_TabGroupColorChange(boolean nightModeEnabled) throws Exception {
