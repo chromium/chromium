@@ -554,7 +554,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
 }
 
 std::vector<const Iban*> PersonalDataManager::GetLocalIbans() const {
-  std::vector<const Iban*> result;
   return payments_data_manager_->GetLocalIbans();
 }
 
@@ -735,36 +734,6 @@ const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
   return experiment_country_code_;
 }
 
-bool PersonalDataManager::IsCardPresentAsBothLocalAndServerCards(
-    const CreditCard& credit_card) {
-  for (CreditCard* card_from_list : GetCreditCards()) {
-    if (credit_card.IsLocalOrServerDuplicateOf(*card_from_list)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
-    const CreditCard* local_card) const {
-  DCHECK(local_card);
-  if (local_card->record_type() != CreditCard::RecordType::kLocalCard) {
-    return nullptr;
-  }
-
-  std::vector<CreditCard*> server_cards = GetServerCreditCards();
-  auto it =
-      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
-        return local_card->IsLocalOrServerDuplicateOf(*server_card);
-      });
-
-  if (it != server_cards.end()) {
-    return *it;
-  }
-
-  return nullptr;
-}
-
 bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
   // TODO(crbug.com/40066949): Remove this method in favor of
   // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
@@ -925,33 +894,7 @@ bool PersonalDataManager::SaveCardLocallyIfNew(
   credit_cards.push_back(imported_card);
 
   SetCreditCards(&credit_cards);
-
-  OnCreditCardSaved(/*is_local_card=*/true);
   return true;
-}
-
-std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
-    const CreditCard& imported_card) {
-  DCHECK(!imported_card.number().empty());
-  return SaveImportedCreditCard(imported_card);
-}
-
-std::string PersonalDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
-  DCHECK(!imported_iban.value().empty());
-  // If an existing IBAN is found, call `UpdateIban()`, otherwise,
-  // `AddAsLocalIban()`. `local_ibans_` will be in sync with the local web
-  // database as of `Refresh()` which will be called by both `UpdateIban()` and
-  // `AddAsLocalIban()`.
-  for (auto& iban : payments_data_manager_->local_ibans_) {
-    if (iban->value() == imported_iban.value()) {
-      // Set the GUID of the IBAN to the one that matches it in
-      // `local_ibans_` so that UpdateIban() will be able to update the
-      // specific IBAN.
-      imported_iban.set_identifier(Iban::Guid(iban->guid()));
-      return UpdateIban(imported_iban);
-    }
-  }
-  return AddAsLocalIban(std::move(imported_iban));
 }
 
 void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
@@ -966,77 +909,6 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   // production (as we no longer re-mask cards in this method), but tests may
   // depend on it still. Investigate and remove if possible.
   OnStateChanged(sync_service_);
-}
-
-std::string PersonalDataManager::SaveImportedCreditCard(
-    const CreditCard& imported_card) {
-  // Set to true if |imported_card| is merged into the credit card list.
-  bool merged = false;
-
-  std::string guid = imported_card.guid();
-  std::vector<CreditCard> credit_cards;
-  for (auto& card : payments_data_manager_->local_credit_cards_) {
-    // If |imported_card| has not yet been merged, check whether it should be
-    // with the current |card|.
-    if (!merged && card->UpdateFromImportedCard(imported_card, app_locale_)) {
-      guid = card->guid();
-      merged = true;
-    }
-
-    credit_cards.push_back(*card);
-  }
-
-  if (!merged)
-    credit_cards.push_back(imported_card);
-
-  SetCreditCards(&credit_cards);
-
-  // After a card is saved locally, notifies the observers.
-  OnCreditCardSaved(/*is_local_card=*/true);
-
-  return guid;
-}
-
-bool PersonalDataManager::IsKnownCard(const CreditCard& credit_card) const {
-  const auto stripped_pan = CreditCard::StripSeparators(credit_card.number());
-  for (const auto& card : payments_data_manager_->local_credit_cards_) {
-    if (stripped_pan == CreditCard::StripSeparators(card->number()))
-      return true;
-  }
-
-  const auto masked_info = credit_card.NetworkAndLastFourDigits();
-  for (const auto& card : payments_data_manager_->server_credit_cards_) {
-    switch (card->record_type()) {
-      case CreditCard::RecordType::kFullServerCard:
-        if (stripped_pan == CreditCard::StripSeparators(card->number()))
-          return true;
-        break;
-      case CreditCard::RecordType::kMaskedServerCard:
-        if (masked_info == card->NetworkAndLastFourDigits())
-          return true;
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  return false;
-}
-
-bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
-  // Check whether the current card itself is a server card.
-  if (credit_card->record_type() != CreditCard::RecordType::kLocalCard) {
-    return true;
-  }
-
-  std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
-  // Check whether the current card is already uploaded.
-  for (const CreditCard* server_card : server_credit_cards) {
-    if (credit_card->MatchingCardDetails(*server_card)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
@@ -1104,8 +976,6 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   }
   change_callbacks_.clear();
 }
-
-void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
 
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
   DCHECK(payments_data_manager_->database_helper_);

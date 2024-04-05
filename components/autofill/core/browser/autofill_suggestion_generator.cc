@@ -1791,7 +1791,8 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
   switch (candidate_card->record_type()) {
     case CreditCard::RecordType::kLocalCard:
       candidate_server_card =
-          personal_data().GetServerCardForLocalCard(candidate_card);
+          personal_data().payments_data_manager().GetServerCardForLocalCard(
+              candidate_card);
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       candidate_server_card = candidate_card;
@@ -2084,7 +2085,8 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     FieldType trigger_field_type) const {
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
-        personal_data().GetServerCardForLocalCard(&credit_card);
+        personal_data().payments_data_manager().GetServerCardForLocalCard(
+            &credit_card);
     DCHECK(server_duplicate_card);
     suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
   }

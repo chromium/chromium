@@ -271,6 +271,39 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
+  // Check if `credit_card` has a duplicate card present in either Local or
+  // Server card lists.
+  bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
+
+  // Returns a pointer to the server card that has duplicate information of the
+  // `local_card`. It is not guaranteed that a server card is found. If not,
+  // nullptr is returned.
+  const CreditCard* GetServerCardForLocalCard(
+      const CreditCard* local_card) const;
+
+  // Called when the user accepts the prompt to save the credit card locally.
+  // Records some metrics and attempts to save the imported card. Returns the
+  // guid of the new or updated card, or the empty string if no card was saved.
+  std::string OnAcceptedLocalCreditCardSave(
+      const CreditCard& imported_credit_card);
+
+  // Returns the GUID of `imported_iban` if it is successfully added or updated,
+  // or an empty string otherwise.
+  // Called when the user accepts the prompt to save the IBAN locally.
+  // The function will sets the GUID of `imported_iban` to the one that matches
+  // it in `local_ibans_` so that UpdateIban() will be able to update the
+  // specific IBAN.
+  std::string OnAcceptedLocalIbanSave(Iban imported_iban);
+
+  // This function assumes |credit_card| contains the full PAN. Returns |true|
+  // if the card number of |credit_card| is equal to any local card or any
+  // unmasked server card known by the browser, or |TypeAndLastFourDigits| of
+  // |credit_card| is equal to any masked server card known by the browser.
+  bool IsKnownCard(const CreditCard& credit_card) const;
+
+  // Check whether a card is a server card or has a duplicated server card.
+  bool IsServerCard(const CreditCard* credit_card) const;
+
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
@@ -405,6 +438,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Clears all the credit card benefits from the webdata database.
   void ClearAllCreditCardBenefits();
+
+  // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
+  // the new or updated card, or the empty string if no card was saved.
+  virtual std::string SaveImportedCreditCard(
+      const CreditCard& imported_credit_card);
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;

@@ -229,8 +229,9 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       // Clear all IbanSave strikes for this IBAN, so that if it's later removed
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
-      client_->GetPersonalDataManager()->OnAcceptedLocalIbanSave(
-          std::move(import_candidate));
+      client_->GetPersonalDataManager()
+          ->payments_data_manager()
+          .OnAcceptedLocalIbanSave(std::move(import_candidate));
       if (observer_for_testing_) {
         observer_for_testing_->OnAcceptSaveIbanComplete();
       }

@@ -724,7 +724,7 @@ GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
 
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
-        pdm_->GetServerCardForLocalCard(&credit_card);
+        GetServerCardForLocalCard(&credit_card);
     if (server_duplicate_card) {
       return server_duplicate_card->card_art_url();
     }
@@ -803,6 +803,105 @@ bool PaymentsDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
 
 void PaymentsDataManager::SetAutofillHasSeenIban() {
   prefs::SetAutofillHasSeenIban(pref_service_);
+}
+
+bool PaymentsDataManager::IsCardPresentAsBothLocalAndServerCards(
+    const CreditCard& credit_card) {
+  for (CreditCard* card_from_list : GetCreditCards()) {
+    if (credit_card.IsLocalOrServerDuplicateOf(*card_from_list)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const CreditCard* PaymentsDataManager::GetServerCardForLocalCard(
+    const CreditCard* local_card) const {
+  DCHECK(local_card);
+  if (local_card->record_type() != CreditCard::RecordType::kLocalCard) {
+    return nullptr;
+  }
+
+  std::vector<CreditCard*> server_cards = GetServerCreditCards();
+  auto it =
+      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
+        return local_card->IsLocalOrServerDuplicateOf(*server_card);
+      });
+
+  if (it != server_cards.end()) {
+    return *it;
+  }
+
+  return nullptr;
+}
+
+std::string PaymentsDataManager::OnAcceptedLocalCreditCardSave(
+    const CreditCard& imported_card) {
+  DCHECK(!imported_card.number().empty());
+  return SaveImportedCreditCard(imported_card);
+}
+
+std::string PaymentsDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
+  DCHECK(!imported_iban.value().empty());
+  // If an existing IBAN is found, call `UpdateIban()`, otherwise,
+  // `AddAsLocalIban()`. `local_ibans_` will be in sync with the local web
+  // database as of `Refresh()` which will be called by both `UpdateIban()` and
+  // `AddAsLocalIban()`.
+  for (auto& iban : local_ibans_) {
+    if (iban->value() == imported_iban.value()) {
+      // Set the GUID of the IBAN to the one that matches it in
+      // `local_ibans_` so that UpdateIban() will be able to update the
+      // specific IBAN.
+      imported_iban.set_identifier(Iban::Guid(iban->guid()));
+      return UpdateIban(imported_iban);
+    }
+  }
+  return AddAsLocalIban(std::move(imported_iban));
+}
+
+bool PaymentsDataManager::IsKnownCard(const CreditCard& credit_card) const {
+  const auto stripped_pan = CreditCard::StripSeparators(credit_card.number());
+  for (const auto& card : local_credit_cards_) {
+    if (stripped_pan == CreditCard::StripSeparators(card->number())) {
+      return true;
+    }
+  }
+
+  const auto masked_info = credit_card.NetworkAndLastFourDigits();
+  for (const auto& card : server_credit_cards_) {
+    switch (card->record_type()) {
+      case CreditCard::RecordType::kFullServerCard:
+        if (stripped_pan == CreditCard::StripSeparators(card->number())) {
+          return true;
+        }
+        break;
+      case CreditCard::RecordType::kMaskedServerCard:
+        if (masked_info == card->NetworkAndLastFourDigits()) {
+          return true;
+        }
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  return false;
+}
+
+bool PaymentsDataManager::IsServerCard(const CreditCard* credit_card) const {
+  // Check whether the current card itself is a server card.
+  if (credit_card->record_type() != CreditCard::RecordType::kLocalCard) {
+    return true;
+  }
+
+  std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
+  // Check whether the current card is already uploaded.
+  for (const CreditCard* server_card : server_credit_cards) {
+    if (credit_card->MatchingCardDetails(*server_card)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::vector<VirtualCardUsageData*>
@@ -1506,6 +1605,32 @@ size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
   return base::ranges::count_if(
       server_credit_cards_.begin(), server_credit_cards_.end(),
       [](const auto& card) { return card->card_art_url().is_valid(); });
+}
+
+std::string PaymentsDataManager::SaveImportedCreditCard(
+    const CreditCard& imported_card) {
+  // Set to true if |imported_card| is merged into the credit card list.
+  bool merged = false;
+  std::string guid = imported_card.guid();
+  std::vector<CreditCard> credit_cards;
+  for (auto& card : local_credit_cards_) {
+    // If |imported_card| has not yet been merged, check whether it should be
+    // with the current |card|.
+    if (!merged && card->UpdateFromImportedCard(imported_card, app_locale_)) {
+      guid = card->guid();
+      merged = true;
+    }
+
+    credit_cards.push_back(*card);
+  }
+
+  if (!merged) {
+    credit_cards.push_back(imported_card);
+  }
+
+  SetCreditCards(&credit_cards);
+
+  return guid;
 }
 
 }  // namespace autofill

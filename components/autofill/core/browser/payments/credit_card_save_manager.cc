@@ -441,11 +441,6 @@ void CreditCardSaveManager::OnDidUploadCard(
           upload_card_response_details.instrument_id.value(),
           upload_request_.card.cvc());
     }
-
-    // After a card is successfully saved to server, notifies the
-    // |personal_data_manager_|. PDM uses this information to update the avatar
-    // button UI.
-    personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
   } else {
     // If the upload failed, fallback to a local card save.
     // Do not save if card does not have the expiration month or the year
@@ -812,8 +807,8 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       GetLocalCardMigrationStrikeDatabase()->RemoveStrikes(
           LocalCardMigrationStrikeDatabase::kStrikesToRemoveWhenLocalCardAdded);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      personal_data_manager_->OnAcceptedLocalCreditCardSave(
-          card_save_candidate_);
+      personal_data_manager_->payments_data_manager()
+          .OnAcceptedLocalCreditCardSave(card_save_candidate_);
       break;
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:

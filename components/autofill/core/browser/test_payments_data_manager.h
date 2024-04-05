@@ -45,6 +45,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void ClearServerCvcs() override;
   void ClearLocalCvcs() override;
   bool IsAutofillPaymentMethodsEnabled() const override;
+  std::string SaveImportedCreditCard(
+      const CreditCard& imported_credit_card) override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();

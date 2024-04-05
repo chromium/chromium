@@ -178,8 +178,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       if (!has_logged_masked_server_card_suggestion_selected_) {
         has_logged_masked_server_card_suggestion_selected_ = true;
         Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, form);
-        if (personal_data_manager_->IsCardPresentAsBothLocalAndServerCards(
-                credit_card)) {
+        if (personal_data_manager_->payments_data_manager()
+                .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_SERVER_CARD_SUGGESTION_SELECTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE,
               form);
         }
@@ -381,8 +381,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       case CreditCard::RecordType::kLocalCard:
         // Check if the local card is a duplicate of an existing server card
         // and log an additional metric if so.
-        if (personal_data_manager_->IsCardPresentAsBothLocalAndServerCards(
-                credit_card)) {
+        if (personal_data_manager_->payments_data_manager()
+                .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
               form);
         }
@@ -390,8 +390,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         break;
       case CreditCard::RecordType::kMaskedServerCard:
         Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, form);
-        if (personal_data_manager_->IsCardPresentAsBothLocalAndServerCards(
-                credit_card)) {
+        if (personal_data_manager_->payments_data_manager()
+                .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_SERVER_CARD_FILLED_FOR_AN_EXISTING_LOCAL_CARD_ONCE,
               form);
           server_card_with_local_duplicate_filled_ = true;
@@ -634,7 +634,8 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
   } else if (!PassesLuhnCheck(number)) {
     form_event =
         FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_FAIL_LUHN_CHECK_CARD;
-  } else if (personal_data_manager_->IsKnownCard(credit_card)) {
+  } else if (personal_data_manager_->payments_data_manager().IsKnownCard(
+                 credit_card)) {
     form_event = FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_KNOWN_CARD;
   }
 

@@ -331,7 +331,8 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
   card.metadata->is_migratable =
-      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
+      credit_card.IsValid() &&
+      !personal_data.payments_data_manager().IsServerCard(&credit_card);
   card.metadata->is_virtual_card_enrollment_eligible =
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled ||

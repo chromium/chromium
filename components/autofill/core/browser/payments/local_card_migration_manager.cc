@@ -336,11 +336,6 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
       }
     }
 
-    // If at least one card was migrated, notifies the |personal_data_manager_|.
-    // PDM uses this information to update the avatar button UI.
-    if (!migrated_cards.empty())
-      personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
-
     // Remove cards that were successfully migrated from local storage.
     personal_data_manager_->DeleteLocalCreditCards(migrated_cards);
   }
@@ -448,8 +443,9 @@ void LocalCardMigrationManager::GetMigratableCreditCards() {
     // not expired) and is not a server card, add it to the list of migratable
     // cards.
     if (credit_card->IsValid() &&
-        !personal_data_manager_->IsServerCard(credit_card)) {
-      migratable_credit_cards_.push_back(MigratableCreditCard(*credit_card));
+        !personal_data_manager_->payments_data_manager().IsServerCard(
+            credit_card)) {
+      migratable_credit_cards_.emplace_back(*credit_card);
     }
   }
 }

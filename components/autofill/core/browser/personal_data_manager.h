@@ -221,20 +221,6 @@ class PersonalDataManager : public KeyedService,
   // and return false. If the card is new, save it locally and return true.
   virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
 
-  // Called when the user accepts the prompt to save the credit card locally.
-  // Records some metrics and attempts to save the imported card. Returns the
-  // guid of the new or updated card, or the empty string if no card was saved.
-  std::string OnAcceptedLocalCreditCardSave(
-      const CreditCard& imported_credit_card);
-
-  // Returns the GUID of `imported_iban` if it is successfully added or updated,
-  // or an empty string otherwise.
-  // Called when the user accepts the prompt to save the IBAN locally.
-  // The function will sets the GUID of `imported_iban` to the one that matches
-  // it in `local_ibans_` so that UpdateIban() will be able to update the
-  // specific IBAN.
-  std::string OnAcceptedLocalIbanSave(Iban imported_iban);
-
   // Adds |profile| to the web database.
   virtual void AddProfile(const AutofillProfile& profile);
 
@@ -494,28 +480,9 @@ class PersonalDataManager : public KeyedService,
   // Returns all virtual card usage data linked to the credit card.
   virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
 
-  // Check if `credit_card` has a duplicate card present in either Local or
-  // Server card lists.
-  bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
-
-  // Returns a pointer to the server card that has duplicate information of the
-  // `local_card`. It is not guaranteed that a server card is found. If not,
-  // nullptr is returned.
-  const CreditCard* GetServerCardForLocalCard(
-      const CreditCard* local_card) const;
-
   bool HasPendingPaymentQueriesForTesting() const {
     return payments_data_manager_->HasPendingPaymentQueries();
   }
-
-  // This function assumes |credit_card| contains the full PAN. Returns |true|
-  // if the card number of |credit_card| is equal to any local card or any
-  // unmasked server card known by the browser, or |TypeAndLastFourDigits| of
-  // |credit_card| is equal to any masked server card known by the browser.
-  bool IsKnownCard(const CreditCard& credit_card) const;
-
-  // Check whether a card is a server card or has a duplicated server card.
-  bool IsServerCard(const CreditCard* credit_card) const;
 
   // Sets the value that can skip the checks to see if we are syncing in a test.
   void SetSyncingForTest(bool is_syncing_for_test) {
@@ -546,12 +513,6 @@ class PersonalDataManager : public KeyedService,
   // that the data exposed through the PDM matches the database,
   // `OnPersonalDataFinishedProfileTasks()` is triggered.
   void NotifyPersonalDataObserver();
-
-  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
-  // to be added again. In the new proposal, we may not need to go through PDM.
-  // Called when at least one (can be multiple) card was saved. |is_local_card|
-  // indicates if the card is saved to local storage.
-  void OnCreditCardSaved(bool is_local_card);
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const;
@@ -671,11 +632,6 @@ class PersonalDataManager : public KeyedService,
   // but its preferences can already be queried. Can also be a nullptr
   // if it is disabled by CLI.
   void SetSyncService(syncer::SyncService* sync_service);
-
-  // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
-  // the new or updated card, or the empty string if no card was saved.
-  virtual std::string SaveImportedCreditCard(
-      const CreditCard& imported_credit_card);
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();

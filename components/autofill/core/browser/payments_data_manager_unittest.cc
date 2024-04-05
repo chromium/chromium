@@ -1844,4 +1844,249 @@ TEST_F(PaymentsDataManagerTest,
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
 }
 
+// Ensure that verified credit cards can be saved via
+// OnAcceptedLocalCreditCardSave.
+TEST_F(PaymentsDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {
+  // Start with a verified credit card.
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kSettingsOrigin);
+  test::SetCreditCardInfo(&credit_card, "Biggie Smalls",
+                          "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
+  EXPECT_TRUE(credit_card.IsVerified());
+
+  // Add the credit card to the database.
+  personal_data_->AddCreditCard(credit_card);
+
+  // Make sure everything is set up correctly.
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  CreditCard new_verified_card = credit_card;
+  new_verified_card.set_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  new_verified_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"B. Small");
+  EXPECT_TRUE(new_verified_card.IsVerified());
+
+  personal_data_->payments_data_manager().OnAcceptedLocalCreditCardSave(
+      new_verified_card);
+
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Expect that the saved credit card is updated.
+  const std::vector<CreditCard*>& results = personal_data_->GetCreditCards();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(u"B. Small", results[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+}
+
+// Ensure that new IBANs can be updated and saved via
+// `OnAcceptedLocalIbanSave()`.
+TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
+  // Start with a new IBAN.
+  Iban iban0;
+  iban0.set_value(std::u16string(test::kIbanValue16));
+  // Add the IBAN to the database.
+  std::string guid =
+      personal_data_->payments_data_manager().OnAcceptedLocalIbanSave(iban0);
+  iban0.set_identifier(Iban::Guid(guid));
+  iban0.set_record_type(Iban::kLocalIban);
+
+  // Make sure everything is set up correctly.
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetLocalIbans().size());
+
+  // Creates a new IBAN and call `OnAcceptedLocalIbanSave()` and verify that
+  // the new IBAN is saved.
+  Iban iban1;
+  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
+  guid = personal_data_->payments_data_manager().OnAcceptedLocalIbanSave(iban1);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  iban1.set_identifier(Iban::Guid(guid));
+  iban1.set_record_type(Iban::kLocalIban);
+
+  // Expect that the new IBAN is added.
+  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
+
+  std::vector<const Iban*> ibans;
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban1);
+  // Verify that we've loaded the IBAN from the web database.
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+
+  // Creates a new `iban2` which has the same value as `iban0` but with
+  // different nickname and call `OnAcceptedLocalIbanSave()`.
+  Iban iban2 = iban0;
+  iban2.set_nickname(u"Nickname 2");
+  personal_data_->payments_data_manager().OnAcceptedLocalIbanSave(iban2);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  // Updates the nickname for `iban1` and call `OnAcceptedLocalIbanSave()`.
+  iban1.set_nickname(u"Nickname 1 updated");
+  personal_data_->payments_data_manager().OnAcceptedLocalIbanSave(iban1);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  ibans.clear();
+  ibans.push_back(&iban1);
+  ibans.push_back(&iban2);
+  // Expect that the existing IBANs are updated.
+  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
+
+  // Verify that we've loaded the IBANs from the web database.
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+
+  // Call `OnAcceptedLocalIbanSave()` with the same iban1, verify that nothing
+  // changes.
+  personal_data_->payments_data_manager().OnAcceptedLocalIbanSave(iban1);
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+
+  // Reset the PersonalDataManager. This tests that the IBANs are persisted
+  // in the local web database even if the browser is re-loaded, ensuring that
+  // the user can load the IBANs from the local web database on browser startup.
+  ResetPersonalDataManager();
+  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+}
+
+TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
+  // Add a masked server card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
+  test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
+                          "2110" /* last 4 digits */, "12", "2999", "1");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+
+  SetServerCards(server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  CreditCard cardToCompare;
+  cardToCompare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
+  ASSERT_TRUE(
+      personal_data_->payments_data_manager().IsKnownCard(cardToCompare));
+}
+
+TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesLocalCard) {
+  // Add a local card.
+  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                          test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
+                          "4234 5678 9012 2110" /* Visa */, "04", "2999", "1");
+  personal_data_->AddCreditCard(credit_card0);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  CreditCard cardToCompare;
+  cardToCompare.SetNumber(u"4234567890122110" /* Visa */);
+  ASSERT_TRUE(
+      personal_data_->payments_data_manager().IsKnownCard(cardToCompare));
+}
+
+TEST_F(PaymentsDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
+  // Add a local card.
+  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                          test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
+                          "4234 5678 9012 2110" /* Visa */, "04", "2999", "1");
+  personal_data_->AddCreditCard(credit_card0);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  CreditCard cardToCompare;
+  cardToCompare.SetNumber(u"5105 1051 0510 2110" /* American Express */);
+  ASSERT_FALSE(
+      personal_data_->payments_data_manager().IsKnownCard(cardToCompare));
+}
+
+TEST_F(PaymentsDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
+  // Add a local card.
+  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                          test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
+                          "4234 5678 9012 2110" /* Visa */, "04", "2999", "1");
+  personal_data_->AddCreditCard(credit_card0);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  CreditCard cardToCompare;
+  cardToCompare.SetNumber(u"4234 5678 9012 0000" /* Visa */);
+  ASSERT_FALSE(
+      personal_data_->payments_data_manager().IsKnownCard(cardToCompare));
+}
+
+TEST_F(PaymentsDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
+  // Add a masked server card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
+  test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
+                          "2110" /* last 4 digits */, "12", "2999", "1");
+  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
+
+  SetServerCards(server_cards);
+
+  // Add a dupe local card of a full server card.
+  CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                        test::kEmptyOrigin);
+  test::SetCreditCardInfo(&local_card, "Emmet Dalton",
+                          "4234 5678 9012 2110" /* Visa */, "12", "2999", "1");
+  personal_data_->AddCreditCard(local_card);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
+
+  CreditCard cardToCompare;
+  cardToCompare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
+  ASSERT_TRUE(
+      personal_data_->payments_data_manager().IsServerCard(&cardToCompare));
+  ASSERT_TRUE(
+      personal_data_->payments_data_manager().IsServerCard(&local_card));
+}
+
+TEST_F(PaymentsDataManagerTest, IsServerCard_AlreadyServerCard) {
+  std::vector<CreditCard> server_cards;
+  // Create a masked server card.
+  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&masked_card, "Homer Simpson", "2110" /* Visa */,
+                          "01", "2999", "1");
+  masked_card.SetNetworkForMaskedCard(kVisaCard);
+  server_cards.push_back(masked_card);
+
+  SetServerCards(server_cards);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  ASSERT_TRUE(
+      personal_data_->payments_data_manager().IsServerCard(&masked_card));
+}
+
+TEST_F(PaymentsDataManagerTest, IsServerCard_UniqueLocalCard) {
+  // Add a unique local card.
+  CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
+                        test::kEmptyOrigin);
+  test::SetCreditCardInfo(&local_card, "Homer Simpson",
+                          "4234567890123456" /* Visa */, "01", "2999", "1");
+  personal_data_->AddCreditCard(local_card);
+
+  // Make sure everything is set up correctly.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  ASSERT_FALSE(
+      personal_data_->payments_data_manager().IsServerCard(&local_card));
+}
+
 }  // namespace autofill

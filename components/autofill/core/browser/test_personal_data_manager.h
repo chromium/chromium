@@ -56,8 +56,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
   bool IsPaymentsWalletSyncTransportEnabled() const override;
-  std::string SaveImportedCreditCard(
-      const CreditCard& imported_credit_card) override;
   bool IsEligibleForAddressAccountStorage() const override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   bool IsAutofillWalletImportEnabled() const override;
@@ -105,10 +103,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     default_country_code_ = default_country_code;
   }
 
-  int num_times_save_imported_credit_card_called() const {
-    return num_times_save_imported_credit_card_called_;
-  }
-
   // TODO(b/322170538): Remove function from TestPDM.
   void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
     test_payments_data_manager().SetAutofillPaymentMethodsEnabled(
@@ -152,7 +146,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
  private:
   std::string default_country_code_;
-  int num_times_save_imported_credit_card_called_ = 0;
   std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> eligible_for_account_storage_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;

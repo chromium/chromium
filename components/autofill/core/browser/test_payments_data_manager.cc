@@ -175,6 +175,12 @@ void TestPaymentsDataManager::AddServerCvc(int64_t instrument_id,
   }
 }
 
+std::string TestPaymentsDataManager::SaveImportedCreditCard(
+    const CreditCard& imported_credit_card) {
+  AddCreditCard(imported_credit_card);
+  return imported_credit_card.guid();
+}
+
 void TestPaymentsDataManager::ClearServerCvcs() {
   for (CreditCard* card : GetServerCreditCards()) {
     if (!card->cvc().empty()) {

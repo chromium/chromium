@@ -34,13 +34,6 @@ bool TestPersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
   return PersonalDataManager::IsPaymentsWalletSyncTransportEnabled();
 }
 
-std::string TestPersonalDataManager::SaveImportedCreditCard(
-    const CreditCard& imported_credit_card) {
-  num_times_save_imported_credit_card_called_++;
-  AddCreditCard(imported_credit_card);
-  return imported_credit_card.guid();
-}
-
 bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
   return eligible_for_account_storage_.has_value()
              ? *eligible_for_account_storage_
