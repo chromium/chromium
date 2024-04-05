@@ -78,7 +78,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   const base::FilePath GetUserApplicationsDir() {
-    return override_registration_->test_override->applications_dir().Append(
+    return override_registration_->test_override().applications_dir().Append(
         "applications");
   }
 

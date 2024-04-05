@@ -46,6 +46,26 @@ struct LinuxFileRegistration {
 };
 #endif
 
+class OsIntegrationTestOverrideImpl;
+
+// Multiple of these classes can be created to ensure that OS integration is
+// faked during their lifetime. When the last one is destroyed, this blocks the
+// thread until all users of OsIntegrationTestOverride::Get() have destroyed any
+// saved `scoped_refptr<OsIntegrationTestOverride>`. This ensures that all os
+// integration (disk folders, windows registry changes, etc) have been removed.
+//
+// `test_override()` can be used to view or modify the OS state.
+class OsIntegrationTestOverrideBlockingRegistration {
+ public:
+  OsIntegrationTestOverrideBlockingRegistration();
+  ~OsIntegrationTestOverrideBlockingRegistration();
+
+  OsIntegrationTestOverrideImpl& test_override() const;
+
+ private:
+  scoped_refptr<OsIntegrationTestOverrideImpl> test_override_;
+};
+
 // See the `OsIntegrationTestOverride` base class documentation for more
 // information about the purpose of this class. This is the implementation, and
 // being test-only can include test-only code.
@@ -62,34 +82,16 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   using JumpListEntryMap =
       base::flat_map<std::wstring, std::vector<scoped_refptr<ShellLinkItem>>>;
 #endif
-  // Destroying this class blocks the thread until all users of
-  // OsIntegrationTestOverride::Get() have destroyed any saved
-  // `scoped_refptr<OsIntegrationTestOverride>`.
-  struct BlockingRegistration {
-    BlockingRegistration();
-    ~BlockingRegistration();
-
-    scoped_refptr<OsIntegrationTestOverrideImpl> test_override;
-  };
+  using BlockingRegistration = OsIntegrationTestOverrideBlockingRegistration;
 
   // Returns the current test override. This will CHECK-fail if one does not
   // exist.
   static scoped_refptr<OsIntegrationTestOverrideImpl> Get();
 
-  // Overrides applicable directories for shortcut integration and returns an
-  // object that:
-  // 1) Contains the directories.
-  // 2) Keeps the override active until the object is destroyed.
-  // 3) DCHECK-fails on destruction if any of the shortcut directories / os
-  //    hooks are NOT cleanup by the test. This ensures that trybots don't have
-  //    old test artifacts on them that can make future tests flaky.
-  // All installs that occur during the lifetime of the
-  // OsIntegrationTestOverrideImpl MUST be uninstalled before it is
-  // destroyed.
-  // The returned value, on destruction, will block until all usages of the
-  // OsIntegrationTestOverride::Get() are destroyed.
-  static std::unique_ptr<BlockingRegistration> OverrideForTesting(
-      const base::FilePath& base_path = base::FilePath());
+  // Deprecated, simply construct the
+  // OsIntegrationTestOverrideBlockingRegistration directly to override for
+  // testing.
+  static std::unique_ptr<BlockingRegistration> OverrideForTesting();
 
   // -------------------------------
   // === Simulating user actions ===
@@ -245,6 +247,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 
  private:
   friend class base::RefCountedThreadSafe<OsIntegrationTestOverrideImpl>;
+  friend class OsIntegrationTestOverrideBlockingRegistration;
 
   explicit OsIntegrationTestOverrideImpl(const base::FilePath& base_path);
   ~OsIntegrationTestOverrideImpl() override;
@@ -259,6 +262,23 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 #if BUILDFLAG(IS_WIN)
   SkColor ReadColorFromShortcutMenuIcoFile(const base::FilePath& file_path);
 #endif
+
+  // `on_destruction_` has its closure set only once (when BlockingRegistration
+  // is destroyed) and executed when OsIntegrationTestOverrideImpl is destroyed.
+  // The destructor of BlockingRegistration:
+  // - Determines if it is the 'last' blocking registration (and if not,
+  //   no-ops).
+  // - Gets the lock to prevent multi-thread issues.
+  // - Sets `on_destruction_` using a run loop.
+  // - Destroys its reference to this object.
+  // - Waits on the closure to ensure destruction has completed everywhere.
+  base::Lock destruction_closure_lock_;
+  base::ScopedClosureRunner on_destruction_
+      GUARDED_BY(destruction_closure_lock_);
+
+  // This is used to hold all of the other temp dirs, useful for when this needs
+  // to be a specific path.
+  base::ScopedTempDir outer_temp_dir_;
 
 #if BUILDFLAG(IS_WIN)
   base::ScopedTempDir desktop_;
@@ -291,17 +311,6 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   AppProtocolList protocol_scheme_registrations_;
 
   base::flat_set<std::wstring> shortcut_menu_apps_registered_;
-
-  // `on_destruction_` has it's closure set only once (when BlockingRegistration
-  // is destroyed) and executed when OsIntegrationTestOverrideImpl is destroyed.
-  // The destructor of BlockingRegistration
-  // - Gets the lock to prevent multi-thread issues.
-  // - Sets `on_destruction_` using a run loop.
-  // - Destroys this object
-  // - When waits on the closure to ensure destruction has completed everywhere.
-  base::Lock destruction_closure_lock;
-  base::ScopedClosureRunner on_destruction_
-      GUARDED_BY(destruction_closure_lock);
 };
 
 }  // namespace web_app

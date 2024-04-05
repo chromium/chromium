@@ -42,8 +42,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
     WebAppTest::SetUp();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ =
-          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -97,7 +96,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
   }
 
   OsIntegrationTestOverrideImpl& test_override() const {
-    return *test_override_->test_override;
+    return test_override_->test_override();
   }
 
  protected:

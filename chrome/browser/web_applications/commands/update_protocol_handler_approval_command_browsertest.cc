@@ -48,8 +48,7 @@ class UpdateProtocolHandlerApprovalCommandTest
     os_hooks_suppress_.reset();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ =
-          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
   }

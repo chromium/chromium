@@ -45,8 +45,7 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
     WebAppTest::SetUp();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ =
-          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
 
     provider_ = FakeWebAppProvider::Get(profile());
@@ -104,8 +103,8 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
 
  protected:
   WebAppProvider& provider() { return *provider_; }
-  scoped_refptr<OsIntegrationTestOverrideImpl> test_override() {
-    return test_override_->test_override;
+  OsIntegrationTestOverrideImpl& test_override() {
+    return test_override_->test_override();
   }
 
  private:
@@ -302,7 +301,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, InstallWithFilehandlers) {
            os_integration_state.file_handling())) {
     ASSERT_EQ(
         IsFileHandlingEnabled(),
-        test_override()->IsFileExtensionHandled(
+        test_override().IsFileExtensionHandled(
             profile(), app_id,
             provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
@@ -335,7 +334,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
            os_integration_state.file_handling())) {
     ASSERT_EQ(
         IsFileHandlingEnabled(),
-        test_override()->IsFileExtensionHandled(
+        test_override().IsFileExtensionHandled(
             profile(), app_id,
             provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
@@ -355,7 +354,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
-    ASSERT_FALSE(test_override()->IsFileExtensionHandled(
+    ASSERT_FALSE(test_override().IsFileExtensionHandled(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
@@ -387,7 +386,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
            os_integration_state.file_handling())) {
     ASSERT_EQ(
         IsFileHandlingEnabled(),
-        test_override()->IsFileExtensionHandled(
+        test_override().IsFileExtensionHandled(
             profile(), app_id,
             provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
@@ -397,7 +396,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   ASSERT_FALSE(new_state.has_value());
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
-    ASSERT_FALSE(test_override()->IsFileExtensionHandled(
+    ASSERT_FALSE(test_override().IsFileExtensionHandled(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
@@ -431,8 +430,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(IsFileHandlingEnabled(),
-              test_override()->IsFileExtensionHandled(profile(), app_id,
-                                                      app_name, extension));
+              test_override().IsFileExtensionHandled(profile(), app_id,
+                                                     app_name, extension));
   }
 
   SynchronizeOsOptions options;
@@ -441,8 +440,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
-    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
-                                                         app_name, extension));
+    ASSERT_FALSE(test_override().IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
   }
 }
 
@@ -474,8 +473,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(IsFileHandlingEnabled(),
-              test_override()->IsFileExtensionHandled(profile(), app_id,
-                                                      app_name, extension));
+              test_override().IsFileExtensionHandled(profile(), app_id,
+                                                     app_name, extension));
   }
 
   std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
@@ -487,8 +486,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(IsFileHandlingEnabled(),
-              test_override()->IsFileExtensionHandled(profile(), app_id,
-                                                      app_name, extension));
+              test_override().IsFileExtensionHandled(profile(), app_id,
+                                                     app_name, extension));
   }
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
@@ -498,8 +497,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
-    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
-                                                         app_name, extension));
+    ASSERT_FALSE(test_override().IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
   }
   scoped_supress.reset();
 }

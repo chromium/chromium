@@ -23,6 +23,7 @@ struct OsIntegrationTestOverrideState {
   base::Lock lock;
   scoped_refptr<OsIntegrationTestOverride> global_os_integration_test_override
       GUARDED_BY(lock);
+  int blocking_registration_count GUARDED_BY(lock) = 0;
 };
 
 OsIntegrationTestOverrideState&
@@ -49,16 +50,37 @@ OsIntegrationTestOverride::AsOsIntegrationTestOverrideImpl() {
   CHECK_IS_TEST();
   return nullptr;
 }
-
 // static
-void OsIntegrationTestOverride::SetForTesting(
-    scoped_refptr<OsIntegrationTestOverride> override) {
+scoped_refptr<OsIntegrationTestOverride>
+OsIntegrationTestOverride::GetOrCreateForBlockingRegistration(
+    base::FunctionRef<scoped_refptr<OsIntegrationTestOverride>()>
+        creation_function) {
   CHECK_IS_TEST();
   auto& state = GetMutableOsIntegrationTestOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
-  CHECK(!(override && state.global_os_integration_test_override))
-      << "Cannot set a test override when one already exists";
-  state.global_os_integration_test_override = std::move(override);
+  state.blocking_registration_count += 1;
+  if (state.global_os_integration_test_override) {
+    return state.global_os_integration_test_override;
+  }
+  scoped_refptr<OsIntegrationTestOverride> integration_override =
+      creation_function();
+  CHECK(integration_override);
+  state.global_os_integration_test_override = std::move(integration_override);
+  return state.global_os_integration_test_override;
+}
+
+// static
+bool OsIntegrationTestOverride::DecreaseBlockingRegistrationCountMaybeReset() {
+  CHECK_IS_TEST();
+  auto& state = GetMutableOsIntegrationTestOverrideStateForTesting();
+  base::AutoLock state_lock(state.lock);
+  state.blocking_registration_count -= 1;
+  CHECK_GE(state.blocking_registration_count, 0);
+  if (state.blocking_registration_count == 0) {
+    state.global_os_integration_test_override.reset();
+    return true;
+  }
+  return false;
 }
 
 }  // namespace web_app

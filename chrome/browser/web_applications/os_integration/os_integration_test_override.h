@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -104,11 +105,22 @@ class OsIntegrationTestOverride
   virtual void RegisterProtocolSchemes(const webapps::AppId& app_id,
                                        std::vector<std::string> protocols) = 0;
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<OsIntegrationTestOverride>;
   friend class OsIntegrationTestOverrideImpl;
+  friend class OsIntegrationTestOverrideBlockingRegistration;
 
-  static void SetForTesting(scoped_refptr<OsIntegrationTestOverride> override);
+  // Gets or creates a new OsIntegrationTestOverride globally. Creation is done
+  // using the `creation_function`. Used by blocking registrations, and
+  // increases the blocking registration count.
+  static scoped_refptr<OsIntegrationTestOverride>
+  GetOrCreateForBlockingRegistration(
+      base::FunctionRef<scoped_refptr<OsIntegrationTestOverride>()>
+          creation_function);
+
+  // Decreases the blocking registration in the global struct. If there are no
+  // more registrations, the global value is reset and returns `true`.
+  static bool DecreaseBlockingRegistrationCountMaybeReset();
 
   OsIntegrationTestOverride();
   virtual ~OsIntegrationTestOverride() = 0;

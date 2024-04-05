@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -84,16 +86,6 @@
 namespace web_app {
 
 namespace {
-
-std::string GetAllFilesInDir(const base::FilePath& file_path) {
-  std::vector<std::string> files_as_strs;
-  base::FileEnumerator files(file_path, true, base::FileEnumerator::FILES);
-  for (base::FilePath current = files.Next(); !current.empty();
-       current = files.Next()) {
-    files_as_strs.push_back(current.AsUTF8Unsafe());
-  }
-  return base::JoinString(base::make_span(files_as_strs), "\n  ");
-}
 
 #if BUILDFLAG(IS_WIN)
 base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
@@ -154,29 +146,73 @@ SkColor IconManagerReadIconTopLeftColorForSize(WebAppIconManager& icon_manager,
 
 }  // namespace
 
-OsIntegrationTestOverrideImpl::BlockingRegistration::BlockingRegistration() =
-    default;
-OsIntegrationTestOverrideImpl::BlockingRegistration::~BlockingRegistration() {
-  base::ScopedAllowBlockingForTesting blocking;
-  base::RunLoop wait_until_destruction_loop;
-  // Lock the destrunction closure
-  {
-    base::AutoLock lock(test_override->destruction_closure_lock);
-    CHECK(!test_override->on_destruction_)
-        << "Cannot have multiple registrations at the same time.";
-    // Set the destruction closure for the scoped override object.
-    test_override->on_destruction_.ReplaceClosure(
-        wait_until_destruction_loop.QuitClosure());
+OsIntegrationTestOverrideBlockingRegistration::
+    OsIntegrationTestOverrideBlockingRegistration() {
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      OsIntegrationTestOverride::GetOrCreateForBlockingRegistration([]() {
+        base::FilePath base_path;
+#if BUILDFLAG(IS_MAC)
+        // Mac app shims must be put within the user's home directory to allow
+        // LaunchServices to index it. Otherwise, while launching may succeed,
+        // some functionality like file handling does not work correctly.
+        base_path = base::GetHomeDir();
+#endif
+        return base::WrapRefCounted<OsIntegrationTestOverride>(
+            new OsIntegrationTestOverrideImpl(base_path));
+      });
+  test_override_ =
+      base::WrapRefCounted(test_override->AsOsIntegrationTestOverrideImpl());
+}
 
-    // Unregister the override so new handles cannot be acquired.
-    OsIntegrationTestOverride::SetForTesting(nullptr);
+OsIntegrationTestOverrideBlockingRegistration::
+    ~OsIntegrationTestOverrideBlockingRegistration() {
+  base::ScopedAllowBlockingForTesting blocking;
+  std::optional<base::RunLoop> wait_until_destruction_loop;
+
+  // Safely decrement the blocking registration refcount, and if this was the
+  // last one, clear the global state & listen for destruction of all overrides.
+  // We want to wait for all overrides to destroy as this cleans up the OS
+  // integration disk state.
+  {
+    base::AutoLock lock(test_override_->destruction_closure_lock_);
+    CHECK(!test_override_->on_destruction_)
+        << "Cannot have multiple registrations waiting for destruction at the "
+           "same time, only the last one should.";
+    bool is_last_registration = OsIntegrationTestOverride::
+        DecreaseBlockingRegistrationCountMaybeReset();
+    if (is_last_registration) {
+      // This object can be destroyed after the task environment has already
+      // been destroyed in tests. If that's the case, we cannot create a
+      // base::RunLoop and we can simply destruct.
+      if (base::SequencedTaskRunner::HasCurrentDefault()) {
+        wait_until_destruction_loop.emplace();
+        test_override_->on_destruction_.ReplaceClosure(
+            wait_until_destruction_loop->QuitClosure());
+      } else {
+        // This should be the last reference if there is no task environment and
+        // this was the last registration. If this fails, that means that a test
+        // or something else has saved a scoped_refptr to the
+        // OsIntegrationTestOverride and hasn't released it before destroying
+        // the registration. Since there is no task runner, this is likely in
+        // the test harness being destroyed after the registration (and after
+        // the task environment).
+        CHECK(test_override_->HasOneRef());
+      }
+    }
   }
 
   // Release the override & wait until all references are released.
   // Note: The `test_override` MUST be released before waiting on the run
   // loop, as then it will hang forever.
-  test_override.reset();
-  wait_until_destruction_loop.Run();
+  test_override_.reset();
+  if (wait_until_destruction_loop) {
+    wait_until_destruction_loop->Run();
+  }
+}
+
+OsIntegrationTestOverrideImpl&
+OsIntegrationTestOverrideBlockingRegistration::test_override() const {
+  return *OsIntegrationTestOverrideImpl::Get();
 }
 
 // static
@@ -195,15 +231,9 @@ OsIntegrationTestOverrideImpl::Get() {
 
 // static
 std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
-OsIntegrationTestOverrideImpl::OverrideForTesting(
-    const base::FilePath& base_path) {
-  auto test_override =
-      base::WrapRefCounted(new OsIntegrationTestOverrideImpl(base_path));
-  OsIntegrationTestOverride::SetForTesting(test_override);
-  std::unique_ptr<BlockingRegistration> registration =
-      std::make_unique<BlockingRegistration>();
-  registration->test_override = std::move(test_override);
-  return registration;
+OsIntegrationTestOverrideImpl::OverrideForTesting() {
+  return std::make_unique<
+      OsIntegrationTestOverrideImpl::BlockingRegistration>();
 }
 
 bool OsIntegrationTestOverrideImpl::SimulateDeleteShortcutsByUser(
@@ -665,49 +695,38 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
     const base::FilePath& base_path) {
   // Initialize all directories used. The success & the CHECK are separated to
   // ensure that these function calls occur on release builds.
-  if (!base_path.empty()) {
-#if BUILDFLAG(IS_WIN)
-    bool success = desktop_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-    success = application_menu_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-    success = quick_launch_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-    success = startup_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-#elif BUILDFLAG(IS_MAC)
-    bool success = chrome_apps_folder_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-#elif BUILDFLAG(IS_LINUX)
-    bool success = desktop_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-    success = startup_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-    success = applications_dir_.CreateUniqueTempDirUnderPath(base_path);
-    CHECK(success);
-#endif
+
+  bool success;
+  if (base_path.empty()) {
+    success = outer_temp_dir_.CreateUniqueTempDir();
   } else {
-#if BUILDFLAG(IS_WIN)
-    bool success = desktop_.CreateUniqueTempDir();
-    CHECK(success);
-    success = application_menu_.CreateUniqueTempDir();
-    CHECK(success);
-    success = quick_launch_.CreateUniqueTempDir();
-    CHECK(success);
-    success = startup_.CreateUniqueTempDir();
-    CHECK(success);
-#elif BUILDFLAG(IS_MAC)
-    bool success = chrome_apps_folder_.CreateUniqueTempDir();
-    CHECK(success);
-#elif BUILDFLAG(IS_LINUX)
-    bool success = desktop_.CreateUniqueTempDir();
-    CHECK(success);
-    success = startup_.CreateUniqueTempDir();
-    CHECK(success);
-    success = applications_dir_.CreateUniqueTempDir();
-    CHECK(success);
-#endif
+    success = outer_temp_dir_.CreateUniqueTempDirUnderPath(base_path);
   }
+  CHECK(success);
+#if BUILDFLAG(IS_WIN)
+  success = desktop_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+  success =
+      application_menu_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+  success =
+      quick_launch_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+  success = startup_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+#elif BUILDFLAG(IS_MAC)
+  success = chrome_apps_folder_.CreateUniqueTempDirUnderPath(
+      outer_temp_dir_.GetPath());
+  CHECK(success);
+#elif BUILDFLAG(IS_LINUX)
+  success = desktop_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+  success = startup_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+  success =
+      applications_dir_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  CHECK(success);
+#endif
 
 #if BUILDFLAG(IS_LINUX)
   auto callback = base::BindRepeating([](base::FilePath filename_in,
@@ -739,43 +758,25 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
 }
 
 OsIntegrationTestOverrideImpl::~OsIntegrationTestOverrideImpl() {
-  std::vector<base::ScopedTempDir*> directories;
+  // Perform any cleanup necessary to clean OS integration state that isn't
+  // already handled by the destruction of the member variables.
+
+  // Sometimes the test deletes the directory manually - so use !IsValid() to
+  // allow this to occur without causing an issue.
 #if BUILDFLAG(IS_WIN)
-  directories = {&desktop_, &application_menu_, &quick_launch_, &startup_};
+  EXPECT_TRUE(!desktop_.IsValid() || desktop_.Delete());
+  EXPECT_TRUE(!application_menu_.IsValid() || application_menu_.Delete());
+  EXPECT_TRUE(!quick_launch_.IsValid() || quick_launch_.Delete());
+  EXPECT_TRUE(!startup_.IsValid() || startup_.Delete());
 #elif BUILDFLAG(IS_MAC)
-  directories = {&chrome_apps_folder_};
-  // Checks and cleans up possible hidden files in directories.
-  std::vector<std::string> hidden_files{"Icon\r", ".localized"};
-  for (base::ScopedTempDir* dir : directories) {
-    if (dir->IsValid()) {
-      for (auto& f : hidden_files) {
-        base::FilePath path = dir->GetPath().Append(f);
-        if (base::PathExists(path)) {
-          base::DeletePathRecursively(path);
-        }
-      }
-    }
-  }
+  EXPECT_TRUE(!chrome_apps_folder_.IsValid() || chrome_apps_folder_.Delete());
 #elif BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(!desktop_.IsValid() || desktop_.Delete());
+  EXPECT_TRUE(!startup_.IsValid() || startup_.Delete());
+  EXPECT_TRUE(!applications_dir_.IsValid() || applications_dir_.Delete());
   // Reset the file handling callback.
-  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
-      UpdateMimeInfoDatabaseOnLinuxCallback());
-  directories = {&desktop_, &applications_dir_};
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::NullCallback());
 #endif
-  for (base::ScopedTempDir* dir : directories) {
-    if (!dir->IsValid()) {
-      continue;
-    }
-    CHECK(base::IsDirectoryEmpty(dir->GetPath()))
-        << "Directory not empty: " << dir->GetPath().AsUTF8Unsafe()
-        << ". Please uninstall all webapps that have been installed while "
-           "shortcuts were overriden. Contents:\n"
-        << GetAllFilesInDir(dir->GetPath());
-  }
-  {
-    base::AutoLock lock(destruction_closure_lock);
-    on_destruction_.RunAndReset();
-  }
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

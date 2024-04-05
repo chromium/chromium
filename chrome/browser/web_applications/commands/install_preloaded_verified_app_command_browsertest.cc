@@ -39,8 +39,7 @@ class InstallPreloadedVerifiedAppCommandTest
     os_hooks_suppress_.reset();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ =
-          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
 
     host_resolver()->AddRule("lh3.googleusercontent.com", "127.0.0.1");
@@ -64,8 +63,8 @@ class InstallPreloadedVerifiedAppCommandTest
     return true;
 #else
     base::ScopedAllowBlockingForTesting allow_blocking;
-    return test_override_->test_override->IsShortcutCreated(profile(), app_id,
-                                                            name);
+    return test_override_->test_override().IsShortcutCreated(profile(), app_id,
+                                                             name);
 #endif
   }
 
