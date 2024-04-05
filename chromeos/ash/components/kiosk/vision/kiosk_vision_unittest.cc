@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/vision/kiosk_vision.h"
+#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
 #include <string>
 
@@ -10,15 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/vision/pref_names.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -27,8 +25,8 @@ namespace ash::kiosk_vision {
 
 namespace {
 
-void RegisterKioskVisionPrefs(TestingPrefServiceSimple& pref_service) {
-  KioskSystemSession::RegisterLocalStatePrefs(pref_service.registry());
+void RegisterKioskVisionPrefs(TestingPrefServiceSimple& local_state) {
+  RegisterLocalStatePrefs(local_state.registry());
 }
 
 void EnableKioskVisionTelemetryPref(PrefService& pref_service) {
@@ -68,7 +66,7 @@ class KioskVisionTest : public testing::Test {
   void SetUp() override { RegisterKioskVisionPrefs(local_state_); }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
   FakeDlcserviceClient fake_dlcservice_;
 };

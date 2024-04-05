@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/app_mode/vision/kiosk_vision.h"
-#include "chrome/browser/ash/app_mode/vision/pref_names.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -31,6 +29,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "extensions/browser/extension_registry.h"
@@ -155,8 +154,7 @@ KioskSystemSession::~KioskSystemSession() = default;
 
 // static
 void KioskSystemSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kKioskVisionTelemetryEnabled,
-                                /*default_value=*/false);
+  kiosk_vision::RegisterLocalStatePrefs(registry);
   policy::DeviceWeeklyScheduledSuspendPolicyHandler::RegisterLocalStatePrefs(
       registry);
 }

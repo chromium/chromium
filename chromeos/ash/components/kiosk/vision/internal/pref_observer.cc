@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/vision/internal/pref_observer.h"
+#include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/app_mode/vision/pref_names.h"
+#include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::kiosk_vision {

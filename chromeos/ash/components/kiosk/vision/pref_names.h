@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_VISION_PREF_NAMES_H_
-#define CHROME_BROWSER_ASH_APP_MODE_VISION_PREF_NAMES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_PREF_NAMES_H_
+#define CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_PREF_NAMES_H_
 
 namespace ash::prefs {
 
@@ -13,4 +13,4 @@ inline constexpr char kKioskVisionTelemetryEnabled[] =
 
 }  // namespace ash::prefs
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_VISION_PREF_NAMES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_PREF_NAMES_H_

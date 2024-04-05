@@ -6,7 +6,8 @@ import("//testing/test.gni")
 
 assert(is_chromeos_ash)
 
-source_set("vision") {
+component("vision") {
+  defines = [ "IS_KIOSK_VISION_IMPL" ]
   sources = [
     "kiosk_vision.cc",
     "kiosk_vision.h",
@@ -15,8 +16,8 @@ source_set("vision") {
   deps = [
     ":internal",
     "//base",
-    "//chrome/browser:browser_process",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//components/prefs:prefs",
   ]
 }
@@ -38,24 +39,31 @@ source_set("internal") {
   ]
 }
 
-source_set("unit_test_sources") {
+source_set("unit_tests") {
   testonly = true
   sources = [ "kiosk_vision_unittest.cc" ]
   deps = [
     ":vision",
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }
 
 test("kiosk_vision_unit_tests") {
   testonly = true
+  sources = [ "//chromeos/test/run_all_unittests.cc" ]
   deps = [
-    ":unit_test_sources",
+    ":unit_tests",
     ":vision",
-    "//chrome/test:test_support_unit",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
+    "//mojo/core/embedder",
     "//testing/gtest",
   ]
 }

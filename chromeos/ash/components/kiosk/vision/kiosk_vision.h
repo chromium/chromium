@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_VISION_KIOSK_VISION_H_
-#define CHROME_BROWSER_ASH_APP_MODE_VISION_KIOSK_VISION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
+#define CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
 
-#include "chrome/browser/ash/app_mode/vision/internal/pref_observer.h"
+#include "base/component_export.h"
+#include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::kiosk_vision {
@@ -17,12 +19,12 @@ namespace ash::kiosk_vision {
 // prefs; communicating with the CrOS camera service to retrieve ML model
 // detections; and processing and forwarding detections to the backend telemetry
 // API and the Kiosk web app.
-class KioskVision {
+class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
  public:
   explicit KioskVision(PrefService* pref_service);
   KioskVision(const KioskVision&) = delete;
   KioskVision& operator=(const KioskVision&) = delete;
-  ~KioskVision() = default;
+  ~KioskVision();
 
  private:
   void Enable();
@@ -33,6 +35,10 @@ class KioskVision {
 
 inline constexpr char kKioskVisionDlcId[] = "kiosk-vision";
 
+// Registers prefs used in Kiosk Vision.
+COMPONENT_EXPORT(KIOSK_VISION)
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
 }  // namespace ash::kiosk_vision
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_VISION_KIOSK_VISION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_

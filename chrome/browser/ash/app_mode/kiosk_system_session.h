@@ -12,8 +12,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/app_mode/vision/kiosk_vision.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
+#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
 class PrefRegistrySimple;
 
