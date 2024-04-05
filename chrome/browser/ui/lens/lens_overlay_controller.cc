@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
-#include <vector>
-
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -222,6 +221,12 @@ void LensOverlayController::BindSidePanel(
 
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));
+  if (pending_text_query_.has_value()) {
+    // TODO(b/330204523): Send query to the searchbox.
+    side_panel_page_->LoadResultsInFrame(
+        lens::BuildSearchURL(*pending_text_query_));
+    pending_text_query_.reset();
+  }
 }
 
 views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
@@ -255,6 +260,20 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
 bool LensOverlayController::IsOverlayShowing() {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
          state_ == State::kOverlayAndResults;
+}
+
+void LensOverlayController::OnSidePanelEntryDeregistered() {
+  // TODO(b/328296424): Currently, when the lens overlay side panel entry is
+  // hidden, the lens overlay can still be present so this is needed. When
+  // implementing the change to hide the overlay when the side panel entry is
+  // hidden, this will no longer be needed.
+  side_panel_page_.reset();
+  side_panel_receiver_.reset();
+}
+
+void LensOverlayController::IssueTextRequestForTesting(
+    const std::string& text_query) {
+  IssueTextRequest(text_query);
 }
 
 class LensOverlayController::UnderlyingWebContentsObserver
@@ -487,6 +506,20 @@ void LensOverlayController::IssueLensRequest(
 
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
+}
+
+void LensOverlayController::IssueTextRequest(const std::string& query) {
+  // TODO(b/330204523): Send query to the searchbox.
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+  if (side_panel_page_) {
+    side_panel_page_->LoadResultsInFrame(lens::BuildSearchURL(query));
+    return;
+  }
+
+  // If the side panel was not bound at the time of request, we store the query
+  // as pending to load results on bind.
+  pending_text_query_ = std::make_optional<std::string>(query);
 }
 
 void LensOverlayController::HandleStartQueryResponse(

@@ -27,18 +27,9 @@ export class LensSidePanelAppElement extends PolymerElement {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      resultsUrl_: {
-        type: String,
-      },
-    };
-  }
-
   private browserProxy_: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
   private listenerIds_: number[];
-  private resultsUrl_: string;
 
   constructor() {
     super();
@@ -63,7 +54,10 @@ export class LensSidePanelAppElement extends PolymerElement {
   }
 
   private loadResultsInFrame_(resultsUrl: Url) {
-    this.resultsUrl_ = resultsUrl.url;
+    // The src needs to be reset explicitly every time this function is called
+    // to force a reload. We cannot get the currently displayed URL from the
+    // frame because of cross-origin restrictions.
+    this.$.results.src = resultsUrl.url;
   }
 }
 

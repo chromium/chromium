@@ -100,6 +100,11 @@ void LensOverlaySidePanelCoordinator::DeregisterEntry() {
     registered_entry->RemoveObserver(this);
   }
 
+  // TODO(b/328296424): Currently, when the lens overlay side panel entry is
+  // hidden, the lens overlay can still be present so this is needed to clean up
+  // mojo bindings.
+  lens_overlay_controller_->OnSidePanelEntryDeregistered();
+
   // This is a no-op if the entry does not exist.
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));

@@ -138,6 +138,14 @@ class LensOverlayController : public TabStripModelObserver,
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
+  // Handles when the side panel has been deregistered to do any required
+  // cleanup.
+  void OnSidePanelEntryDeregistered();
+
+  // Testing function to issue a text request.
+  // TODO(b/328294794): Remove this function when connecting the mojo call.
+  void IssueTextRequestForTesting(const std::string& text_query);
+
  private:
   class UnderlyingWebContentsObserver;
 
@@ -179,6 +187,10 @@ class LensOverlayController : public TabStripModelObserver,
   void CloseRequestedByOverlay() override;
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
 
+  // Handles a text query by constructing a search URL and loading it into the
+  // results frame.
+  void IssueTextRequest(const std::string& text_query);
+
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
 
@@ -213,6 +225,10 @@ class LensOverlayController : public TabStripModelObserver,
 
   // The screenshot that is currently being rendered by the WebUI.
   SkBitmap current_screenshot_;
+
+  // A pending text query to be loaded in the side panel. Needed when the side
+  // panel is not bound at the time of a text request.
+  std::optional<std::string> pending_text_query_ = std::nullopt;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS

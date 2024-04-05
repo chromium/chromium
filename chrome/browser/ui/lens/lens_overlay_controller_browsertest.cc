@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
 #include "base/test/run_until.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
@@ -280,6 +281,41 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+}
+
+// TODO(b/328294794): This browser test should be deleted / modified after text
+// requests are implemented from mojo.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ShowSidePanelAfterTextRequest) {
+  WaitForPaint();
+
+  std::string text_query = "Apples";
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // TODO(b/328294794): This function should be replaced when the text selection
+  // call from mojo is implemented.
+  controller->IssueTextRequestForTesting(text_query);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);

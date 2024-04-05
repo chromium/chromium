@@ -13,6 +13,8 @@ static_library("lens_overlay") {
     "lens_overlay_query_controller.h",
     "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
+    "lens_overlay_url_builder.cc",
+    "lens_overlay_url_builder.h",
   ]
 
   deps = [
@@ -24,6 +26,7 @@ static_library("lens_overlay") {
     "//components/lens:features",
     "//components/version_info:channel",
     "//google_apis",
+    "//net",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
     "//skia",
