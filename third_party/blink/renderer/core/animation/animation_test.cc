@@ -2425,7 +2425,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
       GetDocument().View()->GetPaintArtifactCompositor();
   ASSERT_TRUE(paint_artifact_compositor);
 
-  // The animation should run on main because compositor properties are missing.
+  // The animation should be optimized out since no visible change.
   EXPECT_EQ(
       animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
       CompositorAnimations::kAnimationHasNoVisibleChange);
@@ -2468,7 +2468,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
       GetDocument().View()->GetPaintArtifactCompositor();
   ASSERT_TRUE(paint_artifact_compositor);
 
-  // The animation should run on main because compositor properties are missing.
+  // The animation should be optimized out since no visible change.
   EXPECT_EQ(
       animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
       CompositorAnimations::kAnimationHasNoVisibleChange);

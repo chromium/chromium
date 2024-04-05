@@ -112,6 +112,7 @@ CSSPaintImageGenerator* ProvideOverrideGenerator(
     CSSPaintImageGenerator::Observer*) {
   return g_override_generator;
 }
+
 }  // namespace
 
 using css_test_helpers::RegisterProperty;
@@ -398,6 +399,16 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
                                    value, g_empty_string, exception_state);
     EXPECT_FALSE(exception_state.HadException());
     EXPECT_TRUE(element_->style()->getPropertyValue(name));
+  }
+
+  bool IsUseCounted(mojom::WebFeature feature) {
+    return GetDocument().IsUseCounted(feature);
+  }
+
+  void ClearUseCounters() {
+    GetDocument().ClearUseCounterForTesting(
+        WebFeature::kStaticPropertyInAnimation);
+    // If other use counters are test, be sure the clear them here.
   }
 
   // This class exists to dodge the interlock between creating compositor
@@ -2716,6 +2727,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 }
 
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
+  ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes colorize {
@@ -2740,9 +2752,12 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
   EXPECT_TRUE(CompositorAnimations::kUnsupportedCSSProperty &
               animation->CheckCanStartAnimationOnCompositor(
                   GetDocument().View()->GetPaintArtifactCompositor()));
+
+  EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
 TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
+  ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes fade-in {
@@ -2764,9 +2779,11 @@ TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
                 GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
 TEST_P(AnimationCompositorAnimationsTest, StaticCompositableProperty) {
+  ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes static {
@@ -2788,9 +2805,11 @@ TEST_P(AnimationCompositorAnimationsTest, StaticCompositableProperty) {
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
               animation->CheckCanStartAnimationOnCompositor(
                   GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
 TEST_P(AnimationCompositorAnimationsTest, EmptyKeyframes) {
+  ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes no-op {
@@ -2803,13 +2822,13 @@ TEST_P(AnimationCompositorAnimationsTest, EmptyKeyframes) {
     </style>
     <div id="target"></div>
   )HTML");
-
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
               animation->CheckCanStartAnimationOnCompositor(
                   GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
 }  // namespace blink

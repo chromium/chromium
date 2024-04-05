@@ -81,6 +81,16 @@ PropertyHandleSet KeyframeEffectModelBase::DynamicProperties() const {
   return result;
 }
 
+bool KeyframeEffectModelBase::HasStaticProperty() const {
+  EnsureKeyframeGroups();
+  for (const auto& entry : *keyframe_groups_) {
+    if (entry.value->IsStatic()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 template <class K>
 void KeyframeEffectModelBase::SetFrames(HeapVector<K>& keyframes) {
   // TODO(samli): Should also notify/invalidate the animation

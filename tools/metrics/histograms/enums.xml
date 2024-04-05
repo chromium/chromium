@@ -11484,6 +11484,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4937" label="NavigatorCookieEnabledThirdParty"/>
   <int value="4938" label="FoldableAPIs"/>
   <int value="4939" label="SnapEvent"/>
+  <int value="4940" label="StaticPropertyInAnimation"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

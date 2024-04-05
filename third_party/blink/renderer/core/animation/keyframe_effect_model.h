@@ -95,6 +95,8 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   PropertyHandleSet DynamicProperties() const;
 
+  bool HasStaticProperty() const;
+
   using KeyframeVector = HeapVector<Member<Keyframe>>;
   const KeyframeVector& GetFrames() const { return keyframes_; }
   bool HasFrames() const { return !keyframes_.empty(); }
