@@ -57,7 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -248,7 +248,7 @@ bool IsProfileManaged(Profile* profile) {
   return profile->GetProfilePolicyConnector()->IsManaged();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 enum class DeviceReportingType {
   kSupervisedUser,
@@ -279,7 +279,7 @@ bool IsBrowserManaged() {
       ->HasMachineLevelPolicies();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -670,13 +670,13 @@ void ManagementUIHandler::InitializeInternal(content::WebUI* web_ui,
                                              Profile* profile) {
   auto handler = std::make_unique<ManagementUIHandler>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   handler->account_managed_ = IsProfileManaged(profile);
   handler->device_managed_ =
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 #else
   handler->account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   web_ui->AddMessageHandler(std::move(handler));
 }
@@ -690,7 +690,7 @@ void ManagementUIHandler::RegisterMessages() {
       "getExtensions",
       base::BindRepeating(&ManagementUIHandler::HandleGetExtensions,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "getLocalTrustRootsInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetLocalTrustRootsInfo,
@@ -704,7 +704,7 @@ void ManagementUIHandler::RegisterMessages() {
       base::BindRepeating(
           &ManagementUIHandler::HandleGetPluginVmDataCollectionStatus,
           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "getThreatProtectionInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetThreatProtectionInfo,
@@ -1274,7 +1274,7 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
 
 void ManagementUIHandler::GetManagementStatus(Profile* profile,
                                               base::Value::Dict* status) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   status->Set(kDeviceManagedInfo, base::Value());
   status->Set(kAccountManagedInfo, base::Value());
   status->Set(kOverview, base::Value());
@@ -1302,7 +1302,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
       status, device_managed_, account_managed_ || primary_user_managed,
       device_manager, account_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
@@ -1325,7 +1325,7 @@ void ManagementUIHandler::OnGotDeviceReportSources(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
@@ -1369,7 +1369,7 @@ void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
   ResolveJavascriptCallback(args[0] /* callback_id */,
                             plugin_vm_data_collection_enabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ManagementUIHandler::HandleGetContextualManagedData(
     const base::Value::List& args) {
@@ -1452,7 +1452,7 @@ void ManagementUIHandler::OnExtensionUnloaded(
 void ManagementUIHandler::UpdateManagedState() {
   auto* profile = Profile::FromWebUI(web_ui());
   bool managed_state_changed = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   managed_state_changed |= account_managed_ != IsProfileManaged(profile);
   managed_state_changed |=
       device_managed_ !=
@@ -1464,7 +1464,7 @@ void ManagementUIHandler::UpdateManagedState() {
   managed_state_changed |=
       account_managed_ != (IsProfileManaged(profile) || IsBrowserManaged());
   account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (managed_state_changed) {
     FireWebUIListener("managed_data_changed");

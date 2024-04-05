@@ -205,11 +205,11 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
  private:
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void HandleGetDeviceReportingInfo(const base::Value::List& args);
   void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
   void HandleGetLocalTrustRootsInfo(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnGotDeviceReportSources(base::Value::List report_sources,
