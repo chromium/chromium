@@ -1076,16 +1076,8 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
   gpu::SharedMemoryLimits limits = gpu::SharedMemoryLimits::ForMailboxContext();
 
   bool support_locking = false;
-#if BUILDFLAG(IS_ANDROID)
-  // Use RasterInterface if kRasterInterfaceInVideoResourceUpdater is enabled.
-  bool support_gles2_interface = true;
-  if (base::FeatureList::IsEnabled(
-          media::kRasterInterfaceInVideoResourceUpdater)) {
-    support_gles2_interface = false;
-  }
-#else
+  // Use RasterInterface always.
   bool support_gles2_interface = false;
-#endif
   bool support_raster_interface = true;
   bool support_oop_rasterization = false;
   bool support_grcontext = false;

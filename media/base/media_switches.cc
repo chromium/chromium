@@ -616,14 +616,6 @@ BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables using RasterInterface in VideoResourceUpdater (note: this is
-// unconditionally the case on all other platforms).
-BASE_FEATURE(kRasterInterfaceInVideoResourceUpdater,
-             "RasterInterfaceInVideoResourceUpdater",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables binding software video NV12/P010 GMBs as separate shared images.
 BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
              "MultiPlaneSoftwareVideoSharedImages",

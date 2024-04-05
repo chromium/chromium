@@ -29,17 +29,8 @@
 namespace media {
 namespace {
 
-bool CanUseRasterInterface() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      media::kRasterInterfaceInVideoResourceUpdater);
-#else
-  return true;
-#endif
-}
-
 bool UseMultiplanarSoftwarePixelUpload() {
-  return CanUseRasterInterface() && IsWritePixelsYUVEnabled();
+  return IsWritePixelsYUVEnabled();
 }
 
 class FakeSharedBitmapReporter : public viz::SharedBitmapReporter {

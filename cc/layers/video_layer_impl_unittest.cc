@@ -34,19 +34,6 @@ static void DebugSetImplThreadAndMainThreadBlocked(
 #endif
 }
 
-bool CanUseRasterInterface() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      media::kRasterInterfaceInVideoResourceUpdater);
-#else
-  return true;
-#endif
-}
-
-bool UseMultiplanarSoftwarePixelUpload() {
-  return CanUseRasterInterface() && media::IsWritePixelsYUVEnabled();
-}
-
 TEST(VideoLayerImplTest, Occlusion) {
   gfx::Size layer_size(1000, 1000);
   gfx::Size viewport_size(1000, 1000);
@@ -348,7 +335,7 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
 
-  if (UseMultiplanarSoftwarePixelUpload()) {
+  if (media::IsWritePixelsYUVEnabled()) {
     ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
     const auto* texture_draw_quad =
         static_cast<const viz::TextureDrawQuad*>(draw_quad);
@@ -395,7 +382,7 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
 
-  if (UseMultiplanarSoftwarePixelUpload()) {
+  if (media::IsWritePixelsYUVEnabled()) {
     ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
     const auto* texture_draw_quad =
         static_cast<const viz::TextureDrawQuad*>(draw_quad);
