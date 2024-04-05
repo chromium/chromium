@@ -392,11 +392,15 @@ class HttpStreamFactory::Job
   State next_state_ = STATE_NONE;
 
   // The server we are trying to reach, could be that of the origin or of the
-  // alternative service (after applying host mapping rules).
+  // alternative service (after applying host mapping rules). The scheme of this
+  // is always HTTP or HTTPS, even for websockets requests.
   const url::SchemeHostPort destination_;
 
   // The origin url we're trying to reach. This url may be different from the
-  // original request when host mapping rules are set-up.
+  // original request when host mapping rules are set-up. It has the original
+  // scheme, so may be HTTP, HTTPS, WS, or WSS. It does not change when there's
+  // an alternate service, but it does take into account host mapping rules,
+  // unlike `request_info_.url`.
   const GURL origin_url_;
 
   // True if request is for Websocket.

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "crypto/ec_private_key.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/host_mapping_rules.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
@@ -195,6 +196,7 @@ struct SpdySessionDependencies {
   std::unique_ptr<ReportingService> reporting_service;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
+  HostMappingRules host_mapping_rules;
   bool enable_ip_pooling = true;
   bool enable_ping = false;
   bool enable_user_alternate_protocol_ports = false;

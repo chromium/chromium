@@ -479,7 +479,7 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
 
   if (proxy_info_.is_direct() &&
       session_->http_server_properties()->RequiresHTTP11(
-          url::SchemeHostPort(request_info_.url),
+          url::SchemeHostPort(origin_url_),
           request_info_.network_anonymization_key)) {
     return false;
   }
