@@ -58,6 +58,7 @@ import {TtsBackground} from './tts_background.js';
 
 /** ChromeVox background context. */
 export class Background extends ChromeVoxState {
+  private startUpTime_ = new Date().getTime();
   private earcons_: AbstractEarcons;
   private isReadingContinuously_ = false;
   private talkBackEnabled_ = false;
@@ -158,7 +159,14 @@ export class Background extends ChromeVoxState {
     this.earcons_.playEarcon(EarconId.CHROMEVOX_LOADED);
     ChromeVox.tts.speak(
         Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
-        new TtsSpeechProperties({doNotInterrupt: true}));
+        new TtsSpeechProperties({
+          doNotInterrupt: true,
+          startCallback: () => {
+            chrome.metricsPrivate.recordMediumTime(
+                'Accessibility.ChromeVox.StartUpSpeechDelay',
+                new Date().getTime() - this.startUpTime_);
+          },
+        }));
     ChromeVox.braille.write(NavBraille.fromText(Msgs.getMsg('intro_brl')));
   }
 }

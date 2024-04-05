@@ -4652,6 +4652,8 @@ static_library("test_support") {
     "accessibility/facegaze_test_utils.h",
     "accessibility/fullscreen_magnifier_test_helper.cc",
     "accessibility/fullscreen_magnifier_test_helper.h",
+    "accessibility/histogram_waiter.cc",
+    "accessibility/histogram_waiter.h",
     "accessibility/magnifier_animation_waiter.cc",
     "accessibility/magnifier_animation_waiter.h",
     "accessibility/select_to_speak_test_utils.cc",

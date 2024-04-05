@@ -590,6 +590,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ChromeVox.StartUpSpeechDelay" units="ms"
+    expires_after="2025-02-28">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The duration of time from when ChromeVox was first loaded to when the
+    ChromeVox welcome message was spoken.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosAutoclick.TrayMenu.ChangeAction"
     enum="AutoclickActionType" expires_after="2024-09-29">
   <owner>katie@chromium.org</owner>

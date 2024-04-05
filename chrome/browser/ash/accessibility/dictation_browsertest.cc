@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
+#include "chrome/browser/ash/accessibility/histogram_waiter.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
@@ -151,38 +152,6 @@ class TestConfig {
  private:
   speech::SpeechRecognitionType speech_recognition_type_;
   EditableType editable_type_;
-};
-
-// Listens for changes to the histogram provided at construction. This class
-// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
-// times, create multiple instances of this class.
-class HistogramWaiter {
- public:
-  explicit HistogramWaiter(const char* metric_name) {
-    histogram_observer_ = std::make_unique<
-        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-        metric_name, base::BindRepeating(&HistogramWaiter::OnHistogramCallback,
-                                         base::Unretained(this)));
-  }
-  ~HistogramWaiter() { histogram_observer_.reset(); }
-
-  HistogramWaiter(const HistogramWaiter&) = delete;
-  HistogramWaiter& operator=(const HistogramWaiter&) = delete;
-
-  // Waits for the next update to the observed histogram.
-  void Wait() { run_loop_.Run(); }
-
-  void OnHistogramCallback(const char* metric_name,
-                           uint64_t name_hash,
-                           base::HistogramBase::Sample sample) {
-    run_loop_.Quit();
-    histogram_observer_.reset();
-  }
-
- private:
-  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
-      histogram_observer_;
-  base::RunLoop run_loop_;
 };
 
 }  // namespace

@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
+#include "chrome/browser/ash/accessibility/histogram_waiter.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -331,9 +332,10 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
-  EnableChromeVox(/* check_for_intro = */ false);
+  EnableChromeVox(/*check_for_intro=*/false);
   sm_.ExpectSpeech("ChromeVox spoken feedback is ready");
   sm_.Replay();
+  HistogramWaiter("Accessibility.ChromeVox.StartUpSpeechDelay").Wait();
 }
 
 // Test Learn Mode by pressing a few keys in Learn Mode. Only available while
