@@ -641,10 +641,6 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
       // null content() - don't serialize contents in this case.
       parent = template_element->content();
     }
-    if (parent) {
-      for (const Node& child : Strategy::ChildrenOf(*parent))
-        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
-    }
 
     // Traverses the shadow tree.
     std::pair<Node*, Element*> auxiliary_pair = GetShadowTree(target_element);
@@ -657,6 +653,12 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
         SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
       if (enclosing_element)
         AppendEndTag(*enclosing_element, enclosing_element_prefix);
+    }
+
+    if (parent) {
+      for (const Node& child : Strategy::ChildrenOf(*parent)) {
+        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+      }
     }
 
     if (!children_only)
