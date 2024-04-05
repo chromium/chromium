@@ -10909,6 +10909,33 @@
             ]
         }
     ],
+    "MacEfficientFileFlush": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFsyncOnly",
+                    "params": {
+                        "MacEfficientFileFlushUseBarrier": "false"
+                    },
+                    "enable_features": [
+                        "MacEfficientFileFlush"
+                    ]
+                },
+                {
+                    "name": "EnabledBarrierFsync",
+                    "params": {
+                        "MacEfficientFileFlushUseBarrier": "true"
+                    },
+                    "enable_features": [
+                        "MacEfficientFileFlush"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacImmersiveFullscreen": [
         {
             "platforms": [
