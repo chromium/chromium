@@ -87,6 +87,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/web/public:public",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }

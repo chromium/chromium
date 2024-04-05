@@ -30,6 +30,7 @@ const CGFloat kFaviconSize = 16;
                     webStateList:(WebStateList*)webStateList {
   CHECK(tabGroup);
   CHECK(webStateList);
+  CHECK(webStateList->ContainsGroup(tabGroup));
   self = [super init];
   if (self) {
     _tabGroup = tabGroup;
@@ -40,22 +41,42 @@ const CGFloat kFaviconSize = 16;
 }
 
 - (NSString*)title {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    return nil;
+  }
   return _tabGroup->GetTitle();
 }
 
 - (UIColor*)groupColor {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    return nil;
+  }
   return _tabGroup->GetColor();
 }
 
 - (NSInteger)numberOfTabsInGroup {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    return 0;
+  }
   return _tabGroup->range().count();
 }
 
 - (BOOL)collapsed {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    return NO;
+  }
   return _tabGroup->visual_data().is_collapsed();
 }
 
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    __weak TabGroupItem* weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          completion(weakSelf, nil);
+        }));
+    return;
+  }
   NSUInteger numberOfRequestedImages = 0;
   for (int index : _tabGroup->range()) {
     if (numberOfRequestedImages >= 7) {
@@ -118,6 +139,10 @@ const CGFloat kFaviconSize = 16;
 - (void)saveSnapshot:(UIImage*)snapshot
              favicon:(UIImage*)favicon
           completion:(GroupTabInfosFetchingCompletionBlock)completion {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    completion(self, @[]);
+    return;
+  }
   GroupTabInfo* info = [[GroupTabInfo alloc] init];
   info.snapshot = snapshot;
   info.favicon = favicon;
