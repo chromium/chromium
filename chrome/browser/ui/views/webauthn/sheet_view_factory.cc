@@ -366,12 +366,18 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorTrustThisComputerSheetModel>(
               dialog_model));
       break;
+    case Step::kGPMCreatePasskey:
+      // TODO(derinel): use a specific view to include the row with the passkey
+      // icon and the credential name.
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorCreateGpmPasskeySheetModel>(
+              dialog_model));
+      break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:
     case Step::kClosed:
     case Step::kRecoverSecurityDomain:
     case Step::kWaitingForEnclave:
-    case Step::kGPMCreatePasskey:
     case Step::kGPMTouchID:
     case Step::kGPMOnboarding:
     case Step::kGPMPasskeySaved:

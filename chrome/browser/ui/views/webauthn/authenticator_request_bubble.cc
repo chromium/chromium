@@ -58,15 +58,6 @@ constexpr BubbleContents kGPMTouchID = {
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
-constexpr BubbleContents kGPMCreatePasskeyContents = {
-    .illustration_light_id = IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT,
-    .title = u"Create passkey for example.com? (UNTRANSLATED)",
-    .body = nullptr,
-    .show_footer = true,
-    .show_icon = true,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
-};
-
 constexpr BubbleContents kGPMOnboardingContents = {
     .illustration_light_id = IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT,
     .title =
@@ -132,8 +123,6 @@ class AuthenticatorRequestBubbleDelegate
   static const BubbleContents* GetContents(
       AuthenticatorRequestDialogModel::Step step) {
     switch (step) {
-      case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:
-        return &kGPMCreatePasskeyContents;
       case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
         return &kGPMTouchID;
       case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:

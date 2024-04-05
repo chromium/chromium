@@ -1763,6 +1763,8 @@ void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
   dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
+// AuthenticatorTrustThisComputerSheetModel ------------------------------------
+
 AuthenticatorTrustThisComputerSheetModel::
     AuthenticatorTrustThisComputerSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
@@ -1824,4 +1826,59 @@ std::u16string AuthenticatorTrustThisComputerSheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorTrustThisComputerSheetModel::OnAccept() {
   dialog_model()->OnTrustThisComputer();
+}
+
+// AuthenticatorCreateGpmPasskeySheetModel -------------------------------------
+
+AuthenticatorCreateGpmPasskeySheetModel::
+    AuthenticatorCreateGpmPasskeySheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
+  // TODO(derinel): Add correct illustration.
+  // TODO(derinel): Rename other mechanism button text.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorCreateGpmPasskeySheetModel::
+    ~AuthenticatorCreateGpmPasskeySheetModel() = default;
+
+std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepTitle() const {
+  return u"Create a passkey for example.com (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepDescription()
+    const {
+  return u"You can use this passkey on any device. It will be saved to Google "
+         u"Password Manager for username@gmail.com. (UNTRANSLATED)";
+}
+
+bool AuthenticatorCreateGpmPasskeySheetModel::IsCancelButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetCancelButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
+  dialog_model()->CancelAuthenticatorRequest();
+}
+
+bool AuthenticatorCreateGpmPasskeySheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorCreateGpmPasskeySheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
+  dialog_model()->OnGPMCreatePasskey();
 }

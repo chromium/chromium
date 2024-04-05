@@ -775,4 +775,26 @@ class AuthenticatorTrustThisComputerSheetModel
   void OnAccept() override;
 };
 
+// The sheet shown for creating a passkey in Google Password Manager.
+class AuthenticatorCreateGpmPasskeySheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorCreateGpmPasskeySheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  ~AuthenticatorCreateGpmPasskeySheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  void OnCancel() override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
