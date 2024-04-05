@@ -116,6 +116,7 @@ public class Snackbar {
     public static final int UMA_AUTO_TRANSLATE = 61;
     public static final int UMA_BOOKMARK_MOVED = 62;
     public static final int UMA_CLEAR_BROWSING_DATA = 63;
+    public static final int UMA_SIGN_OUT = 64;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

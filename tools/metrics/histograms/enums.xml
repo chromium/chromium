@@ -32596,6 +32596,7 @@ Called by update_net_error_codes.py.-->
   <int value="60" label="UMA_QUICK_DELETE"/>
   <int value="61" label="UMA_AUTO_TRANSLATE"/>
   <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>
+  <int value="64" label="UMA_SIGN_OUT"/>
 </enum>
 
 <enum name="SnapshotItemId">
