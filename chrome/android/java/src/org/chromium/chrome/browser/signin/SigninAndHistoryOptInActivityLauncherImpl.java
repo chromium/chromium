@@ -52,7 +52,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
     private SigninAndHistoryOptInActivityLauncherImpl() {}
 
     @Override
-    public void launchActivityIfAllowed(
+    public boolean launchActivityIfAllowed(
             Context context,
             Profile profile,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
@@ -66,7 +66,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
                         withAccountSigninMode,
                         historyOptInMode,
                         accessPoint);
-        launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
+        return launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
                 signinAccessPoint);
     }
 
-    private void launchActivityOrShowError(
+    private boolean launchActivityOrShowError(
             Context context,
             Profile profile,
             Intent intent,
@@ -102,6 +102,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
                                     context, android.R.anim.fade_in, R.anim.no_anim)
                             .toBundle();
             context.startActivity(intent, startActivityOptions);
+            return true;
         }
         // TODO(https://crbug.com/1520783): Update the UI related to sign-in errors, and handle the
         // non-managed case.
@@ -111,5 +112,6 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
                     "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
+        return false;
     }
 }

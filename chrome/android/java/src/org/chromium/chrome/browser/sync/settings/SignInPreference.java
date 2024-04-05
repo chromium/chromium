@@ -18,6 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -175,11 +177,28 @@ public class SignInPreference extends Preference
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
         setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ false);
-        setOnPreferenceClickListener(
-                pref ->
+        OnPreferenceClickListener clickListener =
+                pref -> {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                        SigninAndHistoryOptInActivityLauncherImpl.get()
+                                .launchActivityIfAllowed(
+                                        getContext(),
+                                        mProfile,
+                                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                                .ADD_ACCOUNT,
+                                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
+                                        SigninAccessPoint.SETTINGS);
+                    } else {
                         SyncConsentActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(
-                                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
+                                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
+                    }
+                    return true;
+                };
+        setOnPreferenceClickListener(clickListener);
 
         if (!mWasGenericSigninPromoDisplayed) {
             RecordUserAction.record("Signin_Impression_FromSettings");

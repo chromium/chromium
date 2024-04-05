@@ -90,10 +90,12 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -103,6 +105,8 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -172,7 +176,8 @@ public class MainSettingsFragmentTest {
     @Mock private PasswordCheck mPasswordCheck;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
-    @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
+    @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
+    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     private MainSettings mMainSettings;
@@ -183,7 +188,9 @@ public class MainSettingsFragmentTest {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
-        SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
+        SyncConsentActivityLauncherImpl.setLauncherForTest(mSyncConsentActivityLauncher);
+        SigninAndHistoryOptInActivityLauncherImpl.setLauncherForTest(
+                mSigninAndHistoryOptInActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         NightModeUtils.setNightModeSupportedForTesting(true);
         Intents.init();
@@ -309,7 +316,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    public void testSigninRowLaunchesSignInFlowForSignedOutAccounts() {
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSignInRowLaunchesSyncFlowForSignedOutAccounts() {
         // When there are no accounts, sync promo and the signin preference shows the same text.
         mSyncTestRule.addTestAccount();
         launchSettingsActivity();
@@ -319,9 +327,32 @@ public class MainSettingsFragmentTest {
                 .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
         onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
 
-        verify(mMockSyncConsentActivityLauncher)
+        verify(mSyncConsentActivityLauncher)
                 .launchActivityIfAllowed(
                         any(Activity.class), eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
+        mSyncTestRule.addTestAccount();
+        launchSettingsActivity();
+
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
+        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
+
+        verify(mSigninAndHistoryOptInActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(Activity.class),
+                        any(Profile.class),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(
+                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL),
+                        eq(SigninAccessPoint.SETTINGS));
     }
 
     @Test
@@ -335,7 +366,7 @@ public class MainSettingsFragmentTest {
                 .perform(scrollTo(hasDescendant(withText(R.string.sync_category_title))));
         onView(withText(R.string.sync_category_title)).perform(click());
 
-        verify(mMockSyncConsentActivityLauncher)
+        verify(mSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(
                         any(Activity.class),
                         eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW),

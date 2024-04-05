@@ -35,7 +35,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
 
     /**
      * Launches the {@link SigninAndHistoryOptInActivity} from an eligible access point, shows error
-     * UI if sign-in is not allowed.
+     * UI if sign-in is not allowed. Returns a boolean indicating whether the activity was launched.
      *
      * @param profile the current profile.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if
@@ -47,7 +47,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    void launchActivityIfAllowed(
+    boolean launchActivityIfAllowed(
             Context context,
             Profile profile,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
