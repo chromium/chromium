@@ -54,6 +54,7 @@
 #include "chrome/grit/pdf_resources_map.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
@@ -556,11 +557,13 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     initial_preview_start_time_ = base::TimeTicks();
   }
 
+  if (g_test_delegate) {
+    g_test_delegate->PreviewDocumentReady(web_ui()->GetWebContents(),
+                                          *data_bytes);
+  }
+
   SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
                               std::move(data_bytes));
-  if (g_test_delegate) {
-    g_test_delegate->PreviewDocumentReady(web_ui()->GetWebContents());
-  }
   handler_->OnPrintPreviewReady(*id_, request_id);
 }
 
@@ -972,6 +975,8 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
   if (!render_frame_host)
     return;
 
+  PRINTER_LOG(EVENT) << "Compositing for document type "
+                     << GetCompositorDocumentType();
   client->PrepareToCompositeDocument(
       document_cookie, render_frame_host, GetCompositorDocumentType(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(

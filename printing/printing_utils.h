@@ -75,7 +75,21 @@ gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
 // Returns the printable area in device units for `hdc`.
 COMPONENT_EXPORT(PRINTING_BASE)
 gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc);
-#endif
+
+// Identifies the type of data generated in a print document.
+enum class DocumentDataType { kUnknown, kPdf, kXps };
+
+// Helper for tests and CHECKs to determine the type of data that was generated
+// for the document to be printed.  This includes checking a minimal size and
+// magic bytes for known signatures.
+COMPONENT_EXPORT(PRINTING_BASE)
+DocumentDataType DetermineDocumentDataType(base::span<const uint8_t> data);
+
+// Helper for tests and CHECKs to validate that `maybe_xps_data` suggests an
+// XPS document. This includes checking a minimal size and magic bytes.
+COMPONENT_EXPORT(PRINTING_BASE)
+bool LooksLikeXps(base::span<const uint8_t> maybe_xps_data);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Helper for tests and DCHECKs to validate that `maybe_pdf_data` suggests a PDF
 // document. This includes checking a minimal size and magic bytes.

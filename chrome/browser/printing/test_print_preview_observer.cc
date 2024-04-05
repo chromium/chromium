@@ -98,7 +98,12 @@ void TestPrintPreviewObserver::DidRenderPreviewPage(
 }
 
 void TestPrintPreviewObserver::PreviewDocumentReady(
-    content::WebContents* preview_dialog) {
+    content::WebContents* preview_dialog,
+    base::span<const uint8_t> data) {
+#if BUILDFLAG(IS_WIN)
+  last_document_composite_data_type_ = DetermineDocumentDataType(data);
+#endif
+
   // This runs after `DidGetPreviewPageCount()` for modifiable content, but is
   // otherwise the only notification.
   if (run_loop_ && run_loop_->running()) {

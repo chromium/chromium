@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -103,6 +104,10 @@
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/browser/printing/printer_query_oop.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "printing/printing_utils.h"
 #endif
 
 namespace printing {
@@ -2160,5 +2165,74 @@ IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, ScriptedPrint) {
 IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
   RunPrintTest("document.execCommand('print');");
 }
+
+#if BUILDFLAG(IS_WIN)
+std::string GetDocumentDataTypeTestSuffix(
+    const testing::TestParamInfo<DocumentDataType>& info) {
+  switch (info.param) {
+    case DocumentDataType::kUnknown:
+      NOTREACHED_NORETURN();
+    case DocumentDataType::kPdf:
+      return "Pdf";
+    case DocumentDataType::kXps:
+      return "Xps";
+  }
+}
+
+class PrintCompositorDocumentDataTypeBrowserTest
+    : public PrintBrowserTest,
+      public testing::WithParamInterface<DocumentDataType> {
+ public:
+  PrintCompositorDocumentDataTypeBrowserTest() = default;
+  ~PrintCompositorDocumentDataTypeBrowserTest() override = default;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Force use of out-of-process print drivers, since it is required for
+    // printing with XPS.
+    enabled_features.push_back(
+        {features::kEnableOopPrintDrivers,
+         {{features::kEnableOopPrintDriversJobPrint.name, "true"}}});
+    if (GetParam() == DocumentDataType::kXps) {
+      enabled_features.push_back({features::kUseXpsForPrinting, {}});
+    } else {
+      disabled_features.push_back(features::kUseXpsForPrinting);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+    PrintBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintCompositorDocumentDataTypeBrowserTest,
+                         testing::Values(DocumentDataType::kPdf,
+                                         DocumentDataType::kXps),
+                         GetDocumentDataTypeTestSuffix);
+
+// Demonstrate that the Print Compositor is plumbed to generate the different
+// document types.
+IN_PROC_BROWSER_TEST_P(PrintCompositorDocumentDataTypeBrowserTest,
+                       WindowDotPrint) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+
+  // TODO(crbug.com/40100562):  Update to expect XPS data once Print Compositor
+  // is updated for generating XPS.
+  EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
+              testing::Optional(DocumentDataType::kPdf));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

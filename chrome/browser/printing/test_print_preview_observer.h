@@ -7,10 +7,16 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "content/public/test/browser_test_utils.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "printing/printing_utils.h"
+#endif
 
 namespace base {
 class RunLoop;
@@ -40,13 +46,20 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
 
   uint32_t rendered_page_count() const { return rendered_page_count_; }
 
+#if BUILDFLAG(IS_WIN)
+  std::optional<DocumentDataType> last_document_composite_data_type() const {
+    return last_document_composite_data_type_;
+  }
+#endif
+
  private:
   void EnsureWaitForLoaded();
 
   // PrintPreviewUI::TestDelegate:
   void DidGetPreviewPageCount(uint32_t page_count) override;
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override;
-  void PreviewDocumentReady(content::WebContents* preview_dialog) override;
+  void PreviewDocumentReady(content::WebContents* preview_dialog,
+                            base::span<const uint8_t> data) override;
 
   std::optional<content::DOMMessageQueue> queue_;
 
@@ -56,6 +69,10 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   const int pages_per_sheet_;
   uint32_t expected_rendered_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
+
+#if BUILDFLAG(IS_WIN)
+  std::optional<DocumentDataType> last_document_composite_data_type_;
+#endif
 
   const bool wait_for_loaded_;
   raw_ptr<content::WebContents, FlakyDanglingUntriaged> preview_dialog_ =

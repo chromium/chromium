@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -184,7 +185,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
     // Notifies that the document to print from preview is ready.  This occurs
     // after any possible N-up processing.
-    virtual void PreviewDocumentReady(content::WebContents* preview_dialog) {}
+    virtual void PreviewDocumentReady(content::WebContents* preview_dialog,
+                                      base::span<const uint8_t> data) {}
 
    protected:
     virtual ~TestDelegate() = default;

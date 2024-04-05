@@ -160,11 +160,28 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
 
   return printable_area_device_units;
 }
+
+DocumentDataType DetermineDocumentDataType(base::span<const uint8_t> data) {
+  if (LooksLikePdf(data)) {
+    return DocumentDataType::kPdf;
+  }
+  if (LooksLikeXps(data)) {
+    return DocumentDataType::kXps;
+  }
+  return DocumentDataType::kUnknown;
+}
+
+bool LooksLikeXps(base::span<const uint8_t> maybe_xps_data) {
+  constexpr auto kXpsStartsWith = base::span_from_cstring("PK\x03\x04");
+  return maybe_xps_data.size() >= 2000u &&
+         maybe_xps_data.first(kXpsStartsWith.size()) == kXpsStartsWith;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 bool LooksLikePdf(base::span<const uint8_t> maybe_pdf_data) {
+  constexpr auto kPdfStartsWith = base::span_from_cstring("%PDF-");
   return maybe_pdf_data.size() >= 50u &&
-         std::memcmp(maybe_pdf_data.data(), "%PDF-", 5) == 0;
+         maybe_pdf_data.first(kPdfStartsWith.size()) == kPdfStartsWith;
 }
 
 }  // namespace printing
