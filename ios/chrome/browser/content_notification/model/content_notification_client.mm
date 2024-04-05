@@ -22,13 +22,17 @@ void ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   NSDictionary<NSString*, id>* payload =
       response.notification.request.content.userInfo;
+  if ([response.actionIdentifier
+          isEqualToString:kContentNotificationFeedbackActionIdentifier]) {
+    loadFeedback();
+  } else {
+    ContentNotificationService* contentNotificationService =
+        ContentNotificationServiceFactory::GetForBrowserState(
+            GetLastUsedBrowserState());
 
-  ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          GetLastUsedBrowserState());
-
-  const GURL& url = contentNotificationService->GetDestinationUrl(payload);
-  loadUrlInNewTab(url);
+    const GURL& url = contentNotificationService->GetDestinationUrl(payload);
+    loadUrlInNewTab(url);
+  }
 }
 
 UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
