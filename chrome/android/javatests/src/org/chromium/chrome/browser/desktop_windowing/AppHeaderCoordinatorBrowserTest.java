@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.widget.ImageButton;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
@@ -34,7 +35,10 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -104,6 +108,77 @@ public class AppHeaderCoordinatorBrowserTest {
                             "Tab strip height is different",
                             activity.getToolbarManager().getTabStripHeightSupplier().get(),
                             Matchers.equalTo(newTabStripHeight));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    public void testOnTopResumedActivityChanged_UnfocusedInDesktopWindow() {
+        // TODO (crbug/330213938): Also test other scenarios for different values of desktop
+        // windowing mode / activity focus states; tests for other input combinations are currently
+        // failing even locally due to incorrect tab switcher icon tint.
+        doTestOnTopResumedActivityChanged(
+                /* isInDesktopWindow= */ true, /* isActivityFocused= */ false);
+    }
+
+    private void doTestOnTopResumedActivityChanged(
+            boolean isInDesktopWindow, boolean isActivityFocused) {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        var omniboxIconTint =
+                ThemeUtils.getThemedToolbarIconTint(activity, BrandedColorScheme.APP_DEFAULT);
+        var nonOmniboxIconTint =
+                isInDesktopWindow
+                        ? ThemeUtils.getThemedToolbarIconTintForActivityState(
+                                activity, BrandedColorScheme.APP_DEFAULT, isActivityFocused)
+                        : omniboxIconTint;
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var appHeaderCoordinator =
+                            activity.getRootUiCoordinatorForTesting()
+                                    .getAppHeaderCoordinatorSupplier()
+                                    .get();
+                    Criteria.checkThat(appHeaderCoordinator, Matchers.notNullValue());
+                });
+
+        // Assume that the current activity lost focus in desktop windowing mode.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var appHeaderCoordinator =
+                            activity.getRootUiCoordinatorForTesting()
+                                    .getAppHeaderCoordinatorSupplier()
+                                    .get();
+                    appHeaderCoordinator.set(isInDesktopWindow);
+                    activity.onTopResumedActivityChanged(isActivityFocused);
+                });
+
+        // Verify the toolbar icon tints.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var toolbarTablet =
+                            (ToolbarTablet)
+                                    activity.getToolbarManager().getToolbarLayoutForTesting();
+                    Criteria.checkThat(
+                            "Home button tint is incorrect",
+                            toolbarTablet.getHomeButton().getImageTintList(),
+                            Matchers.is(nonOmniboxIconTint));
+                    Criteria.checkThat(
+                            "Tab switcher icon tint is incorrect.",
+                            toolbarTablet.getTabSwitcherButton().getImageTintList(),
+                            Matchers.is(nonOmniboxIconTint));
+                    Criteria.checkThat(
+                            "App menu button tint is incorrect.",
+                            ((ImageButton) activity.getToolbarManager().getMenuButtonView())
+                                    .getImageTintList(),
+                            Matchers.is(nonOmniboxIconTint));
+                    Criteria.checkThat(
+                            "Bookmark button tint is incorrect.",
+                            toolbarTablet.getBookmarkButtonForTesting().getImageTintList(),
+                            Matchers.is(omniboxIconTint));
                 });
     }
 }

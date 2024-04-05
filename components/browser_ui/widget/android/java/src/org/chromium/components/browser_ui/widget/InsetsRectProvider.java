@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -76,7 +77,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
 
-        assert BuildCompat.isAtLeastV();
+        // TODO (crbug/325351108): Remove the test check once we support Android V testing.
+        assert BuildConfig.IS_FOR_TEST || BuildCompat.isAtLeastV();
         mInsetObserver.addInsetsConsumer(this);
         if (initialInsets != null) {
             updateWidestUnoccludedRect(initialInsets);
