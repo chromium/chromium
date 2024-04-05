@@ -210,7 +210,10 @@ PillButton::PillButton(PressedCallback callback,
 PillButton::~PillButton() = default;
 
 gfx::Size PillButton::CalculatePreferredSize() const {
-  int button_width = label()->GetPreferredSize().width();
+  int button_width =
+      label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width();
 
   if (IsIconPillButton(type_)) {
     // Add the padding on two sides.

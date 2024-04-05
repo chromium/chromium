@@ -163,7 +163,7 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 
   // Requesting size forces layout. Otherwise, we don't know how many lines
   // are needed.
-  label_->GetPreferredSize();
+  label_->GetPreferredSize(views::SizeBounds(label_->width(), {}));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(

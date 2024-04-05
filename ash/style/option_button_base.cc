@@ -62,9 +62,12 @@ void OptionButtonBase::SetLabelStyle(TypographyToken token) {
 }
 
 gfx::Size OptionButtonBase::CalculatePreferredSize() const {
-  int preferred_width = kIconSize + image_label_spacing_ +
-                        label()->GetPreferredSize().width() +
-                        GetInsets().width();
+  int preferred_width =
+      kIconSize + image_label_spacing_ +
+      label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width() +
+      GetInsets().width();
   return gfx::Size(std::max(preferred_width, min_width_), kButtonHeight);
 }
 
@@ -90,7 +93,7 @@ void OptionButtonBase::Layout(PassKey) {
   views::Label* label = this->label();
   gfx::Size label_size(
       local_content_bounds.width() - image_label_spacing_ - kIconSize,
-      label->GetPreferredSize().height());
+      label->GetPreferredSize(views::SizeBounds(label->width(), {})).height());
 
   gfx::Point image_origin = local_content_bounds.origin();
   image_origin.Offset(0, (local_content_bounds.height() - kIconSize) / 2);
