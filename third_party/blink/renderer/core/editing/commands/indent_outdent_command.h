@@ -55,6 +55,7 @@ class CORE_EXPORT IndentOutdentCommand final : public ApplyBlockElementCommand {
                             const Position&,
                             HTMLElement*&,
                             EditingState*);
+  void SetEndingSelectionToListChildIfListItem();
 
   void FormatSelection(const VisiblePosition& start_of_selection,
                        const VisiblePosition& end_of_selection,

@@ -520,6 +520,13 @@ void IndentOutdentCommand::OutdentRegion(
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     if (end_of_next_paragraph.IsNotNull() &&
         !end_of_next_paragraph.IsConnected()) {
+      if (RuntimeEnabledFeatures::MoveEndingSelectionToListChildEnabled()) {
+        // If the end of the current selection is in a list item, set the
+        // selection to the last position in the list item since
+        // OutdentParagraph() moves all children in a list item at once using
+        // InsertListCommand.
+        SetEndingSelectionToListChildIfListItem();
+      }
       end_of_current_paragraph =
           CreateVisiblePosition(EndingVisibleSelection().End());
       end_of_next_paragraph =
@@ -527,6 +534,17 @@ void IndentOutdentCommand::OutdentRegion(
               .ToPositionWithAffinity();
     }
     end_of_current_paragraph = CreateVisiblePosition(end_of_next_paragraph);
+  }
+}
+
+void IndentOutdentCommand::SetEndingSelectionToListChildIfListItem() {
+  Node* selection_node = EndingVisibleSelection().Start().AnchorNode();
+  Node* list_child_node = EnclosingListChild(selection_node);
+  if (list_child_node && IsA<HTMLLIElement>(*list_child_node)) {
+    SetEndingSelection(SelectionForUndoStep::From(
+        SelectionInDOMTree::Builder()
+            .Collapse(Position::LastPositionInNode(*list_child_node))
+            .Build()));
   }
 }
 

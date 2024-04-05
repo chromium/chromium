@@ -84,4 +84,31 @@ test(() => assert_selection(
           '<li>four|</li>',
         '</ol>',
     ].join('')), 'Nested list at one to two, three(ul), and four');
+
+test(() => assert_selection(
+    [
+        '<ol contenteditable>',
+          '<ol>',
+            '<li>^one</li>',
+            '<li>',
+              'two',
+              '<div>two-1</div>',
+              '<div>two-2</div>',
+            '</li>',
+            '<li>three|</li>',
+          '</ol>',
+        '</ol>',
+    ].join(''),
+    'Outdent',
+    [
+        '<ol contenteditable>',
+          '<li>^one</li>',
+          '<li>',
+            'two',
+            '<div>two-1</div>',
+            '<div>two-2</div>',
+          '</li>',
+          '<li>three|</li>',
+        '</ol>',
+    ].join('')), 'Nested list and `two` has children');
 </script>
