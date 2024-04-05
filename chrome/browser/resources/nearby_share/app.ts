@@ -93,18 +93,6 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
         type: Object,
         value: null,
       },
-
-      /**
-       * Return true if the Jelly feature flag is enabled.
-       */
-      isJellyEnabled: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
     };
   }
 
@@ -112,7 +100,6 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   private transferUpdateListener_: TransferUpdateListenerPendingReceiver|null;
   private selectedShareTarget_: ShareTarget|null;
   private payloadPreview_: PayloadPreview|null;
-  isJellyEnabled: boolean;
 
   override ready() {
     super.ready();
@@ -123,19 +110,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
         'close', e => this.onClose_(e as CustomEvent<{reason: CloseReason}>));
     this.addEventListener('onboarding-complete', this.onOnboardingComplete_);
 
-    if (this.isJellyEnabled) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
-
-      const fontLink = document.createElement('link');
-      fontLink.rel = 'stylesheet';
-      fontLink.href = 'chrome://theme/typography.css';
-      document.head.appendChild(fontLink);
-      ColorChangeUpdater.forDocument().start();
-    }
+    ColorChangeUpdater.forDocument().start();
   }
 
   /**

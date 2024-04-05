@@ -5,6 +5,8 @@
     <base href="chrome://nearby">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
     <style>
       body {
         background-color: var(--cr-card-background-color);
@@ -12,7 +14,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="jelly-enabled">
     <nearby-share-app></nearby-share-app>
     <script type="module" src="app.js"></script>
   </body>

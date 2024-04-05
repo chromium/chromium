@@ -68,30 +68,6 @@ suite('ShareAppTest', function() {
       await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('discovery'));
     });
-
-    [false, true].forEach(isJellyEnabled => {
-      test(
-          'Dynamic theme CSS is added when isJellyEnabled is set', async () => {
-            loadTimeData.overrideValues({
-              isJellyEnabled: isJellyEnabled,
-            });
-
-            sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
-
-            const colorLink = document.querySelector(
-                'link[href*=\'chrome://theme/colors.css\']');
-            const fontLink = document.querySelector(
-                'link[href*=\'chrome://theme/typography.css\']');
-            if (isJellyEnabled) {
-              assertTrue(!!colorLink);
-              assertTrue(!!fontLink);
-              assertTrue(document.body.classList.contains('jelly-enabled'));
-            }
-            // From b/287683464: We can't enforce the false case, as every Jelly
-            // component attempts to set these global values (and this
-            // loadTimeData only flips Jelly enablement for Nearby Share).
-          });
-    });
   });
 
   suite('DisabledTests', function() {
