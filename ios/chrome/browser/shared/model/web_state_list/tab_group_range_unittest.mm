@@ -14,14 +14,14 @@ using TabGroupRangeTest = PlatformTest;
 TEST_F(TabGroupRangeTest, InvalidRange) {
   TabGroupRange range = TabGroupRange::InvalidRange();
 
-  EXPECT_FALSE(range.IsValid());
+  EXPECT_FALSE(range.valid());
 }
 
 // Tests properties of the zero range.
 TEST_F(TabGroupRangeTest, ZeroRange) {
   TabGroupRange range(0, 0);
 
-  EXPECT_FALSE(range.IsValid());
+  EXPECT_FALSE(range.valid());
   EXPECT_EQ(0, range.range_begin());
   EXPECT_EQ(0, range.count());
   EXPECT_EQ(0, range.range_end());
@@ -41,7 +41,7 @@ TEST_F(TabGroupRangeTest, ZeroRange) {
 TEST_F(TabGroupRangeTest, SomeRange) {
   TabGroupRange range(1, 2);
 
-  EXPECT_TRUE(range.IsValid());
+  EXPECT_TRUE(range.valid());
   EXPECT_EQ(1, range.range_begin());
   EXPECT_EQ(2, range.count());
   EXPECT_EQ(3, range.range_end());

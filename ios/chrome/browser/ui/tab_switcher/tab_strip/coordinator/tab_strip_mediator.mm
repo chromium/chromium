@@ -83,7 +83,7 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
     bool including_group_items = true,
     TabGroupRange range = TabGroupRange::InvalidRange()) {
   CHECK(web_state_list);
-  if (!range.IsValid()) {
+  if (!range.valid()) {
     range = {0, web_state_list->count()};
   }
   CHECK_GE(range.range_begin(), 0);
@@ -144,7 +144,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     bool including_group_items = true,
     TabGroupRange range = TabGroupRange::InvalidRange()) {
   CHECK(web_state_list);
-  if (!range.IsValid()) {
+  if (!range.valid()) {
     range = {0, web_state_list->count()};
   }
   CHECK_GE(range.range_begin(), 0);
