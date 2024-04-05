@@ -7188,3 +7188,4 @@ crbug.com/40336192 virtual/css-line-clamp/external/wpt/css/css-overflow/line-cla
 crbug.com/40336192 virtual/css-line-clamp/external/wpt/css/css-overflow/webkit-line-clamp-040.html [ Failure ]
 # Test is failing on Linux builders.
 crbug.com/333058973 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure ]
+crbug.com/333058973 [ Mac ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
