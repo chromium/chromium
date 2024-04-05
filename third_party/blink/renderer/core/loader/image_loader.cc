@@ -476,6 +476,7 @@ void ImageLoader::DoUpdateFromElement(
     bool force_blocking) {
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
+    recordreplay::AutoDisallowEvents disallow("ImageLoader::DoUpdateFromElement");
     base::Value::Dict info;
     info.Set("kind", "imageUpdateFromElement");
     info.Set("url", element_->ImageSourceURL().GetString().Utf8());
@@ -962,6 +963,7 @@ void ImageLoader::DispatchPendingLoadEvent(
 
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
+    recordreplay::AutoDisallowEvents disallow("ImageLoader::DispatchPendingLoadEvent");
     base::Value::Dict info;
     info.Set("kind", "imageLoaded");
     info.Set("url", element_->ImageSourceURL().GetString().Utf8());
@@ -987,6 +989,7 @@ void ImageLoader::DispatchPendingErrorEvent(
     int record_replay_scheduled_node_id) {
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
+    recordreplay::AutoDisallowEvents disallow("ImageLoader::DispatchPendingErrorEvent");
     base::Value::Dict info;
     info.Set("kind", "imageError");
     info.Set("url", element_->ImageSourceURL().GetString().Utf8());
