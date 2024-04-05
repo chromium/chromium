@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
 #include <array>
@@ -18,6 +17,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -289,6 +290,8 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     return form;
   }
 
+  PrefService& pref_service() { return *profile()->GetPrefs(); }
+
  protected:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   raw_ptr<PersonalDataManager> personal_data_ = nullptr;
@@ -349,6 +352,22 @@ IN_PROC_BROWSER_TEST_F(
   profile.SetRawInfo(COMPANY_NAME, u"company");
   AddAutofillProfile(profile);
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that when triggering the context menu on a classified field that
+// has a profile, the fallback entry is not part of the menu if Autofill is
+// disabled.
+IN_PROC_BROWSER_TEST_F(
+    AutocompleteUnrecognizedFieldsTest,
+    AutocompleteUnrecognizedFormShown_AutofillDisabled_FallbackOptionsNotPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  pref_service().SetBoolean(prefs::kAutofillProfileEnabled, false);
+  FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
   autofill_context_menu_manager()->AppendItems();
@@ -425,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 }
 
 // Tests that when triggering the context menu on an unclassified form, address
-// manual fallback entries are added when the user has address data stored.
+// manual fallback entries are not added when Autofill is disabled, even if the
+// user has address data stored.
 IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
                        HasAddressData_AddressManualFallbackAdded) {
   AddAutofillProfile(test::GetFullProfile());
@@ -435,6 +455,21 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
+}
+
+// Tests that when triggering the context menu on an unclassified form, address
+// manual fallback entries are not added when Autofill is disabled, even if user
+// has address data stored.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       AutofillDisabled_FallbackOptionsNotPresent) {
+  AddAutofillProfile(test::GetFullProfile());
+  pref_service().SetBoolean(prefs::kAutofillProfileEnabled, false);
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on an unclassified form the
@@ -479,6 +514,20 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
+}
+
+// Tests that when triggering the context menu on an unclassified form, payments
+// manual fallback entries are NOT added if Autofill for payments is disabled.
+IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
+                       PaymentsDisabled_PaymentsManualFallbackNotAdded) {
+  AddCreditCard(test::GetCreditCard());
+  pref_service().SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
 }
 
 // Tests that when triggering the context menu on an unclassified form, the
