@@ -2376,4 +2376,15 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(
         NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
   });
+
+  //============================================================================
+  // Test Set Input Text
+  //============================================================================
+  test('input text appears on page call from browser', async () => {
+    assertEquals(realbox.$.input.value, '');
+    testProxy.callbackRouterRemote.setInputText('Hello');
+    await waitAfterNextRender(realbox);
+    assertEquals(realbox.$.input.value, 'Hello');
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
 });

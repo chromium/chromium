@@ -260,6 +260,7 @@ export class RealboxElement extends RealboxElementBase {
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
+  private inputTextChangedListenerId_: number|null = null;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -277,6 +278,9 @@ export class RealboxElement extends RealboxElementBase {
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged_.bind(this));
+    this.inputTextChangedListenerId_ =
+        this.callbackRouter_.setInputText.addListener(
+            this.onSetInputText_.bind(this));
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -286,6 +290,8 @@ export class RealboxElement extends RealboxElementBase {
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
+    assert(this.inputTextChangedListenerId_);
+    this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -349,6 +355,10 @@ export class RealboxElement extends RealboxElementBase {
         inline: '',
       });
     }
+  }
+
+  private onSetInputText_(inputText: string) {
+    this.$.input.setAttribute('value', inputText);
   }
 
   //============================================================================

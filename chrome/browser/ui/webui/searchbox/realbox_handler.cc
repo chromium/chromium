@@ -498,6 +498,10 @@ searchbox::mojom::SelectionLineState ConvertLineState(
   return searchbox::mojom::SelectionLineState::kNormal;
 }
 
+void RealboxHandler::SetInputText(const std::string& input_text) {
+  page_->SetInputText(input_text);
+}
+
 void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
                                      OmniboxPopupSelection selection) {
   page_->UpdateSelection(

@@ -183,4 +183,6 @@ interface Page {
   // |old_selection|.
   UpdateSelection(OmniboxPopupSelection old_selection,
                   OmniboxPopupSelection selection);
+  // Called to set searchbox input.
+  SetInputText(string input);
 };

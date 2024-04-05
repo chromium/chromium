@@ -37,6 +37,7 @@ class MockPage : public searchbox::mojom::Page {
               UpdateSelection,
               (searchbox::mojom::OmniboxPopupSelectionPtr,
                searchbox::mojom::OmniboxPopupSelectionPtr));
+  MOCK_METHOD(void, SetInputText, (const std::string& input_text));
 };
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
