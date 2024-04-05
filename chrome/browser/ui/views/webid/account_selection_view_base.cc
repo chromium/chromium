@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -372,6 +373,19 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                         idp_display_data.idp_metadata.brand_icon_url);
     }
     account_image_view->FetchAccountImage(account, *image_fetcher_);
+
+    std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
+    if (is_modal_dialog) {
+      constexpr int kArrowIconSize = 8;
+      constexpr int kArrowIconRightPadding = 8;
+      arrow_icon_view = std::make_unique<views::ImageView>();
+      arrow_icon_view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,
+                            /*right=*/kArrowIconRightPadding)));
+      arrow_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
+    }
+
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
     std::u16string footer =
@@ -384,7 +398,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         std::move(account_image_view),
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
-        /*secondary_view=*/nullptr,
+        /*secondary_view=*/std::move(arrow_icon_view),
         /*add_vertical_label_spacing=*/true, footer);
     row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(/*vertical=*/is_modal_dialog ? kVerticalSpacing : 0,

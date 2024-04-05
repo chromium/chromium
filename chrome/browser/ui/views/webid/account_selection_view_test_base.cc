@@ -35,6 +35,11 @@ views::Label* AccountSelectionViewTestBase::GetHoverButtonFooter(
   return account->footer();
 }
 
+views::View* AccountSelectionViewTestBase::GetHoverButtonSecondaryView(
+    HoverButton* account) {
+  return account->secondary_view();
+}
+
 content::IdentityRequestAccount
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
@@ -141,18 +146,25 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
     HoverButton* account_row =
         static_cast<HoverButton*>(accounts[accounts_index++]);
     ASSERT_TRUE(account_row);
+
+    // Check for account name in title.
     EXPECT_EQ(GetHoverButtonTitle(account_row),
               base::UTF8ToUTF16(kNameBase + account_suffix));
+
+    // Check for account email in subtitle.
     EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
               base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix));
-    // The subtitle has changed style, so AutoColorReadabilityEnabled should
-    // be set.
+    // The subtitle has changed style, so AutoColorReadabilityEnabled should be
+    // set.
     EXPECT_TRUE(
         GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
+
+    // Check for account icon.
     views::View* icon_view = GetHoverButtonIconView(account_row);
     EXPECT_TRUE(icon_view);
-    // The footer should contain the IDP eTLD+1. This is not passed to the
-    // method but in our tests they all start with 'idp'.
+
+    // Check for the IDP eTLD+1 in footer. This is not passed to the method but
+    // in our tests they all start with 'idp'.
     if (expect_idp) {
       EXPECT_TRUE(
           GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
@@ -163,6 +175,15 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
               is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
               : expect_idp    ? gfx::Size(kLargerAvatarSize, kLargerAvatarSize)
                            : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+
+    // Check for arrow icon in secondary view.
+    if (is_modal_dialog) {
+      views::ImageView* arrow_icon_view = static_cast<views::ImageView*>(
+          GetHoverButtonSecondaryView(account_row));
+      EXPECT_TRUE(arrow_icon_view);
+    } else {
+      EXPECT_FALSE(GetHoverButtonSecondaryView(account_row));
+    }
   }
 }
 

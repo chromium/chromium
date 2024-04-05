@@ -48,6 +48,7 @@ class AccountSelectionViewTestBase {
   views::Label* GetHoverButtonSubtitle(HoverButton* account);
   views::View* GetHoverButtonIconView(HoverButton* account);
   views::Label* GetHoverButtonFooter(HoverButton* account);
+  views::View* GetHoverButtonSecondaryView(HoverButton* account);
 
   void CheckNonHoverableAccountRow(views::View* row,
                                    const std::string& account_suffix);
