@@ -28,8 +28,8 @@ enum class ChromeSchemeSemantics {
 //       If the URL does not belong to a SWA, but is allow-listed, it is opened
 //       with a generic wrapper SWA to render in an app window.
 //
-// Returns false iff the URL wasn't opened, for example because Lacros is
-// disabled or the URL is a non-SWA chrome:// URL that is not allow-listed.
+// Returns false iff the URL wasn't opened and is allowed to be opened in an Ash
+// browser (e.g. because Lacros is disabled).
 bool TryOpenUrl(
     const GURL& url,
     WindowOpenDisposition disposition,

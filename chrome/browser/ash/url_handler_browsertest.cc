@@ -63,9 +63,10 @@ IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
-  // Failure: non-allowlisted non-SWA chrome page.
-  EXPECT_FALSE(ash::TryOpenUrl(GURL(chrome::kChromeUIDownloadsURL),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  // Success: non-allowlisted non-SWA chrome page.
+  // (This intentionally does nothing.)
+  EXPECT_TRUE(ash::TryOpenUrl(GURL(chrome::kChromeUIDownloadsURL),
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 

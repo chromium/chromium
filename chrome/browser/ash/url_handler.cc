@@ -137,18 +137,20 @@ bool TryOpenUrl(const GURL& url,
     return true;
   }
 
-  // We should get here only in exceptional cases. Some of these exceptions may
-  // not even be needed anymore. Record a crash dump for various cases so that
-  // we can better understand the situation. For now, continue as usual
-  // afterwards (i.e. don't handle the request here). We know that Terminal
-  // still needs to open Ash windows, no need to dump in that case.
-  if (!(url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
-        url.host() == "terminal")) {
-    SCOPED_CRASH_KEY_STRING32("ash", "TryOpenUrl", url.possibly_invalid_spec());
-    base::debug::DumpWithoutCrashing();
-    LOG(WARNING) << "Allowing Ash window creation for url " << url;
+  // We know that Terminal still needs to open Ash windows, no need to dump in
+  // that case.
+  if (url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
+      url.host() == "terminal") {
+    return false;
   }
-  return false;
+
+  // We should not get here anymore in valid cases. Record a crash dump for
+  // diagnosis and return true so that the call-site doesn't end up opening the
+  // url in an Ash browser window.
+  SCOPED_CRASH_KEY_STRING32("ash", "TryOpenUrl", url.possibly_invalid_spec());
+  base::debug::DumpWithoutCrashing();
+  LOG(WARNING) << "Denying possible Ash window creation for url " << url;
+  return true;
 }
 
 }  // namespace ash
