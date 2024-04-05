@@ -5880,6 +5880,21 @@ interface NodeList
     method item
     method keys
     method values
+interface NotRestoredReasonDetails
+    attribute @@toStringTag
+    getter reason
+    method constructor
+    method toJSON
+interface NotRestoredReasons
+    attribute @@toStringTag
+    getter children
+    getter id
+    getter name
+    getter reasons
+    getter src
+    getter url
+    method constructor
+    method toJSON
 interface Notification : EventTarget
     static getter maxActions
     static getter permission
@@ -6286,6 +6301,7 @@ interface PerformanceNavigationTiming : PerformanceResourceTiming
     getter domInteractive
     getter loadEventEnd
     getter loadEventStart
+    getter notRestoredReasons
     getter redirectCount
     getter type
     getter unloadEventEnd
