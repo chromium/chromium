@@ -339,8 +339,8 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
       mini_view_(mini_view),
       wallpaper_preview_(new DeskWallpaperPreview),
       desk_mirrored_contents_view_(new views::View),
-      force_occlusion_tracker_visible_(
-          std::make_unique<aura::WindowOcclusionTracker::ScopedForceVisible>(
+      force_desk_occlusion_tracker_visible_(
+          aura::WindowOcclusionTracker::ScopedForceVisible(
               mini_view->GetDeskContainer())) {
   TRACE_EVENT0("ui", "DeskPreviewView::DeskPreviewView");
 
@@ -422,6 +422,9 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
           mini_view_->desk());
   if (floated_window) {
     GetLayersData(floated_window, &layers_data);
+    force_float_occlusion_tracker_visible_.emplace(floated_window);
+  } else {
+    force_float_occlusion_tracker_visible_.reset();
   }
 
   base::flat_set<aura::Window*> visible_on_all_desks_windows_to_mirror;

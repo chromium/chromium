@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_PREVIEW_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
@@ -164,9 +165,13 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // inactive). This is needed since we may be mirroring the contents of an
   // inactive desk which contains a playing video, which would not show at all
   // in the mirrored contents if we didn't ask the occlusion tracker to consider
-  // the desk container to be visible.
-  std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
-      force_occlusion_tracker_visible_;
+  // the desk container to be visible. We need a separate scoped force on the
+  // floated window, if there is one, as it isn't parented to the desk
+  // container.
+  aura::WindowOcclusionTracker::ScopedForceVisible
+      force_desk_occlusion_tracker_visible_;
+  std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
+      force_float_occlusion_tracker_visible_;
 
   std::unique_ptr<SystemShadow> shadow_;
 
