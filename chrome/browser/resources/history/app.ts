@@ -643,6 +643,20 @@ export class HistoryAppElement extends HistoryAppElementBase {
   setHasDrawerForTesting(enabled: boolean) {
     this.hasDrawer_ = enabled;
   }
+
+  private shouldShowHistoryEmbeddings_(): boolean {
+    if (!loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+      return false;
+    }
+
+    if (!this.queryState_.searchTerm) {
+      return false;
+    }
+
+    return this.queryState_.searchTerm.split(' ')
+               .filter(part => part.length > 0)
+               .length > 1;
+  }
 }
 
 declare global {

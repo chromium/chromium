@@ -10,15 +10,17 @@ import "url/mojom/url.mojom";
 // A single completed history entry reference that forms part of a search
 // result and can be presented to the user with source context.
 struct SearchResultItem {
+  // The title of the page.
+  string title;
+
   // The URL from the history database.
   url.mojom.Url url;
 
-  // The last visit time for the above URL, from history.
-  mojo_base.mojom.Time last_url_visit_time;
+  // The URL formatted for display.
+  string url_for_display;
 
-  // The visit time from the history_embeddings database. This represents
-  // the time at which passage extraction and vector embedding occurred.
-  mojo_base.mojom.Time visit_time;
+  // A localized string for the last visit time for the above URL, from history.
+  string relative_time;
 
   // The full source passage that was used to recall this item.
   string source_passage;

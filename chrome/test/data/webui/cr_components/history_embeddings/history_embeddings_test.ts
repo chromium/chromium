@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/history_embeddings/history_embeddings.j
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import type {SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,23 +19,42 @@ suite('cr-history-embeddings', () => {
   let element: HistoryEmbeddingsElement;
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
-  setup(() => {
+  const mockResults: SearchResultItem[] = [
+    {
+      title: 'Google',
+      url: {url: 'http://google.com'},
+      urlForDisplay: 'google.com',
+      relativeTime: '2 hours ago',
+      sourcePassage: 'Google description',
+    },
+    {
+      title: 'Youtube',
+      url: {url: 'http://youtube.com'},
+      urlForDisplay: 'youtube.com',
+      relativeTime: '4 hours ago',
+      sourcePassage: 'Youtube description',
+    },
+  ];
+
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     handler = TestMock.fromClass(PageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
-    handler.setResultFor('search', Promise.resolve({items: []}));
+    handler.setResultFor(
+        'search', Promise.resolve({result: {items: mockResults}}));
 
     element = document.createElement('cr-history-embeddings');
     document.body.appendChild(element);
+
+    element.searchQuery = 'some query';
+    await handler.whenCalled('search');
     return flushTasks();
   });
 
   test('Searches', async () => {
-    element.searchQuery = 'some query';
-    const searchArg = await handler.whenCalled('search');
-    assertEquals('some query', searchArg.query);
+    assertEquals('some query', handler.getArgs('search')[0].query);
   });
 
   test('DisplaysHeading', async () => {
@@ -53,11 +73,6 @@ suite('cr-history-embeddings', () => {
   });
 
   test('DisplaysResults', async () => {
-    element.mockResults = [
-      {domain: 'google.com', title: 'Google', url: 'http://google.com'},
-      {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
-    ];
-    await flushTasks();
     const resultsElements =
         element.shadowRoot!.querySelectorAll('cr-url-list-item');
     assertEquals(2, resultsElements.length);
@@ -66,25 +81,15 @@ suite('cr-history-embeddings', () => {
   });
 
   test('FiresClick', async () => {
-    element.mockResults = [
-      {domain: 'google.com', title: 'Google', url: 'http://google.com'},
-      {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
-    ];
-    await flushTasks();
     const resultsElements =
         element.shadowRoot!.querySelectorAll('cr-url-list-item');
     const resultClickEventPromise = eventToPromise('result-click', element);
     resultsElements[0]!.click();
     const resultClickEvent = await resultClickEventPromise;
-    assertEquals(element.mockResults[0], resultClickEvent.detail);
+    assertEquals(mockResults[0], resultClickEvent.detail);
   });
 
   test('FiresClickOnMoreActions', async () => {
-    element.mockResults = [
-      {domain: 'google.com', title: 'Google', url: 'http://google.com'},
-      {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
-    ];
-    await flushTasks();
     const moreActionsIconButtons =
         element.shadowRoot!.querySelectorAll<HTMLElement>(
             'cr-url-list-item cr-icon-button');
@@ -92,6 +97,6 @@ suite('cr-history-embeddings', () => {
         eventToPromise('more-actions-click', element);
     moreActionsIconButtons[0]!.click();
     const moreActionsClickEvent = await moreActionsClickEventPromise;
-    assertEquals(element.mockResults[0], moreActionsClickEvent.detail);
+    assertEquals(mockResults[0], moreActionsClickEvent.detail);
   });
 });

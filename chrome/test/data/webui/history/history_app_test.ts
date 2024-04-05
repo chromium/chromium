@@ -5,14 +5,18 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestBrowserService} from './test_browser_service.js';
 
 suite('HistoryAppTest', function() {
   let element: HistoryAppElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserServiceImpl.setInstance(new TestBrowserService());
     element = document.createElement('history-app');
     document.body.appendChild(element);
     return flushTasks();
@@ -32,5 +36,28 @@ suite('HistoryAppTest', function() {
     assertEquals(
         element.shadowRoot!.querySelector('history-synced-device-manager'),
         element.scrollTarget);
+  });
+
+  test('ShowsHistoryEmbeddings', async () => {
+    // By default, embeddings should not even be in the DOM.
+    assertFalse(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
+
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'one'}}));
+    await flushTasks();
+    assertFalse(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
+
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'two words'}}));
+    await flushTasks();
+    assertTrue(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
+
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'one'}}));
+    await flushTasks();
+    assertFalse(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
   });
 });

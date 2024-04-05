@@ -26,22 +26,14 @@
       #historyEmbeddingsDisclaimer {
         width: 100%;
         margin: 0 auto;
-        max-width: var(--cluster-max-width);
         padding: 6px 8px 8px;
         color: var(--cr-secondary-text-color);
         font-size: 11px;
         font-weight: 400;
       }
 
-      history-embeddings-promo {
-        margin: 0 auto;
-        max-width: var(--cluster-max-width);
-      }
-
       cr-history-embeddings-filter-chips {
-        width: 100%;
         margin: 0 auto;
-        max-width: var(--cluster-max-width);
         padding: 16px 8px;
       }
 
@@ -124,18 +116,11 @@
           on-selected-item-changed="updateScrollTarget_"
           items="{{items}}">
         <div id="tabs-container" path="history">
-          <template is="dom-if" if="[[enableHistoryEmbeddings_]]">
-            <div id="historyEmbeddingsDisclaimer">
-              $i18n{historyEmbeddingsDisclaimer}
-              <a href="#" target="_blank">$i18n{learnMore}</a>
-            </div>
-            <history-embeddings-promo></history-embeddings-promo>
-            <cr-history-embeddings-filter-chips
-                show-results-by-group="[[
-                    getShowResultsByGroup_(selectedPage_)]]"
-                on-show-results-by-group-changed="onShowResultsByGroupChanged_">
-            </cr-history-embeddings-filter-chips>
-          </template>
+          <div id="historyEmbeddingsDisclaimer" class="history-cards"
+              hidden$="[[!enableHistoryEmbeddings_]]">
+            $i18n{historyEmbeddingsDisclaimer}
+            <a href="#" target="_blank">$i18n{learnMore}</a>
+          </div>
           <template is="dom-if" if="[[showTabs_]]">
             <div id="tabs">
               <cr-tabs tab-names="[[tabsNames_]]"
@@ -145,6 +130,22 @@
             </div>
           </template>
           <div id="tabsScrollContainer">
+            <template is="dom-if" if="[[enableHistoryEmbeddings_]]">
+              <div class="history-cards">
+                <history-embeddings-promo></history-embeddings-promo>
+                <cr-history-embeddings-filter-chips
+                    show-results-by-group="[[
+                        getShowResultsByGroup_(selectedPage_)]]"
+                    on-show-results-by-group-changed="onShowResultsByGroupChanged_">
+                </cr-history-embeddings-filter-chips>
+                <template is="dom-if" restamp
+                    if="[[shouldShowHistoryEmbeddings_(queryState_.searchTerm)]]">
+                  <cr-history-embeddings
+                      search-query="[[queryState_.searchTerm]]">
+                  </cr-history-embeddings>
+                </template>
+              </div>
+            </template>
             <iron-pages id="tabs-content" attr-for-selected="path"
                 fallback-selection="history"
                 selected="[[getSelectedPage_(selectedPage_, items)]]"

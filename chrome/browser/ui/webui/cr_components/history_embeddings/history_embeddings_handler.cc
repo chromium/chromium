@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace {
 
@@ -18,10 +21,21 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result) {
     auto item = history_embeddings::mojom::SearchResultItem::New();
+    item->title = base::UTF16ToUTF8(scored_url_row.row.title());
     item->url = scored_url_row.row.url();
-    item->last_url_visit_time = scored_url_row.row.last_visit();
-    item->visit_time = scored_url_row.scored_url.visit_time;
     item->source_passage = scored_url_row.scored_url.passage;
+    item->relative_time = base::UTF16ToUTF8(ui::TimeFormat::Simple(
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+        base::Time::Now() - scored_url_row.row.last_visit()));
+
+    url_formatter::FormatUrlTypes format_types =
+        url_formatter::kFormatUrlOmitDefaults |
+        url_formatter::kFormatUrlOmitHTTPS |
+        url_formatter::kFormatUrlOmitTrivialSubdomains;
+    item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
+        scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
+        nullptr, nullptr, nullptr));
+
     mojom_search_result->items.push_back(std::move(item));
   }
   std::move(callback).Run(std::move(mojom_search_result));

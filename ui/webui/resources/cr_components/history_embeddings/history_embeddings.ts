@@ -14,16 +14,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './history_embeddings.html.js';
-import type {SearchQuery, SearchResult} from './history_embeddings.mojom-webui.js';
-
-// Temporary interface for some mocked history embeddings UI. This is only to
-// show some data in the UI for now and currently matches normal history
-// results (see HistoryEntry in //chrome/browser/resources/history/externs.ts).
-interface MockHistoryEntry {
-  domain: string;
-  title: string;
-  url: string;
-}
+import type {SearchQuery, SearchResult, SearchResultItem} from './history_embeddings.mojom-webui.js';
 
 export interface HistoryEmbeddingsElement {
   $: {
@@ -49,7 +40,6 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         type: String,
         observer: 'onSearchQueryChanged_',
       },
-      mockResults: Array,
     };
   }
 
@@ -57,21 +47,20 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private loading_ = false;
   private searchResult_: SearchResult;
   searchQuery: string;
-  mockResults: MockHistoryEntry[];
 
-  private getHeadingText_() {
+  private getHeadingText_(): string {
     if (this.loading_) {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
-  private onMoreActionsClick_(e: DomRepeatEvent<MockHistoryEntry>) {
+  private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
     this.dispatchEvent(
         new CustomEvent('more-actions-click', {detail: e.model.item}));
   }
 
-  private onResultClick_(e: DomRepeatEvent<MockHistoryEntry>) {
+  private onResultClick_(e: DomRepeatEvent<SearchResultItem>) {
     this.dispatchEvent(new CustomEvent('result-click', {detail: e.model.item}));
   }
 

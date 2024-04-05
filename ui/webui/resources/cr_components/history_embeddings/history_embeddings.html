@@ -76,11 +76,11 @@ a {
 
   <div hidden$="[[loading_]]">
     <div class="result-items">
-      <template is="dom-repeat" items="[[mockResults]]">
-        <cr-url-list-item url="[[item.url]]" title="[[item.title]]"
-            description="[[item.domain]]"
+      <template is="dom-repeat" items="[[searchResult_.items]]">
+        <cr-url-list-item url="[[item.url.url]]" title="[[item.title]]"
+            description="[[item.urlForDisplay]]"
             on-click="onResultClick_" as-anchor always-show-suffix>
-          <span slot="suffix">[[item.readableTimestamp]]</span>
+          <span slot="suffix">[[item.relativeTime]]</span>
           <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
               on-click="onMoreActionsClick_">
           </cr-icon-button>
