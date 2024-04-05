@@ -10,6 +10,7 @@ import {OncMojo} from './onc_mojo.js';
 interface NetworkListElement extends LegacyElementMixin, HTMLElement {
   networks: OncMojo.NetworkStateProperties[];
   customItems: NetworkList.CustomItemState[];
+  disabled: boolean;
 }
 
 declare global {

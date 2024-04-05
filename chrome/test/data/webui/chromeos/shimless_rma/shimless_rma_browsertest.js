@@ -33,7 +33,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 };
 
 const tests = [
-  ['OnboardingNetworkPageTest', 'onboarding_network_page_test.js'],
   [
     'OnboardingSelectComponentsPageTest',
     'onboarding_select_components_page_test.js', 'DISABLED_All'

@@ -296,6 +296,11 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     this.dispatchEvent(createCustomEvent(SET_NEXT_BUTTON_LABEL,
       this.isOnline ? 'nextButtonLabel' : 'skipButtonLabel'));
  }
+
+ showConfigForTesting(networkType: NetworkType, guid: string, name: string):
+     void {
+   this.showConfig(networkType, guid, name);
+ }
 }
 
 declare global {

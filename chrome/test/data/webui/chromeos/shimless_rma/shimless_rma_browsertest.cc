@@ -79,6 +79,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, OnboardingLandingPage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, OnboardingNetworkPage) {
+  RunTest("chromeos/shimless_rma/onboarding_network_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

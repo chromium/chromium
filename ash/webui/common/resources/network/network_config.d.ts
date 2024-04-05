@@ -4,6 +4,7 @@
 
 import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 interface NetworkConfigElement extends LegacyElementMixin, HTMLElement {
+  enableConnect: boolean;
   init(): void;
   connect(): void;
   save(): void;
