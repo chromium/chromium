@@ -60,19 +60,24 @@ void NotificationMenuHeaderView::UpdateCounter(int number_of_notifications) {
 gfx::Size NotificationMenuHeaderView::CalculatePreferredSize() const {
   return gfx::Size(
       views::MenuConfig::instance().touchable_menu_min_width,
-      GetInsets().height() + notification_title_->GetPreferredSize().height());
+      GetInsets().height() + notification_title_
+                                 ->GetPreferredSize(views::SizeBounds(
+                                     notification_title_->width(), {}))
+                                 .height());
 }
 
 void NotificationMenuHeaderView::Layout(PassKey) {
   const gfx::Insets insets = GetInsets();
 
   const gfx::Size notification_title_preferred_size =
-      notification_title_->GetPreferredSize();
+      notification_title_->GetPreferredSize(
+          views::SizeBounds(notification_title_->width(), {}));
   notification_title_->SetBounds(insets.left(), insets.top(),
                                  notification_title_preferred_size.width(),
                                  notification_title_preferred_size.height());
 
-  const gfx::Size counter_preferred_size = counter_->GetPreferredSize();
+  const gfx::Size counter_preferred_size =
+      counter_->GetPreferredSize(views::SizeBounds(counter_->width(), {}));
   counter_->SetBounds(width() - counter_preferred_size.width() - insets.right(),
                       insets.top(), counter_preferred_size.width(),
                       counter_preferred_size.height());

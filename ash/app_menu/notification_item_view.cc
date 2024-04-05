@@ -125,8 +125,12 @@ void NotificationItemView::Layout(PassKey) {
       views::MenuConfig::instance().touchable_menu_min_width -
           kNotificationHorizontalPadding - kIconHorizontalPadding * 2 -
           kProportionalIconViewSize.width(),
-      title_label_->GetPreferredSize().height() +
-          message_label_->GetPreferredSize().height());
+      title_label_
+              ->GetPreferredSize(views::SizeBounds(title_label_->width(), {}))
+              .height() +
+          message_label_
+              ->GetPreferredSize(views::SizeBounds(message_label_->width(), {}))
+              .height());
   text_container_->SetBounds(insets.left(), insets.top(),
                              text_container_size.width(),
                              text_container_size.height());
