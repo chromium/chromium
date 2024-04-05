@@ -88,7 +88,9 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 // is 5 element in total, then the range will only take 3 elements.
 - (NSRange)computedRangeStartIndex:(NSUInteger)start
           lengthWithoutLastElement:(NSUInteger)length {
-  if (start + length + 1 == _tabGroupTabNumber) {
+  NSUInteger computedNumberOfElement = start + length + 1;
+  if (computedNumberOfElement == _tabGroupTabNumber &&
+      computedNumberOfElement <= [_tabGroupInfos count]) {
     length += 1;
   }
   return NSMakeRange(start, length);
