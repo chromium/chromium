@@ -240,8 +240,8 @@ void LocalWindowProxy::Initialize() {
     SetSecurityToken(origin.get());
   }
 
-  if (origin &&
-      !origin->Host().empty()) {
+  if (recordreplay::IsRecordingOrReplaying("commands") &&
+      origin && !origin->Host().empty()) {
     bool initGlobally = !gRecordReplayStateInitialized;
     if (initGlobally) {
       gRecordReplayStateInitialized = true;
@@ -258,8 +258,7 @@ void LocalWindowProxy::Initialize() {
       );
     }
 
-    if (world_->IsMainWorld() &&
-      recordreplay::IsRecordingOrReplaying("commands")) {
+    if (world_->IsMainWorld()) {
       bool initFrame = GetFrame()->IsLocalRoot();
       if (initFrame) {
         // Root-level navigation event, initially happens before
