@@ -154,17 +154,18 @@ std::unique_ptr<KeyedService> BuildTestTemplateURLService(
   return std::move(template_url_service);
 }
 
-
-std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(optimization_guide::TestOptimizationGuideModelProvider * optimization_guide_model_provider,
+std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(
+    optimization_guide::TestOptimizationGuideModelProvider*
+        optimization_guide_model_provider,
     content::BrowserContext* context) {
   auto* profile = Profile::FromBrowserContext(context);
   return std::make_unique<FakePageContentAnnotationsService>(
-optimization_guide_model_provider,      HistoryServiceFactory::GetForProfile(profile,
+      optimization_guide_model_provider,
+      HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       ZeroSuggestCacheServiceFactory::GetForProfile(profile),
       TemplateURLServiceFactory::GetForProfile(profile));
 }
-
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     content::BrowserContext* context) {
