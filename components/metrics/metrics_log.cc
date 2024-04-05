@@ -89,11 +89,12 @@ static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
   return (time_ticks - base::TimeTicks()).InSeconds();
 }
 
-// Helper function to get, and increment, the next metrics log record id.
-// This value is cached in local state.
-int GetNextRecordId(PrefService* local_state) {
-  const int value = local_state->GetInteger(prefs::kMetricsLogRecordId) + 1;
-  local_state->SetInteger(prefs::kMetricsLogRecordId, value);
+// Helper function to get, increment, update and return an integer value stored
+// in |local_state| using |key|. This helper is used to manage the log record id
+// and the finalized log record id.
+int IncrementAndUpdate(PrefService* local_state, const std::string& key) {
+  const int value = local_state->GetInteger(key) + 1;
+  local_state->SetInteger(key, value);
   return value;
 }
 
@@ -268,6 +269,7 @@ MetricsLog::~MetricsLog() = default;
 // static
 void MetricsLog::RegisterPrefs(PrefRegistrySimple* registry) {
   EnvironmentRecorder::RegisterPrefs(registry);
+  registry->RegisterIntegerPref(prefs::kMetricsLogFinalizedRecordId, 0);
   registry->RegisterIntegerPref(prefs::kMetricsLogRecordId, 0);
 }
 
@@ -299,9 +301,16 @@ int64_t MetricsLog::GetCurrentTime() {
   return ToMonotonicSeconds(base::TimeTicks::Now());
 }
 
+void MetricsLog::AssignFinalizedRecordId(PrefService* local_state) {
+  DCHECK(!uma_proto_.has_finalized_record_id());
+  uma_proto_.set_finalized_record_id(
+      IncrementAndUpdate(local_state, prefs::kMetricsLogFinalizedRecordId));
+}
+
 void MetricsLog::AssignRecordId(PrefService* local_state) {
   DCHECK(!uma_proto_.has_record_id());
-  uma_proto_.set_record_id(GetNextRecordId(local_state));
+  uma_proto_.set_record_id(
+      IncrementAndUpdate(local_state, prefs::kMetricsLogRecordId));
 }
 
 void MetricsLog::RecordUserAction(const std::string& key,

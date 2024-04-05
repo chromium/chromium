@@ -144,6 +144,9 @@ class MetricsLog {
       const std::string& package_name,
       SystemProfileProto* system_profile);
 
+  // Assign a unique finalized record id to this log.
+  void AssignFinalizedRecordId(PrefService* local_state);
+
   // Assign a unique record id to this log.
   void AssignRecordId(PrefService* local_state);
 

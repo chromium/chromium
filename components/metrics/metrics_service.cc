@@ -758,6 +758,7 @@ void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
   local_state_->ClearPref(prefs::kMetricsClientID);
+  local_state_->ClearPref(prefs::kMetricsLogFinalizedRecordId);
   local_state_->ClearPref(prefs::kMetricsLogRecordId);
   state_manager_->ForceClientIdCreation();
   client_->SetMetricsClientId(state_manager_->client_id());
@@ -1073,6 +1074,7 @@ void MetricsService::CloseCurrentLog(
   GetUptimes(local_state_, &incremental_uptime, &uptime);
   current_log->RecordCurrentSessionData(incremental_uptime, uptime,
                                         &delegating_provider_, local_state_);
+  current_log->AssignFinalizedRecordId(local_state_);
 
   auto log_histogram_writer =
       std::make_unique<MetricsLogHistogramWriter>(current_log.get());
@@ -1396,8 +1398,8 @@ bool MetricsService::PrepareInitialStabilityLog(
     const std::string& prefs_previous_version) {
   DCHECK_EQ(CONSTRUCTED, state_);
 
-  MetricsLog::LogType log_type = MetricsLog::INITIAL_STABILITY_LOG;
-  std::unique_ptr<MetricsLog> initial_stability_log(CreateLog(log_type));
+  constexpr MetricsLog::LogType log_type = MetricsLog::INITIAL_STABILITY_LOG;
+  std::unique_ptr<MetricsLog> initial_stability_log = CreateLog(log_type);
 
   // Do not call OnDidCreateMetricsLog here because the stability log describes
   // stats from the _previous_ session.
@@ -1407,6 +1409,7 @@ bool MetricsService::PrepareInitialStabilityLog(
 
   initial_stability_log->RecordPreviousSessionData(&delegating_provider_,
                                                    local_state_);
+  initial_stability_log->AssignFinalizedRecordId(local_state_);
 
   auto log_histogram_writer = std::make_unique<MetricsLogHistogramWriter>(
       initial_stability_log.get(), base::Histogram::kUmaStabilityHistogramFlag);
@@ -1573,7 +1576,9 @@ bool MetricsService::PrepareProviderMetricsLog() {
     if (provider->HasIndependentMetrics()) {
       // Create a new log. This will have some default values injected in it
       // but those will be overwritten when an embedded profile is extracted.
-      std::unique_ptr<MetricsLog> log = CreateLog(MetricsLog::INDEPENDENT_LOG);
+      constexpr MetricsLog::LogType log_type = MetricsLog::INDEPENDENT_LOG;
+      std::unique_ptr<MetricsLog> log = CreateLog(log_type);
+      log->AssignFinalizedRecordId(local_state_);
 
       // Note that something is happening. This must be set before the
       // operation is requested in case the loader decides to do everything
@@ -1587,8 +1592,7 @@ bool MetricsService::PrepareProviderMetricsLog() {
       std::unique_ptr<IndependentMetricsLoader> loader =
           std::make_unique<IndependentMetricsLoader>(
               std::move(log), client_->GetVersionString(),
-              log_store()->GetSigningKeyForLogType(
-                  MetricsLog::INDEPENDENT_LOG));
+              log_store()->GetSigningKeyForLogType(log_type));
       IndependentMetricsLoader* loader_ptr = loader.get();
       loader_ptr->Run(
           base::BindOnce(&MetricsService::PrepareProviderMetricsLogDone,

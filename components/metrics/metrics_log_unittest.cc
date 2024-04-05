@@ -165,6 +165,29 @@ class MetricsLogTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
+TEST_F(MetricsLogTest, FinalizedRecordId) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG, &client_);
+  MetricsLog log3(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
+                  &client_);
+
+  ASSERT_FALSE(log1.uma_proto()->has_finalized_record_id());
+  ASSERT_FALSE(log2.uma_proto()->has_finalized_record_id());
+  ASSERT_FALSE(log3.uma_proto()->has_finalized_record_id());
+
+  // Set an initial finalized record-id value in prefs, so test values are
+  // predictable.
+  prefs_.SetInteger(prefs::kMetricsLogFinalizedRecordId, 500);
+
+  log1.AssignFinalizedRecordId(&prefs_);
+  log2.AssignFinalizedRecordId(&prefs_);
+  log3.AssignFinalizedRecordId(&prefs_);
+
+  EXPECT_EQ(501, log1.uma_proto()->finalized_record_id());
+  EXPECT_EQ(502, log2.uma_proto()->finalized_record_id());
+  EXPECT_EQ(503, log3.uma_proto()->finalized_record_id());
+}
+
 TEST_F(MetricsLogTest, RecordId) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   MetricsLog log2(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG, &client_);

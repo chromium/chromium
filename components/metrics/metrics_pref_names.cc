@@ -52,6 +52,11 @@ const char kMetricsInitialLogsMetadata[] =
 const char kMetricsLimitedEntropyRandomizationSource[] =
     "user_experience_metrics.limited_entropy_randomization_source";
 
+// A counter tracking the most recently used finalized log record id. Increment
+// this value by one (1) for each finalized log.
+const char kMetricsLogFinalizedRecordId[] =
+    "user_experience_metrics.log_finalized_record_id";
+
 // A counter tracking the most recently used log record id. Increment this value
 // by one (1) for each newly created log.
 const char kMetricsLogRecordId[] = "user_experience_metrics.log_record_id";
