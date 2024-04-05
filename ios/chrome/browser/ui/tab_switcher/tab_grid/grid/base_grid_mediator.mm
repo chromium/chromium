@@ -1057,8 +1057,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection {
-  int webStateListIndex =
-      [self webStateListIndexFromItemIndex:destinationIndex];
 
   // Tab move operations only originate from Chrome so a local object is used.
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
@@ -1077,7 +1075,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
-        MoveTabToBrowser(tabInfo.tabID, self.browser, webStateListIndex);
+        int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
+            self.webStateList, destinationIndex);
+
+        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
         return;
       }
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
@@ -1093,7 +1094,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                                                 .identifier = tabInfo.tabID,
                                             });
     if (sourceIndex != WebStateList::kInvalidIndex) {
-      self.webStateList->MoveWebStateAt(sourceIndex, webStateListIndex);
+      int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
+          self.webStateList, destinationIndex, sourceIndex);
+      self.webStateList->MoveWebStateAt(sourceIndex, destinationWebStateIndex);
     }
     return;
   }
@@ -1102,7 +1105,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
-    [self insertNewWebStateAtIndex:webStateListIndex withURL:droppedURL.URL];
+    int destinationWebStateIndex =
+        WebStateIndexFromGridDropItemIndex(self.webStateList, destinationIndex);
+    [self insertNewWebStateAtIndex:destinationWebStateIndex
+                           withURL:droppedURL.URL];
     return;
   }
 }
@@ -1116,14 +1122,14 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return;
   }
 
-  int webStateListIndex =
-      [self webStateListIndexFromItemIndex:destinationIndex];
+  int destinationWebStateIndex =
+      WebStateIndexFromGridDropItemIndex(self.webStateList, destinationIndex);
   auto loadHandler =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewWebStateAtIndex:webStateListIndex
+          [self insertNewWebStateAtIndex:destinationWebStateIndex
                                  withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
@@ -1197,33 +1203,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     [URLs addObject:URL];
   }
   return URLs;
-}
-
-// Converts the collection view's item index to the WebStateList index.
-- (int)webStateListIndexFromItemIndex:(NSUInteger)index {
-  if (!IsPinnedTabsEnabled() && !IsTabGroupInGridEnabled()) {
-    return index;
-  }
-
-  if (index == NSNotFound) {
-    return WebStateList::kInvalidIndex;
-  }
-
-  // Shifts `webStateIndex` by the number of pinned WebStates.
-  int webStateIndex = self.webStateList->pinned_tabs_count();
-
-  // Shifts `webStateIndex` by the number of WebStates in the groups before it.
-  for (NSUInteger i = 0; i < index; ++i) {
-    const TabGroup* tabGroup =
-        self.webStateList->GetGroupOfWebStateAt(webStateIndex);
-    if (tabGroup) {
-      webStateIndex += tabGroup->range().count();
-    } else {
-      webStateIndex++;
-    }
-  }
-
-  return webStateIndex;
 }
 
 // Inserts/removes a non pinned item to/from the collection.

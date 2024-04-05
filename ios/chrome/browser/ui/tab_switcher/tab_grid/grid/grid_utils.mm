@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
@@ -44,4 +45,51 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
     }
   }
   return items;
+}
+
+int WebStateIndexFromGridDropItemIndex(WebStateList* web_state_list,
+                                       NSUInteger drop_item_index,
+                                       int previous_web_state_index) {
+  if (!IsPinnedTabsEnabled() && !IsTabGroupInGridEnabled()) {
+    return drop_item_index;
+  }
+
+  if (drop_item_index == NSNotFound) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  // Shift `web_state_index` by the number of pinned WebStates.
+  int web_state_index = web_state_list->pinned_tabs_count();
+
+  // Shift `web_state_index` by the number of WebStates in the
+  // groups before it.
+  for (NSUInteger i = 0; i < drop_item_index; ++i) {
+    const TabGroup* tabGroup =
+        web_state_list->GetGroupOfWebStateAt(web_state_index);
+    if (tabGroup) {
+      web_state_index += tabGroup->range().count();
+    } else {
+      web_state_index++;
+    }
+  }
+
+  // If there is no information about `previous_web_state_index`, the current
+  // `web_state_index` is considered valid.
+  if (previous_web_state_index == WebStateList::kInvalidIndex) {
+    return web_state_index;
+  }
+
+  // If the current `web_state_index` belongs to a group and
+  // `previous_web_state_index` is smaller than `web_state_index`,
+  // update the `web_state_index` to be the latest index of the
+  // group.
+  if (previous_web_state_index < web_state_index &&
+      web_state_index < web_state_list->count()) {
+    const TabGroup* tabGroup =
+        web_state_list->GetGroupOfWebStateAt(web_state_index);
+    if (tabGroup) {
+      web_state_index = tabGroup->range().range_end() - 1;
+    }
+  }
+  return web_state_index;
 }
