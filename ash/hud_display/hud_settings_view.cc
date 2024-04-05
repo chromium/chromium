@@ -340,7 +340,8 @@ void AnimationSpeedControl::Layout(PassKey) {
   gfx::Size max_size;
   // Make all labels equal size.
   for (const views::View* label : hints_container_->children()) {
-    max_size.SetToMax(label->GetPreferredSize());
+    max_size.SetToMax(
+        label->GetPreferredSize(views::SizeBounds(label->width(), {})));
   }
 
   for (views::View* label : hints_container_->children()) {
