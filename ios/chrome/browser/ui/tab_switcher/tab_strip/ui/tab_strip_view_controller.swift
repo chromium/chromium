@@ -256,11 +256,19 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     beforeItem destinationItemIdentifier: TabStripItemIdentifier?
   ) {
     var snapshot = dataSource.snapshot(for: .tabs)
+    let itemIsExpanded = snapshot.isExpanded(itemToMoveIdentifier)
+    let childItems = snapshot.snapshot(of: itemToMoveIdentifier).items
     snapshot.delete([itemToMoveIdentifier])
     if let destinationItemIdentifier = destinationItemIdentifier {
       snapshot.insert([itemToMoveIdentifier], before: destinationItemIdentifier)
     } else {
       snapshot.append([itemToMoveIdentifier])
+    }
+    if itemIsExpanded {
+      snapshot.expand([itemToMoveIdentifier])
+    }
+    if !childItems.isEmpty {
+      snapshot.append(childItems, to: itemToMoveIdentifier)
     }
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot, animatingDifferences: true)
@@ -272,6 +280,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     afterItem destinationItemIdentifier: TabStripItemIdentifier?
   ) {
     var snapshot = dataSource.snapshot(for: .tabs)
+    let itemIsExpanded = snapshot.isExpanded(itemToMoveIdentifier)
+    let childItems = snapshot.snapshot(of: itemToMoveIdentifier).items
     snapshot.delete([itemToMoveIdentifier])
     if let destinationItemIdentifier = destinationItemIdentifier {
       snapshot.insert([itemToMoveIdentifier], after: destinationItemIdentifier)
@@ -279,6 +289,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       snapshot.insert([itemToMoveIdentifier], before: firstItemIdentifier)
     } else {
       snapshot.append([itemToMoveIdentifier])
+    }
+    if itemIsExpanded {
+      snapshot.expand([itemToMoveIdentifier])
+    }
+    if !childItems.isEmpty {
+      snapshot.append(childItems, to: itemToMoveIdentifier)
     }
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot, animatingDifferences: true)
