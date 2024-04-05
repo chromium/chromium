@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.WebContents;
 
 /** Fulfilled when a page is loaded. */
 class PageLoadedCondition extends UiThreadCondition {
@@ -22,20 +24,32 @@ class PageLoadedCondition extends UiThreadCondition {
 
     @Override
     public String buildDescription() {
-        return "Tab loaded";
+        return mIncognito ? "Incognito tab loaded" : "Regular tab loaded";
     }
 
     @Override
-    public boolean check() {
+    public ConditionStatus check() {
         Tab tab = mChromeTabbedActivityTestRule.getActivity().getActivityTab();
-        if (tab != null
-                && tab.isIncognito() == mIncognito
-                && !tab.isLoading()
-                && !tab.getWebContents().shouldShowLoadingUI()) {
+        if (tab == null) {
+            return notFulfilled("null ActivityTab");
+        }
+
+        boolean isIncognito = tab.isIncognito();
+        boolean isLoading = tab.isLoading();
+        WebContents webContents = tab.getWebContents();
+        boolean shouldShowLoadingUi = webContents != null && webContents.shouldShowLoadingUI();
+        String message =
+                String.format(
+                        "incognito %b, isLoading %b, hasWebContents %b, shouldShowLoadingUI %b",
+                        isIncognito, isLoading, webContents != null, shouldShowLoadingUi);
+        if (isIncognito == mIncognito
+                && !isLoading
+                && webContents != null
+                && !shouldShowLoadingUi) {
             mMatchedTab = tab;
-            return true;
+            return fulfilled(message);
         } else {
-            return false;
+            return notFulfilled(message);
         }
     }
 

@@ -53,12 +53,16 @@ public class ViewConditions {
         }
 
         @Override
-        public boolean check() throws Exception {
-            if (!mGate.check()) {
-                return true;
+        public ConditionStatus check() throws Exception {
+            ConditionStatus gateStatus = mGate.check();
+            String gateMessage = gateStatus.getMessageAsGate();
+            if (!gateStatus.isFulfilled()) {
+                return fulfilled(gateMessage);
             }
 
-            return mDisplayedCondition.check();
+            ConditionStatus status = mDisplayedCondition.check();
+            status.amendMessage(gateMessage);
+            return status;
         }
 
         @Override
@@ -84,8 +88,9 @@ public class ViewConditions {
         }
 
         @Override
-        public boolean check() {
+        public ConditionStatus check() {
             ViewInteraction viewInteraction = onView(mMatcher);
+            String[] message = new String[1];
             try {
                 viewInteraction.perform(
                         new ViewAction() {
@@ -102,15 +107,15 @@ public class ViewConditions {
                             @Override
                             public void perform(UiController uiController, View view) {
                                 if (mViewMatched != null && mViewMatched != view) {
-                                    throw new IllegalStateException(
+                                    message[0] =
                                             String.format(
                                                     "Matched a different view, was %s, now %s",
-                                                    mViewMatched, view));
+                                                    mViewMatched, view);
                                 }
                                 mViewMatched = view;
                             }
                         });
-                return true;
+                return fulfilled(message[0]);
             } catch (NoMatchingViewException
                     | NoMatchingRootException
                     | AmbiguousViewMatcherException e) {
@@ -121,7 +126,7 @@ public class ViewConditions {
                                     mViewMatched, e.getClass().getSimpleName()),
                             e);
                 }
-                return false;
+                return notFulfilled(e.getClass().getSimpleName());
             }
         }
     }
@@ -141,12 +146,12 @@ public class ViewConditions {
         }
 
         @Override
-        public boolean check() {
+        public ConditionStatus check() {
             try {
                 onView(mMatcher).check(doesNotExist());
-                return true;
+                return fulfilled();
             } catch (AssertionError e) {
-                return false;
+                return notFulfilled();
             }
         }
     }

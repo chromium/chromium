@@ -45,7 +45,17 @@ public class CallbackCondition extends Condition {
     }
 
     @Override
-    public boolean check() {
-        return mCallbackHelper.getCallCount() > mStartingCount;
+    public ConditionStatus check() {
+        int currentCount = mCallbackHelper.getCallCount();
+        if (mStartingCount > 0) {
+            return whether(
+                    currentCount > mStartingCount,
+                    "Called %d/1 times (%d - %d)",
+                    currentCount - mStartingCount,
+                    currentCount,
+                    mStartingCount);
+        } else {
+            return whether(currentCount > 0, "Called %d/1 times", currentCount);
+        }
     }
 }

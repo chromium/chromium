@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -25,19 +26,31 @@ class NtpLoadedCondition extends UiThreadCondition {
     }
 
     @Override
-    public boolean check() {
+    public ConditionStatus check() {
         Tab tab = mPageLoadedCondition.getMatchedTab();
         if (tab == null) {
-            return false;
+            return notFulfilled("null tab");
         }
 
         NativePage nativePage = tab.getNativePage();
         if (!tab.isIncognito()) {
-            return (nativePage instanceof NewTabPage)
-                    && ((NewTabPage) nativePage).isLoadedForTests();
+            if (!(nativePage instanceof NewTabPage)) {
+                return notFulfilled(
+                        "native page has [type %s, title \"%s\"], waiting to be NewTabPage",
+                        nativePage.getClass().getName(), nativePage.getTitle());
+            }
+            boolean isLoaded = ((NewTabPage) nativePage).isLoadedForTests();
+            return whether(isLoaded, "native page is of type NewTabPage, isLoaded=%b", isLoaded);
         } else {
-            return (nativePage instanceof IncognitoNewTabPage)
-                    && ((IncognitoNewTabPage) nativePage).isLoadedForTests();
+            if (!(nativePage instanceof IncognitoNewTabPage)) {
+                return notFulfilled(
+                        "native page has type [type %s, title \"%s\"], waiting to be"
+                                + " IncognitoNewTabPage",
+                        nativePage.getClass().getName(), nativePage.getTitle());
+            }
+            boolean isLoaded = ((IncognitoNewTabPage) nativePage).isLoadedForTests();
+            return whether(
+                    isLoaded, "native page is of type IncognitoNewTabPage, isLoaded=%b", isLoaded);
         }
     }
 }

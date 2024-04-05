@@ -152,8 +152,8 @@ public class LogicalElement implements ElementInState {
         mEnterCondition =
                 new Condition(mIsRunOnUiThread) {
                     @Override
-                    public boolean check() throws Exception {
-                        return checkFunction.call();
+                    public ConditionStatus check() throws Exception {
+                        return whether(checkFunction.call());
                     }
 
                     @Override
@@ -166,8 +166,8 @@ public class LogicalElement implements ElementInState {
             mExitCondition =
                     new Condition(mIsRunOnUiThread) {
                         @Override
-                        public boolean check() throws Exception {
-                            return !checkFunction.call();
+                        public ConditionStatus check() throws Exception {
+                            return whether(!checkFunction.call());
                         }
 
                         @Override

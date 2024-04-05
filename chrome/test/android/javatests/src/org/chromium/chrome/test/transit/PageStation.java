@@ -13,6 +13,7 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.TransitStation;
@@ -253,8 +254,13 @@ public class PageStation extends TransitStation {
         }
 
         @Override
-        public boolean check() throws Exception {
-            return mExpectedTitle.equals(getTestRule().getActivity().getActivityTab().getTitle());
+        public ConditionStatus check() throws Exception {
+            Tab tab = getTestRule().getActivity().getActivityTab();
+            if (tab == null) {
+                return notFulfilled("null ActivityTab");
+            }
+            String title = tab.getTitle();
+            return whether(mExpectedTitle.equals(title), "ActivityTab title: \"%s\"", title);
         }
 
         @Override
@@ -274,10 +280,13 @@ public class PageStation extends TransitStation {
         }
 
         @Override
-        public boolean check() throws Exception {
+        public ConditionStatus check() throws Exception {
             Tab tab = getTestRule().getActivity().getActivityTab();
-            if (tab == null) return false;
-            return tab.getUrl().getSpec().contains(mExpectedUrlPiece);
+            if (tab == null) {
+                return notFulfilled("null ActivityTab");
+            }
+            String url = tab.getUrl().getSpec();
+            return whether(url.contains(mExpectedUrlPiece), "ActivityTab url: \"%s\"", url);
         }
 
         @Override

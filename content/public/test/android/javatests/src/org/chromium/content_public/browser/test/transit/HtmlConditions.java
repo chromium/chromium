@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.test.transit;
 import android.graphics.Rect;
 
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -28,10 +29,10 @@ public class HtmlConditions {
         }
 
         @Override
-        public boolean check() throws Exception {
+        public ConditionStatus check() throws Exception {
             WebContents webContents = mWebContentsElementInState.getWebContents();
             if (webContents == null) {
-                return false;
+                return notFulfilled("null webContents");
             }
 
             Rect bounds;
@@ -39,10 +40,10 @@ public class HtmlConditions {
                 bounds = DOMUtils.getNodeBounds(webContents, mHtmlId);
             } catch (AssertionError e) {
                 // HTML elements might not exist yet, but will be created.
-                return false;
+                return notFulfilled("getNodeBounds() threw assertion");
             }
 
-            return !bounds.isEmpty();
+            return whether(!bounds.isEmpty(), "Bounds: %s", bounds.toShortString());
         }
 
         @Override
@@ -69,21 +70,20 @@ public class HtmlConditions {
         }
 
         @Override
-        public boolean check() throws TimeoutException {
+        public ConditionStatus check() throws TimeoutException {
             WebContents webContents = mWebContentsElementInState.getWebContents();
             if (webContents == null) {
-                return true;
+                return fulfilled("null webContents");
             }
 
             Rect bounds;
             try {
                 bounds = DOMUtils.getNodeBounds(webContents, mHtmlId);
             } catch (AssertionError e) {
-                // If no bounds could be retrieved, it's likely the object is gone.
-                return true;
+                return fulfilled("getNodeBounds() threw assertion, object likely gone");
             }
 
-            return bounds.isEmpty();
+            return whether(bounds.isEmpty(), "Bounds: %s", bounds.toShortString());
         }
     }
 }

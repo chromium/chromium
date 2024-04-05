@@ -4,6 +4,12 @@
 
 package org.chromium.base.test.transit;
 
+import androidx.annotation.Nullable;
+
+import com.google.errorprone.annotations.FormatMethod;
+
+import org.chromium.base.test.transit.ConditionStatus.Status;
+
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.
  *
@@ -24,11 +30,14 @@ public abstract class Condition {
     }
 
     /**
-     * Called on the instrumentation thread, depending on #shouldRunOnUiThread().
+     * Should check the condition, report its status (if useful) and return whether it is fulfilled.
      *
-     * @return whether the condition has been fulfilled.
+     * <p>Depending on #shouldRunOnUiThread(), called on the UI or the instrumentation thread.
+     *
+     * @return {@link ConditionStatus} stating whether the condition has been fulfilled and
+     *     optionally more details about its state.
      */
-    public abstract boolean check() throws Exception;
+    public abstract ConditionStatus check() throws Exception;
 
     /**
      * @return a short description to be printed as part of a list of conditions. Use {@link
@@ -67,5 +76,70 @@ public abstract class Condition {
      */
     public boolean isRunOnUiThread() {
         return mIsRunOnUiThread;
+    }
+
+    /** {@link #check()} should return this when a Condition is fulfilled. */
+    public static ConditionStatus fulfilled() {
+        return fulfilled(/* message= */ null);
+    }
+
+    /** {@link #fulfilled()} with more details to be logged as a short message. */
+    public static ConditionStatus fulfilled(@Nullable String message) {
+        return new ConditionStatus(Status.FULFILLED, message);
+    }
+
+    /** {@link #fulfilled()} with more details to be logged as a short message. */
+    @FormatMethod
+    public static ConditionStatus fulfilled(String message, Object... args) {
+        return new ConditionStatus(Status.FULFILLED, String.format(message, args));
+    }
+
+    /** {@link #check()} should return this when a Condition is not fulfilled. */
+    public static ConditionStatus notFulfilled() {
+        return notFulfilled(/* message= */ null);
+    }
+
+    /** {@link #notFulfilled()} with more details to be logged as a short message. */
+    public static ConditionStatus notFulfilled(@Nullable String message) {
+        return new ConditionStatus(Status.NOT_FULFILLED, message);
+    }
+
+    /** {@link #notFulfilled()} with more details to be logged as a short message. */
+    @FormatMethod
+    public static ConditionStatus notFulfilled(String message, Object... args) {
+        return new ConditionStatus(Status.NOT_FULFILLED, String.format(message, args));
+    }
+
+    /**
+     * {@link #check()} should return this when an error happens while checking a Condition.
+     *
+     * <p>A short message is required.
+     *
+     * <p>Throwing an error in check() has the same effect.
+     */
+    public static ConditionStatus error(@Nullable String message) {
+        return new ConditionStatus(Status.ERROR, message);
+    }
+
+    /** {@link #error(String)} with format parameters. */
+    @FormatMethod
+    public static ConditionStatus error(String message, Object... args) {
+        return new ConditionStatus(Status.ERROR, String.format(message, args));
+    }
+
+    /** {@link #check()} should return this as a convenience method. */
+    public static ConditionStatus whether(boolean isFulfilled) {
+        return isFulfilled ? fulfilled() : notFulfilled();
+    }
+
+    /** {@link #whether(boolean)} with more details to be logged as a short message. */
+    public static ConditionStatus whether(boolean isFulfilled, @Nullable String message) {
+        return isFulfilled ? fulfilled(message) : notFulfilled(message);
+    }
+
+    /** {@link #whether(boolean)} with more details to be logged as a short message. */
+    @FormatMethod
+    public static ConditionStatus whether(boolean isFulfilled, String message, Object... args) {
+        return whether(isFulfilled, String.format(message, args));
     }
 }

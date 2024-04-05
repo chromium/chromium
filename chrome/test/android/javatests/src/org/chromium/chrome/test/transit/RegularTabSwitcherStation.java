@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
@@ -34,8 +35,10 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         Condition noRegularTabsExist =
                 new UiThreadCondition() {
                     @Override
-                    public boolean check() {
-                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ false) == 0;
+                    public ConditionStatus check() {
+                        int regularTabCount =
+                                mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ false);
+                        return whether(regularTabCount == 0, "regular tabs: %d", regularTabCount);
                     }
 
                     @Override
@@ -48,8 +51,11 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         Condition incognitoTabsExist =
                 new UiThreadCondition() {
                     @Override
-                    public boolean check() {
-                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true) > 0;
+                    public ConditionStatus check() {
+                        int incognitoTabCount =
+                                mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true);
+                        return whether(
+                                incognitoTabCount > 0, "incognito tabs: %d", incognitoTabCount);
                     }
 
                     @Override

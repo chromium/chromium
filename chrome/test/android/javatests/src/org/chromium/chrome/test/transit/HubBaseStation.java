@@ -23,6 +23,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.TravelException;
@@ -83,8 +84,11 @@ public abstract class HubBaseStation extends TransitStation {
         Condition incognitoTabsExist =
                 new UiThreadCondition() {
                     @Override
-                    public boolean check() {
-                        return mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true) > 0;
+                    public ConditionStatus check() {
+                        int incognitoTabCount =
+                                mChromeTabbedActivityTestRule.tabsCount(/* incognito= */ true);
+                        return whether(
+                                incognitoTabCount > 0, "%d incognito tabs", incognitoTabCount);
                     }
 
                     @Override

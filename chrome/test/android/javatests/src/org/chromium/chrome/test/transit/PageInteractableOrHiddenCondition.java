@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -21,12 +22,18 @@ class PageInteractableOrHiddenCondition extends UiThreadCondition {
     }
 
     @Override
-    public boolean check() {
+    public ConditionStatus check() {
         Tab tab = mPageLoadedCondition.getMatchedTab();
         if (tab == null) {
-            return false;
+            return notFulfilled("null tab");
         }
 
-        return tab.isUserInteractable() || tab.isHidden();
+        boolean isUserInteractable = tab.isUserInteractable();
+        boolean isHidden = tab.isHidden();
+        return whether(
+                isUserInteractable || isHidden,
+                "isUserInteractable=%b, isHidden=%b",
+                isUserInteractable,
+                isHidden);
     }
 }

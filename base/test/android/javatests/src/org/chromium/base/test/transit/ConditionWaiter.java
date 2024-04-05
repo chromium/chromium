@@ -4,7 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import android.util.ArrayMap;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -12,6 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -19,36 +19,34 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Map;
 
-/** Waits for multiple {@link ConditionWaitStatus}es, polling the {@link Condition}s in parallel. */
+/** Polls multiple {@link Condition}s in parallel. */
 public class ConditionWaiter {
 
     /**
-     * The fulfillment status of a {@link Condition} being waited for.
+     * The process of waiting for a {@link Condition} to be fulfilled.
      *
-     * <p>Tracks the times at which the Condition was checked to provide information about how long
-     * it took to be fulfilled (or for long it was checked until it timed out).
+     * <p>Tracks the {@link ConditionStatus}es returned over time, how long it took to be fulfilled
+     * (or for long it was checked until it timed out).
      *
-     * <p>Tracks and aggregates errors thrown during the Condition checking for user-friendly
-     * printing.
+     * <p>Tracks and aggregates the ConditionStatues for user-friendly printing.
      */
-    static class ConditionWaitStatus {
+    static class ConditionWait {
 
         private final Condition mCondition;
         private final @ConditionOrigin int mOrigin;
         private long mTimeStarted;
         private long mTimeUnfulfilled;
         private long mTimeFulfilled;
-        private ArrayMap<String, Integer> mErrors = new ArrayMap<>();
+        private StatusStore mStatusStore = new StatusStore();
 
         /**
          * Constructor.
          *
-         * @param condition the {@link Condition} that this will hold the status for.
+         * @param condition the {@link Condition} that this will wait for.
          * @param origin the origin of the |condition|.
          */
-        ConditionWaitStatus(Condition condition, @ConditionOrigin int origin) {
+        ConditionWait(Condition condition, @ConditionOrigin int origin) {
             mCondition = condition;
             mOrigin = origin;
         }
@@ -68,60 +66,43 @@ public class ConditionWaiter {
         }
 
         private boolean update() {
+            ConditionStatus status;
             try {
-                boolean fulfilled;
                 if (mCondition.isRunOnUiThread()) {
                     // TODO(crbug.com/1489445): Post multiple checks in parallel, the UI thread will
                     // run them sequentially.
-                    fulfilled = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
+                    status = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
                 } else {
-                    fulfilled = mCondition.check();
-                }
-
-                if (fulfilled) {
-                    reportFulfilledWait();
-                    return false;
-                } else {
-                    reportUnfulfilledWait();
-                    return true;
+                    status = mCondition.check();
                 }
             } catch (Exception e) {
-                reportError(e.getMessage());
+                status = Condition.error(e.getMessage());
+            }
+
+            mStatusStore.report(status);
+            if (status.isError()) {
+                return true;
+            } else if (status.isFulfilled()) {
+                reportFulfilledWait(status);
+                return false;
+            } else {
+                reportUnfulfilledWait(status);
                 return true;
             }
         }
 
-        /**
-         * Report that the Condition being waited on is not fulfilled at this time.
-         *
-         * @throws IllegalStateException when the Condition is unfulfilled but it had previously
-         *     been fulfilled.
-         */
-        private void reportUnfulfilledWait() throws IllegalStateException {
-            if (isFulfilled()) {
-                throw new IllegalStateException("Unfulfilled after already being fulfilled");
-            }
-
-            mTimeUnfulfilled = getNow();
+        /** Report that the Condition being waited on is not fulfilled at this time. */
+        private void reportUnfulfilledWait(ConditionStatus status) throws IllegalStateException {
+            mTimeFulfilled = 0;
+            mTimeUnfulfilled = status.getTimestamp();
         }
 
         /** Report that the Condition being waited on is fulfilled at this time. */
-        private void reportFulfilledWait() {
+        private void reportFulfilledWait(ConditionStatus status) {
             if (!isFulfilled()) {
                 // isFulfilled() will return true after setting a non-zero time.
-                mTimeFulfilled = getNow();
+                mTimeFulfilled = status.getTimestamp();
             }
-        }
-
-        /**
-         * Report that an error happened when checking the Condition.
-         *
-         * @param reason a String that will be printed as the reason; errors with the exact same
-         *     reason are aggregated.
-         */
-        private void reportError(String reason) {
-            int beforeCount = mErrors.getOrDefault(reason, 0);
-            mErrors.put(reason, beforeCount + 1);
         }
 
         /**
@@ -156,18 +137,17 @@ public class ConditionWaiter {
             return Pair.create(minTimeToFulfill, maxTimeToFulfill);
         }
 
-        /**
-         * @return an aggegation of the errors reported while checking a Condition or reporting its
-         *     status.
-         */
-        private Map<String, Integer> getErrors() {
-            return mErrors;
-        }
-
         private static long getNow() {
             long now = TimeUtils.currentTimeMillis();
             assert now > 0;
             return now;
+        }
+
+        /**
+         * @return an aggregation of the statuses reported while checking a Condition.
+         */
+        public StatusStore getStatusStore() {
+            return mStatusStore;
         }
     }
 
@@ -180,41 +160,36 @@ public class ConditionWaiter {
     private static final String TAG = "Transit";
 
     /**
-     * Blocks waiting for multiple {@link ConditionWaitStatus}es, polling the {@link Condition}s in
-     * parallel and reporting their status to the {@link ConditionWaitStatus}es.
+     * Blocks waiting for multiple {@link Condition}s, polling them and reporting their status to he
+     * {@link ConditionWait}es.
      *
-     * <p>The timeout is |MAX_TIME_TO_POLL|.
-     *
-     * <p>TODO(crbug.com/1489462): Make the timeout configurable per transition.
-     *
-     * @param conditionStatuses the {@link ConditionWaitStatus}es to wait for.
+     * @param conditionWaits the {@link ConditionWait}es to process.
      * @param options the {@link TransitionOptions} to configure the polling parameters.
      * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
      */
-    public static void waitFor(
-            List<ConditionWaitStatus> conditionStatuses, TransitionOptions options) {
-        if (conditionStatuses.isEmpty()) {
+    public static void waitFor(List<ConditionWait> conditionWaits, TransitionOptions options) {
+        if (conditionWaits.isEmpty()) {
             Log.i(TAG, "No conditions to fulfill.");
         }
 
-        for (ConditionWaitStatus status : conditionStatuses) {
-            status.startTimer();
+        for (ConditionWait wait : conditionWaits) {
+            wait.startTimer();
         }
 
         Runnable checker =
                 () -> {
                     boolean anyCriteriaMissing = false;
-                    for (ConditionWaitStatus status : conditionStatuses) {
-                        anyCriteriaMissing |= status.update();
+                    for (ConditionWait wait : conditionWaits) {
+                        anyCriteriaMissing |= wait.update();
                     }
 
                     if (anyCriteriaMissing) {
-                        throw buildWaitConditionsException(conditionStatuses);
+                        throw buildWaitConditionsException(conditionWaits);
                     } else {
                         Log.i(
                                 TAG,
                                 "Conditions fulfilled:\n%s",
-                                createWaitConditionsSummary(conditionStatuses));
+                                createWaitConditionsSummary(conditionWaits));
                     }
                 };
 
@@ -223,16 +198,16 @@ public class ConditionWaiter {
     }
 
     private static CriteriaNotSatisfiedException buildWaitConditionsException(
-            List<ConditionWaitStatus> conditionStatuses) {
+            List<ConditionWait> conditionWaits) {
         return new CriteriaNotSatisfiedException(
-                "Did not meet all conditions:\n" + createWaitConditionsSummary(conditionStatuses));
+                "Did not meet all conditions:\n" + createWaitConditionsSummary(conditionWaits));
     }
 
-    private static String createWaitConditionsSummary(List<ConditionWaitStatus> conditionStatuses) {
+    private static String createWaitConditionsSummary(List<ConditionWait> conditionStatuses) {
         StringBuilder detailsString = new StringBuilder();
 
         int i = 1;
-        for (ConditionWaitStatus conditionStatus : conditionStatuses) {
+        for (ConditionWait conditionStatus : conditionStatuses) {
             String conditionDescription = conditionStatus.mCondition.getDescription();
 
             String originString = "";
@@ -248,22 +223,29 @@ public class ConditionWaiter {
                     break;
             }
 
-            Map<String, Integer> errors = conditionStatus.getErrors();
-            StringBuilder errorsString = new StringBuilder();
-            String statusString;
-            if (!errors.isEmpty()) {
-                errorsString.append(" {errors: ");
-                for (Map.Entry<String, Integer> e : errors.entrySet()) {
-                    String errorReason = e.getKey();
-                    Integer errorCount = e.getValue();
-                    errorsString.append(String.format("%s (%d errors);", errorReason, errorCount));
+            String verdictString;
+            if (conditionStatus.getStatusStore().anyErrorsReported()) {
+                if (conditionStatus.isFulfilled()) {
+                    verdictString = "[OK* ]";
+                } else {
+                    verdictString = "[ERR*]";
                 }
-                errorsString.append("}");
-                statusString = "[ERR ]";
-            } else if (conditionStatus.isFulfilled()) {
-                statusString = "[OK  ]";
             } else {
-                statusString = "[FAIL]";
+                if (conditionStatus.isFulfilled()) {
+                    verdictString = "[OK  ]";
+                } else {
+                    verdictString = "[FAIL]";
+                }
+            }
+
+            StringBuilder historyString = new StringBuilder();
+            if (conditionStatus.getStatusStore().shouldPrintRegions()) {
+                List<StatusRegion> statusRegions =
+                        conditionStatus.getStatusStore().getStatusRegions();
+                for (StatusRegion r : statusRegions) {
+                    historyString.append("\n        ");
+                    historyString.append(r.getLogString(conditionStatus.mTimeStarted));
+                }
             }
 
             String fulfilledString;
@@ -285,13 +267,13 @@ public class ConditionWaiter {
                     .append("] ")
                     .append(originString)
                     .append(" ")
-                    .append(statusString)
+                    .append(verdictString)
                     .append(" ")
                     .append(conditionDescription)
                     .append(" ")
                     .append(fulfilledString);
-            if (errorsString.length() > 0) {
-                detailsString.append(" ").append(errorsString);
+            if (historyString.length() > 0) {
+                detailsString.append(historyString);
             }
             detailsString.append('\n');
             i++;

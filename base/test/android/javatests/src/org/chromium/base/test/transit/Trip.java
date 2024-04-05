@@ -7,7 +7,7 @@ package org.chromium.base.test.transit;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
+import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class Trip extends Transition {
     @Nullable private final TransitStation mOrigin;
     private final TransitStation mDestination;
 
-    private List<ConditionWaitStatus> mWaitStatuses;
+    private List<ConditionWait> mWaits;
 
     private static int sLastTripId;
 
@@ -95,10 +95,9 @@ public class Trip extends Transition {
         }
         mDestination.setStateTransitioningTo();
 
-        mWaitStatuses =
-                calculateConditionWaitStatuses(mOrigin, mDestination, getTransitionConditions());
-        for (ConditionWaitStatus waitStatus : mWaitStatuses) {
-            waitStatus.getCondition().onStartMonitoring();
+        mWaits = calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
+        for (ConditionWait waits : mWaits) {
+            waits.getCondition().onStartMonitoring();
         }
     }
 
@@ -107,7 +106,7 @@ public class Trip extends Transition {
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            ConditionWaiter.waitFor(mWaitStatuses, mOptions);
+            ConditionWaiter.waitFor(mWaits, mOptions);
         } catch (AssertionError e) {
             throw TravelException.newTripException(mOrigin, mDestination, e);
         }
@@ -119,11 +118,11 @@ public class Trip extends Transition {
         TrafficControl.notifyActiveStationChanged(mDestination);
     }
 
-    private static ArrayList<ConditionWaitStatus> calculateConditionWaitStatuses(
+    private static ArrayList<ConditionWait> calculateConditionWaits(
             @Nullable TransitStation origin,
             TransitStation destination,
             List<Condition> transitionConditions) {
-        ArrayList<ConditionWaitStatus> waitStatuses = new ArrayList<>();
+        ArrayList<ConditionWait> waits = new ArrayList<>();
 
         Elements originElements =
                 origin != null
@@ -139,16 +138,13 @@ public class Trip extends Transition {
             destinationElementIds.add(element.getId());
             @Nullable Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
-                waitStatuses.add(
-                        new ConditionWaitStatus(
-                                enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+                waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
             }
         }
 
         // Add extra ENTER Conditions.
         for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+            waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
         }
 
         // Create EXIT Conditions for Views that should disappear and LogicalElements that should
@@ -156,24 +152,20 @@ public class Trip extends Transition {
         for (ElementInState element : originElements.getElementsInState()) {
             Condition exitCondition = element.getExitCondition(destinationElementIds);
             if (exitCondition != null) {
-                waitStatuses.add(
-                        new ConditionWaitStatus(
-                                exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+                waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
             }
         }
 
         // Add extra EXIT Conditions.
         for (Condition exitCondition : originElements.getOtherExitConditions()) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+            waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
         }
 
         // Add transition (TRSTN) conditions
         for (Condition condition : transitionConditions) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
+            waits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
         }
 
-        return waitStatuses;
+        return waits;
     }
 }

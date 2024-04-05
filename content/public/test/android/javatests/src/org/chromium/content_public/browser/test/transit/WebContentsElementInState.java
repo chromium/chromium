@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ElementInState;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.content_public.browser.WebContents;
@@ -33,8 +34,8 @@ public class WebContentsElementInState implements ElementInState {
     public Condition getEnterCondition() {
         return new InstrumentationThreadCondition() {
             @Override
-            public boolean check() {
-                return mWebContentsSupplier.get() != null;
+            public ConditionStatus check() {
+                return whether(mWebContentsSupplier.get() != null);
             }
 
             @Override
