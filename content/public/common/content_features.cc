@@ -307,7 +307,7 @@ const base::FeatureParam<base::TimeDelta> kDIPSClientBounceDetectionTimeout{
 // Whether DIPS deletes Privacy Sandbox data.
 BASE_FEATURE(kDIPSPreservePSData,
              "DIPSPreservePSData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables HW decode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWDecoding,

@@ -359,7 +359,8 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+      (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
+       ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
           content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
@@ -757,7 +758,8 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+      (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
+       ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
           content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
