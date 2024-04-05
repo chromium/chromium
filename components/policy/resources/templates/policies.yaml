@@ -1246,6 +1246,8 @@ policies:
   1245: UiAutomationProviderEnabled
   1246: ApplicationBoundEncryptionEnabled
   1247: DeviceAuthenticationFlowAutoReloadInterval
+  1248: ShowAiIntroScreenEnabled
+  1249: ShowTunaScreenEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

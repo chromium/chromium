@@ -1,0 +1,30 @@
+caption: Enable displaying <ph name="FEATURE_NAME">Tuna</ph> introduction screen during sign-in
+desc: |-
+  This policy controls if the <ph name="FEATURE_NAME">Tuna</ph> introduction screen is shown to the user during the first sign-in.
+
+        If set to disabled, the <ph name="FEATURE_NAME">Tuna</ph> introduction screen will not be displayed.
+
+        If set to enabled, the <ph name="FEATURE_NAME">Tuna</ph> introduction screen will be displayed.
+
+        If unset, the <ph name="FEATURE_NAME">Tuna</ph> introduction screen will be skipped for enterprise-managed users and displayed for unmanaged users.
+default: true
+default_for_enterprise_users: false
+example_value: false
+features:
+  dynamic_refresh: false
+  internal_only: true
+  per_profile: true
+items:
+- caption: Display the <ph name="FEATURE_NAME">Tuna</ph> introduction screen during sign-in
+  value: true
+- caption: Do not display the <ph name="FEATURE_NAME">Tuna</ph> introduction screen during sign-in
+  value: false
+owners:
+- ziegltrum@google.com
+- cros-oobe@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:125-
+tags: []
+type: main

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default value is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "ash.ai_intro_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowAiIntroScreenEnabled": false
+        },
+        "prefs": {
+          "ash.ai_intro_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowAiIntroScreenEnabled": true
+        },
+        "prefs": {
+          "ash.ai_intro_screen_oobe_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

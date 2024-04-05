@@ -6,13 +6,16 @@
 
 #include "ai_intro_screen.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -43,6 +46,15 @@ bool TunaScreen::ShouldBeSkipped() {
 
   auto* user_manager = user_manager::UserManager::Get();
   if (user_manager->IsLoggedInAsChildUser()) {
+    return true;
+  }
+
+  // Skip the screen if `kShowTunaScreenEnabled` preference is set by
+  // managed user default or admin to false.
+  const PrefService::Preference* pref =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
+          prefs::kShowTunaScreenEnabled);
+  if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }
 

@@ -2626,7 +2626,8 @@ void WizardController::OnAppDownloadingScreenExit() {
 }
 
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
-  OnScreenExit(AiIntroScreenView::kScreenId, kDefaultExitReason);
+  OnScreenExit(AiIntroScreenView::kScreenId,
+    AiIntroScreen::GetResultString(result));
 
   if (features::IsOobeTunaEnabled()) {
     ShowTunaScreen();
