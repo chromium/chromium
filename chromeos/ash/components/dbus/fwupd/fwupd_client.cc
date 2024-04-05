@@ -344,8 +344,15 @@ class FwupdClientImpl : public FwupdClient {
                               dbus::ErrorResponse* error_response) {
     bool can_parse = true;
     if (!response) {
-      FIRMWARE_LOG(ERROR) << "No Dbus response received from fwupd.";
       can_parse = false;
+      FIRMWARE_LOG(DEBUG) << "No updates found, reason: "
+                          << (error_response ? error_response->ToString()
+                                             : std::string("No response"));
+    } else if (error_response) {
+      // Returning updates and still getting an error response means this is a
+      // real error.
+      FIRMWARE_LOG(ERROR) << "Request Updates had error message: "
+                          << error_response->ToString();
     }
 
     dbus::MessageReader reader(response);
@@ -377,6 +384,7 @@ class FwupdClientImpl : public FwupdClient {
           !base::FeatureList::IsEnabled(
               features::kUpstreamTrustedReportsFirmware) ||
           (trusted_report.has_value() && trusted_report.value());
+      FIRMWARE_LOG(DEBUG) << "Trusted Reports: " << has_trusted_report;
 
       // Skip release if its coming from LVFS and feature flag not enabled
       if (remote_id && *remote_id == "lvfs" &&
