@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 anys = "==0.3.0"
 mypy = "==1.6.0"
-pillow = "==10.2.0"
+pillow = "==10.3.0"
 pytest = "==7.4.2"
 pytest-asyncio = "==0.21.1"
 pytest-httpserver = "==1.0.8"
