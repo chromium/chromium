@@ -522,7 +522,6 @@ void DesktopWindowTreeHostWin::EndMoveLoop() {
 void DesktopWindowTreeHostWin::SetVisibilityChangedAnimationsEnabled(
     bool value) {
   message_handler_->SetVisibilityChangedAnimationsEnabled(value);
-  content_window()->SetProperty(aura::client::kAnimationsDisabledKey, !value);
 }
 
 std::unique_ptr<NonClientFrameView>

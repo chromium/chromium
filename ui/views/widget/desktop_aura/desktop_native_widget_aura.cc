@@ -1147,6 +1147,7 @@ void DesktopNativeWidgetAura::SetVisibilityChangedAnimationsEnabled(
     bool value) {
   if (desktop_window_tree_host_)
     desktop_window_tree_host_->SetVisibilityChangedAnimationsEnabled(value);
+  content_window()->SetProperty(aura::client::kAnimationsDisabledKey, !value);
 }
 
 void DesktopNativeWidgetAura::SetVisibilityAnimationDuration(
