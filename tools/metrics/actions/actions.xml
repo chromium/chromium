@@ -41206,6 +41206,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.AddPasswordManually">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41214,6 +41215,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.AddPasswordManually.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41223,6 +41225,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.AddPasswordManually.PrimaryActionTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41232,12 +41235,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.Autofill">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Autofill in What's New.</description>
 </action>
 
 <action name="WhatsNew.Autofill.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41246,12 +41251,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.CalendarEvent">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Calendar Event in What's New.</description>
 </action>
 
 <action name="WhatsNew.CalendarEvent.InstructionsTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41260,6 +41267,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.CalendarEvent.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41269,12 +41277,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.ChromeActions">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Chrome Actions in What's New.</description>
 </action>
 
 <action name="WhatsNew.ChromeActions.InstructionsTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41283,6 +41293,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.ChromeActions.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41292,6 +41303,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.ChromeActions.PrimaryActionTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41306,12 +41318,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoLock">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Incognito Lock in What's New.</description>
 </action>
 
 <action name="WhatsNew.IncognitoLock.InstructionsTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41320,6 +41334,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoLock.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41329,6 +41344,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoLock.PrimaryActionTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41337,6 +41353,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoTabsFromOtherApps">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41345,6 +41362,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoTabsFromOtherApps.InstructionsTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41354,6 +41372,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoTabsFromOtherApps.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41363,6 +41382,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.IncognitoTabsFromOtherApps.PrimaryActionTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41372,12 +41392,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.MiniMaps">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Mini Maps in What's New.</description>
 </action>
 
 <action name="WhatsNew.MiniMaps.InstructionsTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41386,6 +41408,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.MiniMaps.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41394,12 +41417,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.NewOverflowMenu">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened New Overflow Menu in What's New.</description>
 </action>
 
 <action name="WhatsNew.PasswordsInOtherApps">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41408,6 +41433,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.PasswordsInOtherApps.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41417,6 +41443,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.PasswordsInOtherApps.PrimaryActionTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41432,12 +41459,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.SearchTabs">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Search Tabs in What's New.</description>
 </action>
 
 <action name="WhatsNew.SearchTabs.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41446,12 +41475,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.SharedHighlighting">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Shared Highlighting in What's New.</description>
 </action>
 
 <action name="WhatsNew.SharedHighlighting.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41467,12 +41498,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.UseChromeByDefault">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Chrome By Default in What's New.</description>
 </action>
 
 <action name="WhatsNew.UseChromeByDefault.LearnMoreTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41482,6 +41515,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WhatsNew.UseChromeByDefault.PrimaryActionTappedTapped">
+  <obsolete>Deprecated as of 4/2024.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>

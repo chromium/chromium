@@ -49,14 +49,7 @@
 
 - (void)didTapActionButton:(WhatsNewType)type
              primaryAction:(WhatsNewPrimaryAction)primaryAction {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".PrimaryActionTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
+  base::UmaHistogramEnumeration("IOS.WhatsNew.PrimaryActionTapped", type);
 
   switch (primaryAction) {
     case WhatsNewPrimaryAction::kIOSSettings:
@@ -100,31 +93,16 @@
   UrlLoadParams params = UrlLoadParams::InNewTab(learnMoreURL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   self.urlLoadingAgent->Load(params);
-  [self recordLearnMoreInteraction:type];
+  base::UmaHistogramEnumeration("IOS.WhatsNew.LearnMoreTapped", type);
 }
 
 - (void)didTapInstructions:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".InstructionsTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
   base::UmaHistogramEnumeration("IOS.WhatsNew.InstructionsShown", type);
 }
 
 #pragma mark - WhatsNewTableViewActionHandler
 
 - (void)recordWhatsNewInteraction:(WhatsNewItem*)item {
-  const char* type = WhatsNewTypeToString(item.type);
-  if (!type) {
-    return;
-  }
-
-  std::string metric = base::StrCat({"WhatsNew.", type});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
   base::UmaHistogramEnumeration("IOS.WhatsNew.Shown", item.type);
 }
 
@@ -175,18 +153,6 @@
 - (void)updateConsumer {
   [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItem]
                           featureItems:[self whatsNewFeatureItems]];
-}
-
-// Record when a user tap on learn more.
-- (void)recordLearnMoreInteraction:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".LearnMoreTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
 }
 
 @end

@@ -4201,33 +4201,54 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
     expires_after="2024-08-11">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
-    The action taken by the user in response to seeing the instructions of a
-    What's New feature.
+    Recorded each time the instructions of a What's New feature is displayed.
+    The recorded value is the type of the feature that was being viewed.
   </summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
     expires_after="2024-08-11">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>
+</histogram>
+
+<histogram name="IOS.WhatsNew.LearnMoreTapped" enum="WhatsNewType"
+    expires_after="2024-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Recorded each time the learn more button of a What's New feature is tapped.
+    The recorded value is the type of the feature that was being viewed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WhatsNew.PrimaryActionTapped" enum="WhatsNewType"
+    expires_after="2024-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Recorded each time the primary button of a What's New feature is tapped. The
+    recorded value is the type of the feature that was being viewed.
+  </summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
     expires_after="2024-09-01">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
-    The action taken by the user in response to seeing a What's New feature.
+    Recorded each time a feature cell in What's New is tapped. The recorded
+    value is the type of the feature that will show.
   </summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
     expires_after="2024-09-01">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Whether or not the table view of the What's New feature was scrolled.
   </summary>
@@ -4235,14 +4256,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2024-09-01">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on What's New.</summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.{Type}.TimeSpent" units="ms"
     expires_after="2024-07-28">
   <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on each feature of What's New.</summary>
   <token key="Type">
     <variant name="CalendarEvent" summary="Calendar Event"/>
