@@ -17,7 +17,6 @@ namespace web_app {
 class WebAppShortcutManager;
 class WebAppFileHandlerManager;
 class WebAppProtocolHandlerManager;
-class UrlHandlerManager;
 
 class FakeOsIntegrationManager : public OsIntegrationManager {
  public:
@@ -25,17 +24,13 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
-      std::unique_ptr<UrlHandlerManager> url_handler_manager);
+      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager);
   ~FakeOsIntegrationManager() override;
 
   void SetNextCreateShortcutsResult(const webapps::AppId& app_id, bool success);
 
   void SetFileHandlerManager(
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager);
-
-  void SetUrlHandlerManager(
-      std::unique_ptr<UrlHandlerManager> url_handler_manager);
 
   void SetShortcutManager(
       std::unique_ptr<WebAppShortcutManager> shortcut_manager);

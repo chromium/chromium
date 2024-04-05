@@ -371,11 +371,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
     auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
         profile, file_handler_manager.get(), protocol_handler_manager.get());
 
-    // TODO(crbug.com/1072058): Remove UrlHandlerManager from
-    // OsIntegrationManager.
     os_integration_manager_ = std::make_unique<OsIntegrationManager>(
         profile, std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
+        std::move(protocol_handler_manager));
   }
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile);

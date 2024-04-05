@@ -41,8 +41,8 @@ class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
     SetPreinstalledWebAppConfigDirForTesting(&empty_path_);
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
-          return std::make_unique<FakeOsIntegrationManager>(
-              profile, nullptr, nullptr, nullptr, nullptr);
+          return std::make_unique<FakeOsIntegrationManager>(profile, nullptr,
+                                                            nullptr, nullptr);
         });
   }
 

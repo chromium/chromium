@@ -99,8 +99,7 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
             profile(),
             /*app_shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
-            /*protocol_handler_manager=*/nullptr,
-            /*url_handler_manager*/ nullptr));
+            /*protocol_handler_manager=*/nullptr));
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 

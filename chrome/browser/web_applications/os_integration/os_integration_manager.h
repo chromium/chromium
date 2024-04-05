@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
-#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
@@ -57,8 +56,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
-      std::unique_ptr<UrlHandlerManager> url_handler_manager);
+      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager);
   ~OsIntegrationManager() override;
 
   // Sets internal WebAppProvider reference and threads it through to all sub
@@ -113,11 +111,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
 
   virtual FakeOsIntegrationManager* AsTestOsIntegrationManager();
 
-  void set_url_handler_manager(
-      std::unique_ptr<UrlHandlerManager> url_handler_manager) {
-    url_handler_manager_ = std::move(url_handler_manager);
-  }
-
   // WebAppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const webapps::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
@@ -129,9 +122,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   WebAppProtocolHandlerManager* protocol_handler_manager() {
     return protocol_handler_manager_.get();
-  }
-  UrlHandlerManager* url_handler_manager() {
-    return url_handler_manager_.get();
   }
   void set_shortcut_manager(
       std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
@@ -193,7 +183,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
   std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
-  std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
   bool set_provider_called_ = false;

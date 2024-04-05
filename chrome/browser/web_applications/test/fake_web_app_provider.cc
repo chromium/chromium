@@ -287,8 +287,7 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
   SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
       profile_, /*app_shortcut_manager=*/nullptr,
       /*file_handler_manager=*/nullptr,
-      /*protocol_handler_manager=*/nullptr,
-      /*url_handler_manager=*/nullptr));
+      /*protocol_handler_manager=*/nullptr));
 
   SetSyncBridge(std::make_unique<WebAppSyncBridge>(
       &GetRegistrarMutable(), processor().CreateForwardingProcessor()));

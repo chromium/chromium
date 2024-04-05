@@ -28,8 +28,7 @@ class WebAppProtocolHandlerManagerTest : public WebAppTest {
         std::make_unique<FakeOsIntegrationManager>(
             profile(), /*app_shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
-            std::make_unique<WebAppProtocolHandlerManager>(profile()),
-            /*url_handler_manager=*/nullptr));
+            std::make_unique<WebAppProtocolHandlerManager>(profile())));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

@@ -52,7 +52,7 @@ using testing::Not;
 std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<FakeWebAppProvider>(profile);
   provider->SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
-      profile, nullptr, nullptr, nullptr, nullptr));
+      profile, nullptr, nullptr, nullptr));
   provider->StartWithSubsystems();
   DCHECK(provider);
   return provider;

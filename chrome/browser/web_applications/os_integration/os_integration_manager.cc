@@ -86,13 +86,11 @@ OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
     std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
-    std::unique_ptr<UrlHandlerManager> url_handler_manager)
+    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager)
     : profile_(profile),
       shortcut_manager_(std::move(shortcut_manager)),
       file_handler_manager_(std::move(file_handler_manager)),
-      protocol_handler_manager_(std::move(protocol_handler_manager)),
-      url_handler_manager_(std::move(url_handler_manager)) {}
+      protocol_handler_manager_(std::move(protocol_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 

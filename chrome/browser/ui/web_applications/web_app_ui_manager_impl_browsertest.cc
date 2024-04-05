@@ -70,7 +70,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     auto provider = std::make_unique<FakeWebAppProvider>(profile);
     auto shortcut_manager = std::make_unique<TestShortcutManager>(profile);
     auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
-        profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
+        profile, std::move(shortcut_manager), nullptr, nullptr);
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
     provider->StartWithSubsystems();
     return provider;
