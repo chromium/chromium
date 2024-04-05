@@ -153,6 +153,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
             std::move(callback).Run(&mock_autofill_driver(), form_data);
+          })))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
+            std::move(callback).Run(&mock_autofill_driver(), form_data);
           })));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
