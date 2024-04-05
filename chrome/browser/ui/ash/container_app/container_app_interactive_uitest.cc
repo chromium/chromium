@@ -11,8 +11,12 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/shelf_item.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +34,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/app_constants/constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/label.h"
@@ -50,6 +55,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContainerAppWebContentsElementId);
 // Names.
 inline char kAppsGridViewElementName[] = "AppsGridView";
 inline char kAppListBubbleAppsPageElementName[] = "AppListBubbleAppsPage";
+inline char kChromeAppElementName[] = "ChromeApp";
 inline char kContainerAppElementName[] = "ContainerApp";
 inline char kFilesAppElementName[] = "FilesApp";
 inline char kGmailAppElementName[] = "GmailApp";
@@ -78,6 +84,14 @@ std::optional<size_t> FindIndex(const Range& range, const Value* value) {
              : std::make_optional<size_t>();
 }
 
+// Returns the `ash::ShelfItem` for the given web app `id`.
+const ash::ShelfItem* FindShelfItemForWebApp(std::string_view id) {
+  const ash::ShelfItems& items = ash::ShelfModel::Get()->items();
+  auto it = base::ranges::find_if(
+      items, [id](const ash::ShelfItem& item) { return item.id.app_id == id; });
+  return it != items.end() ? &*it : nullptr;
+}
+
 // Returns if `view` is the `ash::AppListItemView` for the given web app `id`.
 bool IsAppListItemViewForWebApp(std::string_view id, const views::View* view) {
   return views::IsViewClass<ash::AppListItemView>(view) &&
@@ -87,6 +101,15 @@ bool IsAppListItemViewForWebApp(std::string_view id, const views::View* view) {
 // Returns if `browser` is the `Browser` for the given web app `id`.
 bool IsBrowserForWebApp(const webapps::AppId& id, const Browser* browser) {
   return web_app::AppBrowserController::IsForWebApp(browser, id);
+}
+
+// Returns if `view` is the `ash::ShelfAppButton` for the given web app `id`.
+bool IsShelfAppButtonForWebApp(
+    std::reference_wrapper<const raw_ptr<ash::ShelfView>> shelf,
+    std::string_view id,
+    const views::View* view) {
+  return views::IsViewClass<ash::ShelfAppButton>(view) &&
+         shelf.get()->GetShelfAppButton(FindShelfItemForWebApp(id)->id) == view;
 }
 
 }  // namespace
@@ -280,7 +303,75 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromAppList) {
                               GetContainerAppLaunchUrl()));
 }
 
-// TODO(http://b/331668699): Test container app launch from shelf.
+// Verifies that the container app can be launched from the shelf.
+IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
+  // Views.
+  raw_ptr<ash::ShelfAppButton> chrome_app = nullptr;
+  raw_ptr<ash::ShelfAppButton> container_app = nullptr;
+  raw_ptr<ash::ShelfAppButton> gmail_app = nullptr;
+  raw_ptr<ash::ShelfView> shelf = nullptr;
+
+  // Test.
+  RunTestSequence(
+      // Cache shelf.
+      AssignView(ash::kShelfViewElementId, std::ref(shelf)),
+
+      // Find container app.
+      NameDescendantView(
+          ash::kShelfViewElementId, kContainerAppElementName,
+          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
+                              web_app::kContainerAppId)),
+
+      // Cache container app.
+      AssignView(kContainerAppElementName, std::ref(container_app)),
+
+      // Find Chrome app.
+      NameDescendantView(
+          ash::kShelfViewElementId, kChromeAppElementName,
+          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
+                              app_constants::kChromeAppId)),
+
+      // Cache Chrome app.
+      AssignView(kChromeAppElementName, std::ref(chrome_app)),
+
+      // Find Gmail app.
+      NameDescendantView(
+          ash::kShelfViewElementId, kGmailAppElementName,
+          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
+                              web_app::kGmailAppId)),
+
+      // Cache Gmail app.
+      AssignView(kGmailAppElementName, std::ref(gmail_app)),
+
+      // Check container app position.
+      Check([&]() {
+        std::vector<raw_ptr<const ash::ShelfAppButton>> apps;
+        FindDescendantsOfClass(shelf, apps);
+        const auto chrome_app_index = FindIndex(apps, chrome_app.get());
+        const auto container_app_index = FindIndex(apps, container_app.get());
+        const auto gmail_app_index = FindIndex(apps, gmail_app.get());
+        return (chrome_app_index == container_app_index.value() - 1u) &&
+               (gmail_app_index == container_app_index.value() + 1u);
+      }),
+
+      // Launch container app.
+      InstrumentNextTab(kContainerAppWebContentsElementId, AnyBrowser()),
+      DoDefaultAction(kContainerAppElementName),
+
+      // Check container app browser.
+      CheckElement(kContainerAppWebContentsElementId,
+                   base::BindOnce(&AsInstrumentedWebContents)
+                       .Then(base::BindOnce(
+                           &WebContentsInteractionTestUtil::web_contents))
+                       .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+                       .Then(base::BindOnce(&IsBrowserForWebApp,
+                                            web_app::kContainerAppId))),
+
+      // Check container app launch URL.
+      WaitForWebContentsReady(kContainerAppWebContentsElementId,
+                              GetContainerAppLaunchUrl()));
+}
+
 // TODO(http://b/331668699): Test container app position for existing users.
 // TODO(http://b/331668699): Test container app preinstall ineligibility.
 // TODO(http://b/331668699): Test container app uninstallability.
