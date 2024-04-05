@@ -65,7 +65,7 @@ void SearchControllerAsh::OnSearchResultsReceived(
   }
 }
 
-bool SearchControllerAsh::IsSearchControllerConnected() const {
+bool SearchControllerAsh::IsConnected() const {
   return search_controller_.is_bound() && search_controller_.is_connected();
 }
 

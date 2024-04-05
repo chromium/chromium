@@ -40,7 +40,7 @@ class SearchControllerAsh : public mojom::SearchResultsPublisher {
   void RegisterSearchController(
       mojo::PendingRemote<mojom::SearchController> search_controller);
 
-  bool IsSearchControllerConnected() const;
+  bool IsConnected() const;
 
   // Sends search query to lacros. The callback will be called each time results
   // are received from lacros via OnSearchResultsReceived().

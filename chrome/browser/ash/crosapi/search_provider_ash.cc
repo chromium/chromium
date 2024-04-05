@@ -31,7 +31,7 @@ void SearchProviderAsh::RegisterSearchController(
 }
 
 bool SearchProviderAsh::IsSearchControllerConnected() const {
-  return search_controller_.IsSearchControllerConnected();
+  return search_controller_.IsConnected();
 }
 
 }  // namespace crosapi
