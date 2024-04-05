@@ -40,6 +40,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
@@ -690,11 +691,11 @@ bool ClearNV12Padding(const VAImage& image,
 
 // Creates an AutoLock iff |va_lock_| is not null and the libva backend is
 // thread-safe.
-std::unique_ptr<base::AutoLock> AutoLockOnlyIfNeeded(base::Lock* lock) {
+std::optional<base::AutoLock> AutoLockOnlyIfNeeded(base::Lock* lock) {
   if (lock && !IsThreadSafeDriver(VaapiWrapper::GetImplementationType())) {
-    return std::make_unique<base::AutoLock>(*lock);
+    return std::optional<base::AutoLock>(*lock);
   }
-  return nullptr;
+  return std::nullopt;
 }
 
 // Can't statically initialize the profile map:
@@ -2818,7 +2819,7 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface");
-  std::unique_ptr<base::AutoLock> auto_lock =
+  std::optional<base::AutoLock> auto_lock =
       AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurfaceLocked");
 
@@ -2935,7 +2936,7 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSize");
-  std::unique_ptr<base::AutoLock> auto_lock =
+  std::optional<base::AutoLock> auto_lock =
       AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSizeLocked");
   // vaSyncSurface() is not necessary on Intel platforms as long as there is a
@@ -2974,7 +2975,7 @@ bool VaapiWrapper::DownloadFromVABuffer(
         sequence_checker_.CalledOnValidSequence());
   DCHECK(target_ptr);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer");
-  std::unique_ptr<base::AutoLock> auto_lock =
+  std::optional<base::AutoLock> auto_lock =
       AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferLocked");
   // vaSyncSurface() is not necessary on Intel platforms as long as there is a

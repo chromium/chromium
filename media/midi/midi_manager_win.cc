@@ -634,11 +634,11 @@ MidiManagerWin::PortManager::HandleMidiInCallback(HMIDIIN hmi,
   // Exceptionally, we do not take the lock when this callback is invoked inside
   // midiInGetNumDevs() on the caller thread because the lock is already
   // obtained by the current caller thread.
-  std::unique_ptr<base::AutoLock> task_lock;
+  std::optional<base::AutoLock> task_lock;
   if (IsRunningInsideMidiInGetNumDevs())
     GetTaskLock()->AssertAcquired();
   else
-    task_lock = std::make_unique<base::AutoLock>(*GetTaskLock());
+    task_lock.emplace(*GetTaskLock());
   {
     base::AutoLock lock(*GetInstanceIdLock());
     if (instance_id != g_active_instance_id)
