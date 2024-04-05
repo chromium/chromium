@@ -472,7 +472,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
-  MOCK_METHOD(void, ShowCreditCardSettings, (), (override));
+  MOCK_METHOD(void, ShowPaymentMethodSettings, (), (override));
   MOCK_METHOD(void,
               SuggestionSelected,
               (std::string unique_id, bool is_virtual),

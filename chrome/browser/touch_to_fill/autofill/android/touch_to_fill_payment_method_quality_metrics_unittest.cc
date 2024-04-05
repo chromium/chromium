@@ -20,16 +20,16 @@ using test::CreateTestFormField;
 using ::testing::NiceMock;
 using ::testing::TestWithParam;
 
-struct TouchToFillForCreditCardsTestCase {
+struct TouchToFillForPaymentMethodsTestCase {
   std::vector<FieldType> field_types;
   std::vector<bool> fields_have_autofilled_values;
   bool is_all_autofilled;
   bool is_all_accepted;
 };
 
-class TouchToFillForCreditCardsTest
+class TouchToFillForPaymentMethodsTest
     : public AutofillMetricsBaseTest,
-      public TestWithParam<TouchToFillForCreditCardsTestCase> {
+      public TestWithParam<TouchToFillForPaymentMethodsTestCase> {
  public:
   void SetUp() override {
     SetUpHelper();
@@ -110,13 +110,13 @@ class TouchToFillForCreditCardsTest
 // - Submits the form.
 // - The perfect filling and filling correctness metrics are expected to be
 // logged correctly here.
-TEST_P(TouchToFillForCreditCardsTest,
+TEST_P(TouchToFillForPaymentMethodsTest,
        AllAutofilledAndAccepted_TouchToFill_CreditCards) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*include_full_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
-  TouchToFillForCreditCardsTestCase test_case = GetParam();
+  TouchToFillForPaymentMethodsTestCase test_case = GetParam();
   FormData form = CreateForm(GetFields(test_case.field_types));
 
   SeeForm(form);
@@ -153,23 +153,23 @@ TEST_P(TouchToFillForCreditCardsTest,
 // are correctly logged for the payment bottom sheet.
 INSTANTIATE_TEST_SUITE_P(
     AutofillMetricsTest,
-    TouchToFillForCreditCardsTest,
+    TouchToFillForPaymentMethodsTest,
     testing::Values(
         // All autofilled and nothing edited manually
-        TouchToFillForCreditCardsTestCase{
+        TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH},
             /*fields_is_autofilled_values=*/{true, true, true},
             /*is_all_autofilled=*/true,
             /*is_all_accepted=*/true},
         // Not all autofilled and nothing edited manually
-        TouchToFillForCreditCardsTestCase{
+        TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
              CREDIT_CARD_VERIFICATION_CODE},
             /*fields_is_autofilled_values=*/{true, true, true, false},
             /*is_all_autofilled=*/false,
             /*is_all_accepted=*/true},
         // Not all autofilled and something edited manually
-        TouchToFillForCreditCardsTestCase{
+        TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
              CREDIT_CARD_VERIFICATION_CODE},
             /*fields_is_autofilled_values=*/{true, true, true, false},

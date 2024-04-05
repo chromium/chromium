@@ -747,7 +747,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   EXPECT_CALL(autofill_client_,
               ShowAutofillSettings(testing::Eq(FillingProduct::kCreditCard)));
-  touch_to_fill_delegate_->ShowCreditCardSettings();
+  touch_to_fill_delegate_->ShowPaymentMethodSettings();
 
   ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), true);
 }

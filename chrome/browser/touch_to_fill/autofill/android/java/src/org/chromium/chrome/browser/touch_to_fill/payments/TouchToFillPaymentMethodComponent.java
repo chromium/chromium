@@ -11,11 +11,11 @@ import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
- * This component allows to select a credit card to be filled into a form. It acts as a 1-tap
+ * This component allows to select a payment method to be filled into a form. It acts as a 1-tap
  * surface (bottom sheet) and is meant to be shown while the keyboard is suppressed.
  */
-interface TouchToFillCreditCardComponent {
-    /** This delegate is called when the TouchToFillCreditCard component is interacted with. */
+interface TouchToFillPaymentMethodComponent {
+    /** This delegate is called when the TouchToFillPaymentMethod component is interacted with. */
     interface Delegate {
         /** Called whenever the sheet is dismissed (by user or native). */
         void onDismissed(boolean dismissedByUser);
@@ -24,7 +24,7 @@ interface TouchToFillCreditCardComponent {
         void scanCreditCard();
 
         /** Causes navigation to the payment methods settings page. */
-        void showCreditCardSettings();
+        void showPaymentMethodSettings();
 
         /**
          * Called when the user selects a card.
@@ -39,7 +39,7 @@ interface TouchToFillCreditCardComponent {
      * Initializes the component.
      *
      * @param context A {@link Context} to create views and retrieve resources.
-     * @param personalDataManager A {@link PersonalDataManager} associated with the credit card
+     * @param personalDataManager A {@link PersonalDataManager} associated with the payment method
      *     data.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles interaction events.

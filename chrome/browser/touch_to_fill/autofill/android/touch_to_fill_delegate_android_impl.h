@@ -125,7 +125,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   bool ShouldShowScanCreditCard() override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
-  void ShowCreditCardSettings() override;
+  void ShowPaymentMethodSettings() override;
   void SuggestionSelected(std::string unique_id, bool is_virtual) override;
   void OnDismissed(bool dismissed_by_user) override;
 
@@ -194,7 +194,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // most recent form values. FormStructure knows only about the initial values.
   bool IsFormPrefilled(const FormData& form);
 
-  TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
+  TouchToFillState ttf_payment_method_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
   FormData query_form_;

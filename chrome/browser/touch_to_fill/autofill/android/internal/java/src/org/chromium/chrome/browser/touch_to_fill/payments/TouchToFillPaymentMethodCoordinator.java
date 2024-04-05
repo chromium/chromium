@@ -5,14 +5,14 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FOOTER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.IBAN;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -33,13 +33,13 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import java.util.function.Function;
 
 /**
- * Implements the TouchToFillCreditCardComponent. It uses a bottom sheet to let the user select a
+ * Implements the TouchToFillPaymentMethodComponent. It uses a bottom sheet to let the user select a
  * credit card to be filled into the focused form.
  */
-public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardComponent {
-    private final TouchToFillCreditCardMediator mMediator = new TouchToFillCreditCardMediator();
-    private PropertyModel mTouchToFillCreditCardModel;
-    private Function<TouchToFillCreditCardProperties.CardImageMetaData, Drawable>
+public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMethodComponent {
+    private final TouchToFillPaymentMethodMediator mMediator = new TouchToFillPaymentMethodMediator();
+    private PropertyModel mTouchToFillPaymentMethodModel;
+    private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;
 
     @Override
@@ -49,7 +49,7 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
-        mTouchToFillCreditCardModel = createModel(mMediator);
+                mTouchToFillPaymentMethodModel = createModel(mMediator);
         mCardImageFunction =
                 (metaData) ->
                         getCardIcon(
@@ -59,11 +59,11 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
                                 metaData.iconId,
                                 AutofillUiUtils.CardIconSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mMediator.initialize(
-                context, delegate, mTouchToFillCreditCardModel, bottomSheetFocusHelper);
+       mMediator.initialize(
+                context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
-                mTouchToFillCreditCardModel,
-                new TouchToFillCreditCardView(context, sheetController));
+                mTouchToFillPaymentMethodModel,
+                new TouchToFillPaymentMethodView(context, sheetController));
     }
 
     @Override
@@ -84,42 +84,42 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
 
     /**
      * Connects the given model with the given view using Model Change Processors.
-     * @param model A {@link PropertyModel} built with {@link TouchToFillCreditCardProperties}.
-     * @param view A {@link TouchToFillCreditCardView}.
+     * @param model A {@link PropertyModel} built with {@link TouchToFillPaymentMethodProperties}.
+     * @param view A {@link TouchToFillPaymentMethodView}.
      */
     @VisibleForTesting
-    static void setUpModelChangeProcessors(PropertyModel model, TouchToFillCreditCardView view) {
+    static void setUpModelChangeProcessors(PropertyModel model, TouchToFillPaymentMethodView view) {
         PropertyModelChangeProcessor.create(
-                model, view, TouchToFillCreditCardViewBinder::bindTouchToFillCreditCardView);
+                model, view, TouchToFillPaymentMethodViewBinder::bindTouchToFillPaymentMethodView);
     }
 
-    static void setUpCardItems(PropertyModel model, TouchToFillCreditCardView view) {
+    static void setUpCardItems(PropertyModel model, TouchToFillPaymentMethodView view) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
         adapter.registerType(
                 CREDIT_CARD,
-                TouchToFillCreditCardViewBinder::createCardItemView,
-                TouchToFillCreditCardViewBinder::bindCardItemView);
+                TouchToFillPaymentMethodViewBinder::createCardItemView,
+                TouchToFillPaymentMethodViewBinder::bindCardItemView);
         adapter.registerType(
                 IBAN,
-                TouchToFillCreditCardViewBinder::createIbanItemView,
-                TouchToFillCreditCardViewBinder::bindIbanItemView);
+                TouchToFillPaymentMethodViewBinder::createIbanItemView,
+                TouchToFillPaymentMethodViewBinder::bindIbanItemView);
         adapter.registerType(
                 HEADER,
-                TouchToFillCreditCardViewBinder::createHeaderItemView,
-                TouchToFillCreditCardViewBinder::bindHeaderView);
+                TouchToFillPaymentMethodViewBinder::createHeaderItemView,
+                TouchToFillPaymentMethodViewBinder::bindHeaderView);
         adapter.registerType(
                 FILL_BUTTON,
-                TouchToFillCreditCardViewBinder::createFillButtonView,
-                TouchToFillCreditCardViewBinder::bindFillButtonView);
+                TouchToFillPaymentMethodViewBinder::createFillButtonView,
+                TouchToFillPaymentMethodViewBinder::bindFillButtonView);
         adapter.registerType(
                 FOOTER,
-                TouchToFillCreditCardViewBinder::createFooterItemView,
-                TouchToFillCreditCardViewBinder::bindFooterView);
+                TouchToFillPaymentMethodViewBinder::createFooterItemView,
+                TouchToFillPaymentMethodViewBinder::bindFooterView);
         view.setSheetItemListAdapter(adapter);
     }
 
-    PropertyModel createModel(TouchToFillCreditCardMediator mediator) {
-        return new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
+    PropertyModel createModel(TouchToFillPaymentMethodMediator mediator) {
+        return new PropertyModel.Builder(TouchToFillPaymentMethodProperties.ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(SHEET_ITEMS, new ModelList())
                 .with(DISMISS_HANDLER, mediator::onDismissed)
@@ -127,10 +127,10 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     }
 
     PropertyModel getModelForTesting() {
-        return mTouchToFillCreditCardModel;
+        return mTouchToFillPaymentMethodModel;
     }
 
-    TouchToFillCreditCardMediator getMediatorForTesting() {
+    TouchToFillPaymentMethodMediator getMediatorForTesting() {
         return mMediator;
     }
 }

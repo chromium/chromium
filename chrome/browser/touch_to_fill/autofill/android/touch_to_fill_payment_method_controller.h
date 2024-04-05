@@ -2,41 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_CONTROLLER_H_
-#define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_CONTROLLER_H_
+#ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_
+#define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_
 
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_view_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 
 namespace autofill {
 
 class ContentAutofillClient;
-class TouchToFillCreditCardView;
+class TouchToFillPaymentMethodView;
 class TouchToFillDelegate;
 class CreditCard;
 
-// Controller of the bottom sheet surface for filling credit card data on
+// Controller of the bottom sheet surface for filling credit card or IBAN data on
 // Android. It is responsible for showing the view and handling user
 // interactions. While the surface is shown, stores its Java counterpart in
 // `java_object_`.
-class TouchToFillCreditCardController
-    : public TouchToFillCreditCardViewController,
+class TouchToFillPaymentMethodController
+    : public TouchToFillPaymentMethodViewController,
       public ContentAutofillDriverFactory::Observer,
       public content::WebContentsObserver {
  public:
-  explicit TouchToFillCreditCardController(
+  explicit TouchToFillPaymentMethodController(
       ContentAutofillClient* autofill_client);
-  TouchToFillCreditCardController(const TouchToFillCreditCardController&) =
+  TouchToFillPaymentMethodController(const TouchToFillPaymentMethodController&) =
       delete;
-  TouchToFillCreditCardController& operator=(
-      const TouchToFillCreditCardController&) = delete;
-  ~TouchToFillCreditCardController() override;
+  TouchToFillPaymentMethodController& operator=(
+      const TouchToFillPaymentMethodController&) = delete;
+  ~TouchToFillPaymentMethodController() override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -52,17 +52,17 @@ class TouchToFillCreditCardController
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable credit
   // cards and be notified of the user's decision. Returns whether the surface
   // was successfully shown.
-  bool Show(std::unique_ptr<TouchToFillCreditCardView> view,
+  bool Show(std::unique_ptr<TouchToFillPaymentMethodView> view,
             base::WeakPtr<TouchToFillDelegate> delegate,
             base::span<const CreditCard> cards_to_suggest);
 
   // Hides the surface if it is currently shown.
   void Hide();
 
-  // TouchToFillCreditCardViewController:
+  // TouchToFillPaymentMethodViewController:
   void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
   void ScanCreditCard(JNIEnv* env) override;
-  void ShowCreditCardSettings(JNIEnv* env) override;
+  void ShowPaymentMethodSettings(JNIEnv* env) override;
   void SuggestionSelected(JNIEnv* env,
                           base::android::JavaParamRef<jstring> unique_id,
                           bool is_virtual) override;
@@ -83,8 +83,8 @@ class TouchToFillCreditCardController
   // Delegate for the surface being shown.
   base::WeakPtr<TouchToFillDelegate> delegate_;
   // View that displays the surface, owned by `this`.
-  std::unique_ptr<TouchToFillCreditCardView> view_;
-  // The corresponding Java TouchToFillCreditCardControllerBridge.
+  std::unique_ptr<TouchToFillPaymentMethodView> view_;
+  // The corresponding Java TouchToFillPaymentMethodControllerBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   // Suppresses the keyboard between
   // AutofillManager::Observer::On{Before,After}AskForValuesToFill() events if
@@ -94,4 +94,4 @@ class TouchToFillCreditCardController
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_CONTROLLER_H_
+#endif  // CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_

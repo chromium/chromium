@@ -130,7 +130,7 @@
 #include "chrome/browser/android/signin/signin_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_view_impl.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
@@ -895,9 +895,9 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
           !cards_to_suggest.empty());
 
-  return touch_to_fill_credit_card_controller_.Show(
-      std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
-      std::move(cards_to_suggest));
+  return touch_to_fill_payment_method_controller_.Show(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -907,7 +907,7 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
 
 void ChromeAutofillClient::HideTouchToFillCreditCard() {
 #if BUILDFLAG(IS_ANDROID)
-  touch_to_fill_credit_card_controller_.Hide();
+  touch_to_fill_payment_method_controller_.Hide();
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

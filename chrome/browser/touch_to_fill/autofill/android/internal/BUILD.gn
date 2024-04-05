@@ -7,8 +7,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni") {
   sources = [
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardControllerBridge.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBridge.java",
   ]
 }
 
@@ -42,13 +42,13 @@ android_library("java") {
 
   srcjar_deps = [ ":jni" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardControllerBridge.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardCoordinator.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardMediator.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardProperties.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardView.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewBinder.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodCoordinator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodMediator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodProperties.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodView.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBinder.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBridge.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
@@ -56,10 +56,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/layout/touch_to_fill_credit_card_footer_item.xml",
-    "java/res/layout/touch_to_fill_credit_card_header_item.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
     "java/res/layout/touch_to_fill_iban_sheet_item.xml",
+    "java/res/layout/touch_to_fill_payment_method_footer_item.xml",
+    "java/res/layout/touch_to_fill_payment_method_header_item.xml",
     "java/res/values/dimens.xml",
   ]
 }
@@ -68,7 +68,7 @@ robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardControllerRobolectricTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerRobolectricTest.java" ]
 
   deps = [
     ":java",
@@ -102,8 +102,8 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
   sources = [
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardRenderTest.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewTest.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodRenderTest.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewTest.java",
   ]
 
   deps = [

@@ -16,8 +16,8 @@ class AutofillManager;
 class FormStructure;
 
 // An interface for interaction with the bottom sheet UI controller, which is
-// `TouchToFillCreditCardController` on Android. The delegate will supply the
-// data to show and will be notified of events by the controller.
+// `TouchToFillPaymentMethodController` on Android. The delegate will supply
+// the data to show and will be notified of events by the controller.
 class TouchToFillDelegate {
  public:
   virtual ~TouchToFillDelegate() = default;
@@ -45,7 +45,7 @@ class TouchToFillDelegate {
   virtual bool ShouldShowScanCreditCard() = 0;
   virtual void ScanCreditCard() = 0;
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
-  virtual void ShowCreditCardSettings() = 0;
+  virtual void ShowPaymentMethodSettings() = 0;
   virtual void SuggestionSelected(std::string unique_id, bool is_virtual) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 

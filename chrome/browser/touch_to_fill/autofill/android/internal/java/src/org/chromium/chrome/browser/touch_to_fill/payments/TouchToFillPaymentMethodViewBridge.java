@@ -19,18 +19,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-/** JNI wrapper for C++ TouchToFillCreditCardViewImpl. Delegates calls from native to Java. */
+/** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
 @JNINamespace("autofill")
-class TouchToFillCreditCardViewBridge {
-    private final TouchToFillCreditCardComponent mComponent;
+class TouchToFillPaymentMethodViewBridge {
+    private final TouchToFillPaymentMethodComponent mComponent;
 
-    private TouchToFillCreditCardViewBridge(
-            TouchToFillCreditCardComponent.Delegate delegate,
+    private TouchToFillPaymentMethodViewBridge(
+            TouchToFillPaymentMethodComponent.Delegate delegate,
             Context context,
             PersonalDataManager personalDataManager,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
-        mComponent = new TouchToFillCreditCardCoordinator();
+        mComponent = new TouchToFillPaymentMethodCoordinator();
         mComponent.initialize(
                 context,
                 personalDataManager,
@@ -40,23 +40,23 @@ class TouchToFillCreditCardViewBridge {
     }
 
     @CalledByNative
-    private static @Nullable TouchToFillCreditCardViewBridge create(
-            TouchToFillCreditCardComponent.Delegate delegate,
+    private static @Nullable TouchToFillPaymentMethodViewBridge create(
+        TouchToFillPaymentMethodComponent.Delegate delegate,
             Profile profile,
             WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
+    if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (context == null) return null;
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        return new TouchToFillCreditCardViewBridge(
+        return new TouchToFillPaymentMethodViewBridge(
                 delegate,
                 context,
                 PersonalDataManagerFactory.getForProfile(profile),
                 bottomSheetController,
                 windowAndroid);
-    }
+   }
 
     @CalledByNative
     private void showSheet(

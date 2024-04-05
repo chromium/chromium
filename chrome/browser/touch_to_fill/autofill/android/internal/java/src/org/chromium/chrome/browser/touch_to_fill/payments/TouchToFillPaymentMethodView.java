@@ -14,17 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
-import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.Set;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the
- * TouchToFillCreditCard. It is a View in this Model-View-Controller component and doesn't inherit
+ * TouchToFillPaymentMethod. It is a View in this Model-View-Controller component and doesn't inherit
  * but holds Android Views.
  */
-class TouchToFillCreditCardView extends TouchToFillViewBase {
+class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
@@ -61,12 +61,12 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     }
 
     /**
-     * Constructs a TouchToFillCreditCardView which creates, modifies, and shows the bottom sheet.
+     * Constructs a TouchToFillPaymentMethodView which creates, modifies, and shows the bottom sheet.
      *
      * @param context A {@link Context} used to load resources and inflate the sheet.
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
-    TouchToFillCreditCardView(Context context, BottomSheetController bottomSheetController) {
+    TouchToFillPaymentMethodView(Context context, BottomSheetController bottomSheetController) {
         super(
                 bottomSheetController,
                 (RelativeLayout)
@@ -83,22 +83,22 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.autofill_credit_card_bottom_sheet_content_description;
+        return R.string.autofill_payment_method_bottom_sheet_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.autofill_credit_card_bottom_sheet_half_height;
+        return R.string.autofill_payment_method_bottom_sheet_half_height;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.autofill_credit_card_bottom_sheet_full_height;
+        return R.string.autofill_payment_method_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.autofill_credit_card_bottom_sheet_closed;
+        return R.string.autofill_payment_method_bottom_sheet_closed;
     }
 
     @Override
@@ -118,11 +118,11 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
 
     @Override
     protected Set<Integer> listedItemTypes() {
-        return Set.of(TouchToFillCreditCardProperties.ItemType.CREDIT_CARD);
+        return Set.of(TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD, TouchToFillPaymentMethodProperties.ItemType.IBAN);
     }
 
     @Override
     protected int footerItemType() {
-        return TouchToFillCreditCardProperties.ItemType.FOOTER;
+        return TouchToFillPaymentMethodProperties.ItemType.FOOTER;
     }
 }

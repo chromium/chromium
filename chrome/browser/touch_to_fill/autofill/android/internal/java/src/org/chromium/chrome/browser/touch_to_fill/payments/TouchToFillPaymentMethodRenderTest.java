@@ -59,7 +59,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class TouchToFillCreditCardRenderTest {
+public class TouchToFillPaymentMethodRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(
@@ -79,7 +79,7 @@ public class TouchToFillCreditCardRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
-    @Mock private TouchToFillCreditCardComponent.Delegate mDelegateMock;
+    @Mock private TouchToFillPaymentMethodComponent.Delegate mDelegateMock;
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private static final CreditCard VISA =
@@ -164,9 +164,9 @@ public class TouchToFillCreditCardRenderTest {
                     /* value= */ "FR7630006000011234567890189");
 
     private BottomSheetController mBottomSheetController;
-    private TouchToFillCreditCardCoordinator mCoordinator;
+    private TouchToFillPaymentMethodCoordinator mCoordinator;
 
-    public TouchToFillCreditCardRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
+    public TouchToFillPaymentMethodRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         setRtlForTesting(useRtlLayout);
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -185,7 +185,7 @@ public class TouchToFillCreditCardRenderTest {
                         .getBottomSheetController();
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator = new TouchToFillCreditCardCoordinator();
+                    mCoordinator = new TouchToFillPaymentMethodCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
                             AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),

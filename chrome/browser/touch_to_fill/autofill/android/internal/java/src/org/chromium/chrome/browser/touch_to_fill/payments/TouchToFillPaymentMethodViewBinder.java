@@ -4,24 +4,24 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_IMAGE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ITEM_COLLECTION_INFO;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_NICKNAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_VALUE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_EXPIRATION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_IMAGE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,10 +40,10 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Provides functions that map {@link TouchToFillCreditCardProperties} changes in a {@link
- * PropertyModel} to the suitable method in {@link TouchToFillCreditCardView}.
+ * Provides functions that map {@link TouchToFillPaymentMethodProperties} changes in a {@link
+ * PropertyModel} to the suitable method in {@link TouchToFillPaymentMethodView}.
  */
-class TouchToFillCreditCardViewBinder {
+class TouchToFillPaymentMethodViewBinder {
     /**
      * The collection info is added by setting an instance of this delegate on the last text view
      * (it is important to sound naturally and mimic the default message), so that the message
@@ -69,7 +69,7 @@ class TouchToFillCreditCardViewBinder {
             info.setContentDescription(
                     host.getContext()
                             .getString(
-                                    R.string.autofill_credit_card_a11y_item_collection_info,
+                                    R.string.autofill_payment_method_a11y_item_collection_info,
                                     info.getText(),
                                     mCollectionInfo.getPosition(),
                                     mCollectionInfo.getTotal()));
@@ -79,11 +79,11 @@ class TouchToFillCreditCardViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param view The {@link TouchToFillCreditCardView} to update.
+     * @param view The {@link TouchToFillPaymentMethodView} to update.
      * @param propertyKey The {@link PropertyKey} which changed.
      */
-    static void bindTouchToFillCreditCardView(
-            PropertyModel model, TouchToFillCreditCardView view, PropertyKey propertyKey) {
+    static void bindTouchToFillPaymentMethodView(
+            PropertyModel model, TouchToFillPaymentMethodView view, PropertyKey propertyKey) {
         if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
@@ -93,16 +93,16 @@ class TouchToFillCreditCardViewBinder {
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
             }
         } else if (propertyKey == SHEET_ITEMS) {
-            TouchToFillCreditCardCoordinator.setUpCardItems(model, view);
+            TouchToFillPaymentMethodCoordinator.setUpCardItems(model, view);
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
     }
 
-    private TouchToFillCreditCardViewBinder() {}
+    private TouchToFillPaymentMethodViewBinder() {}
 
     /**
-     * Factory used to create a card item inside the ListView inside the TouchToFillCreditCardView.
+     * Factory used to create a card item inside the ListView inside the TouchToFillPaymentMethodView.
      *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
@@ -115,7 +115,7 @@ class TouchToFillCreditCardViewBinder {
     }
 
     /**
-     * Factory used to create an IBAN item inside the ListView inside the TouchToFillCreditCardView.
+     * Factory used to create an IBAN item inside the ListView inside the TouchToFillPaymentMethodView.
      *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
@@ -151,8 +151,8 @@ class TouchToFillCreditCardViewBinder {
         } else if (propertyKey == VIRTUAL_CARD_LABEL) {
             TextView virtualCardLabel = view.findViewById(R.id.description_line_2);
             virtualCardLabel.setText(model.get(VIRTUAL_CARD_LABEL));
-        } else if (propertyKey == ON_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+        } else if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
         } else if (propertyKey == ITEM_COLLECTION_INFO) {
             TextView lastItemTextview = view.findViewById(R.id.description_line_2);
             FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
@@ -169,6 +169,7 @@ class TouchToFillCreditCardViewBinder {
         if (propertyKey == IBAN_VALUE) {
             TextView ibanValue = view.findViewById(R.id.iban_value);
             ibanValue.setText(model.get(IBAN_VALUE));
+            ibanValue.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
         } else if (propertyKey == IBAN_NICKNAME) {
             TextView ibanNickname = view.findViewById(R.id.iban_nickname);
             if (!model.get(IBAN_NICKNAME).isEmpty()) {
@@ -183,13 +184,12 @@ class TouchToFillCreditCardViewBinder {
     }
 
     /**
-     * Factory used to create a new header inside the ListView inside the TouchToFillCreditCardView.
-     *
+     * Factory used to create a new header inside the ListView inside the TouchToFillPaymentMethodView.
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createHeaderItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_credit_card_header_item, parent, false);
+                .inflate(R.layout.touch_to_fill_payment_method_header_item, parent, false);
     }
 
     /**
@@ -218,14 +218,14 @@ class TouchToFillCreditCardViewBinder {
     }
 
     static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == ON_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+        if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
+            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
+            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == CARD_IMAGE
                 || propertyKey == NETWORK_NAME
                 || propertyKey == CARD_NAME
@@ -242,12 +242,12 @@ class TouchToFillCreditCardViewBinder {
     }
 
     /**
-     * Factory used to create a new footer inside the ListView inside the TouchToFillCreditCardView.
+     * Factory used to create a new footer inside the ListView inside the TouchToFillPaymentMethodView.
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createFooterItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_credit_card_footer_item, parent, false);
+                .inflate(R.layout.touch_to_fill_payment_method_footer_item, parent, false);
     }
 
     /**
@@ -262,7 +262,7 @@ class TouchToFillCreditCardViewBinder {
         } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
             setScanCreditCardCallback(view, model.get(SCAN_CREDIT_CARD_CALLBACK));
         } else if (propertyKey == SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
-            setShowCreditCardSettingsCallback(
+            setShowPaymentMethodsSettingsCallback(
                     view, model.get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
@@ -284,7 +284,7 @@ class TouchToFillCreditCardViewBinder {
         scanCreditCard.setOnClickListener(unused -> callback.run());
     }
 
-    private static void setShowCreditCardSettingsCallback(View view, Runnable callback) {
+    private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {
         View managePaymentMethodsButton = view.findViewById(R.id.manage_payment_methods);
         managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }

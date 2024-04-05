@@ -84,7 +84,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kUnknownField, {}};
   }
   // Trigger only if not shown before.
-  if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
+  if (ttf_payment_method_state_ != TouchToFillState::kShouldShow) {
     return {TriggerOutcome::kShownBefore, {}};
   }
   // Trigger only if the client and the form are not insecure.
@@ -202,7 +202,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     return false;
   }
 
-  ttf_credit_card_state_ = TouchToFillState::kIsShowing;
+  ttf_payment_method_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
   if (std::vector<CreditCard>* cards_to_suggest =
@@ -217,7 +217,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
 }
 
 bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {
-  return ttf_credit_card_state_ == TouchToFillState::kIsShowing;
+  return ttf_payment_method_state_ == TouchToFillState::kIsShowing;
 }
 
 // TODO(crbug.com/1348538): Create a central point for TTF hiding decision.
@@ -237,7 +237,7 @@ void TouchToFillDelegateAndroidImpl::HideTouchToFill() {
 
 void TouchToFillDelegateAndroidImpl::Reset() {
   HideTouchToFill();
-  ttf_credit_card_state_ = TouchToFillState::kShouldShow;
+  ttf_payment_method_state_ = TouchToFillState::kShouldShow;
 }
 
 AutofillManager* TouchToFillDelegateAndroidImpl::GetManager() {
@@ -266,7 +266,7 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
       {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
 }
 
-void TouchToFillDelegateAndroidImpl::ShowCreditCardSettings() {
+void TouchToFillDelegateAndroidImpl::ShowPaymentMethodSettings() {
   manager_->client().ShowAutofillSettings(FillingProduct::kCreditCard);
 }
 
@@ -296,7 +296,7 @@ void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
   if (IsShowingTouchToFill()) {
-    ttf_credit_card_state_ = TouchToFillState::kWasShown;
+    ttf_payment_method_state_ = TouchToFillState::kWasShown;
     dismissed_by_user_ = dismissed_by_user;
   }
 }
@@ -305,7 +305,7 @@ void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
     const FormStructure& submitted_form) {
   // Log whether autofill was used after dismissing the touch to fill (without
   // selecting any credit card for filling)
-  if (ttf_credit_card_state_ == TouchToFillState::kWasShown &&
+  if (ttf_payment_method_state_ == TouchToFillState::kWasShown &&
       query_form_.global_id() == submitted_form.global_id() &&
       HasAnyAutofilledFields(submitted_form)) {
     base::UmaHistogramBoolean(

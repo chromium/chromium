@@ -18,8 +18,8 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-/** Properties defined here reflect the visible state of the TouchToFillCreditCard component. */
-class TouchToFillCreditCardProperties {
+/** Properties defined here reflect the visible state of the TouchToFillPaymentMethod component. */
+class TouchToFillPaymentMethodProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
     public static final PropertyModel.ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
@@ -81,19 +81,19 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("card_expiration");
         static final PropertyModel.ReadableObjectPropertyKey<String> VIRTUAL_CARD_LABEL =
                 new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
-        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CREDIT_CARD_CLICK_ACTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_credit_card_click_action");
         static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
                 ITEM_COLLECTION_INFO =
                         new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
-        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
+        static final PropertyKey[] NON_TRANSFORMING_CREDIT_CARD_KEYS = {
             NETWORK_NAME,
             CARD_NAME,
             CARD_NUMBER,
             CARD_EXPIRATION,
             VIRTUAL_CARD_LABEL,
-            ON_CLICK_ACTION,
+            ON_CREDIT_CARD_CLICK_ACTION,
             ITEM_COLLECTION_INFO
         };
 
@@ -151,5 +151,5 @@ class TouchToFillCreditCardProperties {
         private FooterProperties() {}
     }
 
-    private TouchToFillCreditCardProperties() {}
+    private TouchToFillPaymentMethodProperties() {}
 }
