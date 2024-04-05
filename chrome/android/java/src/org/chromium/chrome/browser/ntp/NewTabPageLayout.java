@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -158,6 +159,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsInMultiWindowModeOnTablet;
     private boolean mIsLogoPolishEnabled;
     private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
+    private View mFakeSearchBoxLayout;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -192,6 +194,7 @@ public class NewTabPageLayout extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
+        mFakeSearchBoxLayout = findViewById(R.id.search_box);
         insertSiteSectionView();
     }
 
@@ -857,12 +860,31 @@ public class NewTabPageLayout extends LinearLayout {
                                 - getSearchBoxView().getPaddingBottom()
                                 - mSearchBoxBoundsVerticalInset);
 
-        setTranslationY(percent * (basePosition - target));
+        float translationY = percent * (basePosition - target);
+        if (OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
+            setTranslationYOfFakeboxAndAbove(translationY);
+        } else {
+            setTranslationY(translationY);
+        }
+    }
+
+    /**
+     * Sets the translation_y of the fakebox and all views above it, but not the views below. Used
+     * when the url focus animation is combined with the omnibox suggestions list animation to
+     * reduce the number of visual elements in motion.
+     */
+    private void setTranslationYOfFakeboxAndAbove(float translationY) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            view.setTranslationY(translationY);
+            if (view == mFakeSearchBoxLayout) return;
+        }
     }
 
     /**
      * Sets whether this view is currently moving within its parent view. When the view is moving
      * certain animations will be disabled or prevented.
+     *
      * @param isViewMoving Whether this view is currently moving.
      */
     void setIsViewMoving(boolean isViewMoving) {
