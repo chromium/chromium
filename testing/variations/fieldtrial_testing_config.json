@@ -6321,7 +6321,7 @@
                 {
                     "name": "DoNotDiscard",
                     "params": {
-                        "distance": "2147483647",
+                        "distance_factor": "100000.",
                         "time_ms": "0"
                     },
                     "enable_features": [
@@ -6329,10 +6329,10 @@
                     ]
                 },
                 {
-                    "name": "50_Pixels_1000_Ms",
+                    "name": "50_250_ms",
                     "params": {
-                        "distance": "50",
-                        "time_ms": "1000"
+                        "distance_factor": ".5",
+                        "time_ms": "250"
                     },
                     "enable_features": [
                         "DiscardInputEventsToRecentlyMovedFrames"
