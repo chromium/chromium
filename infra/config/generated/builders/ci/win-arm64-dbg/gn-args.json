@@ -6,7 +6,6 @@
     "proprietary_codecs": true,
     "symbol_level": 1,
     "target_cpu": "arm64",
-    "use_remoteexec": true,
-    "use_siso": true
+    "use_remoteexec": true
   }
 }
