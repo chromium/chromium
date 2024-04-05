@@ -506,6 +506,11 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kOnDeviceModelExecution:
       sandbox_base_name = std::string("cr.sb.odm");
       break;
+#if BUILDFLAG(ENABLE_PRINTING)
+    case Sandbox::kPrintCompositor:
+      sandbox_base_name = std::string("cr.sb.prnc");
+      break;
+#endif
     case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
@@ -540,6 +545,11 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
       sandbox_type != Sandbox::kOnDeviceModelExecution &&
+#if BUILDFLAG(ENABLE_PRINTING)
+      !(sandbox_type == Sandbox::kPrintCompositor &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kPrintCompositorLPAC)) &&
+#endif
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
@@ -603,6 +613,14 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kLpacPnpNotifications);
     container->SetEnableLowPrivilegeAppContainer(true);
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (sandbox_type == Sandbox::kPrintCompositor) {
+    container->AddCapability(kLpacCom);
+    container->AddCapability(L"lpacPrinting");
+    container->SetEnableLowPrivilegeAppContainer(true);
+  }
+#endif
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
@@ -916,6 +934,13 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
     return true;
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (sandbox_type == Sandbox::kPrintCompositor) {
+    return base::FeatureList::IsEnabled(
+        sandbox::policy::features::kPrintCompositorLPAC);
+  }
+#endif
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
     return true;

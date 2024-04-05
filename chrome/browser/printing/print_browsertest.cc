@@ -108,6 +108,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/printing_utils.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 #endif
 
@@ -2207,16 +2208,6 @@ class PrintCompositorDocumentDataTypeBrowserTest
     PrintBrowserTest::SetUp();
   }
 
-  // TODO(crbug.com/40100562):  Tests that generate XPS currently only succeed
-  // if the test is run with sandboxing disabled.  Remove this once sandboxing
-  // changes for XPS are applied to the PrintCompositor service.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrintBrowserTest::SetUpCommandLine(command_line);
-    if (GetParam() == DocumentDataType::kXps) {
-      command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
-    }
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2241,6 +2232,41 @@ IN_PROC_BROWSER_TEST_P(PrintCompositorDocumentDataTypeBrowserTest,
 
   EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
               testing::Optional(GetParam()));
+}
+
+// Demonstrate that the Print Compositor still works using the legacy sandbox
+// method, should the `kPrintCompositorLPAC` flag be disabled.
+// TODO(crbug.com/40283514):  Remove once LPAC sandboxing has been proven to
+// work even for GDI.
+class PrintCompositorLegacySandboxBrowserTest : public PrintBrowserTest {
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    disabled_features.push_back(
+        sandbox::policy::features::kPrintCompositorLPAC);
+    disabled_features.push_back(features::kUseXpsForPrinting);
+
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                          disabled_features);
+    PrintBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrintCompositorLegacySandboxBrowserTest,
+                       WindowDotPrint) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+
+  EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
+              testing::Optional(DocumentDataType::kPdf));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
