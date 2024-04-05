@@ -62,6 +62,8 @@ const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(500);
 constexpr FontSelectionValue kMinimumFontWeight = FontSelectionValue(200);
 constexpr float kMaximumWordSpacingToFontSizeRatio = 0.5;
 constexpr float kMinimumAllowedContrast = 3.;
+constexpr float kMaximumLetterSpacingToFontSizeRatio = 0.2;
+constexpr float kMinimumLetterSpacingToFontSizeRatio = -0.05;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -404,9 +406,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       kMaximumWordSpacingToFontSizeRatio * builder.FontSize()) {
     builder.SetWordSpacing(builder.FontSize() *
                            kMaximumWordSpacingToFontSizeRatio);
-  }
-
-  if (builder.GetFontDescription().WordSpacing() < 0) {
+  } else if (builder.GetFontDescription().WordSpacing() < 0) {
     builder.SetWordSpacing(0);
   }
 
@@ -415,10 +415,17 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetDisplay(EDisplay::kInlineBlock);
   }
 
-  // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
+  if (builder.GetFontDescription().LetterSpacing() >
+      kMaximumLetterSpacingToFontSizeRatio * builder.FontSize()) {
+    builder.SetLetterSpacing(builder.FontSize() *
+                             kMaximumLetterSpacingToFontSizeRatio);
+  } else if (builder.GetFontDescription().LetterSpacing() <
+             kMinimumLetterSpacingToFontSizeRatio * builder.FontSize()) {
+    builder.SetLetterSpacing(builder.FontSize() *
+                             kMinimumLetterSpacingToFontSizeRatio);
+  }
 
-  // TODO(crbug.com/1462930): Validate here the `letter-spacing` property, and
-  // that it's not too big.
+  // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
 
   // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
 }
