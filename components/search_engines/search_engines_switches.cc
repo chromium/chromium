@@ -52,7 +52,7 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPersistentSearchEngineChoiceImport,
              "PersistentSearchEngineChoiceImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
