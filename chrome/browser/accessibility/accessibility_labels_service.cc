@@ -178,6 +178,9 @@ void AccessibilityLabelsService::Init() {
           &AccessibilityLabelsService::OnImageLabelsEnabledChanged,
           weak_factory_.GetWeakPtr()));
 
+  // This ensures prefs refresh the label images AXMode on startup.
+  OnImageLabelsEnabledChanged();
+
   // Log whether the feature is enabled after startup. This must be run on the
   // UI thread because it accesses prefs.
   content::BrowserAccessibilityState::GetInstance()
