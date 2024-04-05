@@ -260,6 +260,7 @@ chromium-metrics-reviews@google.com.
       summary="Non personalized page insights hub"/>
   <variant name="PageInsightsHub" summary="Page insights hub"/>
   <variant name="PageNavigation" summary="Page navigation"/>
+  <variant name="Shopping" summary="Requests for shopping features"/>
 </variants>
 
 <histogram name="OptimizationGuide.AccessTokenHelper.Result"
@@ -383,6 +384,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount.{RequestContext}"
+    units="total host count" expires_after="M130">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of hosts selected for sending a hint request using
+    {RequestContext} of the OptmizationGuide HintsFetcher. This will be captured
+    when any hint request is initiated.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
+</histogram>
+
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
     enum="NetErrorCodes" expires_after="M130">
   <owner>mcrouse@chromium.org</owner>
@@ -424,6 +438,19 @@ chromium-metrics-reviews@google.com.
     Records the number of URLs selected for sending a hint request. This will be
     captured when any hint request is initiated.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount.{RequestContext}"
+    units="total url count" expires_after="2024-07-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of URLs selected for sending a hint request using
+    {RequestContext} of the OptmizationGuide HintsFetcher. This will be captured
+    when any hint request is initiated.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
 </histogram>
 
 <histogram name="OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor"

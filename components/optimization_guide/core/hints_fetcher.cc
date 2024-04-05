@@ -320,6 +320,18 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount",
       valid_urls.size());
 
+  // Record histogram variants based on request context.
+  // Histogram macro doesn't allow dynamic string. Use function.
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount." +
+          GetStringNameForRequestContext(request_context_),
+      filtered_hosts.size());
+
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount." +
+          GetStringNameForRequestContext(request_context_),
+      valid_urls.size());
+
   // It's safe to use |base::Unretained(this)| here because |this| owns
   // |active_url_loader_| and the callback will be canceled if
   // |active_url_loader_| is destroyed.
