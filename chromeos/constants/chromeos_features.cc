@@ -17,8 +17,14 @@
 namespace chromeos::features {
 
 namespace {
+
 bool g_app_install_service_uri_enabled_for_testing = false;
-}
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+bool g_ignore_container_app_preinstall_key_for_testing = false;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables triggering app installs from a specific URI.
@@ -330,7 +336,8 @@ bool IsContainerAppPreinstallEnabled() {
   return base::FeatureList::IsEnabled(
              kFeatureManagementContainerAppPreinstall) &&
          base::FeatureList::IsEnabled(kContainerAppPreinstall) &&
-         (base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey ||
+         (g_ignore_container_app_preinstall_key_for_testing ||
+          base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey ||
           base::SHA1HashString(switches::GetContainerAppPreinstallKey()) ==
               kKey);
 #endif
@@ -509,5 +516,11 @@ int RoundedWindowsRadius() {
 base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting() {
   return {&g_app_install_service_uri_enabled_for_testing, true};
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+base::AutoReset<bool> SetIgnoreContainerAppPreinstallKeyForTesting() {
+  return {&g_ignore_container_app_preinstall_key_for_testing, true};
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace chromeos::features

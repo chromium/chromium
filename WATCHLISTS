@@ -906,6 +906,9 @@
     'compute_pressure': {
       'filepath': 'compute_pressure',
     },
+    'container_app': {
+      'filepath': 'chrome/browser/ui/ash/container_app',
+    },
     'content_bluetooth': {
       'filepath': 'content/.*bluetooth'
     },
@@ -2809,6 +2812,8 @@
                          'arnaud.mandy@intel.com',
                          'wei4.wang@intel.com',
                          'kenneth.r.christiansen@intel.com'],
+    'container_app': ['dmblack+watch@google.com',
+                      'xiaohuic+watch@chromium.org'],
     'content_bluetooth': ['mattreynolds+watch@chromium.org'],
     'content_index': ['rayankans+watch@chromium.org'],
     'content_loader': ['loading-reviews@chromium.org'],

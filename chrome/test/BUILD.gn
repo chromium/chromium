@@ -11283,6 +11283,11 @@ if (!is_android && !is_chromeos_device) {
           "base/chromeos/crosier/interactive_ash_test.h",
           "base/chromeos/crosier/interactive_ash_test_uitest.cc",
         ]
+
+        if (is_chrome_branded) {
+          sources += [ "../browser/ui/ash/container_app/container_app_interactive_uitest.cc" ]
+        }
+
         deps += [
           "//ash:ash",
           "//ash:interactive_ui_test_support",

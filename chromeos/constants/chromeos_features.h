@@ -157,8 +157,13 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting();
+[[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+    base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting();
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+[[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+    base::AutoReset<bool> SetIgnoreContainerAppPreinstallKeyForTesting();
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace features
 }  // namespace chromeos
