@@ -14,12 +14,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/liburlpattern/pattern.h"
 
 namespace blink {
 
@@ -74,6 +76,25 @@ class ManifestParserTest : public testing::Test {
 
   const KURL& DefaultDocumentUrl() const { return default_document_url; }
   const KURL& DefaultManifestUrl() const { return default_manifest_url; }
+
+  void VerifySafeUrlPatternSizes(const SafeUrlPattern& pattern,
+                                 size_t protocol_size,
+                                 size_t username_size,
+                                 size_t password_size,
+                                 size_t hostname_size,
+                                 size_t port_size,
+                                 size_t pathname_size,
+                                 size_t search_size,
+                                 size_t hash_size) {
+    EXPECT_EQ(pattern.protocol.size(), protocol_size);
+    EXPECT_EQ(pattern.username.size(), username_size);
+    EXPECT_EQ(pattern.password.size(), password_size);
+    EXPECT_EQ(pattern.hostname.size(), hostname_size);
+    EXPECT_EQ(pattern.port.size(), port_size);
+    EXPECT_EQ(pattern.pathname.size(), pathname_size);
+    EXPECT_EQ(pattern.search.size(), search_size);
+    EXPECT_EQ(pattern.hash.size(), hash_size);
+  }
 
  private:
   test::TaskEnvironment task_environment_;
@@ -6745,6 +6766,32 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 2u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 0, 0, 0,
+        0, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 0, 0, 0,
+        0, 0, 1, 0, 0);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .value,
+              "foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .value,
+              "foo/bar/");
 
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -6776,6 +6823,110 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 6u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 0, 0, 0,
+        0, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 0, 0, 0,
+        0, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 0, 0, 0,
+        0, 0, 2, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 0, 0, 0,
+        0, 0, 3, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 0, 0, 0,
+        0, 0, 2, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[5], 0, 0, 0,
+        0, 0, 3, 0, 0);
+
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[2]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[2]
+                  .value,
+              "/bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[2]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
 
     EXPECT_EQ(0u, GetErrorCount());
   }
