@@ -85,4 +85,9 @@ void FakePatchPanelClient::SetFeatureFlag(
     patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
     bool enabled) {}
 
+void FakePatchPanelClient::WaitForServiceToBeAvailable(
+    dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace ash

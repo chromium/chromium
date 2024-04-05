@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
                  TagSocketCallback callback) override;
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override;
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
   // Record of count of calling NotifyAndroidInteractiveState for testing
   // purpose.

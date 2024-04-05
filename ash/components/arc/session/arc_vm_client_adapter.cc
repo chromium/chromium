@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <deque>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <set>
 #include <utility>
@@ -39,6 +40,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -58,10 +60,12 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/system/core_scheduling.h"
@@ -1025,6 +1029,36 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         file_system_status, use_per_vm_core_scheduling, start_params_,
         delegate_.get());
 
+    // ARCVM startup will fail if patchpanel DBus service is not available. The
+    // startup of patchpanel is slow on some low-end devices. According to
+    // b/325850116 the interval between ARCVM startup and patchpanel getting
+    // ready was 2s in that case. So let's wait 5s here before suspecting the
+    // startup to be blocked by patchpanel and printing the log.
+    patchpanel_timer_ = std::make_unique<base::OneShotTimer>();
+    patchpanel_timer_->Start(
+        FROM_HERE, base::Seconds(5), base::BindOnce([]() {
+          LOG(WARNING) << "Still waiting for patchpanel before starting ARCVM.";
+        }));
+    ash::PatchPanelClient::Get()->WaitForServiceToBeAvailable(
+        base::BindOnce(&ArcVmClientAdapter::OnPatchPanelServiceAvailable,
+                       weak_factory_.GetWeakPtr(), std::move(start_request),
+                       std::move(callback)));
+  }
+
+  void OnPatchPanelServiceAvailable(
+      vm_tools::concierge::StartArcVmRequest start_request,
+      chromeos::VoidDBusMethodCallback callback,
+      bool service_is_available) {
+    patchpanel_timer_->Stop();
+    patchpanel_timer_.reset();
+
+    if (!service_is_available) {
+      LOG(ERROR)
+          << "Failed to start arcvm. Patchpanel service is not available.";
+      std::move(callback).Run(false);
+      return;
+    }
+
     VLOG(1) << "Sending request to start ARCVM";
     GetConciergeClient()->StartArcVm(
         start_request,
@@ -1219,6 +1253,10 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   StartParams start_params_;
   bool should_notify_observers_ = false;
   int64_t current_cid_ = kInvalidCid;
+
+  // A timer that fires after ARCVM startup is suspected to be blocked by
+  // patchpanel service startup.
+  std::unique_ptr<base::OneShotTimer> patchpanel_timer_;
 
   FileSystemStatusRewriter file_system_status_rewriter_for_testing_;
 

@@ -53,6 +53,7 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -382,6 +383,7 @@ class ArcVmClientAdapterTest : public testing::Test,
         // connect_sleep_duration_initial
         base::Milliseconds(20));
 
+    ash::PatchPanelClient::InitializeFake();
     ash::SessionManagerClient::InitializeFake();
 
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
@@ -397,6 +399,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   void TearDown() override {
     scoped_user_manager_.reset();
     arc_dlc_installer_.reset();
+    ash::PatchPanelClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();

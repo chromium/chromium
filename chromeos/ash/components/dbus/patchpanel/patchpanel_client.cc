@@ -208,6 +208,12 @@ class PatchPanelClientImpl : public PatchPanelClient {
     ConnectToSignals();
   }
 
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
+      override {
+    patchpanel_proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void AddObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);
   }

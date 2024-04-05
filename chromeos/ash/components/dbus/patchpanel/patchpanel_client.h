@@ -87,6 +87,11 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
       patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
       bool enabled) = 0;
 
+  // Calls |callback| when patchpanel DBus service to be available. If the
+  // service is already up, calls |callback| immediately.
+  virtual void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
+
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;
 
