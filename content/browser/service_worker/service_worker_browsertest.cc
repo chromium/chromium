@@ -5318,8 +5318,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
 }
 
+// TODO(crbug.com/332989700): The test is flaky.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
-                       HasSkippedForEmptyFetchHandlerMetrics) {
+                       DISABLED_HasSkippedForEmptyFetchHandlerMetrics) {
   base::HistogramTester tester;
 
   const GURL create_service_worker_url(embedded_test_server()->GetURL(
