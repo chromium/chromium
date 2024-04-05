@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 
-#include "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/counters/browsing_data_counter.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 class Browser;
@@ -68,6 +69,10 @@ enum ClearBrowsingDataItemType {
 // The manager's consumer.
 @property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
 
+// The selected deletion's time period. Initialized with the pref value of
+// browsing_data::prefs::kDeleteTimePeriod.
+@property(nonatomic, assign) browsing_data::TimePeriod timePeriod;
+
 // Default init method. `browserState` can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
 
@@ -78,9 +83,6 @@ enum ClearBrowsingDataItemType {
         (BrowsingDataCounterWrapperProducer*)producer NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Call this method before actually using the data manager.
-- (void)prepare;
 
 // Call this method when data manager is not used anymore.
 - (void)disconnect;

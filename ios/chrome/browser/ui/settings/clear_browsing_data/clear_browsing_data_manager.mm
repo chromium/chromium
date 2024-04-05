@@ -117,15 +117,7 @@ BOOL UIIsBlocking(Browser* browser) {
 
 }  // namespace
 
-@interface ClearBrowsingDataManager () <BrowsingDataRemoverObserving,
-                                        PrefObserverDelegate> {
-  // Access to the kDeleteTimePeriod preference.
-  IntegerPrefMember _timeRangePref;
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  PrefChangeRegistrar _prefChangeRegistrar;
-
+@interface ClearBrowsingDataManager () <BrowsingDataRemoverObserving> {
   // Observer for browsing data removal events and associated
   // base::ScopedObservation used to track registration with
   // BrowsingDataRemover.
@@ -188,9 +180,6 @@ BOOL UIIsBlocking(Browser* browser) {
     _browserState = browserState;
     _counterWrapperProducer = producer;
 
-    _timeRangePref.Init(browsing_data::prefs::kDeleteTimePeriod,
-                        _browserState->GetPrefs());
-
     _browsingDataRemoverObserver =
         std::make_unique<BrowsingDataRemoverObserverBridge>(self);
     _scoped_observation =
@@ -199,8 +188,9 @@ BOOL UIIsBlocking(Browser* browser) {
             _browsingDataRemoverObserver.get());
     _scoped_observation->Observe(remover);
 
-    _prefChangeRegistrar.Init(_browserState->GetPrefs());
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _timePeriod = static_cast<browsing_data::TimePeriod>(
+        _browserState->GetPrefs()->GetInteger(
+            browsing_data::prefs::kDeleteTimePeriod));
   }
   return self;
 }
@@ -234,26 +224,7 @@ BOOL UIIsBlocking(Browser* browser) {
   [tableView reloadData];
 }
 
-- (void)prepare {
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
-
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
-  _prefObserverBridge->ObserveChangesForPreference(
-      browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
-}
-
 - (void)disconnect {
-  _timeRangePref.Destroy();
-  _prefObserverBridge.reset();
-  _prefChangeRegistrar.RemoveAll();
   _scoped_observation.reset();
   _browsingDataRemoverObserver.reset();
   _countersByMasks.clear();
@@ -338,8 +309,7 @@ BOOL UIIsBlocking(Browser* browser) {
                              (~NSByteCountFormatterUseKB);
     formatter.countStyle = NSByteCountFormatterCountStyleMemory;
     NSString* formattedSize = [formatter stringFromByteCount:cacheSizeBytes];
-    return _timeRangePref.GetValue() ==
-                   static_cast<int>(browsing_data::TimePeriod::ALL_TIME)
+    return self.timePeriod == browsing_data::TimePeriod::ALL_TIME
                ? formattedSize
                : l10n_util::GetNSStringF(
                      IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
@@ -619,8 +589,8 @@ BOOL UIIsBlocking(Browser* browser) {
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTimeRange];
   timeRangeItem.text = l10n_util::GetNSString(
       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
-  NSString* detailText = [TimeRangeSelectorTableViewController
-      timePeriodLabelForPrefs:self.browserState->GetPrefs()];
+  NSString* detailText =
+      [TimeRangeSelectorTableViewController timePeriodLabel:self.timePeriod];
   DCHECK(detailText);
   timeRangeItem.detailText = detailText;
   timeRangeItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -677,10 +647,8 @@ BOOL UIIsBlocking(Browser* browser) {
 - (void)clearDataForDataTypes:(BrowsingDataRemoveMask)mask {
   DCHECK(mask != BrowsingDataRemoveMask::REMOVE_NOTHING);
 
-  browsing_data::TimePeriod timePeriod =
-      static_cast<browsing_data::TimePeriod>(_timeRangePref.GetValue());
   [self.consumer removeBrowsingDataForBrowserState:_browserState
-                                        timePeriod:timePeriod
+                                        timePeriod:self.timePeriod
                                         removeMask:mask
                                    completionBlock:nil];
 
@@ -689,6 +657,9 @@ BOOL UIIsBlocking(Browser* browser) {
   // the browsing data is cleared without the user's input.
   feature_engagement::TrackerFactory::GetForBrowserState(_browserState)
       ->NotifyEvent(feature_engagement::events::kClearedBrowsingData);
+
+  // Update prefs with the values displayed in the UI.
+  [self updatePrefs];
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     PrefService* prefs = _browserState->GetPrefs();
@@ -717,6 +688,23 @@ BOOL UIIsBlocking(Browser* browser) {
   }
 }
 
+// Updates the preferences with the option values of the latest deletion.
+- (void)updatePrefs {
+  PrefService* prefs = self.browserState->GetPrefs();
+
+  prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                    static_cast<int>(self.timePeriod));
+
+  prefs->SetBoolean(self.browsingHistoryItem.prefName,
+                    self.browsingHistoryItem.checked);
+  prefs->SetBoolean(self.cookiesSiteDataItem.prefName,
+                    self.cookiesSiteDataItem.checked);
+  prefs->SetBoolean(self.cacheItem.prefName, self.cacheItem.checked);
+  prefs->SetBoolean(self.savedPasswordsItem.prefName,
+                    self.savedPasswordsItem.checked);
+  prefs->SetBoolean(self.autofillItem.prefName, self.autofillItem.checked);
+}
+
 #pragma mark Properties
 
 - (void)setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:(BOOL)showNotice
@@ -741,33 +729,17 @@ BOOL UIIsBlocking(Browser* browser) {
     (const signin::PrimaryAccountChangeEvent&)event {
 }
 
-#pragma mark - PrefObserverDelegate
+#pragma mark - Property Setters/Getters
 
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  PrefService* prefs = self.browserState->GetPrefs();
-  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
-    NSString* detailText =
-        [TimeRangeSelectorTableViewController timePeriodLabelForPrefs:prefs];
-    self.tableViewTimeRangeItem.detailText = detailText;
-    [self.consumer updateCellsForItem:self.tableViewTimeRangeItem reload:YES];
-  } else if (preferenceName == browsing_data::prefs::kDeleteBrowsingHistory) {
-    self.browsingHistoryItem.checked = prefs->GetBoolean(preferenceName);
-    [self.consumer updateCellsForItem:self.browsingHistoryItem reload:NO];
-  } else if (preferenceName == browsing_data::prefs::kDeleteCookies) {
-    self.cookiesSiteDataItem.checked = prefs->GetBoolean(preferenceName);
-    [self.consumer updateCellsForItem:self.cookiesSiteDataItem reload:NO];
-  } else if (preferenceName == browsing_data::prefs::kDeleteCache) {
-    self.cacheItem.checked = prefs->GetBoolean(preferenceName);
-    [self.consumer updateCellsForItem:self.cacheItem reload:NO];
-  } else if (preferenceName == browsing_data::prefs::kDeletePasswords) {
-    self.savedPasswordsItem.checked = prefs->GetBoolean(preferenceName);
-    [self.consumer updateCellsForItem:self.savedPasswordsItem reload:NO];
-  } else if (preferenceName == browsing_data::prefs::kDeleteFormData) {
-    self.autofillItem.checked = prefs->GetBoolean(preferenceName);
-    [self.consumer updateCellsForItem:self.autofillItem reload:NO];
-  } else {
-    DCHECK(false) << "Unxpected clear browsing data item type.";
+- (void)setTimePeriod:(browsing_data::TimePeriod)timePeriod {
+  if (_timePeriod == timePeriod) {
+    return;
   }
+
+  _timePeriod = timePeriod;
+  self.tableViewTimeRangeItem.detailText =
+      [TimeRangeSelectorTableViewController timePeriodLabel:self.timePeriod];
+  [self.consumer updateCellsForItem:self.tableViewTimeRangeItem reload:YES];
 }
 
 #pragma mark BrowsingDataRemoverObserving

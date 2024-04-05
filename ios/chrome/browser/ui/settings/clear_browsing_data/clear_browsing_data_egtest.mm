@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -70,6 +71,20 @@ using chrome_test_util::WindowWithNumber;
 
 @implementation ClearBrowsingDataSettingsTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+
+  // TODO(crbug.com/1285974): Remove when bug is resolved for multiwindow
+  // egtests.
+  if ([self
+          isRunningTest:@selector(testClearBrowsingDataDialogInMultiWindow)]) {
+    config.features_disabled.push_back(kNewOverflowMenu);
+  }
+
+  return config;
+}
+
 - (void)openClearBrowsingDataDialog {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
@@ -88,6 +103,16 @@ using chrome_test_util::WindowWithNumber;
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
   [ChromeEarlGreyUI tapPrivacyMenuButton:ButtonWithAccessibilityLabel(
                                              clearBrowsingDataDialogLabel)];
+}
+
+// With CBD dialog already opened, go through with the deletion.
+- (void)goThroughWithDeletion {
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
 }
 
 // Test that opening the clear browsing data dialog does not crash.
@@ -125,12 +150,6 @@ using chrome_test_util::WindowWithNumber;
 - (void)testClearBrowsingDataDialogInMultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-
-  // TODO(crbug.com/1285974).
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
-  }
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
@@ -176,8 +195,8 @@ using chrome_test_util::WindowWithNumber;
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:ElementIsSelected(isClearAutofillButtonSelected)];
 
-  // Switch Clear Browsing History Button in window 0 and make sure it is
-  // deselected in both.
+  // Switch Clear Browsing History Button in window 0 and make sure it doesn't
+  // change in window 1.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       performAction:grey_tap()];
@@ -187,30 +206,30 @@ using chrome_test_util::WindowWithNumber;
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:ElementIsSelected(
-                            !isClearBrowsingHistoryButtonSelected)];
+                            isClearBrowsingHistoryButtonSelected)];
 
-  // Switch Clear Browsing History Button in window 1 and make sure it is
-  // deselected in both.
+  // Switch Clear Browsing Cookies in window 1 and make sure it is still
+  // selected in window 0.
   [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
       assertWithMatcher:ElementIsSelected(!isClearCookiesButtonSelected)];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
-      assertWithMatcher:ElementIsSelected(!isClearCookiesButtonSelected)];
+      assertWithMatcher:ElementIsSelected(isClearCookiesButtonSelected)];
 
-  // Switch Clear Cache Button in window 0 and make sure it is
-  // deselected in both.
+  // Switch Clear Cache Button in window 0 and make sure it is still selected in
+  // window 1.
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:ElementIsSelected(!isClearCacheButtonSelected)];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
-      assertWithMatcher:ElementIsSelected(!isClearCacheButtonSelected)];
+      assertWithMatcher:ElementIsSelected(isClearCacheButtonSelected)];
 
-  // Switch Clear Saved Passwords Button in window 1 and make sure it is
-  // deselected in both.
+  // Switch Clear Saved Passwords Button in window 1 and make sure it is still
+  // selected in window 0.
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
@@ -218,33 +237,20 @@ using chrome_test_util::WindowWithNumber;
                             !isClearSavedPasswordsButtonSelected)];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      assertWithMatcher:ElementIsSelected(
-                            !isClearSavedPasswordsButtonSelected)];
+      assertWithMatcher:ElementIsSelected(isClearSavedPasswordsButtonSelected)];
 
-  // Switch Clear Autofill Button in window 0 and make sure it is
-  // deselected in both.
+  // Switch Clear Autofill Button in window 0 and make sure it is still selected
+  // in window 1.
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:ElementIsSelected(!isClearAutofillButtonSelected)];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      assertWithMatcher:ElementIsSelected(!isClearAutofillButtonSelected)];
-
-  // Restore to intial state.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      performAction:grey_tap()];
+      assertWithMatcher:ElementIsSelected(isClearAutofillButtonSelected)];
 
   // Cleanup.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
@@ -295,12 +301,8 @@ using chrome_test_util::WindowWithNumber;
   [ChromeEarlGreyUI
       tapPrivacyMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
                                IDS_IOS_CLEAR_BROWSING_DATA_TITLE)];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        chrome_test_util::ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-  WaitForActivityOverlayToDisappear();
+
+  [self goThroughWithDeletion];
 }
 
 // Tests that a user in the `ConsentLevel::kSignin` state will remain signed in
@@ -331,6 +333,93 @@ using chrome_test_util::WindowWithNumber;
 
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that changing the options for clear browsing data is not saved if the
+// deletion doesn't go through, i.e. if the user dismisses CBD.
+- (void)testChangeOptionsAndDismiss {
+  [self openClearBrowsingDataDialog];
+
+  // Check that CBD is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Switch the clear browsing history button to off.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      assertWithMatcher:ElementIsSelected(NO)];
+
+  // Dismiss the view without having going through the deletion.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Settings has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Open CBD and check that the options did not change, i.e. that clear
+  // browsing history remains selected.
+  [self openClearBrowsingDataDialog];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      assertWithMatcher:ElementIsSelected(YES)];
+}
+
+// Tests that changing the options for clear browsing data is saved if the
+// deletion goes through, i.e. if the user clears their browsing data.
+- (void)testChangeOptionsAndDelete {
+  [self openClearBrowsingDataDialog];
+
+  // Check that CBD is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Switch the clear browsing history button to off.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      assertWithMatcher:ElementIsSelected(NO)];
+
+  [self goThroughWithDeletion];
+
+  // Dismiss the view.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Settings has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Open CBD and check that the options changed, i.e. that clear browsing
+  // history is unselected selected.
+  [self openClearBrowsingDataDialog];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      assertWithMatcher:ElementIsSelected(NO)];
+
+  // Reset.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
+      performAction:grey_tap()];
+  [self goThroughWithDeletion];
 }
 
 @end

@@ -188,7 +188,6 @@
   self.suppressTableViewUpdates = YES;
   [self loadModel];
   self.suppressTableViewUpdates = NO;
-  [self.dataManager prepare];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -305,9 +304,10 @@
   DCHECK(item);
   switch (item.type) {
     case ItemTypeTimeRange: {
-      UIViewController* controller =
+      TimeRangeSelectorTableViewController* controller =
           [[TimeRangeSelectorTableViewController alloc]
-              initWithPrefs:self.browserState->GetPrefs()];
+              initWithTimePeriod:self.dataManager.timePeriod];
+      controller.consumer = self;
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       [self.navigationController pushViewController:controller animated:YES];
       break;
@@ -321,9 +321,8 @@
       TableViewClearBrowsingDataItem* clearBrowsingDataItem =
           base::apple::ObjCCastStrict<TableViewClearBrowsingDataItem>(item);
 
-      self.browserState->GetPrefs()->SetBoolean(clearBrowsingDataItem.prefName,
-                                                !clearBrowsingDataItem.checked);
-      // UI update will be trigerred by data manager.
+      clearBrowsingDataItem.checked = !clearBrowsingDataItem.checked;
+      [self updateCellsForItem:clearBrowsingDataItem reload:NO];
       break;
     }
     default:
@@ -378,6 +377,10 @@
 }
 
 #pragma mark - ClearBrowsingDataConsumer
+
+- (void)updateTimePeriod:(browsing_data::TimePeriod)timePeriod {
+  self.dataManager.timePeriod = timePeriod;
+}
 
 - (void)dismissAlertCoordinator {
   [self.alertCoordinator stop];

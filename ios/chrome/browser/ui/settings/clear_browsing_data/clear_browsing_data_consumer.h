@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/ios/block_types.h"
+#import "base/ios/block_types.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 
 class ChromeBrowserState;
 @class TableViewItem;
@@ -35,6 +36,8 @@ enum class BrowsingDataRemoveMask;
 // Dismisses the alert coordinator.
 - (void)dismissAlertCoordinator;
 
+// Called when the time period for the deletion was changed by the user.
+- (void)updateTimePeriod:(browsing_data::TimePeriod)timePeriod;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_CONSUMER_H_
