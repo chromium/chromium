@@ -165,20 +165,19 @@ void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
                               ExceptionState& exception_state) {
   // TransferNamedArrayBufferViews deteches input and output array buffers, so
   // JavaScript can't modify them during Compute().
+  //
+  // TODO(crbug.com/332772485): Call `TransferNamedArrayBufferViews()` from
+  // backend-independent validation logic.
   auto inputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
   if (!inputs_info) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kDataError,
-        "Invalid inputs: " + exception_state.Message());
+    resolver->Reject(exception_state);
     return;
   }
   auto outputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
   if (!outputs_info) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kDataError,
-        "Invalid outputs: " + exception_state.Message());
+    resolver->Reject(exception_state);
     return;
   }
 
