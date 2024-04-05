@@ -550,7 +550,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
 
   if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
-    NotifyDone({.status = OK, .requested_types = preferred_types_});
+    NotifyDone(OK);
     return;
   }
 
@@ -687,7 +687,7 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPED;
 
   if (need_to_notify) {
-    NotifyDone({.status = ABORTED, .requested_types = preferred_types_});
+    NotifyDone(ABORTED);
   }
 }
 
@@ -695,12 +695,13 @@ void DataTypeManagerImpl::NotifyStart() {
   observer_->OnConfigureStart();
 }
 
-void DataTypeManagerImpl::NotifyDone(const ConfigureResult& raw_result) {
+void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
   DCHECK(!last_restart_time_.is_null());
   base::TimeDelta configure_time = base::Time::Now() - last_restart_time_;
 
-  ConfigureResult result = raw_result;
-  result.data_type_status_table = data_type_status_table_;
+  ConfigureResult result = {.status = status,
+                            .requested_types = preferred_types_,
+                            .data_type_status_table = data_type_status_table_};
 
   const std::string prefix_uma =
       (last_requested_context_.reason == CONFIGURE_REASON_NEW_CLIENT)
@@ -717,9 +718,6 @@ void DataTypeManagerImpl::NotifyDone(const ConfigureResult& raw_result) {
     case DataTypeManager::ABORTED:
       DVLOG(1) << "NotifyDone called with result: ABORTED";
       base::UmaHistogramLongTimes(prefix_uma + ".ABORTED", configure_time);
-      break;
-    case DataTypeManager::UNKNOWN:
-      NOTREACHED();
       break;
   }
   observer_->OnConfigureDone(result);

@@ -32,18 +32,14 @@ class DataTypeManager {
     STOPPING     // Data types are being stopped.
   };
 
-  // Update NotifyDone() in data_type_manager_impl.cc if you update
-  // this.
   enum ConfigureStatus {
-    UNKNOWN = -1,
     OK,       // Configuration finished some or all types.
-    ABORTED,  // Start was aborted by calling Stop() before
+    ABORTED,  // Configuration was aborted by calling Stop() before
               // all types were started.
   };
 
-  // Note: |errors| is only filled when status is not OK.
   struct ConfigureResult {
-    ConfigureStatus status = UNKNOWN;
+    ConfigureStatus status = ABORTED;
     ModelTypeSet requested_types;
     DataTypeStatusTable data_type_status_table;
   };

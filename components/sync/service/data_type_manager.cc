@@ -4,8 +4,6 @@
 
 #include "components/sync/service/data_type_manager.h"
 
-#include "base/notreached.h"
-
 namespace syncer {
 
 // Static.
@@ -15,9 +13,6 @@ std::string DataTypeManager::ConfigureStatusToString(ConfigureStatus status) {
       return "Ok";
     case ABORTED:
       return "Aborted";
-    case UNKNOWN:
-      NOTREACHED();
-      return std::string();
   }
   return std::string();
 }

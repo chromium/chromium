@@ -596,10 +596,6 @@ TEST_F(SyncDataTypeManagerImplTest, OneFailingController) {
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   SetConfigureStartExpectation();
-  SetConfigureDoneExpectation(
-      DataTypeManager::UNKNOWN,
-      BuildStatusTable(ModelTypeSet(),
-                       /*datatype_errors=*/{BOOKMARKS}, ModelTypeSet()));
 
   Configure({BOOKMARKS});
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());

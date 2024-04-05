@@ -107,7 +107,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void Restart();
 
   void NotifyStart();
-  void NotifyDone(const ConfigureResult& result);
+  void NotifyDone(ConfigureStatus status);
 
   void ConfigureImpl(ModelTypeSet preferred_types,
                      const ConfigureContext& context);
