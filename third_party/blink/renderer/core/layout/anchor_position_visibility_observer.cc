@@ -29,6 +29,11 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
 
   // Setup an intersection observer to monitor intersection visibility.
   if (anchor_element_) {
+    Node* root = nullptr;
+    if (LayoutObject* anchored_object = anchored_element_->GetLayoutObject()) {
+      root = anchored_object->Container()->GetNode();
+    }
+
     observer_ = IntersectionObserver::Create(
         anchor_element_->GetDocument(),
         WTF::BindRepeating(
@@ -37,9 +42,7 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
         // Do not record metrics for this internal intersection observer.
         std::nullopt,
         IntersectionObserver::Params{
-            // TODO(pdr): Set the intersection observer root to the containing
-            // block of the anchor and anchored elements. See:
-            // `position-visibility-anchors-visible-non-intervening-container.tentative.html`.
+            .root = root,
             .thresholds = {IntersectionObserver::kMinimumThreshold, 1.0f},
             .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
         });

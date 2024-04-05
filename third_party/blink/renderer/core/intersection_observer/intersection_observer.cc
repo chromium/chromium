@@ -269,6 +269,7 @@ IntersectionObserver* IntersectionObserver::Create(
   }
 
   Params params = {
+      .root = root,
       .delay = observer_init->delay(),
       .track_visibility = observer_init->trackVisibility(),
   };
@@ -305,7 +306,7 @@ IntersectionObserver* IntersectionObserver::Create(
   }
 
   return MakeGarbageCollected<IntersectionObserver>(delegate, ukm_metric_id,
-                                                    root, std::move(params));
+                                                    std::move(params));
 }
 
 IntersectionObserver* IntersectionObserver::Create(
@@ -335,38 +336,38 @@ IntersectionObserver* IntersectionObserver::Create(
           document.GetExecutionContext(), std::move(callback), params.behavior,
           params.needs_initial_observation_with_detached_target);
   return MakeGarbageCollected<IntersectionObserver>(
-      *intersection_observer_delegate, ukm_metric_id, /*root=*/nullptr,
-      std::move(params));
+      *intersection_observer_delegate, ukm_metric_id, std::move(params));
 }
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverDelegate& delegate,
     std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id,
-    Node* root,
     Params&& params)
     : ActiveScriptWrappable<IntersectionObserver>({}),
       ExecutionContextClient(delegate.GetExecutionContext()),
       delegate_(&delegate),
       ukm_metric_id_(ukm_metric_id),
-      root_(root),
+      root_(params.root),
       thresholds_(std::move(params.thresholds)),
       delay_(params.delay),
       margin_(NormalizeMargins(params.margin)),
       scroll_margin_(NormalizeScrollMargins(params.scroll_margin)),
       margin_target_(params.margin_target),
-      root_is_implicit_(root ? 0 : 1),
+      root_is_implicit_(params.root ? 0 : 1),
       track_visibility_(params.track_visibility),
       track_fraction_of_root_(params.semantics == kFractionOfRoot),
       always_report_root_bounds_(params.always_report_root_bounds),
       use_overflow_clip_edge_(params.use_overflow_clip_edge) {
-  if (root) {
-    if (root->IsDocumentNode()) {
-      To<Document>(root)
+  if (params.root) {
+    if (params.root->IsDocumentNode()) {
+      To<Document>(params.root)
           ->EnsureDocumentExplicitRootIntersectionObserverData()
           .AddObserver(*this);
     } else {
-      DCHECK(root->IsElementNode());
-      To<Element>(root)->EnsureIntersectionObserverData().AddObserver(*this);
+      DCHECK(params.root->IsElementNode());
+      To<Element>(params.root)
+          ->EnsureIntersectionObserverData()
+          .AddObserver(*this);
     }
   }
 }

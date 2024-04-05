@@ -106,6 +106,7 @@ class CORE_EXPORT IntersectionObserver final
     STACK_ALLOCATED();
 
    public:
+    Node* root;
     Vector<Length> margin;
     MarginTarget margin_target = kApplyMarginToRoot;
     Vector<Length> scroll_margin;
@@ -127,8 +128,7 @@ class CORE_EXPORT IntersectionObserver final
   };
 
   // Creates an IntersectionObserver that monitors changes to the intersection
-  // between its target element relative to its implicit root and notifies via
-  // the given |callback|.
+  // and notifies via the given |callback|.
   static IntersectionObserver* Create(
       const Document& document,
       EventCallback callback,
@@ -138,7 +138,6 @@ class CORE_EXPORT IntersectionObserver final
   IntersectionObserver(
       IntersectionObserverDelegate& delegate,
       std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id,
-      Node* root,
       Params&& params);
 
   // API methods.

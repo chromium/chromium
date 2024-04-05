@@ -73,7 +73,6 @@ class IntersectionObserverTest : public SimTest,
         MakeGarbageCollected<IntersectionObserver>(
             *scroll_margin_delegate,
             LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-            /*root=*/nullptr,
             IntersectionObserver::Params{
                 .margin = {Length::Fixed(10)},
                 .scroll_margin = {Length::Fixed(scroll_margin)},
@@ -133,7 +132,6 @@ class IntersectionObserverTest : public SimTest,
         MakeGarbageCollected<IntersectionObserver>(
             *scroll_margin_delegate,
             LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-            /*root=*/nullptr,
             IntersectionObserver::Params{
                 .margin = {Length::Fixed(10)},
                 .scroll_margin = {Length::Fixed(scroll_margin)},
@@ -401,7 +399,6 @@ TEST_P(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .thresholds = {kExpectedFractionOfTarget / 2},
           });
@@ -417,7 +414,6 @@ TEST_P(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
       MakeGarbageCollected<IntersectionObserver>(
           *root_observer_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .thresholds = {kExpectedFractionOfRoot / 2},
               .semantics = IntersectionObserver::kFractionOfRoot});
@@ -478,7 +474,6 @@ TEST_P(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .thresholds = {std::numeric_limits<float>::min()},
           });
@@ -2396,8 +2391,9 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 
   IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
       *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver, root,
+      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
       IntersectionObserver::Params{
+          .root = root,
           .thresholds = {1},
           .semantics = IntersectionObserver::kFractionOfRoot,
       });
@@ -2904,7 +2900,6 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
       MakeGarbageCollected<IntersectionObserver>(
           *root_margin_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .margin = {Length::Fixed(10)},
               .thresholds = {std::numeric_limits<float>::min()},
@@ -2921,7 +2916,6 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
       MakeGarbageCollected<IntersectionObserver>(
           *target_margin_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .margin = {Length::Fixed(10)},
               .margin_target = IntersectionObserver::kApplyMarginToTarget,
@@ -2979,7 +2973,6 @@ TEST_P(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
       MakeGarbageCollected<IntersectionObserver>(
           *target_margin_delegate,
           LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
-          /*root=*/nullptr,
           IntersectionObserver::Params{
               .margin = {Length::Percent(10)},
               .margin_target = IntersectionObserver::kApplyMarginToTarget,
@@ -3078,8 +3071,9 @@ TEST_P(IntersectionObserverTest, ScrollMarginIntersectingNonScrollingRoot) {
   IntersectionObserver* scroll_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *scroll_margin_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver, root,
+          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
+              .root = root,
               .margin = {Length::Fixed(10)},
               .thresholds = {std::numeric_limits<float>::min()},
           });
