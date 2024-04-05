@@ -112,6 +112,14 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
+BASE_FEATURE(kUseMoveNotCopyInAXTreeCombiner,
+             "UseMoveNotCopyInAXTreeCombiner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsUseMoveNotCopyInAXTreeCombinerEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kUseMoveNotCopyInAXTreeCombiner);
+}
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",

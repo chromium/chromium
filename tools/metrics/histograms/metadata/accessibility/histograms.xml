@@ -1716,6 +1716,20 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Performance.AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent in
+    AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner.
+
+    The primary use is to measure the impact of https://crrev.com/c/5410696,
+    which updates the class to eliminate potential copies.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Incremental"
     units="bytes" expires_after="2024-09-22">
   <owner>kevers@chromium.org</owner>
@@ -1785,6 +1799,18 @@ even if they fit the naming pattern. -->
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.AXTreeCombiner::Combine"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent in AXTreeCombiner::Combine.
+
+    The primary use is to measure the impact of https://crrev.com/c/5410696,
+    which updates the class to eliminate potential copies.
   </summary>
 </histogram>
 

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
+
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace content {
 
@@ -35,8 +37,19 @@ void AccessibilityTreeSnapshotCombiner::ReceiveSnapshotFromRenderFrameHost(
 // ReceiveSnapshotFromRenderFrameHost when there are no more references to this
 // object.
 AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner() {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.AccessibilityTreeSnapshotCombiner::"
+      "~AccessibilityTreeSnapshotCombiner");
   combiner_.Combine();
-  std::move(callback_).Run(combiner_.combined());
+  if (features::IsUseMoveNotCopyInAXTreeCombinerEnabled()) {
+    // This ensures a move of `combiner_.combined()`. It should be safe to steal
+    // `combiner_`'s resources since we're being destroyed.
+    std::move(callback_).Run(
+        const_cast<ui::AXTreeUpdate&>(combiner_.combined()));
+  } else {
+    // This is a copy since combiner_.combined() is a const AXTreeUpdate&.
+    std::move(callback_).Run(combiner_.combined());
+  }
 }
 
 }  // namespace content

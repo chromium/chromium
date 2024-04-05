@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_tree_combiner.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -28,10 +30,17 @@ void AXTreeCombiner::AddTree(const AXTreeUpdate& tree, bool is_root) {
 }
 
 bool AXTreeCombiner::Combine() {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.AXTreeCombiner::Combine");
+
   if (trees_.size() == 1) {
     // Nothing to combine -- only one tree.
     DCHECK(root_tree_id_ == trees_[0].tree_data.tree_id);
-    combined_ = trees_[0];
+    if (features::IsUseMoveNotCopyInAXTreeCombinerEnabled()) {
+      combined_ = std::move(trees_[0]);
+    } else {
+      combined_ = trees_[0];
+    }
     return true;
   }
 
@@ -92,68 +101,145 @@ AXNodeID AXTreeCombiner::MapId(AXTreeID tree_id, AXNodeID node_id) {
 
 void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
   AXTreeID tree_id = tree->tree_data.tree_id;
-  for (auto node : tree->nodes) {
-    AXTreeID child_tree_id = AXTreeID::FromString(
-        node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
 
-    // Map the node's ID.
-    node.id = MapId(tree_id, node.id);
+  // TODO(accessibility): this duplicates a fair amount of logic and will be
+  // removed after m125 along with other experiment conditionals.
+  if (features::IsUseMoveNotCopyInAXTreeCombinerEnabled()) {
+    for (auto& node : const_cast<AXTreeUpdate*>(tree)->nodes) {
+      AXTreeID child_tree_id = AXTreeID::FromString(
+          node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
 
-    // Map the node's child IDs.
-    for (int& child_id : node.child_ids) {
-      child_id = MapId(tree_id, child_id);
-    }
+      // Map the node's ID.
+      node.id = MapId(tree_id, node.id);
 
-    // Map the container id.
-    if (node.relative_bounds.offset_container_id > 0)
-      node.relative_bounds.offset_container_id =
-          MapId(tree_id, node.relative_bounds.offset_container_id);
-
-    // Map other int attributes that refer to node IDs.
-    for (auto& attr : node.int_attributes) {
-      if (IsNodeIdIntAttribute(attr.first)) {
-        attr.second = MapId(tree_id, attr.second);
+      // Map the node's child IDs.
+      for (int& child_id : node.child_ids) {
+        child_id = MapId(tree_id, child_id);
       }
-    }
 
-    // Map other int list attributes that refer to node IDs.
-    for (auto& node_int_list : node.intlist_attributes) {
-      if (IsNodeIdIntListAttribute(node_int_list.first)) {
-        for (int& attr : node_int_list.second) {
-          attr = MapId(tree_id, attr);
+      // Map the container id.
+      if (node.relative_bounds.offset_container_id > 0) {
+        node.relative_bounds.offset_container_id =
+            MapId(tree_id, node.relative_bounds.offset_container_id);
+      }
+
+      // Map other int attributes that refer to node IDs.
+      for (auto& attr : node.int_attributes) {
+        if (IsNodeIdIntAttribute(attr.first)) {
+          attr.second = MapId(tree_id, attr.second);
         }
       }
-    }
 
-    // Remove the ax::mojom::StringAttribute::kChildTreeId attribute.
-    for (auto& attr : node.string_attributes) {
-      if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
-        attr.first = ax::mojom::StringAttribute::kNone;
-        attr.second = "";
+      // Map other int list attributes that refer to node IDs.
+      for (auto& node_int_list : node.intlist_attributes) {
+        if (IsNodeIdIntListAttribute(node_int_list.first)) {
+          for (int& attr : node_int_list.second) {
+            attr = MapId(tree_id, attr);
+          }
+        }
       }
-    }
 
-    // See if this node has a child tree. As a confidence check, make sure the
-    // child tree lists this tree as its parent tree id.
-    const AXTreeUpdate* child_tree = nullptr;
-    if (tree_id_map_.find(child_tree_id) != tree_id_map_.end()) {
-      child_tree = tree_id_map_.find(child_tree_id)->second;
-      if (child_tree->tree_data.parent_tree_id != tree_id)
-        child_tree = nullptr;
-      if (child_tree && child_tree->nodes.empty())
-        child_tree = nullptr;
+      // Remove the ax::mojom::StringAttribute::kChildTreeId attribute.
+      for (auto& attr : node.string_attributes) {
+        if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
+          attr.first = ax::mojom::StringAttribute::kNone;
+          attr.second = "";
+        }
+      }
+
+      // See if this node has a child tree. As a confidence check, make sure the
+      // child tree lists this tree as its parent tree id.
+      const AXTreeUpdate* child_tree = nullptr;
+      if (tree_id_map_.find(child_tree_id) != tree_id_map_.end()) {
+        child_tree = tree_id_map_.find(child_tree_id)->second;
+        if (child_tree->tree_data.parent_tree_id != tree_id) {
+          child_tree = nullptr;
+        }
+        if (child_tree && child_tree->nodes.empty()) {
+          child_tree = nullptr;
+        }
+        if (child_tree) {
+          node.child_ids.push_back(
+              MapId(child_tree_id, child_tree->nodes[0].id));
+        }
+      }
+
+      // Put the rewritten AXNodeData into the output data structure.
+      combined_.nodes.emplace_back(std::move(node));
+
+      // Recurse into the child tree now, if any.
       if (child_tree) {
-        node.child_ids.push_back(MapId(child_tree_id,
-                                       child_tree->nodes[0].id));
+        ProcessTree(child_tree);
       }
     }
+  } else {
+    for (auto node : tree->nodes) {
+      AXTreeID child_tree_id = AXTreeID::FromString(
+          node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
 
-    // Put the rewritten AXNodeData into the output data structure.
-    combined_.nodes.push_back(node);
+      // Map the node's ID.
+      node.id = MapId(tree_id, node.id);
 
-    // Recurse into the child tree now, if any.
-    if (child_tree)
-      ProcessTree(child_tree);
+      // Map the node's child IDs.
+      for (int& child_id : node.child_ids) {
+        child_id = MapId(tree_id, child_id);
+      }
+
+      // Map the container id.
+      if (node.relative_bounds.offset_container_id > 0) {
+        node.relative_bounds.offset_container_id =
+            MapId(tree_id, node.relative_bounds.offset_container_id);
+      }
+
+      // Map other int attributes that refer to node IDs.
+      for (auto& attr : node.int_attributes) {
+        if (IsNodeIdIntAttribute(attr.first)) {
+          attr.second = MapId(tree_id, attr.second);
+        }
+      }
+
+      // Map other int list attributes that refer to node IDs.
+      for (auto& node_int_list : node.intlist_attributes) {
+        if (IsNodeIdIntListAttribute(node_int_list.first)) {
+          for (int& attr : node_int_list.second) {
+            attr = MapId(tree_id, attr);
+          }
+        }
+      }
+
+      // Remove the ax::mojom::StringAttribute::kChildTreeId attribute.
+      for (auto& attr : node.string_attributes) {
+        if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
+          attr.first = ax::mojom::StringAttribute::kNone;
+          attr.second = "";
+        }
+      }
+
+      // See if this node has a child tree. As a confidence check, make sure the
+      // child tree lists this tree as its parent tree id.
+      const AXTreeUpdate* child_tree = nullptr;
+      if (tree_id_map_.find(child_tree_id) != tree_id_map_.end()) {
+        child_tree = tree_id_map_.find(child_tree_id)->second;
+        if (child_tree->tree_data.parent_tree_id != tree_id) {
+          child_tree = nullptr;
+        }
+        if (child_tree && child_tree->nodes.empty()) {
+          child_tree = nullptr;
+        }
+        if (child_tree) {
+          node.child_ids.push_back(
+              MapId(child_tree_id, child_tree->nodes[0].id));
+        }
+      }
+
+      // Put the rewritten AXNodeData into the output data structure.
+      combined_.nodes.push_back(node);
+
+      // Recurse into the child tree now, if any.
+      if (child_tree) {
+        ProcessTree(child_tree);
+      }
+    }
   }
 }
 

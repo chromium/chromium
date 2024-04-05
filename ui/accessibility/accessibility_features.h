@@ -101,6 +101,10 @@ AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseAXPositionForDocumentMarkers);
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
+// Performs a move over a copy of snapshot tree data in AXTreeCombiner.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInAXTreeCombiner);
+AX_BASE_EXPORT bool IsUseMoveNotCopyInAXTreeCombinerEnabled();
+
 #if BUILDFLAG(IS_WIN)
 // Use Chrome-specific accessibility COM API.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
