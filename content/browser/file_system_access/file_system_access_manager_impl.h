@@ -361,11 +361,18 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // remove a token that doesn't exist.
   void RemoveDataTransferToken(const base::UnguessableToken& token);
 
-  SharedHandleState GetSharedHandleStateForPath(
+  // This method may only be called on local and external file paths. Paths in a
+  // sandboxed file system should use the variant below.
+  //
+  // TODO(crbug.com/40198034): Consolidate these methods once the relationships
+  // of permission grants between handles are better specified.
+  SharedHandleState GetSharedHandleStateForNonSandboxedPath(
       const base::FilePath& path,
       const blink::StorageKey& storage_key,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessPermissionContext::UserAction user_action);
+  // Same as above, but for paths in a sandboxed file system.
+  SharedHandleState GetSharedHandleStateForSandboxedPath();
 
   // Return a stable unique ID of the FileSystemHandle in UUID version 4 format.
   base::Uuid GetUniqueId(const FileSystemAccessFileHandleImpl& file);

@@ -139,22 +139,21 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
-  void DidCreateDestinationDirectoryHandle(
-      const std::string& new_entry_name,
-      std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
+  void PrepareForMove(
+      storage::FileSystemURL destination_url,
+      bool has_write_access_to_destination,
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
   void DidTakeMoveLocks(
-      storage::FileSystemURL dest_url,
+      storage::FileSystemURL destination_url,
       bool has_transient_user_activation,
-      bool has_write_access,
+      bool has_write_access_to_destination,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
           locks);
   // Only called if the move operation is not allowed to overwrite the target.
   void ConfirmMoveWillNotOverwriteDestination(
-      const bool has_write_access,
       const storage::FileSystemURL& destination_url,
       std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
       bool has_transient_user_activation,
