@@ -2,6 +2,8 @@ include_rules = [
   "+components/history",
   "+components/keyed_service/core",
   "+components/os_crypt/sync",
+  "+components/optimization_guide/core",
+  "+components/page_content_annotations/core",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+services/service_manager/public/cpp",

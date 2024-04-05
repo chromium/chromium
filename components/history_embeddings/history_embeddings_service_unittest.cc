@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
@@ -23,6 +25,14 @@ class HistoryEmbeddingsTest : public testing::Test {
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
     CHECK(history_service_);
+
+    optimization_guide_model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
+
+    page_content_annotations_service_ =
+        page_content_annotations::TestPageContentAnnotationsService::Create(
+            optimization_guide_model_provider_.get(), history_service_.get());
+    CHECK(page_content_annotations_service_);
   }
 
   void TearDown() override {}
@@ -33,11 +43,15 @@ class HistoryEmbeddingsTest : public testing::Test {
 
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
+  std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
+      page_content_annotations_service_;
 };
 
 TEST_F(HistoryEmbeddingsTest, ConstructsAndInvalidatesWeakPtr) {
-  auto service =
-      std::make_unique<HistoryEmbeddingsService>(history_service_.get());
+  auto service = std::make_unique<HistoryEmbeddingsService>(
+      history_service_.get(), page_content_annotations_service_.get());
   auto weak_ptr = service->AsWeakPtr();
   EXPECT_TRUE(weak_ptr);
   service.reset();
