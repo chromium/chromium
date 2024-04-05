@@ -10,6 +10,7 @@
     "target_environment": "catalyst",
     "target_os": "ios",
     "use_libfuzzer": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
