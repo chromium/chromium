@@ -474,6 +474,9 @@ class TabImpl implements Tab {
 
     @Override
     public int getBackgroundColor() {
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+            return mNativePage != null ? mNativePage.getBackgroundColor() : mBackgroundColor;
+        }
         return mBackgroundColor;
     }
 
@@ -1395,12 +1398,19 @@ class TabImpl implements Tab {
 
     /**
      * Called when the background color for the content changes.
+     *
      * @param color The current for the background.
      */
-    void onBackgroundColorChanged(int color) {
+    void changeBackgroundColor(int color) {
         // TODO(https://crbug.com/329287585): Account for native pages.
         mBackgroundColor = color;
-        for (TabObserver observer : mObservers) observer.onBackgroundColorChanged(this, color);
+        onBackgroundColorChanged();
+    }
+
+    private void onBackgroundColorChanged() {
+        for (TabObserver observer : mObservers) {
+            observer.onBackgroundColorChanged(this, getBackgroundColor());
+        }
     }
 
     /** This is currently called when committing a pre-rendered page or activating a portal. */
@@ -1616,6 +1626,9 @@ class TabImpl implements Tab {
                     }
                     pushNativePageStateToNavigationEntry();
 
+                    if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                        onBackgroundColorChanged();
+                    }
                     updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
                 });
     }
@@ -1633,6 +1646,9 @@ class TabImpl implements Tab {
                 mNativePage.getView().removeOnAttachStateChangeListener(mAttachStateChangeListener);
             }
             mNativePage = null;
+            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                onBackgroundColorChanged();
+            }
         }
         if (postHideTask != null) postHideTask.run();
         if (notify) notifyContentChanged();
