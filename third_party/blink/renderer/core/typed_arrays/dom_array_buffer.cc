@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/buffer_iterator.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -184,13 +185,13 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   ArrayBufferContents contents(shared_buffer->size(), 1,
                                ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  uint8_t* data = static_cast<uint8_t*>(contents.Data());
-  if (UNLIKELY(!data))
+  if (UNLIKELY(!contents.IsValid())) {
     OOM_CRASH(shared_buffer->size());
+  }
 
+  base::BufferIterator iterator(contents.ByteSpan());
   for (const auto& span : *shared_buffer) {
-    memcpy(data, span.data(), span.size());
-    data += span.size();
+    iterator.MutableSpan<char>(span.size()).copy_from(span);
   }
 
   return Create(std::move(contents));
@@ -204,13 +205,13 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   }
   ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  uint8_t* ptr = static_cast<uint8_t*>(contents.Data());
-  if (UNLIKELY(!ptr))
+  if (UNLIKELY(!contents.IsValid())) {
     OOM_CRASH(size);
+  }
 
+  base::BufferIterator iterator(contents.ByteSpan());
   for (const auto& span : data) {
-    memcpy(ptr, span.data(), span.size());
-    ptr += span.size();
+    iterator.MutableSpan<char>(span.size()).copy_from(span);
   }
 
   return Create(std::move(contents));
@@ -227,14 +228,13 @@ DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(size_t num_elements,
   return Create(std::move(contents));
 }
 
-DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(const void* source,
-                                             size_t byte_length) {
-  DOMArrayBuffer* buffer = CreateUninitializedOrNull(byte_length, 1);
+DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(base::span<const uint8_t> source) {
+  DOMArrayBuffer* buffer = CreateUninitializedOrNull(source.size(), 1);
   if (!buffer) {
     return nullptr;
   }
 
-  memcpy(buffer->Data(), source, byte_length);
+  buffer->ByteSpan().copy_from(source);
   return buffer;
 }
 

@@ -379,7 +379,7 @@ class WebTransport::DatagramUnderlyingSource final
                               "supplied view is not large enough.")));
           return;
         }
-        memcpy(view.Data(), data.data(), data.size());
+        view.ByteSpan().first(data.size()).copy_from(data);
         request->respond(script_state_, data.size(), exception_state);
         return;
       }

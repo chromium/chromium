@@ -782,8 +782,10 @@ _CONFIG = [
         'allowed': ['gin::.+'],
     },
     {
-        'paths':
-        ['third_party/blink/renderer/bindings/core/v8/serialization/'],
+        'paths': [
+            'third_party/blink/renderer/bindings/core/v8/serialization/',
+            'third_party/blink/renderer/core/typed_arrays/',
+        ],
         'allowed': ['base::BufferIterator'],
     },
     {
