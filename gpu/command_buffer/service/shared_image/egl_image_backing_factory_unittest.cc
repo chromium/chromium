@@ -408,7 +408,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   EXPECT_EQ(dst_pixels[3], 255);
 }
 
-#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+// TODO(crbug.com/332947916): fix these tests to run on Android/GLES
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES) && \
+    !BUILDFLAG(IS_ANDROID)
 // Test to check interaction between Dawn and skia GL representations.
 TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   // Find a Dawn GLES adapter
