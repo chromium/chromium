@@ -4,22 +4,11 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 
-#import "base/memory/weak_ptr.h"
-#import "base/strings/sys_string_conversions.h"
-#import "components/favicon/ios/web_favicon_driver.h"
-#import "components/tab_groups/tab_group_color.h"
-#import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/web/public/web_state.h"
-
-namespace {
-const CGFloat kFaviconSize = 16;
-}
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_utils.h"
 
 @implementation TabGroupItem {
   WebStateList* _webStateList;
@@ -77,6 +66,9 @@ const CGFloat kFaviconSize = 16;
         }));
     return;
   }
+
+  // Reset the array to ensure to not display old snapshots and or favicons.
+  [_tabGroupInfos removeAllObjects];
   NSUInteger numberOfRequestedImages = 0;
   for (int index : _tabGroup->range()) {
     if (numberOfRequestedImages >= 7) {
@@ -85,13 +77,11 @@ const CGFloat kFaviconSize = 16;
     web::WebState* webState = _webStateList->GetWebStateAt(index);
     CHECK(webState);
     __weak TabGroupItem* weakSelf = self;
-    base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
-    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-        ^(UIImage* snapshot) {
-          [weakSelf saveSnapshot:snapshot
-                         favicon:[weakSelf faviconFromWebState:weakWebState]
-                      completion:completion];
-        });
+    [TabGroupUtils fetchTabGroupInfoFromWebState:webState
+                                      completion:^(GroupTabInfo* info) {
+                                        [weakSelf addInfo:info];
+                                        [weakSelf notifyCompletion:completion];
+                                      }];
     numberOfRequestedImages++;
   }
 }
@@ -104,49 +94,19 @@ const CGFloat kFaviconSize = 16;
 
 #pragma mark - Private helpers
 
-// Returns the favicon for the given `webState` or nil otherwise.
-- (UIImage*)faviconFromWebState:(base::WeakPtr<web::WebState>)webState {
-  if (!webState) {
-    return nil;
-  }
-
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kFaviconSize
-                          weight:UIImageSymbolWeightBold
-                           scale:UIImageSymbolScaleMedium];
-
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    return CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
-  }
-
-  // Use the page favicon.
-  favicon::FaviconDriver* faviconDriver =
-      favicon::WebFaviconDriver::FromWebState(webState.get());
-  // The favicon driver may be null during testing.
-  if (faviconDriver) {
-    gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      return favicon.ToUIImage();
-    }
-  }
-
-  // Return the default favicon.
-  return DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+// Adds the given info to the GroupTabInfo array.
+- (void)addInfo:(GroupTabInfo*)info {
+  [_tabGroupInfos addObject:info];
 }
 
 // Saves the snapshot and favicon couple in the same GroupTabInfo. Call the
 // completion if there is no new snapshot or favicon to save.
-- (void)saveSnapshot:(UIImage*)snapshot
-             favicon:(UIImage*)favicon
-          completion:(GroupTabInfosFetchingCompletionBlock)completion {
+
+- (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion {
   if (!_webStateList->ContainsGroup(_tabGroup)) {
     completion(self, @[]);
     return;
   }
-  GroupTabInfo* info = [[GroupTabInfo alloc] init];
-  info.snapshot = snapshot;
-  info.favicon = favicon;
-  [_tabGroupInfos addObject:info];
   if (static_cast<int>([_tabGroupInfos count]) ==
       MIN(_tabGroup->range().count(), 7)) {
     completion(self, _tabGroupInfos);

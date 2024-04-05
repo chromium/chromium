@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -25,10 +26,6 @@
   std::set<web::WebStateID> _identifiers;
   // Web state list where the tab group belong.
   WebStateList* _webStateList;
-  // List of snapshots.
-  NSMutableArray* _snapshots;
-  // List of favicons.
-  NSMutableArray* _favicons;
   // Tab group to edit.
   const TabGroup* _tabGroup;
   // Array of all pictures of the group.
@@ -54,32 +51,26 @@
     _identifiers = identifiers;
     _webStateList = webStateList;
 
-    // TODO(crbug.com/1501837): Replace this manual fetch with the one from
-    // TabGroupItem.
-    _snapshots = [[NSMutableArray alloc] init];
-    _favicons = [[NSMutableArray alloc] init];
     _tabGroupInfos = [[NSMutableArray alloc] init];
 
     NSUInteger numberOfRequestedImages = 0;
-
     for (web::WebStateID identifier : identifiers) {
       if (numberOfRequestedImages >= 7) {
         break;
       }
+      // TODO(crbug.com/333032676): Replace this with the appropriate helper
+      // once it exists.
       int index = GetWebStateIndex(
           webStateList, WebStateSearchCriteria{.identifier = identifier});
       CHECK_NE(index, WebStateList::kInvalidIndex);
-      TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-          initWithWebState:webStateList->GetWebStateAt(index)];
+
       __weak CreateTabGroupMediator* weakSelf = self;
-
-      [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
-        [innerItem fetchFavicon:^(TabSwitcherItem* faviconItem, UIImage* icon) {
-          [weakSelf addSnapshot:snapshot favicon:icon];
-          [weakSelf updateConsumer];
-        }];
-      }];
-
+      [TabGroupUtils
+          fetchTabGroupInfoFromWebState:webStateList->GetWebStateAt(index)
+                             completion:^(GroupTabInfo* info) {
+                               [weakSelf addInfo:info];
+                               [weakSelf updateConsumer];
+                             }];
       numberOfRequestedImages++;
     }
   }
@@ -145,13 +136,8 @@
 
 #pragma mark - Private helpers
 
-// Adds the given picture to the GroupTabInfo array.
-// TODO(crbug.com/1501837): Remove this once the manual fetch is removed.
-- (void)addSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
-  GroupTabInfo* info = [[GroupTabInfo alloc] init];
-  info.snapshot = snapshot;
-  info.favicon = favicon;
-
+// Adds the given info to the GroupTabInfo array.
+- (void)addInfo:(GroupTabInfo*)info {
   [_tabGroupInfos addObject:info];
 }
 

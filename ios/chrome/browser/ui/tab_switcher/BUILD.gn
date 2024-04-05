@@ -27,7 +27,6 @@ source_set("items") {
   deps = [
     "//base",
     "//components/favicon/ios",
-    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -35,7 +34,6 @@ source_set("items") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
-    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//url",
   ]
@@ -45,6 +43,8 @@ source_set("utils") {
   sources = [
     "item_utils.h",
     "item_utils.mm",
+    "tab_group_utils.h",
+    "tab_group_utils.mm",
     "tab_utils.h",
     "tab_utils.mm",
   ]
@@ -52,14 +52,18 @@ source_set("utils") {
   deps = [
     ":items",
     "//base",
+    "//components/favicon/ios",
     "//components/tab_groups",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
