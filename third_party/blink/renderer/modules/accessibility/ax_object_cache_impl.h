@@ -537,8 +537,7 @@ class MODULES_EXPORT AXObjectCacheImpl
       std::vector<ui::AXTreeUpdate>& updates,
       std::vector<ui::AXEvent>& events,
       bool& had_end_of_test_event,
-      bool& had_load_complete_messages,
-      bool& need_to_send_location_changes);
+      bool& had_load_complete_messages);
 
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>& nodes) override;
@@ -1097,9 +1096,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Nodes renoved from flat tree.
   HeapVector<std::pair<Member<Node>, bool>> nodes_for_subtree_removal_;
-
-  // True when layout has changed, and changed locations must be serialized.
-  bool need_to_send_location_changes_ = false;
 
   AXID last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 

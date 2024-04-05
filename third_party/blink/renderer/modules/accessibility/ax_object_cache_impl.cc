@@ -3433,10 +3433,6 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
 
   bool had_end_of_test_event = false;
 
-  // If there's a layout complete or a scroll changed message, we need to send
-  // location changes.
-  bool need_to_send_location_changes = false;
-
   // Keep track of load complete messages. When a load completes, it's a good
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
@@ -3448,8 +3444,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   // either when the queue is empty, or the number of remaining objects to
   // serialize has been reached.
   GetUpdatesAndEventsForSerialization(updates, events, had_end_of_test_event,
-                                      had_load_complete_messages,
-                                      need_to_send_location_changes);
+                                      had_load_complete_messages);
 
   /* Clear the pending updates and events as they're about to be serialized */
   dirty_objects_.clear();
@@ -3486,7 +3481,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
     // really occur and thus the function will return false.
     // Cancel serialization to avoid stalling pipeline.
     OnSerializationCancelled();
-  } else if (need_to_send_location_changes) {
+  } else if (!changed_bounds_ids_.empty()) {
     SerializeLocationChanges();
   }
 
@@ -5361,8 +5356,7 @@ Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
 
 void AXObjectCacheImpl::SerializeLocationChanges() {
   CHECK(GetDocument().IsActive());
-  if (changed_bounds_ids_.empty())
-    return;
+  DCHECK(!changed_bounds_ids_.empty());
 
   TRACE_EVENT0("accessibility", "SerializeLocationChanges");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -5467,8 +5461,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
-    bool& had_load_complete_messages,
-    bool& need_to_send_location_changes) {
+    bool& had_load_complete_messages) {
   TRACE_EVENT0("accessibility", "GetUpdatesAndEventsForSerialization");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.GetUpdatesAndEventsForSerialization");
@@ -5568,11 +5561,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
         "Accessibility.Performance.AXObjectCacheImpl.Incremental",
         base::saturated_cast<int>(node_data_size.ByteSize()), 1, kSizeGb,
         kBucketCount);
-  }
-
-  if (need_to_send_location_changes_) {
-    need_to_send_location_changes_ = false;  // Class member is now clear.
-    need_to_send_location_changes = true;    // Reference parameter.
   }
 
   // Loop over each event and generate an updated event message.
@@ -5943,7 +5931,6 @@ void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
     return;
   }
 
-  need_to_send_location_changes_ = true;
   DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleLayout, document);
 }
 
@@ -5979,7 +5966,6 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    need_to_send_location_changes_ = true;
     DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleScroll, node);
   }
 }
