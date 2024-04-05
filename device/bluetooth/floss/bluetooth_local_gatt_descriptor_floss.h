@@ -24,7 +24,7 @@ class BluetoothLocalGattCharacteristicFloss;
 // The BluetoothLocalGattDescriptorFloss class implements
 // BluetoothRemoteGattDescriptor for remote and local GATT characteristic
 // descriptors for platforms that use Floss.
-class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptorFloss
+class BluetoothLocalGattDescriptorFloss
     : public device::BluetoothLocalGattDescriptor,
       public FlossGattServerObserver {
  public:
@@ -65,7 +65,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptorFloss
                                         std::vector<uint8_t> value) override;
 
   void ResolveInstanceId(const GattCharacteristic& characteristic);
-  int32_t InstanceId() const { return floss_instance_id_; }
 
  private:
   friend class BluetoothLocalGattCharacteristicFloss;

@@ -26,11 +26,7 @@ BluetoothLocalGattServiceFloss::Create(
   auto* service =
       new BluetoothLocalGattServiceFloss(adapter, uuid, is_primary, delegate);
   auto weak_ptr = service->weak_ptr_factory_.GetWeakPtr();
-  if (adapter) {
-    adapter->AddLocalGattService(base::WrapUnique(service));
-  } else {
-    LOG(ERROR) << __func__ << ": Adapter does not exist.";
-  }
+  adapter->AddLocalGattService(base::WrapUnique(service));
   return weak_ptr;
 }
 
@@ -69,12 +65,7 @@ void BluetoothLocalGattServiceFloss::Register(base::OnceClosure callback,
         .Run(device::BluetoothGattService::GattErrorCode::kFailed);
     return;
   }
-  if (!GetAdapter()) {
-    LOG(ERROR) << __func__ << ": Adapter does not exist.";
-    std::move(error_callback)
-        .Run(device::BluetoothGattService::GattErrorCode::kFailed);
-    return;
-  }
+  DCHECK(GetAdapter());
 
   if (register_callbacks_.first || register_callbacks_.second) {
     std::move(error_callback)
@@ -188,17 +179,16 @@ void BluetoothLocalGattServiceFloss::GattServerServiceAdded(
 
   // Resolve instance ids of included services and their sub-attributes.
   DCHECK(included_services_.size() == service.included_services.size());
-  for (uint32_t i = 0; i < included_services_.size(); i++) {
-    auto& included_service = included_services_[i];
-    included_service->GattServerServiceAdded(GattStatus::kSuccess,
-                                             service.included_services[i]);
+  int32_t service_idx = 0;
+  for (auto& included_service : included_services_) {
+    included_service->GattServerServiceAdded(
+        GattStatus::kSuccess, service.included_services[service_idx++]);
   }
 
-  for (uint32_t i = 0; i < characteristics_.size(); i++) {
-    auto& characteristic = characteristics_[i];
+  for (auto& characteristic : characteristics_) {
     characteristic->ResolveInstanceId(service);
-
-    auto local_characteristic = service.characteristics[i];
+    GattCharacteristic local_characteristic =
+        characteristic->ToGattCharacteristic();
     for (auto& descriptor : characteristic->descriptors_) {
       descriptor->ResolveInstanceId(local_characteristic);
     }

@@ -24,7 +24,7 @@ class BluetoothLocalGattCharacteristicFloss;
 
 // The BluetoothLocalGattServiceFloss class implements BluetoothGattService
 // for local GATT services for platforms that use Floss.
-class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattServiceFloss
+class BluetoothLocalGattServiceFloss
     : public BluetoothGattServiceFloss,
       public device::BluetoothLocalGattService {
  public:
@@ -72,7 +72,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattServiceFloss
  private:
   friend class BluetoothLocalGattCharacteristicFloss;
   friend class BluetoothLocalGattDescriptorFloss;
-  friend class BluetoothLocalGattServiceFlossTest;
 
   BluetoothLocalGattServiceFloss(
       BluetoothAdapterFloss* adapter,
