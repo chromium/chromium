@@ -104,6 +104,42 @@ config("libvpx_public_config") {
   ]
 }
 
+executable("decode_encode_profile_test") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  include_dirs = libvpx_include_dirs + [
+                   "source/libvpx/third_party/libwebm/",
+                   "source/libvpx/third_party/googletest/src/include/",
+                   "source/libvpx/third_party/googletest/src/",
+                 ]
+
+  testonly = true
+  sources = [
+    "source/libvpx/test/decode_test_driver.cc",
+    "source/libvpx/test/encode_test_driver.cc",
+    "source/libvpx/test/init_vpx_test.cc",
+    "source/libvpx/test/test_libvpx.cc",
+    "source/libvpx/test/test_vectors.cc",
+    "source/libvpx/test/test_vectors.h",
+    "source/libvpx/third_party/googletest/src/src/gtest-all.cc",
+    "source/libvpx/third_party/libwebm/mkvparser/mkvparser.cc",
+    "source/libvpx/third_party/libwebm/mkvparser/mkvreader.cc",
+    "source/libvpx/tools_common.h",
+    "source/libvpx/webmdec.cc",
+    "source/libvpx/y4minput.c",
+    "tests/pgo/decode_encode_profile_test.cc",
+  ]
+  deps = [ ":libvpx" ]
+
+  # gtest-death-test dependency on fdio for fuchsia builds
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  }
+}
+
 if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
   nasm_assemble("libvpx_asm") {
     if (current_cpu == "x86") {
