@@ -16,8 +16,9 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Check that exceptions are thrown for operations that are malformed while layers are open.");
-_addTest(function(canvas, ctx) {
+test(t => {
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
 
   // Shouldn't throw on its own.
   ctx.getImageData(0, 0, 200, 200);
@@ -28,6 +29,6 @@ _addTest(function(canvas, ctx) {
   assert_throws_dom("InvalidStateError",
                     () => ctx.getImageData(0, 0, 200, 200));
 
-});
+}, "Check that exceptions are thrown for operations that are malformed while layers are open.");
 </script>
 

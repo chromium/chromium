@@ -16,8 +16,9 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Check that exceptions are thrown for operations that are malformed while layers are open.");
-_addTest(function(canvas, ctx) {
+test(t => {
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
 
   const canvas2 = new OffscreenCanvas(200, 200);
   const ctx2 = canvas2.getContext('2d');
@@ -30,6 +31,6 @@ _addTest(function(canvas, ctx) {
   assert_throws_dom("InvalidStateError",
                     () => ctx2.drawImage(canvas, 0, 0));
 
-});
+}, "Check that exceptions are thrown for operations that are malformed while layers are open.");
 </script>
 

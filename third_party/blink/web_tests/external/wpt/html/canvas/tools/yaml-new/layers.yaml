@@ -428,6 +428,7 @@
 
 - name: 2d.layer.ctm.getTransform
   desc: Tests getTransform inside layers.
+  test_type: sync
   code: |
     ctx.translate(10, 20);
     ctx.beginLayer();
@@ -559,7 +560,7 @@
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
   size: [200, 200]
   canvas_types: ['HtmlCanvas']
-  test_type: "promise"
+  test_type: promise
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -603,6 +604,7 @@
     Check that exceptions are thrown for operations that are malformed while
     layers are open.
   size: [200, 200]
+  test_type: sync
   code: |
     {{ setup }}
     // Shouldn't throw on its own.
@@ -643,7 +645,7 @@
     Check that exceptions are thrown for operations that are malformed while
     layers are open.
   size: [200, 200]
-  test_type: "promise"
+  test_type: promise
   code: |
     // Shouldn't throw on its own.
     await {{ operation }};
@@ -864,6 +866,7 @@
 
 - name: 2d.layer.invalid-calls
   desc: Raises exception on {{ variant_desc }}.
+  test_type: sync
   code: |
     assert_throws_dom("INVALID_STATE_ERR", function() {
       {{ call_sequence | indent(2) }}
@@ -903,6 +906,7 @@
 
 - name: 2d.layer.exceptions-are-no-op
   desc: Checks that the context state is left unchanged if beginLayer throws.
+  test_type: sync
   code: |
     // Get `beginLayer` to throw while parsing the filter.
     assert_throws_js(TypeError,
@@ -927,6 +931,7 @@
 
 - name: 2d.layer.beginLayer-options
   desc: Checks beginLayer works for different option parameter values
+  test_type: sync
   code: |
     ctx.beginLayer(); ctx.endLayer();
     ctx.beginLayer(null); ctx.endLayer();

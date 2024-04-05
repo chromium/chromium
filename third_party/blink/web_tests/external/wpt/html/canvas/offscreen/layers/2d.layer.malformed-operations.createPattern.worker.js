@@ -6,13 +6,7 @@
 importScripts("/resources/testharness.js");
 importScripts("/html/canvas/resources/canvas-tests.js");
 
-var t = async_test("Check that exceptions are thrown for operations that are malformed while layers are open.");
-var t_pass = t.done.bind(t);
-var t_fail = t.step_func(function(reason) {
-    throw reason;
-});
-t.step(function() {
-
+test(t => {
   var canvas = new OffscreenCanvas(200, 200);
   var ctx = canvas.getContext('2d');
 
@@ -24,6 +18,5 @@ t.step(function() {
   ctx.beginLayer();
   assert_throws_dom("InvalidStateError",
                     () => ctx.createPattern(canvas, 'repeat'));
-  t.done();
-});
+}, "Check that exceptions are thrown for operations that are malformed while layers are open.");
 done();
