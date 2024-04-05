@@ -45,11 +45,16 @@ found in the LICENSE file.
         android:persistent="false"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="google_activity_controls"
+        android:key="data_types_switches_summary"
         android:summary="@string/data_types_switches_summary"/>
 
     <PreferenceCategory
         android:key="control_your_data_category"
         android:title="@string/prefs_control_your_data"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="google_activity_controls"
+        android:title="@string/sign_in_google_activity_controls_title"
+        android:summary="@string/sign_in_google_activity_controls_summary"/>
 
 </PreferenceScreen>

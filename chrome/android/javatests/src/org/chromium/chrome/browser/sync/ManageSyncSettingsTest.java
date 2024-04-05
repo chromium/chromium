@@ -994,6 +994,23 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testClickGoogleActivityControlsWhenSyncPromosShouldBeReplacedWithSigninPromos() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        // Click the Google ActivityControls pref
+        onView(withText(R.string.sign_in_google_activity_controls_title)).perform(click());
+        verify(mGoogleActivityController).openWebAndAppActivitySettings(any(), any());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PersonalizedGoogleServices"})
     @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickPersonalizeGoogleServicesNonEEA() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
