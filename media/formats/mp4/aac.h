@@ -27,6 +27,12 @@ namespace mp4 {
 // for more details.
 class MEDIA_EXPORT AAC {
  public:
+  // AAC has a few nested profile types, and we often have to add special
+  // behavior for XHE AAC typed media. Specifically, this is the USAC
+  // Audio-Object type from
+  // https://wiki.multimedia.cx/index.php/MPEG-4_Audio#Audio_Object_Types.
+  static constexpr uint8_t kXHeAAcType = 42;
+
   AAC();
   AAC(const AAC& other);
   ~AAC();

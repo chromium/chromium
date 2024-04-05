@@ -13,8 +13,6 @@
 
 namespace media::mp4 {
 
-constexpr uint8_t kXHeAAcType = 42;
-
 AAC::AAC()
     : profile_(0),
       frequency_index_(0),
