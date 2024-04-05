@@ -4060,6 +4060,15 @@ inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
+// Integer value controlling whether to show any enterprise badging on a managed
+// profile.
+// - 0: Hide all badging
+// - 1: Show badging for managed profiles on unmanaged devices
+// - 2: Show badging for managed profiles on all devices
+// - 3: Show badging for managed profiles on managed devices
+inline constexpr char kEnterpriseBadgingTemporarySetting[] =
+    "temporary_setting.enterpise_badging";
+
 // Integer value controlling whether to show Work/School label next to the
 // avatar. This is used on the local state so that the management label is
 // always shown for managed profiles on unmanaged devices.

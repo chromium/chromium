@@ -21,6 +21,13 @@ class Profile;
 namespace chrome {
 namespace enterprise_util {
 
+enum EnterpriseProfileBadgingTemporarySetting : int {
+  kHide = 0,
+  kShowOnUnmanagedDevices = 1,
+  kShowOnAllDevices = 2,
+  kShowOnManagedDevices = 3
+};
+
 // Represents which type of managed environment we have.
 enum class ManagementEnvironment { kNone, kSchool, kWork };
 
@@ -70,6 +77,8 @@ bool ProfileCanBeManaged(Profile* profile);
 
 ManagementEnvironment GetManagementEnvironment(Profile* profile,
                                                const AccountInfo& account_info);
+
+bool CanShowEnterpriseBadging(Profile* profile);
 
 // Checks `email_domain` against the list of pre-defined known consumer domains.
 // Use this for optimization purposes when you want to skip some code paths for

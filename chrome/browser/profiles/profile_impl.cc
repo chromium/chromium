@@ -431,6 +431,7 @@ void ProfileImpl::RegisterProfilePrefs(
 #endif
   registry->RegisterStringPref(prefs::kCustomProfileLabel, std::string());
   registry->RegisterIntegerPref(prefs::kProfileLabelPreset, 0);
+  registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);
 }
 
 ProfileImpl::ProfileImpl(

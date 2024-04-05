@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -199,6 +200,32 @@ ManagementEnvironment GetManagementEnvironment(
   }
   return account_info.IsEduAccount() ? ManagementEnvironment::kSchool
                                      : ManagementEnvironment::kWork;
+}
+
+bool CanShowEnterpriseBadging(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+    return false;
+  }
+  if (!UserAcceptedAccountManagement(profile)) {
+    return false;
+  }
+
+  bool is_device_managed =
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
+
+  switch (profile->GetPrefs()->GetInteger(
+      prefs::kEnterpriseBadgingTemporarySetting)) {
+    case EnterpriseProfileBadgingTemporarySetting::kHide:
+      return false;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnUnmanagedDevices:
+      return !is_device_managed;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnAllDevices:
+      return true;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnManagedDevices:
+      return is_device_managed;
+    default:
+      return false;
+  }
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {

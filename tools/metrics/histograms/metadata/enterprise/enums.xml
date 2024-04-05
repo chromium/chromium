@@ -2087,6 +2087,7 @@ chromium-metrics-reviews@google.com.
   <int value="1247" label="DeviceAuthenticationFlowAutoReloadInterval"/>
   <int value="1248" label="ShowAiIntroScreenEnabled"/>
   <int value="1249" label="ShowTunaScreenEnabled"/>
+  <int value="1250" label="EnterpriseBadgingTemporarySetting"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
