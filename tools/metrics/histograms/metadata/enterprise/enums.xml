@@ -2088,6 +2088,8 @@ chromium-metrics-reviews@google.com.
   <int value="1248" label="ShowAiIntroScreenEnabled"/>
   <int value="1249" label="ShowTunaScreenEnabled"/>
   <int value="1250" label="EnterpriseBadgingTemporarySetting"/>
+  <int value="1251"
+      label="GenAILocalFoundationalModelEnterprisePolicySettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -115,6 +116,7 @@ using ModelExecutionError =
 
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* local_state,
     signin::IdentityManager* identity_manager,
     scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
@@ -133,15 +135,23 @@ ModelExecutionManager::ModelExecutionManager(
       model_provider_(model_provider),
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {
-  if (model_provider_ && on_device_model_service_controller_ &&
-      features::ShouldUseTextSafetyClassifierModel()) {
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-        /*model_metadata=*/std::nullopt, this);
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        /*model_metadata=*/std::nullopt, this);
+  if (!model_provider_ && !on_device_model_service_controller_) {
+    return;
   }
+  if (!features::ShouldUseTextSafetyClassifierModel()) {
+    return;
+  }
+  if (GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) !=
+      prefs::GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
+    return;
+  }
+
+  model_provider_->AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+      /*model_metadata=*/std::nullopt, this);
+  model_provider_->AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+      /*model_metadata=*/std::nullopt, this);
 }
 
 ModelExecutionManager::~ModelExecutionManager() {

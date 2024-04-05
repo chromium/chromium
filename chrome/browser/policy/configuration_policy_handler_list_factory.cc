@@ -89,6 +89,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -2276,6 +2277,18 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
     BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<SiteSearchPolicyHandler>(chrome_schema));
+
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kGenAILocalFoundationalModelSettings,
+      optimization_guide::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(
+          optimization_guide::prefs::
+              GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed),
+      static_cast<int>(
+          optimization_guide::prefs::
+              GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
+      false));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
