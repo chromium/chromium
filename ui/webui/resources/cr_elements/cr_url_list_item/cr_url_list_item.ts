@@ -24,10 +24,12 @@ export enum CrUrlListItemSize {
 export interface CrUrlListItemElement {
   $: {
     anchor: HTMLElement,
+    badgesContainer: HTMLElement,
     badges: HTMLSlotElement,
     button: HTMLElement,
     content: HTMLSlotElement,
     description: HTMLSlotElement,
+    metadata: HTMLElement,
   };
 }
 
@@ -224,7 +226,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     return index <= 1;
   }
 
-  private onBadgesSlotChange_() {
+  protected onBadgesSlotChange_() {
     this.hasBadges = this.$.badges.assignedElements({flatten: true}).length > 0;
   }
 

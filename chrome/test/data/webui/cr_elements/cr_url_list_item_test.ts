@@ -10,7 +10,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 suite('CrUrlListItemTest', () => {
@@ -210,5 +210,29 @@ suite('CrUrlListItemTest', () => {
     await element.updateComplete;
     element.focus();
     assertEquals(element.$.anchor, getDeepActiveElement());
+  });
+
+  test('ContentSlotOverridesMetadata', async () => {
+    element.title = 'My title';
+    await element.updateComplete;
+    assertTrue(isVisible(element.$.metadata));
+
+    const slotchangeEvent = eventToPromise('slotchange', element.$.content);
+    const contentSlot = document.createElement('div');
+    contentSlot.slot = 'content';
+    element.appendChild(contentSlot);
+    await slotchangeEvent;
+    assertFalse(isVisible(element.$.metadata));
+  });
+
+  test('BadgesSlot', async () => {
+    assertFalse(isVisible(element.$.badgesContainer));
+
+    const slotchangeEvent = eventToPromise('slotchange', element.$.badges);
+    const contentSlot = document.createElement('div');
+    contentSlot.slot = 'badges';
+    element.appendChild(contentSlot);
+    await slotchangeEvent;
+    assertFalse(isVisible(element.$.badgesContainer));
   });
 });
