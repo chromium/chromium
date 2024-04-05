@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(MOJO_BASE_PROTOBUF_SUPPORT) ProtoWrapper {
     if (!is_valid()) {
       return std::nullopt;
     }
-    return bytes_->byte_span();
+    return base::span(*bytes_);
   }
 
  private:

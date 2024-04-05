@@ -423,7 +423,7 @@ mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
   for (auto& [constant_id, constant_buffer] :
        graph_info_->constant_id_to_buffer_map) {
     cloned_graph_info->constant_id_to_buffer_map[constant_id] =
-        mojo_base::BigBuffer(constant_buffer.byte_span());
+        constant_buffer.Clone();
   }
   return cloned_graph_info;
 }

@@ -2595,7 +2595,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
     AdAuctionPageData& ad_auction_page_data) {
   // Check that response was witnessed by seller origin.
   std::array<uint8_t, crypto::kSHA256Length> hash =
-      crypto::SHA256Hash(response.byte_span());
+      crypto::SHA256Hash(response);
   if (!ad_auction_page_data.WitnessedAuctionResultForOrigin(
           config_->seller,
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
@@ -4967,9 +4967,8 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     }
     return;
   }
-  base::span<const uint8_t> result_span = result.value().byte_span();
   data_decoder->ParseCbor(
-      result_span,
+      result.value(),
       base::BindOnce(
           &InterestGroupAuction::OnParsedServerResponse,
           weak_ptr_factory_.GetWeakPtr(),

@@ -107,6 +107,10 @@ BigBuffer& BigBuffer::operator=(BigBuffer&& other) {
   return *this;
 }
 
+BigBuffer BigBuffer::Clone() const {
+  return BigBuffer(base::span(*this));
+}
+
 uint8_t* BigBuffer::data() {
   return const_cast<uint8_t*>(const_cast<const BigBuffer*>(this)->data());
 }

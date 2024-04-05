@@ -699,7 +699,7 @@ void BlobStorageContext::RegisterFromMemory(
 
   std::unique_ptr<BlobDataBuilder> builder =
       std::make_unique<BlobDataBuilder>(uuid);
-  builder->AppendData(data.byte_span());
+  builder->AppendData(data);
   std::unique_ptr<BlobDataHandle> handle = AddFinishedBlob(std::move(builder));
   BlobImpl::Create(std::move(handle), std::move(blob));
 }

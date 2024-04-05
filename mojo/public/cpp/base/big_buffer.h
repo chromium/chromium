@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
 // The |size()| of the data cannot be manipulated.
 class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
  public:
+  using value_type = uint8_t;
   using iterator = base::span<uint8_t>::iterator;
   using const_iterator = base::span<const uint8_t>::iterator;
 
@@ -112,6 +113,11 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   BigBuffer& operator=(BigBuffer&& other);
 
+  // Returns a new BigBuffer containing a copy of this BigBuffer's contents.
+  // Note that the new BigBuffer may not necessarily have the same backing
+  // storage type as the original one, only the same contents.
+  BigBuffer Clone() const;
+
   // Returns a pointer to the data stored by this BigBuffer, regardless of
   // backing storage type. Prefer to use `base::span(big_buffer)` instead, or
   // the implicit conversion to `base::span`.
@@ -128,12 +134,12 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   // get a span independent of the storage type, write `base::span(big_buffer)`,
   // or rely on the implicit conversion.
   base::span<const uint8_t> byte_span() const {
-    DCHECK_EQ(storage_type_, StorageType::kBytes);
+    CHECK_EQ(storage_type_, StorageType::kBytes);
     return bytes_.as_span();
   }
 
   internal::BigBufferSharedMemoryRegion& shared_memory() {
-    DCHECK_EQ(storage_type_, StorageType::kSharedMemory);
+    CHECK_EQ(storage_type_, StorageType::kSharedMemory);
     return shared_memory_.value();
   }
 

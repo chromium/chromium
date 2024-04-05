@@ -868,7 +868,7 @@ class DummyBackgroundResponseProcessorClient
     }
     ASSERT_EQ(expected_cached_metadata, cached_metadata_);
     if (expected_cached_metadata) {
-      EXPECT_THAT(cached_metadata_->byte_span(),
+      EXPECT_THAT(*cached_metadata_,
                   testing::ElementsAreArray(*expected_cached_metadata));
     }
   }
@@ -1108,7 +1108,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasCodeCache) {
     EXPECT_TRUE(head);
     EXPECT_TRUE(consumer_handle_);
     ASSERT_TRUE(cached_metadata);
-    EXPECT_THAT(cached_metadata->byte_span(),
+    EXPECT_THAT(*cached_metadata,
                 testing::ElementsAreArray(code_cache_data_copy));
   }));
   Finish();
