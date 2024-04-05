@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -64,20 +63,13 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         GradientDrawable backgroundDrawable =
                 ToolbarPhone.createModernLocationBarBackground(getContext());
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            backgroundDrawable.setTint(
-                    ChromeColors.getSurfaceColor(
-                            getContext(), R.dimen.omnibox_suggestion_bg_elevation));
-            backgroundDrawable.setCornerRadius(
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.omnibox_suggestion_bg_round_corner_radius));
-            setPaddingRelative(
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding_modern),
-                    getPaddingTop(),
-                    getPaddingEnd(),
-                    getPaddingBottom());
-        }
+        backgroundDrawable.setTint(
+                ChromeColors.getSurfaceColor(
+                        getContext(), R.dimen.omnibox_suggestion_bg_elevation));
+        backgroundDrawable.setCornerRadius(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius));
+
         setBackground(backgroundDrawable);
 
         // Expand status view's left and right space, and expand the vertical padding of the
