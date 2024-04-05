@@ -173,7 +173,7 @@ TEST(ClientSharedImageTest, ImportUnowned) {
       ExportedSharedImage(mailbox, metadata, SyncToken(), GL_TEXTURE_2D));
 
   // Check that the ClientSI's state matches the input parameters.
-  EXPECT_TRUE(client_si->mailbox() == mailbox);
+  EXPECT_EQ(client_si->mailbox(), mailbox);
   EXPECT_EQ(client_si->format(), kFormat);
   EXPECT_EQ(client_si->size(), kSize);
   EXPECT_EQ(client_si->usage(), kUsage);
@@ -202,8 +202,8 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
   EXPECT_TRUE(client_si->HasHolder());
 
   // Check that the ClientSI's state matches the input parameters.
-  EXPECT_TRUE(client_si->mailbox() ==
-              sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(client_si->mailbox(),
+            sii->GetMailboxForMostRecentlyCreatedSharedImage());
   EXPECT_EQ(client_si->format(), kFormat);
   EXPECT_EQ(client_si->size(), kSize);
   EXPECT_EQ(client_si->usage(), kUsage);
@@ -234,8 +234,8 @@ TEST(ClientSharedImageTest, ExportAndImport) {
   auto exported_si = client_si->Export();
   auto imported_client_si = ClientSharedImage::ImportUnowned(exported_si);
 
-  EXPECT_TRUE(imported_client_si->mailbox() ==
-              sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(imported_client_si->mailbox(),
+            sii->GetMailboxForMostRecentlyCreatedSharedImage());
   EXPECT_EQ(imported_client_si->format(), kFormat);
   EXPECT_EQ(imported_client_si->size(), kSize);
   EXPECT_EQ(imported_client_si->usage(), kUsage);
@@ -261,8 +261,8 @@ TEST(ClientSharedImageTest, MakeUnowned) {
   auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
   auto unowned_si = client_si->MakeUnowned();
 
-  EXPECT_TRUE(unowned_si->mailbox() ==
-              sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(unowned_si->mailbox(),
+            sii->GetMailboxForMostRecentlyCreatedSharedImage());
   EXPECT_EQ(unowned_si->format(), kFormat);
   EXPECT_EQ(unowned_si->size(), kSize);
   EXPECT_EQ(unowned_si->usage(), kUsage);
