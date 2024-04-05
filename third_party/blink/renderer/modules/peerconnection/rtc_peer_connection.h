@@ -190,8 +190,6 @@ class MODULES_EXPORT RTCPeerConnection final
   MediaStreamVector getLocalStreams() const;
   // A remote stream is any stream associated with a receiver.
   MediaStreamVector getRemoteStreams() const;
-  MediaStream* getRemoteStreamById(const String&) const;
-  bool IsRemoteStream(MediaStream* stream) const;
 
   void addStream(ScriptState*, MediaStream*, ExceptionState&);
 
@@ -233,7 +231,6 @@ class MODULES_EXPORT RTCPeerConnection final
   bool ShouldFireDefaultCallbacks() {
     return !closed_ && !peer_handler_unregistered_;
   }
-  bool ShouldFireGetStatsCallback() { return !peer_handler_unregistered_; }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(negotiationneeded, kNegotiationneeded)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidate, kIcecandidate)
@@ -251,11 +248,6 @@ class MODULES_EXPORT RTCPeerConnection final
   // Called in response to CreateOffer / CreateAnswer to update `last_offer_` or
   // `last_answer_`.
   void NoteSdpCreated(const RTCSessionDescriptionInit&);
-  // Utility to report SDP usage of setLocalDescription / setRemoteDescription.
-  enum class SetSdpOperationType {
-    kSetLocalDescription,
-    kSetRemoteDescription,
-  };
 
   // MediaStreamObserver
   void OnStreamAddTrack(MediaStream*,
@@ -320,12 +312,7 @@ class MODULES_EXPORT RTCPeerConnection final
   // state.
   void UpdateIceConnectionState();
 
-  bool encoded_insertable_streams() { return encoded_insertable_streams_; }
-
   void Trace(Visitor*) const override;
-
-  base::TimeTicks WebRtcTimestampToBlinkTimestamp(
-      base::TimeTicks webrtc_monotonic_time) const;
 
   using RtcPeerConnectionHandlerFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<RTCPeerConnectionHandler>()>;
@@ -516,7 +503,6 @@ class MODULES_EXPORT RTCPeerConnection final
   HeapHashMap<webrtc::IceTransportInterface*, WeakMember<RTCIceTransport>>
       ice_transports_by_native_transport_;
 
-  // TODO(crbug.com/787254): Use RTCPeerConnectionHandler.
   std::unique_ptr<RTCPeerConnectionHandler> peer_handler_;
 
   base::OnceClosure dispatch_events_task_created_callback_for_testing_;
@@ -559,9 +545,6 @@ class MODULES_EXPORT RTCPeerConnection final
   String last_answer_;
 
   Member<RTCSctpTransport> sctp_transport_;
-
-  // Blink and WebRTC timestamp diff.
-  const base::TimeDelta blink_webrtc_time_diff_;
 
   // Insertable streams.
   bool encoded_insertable_streams_;

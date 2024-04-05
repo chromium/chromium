@@ -140,16 +140,6 @@ void RunClosureWithTrace(CrossThreadOnceClosure closure,
   std::move(closure).Run();
 }
 
-void RunSynchronousCrossThreadOnceClosure(CrossThreadOnceClosure closure,
-                                          const char* trace_event_name,
-                                          base::WaitableEvent* event) {
-  {
-    TRACE_EVENT0("webrtc", trace_event_name);
-    std::move(closure).Run();
-  }
-  event->Signal();
-}
-
 void RunSynchronousOnceClosure(base::OnceClosure closure,
                                const char* trace_event_name,
                                base::WaitableEvent* event) {
@@ -1761,27 +1751,6 @@ RTCPeerConnectionHandler::NativePeerConnection() {
 }
 
 void RTCPeerConnectionHandler::RunSynchronousOnceClosureOnSignalingThread(
-    CrossThreadOnceClosure closure,
-    const char* trace_event_name) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  scoped_refptr<base::SingleThreadTaskRunner> thread(signaling_thread());
-  if (!thread.get() || thread->BelongsToCurrentThread()) {
-    TRACE_EVENT0("webrtc", trace_event_name);
-    std::move(closure).Run();
-  } else {
-    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-    PostCrossThreadTask(
-        *thread.get(), FROM_HERE,
-        CrossThreadBindOnce(&RunSynchronousCrossThreadOnceClosure,
-                            std::move(closure),
-                            CrossThreadUnretained(trace_event_name),
-                            CrossThreadUnretained(&event)));
-    event.Wait();
-  }
-}
-
-void RTCPeerConnectionHandler::RunSynchronousOnceClosureOnSignalingThread(
     base::OnceClosure closure,
     const char* trace_event_name) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -2182,11 +2151,6 @@ void RTCPeerConnectionHandler::ReportICEState(
   ice_state_seen_[new_state] = true;
   UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.ConnectionState", new_state,
                             webrtc::PeerConnectionInterface::kIceConnectionMax);
-}
-
-void RTCPeerConnectionHandler::ResetUMAStats() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  memset(ice_state_seen_, 0, sizeof(ice_state_seen_));
 }
 
 }  // namespace blink

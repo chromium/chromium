@@ -1592,28 +1592,6 @@ MediaStreamVector RTCPeerConnection::getRemoteStreams() const {
   return remote_streams;
 }
 
-MediaStream* RTCPeerConnection::getRemoteStreamById(const String& id) const {
-  for (const auto& rtp_receiver : rtp_receivers_) {
-    for (const auto& stream : rtp_receiver->streams()) {
-      if (stream->id() == id) {
-        return stream.Get();
-      }
-    }
-  }
-  return nullptr;
-}
-
-bool RTCPeerConnection::IsRemoteStream(MediaStream* stream) const {
-  for (const auto& receiver : rtp_receivers_) {
-    for (const auto& receiver_stream : receiver->streams()) {
-      if (receiver_stream == stream) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 ScriptPromise<RTCStatsReport> RTCPeerConnection::getStats(
     ScriptState* script_state,
     MediaStreamTrack* selector,

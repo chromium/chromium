@@ -95,9 +95,6 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
       const webrtc::DataChannelInit&) override;
   webrtc::PeerConnectionInterface* NativePeerConnection() override;
   void RunSynchronousOnceClosureOnSignalingThread(
-      CrossThreadOnceClosure closure,
-      const char* trace_event_name) override;
-  void RunSynchronousOnceClosureOnSignalingThread(
       base::OnceClosure closure,
       const char* trace_event_name) override;
   void TrackIceConnectionStateChange(

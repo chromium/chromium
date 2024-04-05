@@ -75,16 +75,6 @@ class MockPeerConnectionHandler : public MockRTCPeerConnectionHandlerPlatform {
     return signaling_thread_;
   }
 
-  void RunSynchronousOnceClosureOnSignalingThread(
-      CrossThreadOnceClosure closure,
-      const char* trace_event_name) override {
-    closure_ = std::move(closure);
-    RunSynchronous(
-        signaling_thread_.get(),
-        CrossThreadBindOnce(&MockPeerConnectionHandler::RunOnceClosure,
-                            CrossThreadUnretained(this)));
-  }
-
  private:
   void RunOnceClosure() {
     DCHECK(signaling_thread_->BelongsToCurrentThread());
