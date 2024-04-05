@@ -459,8 +459,8 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // denotes incognito mode.
   PaymentsNetworkInterface(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* const identity_manager,
-      AccountInfoGetter* const account_info_getter,
+      signin::IdentityManager* identity_manager,
+      AccountInfoGetter* account_info_getter,
       bool is_off_the_record = false);
 
   PaymentsNetworkInterface(const PaymentsNetworkInterface&) = delete;
