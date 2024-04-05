@@ -49,8 +49,8 @@ mojom::ExecutionWorld ProgrammaticScriptInjector::GetExecutionWorld() const {
   return params_->injection->get_js()->world;
 }
 
-std::optional<std::string> ProgrammaticScriptInjector::GetExecutionWorldId()
-    const {
+const std::optional<std::string>&
+ProgrammaticScriptInjector::GetExecutionWorldId() const {
   return params_->injection->get_js()->world_id;
 }
 

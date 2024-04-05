@@ -136,7 +136,8 @@ mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
   return script_->execution_world();
 }
 
-std::optional<std::string> UserScriptInjector::GetExecutionWorldId() const {
+const std::optional<std::string>& UserScriptInjector::GetExecutionWorldId()
+    const {
   return script_->world_id();
 }
 

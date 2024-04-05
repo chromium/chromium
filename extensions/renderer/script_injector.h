@@ -57,10 +57,7 @@ class ScriptInjector {
   virtual mojom::ExecutionWorld GetExecutionWorld() const = 0;
 
   // Returns the ID of the world into which to inject.
-  // TODO(https://crbug.com/331680187): Have this return a const& when no
-  // derived class returns std::nullopt (can't return a reference to a local
-  // temporary).
-  virtual std::optional<std::string> GetExecutionWorldId() const = 0;
+  virtual const std::optional<std::string>& GetExecutionWorldId() const = 0;
 
   // Returns the CSS origin of this injection.
   virtual mojom::CSSOrigin GetCssOrigin() const = 0;
