@@ -512,7 +512,6 @@ struct FindPasswordFormTestData {
   const size_t expected_number_of_fields;
   // Expected form name.
   const char* expected_form_name;
-  const uint32_t maxID;
 };
 
 // A script that we run after autofilling forms.  It returns
@@ -663,9 +662,8 @@ PasswordForm MakeSimpleForm() {
   return form;
 }
 
-// TODO(crbug.com/403705) This test is flaky.
 // Check that HTML forms are converted correctly into FormDatas.
-TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
+TEST_F(PasswordControllerTest, FindPasswordFormsInView) {
   // clang-format off
   FindPasswordFormTestData test_data[] = {
      // Normal form: a username and a password element.
@@ -674,7 +672,7 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
       "<input type='text' name='user0'>"
       "<input type='password' name='pass0'>"
       "</form>",
-      true, 2, "form1", 2
+      true, 2, "form1"
     },
     // User name is captured as an email address (HTML5).
     {
@@ -682,12 +680,12 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
       "<input type='email' name='email1'>"
       "<input type='password' name='pass1'>"
       "</form>",
-      true, 2, "form1", 5
+      true, 2, "form1"
     },
     // No form found.
     {
       @"<div>",
-      false, 0, nullptr, 0
+      false, 0, nullptr
     },
     // Disabled username element.
     {
@@ -695,14 +693,14 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
       "<input type='text' name='user2' disabled='disabled'>"
       "<input type='password' name='pass2'>"
       "</form>",
-      true, 2, "form1", 8
+      true, 2, "form1"
     },
     // No password element.
     {
       @"<form name='form1'>"
       "<input type='text' name='user3'>"
       "</form>",
-      false, 0, nullptr, 0
+      false, 0, nullptr
     },
   };
   // clang-format on
