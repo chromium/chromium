@@ -28,37 +28,20 @@ class PrefService;
 
 namespace ash {
 
-class DeviceSettingsService;
-class SupervisedUserCrosSettingsProvider;
-
 // This class manages per-device/global settings.
 class CrosSettings {
  public:
-  // Manage singleton instance.
-  static void Initialize(PrefService* local_state);
+  // Returns the global singleton instance.
+  // Life time is managed by CrosSettingsHolder or, if it is in tests,
+  // ScopedTestingCrosSettings.
   static bool IsInitialized();
-  static void Shutdown();
   static CrosSettings* Get();
 
-  // Sets the singleton to |test_instance|. Does not take ownership of the
-  // instance. Should be matched with a call to |ShutdownForTesting| once the
-  // test is finished and before the instance is deleted.
-  static void SetForTesting(CrosSettings* test_instance);
-  static void ShutdownForTesting();
-
-  // Creates an instance with no providers as yet. This is meant for unit tests,
-  // production code uses the singleton returned by Get() above.
+  // Creates an instance with no providers as yet.
   CrosSettings();
-
-  // Creates a device settings service instance. This is meant for unit tests,
-  // production code uses the singleton returned by Get() above.
-  CrosSettings(DeviceSettingsService* device_settings_service,
-               PrefService* local_state);
-
   CrosSettings(const CrosSettings&) = delete;
   CrosSettings& operator=(const CrosSettings&) = delete;
-
-  virtual ~CrosSettings();
+  ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
   static bool IsCrosSettings(std::string_view path);
@@ -79,7 +62,7 @@ class CrosSettings {
   //   |callback| will be called back when the read is done.
   //   PrepareTrustedValues() should be called again at that point to determine
   //   whether all providers are serving trusted values now.
-  virtual CrosSettingsProvider::TrustedStatus PrepareTrustedValues(
+  CrosSettingsProvider::TrustedStatus PrepareTrustedValues(
       base::OnceClosure callback) const;
 
   // These are convenience forms of Get().  The value will be retrieved
@@ -117,6 +100,11 @@ class CrosSettings {
                               const std::string& email,
                               bool* wildcard_match);
 
+  // Sets a special CrosSettingsProvider for child account handling.
+  // This can be called at most once per instance.
+  void SetSupervisedUserCrosSettingsProvider(
+      std::unique_ptr<CrosSettingsProvider> provider);
+
   // Adding/removing of providers.
   bool AddSettingsProvider(std::unique_ptr<CrosSettingsProvider> provider);
   std::unique_ptr<CrosSettingsProvider> RemoveSettingsProvider(
@@ -130,13 +118,25 @@ class CrosSettings {
   // Returns the provider that handles settings with the |path| or prefix.
   CrosSettingsProvider* GetProvider(std::string_view path) const;
 
-  const SupervisedUserCrosSettingsProvider*
-  supervised_user_cros_settings_provider() const {
+  // TODO(hidehiko): Consider to migrate this into GetProvider().
+  const CrosSettingsProvider* supervised_user_cros_settings_provider() const {
     return supervised_user_cros_settings_provider_;
   }
 
  private:
   friend class CrosSettingsTest;
+
+  // Allows accessing to SetInstance.
+  friend class CrosSettingsHolder;
+  friend class ScopedTestingCrosSettings;
+
+  // Sets `cros_settings` as a global instance. This does not take ownership,
+  // so the caller still has the responsibility to destroy the instance
+  // on appropriate timing. Also, the caller has the responsibility to call
+  // `SetInstance(nullptr)` before destroying the instance.
+  // If this is called while the global instance is already set, this will
+  // cause crash.
+  static void SetInstance(CrosSettings* cros_settings);
 
   // Fires system setting change callback.
   void FireObservers(const std::string& path);
@@ -145,8 +145,7 @@ class CrosSettings {
   std::vector<std::unique_ptr<CrosSettingsProvider>> providers_;
 
   // Owner unique pointer in |providers_|.
-  raw_ptr<SupervisedUserCrosSettingsProvider>
-      supervised_user_cros_settings_provider_;
+  raw_ptr<CrosSettingsProvider> supervised_user_cros_settings_provider_;
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.
@@ -156,8 +155,10 @@ class CrosSettings {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// DEPRECATED: please use CrosSettingsHolder in new code.
 // Helper class for tests. Initializes the CrosSettings singleton on
 // construction and tears it down again on destruction.
+class CrosSettingsHolder;
 class ScopedTestCrosSettings {
  public:
   explicit ScopedTestCrosSettings(PrefService* local_state);
@@ -166,6 +167,9 @@ class ScopedTestCrosSettings {
   ScopedTestCrosSettings& operator=(const ScopedTestCrosSettings&) = delete;
 
   ~ScopedTestCrosSettings();
+
+ private:
+  std::unique_ptr<CrosSettingsHolder> holder_;
 };
 
 }  // namespace ash

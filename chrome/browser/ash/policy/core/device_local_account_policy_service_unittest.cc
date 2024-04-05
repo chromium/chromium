@@ -26,11 +26,13 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
 #include "chrome/browser/ash/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -141,7 +143,8 @@ class DeviceLocalAccountPolicyServiceTestBase
 
   PolicyMap expected_policy_map_;
   UserPolicyBuilder device_local_account_policy_;
-  std::unique_ptr<ash::CrosSettings> cros_settings_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
   scoped_refptr<base::TestSimpleTaskRunner> extension_cache_task_runner_;
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService fake_device_management_service_{
@@ -176,7 +179,8 @@ class DeviceLocalAccountPolicyServiceTest
 
 DeviceLocalAccountPolicyServiceTestBase::
     DeviceLocalAccountPolicyServiceTestBase()
-    : account_1_user_id_(GenerateDeviceLocalAccountUserId(
+    : DeviceSettingsTestBase(/*profile_creation_enabled=*/false),
+      account_1_user_id_(GenerateDeviceLocalAccountUserId(
           kAccount1,
           DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
       account_2_user_id_(GenerateDeviceLocalAccountUserId(
@@ -192,7 +196,8 @@ DeviceLocalAccountPolicyServiceTestBase::
 void DeviceLocalAccountPolicyServiceTestBase::SetUp() {
   ash::DeviceSettingsTestBase::SetUp();
 
-  cros_settings_ = std::make_unique<ash::CrosSettings>(
+  install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>();
+  cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   extension_cache_task_runner_ = new base::TestSimpleTaskRunner;
@@ -217,14 +222,15 @@ void DeviceLocalAccountPolicyServiceTestBase::TearDown() {
   service_->Shutdown();
   service_.reset();
   extension_cache_task_runner_->RunUntilIdle();
-  cros_settings_.reset();
+  cros_settings_holder_.reset();
+  install_attributes_.reset();
   ash::DeviceSettingsTestBase::TearDown();
 }
 
 void DeviceLocalAccountPolicyServiceTestBase::CreatePolicyService() {
   service_ = std::make_unique<DeviceLocalAccountPolicyService>(
       &session_manager_client_, device_settings_service_.get(),
-      cros_settings_.get(), &affiliated_invalidation_service_provider_,
+      ash::CrosSettings::Get(), &affiliated_invalidation_service_provider_,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       extension_cache_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -708,9 +714,10 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, OnStoreLoaded) {
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
 
+  TestingProfile profile;
   MockExternalPolicyProviderVisitor visitor;
   auto external_provider = std::make_unique<extensions::ExternalProviderImpl>(
-      &visitor, broker->extension_loader(), profile_.get(),
+      &visitor, broker->extension_loader(), &profile,
       ManifestLocation::kExternalPolicy,
       ManifestLocation::kExternalPolicyDownload,
       extensions::Extension::InitFromValueFlags::NO_FLAGS);
@@ -923,7 +930,6 @@ class DeviceLocalAccountPolicyProviderTest
   SchemaRegistry schema_registry_;
   std::unique_ptr<DeviceLocalAccountPolicyProvider> provider_;
   MockConfigurationPolicyObserver provider_observer_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_helper_;
 };
 
 DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest()
@@ -937,9 +943,6 @@ void DeviceLocalAccountPolicyProviderTest::SetUp() {
       false /*force_immediate_load*/);
   provider_->Init(&schema_registry_);
   provider_->AddObserver(&provider_observer_);
-  cros_settings_helper_ = std::make_unique<ash::ScopedCrosSettingsTestHelper>(
-      false /*create_service*/);
-  cros_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
   // Values implicitly enforced for public accounts.
   if (type() == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
@@ -961,7 +964,6 @@ void DeviceLocalAccountPolicyProviderTest::TearDown() {
   provider_->RemoveObserver(&provider_observer_);
   provider_->Shutdown();
   provider_.reset();
-  cros_settings_helper_.reset();
   DeviceLocalAccountPolicyServiceTestBase::TearDown();
 }
 

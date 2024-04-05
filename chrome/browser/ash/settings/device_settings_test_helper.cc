@@ -41,8 +41,9 @@ ScopedDeviceSettingsTestHelper::~ScopedDeviceSettingsTestHelper() {
   DeviceSettingsService::Shutdown();
 }
 
-DeviceSettingsTestBase::DeviceSettingsTestBase()
-    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+DeviceSettingsTestBase::DeviceSettingsTestBase(bool profile_creation_enabled)
+    : profile_creation_enabled_(profile_creation_enabled),
+      task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
 DeviceSettingsTestBase::DeviceSettingsTestBase(
     base::test::TaskEnvironment::TimeSource time)
@@ -77,10 +78,11 @@ void DeviceSettingsTestBase::SetUp() {
   device_settings_service_->SetSessionManager(&session_manager_client_,
                                               owner_key_util_);
 
-  profile_ = std::make_unique<TestingProfile>();
-
-  FakeNssService::InitializeForBrowserContext(profile_.get(),
-                                              /*enable_system_slot=*/false);
+  if (profile_creation_enabled_) {
+    profile_ = std::make_unique<TestingProfile>();
+    FakeNssService::InitializeForBrowserContext(profile_.get(),
+                                                /*enable_system_slot=*/false);
+  }
 }
 
 void DeviceSettingsTestBase::TearDown() {

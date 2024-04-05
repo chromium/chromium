@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ash/system/device_disabling_manager_default_delegate.h"
@@ -161,6 +162,16 @@ void BrowserProcessPlatformPart::InitializeSessionManager() {
 
 void BrowserProcessPlatformPart::ShutdownSessionManager() {
   session_manager_.reset();
+}
+
+void BrowserProcessPlatformPart::InitializeCrosSettings() {
+  CHECK(!cros_settings_holder_);
+  cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
+      ash::DeviceSettingsService::Get(), g_browser_process->local_state());
+}
+
+void BrowserProcessPlatformPart::ShutdownCrosSettings() {
+  cros_settings_holder_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializeCrosComponentManager() {

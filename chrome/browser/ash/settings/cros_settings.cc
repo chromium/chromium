@@ -16,45 +16,21 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/device_settings_provider.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
 
-static CrosSettings* g_cros_settings = nullptr;
-
-// Calling SetForTesting sets this flag. This flag means that the production
-// code which calls Initialize and Shutdown will have no effect - the test
-// install attributes will remain in place until ShutdownForTesting is called.
-bool g_using_cros_settings_for_testing = false;
-
-// static
-void CrosSettings::Initialize(PrefService* local_state) {
-  // Don't reinitialize if a specific instance has already been set for test.
-  if (g_using_cros_settings_for_testing)
-    return;
-
-  CHECK(!g_cros_settings);
-  g_cros_settings = new CrosSettings(DeviceSettingsService::Get(), local_state);
-}
+namespace {
+CrosSettings* g_cros_settings = nullptr;
+}  // namespace
 
 // static
 bool CrosSettings::IsInitialized() {
   return g_cros_settings;
-}
-
-// static
-void CrosSettings::Shutdown() {
-  if (g_using_cros_settings_for_testing)
-    return;
-
-  DCHECK(g_cros_settings);
-  delete g_cros_settings;
-  g_cros_settings = nullptr;
 }
 
 // static
@@ -64,39 +40,12 @@ CrosSettings* CrosSettings::Get() {
 }
 
 // static
-void CrosSettings::SetForTesting(CrosSettings* test_instance) {
-  DCHECK(!g_cros_settings);
-  DCHECK(!g_using_cros_settings_for_testing);
-  g_cros_settings = test_instance;
-  g_using_cros_settings_for_testing = true;
-}
-
-// static
-void CrosSettings::ShutdownForTesting() {
-  DCHECK(g_using_cros_settings_for_testing);
-  // Don't delete the test instance, we are not the owner.
-  g_cros_settings = nullptr;
-  g_using_cros_settings_for_testing = false;
+void CrosSettings::SetInstance(CrosSettings* cros_settings) {
+  CHECK(!g_cros_settings || !cros_settings);
+  g_cros_settings = cros_settings;
 }
 
 CrosSettings::CrosSettings() = default;
-
-CrosSettings::CrosSettings(DeviceSettingsService* device_settings_service,
-                           PrefService* local_state) {
-  CrosSettingsProvider::NotifyObserversCallback notify_cb(
-      base::BindRepeating(&CrosSettings::FireObservers,
-                          // This is safe since |this| is never deleted.
-                          base::Unretained(this)));
-
-  auto supervised_user_cros_provider =
-      std::make_unique<SupervisedUserCrosSettingsProvider>(notify_cb);
-  supervised_user_cros_settings_provider_ = supervised_user_cros_provider.get();
-
-  AddSettingsProvider(std::move(supervised_user_cros_provider));
-  AddSettingsProvider(std::make_unique<DeviceSettingsProvider>(
-      notify_cb, device_settings_service, local_state));
-  AddSettingsProvider(std::make_unique<SystemSettingsProvider>(notify_cb));
-}
 
 CrosSettings::~CrosSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -271,6 +220,13 @@ bool CrosSettings::FindEmailInList(const base::Value::List& list,
   return found_wildcard_match;
 }
 
+void CrosSettings::SetSupervisedUserCrosSettingsProvider(
+    std::unique_ptr<CrosSettingsProvider> provider) {
+  CHECK(!supervised_user_cros_settings_provider_);
+  supervised_user_cros_settings_provider_ = provider.get();
+  AddSettingsProvider(std::move(provider));
+}
+
 bool CrosSettings::AddSettingsProvider(
     std::unique_ptr<CrosSettingsProvider> provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -339,12 +295,11 @@ void CrosSettings::FireObservers(const std::string& path) {
   observer_iterator->second->Notify();
 }
 
-ScopedTestCrosSettings::ScopedTestCrosSettings(PrefService* local_state) {
-  CrosSettings::Initialize(local_state);
-}
+ScopedTestCrosSettings::ScopedTestCrosSettings(PrefService* local_state)
+    : holder_(std::make_unique<CrosSettingsHolder>(
+          ash::DeviceSettingsService::Get(),
+          local_state)) {}
 
-ScopedTestCrosSettings::~ScopedTestCrosSettings() {
-  CrosSettings::Shutdown();
-}
+ScopedTestCrosSettings::~ScopedTestCrosSettings() = default;
 
 }  // namespace ash

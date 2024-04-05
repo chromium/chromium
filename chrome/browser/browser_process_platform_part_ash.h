@@ -25,6 +25,7 @@ class AccountManagerFactory;
 class AshProxyMonitor;
 class BrowserContextFlusher;
 class ChromeSessionManager;
+class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
@@ -68,6 +69,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   void InitializeSessionManager();
   void ShutdownSessionManager();
+
+  void InitializeCrosSettings();
+  void ShutdownCrosSettings();
 
   void InitializeCrosComponentManager();
   void ShutdownCrosComponentManager();
@@ -181,6 +185,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   std::unique_ptr<ash::system::SystemClock> system_clock_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
 
   // Whether cros_component_manager_ has been initialized for test. Set by
   // BrowserProcessPlatformPartTestApi.

@@ -25,12 +25,15 @@
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
@@ -144,12 +147,13 @@ class CloudExternalDataPolicyObserverTest
   std::string avatar_policy_2_;
   std::string invalid_avatar_policy_;
 
-  std::unique_ptr<ash::CrosSettings> cros_settings_;
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
   FakeAffiliatedInvalidationServiceProvider
       affiliated_invalidation_service_provider_;
   network::TestURLLoaderFactory url_loader_factory_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<DeviceLocalAccountPolicyProvider>
@@ -173,7 +177,8 @@ class CloudExternalDataPolicyObserverTest
 };
 
 CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()
-    : device_local_account_user_id_(GenerateDeviceLocalAccountUserId(
+    : DeviceSettingsTestBase(/*profile_creation_enabled=*/false),
+      device_local_account_user_id_(GenerateDeviceLocalAccountUserId(
           kDeviceLocalAccount,
           DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -184,16 +189,17 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
   ash::DeviceSettingsTestBase::SetUp();
 
   ASSERT_TRUE(profile_manager_.SetUp());
+  install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>();
   shared_url_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &url_loader_factory_);
-  cros_settings_ = std::make_unique<ash::CrosSettings>(
+  cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   device_local_account_policy_service_ =
       std::make_unique<DeviceLocalAccountPolicyService>(
           &session_manager_client_, device_settings_service_.get(),
-          cros_settings_.get(), &affiliated_invalidation_service_provider_,
+          ash::CrosSettings::Get(), &affiliated_invalidation_service_provider_,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -222,7 +228,8 @@ void CloudExternalDataPolicyObserverTest::TearDown() {
   }
   device_local_account_policy_service_->Shutdown();
   device_local_account_policy_service_.reset();
-  cros_settings_.reset();
+  cros_settings_holder_.reset();
+  install_attributes_.reset();
   ash::DeviceSettingsTestBase::TearDown();
 }
 
@@ -252,7 +259,7 @@ void CloudExternalDataPolicyObserverTest::OnExternalDataFetched(
 
 void CloudExternalDataPolicyObserverTest::CreateObserver() {
   observer_ = std::make_unique<CloudExternalDataPolicyObserver>(
-      cros_settings_.get(), device_local_account_policy_service_.get(),
+      ash::CrosSettings::Get(), device_local_account_policy_service_.get(),
       key::kUserAvatarImage, this);
   observer_->Init();
 }

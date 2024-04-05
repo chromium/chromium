@@ -3222,6 +3222,8 @@ source_set("ash") {
     "settings/about_flags.h",
     "settings/cros_settings.cc",
     "settings/cros_settings.h",
+    "settings/cros_settings_holder.cc",
+    "settings/cros_settings_holder.h",
     "settings/device_settings_cache.cc",
     "settings/device_settings_cache.h",
     "settings/device_settings_provider.cc",

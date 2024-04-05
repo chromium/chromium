@@ -11,9 +11,8 @@
 
 namespace ash {
 
-ScopedTestingCrosSettings::ScopedTestingCrosSettings() {
-  test_instance_ = std::make_unique<CrosSettings>();
-
+ScopedTestingCrosSettings::ScopedTestingCrosSettings()
+    : test_instance_(std::make_unique<CrosSettings>()) {
   std::unique_ptr<StubCrosSettingsProvider> device_settings =
       std::make_unique<StubCrosSettingsProvider>();
   OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting(
@@ -26,15 +25,17 @@ ScopedTestingCrosSettings::ScopedTestingCrosSettings() {
   system_settings_ptr_ = system_settings.get();
   test_instance_->AddSettingsProvider(std::move(system_settings));
 
-  CrosSettings::SetForTesting(test_instance_.get());
+  CHECK(!CrosSettings::IsInitialized());
+  CrosSettings::SetInstance(test_instance_.get());
 }
 
 ScopedTestingCrosSettings::~ScopedTestingCrosSettings() {
+  CHECK_EQ(CrosSettings::Get(), test_instance_.get());
+  CrosSettings::SetInstance(nullptr);
   OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting(
       nullptr);
   device_settings_ptr_ = nullptr;
   system_settings_ptr_ = nullptr;
-  CrosSettings::ShutdownForTesting();
 }
 
 }  // namespace ash

@@ -51,7 +51,7 @@ class DeviceSettingsTestBase : public testing::Test {
   DeviceSettingsTestBase& operator=(const DeviceSettingsTestBase&) = delete;
 
  protected:
-  DeviceSettingsTestBase();
+  explicit DeviceSettingsTestBase(bool profile_creation_enabled = true);
   explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
   ~DeviceSettingsTestBase() override;
 
@@ -72,6 +72,8 @@ class DeviceSettingsTestBase : public testing::Test {
   void InitOwner(const AccountId& account_id, bool tpm_is_ready);
 
   void SetSessionStopping();
+
+  const bool profile_creation_enabled_ = true;
 
   content::BrowserTaskEnvironment task_environment_;
 

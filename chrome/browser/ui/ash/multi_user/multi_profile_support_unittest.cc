@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -38,10 +40,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -278,6 +279,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   // TODO: convert to vector<std::unique_ptr<aura::Window>>.
   aura::Window::Windows windows_;
 
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
+
   // Owned by |user_manager_enabler_|.
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
       nullptr;
@@ -292,7 +295,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
 void MultiProfileSupportTest::SetUp() {
   ash::DeviceSettingsService::Initialize();
-  ash::CrosSettings::Initialize(
+  cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
+      ash::DeviceSettingsService::Get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
   ash_test_helper()
@@ -361,7 +365,7 @@ void MultiProfileSupportTest::TearDown() {
   ::MultiUserWindowManagerHelper::DeleteInstance();
   ChromeAshTestBase::TearDown();
   profile_manager_.reset();
-  ash::CrosSettings::Shutdown();
+  cros_settings_holder_.reset();
   ash::DeviceSettingsService::Shutdown();
 }
 
