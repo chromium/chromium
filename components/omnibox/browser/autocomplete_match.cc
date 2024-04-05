@@ -1494,14 +1494,21 @@ AutocompleteMatch::GetMatchWithContentsAndDescriptionPossiblySwapped() const {
 }
 
 void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
-  if (IsEmptyAutocompletion())
-    allowed_to_be_default_match = true;
-  else if (input.prevent_inline_autocomplete())
+  if (input.text().starts_with('@') && type != Type::SEARCH_WHAT_YOU_TYPED) {
+    // @ inputs are very special. The only kind of match that can be default is
+    // a search-what-you-typed sentinel suggestion, so as to not distract from
+    // the starter pack suggestions. Note: There may be some edge cases to
+    // consider if more providers are updated to use of this method; then we
+    // may want to avoid applying this rule when in keyword mode.
     allowed_to_be_default_match = false;
-  else if (input.text().empty() ||
-           !base::IsUnicodeWhitespace(input.text().back()))
+  } else if (IsEmptyAutocompletion()) {
     allowed_to_be_default_match = true;
-  else {
+  } else if (input.prevent_inline_autocomplete()) {
+    allowed_to_be_default_match = false;
+  } else if (input.text().empty() ||
+             !base::IsUnicodeWhitespace(input.text().back())) {
+    allowed_to_be_default_match = true;
+  } else {
     // If we've reached here, the input ends in trailing whitespace. If the
     // trailing whitespace prefixes |inline_autocompletion|, then allow the
     // match to be default and remove the whitespace from
