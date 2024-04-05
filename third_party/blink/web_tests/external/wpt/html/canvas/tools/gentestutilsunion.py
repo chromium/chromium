@@ -281,11 +281,16 @@ def _validate_test(test: _TestParams):
             f'Invalid canvas size "{test["size"]}" in test {test["name"]}. '
             'Expected an array with two numbers.')
 
-    if 'test_type' in test and test['test_type'] != 'promise':
+    if test['template_type'] == _TemplateType.TESTHARNESS:
+        valid_test_types = {'sync', 'async', 'promise'}
+    else:
+        valid_test_types = {'promise'}
+
+    test_type = test.get('test_type')
+    if test_type is not None and test_type not in valid_test_types:
         raise InvalidTestDefinitionError(
-            f'Test {test["name"]}\' test_type is invalid, it only accepts '
-            '"promise" now for creating promise test type in the template '
-            'file.')
+            f'Invalid test_type: {test_type}. '
+            f'Valid values are: {valid_test_types}.')
 
 
 def _render_template(jinja_env: jinja2.Environment, template: jinja2.Template,
@@ -414,6 +419,8 @@ class _Variant():
             code_params['canvas_type'] = _CanvasType.WORKER.value
             self._params['code_worker'] = _preprocess_code(
                 jinja_env, self._params['code'], code_params)
+
+        _validate_test(self._params)
 
     def generate_expected_image(self, output_dirs: _OutputPaths) -> None:
         """Creates a reference image using Cairo and save filename in params."""
@@ -615,7 +622,6 @@ def generate_test_files(name_to_dir_file: str) -> None:
     used_tests = collections.defaultdict(set)
     for test in tests:
         print(test['name'])
-        _validate_test(test)
         for variant in _get_variants(test):
             variant.finalize_params(jinja_env)
             if test['name'] != variant.params['name']:
