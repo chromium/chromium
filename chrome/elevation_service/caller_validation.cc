@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/types/expected.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
@@ -107,39 +108,44 @@ base::expected<base::FilePath, DWORD> GetProcessExecutablePath(
 // Generate path based validation data, or return empty string if this was not
 // possible.
 base::expected<std::vector<uint8_t>, HRESULT> GeneratePathValidationData(
-    const base::Process& process) {
-  auto path = GetProcessExecutablePath(process);
-  if (!path.has_value()) {
-    return base::unexpected(
-        elevation_service::Elevator::kErrorCouldNotObtainPath);
-  }
-  if (path->IsNetwork()) {
+    const base::FilePath& process_path) {
+  if (process_path.IsNetwork()) {
     return base::unexpected(
         elevation_service::Elevator::kErrorUnsupportedFilePath);
   }
   // Wide to narrow data loss is fine here, because the same system will always
   // be dealing with the same data.
-  auto narrow_path = base::SysWideToUTF8(MaybeTrimProcessPath(*path).value());
+  const auto narrow_path =
+      base::SysWideToUTF8(MaybeTrimProcessPath(process_path).value());
   return std::vector<uint8_t>(narrow_path.begin(), narrow_path.end());
 }
 
 HRESULT ValidatePath(const base::Process& process,
                      base::span<const uint8_t> data,
                      std::string* log_message) {
-  auto current_path = GeneratePathValidationData(process);
-  if (!current_path.has_value()) {
-    return current_path.error();
+  const auto process_path = GetProcessExecutablePath(process);
+  if (!process_path.has_value()) {
+    return elevation_service::Elevator::kErrorCouldNotObtainPath;
   }
 
-  if (data.size() == current_path->size() &&
-      std::equal(data.begin(), data.end(), current_path->cbegin())) {
+  auto current_path_data = GeneratePathValidationData(*process_path);
+  if (!current_path_data.has_value()) {
+    return current_path_data.error();
+  }
+
+  if (data.size() == current_path_data->size() &&
+      std::equal(data.begin(), data.end(), current_path_data->cbegin())) {
     return S_OK;
   }
+
+  SYSLOG(WARNING) << "Failed to authenticate caller process: "
+                  << process_path->value();
 
   if (log_message) {
     *log_message =
         "Data: '" + std::string(data.begin(), data.end()) + "'. Current: '" +
-        std::string(current_path->cbegin(), current_path->cend()) + "'";
+        std::string(current_path_data->cbegin(), current_path_data->cend()) +
+        "'";
   }
 
   return elevation_service::Elevator::kValidationDidNotPass;
@@ -157,7 +163,12 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
       return base::unexpected(
           elevation_service::Elevator::kErrorUnsupportedProtectionLevel);
     case ProtectionLevel::PROTECTION_PATH_VALIDATION: {
-      auto path_validation_data = GeneratePathValidationData(process);
+      const auto process_path = GetProcessExecutablePath(process);
+      if (!process_path.has_value()) {
+        return base::unexpected(
+            elevation_service::Elevator::kErrorCouldNotObtainPath);
+      }
+      auto path_validation_data = GeneratePathValidationData(*process_path);
       if (path_validation_data.has_value()) {
         path_validation_data->insert(
             path_validation_data->cbegin(),

@@ -52,6 +52,7 @@ executable("elevation_service") {
     ":version_resources",
     "//base",
     "//build/win:default_exe_manifest",
+    "//chrome/common/win:eventlog_provider",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crx_file",

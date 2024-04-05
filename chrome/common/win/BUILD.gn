@@ -36,10 +36,8 @@ shared_library("eventlog_provider") {
     ldflags = [ "/NOENTRY" ]
   }
 
-  deps = [
-    ":eventlog_messages",
-    ":eventlog_provider_dll_version",
-  ]
+  deps = [ ":eventlog_provider_dll_version" ]
+  public_deps = [ ":eventlog_messages" ]
 }
 
 # The delay load hook must be a source_set to ensure that it has external

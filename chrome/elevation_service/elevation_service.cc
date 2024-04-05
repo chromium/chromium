@@ -8,9 +8,13 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/common/win/eventlog_messages.h"
 #include "chrome/elevation_service/service_main.h"
+#include "chrome/install_static/install_details.h"
 #include "chrome/install_static/product_install_details.h"
 
 extern "C" int WINAPI wWinMain(HINSTANCE instance,
@@ -29,6 +33,12 @@ extern "C" int WINAPI wWinMain(HINSTANCE instance,
   base::AtExitManager exit_manager;
 
   install_static::InitializeProductDetailsForPrimaryModule();
+
+  // Enable logging to the Windows Event Log.
+  logging::SetEventSource(
+      base::WideToUTF8(
+          install_static::InstallDetails::Get().install_full_name()),
+      ELEVATION_SERVICE_CATEGORY, MSG_ELEVATION_SERVICE_LOG_MESSAGE);
 
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
