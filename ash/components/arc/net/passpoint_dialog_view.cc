@@ -91,7 +91,6 @@ PasspointDialogView::PasspointDialogView(
                         kDialogBorderMargin[2], kDialogBorderMargin[3]));
   SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  SetSize(CalculatePreferredSize());
 
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
@@ -124,13 +123,9 @@ PasspointDialogView::PasspointDialogView(
 
 PasspointDialogView::~PasspointDialogView() = default;
 
-gfx::Size PasspointDialogView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
-
-  views::LayoutProvider* provider = views::LayoutProvider::Get();
-  size.set_width(provider->GetDistanceMetric(
-      views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  return size;
+gfx::Size PasspointDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return GetLayoutManager()->GetPreferredSize(this, available_size);
 }
 
 void PasspointDialogView::AddedToWidget() {
@@ -139,10 +134,6 @@ void PasspointDialogView::AddedToWidget() {
   view_ax.SetName(l10n_util::GetStringFUTF16(
                       IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE, app_name_),
                   ax::mojom::NameFrom::kAttribute);
-}
-
-int PasspointDialogView::GetLabelWidth() {
-  return width() - kDialogBorderMargin[1] - kDialogBorderMargin[3];
 }
 
 std::unique_ptr<views::View> PasspointDialogView::MakeBaseLabelView(
@@ -154,11 +145,9 @@ std::unique_ptr<views::View> PasspointDialogView::MakeBaseLabelView(
       views::Builder<views::StyledLabel>()
           .CopyAddressTo(&body_text_)
           .SetText(label)
-          .SizeToFit(GetLabelWidth())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetAutoColorReadabilityEnabled(false)
           .Build();
-  styled_label->set_use_legacy_preferred_size(true);
 
   if (!is_expiring) {
     std::vector<size_t> offsets;
@@ -191,7 +180,6 @@ std::unique_ptr<views::View> PasspointDialogView::MakeSubscriptionLabelView(
       views::Builder<views::StyledLabel>()
           .CopyAddressTo(&body_subscription_text_)
           .SetText(label)
-          .SizeToFit(GetLabelWidth())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetAutoColorReadabilityEnabled(false)
           .AddStyleRange(
@@ -200,7 +188,6 @@ std::unique_ptr<views::View> PasspointDialogView::MakeSubscriptionLabelView(
                   base::BindRepeating(&PasspointDialogView::OnLearnMoreClicked,
                                       weak_factory_.GetWeakPtr())))
           .Build();
-  styled_label->set_use_legacy_preferred_size(true);
   return styled_label;
 }
 
