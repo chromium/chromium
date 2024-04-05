@@ -31955,6 +31955,12 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Request is cancelled"/>
 </enum>
 
+<enum name="ShoppingContextualFeature">
+  <int value="0" label="Price tracking"/>
+  <int value="1" label="Price insights"/>
+  <int value="2" label="Discounts"/>
+</enum>
+
 <enum name="ShoppingDataProviderFallback">
   <summary>
     The different kinds of fallback data used by the ShoppingDataProvider.
