@@ -159,6 +159,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/i18n/rtl.h"
+#include "base/test/file_path_reparse_point_win.h"
 #endif
 
 using base::ASCIIToUTF16;
@@ -2012,6 +2013,46 @@ class LaunchBrowserWithNonAsciiUserDatadir : public BrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LaunchBrowserWithNonAsciiUserDatadir,
                        TestNonAsciiUserDataDir) {
+  // Verify that the window is present.
+  ASSERT_TRUE(browser());
+  ASSERT_TRUE(browser()->profile());
+  // Verify that the profile has been added correctly to the
+  // ProfileAttributesStorage.
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+}
+
+// This test verifies that Chrome can be launched with a user-data-dir path
+// which contains a reparse point. This is important because sandbox
+// policy validates that paths passed to policy rules do not contain
+// reparse points. New code in Chrome that adjusts the sandbox can
+// accidentally pass paths with reparse points to the sandbox and cause
+// Chrome not to start anymore.
+class LaunchBrowserWithReparsePointUserDatadir : public BrowserTest {
+ public:
+  LaunchBrowserWithReparsePointUserDatadir() {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    base::FilePath tmp_profile = temp_dir_.GetPath().AppendASCII("profile");
+    ASSERT_TRUE(base::CreateDirectory(tmp_profile));
+    base::FilePath reparse_profile =
+        temp_dir_.GetPath().AppendASCII("profile_reparse");
+    ASSERT_TRUE(base::CreateDirectory(reparse_profile));
+    auto reparse_point =
+        base::test::FilePathReparsePoint::Create(reparse_profile, tmp_profile);
+    ASSERT_TRUE(reparse_point.has_value());
+    reparse_point_.emplace(std::move(reparse_point.value()));
+    command_line->AppendSwitchPath(switches::kUserDataDir, reparse_profile);
+  }
+
+  base::ScopedTempDir temp_dir_;
+  std::optional<base::test::FilePathReparsePoint> reparse_point_;
+};
+
+IN_PROC_BROWSER_TEST_F(LaunchBrowserWithReparsePointUserDatadir,
+                       TestReparsePointUserDataDir) {
   // Verify that the window is present.
   ASSERT_TRUE(browser());
   ASSERT_TRUE(browser()->profile());

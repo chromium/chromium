@@ -56,9 +56,9 @@
 #include <shlobj.h>
 #include <tchar.h>
 #include <windows.h>
-#include <winioctl.h>
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/file_path_reparse_point_win.h"
 #include "base/test/gtest_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -97,80 +97,7 @@ namespace {
 
 const size_t kLargeFileSize = (1 << 16) + 3;
 
-// To test that NormalizeFilePath() deals with NTFS reparse points correctly,
-// we need functions to create and delete reparse points.
 #if BUILDFLAG(IS_WIN)
-typedef struct _REPARSE_DATA_BUFFER {
-  ULONG  ReparseTag;
-  USHORT  ReparseDataLength;
-  USHORT  Reserved;
-  union {
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      ULONG Flags;
-      WCHAR PathBuffer[1];
-    } SymbolicLinkReparseBuffer;
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      WCHAR PathBuffer[1];
-    } MountPointReparseBuffer;
-    struct {
-      UCHAR DataBuffer[1];
-    } GenericReparseBuffer;
-  };
-} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
-
-// Sets a reparse point. |source| will now point to |target|. Returns true if
-// the call succeeds, false otherwise.
-bool SetReparsePoint(HANDLE source, const FilePath& target_path) {
-  std::wstring kPathPrefix = FILE_PATH_LITERAL("\\??\\");
-  std::wstring target_str;
-  // The juction will not work if the target path does not start with \??\ .
-  if (kPathPrefix != target_path.value().substr(0, kPathPrefix.size()))
-    target_str += kPathPrefix;
-  target_str += target_path.value();
-  const wchar_t* target = target_str.c_str();
-  USHORT size_target = static_cast<USHORT>(wcslen(target)) * sizeof(target[0]);
-  char buffer[2000] = {0};
-  DWORD returned;
-
-  REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
-
-  data->ReparseTag = 0xa0000003;
-  memcpy(data->MountPointReparseBuffer.PathBuffer, target, size_target + 2);
-
-  data->MountPointReparseBuffer.SubstituteNameLength = size_target;
-  data->MountPointReparseBuffer.PrintNameOffset = size_target + 2;
-  data->ReparseDataLength = size_target + 4 + 8;
-
-  int data_size = data->ReparseDataLength + 8;
-
-  if (!DeviceIoControl(source, FSCTL_SET_REPARSE_POINT, &buffer, data_size,
-                       NULL, 0, &returned, NULL)) {
-    return false;
-  }
-  return true;
-}
-
-// Delete the reparse point referenced by |source|. Returns true if the call
-// succeeds, false otherwise.
-bool DeleteReparsePoint(HANDLE source) {
-  DWORD returned;
-  REPARSE_DATA_BUFFER data = {0};
-  data.ReparseTag = 0xa0000003;
-  if (!DeviceIoControl(source, FSCTL_DELETE_REPARSE_POINT, &data, 8, NULL, 0,
-                       &returned, NULL)) {
-    return false;
-  }
-  return true;
-}
-
 // Method that wraps the win32 GetShortPathName API. Returns an empty path on
 // error.
 FilePath MakeShortFilePath(const FilePath& input) {
@@ -187,36 +114,7 @@ FilePath MakeShortFilePath(const FilePath& input) {
 
   return FilePath(path_short_str);
 }
-
-// Manages a reparse point for a test.
-class ReparsePoint {
- public:
-  // Creates a reparse point from |source| (an empty directory) to |target|.
-  ReparsePoint(const FilePath& source, const FilePath& target) {
-    dir_.Set(
-        ::CreateFile(source.value().c_str(), GENERIC_READ | GENERIC_WRITE,
-                     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                     NULL, OPEN_EXISTING,
-                     FILE_FLAG_BACKUP_SEMANTICS,  // Needed to open a directory.
-                     NULL));
-    created_ = dir_.is_valid() && SetReparsePoint(dir_.get(), target);
-  }
-  ReparsePoint(const ReparsePoint&) = delete;
-  ReparsePoint& operator=(const ReparsePoint&) = delete;
-
-  ~ReparsePoint() {
-    if (created_)
-      DeleteReparsePoint(dir_.get());
-  }
-
-  bool IsValid() { return created_; }
-
- private:
-  win::ScopedHandle dir_;
-  bool created_;
-};
-
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 // Provide a simple way to change the permissions bits on |path| in tests.
@@ -596,18 +494,20 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
   ASSERT_TRUE(CreateDirectory(to_sub_a));
   FilePath normalized_path;
   {
-    ReparsePoint reparse_to_sub_a(to_sub_a, sub_a);
-    ASSERT_TRUE(reparse_to_sub_a.IsValid());
+    auto reparse_to_sub_a = test::FilePathReparsePoint::Create(to_sub_a, sub_a);
+    ASSERT_TRUE(reparse_to_sub_a.has_value());
 
     FilePath to_base_b = base_b.Append(FPL("to_base_b"));
     ASSERT_TRUE(CreateDirectory(to_base_b));
-    ReparsePoint reparse_to_base_b(to_base_b, base_b);
-    ASSERT_TRUE(reparse_to_base_b.IsValid());
+    auto reparse_to_base_b =
+        test::FilePathReparsePoint::Create(to_base_b, base_b);
+    ASSERT_TRUE(reparse_to_base_b.has_value());
 
     FilePath to_sub_long = base_b.Append(FPL("to_sub_long"));
     ASSERT_TRUE(CreateDirectory(to_sub_long));
-    ReparsePoint reparse_to_sub_long(to_sub_long, sub_long);
-    ASSERT_TRUE(reparse_to_sub_long.IsValid());
+    auto reparse_to_sub_long =
+        test::FilePathReparsePoint::Create(to_sub_long, sub_long);
+    ASSERT_TRUE(reparse_to_sub_long.has_value());
 
     // Normalize a junction free path: base_a\sub_a\file.txt .
     ASSERT_TRUE(NormalizeFilePath(file_txt, &normalized_path));
@@ -3327,8 +3227,8 @@ TEST_F(FileUtilTest, FileEnumeratorTest) {
 #if BUILDFLAG(IS_WIN)
   {
     // Make dir1 point to dir2.
-    ReparsePoint reparse_point(dir1, dir2);
-    EXPECT_TRUE(reparse_point.IsValid());
+    auto reparse_point = test::FilePathReparsePoint::Create(dir1, dir2);
+    EXPECT_TRUE(reparse_point.has_value());
 
     // There can be a delay for the enumeration code to see the change on
     // the file system so skip this test for XP.
