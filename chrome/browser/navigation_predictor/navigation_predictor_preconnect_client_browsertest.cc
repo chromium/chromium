@@ -386,7 +386,9 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
            kPreconnectToSearchWithPrivacyModeEnabledTest},
           {});
     } else {
-      feature_list_.InitWithFeatures({kPreconnectToSearchTest}, {});
+      feature_list_.InitWithFeatures(
+          {kPreconnectToSearchTest},
+          {kPreconnectToSearchWithPrivacyModeEnabledTest});
     }
   }
 

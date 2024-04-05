@@ -135,7 +135,7 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
           {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
            {net::features::kNetUnusedIdleSocketTimeout,
             {{"unused_idle_socket_timeout_seconds", "0"}}}},
-          {});
+          {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
     }
   }
 
@@ -275,6 +275,7 @@ class SearchEnginePreconnectorForegroundBrowserTest
   SearchEnginePreconnectorForegroundBrowserTest() {
     {
       std::vector<base::test::FeatureRefAndParams> enabled_features;
+      std::vector<base::test::FeatureRef> disabled_features;
       if (skip_in_background()) {
         enabled_features.push_back({features::kPreconnectToSearch,
                                     {{"startup_delay_ms", "1000000"},
@@ -287,8 +288,12 @@ class SearchEnginePreconnectorForegroundBrowserTest
       if (preconnect_to_search_with_privacy_mode_enabled()) {
         enabled_features.push_back(
             {features::kPreconnectToSearchWithPrivacyModeEnabled, {}});
+      } else {
+        disabled_features.emplace_back(
+            features::kPreconnectToSearchWithPrivacyModeEnabled);
       }
-      feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+      feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                  disabled_features);
     }
   }
 
@@ -502,7 +507,7 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
             {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
              {net::features::kNetUnusedIdleSocketTimeout,
               {{"unused_idle_socket_timeout_seconds", "60"}}}},
-            {});
+            {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
       }
     }
   }
