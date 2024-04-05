@@ -17,6 +17,10 @@ type RectF =
 
 type PageMetadata =
     import('./media_app_ui_untrusted.mojom-webui.js').PageMetadata;
+type OcrUntrustedPageInterface =
+    import('./media_app_ui_untrusted.mojom-webui.js').OcrUntrustedPageInterface;
+type RequestBitmapResponse = import('./media_app_ui_untrusted.mojom-webui.js')
+                                 .OcrUntrustedPage_RequestBitmap_ResponseParams;
 
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
@@ -248,7 +252,7 @@ declare interface ClientApiDelegate {
 /**
  * The client Api for interacting with the media app instance.
  */
-declare interface ClientApi {
+declare interface ClientApi extends OcrUntrustedPageInterface {
   /**
    * Looks up handler(s) and loads media via FileList.
    */
@@ -258,6 +262,10 @@ declare interface ClientApi {
    * WebUI methods.
    */
   setDelegate(delegate: ClientApiDelegate|null): void;
+  /**
+   * Gets the bitmap for the page with `requestedPageId`.
+   */
+  requestBitmap(requestedPageId: string): Promise<RequestBitmapResponse>;
   /**
    * If a document is currently loaded, scrolls and zooms to the given viewport.
    */

@@ -278,8 +278,19 @@ parentMessagePipe.registerHandler(
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
 let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
+ocrCallbackRouter.requestBitmap.addListener(async (requestedPageId: string) => {
+  const app = getApp();
+  if (app) {
+    const result = await app.requestBitmap(requestedPageId);
+    return {page: result};
+  }
+  return null;
+});
 ocrCallbackRouter.setViewport.addListener(
     (viewportBox: RectF) => void getApp()?.setViewport(viewportBox));
+ocrCallbackRouter.onConnectionError.addListener(() => {
+  console.warn('Calling MediaApp RequestBitmap() failed to return bitmap.');
+});
 
 /**
  * A delegate which exposes privileged WebUI functionality to the media

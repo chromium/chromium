@@ -27,7 +27,10 @@ copy("stage_static") {
 copy("stage_generated") {
   sources = [
     "$root_gen_dir/ash/webui/media_app_ui/media_app_ui.mojom-lite.js",
+    "$root_gen_dir/mojo/public/mojom/base/big_buffer.mojom-lite.js",
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
+    "$root_gen_dir/skia/public/mojom/bitmap.mojom-lite.js",
+    "$root_gen_dir/skia/public/mojom/image_info.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
   ]

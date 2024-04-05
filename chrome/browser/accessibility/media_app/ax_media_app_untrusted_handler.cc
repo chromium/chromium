@@ -659,16 +659,33 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (UNLIKELY(media_app_)) {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
-    // TODO(b/303133098): Change this as soon as `RequestBitmap` becomes
-    // available by the Backlight team.
     SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
+    // TODO - b/289012145: screen_ai_annotator_ is only bound in builds with
+    // the ENABLE_SCREEN_AI_SERVICE buildflag. We should figure out a way to
+    // mock it in tests running on bots without this flag and call
+    // OnBitmapReceived() here.
     screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
         page_bitmap,
         base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                        weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
   } else {
-    // TODO(b/301007305): Implement `RequestBitmap` in the Media App.
+    media_app_ui::mojom::OcrUntrustedPage::RequestBitmapCallback cb =
+        base::BindOnce(&AXMediaAppUntrustedHandler::OnBitmapReceived,
+                       weak_ptr_factory_.GetWeakPtr(), dirty_page_id);
+    media_app_page_->RequestBitmap(dirty_page_id, std::move(cb));
   }
+}
+
+void AXMediaAppUntrustedHandler::OnBitmapReceived(
+    const std::string& dirty_page_id,
+    const SkBitmap& bitmap) {
+  // If there was a failure getting a page's bitmap, the app will return a null
+  // value which shows up as an empty bitmap here. To prevent the entire app
+  // crashing just because one page failed to render, send it to ScreenAI
+  // anyway, which should just produce an empty A11y tree.
+  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+      bitmap, base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
+                             weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
 }
 
 void AXMediaAppUntrustedHandler::OnPageOcred(

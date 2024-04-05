@@ -41,6 +41,8 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
+class SkBitmap;
+
 namespace content {
 
 class RenderFrameHost;
@@ -129,6 +131,10 @@ class AXMediaAppUntrustedHandler
   void UpdateDocumentTree();
   void UpdatePageLocation(const std::string& page_id,
                           const gfx::RectF& page_location);
+  // A callback which is run after the Media App sends the bitmap of the page
+  // that should be OCRed.
+  void OnBitmapReceived(const std::string& dirty_page_id,
+                        const SkBitmap& bitmap);
   void OnPageOcred(const std::string& dirty_page_id,
                    const ui::AXTreeUpdate& tree_update);
   content::WebContents* GetMediaAppWebContents() const;

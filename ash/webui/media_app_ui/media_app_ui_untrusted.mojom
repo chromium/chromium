@@ -4,6 +4,7 @@
 
 module ash.media_app_ui.mojom;
 
+import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Factory interface to create an untrusted page handler (for the
@@ -65,7 +66,8 @@ interface OcrUntrustedPageHandler {
 // Interface implemented in JavaScript by the chrome-untrusted:// page for Media
 // App and called by browser process code.
 interface OcrUntrustedPage {
-  // TODO(b/301007305): Implement methods for the OCR service.
+  // Request the bitmap information for a page identified by its ID.
+  RequestBitmap(string requestedPageId) => (skia.mojom.BitmapN32? page);
 
   // If a document is currently loaded, scrolls and zooms to the given viewport.
   // This allows certain AXActions to be implemented such as

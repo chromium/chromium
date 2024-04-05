@@ -91,7 +91,10 @@ mojom("mojo_bindings") {
 
 mojom("mojo_bindings_untrusted") {
   sources = [ "media_app_ui_untrusted.mojom" ]
-  public_deps = [ "//ui/gfx/geometry/mojom" ]
+  public_deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
   webui_module_path = "/"
 }
 
