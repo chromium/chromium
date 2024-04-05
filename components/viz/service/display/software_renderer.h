@@ -72,7 +72,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
   void DidChangeVisibility() override;
-  void GenerateMipmap() override;
 
  private:
   void ClearCanvas(SkColor color);

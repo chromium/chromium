@@ -3464,11 +3464,6 @@ void SkiaRenderer::FinishDrawingRenderPass() {
   FlushOutputSurface();
 }
 
-void SkiaRenderer::GenerateMipmap() {
-  // This is a no-op since setting FilterQuality to high during drawing of
-  // CompositorRenderPassDrawQuad is what actually generates generate_mipmap.
-}
-
 void SkiaRenderer::UpdateRenderPassTextures(
     const AggregatedRenderPassList& render_passes_in_draw_order,
     const base::flat_map<AggregatedRenderPassId, RenderPassRequirements>&

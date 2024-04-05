@@ -690,10 +690,6 @@ void SoftwareRenderer::DidChangeVisibility() {
     output_surface_->DiscardBackbuffer();
 }
 
-void SoftwareRenderer::GenerateMipmap() {
-  NOTIMPLEMENTED();
-}
-
 bool SoftwareRenderer::ShouldApplyBackdropFilters(
     const cc::FilterOperations* backdrop_filters,
     const AggregatedRenderPassDrawQuad* quad) const {

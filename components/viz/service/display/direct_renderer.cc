@@ -751,9 +751,6 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
                 render_pass_requires_scissor);
   FinishDrawingRenderPass();
-
-  if (render_pass->generate_mipmap)
-    GenerateMipmap();
 }
 
 bool DirectRenderer::CanSkipRenderPass(

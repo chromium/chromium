@@ -52,7 +52,6 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
   void DidChangeVisibility() override {}
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
-  void GenerateMipmap() override {}
 };
 
 }  // namespace viz

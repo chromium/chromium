@@ -311,7 +311,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void CopyDrawnRenderPass(
       const copy_output::RenderPassGeometry& geometry,
       std::unique_ptr<CopyOutputRequest> request) = 0;
-  virtual void GenerateMipmap() = 0;
   virtual bool SupportsBGRA() const;
 
   gfx::Size surface_size_for_swap_buffers() const {
