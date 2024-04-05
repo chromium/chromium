@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.desktop_windowing;
 
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
@@ -60,6 +59,7 @@ public class AppHeaderCoordinatorBrowserTest {
     private @Captor ArgumentCaptor<InsetsRectProvider.Observer> mInsetsRectObserverCaptor;
 
     private Rect mWidestUnoccludedRect = new Rect();
+    private Rect mWindowRect = new Rect();
 
     @Before
     public void setup() {
@@ -67,6 +67,7 @@ public class AppHeaderCoordinatorBrowserTest {
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
 
         doAnswer(args -> mWidestUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
+        doAnswer(args -> mWindowRect).when(mInsetsRectProvider).getWindowRect();
     }
 
     @Test
@@ -77,9 +78,7 @@ public class AppHeaderCoordinatorBrowserTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         // Configure mock InsetsRectProvider.
-        Rect windowRect = new Rect();
-        activity.getWindow().getDecorView().getGlobalVisibleRect(windowRect);
-        doReturn(windowRect).when(mInsetsRectProvider).getWindowRect();
+        activity.getWindow().getDecorView().getGlobalVisibleRect(mWindowRect);
 
         int topPadding = 5;
         int leftPadding = 10;

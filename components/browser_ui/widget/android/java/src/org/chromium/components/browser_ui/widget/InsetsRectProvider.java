@@ -77,8 +77,10 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mInsetObserver = insetObserver;
 
         assert BuildCompat.isAtLeastV();
-        updateWidestUnoccludedRect(initialInsets);
         mInsetObserver.addInsetsConsumer(this);
+        if (initialInsets != null) {
+            updateWidestUnoccludedRect(initialInsets);
+        }
     }
 
     /** Return the list of bounding rect from the window insets. */

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.desktop_windowing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -34,10 +33,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.annotation.LooperMode.Mode;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
@@ -48,6 +52,7 @@ import java.util.List;
 /** Unit test for {@link AppHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@LooperMode(Mode.PAUSED)
 public class AppHeaderCoordinatorUnitTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
@@ -61,8 +66,7 @@ public class AppHeaderCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private View mRootView;
-    @Mock private StripLayoutHelperManager mStripLayoutManager;
+    @Mock private StripLayoutHelperManager mAppHeaderDelegate;
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
@@ -71,11 +75,17 @@ public class AppHeaderCoordinatorUnitTest {
 
     private AppHeaderCoordinator mAppHeaderCoordinator;
     private Activity mSpyActivity;
+    private View mSpyRootView;
+    private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
+            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<TabStripTransitionCoordinator>
+            mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
 
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         doReturn(true).when(mSpyActivity).isInMultiWindowMode();
+        mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
         setupWithNoInsets();
         initAppHeaderCoordinator();
@@ -166,16 +176,17 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void enableDesktopWindowing() {
+        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
-        verify(mStripLayoutManager)
-                .updateHorizontalPaddings(eq((float) LEFT_BLOCK), eq((float) RIGHT_BLOCK));
+        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
     }
 
     @Test
     public void changeBoundingRects() {
+        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -194,46 +205,53 @@ public class AppHeaderCoordinatorUnitTest {
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
-        verify(mStripLayoutManager, times(2))
-                .updateHorizontalPaddings(eq((float) LEFT_BLOCK), eq((float) RIGHT_BLOCK));
+        verify(mAppHeaderDelegate, times(2))
+                .updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
     }
 
     @Test
     public void initializeWithDesktopWindowingThenExit() {
         setupWithLeftAndRightBoundingRect();
         initAppHeaderCoordinator();
+        initPostNative();
         verifyDesktopWindowingEnabled();
-        verify(mStripLayoutManager)
-                .updateHorizontalPaddings(eq((float) LEFT_BLOCK), eq((float) RIGHT_BLOCK));
+        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
         setupWithNoInsets();
         notifyInsetsRectObserver();
         assertFalse(
                 "DesktopWindowing should exit when no insets is supplied.",
                 mAppHeaderCoordinator.isDesktopWindowingEnabled());
-        verify(mStripLayoutManager).updateHorizontalPaddings(eq(0f), eq(0f));
+        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(0), eq(0));
         verify(mBrowserControlsVisDelegate).releasePersistentShowingToken(anyInt());
     }
 
     @Test
     public void testDestroy() {
+        initPostNative();
         mAppHeaderCoordinator.destroy();
 
         verify(mInsetsRectProvider).destroy();
         verify(mTabStripTransitionCoordinator).setInsetRectProvider(isNull());
-        verify(mRootView, times(0)).setSystemGestureExclusionRects(any());
-        verify(mStripLayoutManager, times(0)).updateHorizontalPaddings(anyFloat(), anyFloat());
+        verify(mSpyRootView, times(0)).setSystemGestureExclusionRects(any());
+        verify(mAppHeaderDelegate, times(0)).updateHorizontalPaddings(anyInt(), anyInt());
     }
 
     private void initAppHeaderCoordinator() {
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
                         mSpyActivity,
-                        mRootView,
-                        mStripLayoutManager,
+                        mSpyRootView,
                         mBrowserControlsVisDelegate,
                         mInsetObserver,
-                        mTabStripTransitionCoordinator);
+                        mAppHeaderDelegateSupplier,
+                        mTabStripTransitionCoordinatorSupplier);
+    }
+
+    private void initPostNative() {
+        mAppHeaderDelegateSupplier.set(mAppHeaderDelegate);
+        mTabStripTransitionCoordinatorSupplier.set(mTabStripTransitionCoordinator);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     private void setupWithNoInsets() {
@@ -273,6 +291,6 @@ public class AppHeaderCoordinatorUnitTest {
                 mAppHeaderCoordinator.isDesktopWindowingEnabled());
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
-        verify(mRootView, atLeastOnce()).setSystemGestureExclusionRects(any());
+        verify(mSpyRootView, atLeastOnce()).setSystemGestureExclusionRects(any());
     }
 }

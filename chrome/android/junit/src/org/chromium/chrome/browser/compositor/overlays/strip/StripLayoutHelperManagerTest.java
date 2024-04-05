@@ -601,8 +601,8 @@ public class StripLayoutHelperManagerTest {
         activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
 
         // Update the paddings.
-        float leftPadding = 10f;
-        float rightPadding = 20f;
+        int leftPadding = 10;
+        int rightPadding = 20;
         int topPaddingPx = 5;
         mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPaddingPx);
@@ -624,8 +624,8 @@ public class StripLayoutHelperManagerTest {
                         eq(hoveredTabId),
                         anyInt(),
                         anyFloat(),
-                        eq(leftPadding),
-                        eq(rightPadding),
+                        eq((float) leftPadding),
+                        eq((float) rightPadding),
                         eq((float) topPaddingPx));
     }
 
@@ -948,8 +948,8 @@ public class StripLayoutHelperManagerTest {
     @Test
     public void testTouchEventsIgnoredOnPaddings() {
         // Update the size and paddings.
-        float leftPadding = 10f;
-        float rightPadding = 20f;
+        int leftPadding = 10;
+        int rightPadding = 20;
         mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);

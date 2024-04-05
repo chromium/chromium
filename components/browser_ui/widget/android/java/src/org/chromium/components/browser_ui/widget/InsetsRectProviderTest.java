@@ -89,6 +89,14 @@ public class InsetsRectProviderTest {
     }
 
     @Test
+    public void testInitializationEmpty() {
+        int type = WindowInsetsCompat.Type.captionBar();
+        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, null);
+
+        assertSuppliedValues(Insets.NONE, new Rect(), List.of());
+    }
+
+    @Test
     public void testObservation() {
         // Assume inset is at the bottom for this test.
         int type = WindowInsetsCompat.Type.navigationBars();

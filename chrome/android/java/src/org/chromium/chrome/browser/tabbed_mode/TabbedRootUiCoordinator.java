@@ -27,6 +27,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -119,6 +121,7 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -191,7 +194,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private AppHeaderCoordinator mAppHeaderCoordinator;
+    // TODO(crbug/325351108): Remove the use of supplier and inject through ctor.
+    private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
+            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<TabStripTransitionCoordinator>
+            mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
+    private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private Destroyable mTabGroupCreationDialogManager;
 
     /**
@@ -415,6 +423,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusBarColorController.setAllowToolbarColorOnTablets(
                 ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
+        initAppHeaderCoordinator();
     }
 
     @Override
@@ -716,7 +725,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
         initTabStripTransitionCoordinator();
-        initAppHeaderCoordinator();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) {
             PageInfoSharingControllerImpl.getInstance().initialize();
         }
@@ -816,6 +824,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         initStatusIndicatorCoordinator(layoutManager);
         mLayoutManager = layoutManager;
+
+        if (mLayoutManager instanceof LayoutManagerChrome) {
+            StripLayoutHelperManager stripLayoutHelperManager =
+                    ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager();
+            if (stripLayoutHelperManager != null) {
+                mAppHeaderDelegateSupplier.set(stripLayoutHelperManager);
+            }
+        }
     }
 
     @Override
@@ -1204,33 +1220,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
+        assert mToolbarManager.getTabStripTransitionCoordinator() != null;
+        mTabStripTransitionCoordinatorSupplier.set(
+                mToolbarManager.getTabStripTransitionCoordinator());
     }
 
     private void initAppHeaderCoordinator() {
         // AppHeaderCoordinator require API 30 to call the WindowInsets APIs.
         if (VERSION.SDK_INT < VERSION_CODES.R) return;
 
-        StripLayoutHelperManager stripLayoutHelperManager =
-                ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager();
-        if (stripLayoutHelperManager == null) return;
-
-        // |stripLayoutHelperManager| will be non-null only on tablets.
-        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
             return;
         }
 
-        var tabStripTransitionCoordinator = mToolbarManager.getTabStripTransitionCoordinator();
-        assert tabStripTransitionCoordinator != null;
-
-        // TODO(crbug/328446763): instantiate earlier so the tab strip place holder draws properly.
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
                         mActivity,
-                        mCoordinator,
-                        stripLayoutHelperManager,
+                        mActivity.getWindow().getDecorView().getRootView(),
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserverViewSupplier.get(),
-                        tabStripTransitionCoordinator);
+                        mAppHeaderDelegateSupplier,
+                        mTabStripTransitionCoordinatorSupplier);
         mAppHeaderCoordinatorSupplier.set(mAppHeaderCoordinator);
     }
 

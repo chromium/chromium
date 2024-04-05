@@ -94,7 +94,8 @@ public class StripLayoutHelperManager
         implements SceneOverlay,
                 PauseResumeWithNativeObserver,
                 TabStripHeightObserver,
-                TopResumedActivityChangedObserver {
+                TopResumedActivityChangedObserver,
+                AppHeaderCoordinator.AppHeaderDelegate {
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -535,12 +536,6 @@ public class StripLayoutHelperManager
         appHeaderCoordinatorSupplier.onAvailable(
                 appHeaderCoordinator -> mDesktopWindowModeSupplier = appHeaderCoordinator);
 
-        if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
-            // Add some large margins to tab strip when flag enabled.
-            // TODO(crbug/325351108): Introducing external callers and remove this call.
-            updateHorizontalPaddings(
-                    EXPERIMENT_LEFT_MARGIN_DP * mDensity, EXPERIMENT_RIGHT_MARGIN_DP * mDensity);
-        }
         onContextChanged(context);
     }
 
@@ -1178,11 +1173,17 @@ public class StripLayoutHelperManager
      * @param leftPaddingPx Left padding for the tab strip in px.
      * @param rightPaddingPx Right padding for the tab strip in px.
      */
-    public void updateHorizontalPaddings(float leftPaddingPx, float rightPaddingPx) {
+    @Override
+    public void updateHorizontalPaddings(int leftPaddingPx, int rightPaddingPx) {
         mLeftPadding = leftPaddingPx / mDensity;
         mRightPadding = rightPaddingPx / mDensity;
 
         onSizeChanged(mWidth, mHeight, mLastVisibleViewportOffsetY, mOrientation);
+    }
+
+    @Override
+    public int getAppHeaderBackgroundColor() {
+        return getBackgroundColor();
     }
 
     private void updateTitleForTab(Tab tab) {

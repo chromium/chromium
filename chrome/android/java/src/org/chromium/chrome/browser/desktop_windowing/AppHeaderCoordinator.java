@@ -14,6 +14,7 @@ import android.view.WindowInsetsController;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowCompat;
@@ -22,15 +23,15 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
@@ -45,15 +46,33 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
 
     private static @Nullable InsetsRectProvider sInsetsRectProviderForTesting;
 
-    private final Activity mActivity;
-    private final View mCoordinatorView;
-    private final InsetsRectProvider mInsetsRectProvider;
-    private final StripLayoutHelperManager mStripLayoutHelperManager;
+    /** External delegate to adjust UI in response to app header signals. */
+    public interface AppHeaderDelegate {
+
+        /**
+         * Adjust the paddings for app header region.
+         *
+         * @param leftPadding Left padding at the app header region in px.
+         * @param rightPadding Right padding at the app header region in px.
+         */
+        void updateHorizontalPaddings(@Px int leftPadding, @Px int rightPadding);
+
+        /**
+         * @return The background color to be used for the app header.
+         */
+        int getAppHeaderBackgroundColor();
+    }
+
+    private Activity mActivity;
+    private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
-    private final TabStripTransitionCoordinator mTabStripTransitionCoordinator;
-
+    private final InsetsRectProvider mInsetsRectProvider;
     private final WindowInsetsController mInsetsController;
+    private final OneshotSupplier<AppHeaderDelegate> mAppHeaderDelegateSupplier;
+    private final OneshotSupplier<TabStripTransitionCoordinator>
+            mTabStripTransitionCoordinatorSupplier;
 
+    // Internal states
     private boolean mDesktopWindowingEnabled;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
@@ -63,44 +82,38 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
      *
      * @param activity The activity associated with the window containing the app header.
-     * @param coordinatorView The root view within the activity.
-     * @param stripLayoutHelperManager StripLayoutHelperManager that manages the tab strip.
+     * @param rootView The root view within the activity.
      * @param browserControlsVisibilityDelegate Delegate interface allowing control of the browser
      *     controls visibility.
      * @param insetObserver {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
-     * @param tabStripTransitionCoordinator Coordinator managing tab strip height transitions.
      */
     @SuppressWarnings("WrongConstant")
     public AppHeaderCoordinator(
             Activity activity,
-            View coordinatorView,
-            StripLayoutHelperManager stripLayoutHelperManager,
+            View rootView,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
-            @NonNull TabStripTransitionCoordinator tabStripTransitionCoordinator) {
-        // TODO(crbug/328446763): Properly release the reference to the activity when destroyed.
+            OneshotSupplier<AppHeaderDelegate> appHeaderDelegateSupplier,
+            OneshotSupplier<TabStripTransitionCoordinator> tabStripTransitionCoordinatorSupplier) {
         mActivity = activity;
-        mCoordinatorView = coordinatorView;
-        mStripLayoutHelperManager = stripLayoutHelperManager;
+        mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
-        mTabStripTransitionCoordinator = tabStripTransitionCoordinator;
+        mInsetsController = mRootView.getWindowInsetsController();
+        mAppHeaderDelegateSupplier = appHeaderDelegateSupplier;
+        mTabStripTransitionCoordinatorSupplier = tabStripTransitionCoordinatorSupplier;
 
-        mInsetsController = mActivity.getWindow().getDecorView().getWindowInsetsController();
-
-        WindowInsets insets = mActivity.getWindow().getDecorView().getRootWindowInsets();
+        // Initialize mInsetsRectProvider and setup observers.
+        WindowInsets insets = mRootView.getRootWindowInsets();
+        WindowInsetsCompat initInsets =
+                insets == null ? null : WindowInsetsCompat.toWindowInsetsCompat(insets, mRootView);
         mInsetsRectProvider =
                 sInsetsRectProviderForTesting != null
                         ? sInsetsRectProviderForTesting
                         : new InsetsRectProvider(
-                                insetObserver,
-                                WindowInsets.Type.captionBar(),
-                                WindowInsetsCompat.toWindowInsetsCompat(insets, mCoordinatorView));
+                                insetObserver, WindowInsets.Type.captionBar(), initInsets);
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mInsetsRectProvider.addObserver(insetsRectUpdateRunnable);
-
-        // TODO(wenyufu): Inject this mInsetsRectProvider into TSTC's ctor.
-        mTabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider);
 
         // Populate the initial value if the rect provider is ready.
         if (!mInsetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
@@ -108,13 +121,21 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
                     mInsetsRectProvider.getWidestUnoccludedRect());
         }
 
+        mAppHeaderDelegateSupplier.runSyncOrOnAvailable(
+                (delegate) -> maybeUpdateAppHeaderPaddings(mDesktopWindowingEnabled));
+        mTabStripTransitionCoordinatorSupplier.runSyncOrOnAvailable(
+                (tabStripTransitionCoordinator) ->
+                        tabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider));
         set(mDesktopWindowingEnabled);
     }
 
     /** Destroy the instances and remove all the dependencies. */
     public void destroy() {
-        mTabStripTransitionCoordinator.setInsetRectProvider(null);
+        mActivity = null;
         mInsetsRectProvider.destroy();
+        if (mTabStripTransitionCoordinatorSupplier.get() != null) {
+            mTabStripTransitionCoordinatorSupplier.get().setInsetRectProvider(null);
+        }
     }
 
     /**
@@ -132,16 +153,7 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
 
         // Regardless the current state, we'll update the side padding for StripLayoutHelper, as
         // bounding rect can have updates without entering / exiting desktop windowing mode.
-        if (desktopWindowingEnabled) {
-            mStripLayoutHelperManager.updateHorizontalPaddings(
-                    widestUnoccludedRect.left,
-                    mInsetsRectProvider.getWindowRect().width() - widestUnoccludedRect.right);
-            updateExclusionRects(mWidestUnoccludedRect);
-        } else if (mDesktopWindowingEnabled) {
-            // Only reset when we are exiting desktop windowing mode.
-            mStripLayoutHelperManager.updateHorizontalPaddings(0, 0);
-            updateExclusionRects(null);
-        }
+        maybeUpdateAppHeaderPaddings(desktopWindowingEnabled);
 
         // If whether we are in DW mode does not change, we can end this method now.
         if (desktopWindowingEnabled == mDesktopWindowingEnabled) return;
@@ -165,9 +177,25 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
         }
     }
 
-    private void updateExclusionRects(Rect rectsSeen) {
-        // TODO(crbug/328446763): Get the rect based on tab strip's size.
-        mCoordinatorView.setSystemGestureExclusionRects(Collections.singletonList(rectsSeen));
+    private void maybeUpdateAppHeaderPaddings(boolean isDesktopWindowingEnabled) {
+        if (mAppHeaderDelegateSupplier.get() == null
+                || mInsetsRectProvider.getWindowRect().isEmpty()
+                || mWidestUnoccludedRect == null) return;
+
+        if (isDesktopWindowingEnabled) {
+            mAppHeaderDelegateSupplier
+                    .get()
+                    .updateHorizontalPaddings(
+                            mWidestUnoccludedRect.left,
+                            mInsetsRectProvider.getWindowRect().width()
+                                    - mWidestUnoccludedRect.right);
+            // TODO(crbug/328446763): Get the rect based on tab strip's size.
+            mRootView.setSystemGestureExclusionRects(List.of(mWidestUnoccludedRect));
+        } else if (mDesktopWindowingEnabled) {
+            // Only reset when we are exiting desktop windowing mode.
+            mAppHeaderDelegateSupplier.get().updateHorizontalPaddings(0, 0);
+            mRootView.setSystemGestureExclusionRects(List.of());
+        }
     }
 
     /**
@@ -209,9 +237,11 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     // TODO(crbug/328446763): Call this method when theme / tab model switches.
     @SuppressLint("WrongConstant")
     private void updateIconColorForCaptionBars() {
+        if (mAppHeaderDelegateSupplier.get() == null) return;
+
         boolean useLightIcon =
                 ColorUtils.shouldUseLightForegroundOnBackground(
-                        mStripLayoutHelperManager.getBackgroundColor());
+                        mAppHeaderDelegateSupplier.get().getAppHeaderBackgroundColor());
         int useLightCaptionBar = useLightIcon ? APPEARANCE_LIGHT_CAPTION_BARS : 0;
         mInsetsController.setSystemBarsAppearance(
                 useLightCaptionBar, APPEARANCE_LIGHT_CAPTION_BARS);
