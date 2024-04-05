@@ -36,12 +36,7 @@ public class ChromeBackupWatcher {
     @CalledByNative
     private ChromeBackupWatcher() {
         Context context = ContextUtils.getApplicationContext();
-        if (context == null) {
-            // Initialize explicitly, otherwise the compiler says final members weren't initialized.
-            mBackupManager = null;
-            mPrefChangeRegistrar = null;
-            return;
-        }
+        assert context != null;
 
         mBackupManager = new BackupManager(context);
         // Watch the Java preferences that are backed up.
@@ -85,9 +80,8 @@ public class ChromeBackupWatcher {
 
     @CalledByNative
     private void destroy() {
-        if (mPrefChangeRegistrar != null) {
-            mPrefChangeRegistrar.destroy();
-        }
+        assert mPrefChangeRegistrar != null;
+        mPrefChangeRegistrar.destroy();
     }
 
     private void onBackupPrefsChanged() {
