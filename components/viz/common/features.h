@@ -21,7 +21,6 @@ namespace features {
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackdropFilterMirrorEdgeMode);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegateTransforms);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
@@ -110,7 +109,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
-VIZ_COMMON_EXPORT bool ShouldDelegateTransforms();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldUseRealBuffersForPageFlipTest();

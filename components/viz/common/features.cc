@@ -294,16 +294,6 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
     &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
     base::Milliseconds(200)};
 
-// Allows delegating transforms over Wayland when it is also supported by Ash.
-BASE_FEATURE(kDelegateTransforms,
-             "DelegateTransforms",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // If enabled, Chrome includes the Renderer Main thread(s) into the
 // ADPF(Android Dynamic Performance Framework) hint session.
 BASE_FEATURE(kEnableADPFRendererMain,
@@ -389,10 +379,6 @@ const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
-}
-
-bool ShouldDelegateTransforms() {
-  return base::FeatureList::IsEnabled(features::kDelegateTransforms);
 }
 
 #if BUILDFLAG(IS_ANDROID)

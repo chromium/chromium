@@ -95,8 +95,7 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
   supports_out_of_window_clip_rect_ =
       runtime_props.supports_out_of_window_clip_rect;
   needs_background_image_ = runtime_props.needs_background_image;
-  supports_affine_transform_ = features::ShouldDelegateTransforms() &&
-                               runtime_props.supports_affine_transform;
+  supports_affine_transform_ = runtime_props.supports_affine_transform;
   has_transformation_fix_ = runtime_props.has_transformation_fix;
 }
 
