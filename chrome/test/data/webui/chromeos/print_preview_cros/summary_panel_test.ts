@@ -172,7 +172,7 @@ suite('SummaryPanel', () => {
     const printDisabledEvent1 =
         eventToPromise(PRINT_BUTTON_DISABLED_CHANGED_EVENT, controller);
     const delay = 10;
-    printPreviewPageHandler.useTestDelay(delay);
+    printPreviewPageHandler.setTestDelay(delay);
 
     const printButton =
         strictQuery<Button>(printButtonSelector, element!.shadowRoot, Button);

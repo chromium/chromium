@@ -67,7 +67,7 @@ suite('PrintTicketManager', () => {
           ' invoked when sentPrintRequest called',
       async () => {
         const delay = 1;
-        printPreviewPageHandler.useTestDelay(delay);
+        printPreviewPageHandler.setTestDelay(delay);
         const instance = PrintTicketManager.getInstance();
         let startCount = 0;
         instance.addEventListener(PRINT_REQUEST_STARTED_EVENT, () => {
@@ -106,7 +106,7 @@ suite('PrintTicketManager', () => {
       'isPrintRequestInProgress updates based on sendPrintRequest progress',
       async () => {
         const delay = 1;
-        printPreviewPageHandler.useTestDelay(delay);
+        printPreviewPageHandler.setTestDelay(delay);
         const instance = PrintTicketManager.getInstance();
         const startEvent =
             eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
@@ -131,7 +131,7 @@ suite('PrintTicketManager', () => {
   // called if print request is not in progress.
   test('ensure only one print request triggered at a time', async () => {
     const delay = 1;
-    printPreviewPageHandler.useTestDelay(delay);
+    printPreviewPageHandler.setTestDelay(delay);
     const instance = PrintTicketManager.getInstance();
     const startEvent = eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
     const finishEvent = eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);

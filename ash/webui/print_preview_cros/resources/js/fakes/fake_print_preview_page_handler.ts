@@ -72,7 +72,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.callCount.set(CANCEL_METHOD, prevCallCount + 1);
   }
 
-  useTestDelay(delay: number): void {
+  setTestDelay(delay: number): void {
     assert(delay >= 0);
     this.testDelayMs = delay;
   }

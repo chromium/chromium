@@ -74,7 +74,7 @@ suite('PrintPreviewCrosApp', () => {
             methods, 'resolveMethodWithDelay');
         const delay = 1;
         resolveWithDelay.addExpectation('print', delay);
-        printPreviewPageHandler.useTestDelay(delay);
+        printPreviewPageHandler.setTestDelay(delay);
         await printPreviewPageHandler.print();
 
         mockController.verifyMocks();
