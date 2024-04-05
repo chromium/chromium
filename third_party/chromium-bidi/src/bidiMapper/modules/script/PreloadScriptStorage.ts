@@ -32,32 +32,34 @@ export class PreloadScriptStorage {
   /** Tracks all BiDi preload scripts.  */
   readonly #scripts = new Set<PreloadScript>();
 
-  /** Finds all entries that match the given filter. */
+  /**
+   * Finds all entries that match the given filter (OR logic).
+   */
   find(filter?: PreloadScriptFilter): PreloadScript[] {
     if (!filter) {
       return [...this.#scripts];
     }
 
     return [...this.#scripts].filter((script) => {
-      if (filter.id !== undefined && filter.id !== script.id) {
-        return false;
+      if (filter.id !== undefined && filter.id === script.id) {
+        return true;
       }
       if (
         filter.targetId !== undefined &&
-        !script.targetIds.has(filter.targetId)
+        script.targetIds.has(filter.targetId)
       ) {
-        return false;
+        return true;
       }
       if (
         filter.global !== undefined &&
         // Global scripts have no contexts
-        ((filter.global && script.contexts !== undefined) ||
+        ((filter.global && script.contexts === undefined) ||
           // Non global scripts always have contexts
-          (!filter.global && script.contexts === undefined))
+          (!filter.global && script.contexts !== undefined))
       ) {
-        return false;
+        return true;
       }
-      return true;
+      return false;
     });
   }
 

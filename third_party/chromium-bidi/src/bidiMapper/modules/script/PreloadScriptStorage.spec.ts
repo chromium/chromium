@@ -26,6 +26,14 @@ const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
 const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';
 const CDP_TARGET_ID = 'TARGET_ID';
 
+function createPreloadScript(id: string, contexts?: string[]): PreloadScript {
+  const preloadScript = sinon.createStubInstance(PreloadScript);
+  sinon.stub(preloadScript, 'id').get(() => id);
+  sinon.stub(preloadScript, 'contexts').get(() => contexts);
+  sinon.stub(preloadScript, 'targetIds').get(() => new Set([CDP_TARGET_ID]));
+  return preloadScript;
+}
+
 describe('PreloadScriptStorage', () => {
   let preloadScriptStorage: PreloadScriptStorage;
 
@@ -35,6 +43,10 @@ describe('PreloadScriptStorage', () => {
     preloadScriptStorage = new PreloadScriptStorage();
     cdpTarget = sinon.createStubInstance(CdpTarget);
     sinon.stub(cdpTarget, 'id').get(() => CDP_TARGET_ID);
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   it('initial state', () => {
@@ -106,14 +118,21 @@ describe('PreloadScriptStorage', () => {
     });
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
+  it(`find preload scripts using OR logic`, () => {
+    const preloadScript1 = createPreloadScript(MOCKED_UUID_1, [CDP_TARGET_ID]);
+    preloadScriptStorage.add(preloadScript1);
 
-  function createPreloadScript(id: string): PreloadScript {
-    const preloadScript = sinon.createStubInstance(PreloadScript);
-    sinon.stub(preloadScript, 'id').get(() => id);
-    sinon.stub(preloadScript, 'targetIds').get(() => new Set([CDP_TARGET_ID]));
-    return preloadScript;
-  }
+    expect(
+      preloadScriptStorage.find({
+        id: MOCKED_UUID_2,
+        targetId: CDP_TARGET_ID,
+      })
+    ).to.deep.equal([preloadScript1]);
+    expect(
+      preloadScriptStorage.find({
+        targetId: CDP_TARGET_ID,
+        global: true,
+      })
+    ).to.deep.equal([preloadScript1]);
+  });
 });
