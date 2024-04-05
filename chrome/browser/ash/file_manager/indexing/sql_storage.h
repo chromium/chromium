@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/file_manager/indexing/term_table.h"
+#include "chrome/browser/ash/file_manager/indexing/url_table.h"
 #include "sql/database.h"
+#include "url/gurl.h"
 
 namespace sql {
 class Statement;
@@ -54,6 +56,17 @@ class SqlStorage {
   // the ID that was assigned to the term. Otherwise, it returns - 1.
   int64_t DeleteTerm(const std::string& term);
 
+  // Gets an ID for the given URL. Creates a new one, if this URL is seen for
+  // the first time.
+  int64_t GetOrCreateUrlId(const GURL& url);
+
+  // Returns the ID of the given URL or -1 if it does not exists.
+  int64_t GetUrlId(const GURL& url);
+
+  // Deletes the given URL and returns its ID. If the URL was not
+  // seen before, this method returns -1.
+  int64_t DeleteUrl(const GURL& url);
+
  private:
   // Error callback set on the database.
   void OnErrorCallback(int error, sql::Statement* stmt);
@@ -70,6 +83,9 @@ class SqlStorage {
 
   // The table that holds mapping from tags to tag IDs.
   TermTable term_table_;
+
+  // The table that holds mapping from URLs to URL IDs.
+  UrlTable url_table_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace file_manager {
 namespace {
@@ -58,6 +59,34 @@ TEST_F(SqlStorageTest, DeleteTerm) {
   EXPECT_EQ(storage_->DeleteTerm("foo"), -1);
   EXPECT_EQ(storage_->GetTermId("foo", true), 1);
   EXPECT_EQ(storage_->DeleteTerm("foo"), 1);
+}
+
+TEST_F(SqlStorageTest, GetOrCreateUrlId) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  GURL url("filesystem:chrome://file-manager/external/Downloads-u123/foo.txt");
+  EXPECT_EQ(storage_->GetOrCreateUrlId(url), 1);
+}
+
+TEST_F(SqlStorageTest, GetUrlId) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  GURL url("filesystem:chrome://file-manager/external/Downloads-u123/foo.txt");
+  EXPECT_EQ(storage_->GetUrlId(url), -1);
+  EXPECT_EQ(storage_->GetOrCreateUrlId(url), 1);
+  EXPECT_EQ(storage_->GetUrlId(url), 1);
+}
+
+TEST_F(SqlStorageTest, DeleteUrl) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  GURL url("filesystem:chrome://file-manager/external/Downloads-u123/foo.txt");
+  EXPECT_EQ(storage_->DeleteUrl(url), -1);
+  EXPECT_EQ(storage_->GetOrCreateUrlId(url), 1);
+  EXPECT_EQ(storage_->DeleteUrl(url), 1);
 }
 
 }  // namespace

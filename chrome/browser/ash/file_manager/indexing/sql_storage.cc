@@ -26,7 +26,8 @@ SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
     : uma_tag_(uma_tag),
       db_path_(db_path),
       db_(sql::Database(sql::DatabaseOptions())),
-      term_table_(&db_) {}
+      term_table_(&db_),
+      url_table_(&db_) {}
 
 SqlStorage::~SqlStorage() {
   db_.reset_error_callback();
@@ -64,6 +65,11 @@ bool SqlStorage::Init() {
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
     return false;
   }
+  if (!url_table_.Init()) {
+    LOG(ERROR) << "Failed to initialize URL table";
+    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    return false;
+  }
 
   // Record successful operation and let the world know.
   base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenOk);
@@ -97,6 +103,21 @@ int64_t SqlStorage::GetTermId(const std::string& term_bytes, bool create) {
 int64_t SqlStorage::DeleteTerm(const std::string& term_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return term_table_.DeleteTerm(term_bytes);
+}
+
+int64_t SqlStorage::GetOrCreateUrlId(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url_table_.GetOrCreateUrlId(url);
+}
+
+int64_t SqlStorage::GetUrlId(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url_table_.GetUrlId(url);
+}
+
+int64_t SqlStorage::DeleteUrl(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url_table_.DeleteUrl(url);
 }
 
 }  // namespace file_manager

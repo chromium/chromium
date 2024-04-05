@@ -12,11 +12,11 @@ namespace file_manager {
 namespace {
 
 // The statement used to create the term table.
-static constexpr char kCreateTableQuery[] =
+static constexpr char kCreateTermTableQuery[] =
     // clang-format off
     "CREATE TABLE IF NOT EXISTS term_table("
-        "term_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "term TEXT NOT NULL)";
+      "term_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "term TEXT NOT NULL)";
 // clang-format on
 
 // The statement used to delete a term from the database by term ID.
@@ -34,71 +34,50 @@ static constexpr char kGetTermIdQuery[] =
 // The statement used to insert a new term into the table.
 static constexpr char kInsertTermQuery[] =
     // clang-format off
-     "INSERT INTO term_table(term) VALUES (?) RETURNING term_id";
+    "INSERT INTO term_table(term) VALUES (?) RETURNING term_id";
+// clang-format on
+
+// The statement that creates an index on terms.
+static constexpr char kCreateTermIndexQuery[] =
+    // clang-format off
+    "CREATE UNIQUE INDEX IF NOT EXISTS term_index ON term_table(term)";
 // clang-format on
 
 }  // namespace
 
-TermTable::TermTable(sql::Database* db) : db_(db) {}
+TermTable::TermTable(sql::Database* db) : TextTable(db, "term_table") {}
 TermTable::~TermTable() = default;
 
-bool TermTable::Init() {
-  if (!db_->is_open()) {
-    LOG(WARNING) << "Unable to initialized TermTable due to closed db";
-    return false;
-  }
-  sql::Statement create_table(
-      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTableQuery));
-  DCHECK(create_table.is_valid())
-      << "Failed to crate the term table " << kCreateTableQuery;
-  if (!create_table.Run()) {
-    LOG(ERROR) << "Failed to create the term table";
-    return false;
-  }
-  // TODO(b:327535200): Create a unique index on the term column.
-  return true;
-}
-
 int64_t TermTable::DeleteTerm(const std::string& term) {
-  int64_t term_id = GetTermId(term, false);
-  if (term_id < 0) {
-    return term_id;
-  }
-
-  sql::Statement delete_term_by_id(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteTermQuery));
-  DCHECK(delete_term_by_id.is_valid())
-      << "Invalid delete statement: \"" << kDeleteTermQuery << "\"";
-  delete_term_by_id.BindInt64(0, term_id);
-  if (!delete_term_by_id.Run()) {
-    LOG(ERROR) << "Failed to delete terms matching " << term;
-    return -1;
-  }
-  return term_id;
+  return DeleteValue(term);
 }
 
 int64_t TermTable::GetTermId(const std::string& term, bool create) {
-  sql::Statement get_term_id(
-      db_->GetCachedStatement(SQL_FROM_HERE, kGetTermIdQuery));
-  get_term_id.BindString(0, term);
-  DCHECK(get_term_id.is_valid())
-      << "Invalid get term ID statement: \"" << kGetTermIdQuery << "\"";
-  if (get_term_id.Step()) {
-    return get_term_id.ColumnInt64(0);
-  }
-  if (!create) {
-    return -1;
-  }
-  sql::Statement insert_term(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTermQuery));
-  DCHECK(insert_term.is_valid())
-      << "Invalid insert term statement \"" << kInsertTermQuery << "\"";
-  insert_term.BindString(0, term);
-  if (insert_term.Step()) {
-    return insert_term.ColumnInt64(0);
-  }
-  LOG(ERROR) << "Failed to insert term" << term;
-  return -1;
+  return GetValueId(term, create);
 }
 
+std::unique_ptr<sql::Statement> TermTable::MakeGetStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetTermIdQuery));
+}
+
+std::unique_ptr<sql::Statement> TermTable::MakeInsertStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTermQuery));
+}
+
+std::unique_ptr<sql::Statement> TermTable::MakeDeleteStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteTermQuery));
+}
+
+std::unique_ptr<sql::Statement> TermTable::MakeCreateTableStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTermTableQuery));
+}
+
+std::unique_ptr<sql::Statement> TermTable::MakeCreateIndexStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTermIndexQuery));
+}
 }  // namespace file_manager

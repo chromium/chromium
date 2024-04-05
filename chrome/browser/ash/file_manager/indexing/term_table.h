@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_TERM_TABLE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_TERM_TABLE_H_
 
+#include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/file_manager/indexing/text_table.h"
 #include "sql/database.h"
 
 namespace file_manager {
@@ -17,21 +18,16 @@ namespace file_manager {
 // if a file is labeled as "downloaded", the "downloaded" text is considered
 // a term. In this table it is assigned a unique integer ID that is used
 // across other tables for information retrieval.
-class TermTable {
+class TermTable : public TextTable {
  public:
   // Creates a new table and passes the pointer to the SQL database to it. The
   // caller must make sure it owns both the sql::Database object and this table.
   // The caller also must make sure that the sql::Database outlives the table.
   explicit TermTable(sql::Database* db);
-
-  ~TermTable();
+  ~TermTable() override;
 
   TermTable(const TermTable&) = delete;
   TermTable& operator=(const TermTable&) = delete;
-
-  // Initializes the database, if necessary. Returns true on success, and false
-  // on failure.
-  bool Init();
 
   // Deletes the given term from the table. Returns -1, if the term was not
   // found. Otherwise, returns the ID that the term was assigned.
@@ -42,9 +38,12 @@ class TermTable {
   // term and returns its ID, or returns the existing term ID.
   int64_t GetTermId(const std::string& term, bool create);
 
- private:
-  // The pointer to a database owned by the whoever created this table.
-  raw_ptr<sql::Database> db_;
+ protected:
+  std::unique_ptr<sql::Statement> MakeGetStatement() const override;
+  std::unique_ptr<sql::Statement> MakeInsertStatement() const override;
+  std::unique_ptr<sql::Statement> MakeDeleteStatement() const override;
+  std::unique_ptr<sql::Statement> MakeCreateTableStatement() const override;
+  std::unique_ptr<sql::Statement> MakeCreateIndexStatement() const override;
 };
 
 }  // namespace file_manager
