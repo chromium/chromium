@@ -55,8 +55,10 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   // to match it against returned suggestions.
   std::string SetUpPromoCodeOffer(std::string origin,
                                   const GURL& offer_details_url) {
-    personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
-    personal_data_manager_.get()->SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
     AutofillOfferData testPromoCodeOfferData =
         test::GetPromoCodeOfferData(GURL(origin));
     testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
@@ -270,8 +272,10 @@ TEST_F(MerchantPromoCodeManagerTest,
 TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
-  personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
-  personal_data_manager_.get()->SetAutofillPaymentMethodsEnabled(true);
+  personal_data_manager_->test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
+  personal_data_manager_->test_payments_data_manager()
+      .SetAutofillPaymentMethodsEnabled(true);
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
@@ -324,7 +328,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillWalletImportDisabled) {
   AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
-  personal_data_manager_->SetAutofillWalletImportEnabled(false);
+  personal_data_manager_->test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(false);
 
   // Autofill wallet import is disabled, so check that we do not return
   // suggestions to the handler.

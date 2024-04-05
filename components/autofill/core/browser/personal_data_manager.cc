@@ -486,6 +486,7 @@ void PersonalDataManager::SetSyncServiceForTest(
     sync_service_->RemoveObserver(this);
     sync_service_ = nullptr;
   }
+  payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
   SetSyncService(sync_service);
 }
 
@@ -535,9 +536,6 @@ std::vector<CreditCard*> PersonalDataManager::GetLocalCreditCards() const {
 }
 
 std::vector<CreditCard*> PersonalDataManager::GetServerCreditCards() const {
-  std::vector<CreditCard*> result;
-  if (!IsAutofillWalletImportEnabled())
-    return result;
   return payments_data_manager_->GetServerCreditCards();
 }
 
@@ -550,9 +548,6 @@ std::vector<const Iban*> PersonalDataManager::GetLocalIbans() const {
 }
 
 std::vector<const Iban*> PersonalDataManager::GetServerIbans() const {
-  if (!IsAutofillWalletImportEnabled()) {
-    return {};
-  }
   return payments_data_manager_->GetServerIbans();
 }
 
@@ -570,25 +565,16 @@ PaymentsCustomerData* PersonalDataManager::GetPaymentsCustomerData() const {
 
 std::vector<CreditCardCloudTokenData*>
 PersonalDataManager::GetCreditCardCloudTokenData() const {
-  if (!IsAutofillWalletImportEnabled()) {
-    return {};
-  }
   return payments_data_manager_->GetCreditCardCloudTokenData();
 }
 
 std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
-  if (!IsAutofillWalletImportEnabled()) {
-    return {};
-  }
   return payments_data_manager_->GetAutofillOffers();
 }
 
 std::vector<const AutofillOfferData*>
 PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
-  if (!IsAutofillWalletImportEnabled()) {
-    return {};
-  }
   return payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
       origin);
 }
@@ -604,16 +590,11 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
 
 gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
     const GURL& card_art_url) const {
-  if (!IsAutofillWalletImportEnabled())
-    return nullptr;
   return payments_data_manager_->GetCachedCardArtImageForUrl(card_art_url);
 }
 
 std::vector<VirtualCardUsageData*>
 PersonalDataManager::GetVirtualCardUsageData() const {
-  if (!IsAutofillWalletImportEnabled()) {
-    return {};
-  }
   return payments_data_manager_->GetVirtualCardUsageData();
 }
 
@@ -651,46 +632,6 @@ void PersonalDataManager::AddMaskedBankAccountForTest(
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
          payments_data_manager_->IsAutofillPaymentMethodsEnabled();
-}
-
-bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
-  if (is_syncing_for_test_) {
-    return true;
-  }
-
-  if (!sync_service_) {
-    // Without `sync_service_`, namely in off-the-record profiles, wallet import
-    // is effectively disabled.
-    return false;
-  }
-
-  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPayments);
-}
-
-bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
-  if (!IsAutofillWalletImportEnabled())
-    return false;
-
-  if (is_syncing_for_test_)
-    return true;
-
-  CHECK(sync_service_);
-
-  // Check if the user is in sync transport mode for wallet data.
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  if (!sync_service_->IsSyncFeatureEnabled()) {
-    // For SyncTransport, only show server payment methods if the user has opted
-    // in to seeing them in the dropdown.
-    if (!prefs::IsUserOptedInWalletSyncTransport(
-            pref_service_, sync_service_->GetAccountInfo().account_id)) {
-      return false;
-    }
-  }
-
-  // Server payment methods should be suggested if the sync service is active.
-  return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()

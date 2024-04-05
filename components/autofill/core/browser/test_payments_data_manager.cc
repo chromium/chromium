@@ -206,6 +206,19 @@ bool TestPaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
   return PaymentsDataManager::IsAutofillPaymentMethodsEnabled();
 }
 
+bool TestPaymentsDataManager::IsAutofillWalletImportEnabled() const {
+  // Return the value of autofill_wallet_import_enabled_ if it has been set,
+  // otherwise fall back to the normal behavior of checking the pref_service.
+  if (autofill_wallet_import_enabled_.has_value()) {
+    return autofill_wallet_import_enabled_.value();
+  }
+  return PaymentsDataManager::IsAutofillWalletImportEnabled();
+}
+
+bool TestPaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
+  return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
+}
+
 bool TestPaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   if (payment_methods_mandatory_reauth_enabled_.has_value()) {
     return payment_methods_mandatory_reauth_enabled_.value();

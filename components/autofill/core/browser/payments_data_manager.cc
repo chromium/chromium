@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -497,8 +498,7 @@ template <typename T>
 std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
     CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     base::FunctionRef<bool(const T&)> filter) const {
-  if (!pdm_->IsAutofillWalletImportEnabled() ||
-      !IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return std::nullopt;
   }
   base::Time now = AutofillClock::Now();
@@ -597,6 +597,9 @@ std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
+  if (!IsAutofillWalletImportEnabled()) {
+    return {};
+  }
   std::vector<CreditCard*> result;
   result.reserve(server_credit_cards_.size());
   for (const auto& card : server_credit_cards_) {
@@ -611,7 +614,7 @@ std::vector<CreditCard*> PaymentsDataManager::GetCreditCards() const {
   for (const auto& card : local_credit_cards_) {
     result.push_back(card.get());
   }
-  if (pdm_->IsAutofillWalletImportEnabled()) {
+  if (IsAutofillWalletImportEnabled()) {
     for (const auto& card : server_credit_cards_) {
       result.push_back(card.get());
     }
@@ -629,6 +632,9 @@ std::vector<const Iban*> PaymentsDataManager::GetLocalIbans() const {
 }
 
 std::vector<const Iban*> PaymentsDataManager::GetServerIbans() const {
+  if (!IsAutofillWalletImportEnabled()) {
+    return {};
+  }
   std::vector<const Iban*> result;
   result.reserve(server_ibans_.size());
   for (const std::unique_ptr<Iban>& iban : server_ibans_) {
@@ -640,7 +646,7 @@ std::vector<const Iban*> PaymentsDataManager::GetServerIbans() const {
 std::vector<const Iban*> PaymentsDataManager::GetIbans() const {
   std::vector<const Iban*> result;
   result.reserve(local_ibans_.size() + server_ibans_.size());
-  if (pdm_->IsAutofillWalletImportEnabled()) {
+  if (IsAutofillWalletImportEnabled()) {
     for (const std::unique_ptr<Iban>& iban : server_ibans_) {
       result.push_back(iban.get());
     }
@@ -654,7 +660,7 @@ std::vector<const Iban*> PaymentsDataManager::GetIbans() const {
 
 std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
   std::vector<const Iban*> ibans_to_suggest =
-      pdm_->ShouldSuggestServerPaymentMethods() ? GetIbans() : GetLocalIbans();
+      ShouldSuggestServerPaymentMethods() ? GetIbans() : GetLocalIbans();
   // Remove any IBAN from the returned list if it's a local IBAN and its
   // prefix, suffix, and length matches any existing server IBAN.
   std::erase_if(ibans_to_suggest, [this](const Iban* iban) {
@@ -687,6 +693,9 @@ PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
 
 std::vector<CreditCardCloudTokenData*>
 PaymentsDataManager::GetCreditCardCloudTokenData() const {
+  if (!IsAutofillWalletImportEnabled()) {
+    return {};
+  }
   std::vector<CreditCardCloudTokenData*> result;
   result.reserve(server_credit_card_cloud_token_data_.size());
   for (const auto& data : server_credit_card_cloud_token_data_) {
@@ -696,7 +705,7 @@ PaymentsDataManager::GetCreditCardCloudTokenData() const {
 }
 
 std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
   std::vector<AutofillOfferData*> result;
@@ -710,7 +719,7 @@ std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
 std::vector<const AutofillOfferData*>
 PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
@@ -758,6 +767,9 @@ gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
 
 gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
     const GURL& card_art_url) const {
+  if (!IsAutofillWalletImportEnabled()) {
+    return nullptr;
+  }
   if (!card_art_url.is_valid()) {
     return nullptr;
   }
@@ -811,6 +823,21 @@ bool PaymentsDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
 
 void PaymentsDataManager::SetAutofillHasSeenIban() {
   prefs::SetAutofillHasSeenIban(pref_service_);
+}
+
+bool PaymentsDataManager::IsAutofillWalletImportEnabled() const {
+  if (is_syncing_for_test_) {
+    return true;
+  }
+
+  if (!sync_service_) {
+    // Without `sync_service_`, namely in off-the-record profiles, wallet import
+    // is effectively disabled.
+    return false;
+  }
+
+  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPayments);
 }
 
 bool PaymentsDataManager::IsCardPresentAsBothLocalAndServerCards(
@@ -975,7 +1002,7 @@ void PaymentsDataManager::
 
 std::vector<VirtualCardUsageData*>
 PaymentsDataManager::GetVirtualCardUsageData() const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
   std::vector<VirtualCardUsageData*> result;
@@ -991,7 +1018,7 @@ std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
     return {};
   }
   std::vector<CreditCard*> credit_cards;
-  if (pdm_->ShouldSuggestServerPaymentMethods()) {
+  if (ShouldSuggestServerPaymentMethods()) {
     credit_cards = GetCreditCards();
   } else {
     credit_cards = GetLocalCreditCards();
@@ -1440,6 +1467,33 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   if (AreBankAccountsSupported()) {
     CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
   }
+}
+
+bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
+  if (!IsAutofillWalletImportEnabled()) {
+    return false;
+  }
+
+  if (is_syncing_for_test_) {
+    return true;
+  }
+
+  CHECK(sync_service_);
+
+  // Check if the user is in sync transport mode for wallet data.
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  if (!sync_service_->IsSyncFeatureEnabled()) {
+    // For SyncTransport, only show server payment methods if the user has opted
+    // in to seeing them in the dropdown.
+    if (!prefs::IsUserOptedInWalletSyncTransport(
+            pref_service_, sync_service_->GetAccountInfo().account_id)) {
+      return false;
+    }
+  }
+
+  // Server payment methods should be suggested if the sync service is active.
+  return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
 void PaymentsDataManager::LoadCreditCards() {

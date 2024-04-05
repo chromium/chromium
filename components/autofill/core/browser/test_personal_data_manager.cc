@@ -48,19 +48,6 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
   return default_country_code_;
 }
 
-bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
-  // Return the value of autofill_wallet_import_enabled_ if it has been set,
-  // otherwise fall back to the normal behavior of checking the pref_service.
-  if (autofill_wallet_import_enabled_.has_value())
-    return autofill_wallet_import_enabled_.value();
-  return PersonalDataManager::IsAutofillWalletImportEnabled();
-}
-
-bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
-  return payments_data_manager().IsAutofillPaymentMethodsEnabled() &&
-         IsAutofillWalletImportEnabled();
-}
-
 void TestPersonalDataManager::ClearAllLocalData() {
   ClearProfiles();
   payments_data_manager_->local_credit_cards_.clear();

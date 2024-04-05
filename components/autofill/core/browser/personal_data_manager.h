@@ -484,9 +484,8 @@ class PersonalDataManager : public KeyedService,
     return payments_data_manager_->HasPendingPaymentQueries();
   }
 
-  // Sets the value that can skip the checks to see if we are syncing in a test.
   void SetSyncingForTest(bool is_syncing_for_test) {
-    is_syncing_for_test_ = is_syncing_for_test;
+    payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
   }
 
   // Returns whether a row to give the option of showing cards from the user's
@@ -516,9 +515,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const;
-
-  // Returns whether sync's integration with payments is on.
-  virtual bool IsAutofillWalletImportEnabled() const;
 
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
@@ -582,13 +578,6 @@ class PersonalDataManager : public KeyedService,
 
  protected:
   friend class PaymentsDataCleaner;
-  // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
-  // at all, let alone befriend it.
-  friend class PaymentsDataManager;
-
-  // Whether server cards or IBANs are enabled and should be suggested to the
-  // user.
-  virtual bool ShouldSuggestServerPaymentMethods() const;
 
   // Responsible for all address-related logic of the PDM.
   // Non-null after `Init()`.
@@ -659,9 +648,6 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  // Whether sync should be considered on in a test.
-  bool is_syncing_for_test_ = false;
 
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;

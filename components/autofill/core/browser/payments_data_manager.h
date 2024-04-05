@@ -271,6 +271,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
+  // Returns whether sync's integration with payments is on.
+  virtual bool IsAutofillWalletImportEnabled() const;
+
   // Check if `credit_card` has a duplicate card present in either Local or
   // Server card lists.
   bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
@@ -332,12 +335,23 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 
+  void SetSyncServiceForTest(syncer::SyncService* sync_service) {
+    sync_service_ = sync_service;
+  }
+  void SetSyncingForTest(bool is_syncing_for_test) {
+    is_syncing_for_test_ = is_syncing_for_test;
+  }
+
  protected:
   friend class PaymentsDataManagerTestApi;
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
   friend class TestPaymentsDataManager;
   friend class TestPersonalDataManager;
+
+  // Whether server cards or IBANs are enabled and should be suggested to the
+  // user.
+  virtual bool ShouldSuggestServerPaymentMethods() const;
 
   // Loads the saved credit cards from the web database.
   virtual void LoadCreditCards();
@@ -499,6 +513,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
+
+  // Whether sync should be considered on in a test.
+  bool is_syncing_for_test_ = false;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };

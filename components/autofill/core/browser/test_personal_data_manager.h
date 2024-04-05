@@ -58,8 +58,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsPaymentsWalletSyncTransportEnabled() const override;
   bool IsEligibleForAddressAccountStorage() const override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  bool IsAutofillWalletImportEnabled() const override;
-  bool ShouldSuggestServerPaymentMethods() const override;
   void ClearAllLocalData() override;
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
@@ -113,8 +111,10 @@ class TestPersonalDataManager : public PersonalDataManager {
         autofill_profile_enabled);
   }
 
+  // TODO(b/322170538): Remove function from TestPDM.
   void SetAutofillWalletImportEnabled(bool autofill_wallet_import_enabled) {
-    autofill_wallet_import_enabled_ = autofill_wallet_import_enabled;
+    test_payments_data_manager().SetAutofillWalletImportEnabled(
+        autofill_wallet_import_enabled);
   }
 
   void SetIsEligibleForAddressAccountStorage(bool eligible) {
@@ -144,7 +144,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
  private:
   std::string default_country_code_;
-  std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> eligible_for_account_storage_;
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;

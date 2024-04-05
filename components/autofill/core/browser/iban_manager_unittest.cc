@@ -48,7 +48,8 @@ class IbanManagerTest : public testing::Test {
   IbanManagerTest() : iban_manager_(&personal_data_manager_) {}
 
   void SetUp() override {
-    personal_data_manager_.SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_.test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
     original_resource_bundle_ =
         ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
 
@@ -142,7 +143,8 @@ MATCHER_P(MatchesTextAndPopupItemId, suggestion, "") {
 }
 
 TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
-  personal_data_manager_.SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   Suggestion local_iban_suggestion_0 =
       GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
   Suggestion local_iban_suggestion_1 =
@@ -180,7 +182,8 @@ TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
 }
 
 TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
-  personal_data_manager_.SetAutofillPaymentMethodsEnabled(false);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillPaymentMethodsEnabled(false);
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue_1, kNickname_1));
 
@@ -314,7 +317,8 @@ TEST_F(IbanManagerTest,
 // with matching prefixes should be returned.
 TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_All) {
-  personal_data_manager_.SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
@@ -353,7 +357,8 @@ TEST_F(IbanManagerTest,
 // with matching prefixes should be returned.
 TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_Some) {
-  personal_data_manager_.SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
@@ -393,7 +398,8 @@ TEST_F(IbanManagerTest,
 TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_ShowsIfFewCharsInField) {
-  personal_data_manager_.SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
@@ -453,7 +459,8 @@ TEST_F(
 TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_HidesIfManyCharsInField) {
-  personal_data_manager_.SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
