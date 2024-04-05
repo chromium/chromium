@@ -1656,12 +1656,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLocalUserFilesAllowed,
     prefs::kLocalUserFilesAllowed,
     base::Value::Type::BOOLEAN },
-  { key::kClassroomIntegrationEnabled,
-    ash::prefs::kClassroomIntegrationEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kTasksIntegrationEnabled,
-    ash::prefs::kTasksIntegrationEnabled,
-    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

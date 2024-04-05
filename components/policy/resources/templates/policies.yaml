@@ -1240,8 +1240,8 @@ policies:
   1239: ProfileLabel
   1240: PrivacySandboxFingerprintingProtectionEnabled
   1241: MultiScreenCaptureAllowedForUrls
-  1242: ClassroomIntegrationEnabled
-  1243: TasksIntegrationEnabled
+  1242: ''
+  1243: ''
   1244: BoundSessionCredentialsEnabled
   1245: UiAutomationProviderEnabled
   1246: ApplicationBoundEncryptionEnabled
