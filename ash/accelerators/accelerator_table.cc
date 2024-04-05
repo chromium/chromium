@@ -158,6 +158,7 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
      AcceleratorAction::kToggleFullscreen},
     // For testing on Linux desktop where it's hard to rebind the caps lock key.
     {true, ui::VKEY_A, ui::EF_ALT_DOWN, AcceleratorAction::kDevToggleAppList},
+    {true, ui::VKEY_S, ui::EF_ALT_DOWN, AcceleratorAction::kTogglePicker},
 
     // For testing fingerprint ui.
     {true, ui::VKEY_1, kDebugModifier, kTouchFingerprintSensor1},
