@@ -3283,6 +3283,9 @@ extern const char kAshModifierSplitFeatureKeyDescription[];
 extern const char kAshPickerName[];
 extern const char kAshPickerDescription[];
 
+extern const char kAshPickerFlipName[];
+extern const char kAshPickerFlipDescription[];
+
 extern const char kAshPickerFeatureKeyName[];
 extern const char kAshPickerFeatureKeyDescription[];
 

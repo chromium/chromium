@@ -18006,6 +18006,7 @@ from previous Chrome versions.
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
   <int value="-1353714232" label="FilesTransferDetails:enabled"/>
   <int value="-1353195918" label="UseSkiaRenderer:enabled"/>
+  <int value="-1352117564" label="PickerFlip:enabled"/>
   <int value="-1351968795" label="SingleProcessMash:enabled"/>
   <int value="-1351328710"
       label="OmniboxUIExperimentJogTextfieldOnPopup:disabled"/>
@@ -18972,6 +18973,7 @@ from previous Chrome versions.
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
   <int value="-923422400" label="DiscardOccludedBitmaps:enabled"/>
   <int value="-921755651" label="EnableManagedByParentUi:disabled"/>
+  <int value="-920794084" label="PickerFlip:disabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
   <int value="-920404312" label="ArcXdgMode:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>

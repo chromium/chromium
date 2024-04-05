@@ -71,6 +71,9 @@ ASH_PUBLIC_EXPORT extern const size_t kToggleGameDashboardAcceleratorDataLength;
 // Accelerators that are enabled with the Picker feature.
 ASH_PUBLIC_EXPORT extern const AcceleratorData kTogglePickerAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t kTogglePickerAcceleratorDataLength;
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kTogglePickerFlipAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t kTogglePickerFlipAcceleratorDataLength;
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.

@@ -397,9 +397,19 @@ const size_t kToggleGameDashboardAcceleratorDataLength =
     std::size(kToggleGameDashboardAcceleratorData);
 
 const AcceleratorData kTogglePickerAcceleratorData[] = {
-    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker}};
+    {true, ui::VKEY_RIGHT_ALT, ui::EF_NONE, AcceleratorAction::kTogglePicker},
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker},
+};
 
 const size_t kTogglePickerAcceleratorDataLength =
+    std::size(kTogglePickerAcceleratorData);
+
+const AcceleratorData kTogglePickerFlipAcceleratorData[] = {
+    {false, ui::VKEY_RIGHT_ALT, ui::EF_NONE, AcceleratorAction::kTogglePicker},
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker},
+};
+
+const size_t kTogglePickerFlipAcceleratorDataLength =
     std::size(kTogglePickerAcceleratorData);
 
 // static

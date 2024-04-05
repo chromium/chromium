@@ -2369,6 +2369,9 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the new picker flip feature.
+BASE_FEATURE(kPickerFlip, "PickerFlip", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4204,6 +4207,10 @@ bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
 
 bool IsPickerUpdateEnabled() {
   return base::FeatureList::IsEnabled(kPicker);
+}
+
+bool IsPickerFlipEnabled() {
+  return base::FeatureList::IsEnabled(kPickerFlip) && IsPickerUpdateEnabled();
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {

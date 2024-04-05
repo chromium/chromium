@@ -5644,6 +5644,10 @@ const char kAshModifierSplitFeatureKeyDescription[] =
 const char kAshPickerName[] = "Picker feature";
 const char kAshPickerDescription[] = "Enable new Picker feature on ChromeOS.";
 
+const char kAshPickerFlipName[] = "Flip Picker feature";
+const char kAshPickerFlipDescription[] =
+    "Enable new flipped Picker feature on ChromeOS.";
+
 const char kAshPickerFeatureKeyName[] = "Feature key for Picker feature";
 const char kAshPickerFeatureKeyDescription[] =
     "Feature key to use the new Picker feature on ChromeOS.";
