@@ -109,9 +109,16 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
     return;
   }
 
-  // Check if the web contents found is in a dPWA.
+  // Check if the web contents found is in a dPWA. Occasionally, we've found it
+  // is possible that the web contents does not have a delegate - we should just
+  // abort in that scenario.
+  WebContentsDelegate* web_contents_delegate = web_contents->GetDelegate();
+  if (!web_contents_delegate) {
+    return;
+  }
+
   bool is_web_contents_for_web_app =
-      web_contents->GetDelegate()->ShouldUseInstancedSystemMediaControls() ||
+      web_contents_delegate->ShouldUseInstancedSystemMediaControls() ||
       always_assume_web_app_for_testing_;
   if (!is_web_contents_for_web_app) {
     // Non-webapp updates are handled by media_keys_listener_manager_impl and do
