@@ -19,6 +19,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {CardBenefitsUserAction, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './credit_card_list_entry.html.js';
 
@@ -81,6 +82,12 @@ export class SettingsCreditCardListEntryElement extends
         anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
       },
     }));
+  }
+
+  private onSummarySublabelTermsLinkClick_() {
+    // Log the metric for user clicking on the card benefits terms hyperlink.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        CardBenefitsUserAction.CARD_BENEFITS_TERMS_LINK_CLICKED);
   }
 
   private getCardNumberDescription_(
