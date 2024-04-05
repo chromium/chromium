@@ -43,7 +43,7 @@ class FeaturePromoSpecification {
     ~AdditionalConditions();
 
     // Provides constraints on when the promo can show based on some other
-    // Feautre Engagement event.
+    // Feature Engagement event.
     enum class Constraint { kAtMost, kAtLeast, kExactly };
 
     // Represents an additional condition for the promo to show.
@@ -162,9 +162,10 @@ class FeaturePromoSpecification {
   enum class PromoSubtype {
     // A normal promo. Follows the default rules for when it can show.
     kNormal = 0,
-    // A promo designed to be shown in multiple apps (or webapps). Can show once
-    // per app.
-    kPerApp = 1,
+    // A promo designed to be shown per app or account, keyed to a unique
+    // identifier. This type requires being on an allowlist.
+    // (Previously known as "kPerApp".)
+    kKeyedNotice = 1,
     // A promo that must be able to be shown until explicitly acknowledged and
     // dismissed by the user. This type requires being on an allowlist.
     kLegalNotice = 2,

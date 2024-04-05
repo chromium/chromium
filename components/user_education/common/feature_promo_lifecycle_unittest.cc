@@ -111,7 +111,7 @@ class FeaturePromoLifecycleTest : public testing::Test {
       const base::Feature& feature,
       const char* app_id = nullptr) {
     if (!app_id) {
-      app_id = promo_subtype() == PromoSubtype::kPerApp ? kAppName : "";
+      app_id = promo_subtype() == PromoSubtype::kKeyedNotice ? kAppName : "";
     }
     return std::make_unique<FeaturePromoLifecycle>(
         &storage_service_, app_id, &feature, promo_type(), promo_subtype());
@@ -138,8 +138,8 @@ class FeaturePromoLifecycleTest : public testing::Test {
 
     std::string name = "";
     switch (lifecycle->promo_subtype()) {
-      case PromoSubtype::kPerApp:
-        name = "PerApp.";
+      case PromoSubtype::kKeyedNotice:
+        name = "KeyedNotice.";
         break;
       case PromoSubtype::kLegalNotice:
         name = "LegalNotice.";
@@ -281,9 +281,9 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kLegalNotice) {
   EXPECT_EQ(1, promo_data->show_count);
 }
 
-TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kPerApp) {
+TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kKeyedNotice) {
   set_promo_type(PromoType::kTutorial);
-  set_promo_subtype(PromoSubtype::kPerApp);
+  set_promo_subtype(PromoSubtype::kKeyedNotice);
   auto lifecycle = CreateLifecycle(kTestIPHFeature);
   lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
   lifecycle->OnPromoEnded(CloseReason::kAction, true);
@@ -328,7 +328,7 @@ class FeaturePromoLifecycleParamTest
       const base::Feature& feature,
       const char* app_id = nullptr) {
     if (!app_id) {
-      app_id = promo_subtype() == PromoSubtype::kPerApp ? kAppName : "";
+      app_id = promo_subtype() == PromoSubtype::kKeyedNotice ? kAppName : "";
     }
     return std::make_unique<FeaturePromoLifecycle>(
         &storage_service_, app_id, &feature, promo_type(), promo_subtype());
@@ -343,7 +343,7 @@ INSTANTIATE_TEST_SUITE_P(
     FeaturePromoLifecycleWriteDataTest,
     testing::Combine(testing::Values(PromoType::kTutorial),
                      testing::Values(PromoSubtype::kNormal,
-                                     PromoSubtype::kPerApp,
+                                     PromoSubtype::kKeyedNotice,
                                      PromoSubtype::kActionableAlert,
                                      PromoSubtype::kLegalNotice),
                      testing::Values(CloseReason::kDismiss,
@@ -426,7 +426,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      PromoType::kTutorial,
                                      PromoType::kCustomAction),
                      testing::Values(PromoSubtype::kNormal,
-                                     PromoSubtype::kPerApp,
+                                     PromoSubtype::kKeyedNotice,
                                      PromoSubtype::kActionableAlert,
                                      PromoSubtype::kLegalNotice)),
     (ParamToString<PromoType, PromoSubtype>));
@@ -565,10 +565,10 @@ INSTANTIATE_TEST_SUITE_P(
                                      PromoType::kToast,
                                      PromoType::kTutorial,
                                      PromoType::kCustomAction),
-                     testing::Values(PromoSubtype::kPerApp)),
+                     testing::Values(PromoSubtype::kKeyedNotice)),
     (ParamToString<PromoType, PromoSubtype>));
 
-TEST_P(FeaturePromoLifecycleAppTest, IPHBlockedPerApp) {
+TEST_P(FeaturePromoLifecycleAppTest, IPHBlockedKeyedNotice) {
   // Show and confirm for one app.
   auto lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
   lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);

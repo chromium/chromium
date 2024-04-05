@@ -38,8 +38,8 @@ constexpr char kAdditionalConditionName[] = "AdditionalCondition";
 constexpr char kAdditionalCondition2Name[] = "AdditionalCondition2";
 constexpr uint32_t kAdditionalConditionCount = 3;
 constexpr uint32_t kAdditionalConditionDays = 14;
-constexpr char kPerAppTrigger[] = "PerAppIphFeature_trigger";
-constexpr char kPerAppUsed[] = "PerAppIphFeature_used";
+constexpr char kKeyedNoticeTrigger[] = "KeyedNoticeIphFeature_trigger";
+constexpr char kKeyedNoticeUsed[] = "KeyedNoticeIphFeature_used";
 constexpr char kLegalNoticeTrigger[] = "LegalNoticeIphFeature_trigger";
 constexpr char kLegalNoticeUsed[] = "LegalNoticeIphFeature_used";
 constexpr char kActionableAlertTrigger[] = "ActionableAlertFeature_trigger";
@@ -53,8 +53,8 @@ BASE_FEATURE(kSnoozeIphFeature,
 BASE_FEATURE(kIphWithConditionFeature,
              "IPH_kIphWithConditionFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPerAppIphFeature,
-             "IPH_PerAppIphFeature",
+BASE_FEATURE(kKeyedNoticeIphFeature,
+             "IPH_KeyedNoticeIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeIphFeature,
              "IPH_LegalNoticeIphFeature",
@@ -63,8 +63,9 @@ BASE_FEATURE(kActionableAlertFeature,
              "IPH_ActionableAlertFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const std::initializer_list<const base::Feature*> kKnownFeatures{
-    &kToastIphFeature,  &kSnoozeIphFeature,       &kIphWithConditionFeature,
-    &kPerAppIphFeature, &kActionableAlertFeature, &kLegalNoticeIphFeature};
+    &kToastIphFeature,         &kSnoozeIphFeature,
+    &kIphWithConditionFeature, &kKeyedNoticeIphFeature,
+    &kActionableAlertFeature,  &kLegalNoticeIphFeature};
 const std::initializer_list<const base::Feature*> kKnownGroups{};
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
@@ -89,9 +90,10 @@ std::unique_ptr<UserEducationConfigurationProvider> CreateProvider(
           kSnoozeIphFeature, kTestElementId, IDS_CLOSE));
 
   auto spec = user_education::FeaturePromoSpecification::CreateForCustomAction(
-      kPerAppIphFeature, kTestElementId, IDS_CANCEL, IDS_OK, base::DoNothing());
+      kKeyedNoticeIphFeature, kTestElementId, IDS_CANCEL, IDS_OK,
+      base::DoNothing());
   spec.set_promo_subtype_for_testing(
-      user_education::FeaturePromoSpecification::PromoSubtype::kPerApp);
+      user_education::FeaturePromoSpecification::PromoSubtype::kKeyedNotice);
   registry.RegisterFeature(std::move(spec));
 
   spec = user_education::FeaturePromoSpecification::CreateForCustomAction(
@@ -239,17 +241,18 @@ TEST_F(UserEducationConfigurationProviderTest, ProvidesSnoozeConfiguration) {
   EXPECT_TRUE(config.groups.empty());
 }
 
-TEST_F(UserEducationConfigurationProviderTest, ProvidesPerAppConfiguration) {
+TEST_F(UserEducationConfigurationProviderTest,
+       ProvidesKeyedNoticeConfiguration) {
   feature_engagement::FeatureConfig config;
 
   EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
-      kPerAppIphFeature, config, kKnownFeatures, kKnownGroups));
+      kKeyedNoticeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_TRUE(config.valid);
 
-  EXPECT_EQ(GetDefaultUsed(kPerAppUsed), config.used);
+  EXPECT_EQ(GetDefaultUsed(kKeyedNoticeUsed), config.used);
 
-  EXPECT_EQ(GetAnyTrigger(kPerAppTrigger), config.trigger);
+  EXPECT_EQ(GetAnyTrigger(kKeyedNoticeTrigger), config.trigger);
 
   EXPECT_TRUE(config.event_configs.empty());
 

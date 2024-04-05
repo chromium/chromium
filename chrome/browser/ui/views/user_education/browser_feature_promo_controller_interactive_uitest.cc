@@ -244,15 +244,18 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
+  user_education::FeaturePromoParams params(kCustomActionTestFeature);
+  params.close_callback =
+      base::BindLambdaForTesting([this, &called, &close_reason]() {
+        called = true;
+        EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+            user_education::FeaturePromoParams(kCustomActionTestFeature),
+            &close_reason));
+      });
+
   RunTestSequence(
-      MaybeShowPromo(
-          kCustomActionTestFeature,
-          user_education::FeaturePromoResult::Success(),
-          base::BindLambdaForTesting([this, &called, &close_reason]() {
-            called = true;
-            EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
-                kCustomActionTestFeature, &close_reason));
-          })),
+      MaybeShowPromo(std::move(params),
+                     user_education::FeaturePromoResult::Success()),
       PressClosePromoButton(), CheckVariable(called, true),
       CheckVariable(close_reason, FeaturePromoClosedReason::kCancel));
 }
@@ -262,15 +265,18 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
-  RunTestSequence(
-      MaybeShowPromo(
-          kCustomActionTestFeature,
-          user_education::FeaturePromoResult::Success(),
-          base::BindLambdaForTesting([this, &called, &close_reason]() {
+  user_education::FeaturePromoParams params(kCustomActionTestFeature);
+  params.close_callback =
+      base::BindLambdaForTesting(
+          [this, &called, &close_reason]() {
             called = true;
             EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
                 kCustomActionTestFeature, &close_reason));
-          })),
+          });
+
+  RunTestSequence(
+      MaybeShowPromo(std::move(params),
+                     user_education::FeaturePromoResult::Success()),
       PressDefaultPromoButton(), CheckVariable(called, true),
       CheckVariable(close_reason, FeaturePromoClosedReason::kDismiss));
 }
@@ -280,17 +286,20 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
-  RunTestSequence(
-      MaybeShowPromo(
-          // Normal promos will defer writing close data until the promo is
-          // fully ended.
-          kLegalNoticeTestFeature,
-          user_education::FeaturePromoResult::Success(),
-          base::BindLambdaForTesting([this, &called, &close_reason]() {
+  user_education::FeaturePromoParams params(kLegalNoticeTestFeature);
+  params.close_callback =
+      base::BindLambdaForTesting(
+          [this, &called, &close_reason]() {
+            // Normal promos will defer writing close data until the promo is
+            // fully ended.
             called = true;
             EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
                 kLegalNoticeTestFeature, &close_reason));
-          })),
+          });
+
+  RunTestSequence(
+      MaybeShowPromo(std::move(params),
+                     user_education::FeaturePromoResult::Success()),
       PressNonDefaultPromoButton(), CheckVariable(called, true),
       CheckVariable(close_reason, FeaturePromoClosedReason::kAction));
 }

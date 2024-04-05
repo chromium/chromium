@@ -82,17 +82,16 @@ class InteractiveFeaturePromoTestApi
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.
   // TODO(dfried): fix these so that they work for WebUI help bubbles as well.
 
-  // Possibly tries to show the promo `iph_feature`, which should produce the
+  // Possibly tries to show the promo with `params`, which should produce the
   // `expected_result`. If the result is success, checks that the help bubble is
   // open and the correct promo is showing.
   //
   // When using a mock `FeatureEngagementTracker` the tracker will be set up to
   // handle the appropriate calls.
   [[nodiscard]] MultiStep MaybeShowPromo(
-      const base::Feature& iph_feature,
+      user_education::FeaturePromoParams params,
       user_education::FeaturePromoResult expected_result =
-          user_education::FeaturePromoResult::Success(),
-      base::OnceClosure close_callback = base::DoNothing());
+          user_education::FeaturePromoResult::Success());
 
   // Waits for the given promo to be shown.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);

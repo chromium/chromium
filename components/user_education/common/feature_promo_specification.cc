@@ -419,8 +419,8 @@ std::ostream& operator<<(
     case FeaturePromoSpecification::PromoSubtype::kNormal:
       oss << "kNormal";
       break;
-    case FeaturePromoSpecification::PromoSubtype::kPerApp:
-      oss << "kPerApp";
+    case FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
+      oss << "kKeyedNotice";
       break;
     case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
       oss << "kLegalNotice";

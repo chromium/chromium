@@ -66,8 +66,8 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
   const auto* const promo_spec = registry_.GetParamsForFeature(feature);
   const bool is_unlimited =
-      promo_spec->promo_subtype() ==
-          user_education::FeaturePromoSpecification::PromoSubtype::kPerApp ||
+      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
+                                         PromoSubtype::kKeyedNotice ||
       promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
                                          PromoSubtype::kLegalNotice ||
       promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::

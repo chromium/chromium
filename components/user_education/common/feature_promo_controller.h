@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -93,8 +94,11 @@ class FeaturePromoController {
   // expensive, this is a slightly less expensive out (but please note that it
   // is not zero cost; a number of prefs and application states do need to be
   // queried).
+  //
+  // Note that some fields of `params` may be ignored if they are not needed to
+  // perform the checks involved.
   virtual FeaturePromoResult CanShowPromo(
-      const base::Feature& iph_feature) const = 0;
+      const FeaturePromoParams& params) const = 0;
 
   // Starts the promo if possible. Returns whether it started.
   // If the Feature Engagement backend is not initialized, returns false.
@@ -143,8 +147,11 @@ class FeaturePromoController {
   // expensive. If `last_close_reason` is set, and the promo has been
   // dismissed, it wil be populated with the most recent close reason.
   // (The value is undefined if this method returns false.)
+  //
+  // Note that while `params` is a full parameters block, only `feature` and
+  // `key` are actually used.
   virtual bool HasPromoBeenDismissed(
-      const base::Feature& iph_feature,
+      const FeaturePromoParams& params,
       FeaturePromoClosedReason* last_close_reason = nullptr) const = 0;
 
   // Returns whether the promo for `iph_feature` matches kBubbleShowing or any
@@ -245,7 +252,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // FeaturePromoController:
   FeaturePromoResult CanShowPromo(
-      const base::Feature& iph_feature) const override;
+      const FeaturePromoParams& params) const override;
   FeaturePromoResult MaybeShowPromo(FeaturePromoParams params) override;
   bool MaybeShowStartupPromo(FeaturePromoParams params) override;
   FeaturePromoStatus GetPromoStatus(
@@ -253,7 +260,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const FeaturePromoSpecification* GetCurrentPromoSpecificationForAnchor(
       ui::ElementIdentifier menu_element_id) const override;
   bool HasPromoBeenDismissed(
-      const base::Feature& iph_feature,
+      const FeaturePromoParams& params,
       FeaturePromoClosedReason* close_reason = nullptr) const override;
   FeaturePromoResult MaybeShowPromoForDemoPage(
       FeaturePromoParams params) override;
@@ -303,9 +310,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const HelpBubble* critical_promo_bubble() const {
     return critical_promo_bubble_;
   }
-
-  // Get the current app ID, if this is an app, empty otherwise.
-  virtual std::string GetAppId() const = 0;
 
   // Gets the context in which to locate the anchor view.
   virtual ui::ElementContext GetAnchorContext() const = 0;
@@ -419,7 +423,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // The optional parameters `spec`, `lifecycle`, and `anchor_element` will be
   // populated on success, if specified.
   FeaturePromoResult CanShowPromoCommon(
-      const base::Feature& iph_feature,
+      const FeaturePromoParams& params,
       bool for_demo,
       const FeaturePromoSpecification** spec = nullptr,
       std::unique_ptr<FeaturePromoLifecycle>* lifecycle = nullptr,
@@ -548,7 +552,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 // methods.
 struct FeaturePromoParams {
   // NOLINTNEXTLINE(google-explicit-constructor)
-  FeaturePromoParams(const base::Feature& iph_feature);
+  FeaturePromoParams(const base::Feature& iph_feature,
+                     const std::string& key = std::string());
   FeaturePromoParams(FeaturePromoParams&& other) noexcept;
   ~FeaturePromoParams();
 
@@ -558,6 +563,10 @@ struct FeaturePromoParams {
   //
   // Note that this is different than the feature that the IPH is showing for.
   raw_ref<const base::Feature> feature;
+
+  // The key required for keyed promos. Should be left empty for all other
+  // (i.e. non-keyed) promos.
+  std::string key;
 
   // Used for startup promos; will be called when the promo actually shows.
   FeaturePromoController::QueuedPromoCallback queued_promo_callback;

@@ -30186,7 +30186,7 @@ Called by update_net_error_codes.py.-->
 
 <enum name="PromoSubtype">
   <int value="0" label="Normal"/>
-  <int value="1" label="Per App"/>
+  <int value="1" label="Keyed Notice"/>
   <int value="2" label="Legal Notice"/>
   <int value="3" label="Actionable Alert"/>
 </enum>

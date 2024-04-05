@@ -45,12 +45,12 @@ class ScopedPromoData {
 
 FeaturePromoLifecycle::FeaturePromoLifecycle(
     FeaturePromoStorageService* storage_service,
-    const base::StringPiece& app_id,
+    const base::StringPiece& promo_key,
     const base::Feature* iph_feature,
     PromoType promo_type,
     PromoSubtype promo_subtype)
     : storage_service_(storage_service),
-      app_id_(app_id),
+      promo_key_(promo_key),
       iph_feature_(iph_feature),
       promo_type_(promo_type),
       promo_subtype_(promo_subtype) {}
@@ -60,7 +60,7 @@ FeaturePromoLifecycle::~FeaturePromoLifecycle() {
 }
 
 FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
-  DCHECK(promo_subtype_ != PromoSubtype::kPerApp || !app_id_.empty());
+  DCHECK(promo_subtype_ != PromoSubtype::kKeyedNotice || !promo_key_.empty());
 
   const auto data = storage_service_->ReadPromoData(*iph_feature_);
   if (!data.has_value()) {
@@ -100,8 +100,8 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
       }
       return result;
     }
-    case PromoSubtype::kPerApp:
-      return base::Contains(data->shown_for_apps, app_id_)
+    case PromoSubtype::kKeyedNotice:
+      return base::Contains(data->shown_for_keys, promo_key_)
                  ? FeaturePromoResult::kPermanentlyDismissed
                  : FeaturePromoResult::Success();
     case PromoSubtype::kLegalNotice:
@@ -263,8 +263,8 @@ void FeaturePromoLifecycle::MaybeWriteClosedPromoData(
     case FeaturePromoClosedReason::kFeatureEngaged:
     case FeaturePromoClosedReason::kTimeout: {
       ScopedPromoData data(storage_service_, iph_feature_);
-      if (!app_id_.empty()) {
-        data->shown_for_apps.insert(app_id_);
+      if (!promo_key_.empty()) {
+        data->shown_for_keys.insert(promo_key_);
       }
       data->is_dismissed = true;
       data->last_dismissed_by = close_reason;
@@ -306,9 +306,9 @@ void FeaturePromoLifecycle::RecordShown() {
   switch (promo_subtype_) {
     case PromoSubtype::kNormal:
       break;
-    case PromoSubtype::kPerApp:
+    case PromoSubtype::kKeyedNotice:
       // Ends with a period.
-      type_action_name.append("PerApp.");
+      type_action_name.append("KeyedNotice.");
       break;
     case PromoSubtype::kLegalNotice:
       // Ends with a period.

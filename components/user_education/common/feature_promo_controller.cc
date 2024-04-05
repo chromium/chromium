@@ -95,9 +95,10 @@ FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromo(
-    const base::Feature& iph_feature) const {
-  auto result = CanShowPromoCommon(iph_feature, false);
-  if (result && !feature_engagement_tracker_->WouldTriggerHelpUI(iph_feature)) {
+    const FeaturePromoParams& params) const {
+  auto result = CanShowPromoCommon(params, false);
+  if (result &&
+      !feature_engagement_tracker_->WouldTriggerHelpUI(*params.feature)) {
     result = FeaturePromoResult::kBlockedByConfig;
   }
   return result;
@@ -162,8 +163,8 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   const FeaturePromoSpecification* spec = nullptr;
   std::unique_ptr<FeaturePromoLifecycle> lifecycle = nullptr;
   ui::TrackedElement* anchor_element = nullptr;
-  auto result = CanShowPromoCommon(params.feature.get(), for_demo, &spec,
-                                   &lifecycle, &anchor_element);
+  auto result =
+      CanShowPromoCommon(params, for_demo, &spec, &lifecycle, &anchor_element);
   if (!result) {
     return result;
   }
@@ -301,15 +302,15 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
 }
 
 bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
-    const base::Feature& iph_feature,
+    const FeaturePromoParams& params,
     FeaturePromoClosedReason* last_close_reason) const {
   const FeaturePromoSpecification* const spec =
-      registry()->GetParamsForFeature(iph_feature);
+      registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
     return false;
   }
 
-  const auto data = storage_service()->ReadPromoData(iph_feature);
+  const auto data = storage_service()->ReadPromoData(*params.feature);
   if (!data) {
     return false;
   }
@@ -324,8 +325,11 @@ bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
     case user_education::FeaturePromoSpecification::PromoSubtype::
         kActionableAlert:
       return data->is_dismissed;
-    case user_education::FeaturePromoSpecification::PromoSubtype::kPerApp:
-      return base::Contains(data->shown_for_apps, GetAppId());
+    case user_education::FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
+      if (params.key.empty()) {
+        return false;
+      }
+      return base::Contains(data->shown_for_keys, params.key);
   }
 }
 
@@ -595,7 +599,7 @@ void FeaturePromoControllerCommon::FailQueuedPromos() {
 }
 
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
-    const base::Feature& iph_feature,
+    const FeaturePromoParams& params,
     bool for_demo,
     const FeaturePromoSpecification** spec_out,
     std::unique_ptr<FeaturePromoLifecycle>* lifecycle_out,
@@ -605,12 +609,12 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   // Note that this check is bypassed if this is for an explicit demo, but not
   // in demo mode, as the IPH may be queued for startup specifically because it
   // is being demoed.
-  if (!for_demo && IsPromoQueued(iph_feature)) {
+  if (!for_demo && IsPromoQueued(*params.feature)) {
     return FeaturePromoResult::kBlockedByPromo;
   }
 
   const FeaturePromoSpecification* const spec =
-      registry()->GetParamsForFeature(iph_feature);
+      registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
     return FeaturePromoResult::kError;
   }
@@ -620,7 +624,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   // Engagement tracker more times than necessary, emitting unnecessary logging
   // events when features are disabled.
   if (!for_demo && !in_iph_demo_mode_ &&
-      !base::FeatureList::IsEnabled(iph_feature)) {
+      !base::FeatureList::IsEnabled(*params.feature)) {
     return FeaturePromoResult::kFeatureDisabled;
   }
 
@@ -629,7 +633,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   std::unique_ptr<FeaturePromoLifecycle> lifecycle;
   if (!for_demo && !in_iph_demo_mode_) {
     lifecycle = std::make_unique<FeaturePromoLifecycle>(
-        storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
+        storage_service_, params.key, &*params.feature, spec->promo_type(),
         spec->promo_subtype());
     if (const auto result = lifecycle->CanShow(); !result) {
       return result;
@@ -677,7 +681,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
       // If in demo mode but the caller has asked for a lifecycle anyway, then
       // provide one.
       lifecycle = std::make_unique<FeaturePromoLifecycle>(
-          storage_service_, GetAppId(), &iph_feature, spec->promo_type(),
+          storage_service_, params.key, &*params.feature, spec->promo_type(),
           spec->promo_subtype());
     }
     *lifecycle_out = std::move(lifecycle);
@@ -1095,8 +1099,9 @@ FeaturePromoControllerCommon::BlockActiveWindowCheckForTesting() {
                                                  true);
 }
 
-FeaturePromoParams::FeaturePromoParams(const base::Feature& iph_feature)
-    : feature(iph_feature) {}
+FeaturePromoParams::FeaturePromoParams(const base::Feature& iph_feature,
+                                       const std::string& promo_key)
+    : feature(iph_feature), key(promo_key) {}
 FeaturePromoParams::FeaturePromoParams(FeaturePromoParams&& other) noexcept =
     default;
 FeaturePromoParams::~FeaturePromoParams() = default;

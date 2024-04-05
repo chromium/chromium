@@ -87,16 +87,16 @@ InteractiveFeaturePromoTestApi::SetLastActive(NewTime time) {
 
 InteractiveFeaturePromoTestApi::MultiStep
 InteractiveFeaturePromoTestApi::MaybeShowPromo(
-    const base::Feature& iph_feature,
-    user_education::FeaturePromoResult expected_result,
-    base::OnceClosure close_callback) {
+    user_education::FeaturePromoParams params,
+    user_education::FeaturePromoResult expected_result) {
   // Always attempt to show the promo.
+  const base::Feature& iph_feature = *params.feature;
   auto steps = Steps(std::move(
       CheckView(
           kBrowserViewElementId,
-          [this, &iph_feature, expected_result,
-           close_callback =
-               std::move(close_callback)](BrowserView* browser_view) mutable {
+          [this, params = std::move(params),
+           expected_result](BrowserView* browser_view) mutable {
+            const base::Feature& iph_feature = *params.feature;
             // If using a mock tracker, ensure that it returns the correct
             // status.
             auto* const tracker =
@@ -119,8 +119,6 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
             }
 
             // Attempt to show the promo.
-            user_education::FeaturePromoParams params(iph_feature);
-            params.close_callback = std::move(close_callback);
             const auto result =
                 browser_view->MaybeShowFeaturePromo(std::move(params));
 

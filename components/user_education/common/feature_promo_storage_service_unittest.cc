@@ -36,23 +36,23 @@ TEST(FeaturePromoStorageServiceTest, GetSnoozeCount) {
   EXPECT_EQ(0, service.GetSnoozeCount(kTestIPHFeature2));
 }
 
-TEST(FeaturePromoStorageServiceTest, GetShownForApps) {
+TEST(FeaturePromoStorageServiceTest, GetShownForKeys) {
   static constexpr char kAppName1[] = "App1";
   static constexpr char kAppName2[] = "App2";
 
   test::TestFeaturePromoStorageService service;
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature), testing::IsEmpty());
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature2), testing::IsEmpty());
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature), testing::IsEmpty());
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature2), testing::IsEmpty());
   FeaturePromoData data;
-  data.shown_for_apps.insert(kAppName1);
-  data.shown_for_apps.insert(kAppName2);
+  data.shown_for_keys.insert(kAppName1);
+  data.shown_for_keys.insert(kAppName2);
   service.SavePromoData(kTestIPHFeature, data);
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature),
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature),
               testing::UnorderedElementsAre(kAppName1, kAppName2));
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature2), testing::IsEmpty());
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature2), testing::IsEmpty());
   service.Reset(kTestIPHFeature);
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature), testing::IsEmpty());
-  EXPECT_THAT(service.GetShownForApps(kTestIPHFeature2), testing::IsEmpty());
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature), testing::IsEmpty());
+  EXPECT_THAT(service.GetShownForKeys(kTestIPHFeature2), testing::IsEmpty());
 }
 
 }  // namespace user_education

@@ -32,7 +32,7 @@ class FeaturePromoLifecycle {
   using PromoType = FeaturePromoSpecification::PromoType;
 
   FeaturePromoLifecycle(FeaturePromoStorageService* storage_service,
-                        const base::StringPiece& app_id,
+                        const base::StringPiece& promo_key,
                         const base::Feature* iph_feature,
                         PromoType promo_type,
                         PromoSubtype promo_subtype);
@@ -115,8 +115,8 @@ class FeaturePromoLifecycle {
   // The service that stores non-transient data about the IPH.
   const raw_ptr<FeaturePromoStorageService> storage_service_;
 
-  // The current app id, or empty for none.
-  const std::string app_id_;
+  // The current promo key, or empty for none.
+  const std::string promo_key_;
 
   // Data about the current IPH.
   const raw_ptr<const base::Feature> iph_feature_;

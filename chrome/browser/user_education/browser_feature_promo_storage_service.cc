@@ -183,7 +183,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
   if (app_list) {
     for (auto& app : *app_list) {
       if (auto* const app_id = app.GetIfString()) {
-        promo_data->shown_for_apps.emplace(*app_id);
+        promo_data->shown_for_keys.emplace(*app_id);
       }
     }
   }
@@ -214,12 +214,12 @@ void BrowserFeaturePromoStorageService::SavePromoData(
   pref_data.SetByDottedPath(path_prefix + kIPHShowCountPath,
                             promo_data.show_count);
 
-  base::Value::List shown_for_apps;
-  for (auto& app_id : promo_data.shown_for_apps) {
-    shown_for_apps.Append(app_id);
+  base::Value::List shown_for_keys;
+  for (auto& app_id : promo_data.shown_for_keys) {
+    shown_for_keys.Append(app_id);
   }
   pref_data.SetByDottedPath(path_prefix + kIPHShownForAppsPath,
-                            std::move(shown_for_apps));
+                            std::move(shown_for_keys));
 }
 
 void BrowserFeaturePromoStorageService::ResetSession() {

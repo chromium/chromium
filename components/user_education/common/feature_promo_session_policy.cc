@@ -105,7 +105,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
       promo_info.priority = PromoPriority::kHigh;
       break;
     case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
-    case FeaturePromoSpecification::PromoSubtype::kPerApp:
+    case FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
       promo_info.priority = PromoPriority::kMedium;
       break;
     case FeaturePromoSpecification::PromoSubtype::kNormal:

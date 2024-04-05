@@ -194,12 +194,13 @@ class FeaturePromoLifecycleUiTest : public TestBase {
 
   auto CheckDismissed(
       bool dismissed,
-      const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
+      const base::Feature* feature = &kFeaturePromoLifecycleTestPromo,
+      const std::string& key = std::string()) {
     return std::move(
-        CheckBrowser(base::BindLambdaForTesting([dismissed,
-                                                 feature](Browser* browser) {
-          return GetPromoController(browser)->HasPromoBeenDismissed(*feature) ==
-                 dismissed;
+        CheckBrowser(base::BindLambdaForTesting([dismissed, feature,
+                                                 key](Browser* browser) {
+          return GetPromoController(browser)->HasPromoBeenDismissed(
+                     {*feature, key}) == dismissed;
         }))
             .SetDescription(base::StringPrintf("CheckDismissed(%s, %s)",
                                                dismissed ? "true" : "false",
@@ -393,12 +394,13 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   }
 
   auto CheckShownForApp() {
-    return CheckBrowser(base::BindOnce([](Browser* browser) {
-      const auto data = GetStorageService(browser)->ReadPromoData(
-          kFeaturePromoLifecycleTestPromo);
-      return base::Contains(data->shown_for_apps,
-                            browser->app_controller()->app_id());
-    }));
+    return std::move(
+        CheckBrowser(base::BindOnce([](Browser* browser) {
+          const auto data = GetStorageService(browser)->ReadPromoData(
+              kFeaturePromoLifecycleTestPromo);
+          return base::Contains(data->shown_for_keys,
+                                browser->app_controller()->app_id());
+        })).SetDescription("CheckShownForApp()"));
   }
 
  protected:
@@ -414,16 +416,17 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
                 &kFeaturePromoLifecycleTestPromo,
                 kToolbarAppMenuButtonElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO)
                 .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                                     PromoSubtype::kPerApp)));
+                                     PromoSubtype::kKeyedNotice)));
   }
 };
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
-  RunTestSequenceInContext(app_browser->window()->GetElementContext(),
-                           WaitForShow(kToolbarAppMenuButtonElementId),
-                           MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
-                           DismissIPH(), CheckShownForApp());
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForShow(kToolbarAppMenuButtonElementId),
+      MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}), DismissIPH(),
+      CheckShownForApp());
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
@@ -431,19 +434,19 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
-      MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
+      MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}), DismissIPH(),
       FlushEvents(),
-      MaybeShowPromo(kFeaturePromoLifecycleTestPromo,
+      MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_},
                      FeaturePromoResult::kPermanentlyDismissed));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
-  RunTestSequenceInContext(app_browser->window()->GetElementContext(),
-                           WaitForShow(kToolbarAppMenuButtonElementId),
-                           CheckDismissed(false),
-                           MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
-                           DismissIPH(), CheckDismissed(true));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForShow(kToolbarAppMenuButtonElementId), CheckDismissed(false),
+      MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}), DismissIPH(),
+      CheckDismissed(true, &kFeaturePromoLifecycleTestPromo, app1_id_));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
@@ -451,18 +454,19 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
   Browser* const app_browser2 = LaunchWebAppBrowser(app2_id_);
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(),
-      MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
+      MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}),
       WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(), FlushEvents(),
-      InContext(app_browser2->window()->GetElementContext(),
-                Steps(WaitForShow(kToolbarAppMenuButtonElementId),
-                      MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
-                      DismissIPH(), CheckShownForApp())));
+      InContext(
+          app_browser2->window()->GetElementContext(),
+          Steps(WaitForShow(kToolbarAppMenuButtonElementId),
+                MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app2_id_}),
+                DismissIPH(), CheckShownForApp())));
 }
 
-class FeaturePromoLifecycleCriticaUiTest : public FeaturePromoLifecycleUiTest {
+class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
  public:
-  FeaturePromoLifecycleCriticaUiTest() = default;
-  ~FeaturePromoLifecycleCriticaUiTest() override = default;
+  FeaturePromoLifecycleCriticalUiTest() = default;
+  ~FeaturePromoLifecycleCriticalUiTest() override = default;
 
   auto CheckDismissed(
       bool dismissed,
@@ -522,13 +526,13 @@ class FeaturePromoLifecycleCriticaUiTest : public FeaturePromoLifecycleUiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, ShowCriticalPromo) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, ShowCriticalPromo) {
   RunTestSequence(CheckDismissed(false),
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   CheckDismissed(true));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CannotRepeatDismissedPromo) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   FlushEvents(),
@@ -536,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                                  FeaturePromoResult::kPermanentlyDismissed));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, ReshowAfterAbort) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, ReshowAfterAbort) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
                   AbortPromo(kFeaturePromoLifecycleTestPromo),
                   CheckDismissed(false),
@@ -544,14 +548,14 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, ReshowAfterAbort) {
                   CheckDismissed(true));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        HasPromoBeenDismissed) {
   RunTestSequence(CheckDismissed(false),
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   CheckDismissed(true));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        ShowSecondAfterDismiss) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestPromo),
@@ -560,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                   CheckDismissed(true, &kFeaturePromoLifecycleTestPromo2));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CriticalBlocksCritical) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo),
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo2,
@@ -570,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo2));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, AlertBlocksAlert) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, AlertBlocksAlert) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestAlert),
                   MaybeShowPromo(kFeaturePromoLifecycleTestAlert2,
                                  FeaturePromoResult::kBlockedByPromo),
@@ -579,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, AlertBlocksAlert) {
                   CheckDismissed(false, &kFeaturePromoLifecycleTestAlert2));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CriticalCancelsAlert) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestAlert),
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
@@ -587,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                   CheckDismissed(false, &kFeaturePromoLifecycleTestAlert));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CriticalCancelsNormal) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo3),
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
@@ -595,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, AlertCancelsNormal) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
+                       AlertCancelsNormal) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo3),
                   MaybeShowPromo(kFeaturePromoLifecycleTestAlert), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestAlert),

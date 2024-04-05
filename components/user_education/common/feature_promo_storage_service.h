@@ -70,7 +70,7 @@ class FeaturePromoStorageService {
   virtual void ResetNewBadge(const base::Feature& new_badge_feature) = 0;
 
   // Returns the set of apps that `iph_feature` has been shown for.
-  std::set<std::string> GetShownForApps(const base::Feature& iph_feature) const;
+  std::set<std::string> GetShownForKeys(const base::Feature& iph_feature) const;
 
   // Returns the count of previous snoozes for `iph_feature`.
   int GetSnoozeCount(const base::Feature& iph_feature) const;

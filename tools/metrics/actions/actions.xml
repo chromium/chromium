@@ -40541,6 +40541,36 @@ should be able to be added at any place in this file.
   <description>The IPH was shown to the user.</description>
 </action>
 
+<action name="UserEducation.MessageShown.KeyedNotice.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>A Per App Custom Action IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.KeyedNotice.Legacy">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>A Per App Legacy IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.KeyedNotice.Snooze">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>A Per App Snooze IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.KeyedNotice.Toast">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>A Per App Toast IPH was shown to the user.</description>
+</action>
+
+<action name="UserEducation.MessageShown.KeyedNotice.Tutorial">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>A Per App Tutorial IPH was shown to the user.</description>
+</action>
+
 <action name="UserEducation.MessageShown.Legacy">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -40577,36 +40607,6 @@ should be able to be added at any place in this file.
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <description>A Legal Notice Tutorial IPH was shown to the user.</description>
-</action>
-
-<action name="UserEducation.MessageShown.PerApp.CustomAction">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <description>A Per App Custom Action IPH was shown to the user.</description>
-</action>
-
-<action name="UserEducation.MessageShown.PerApp.Legacy">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <description>A Per App Legacy IPH was shown to the user.</description>
-</action>
-
-<action name="UserEducation.MessageShown.PerApp.Snooze">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <description>A Per App Snooze IPH was shown to the user.</description>
-</action>
-
-<action name="UserEducation.MessageShown.PerApp.Toast">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <description>A Per App Toast IPH was shown to the user.</description>
-</action>
-
-<action name="UserEducation.MessageShown.PerApp.Tutorial">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <description>A Per App Tutorial IPH was shown to the user.</description>
 </action>
 
 <action name="UserEducation.MessageShown.Snooze">

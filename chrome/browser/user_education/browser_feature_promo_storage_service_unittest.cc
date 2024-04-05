@@ -52,8 +52,8 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(200);
     data.snooze_count = 3;
     data.show_count = 4;
-    data.shown_for_apps.insert(kAppName1);
-    data.shown_for_apps.insert(kAppName2);
+    data.shown_for_keys.insert(kAppName1);
+    data.shown_for_keys.insert(kAppName2);
     return data;
   }
 
@@ -71,8 +71,8 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     EXPECT_EQ(expected.last_snooze_time, actual->last_snooze_time);
     EXPECT_EQ(expected.snooze_count, actual->snooze_count);
     EXPECT_EQ(expected.show_count, actual->show_count);
-    EXPECT_THAT(actual->shown_for_apps,
-                testing::ContainerEq(expected.shown_for_apps));
+    EXPECT_THAT(actual->shown_for_keys,
+                testing::ContainerEq(expected.shown_for_keys));
   }
 
   void SaveData(const base::Feature& to_save_data_for,
@@ -151,7 +151,7 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsData) {
 TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAgain) {
   auto data = CreateTestData();
   SaveData(kTestIPHFeature, data);
-  data.shown_for_apps.clear();
+  data.shown_for_keys.clear();
   data.is_dismissed = false;
   data.show_count++;
   SaveData(kTestIPHFeature, data);
@@ -172,7 +172,7 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsMultipleFeatures) {
   auto data2 = CreateTestData();
   data2.is_dismissed = false;
   data2.last_dismissed_by = user_education::FeaturePromoClosedReason::kCancel;
-  data2.shown_for_apps.clear();
+  data2.shown_for_keys.clear();
   data2.show_count = 6;
   SaveData(kTestIPHFeature2, data2);
   CompareData(data, kTestIPHFeature);

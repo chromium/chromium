@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -216,12 +215,4 @@ BrowserFeaturePromoController::GetScreenReaderPromptPromoFeature() const {
 const char* BrowserFeaturePromoController::GetScreenReaderPromptPromoEventName()
     const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
-}
-
-std::string BrowserFeaturePromoController::GetAppId() const {
-  if (const web_app::AppBrowserController* const controller =
-          browser_view_->browser()->app_controller()) {
-    return controller->app_id();
-  }
-  return std::string();
 }

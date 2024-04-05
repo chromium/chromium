@@ -300,10 +300,10 @@ auto GetPromoData(
   if (storage_service) {
     auto promo_data = storage_service->ReadPromoData(*spec.feature());
     if (promo_data.has_value()) {
-      if (spec.promo_subtype() ==
-          user_education::FeaturePromoSpecification::PromoSubtype::kPerApp) {
+      if (spec.promo_subtype() == user_education::FeaturePromoSpecification::
+                                      PromoSubtype::kKeyedNotice) {
         result.emplace_back(FormatDemoPageData(
-            "Shown for apps", promo_data->shown_for_apps.size()));
+            "Shown for keys", promo_data->shown_for_keys.size()));
       } else {
         result.emplace_back(
             FormatDemoPageData("Show count", promo_data->show_count));

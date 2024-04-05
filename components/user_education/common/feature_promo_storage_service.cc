@@ -20,14 +20,14 @@ int FeaturePromoStorageService::GetSnoozeCount(
   return data ? data->snooze_count : 0;
 }
 
-std::set<std::string> FeaturePromoStorageService::GetShownForApps(
+std::set<std::string> FeaturePromoStorageService::GetShownForKeys(
     const base::Feature& iph_feature) const {
   const auto data = ReadPromoData(iph_feature);
   if (!data) {
     return std::set<std::string>();
   }
 
-  return data->shown_for_apps;
+  return data->shown_for_keys;
 }
 
 base::Time FeaturePromoStorageService::GetCurrentTime() const {

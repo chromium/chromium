@@ -93,7 +93,6 @@ class BrowserFeaturePromoController
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;
-  std::string GetAppId() const override;
 
  private:
   // The browser window this instance is responsible for.

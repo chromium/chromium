@@ -834,7 +834,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                               PromoSubtype::kPerApp)));
+                               PromoSubtype::kKeyedNotice)));
 
   if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     // kIPHComposeMSBBSettingsFeature:
