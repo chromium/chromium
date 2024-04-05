@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -26,6 +29,22 @@ std::unique_ptr<TemplateURLData> GenerateSimpleTemplateURLData(
   data->SetURL(std::string("https://") + keyword + "/q={searchTerms}");
   return data;
 }
+
+using testing::_;
+
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  ~MockHistoryService() override = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              QueryURL,
+              (const GURL& url,
+               bool want_visits,
+               history::HistoryService::QueryURLCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+};
 }  // namespace
 
 class ZeroSuggestVerbatimMatchProviderTest
@@ -44,12 +63,13 @@ class ZeroSuggestVerbatimMatchProviderTest
 };
 
 bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
+  using OEP = metrics::OmniboxEventProto;
+
   auto param = GetParam();
-  return param == metrics::OmniboxEventProto::OTHER ||
-         param == metrics::OmniboxEventProto::
-                      SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
-         param == metrics::OmniboxEventProto::
-                      SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
+  return param == OEP::OTHER || param == OEP::OTHER_ON_CCT ||
+         param == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+         param == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
+         param == OEP::SEARCH_RESULT_PAGE_ON_CCT;
 }
 
 void ZeroSuggestVerbatimMatchProviderTest::SetUp() {
@@ -70,6 +90,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://google.com/search?q=test");
   AutocompleteInput input(base::ASCIIToUTF16(query), GetParam(),
                           TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   provider_->Start(input, false);
@@ -84,6 +105,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://google.com/search?q=test");
   AutocompleteInput input(base::ASCIIToUTF16(query), GetParam(),
                           TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
@@ -97,6 +119,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnFocus) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::ASCIIToUTF16(url), GetParam(),
                           TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
@@ -112,6 +135,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.wired.com/");
   AutocompleteInput input(base::ASCIIToUTF16(url), GetParam(),
                           TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
@@ -127,6 +151,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, NoVerbatimMatchWithEmptyInput) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   provider_->Start(input, false);
@@ -142,6 +167,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
@@ -157,6 +183,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnClobber) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
@@ -172,6 +199,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
@@ -193,12 +221,14 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.wider.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
     ASSERT_EQ(u"https://www.wider.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 }
 
@@ -213,6 +243,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.search.com/q=abc");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
@@ -220,6 +251,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
     ASSERT_FALSE(provider_->matches().empty());
     ASSERT_EQ(u"https://www.search.com/q=abc",
               provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 }
 
@@ -239,12 +271,14 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.search.com/q=abc");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
     ASSERT_EQ(u"abc", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 }
 
@@ -267,6 +301,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   std::string url("https://www.non-default.com/q=abc");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
   input.set_current_url(GURL(url));
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
@@ -274,6 +309,160 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
     ASSERT_FALSE(provider_->matches().empty());
     ASSERT_EQ(u"https://www.non-default.com/q=abc",
               provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"title", provider_->matches()[0].description);
+  }
+}
+
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       MissingPageTitle_NoHistoryService) {
+  std::string url("https://www.wired.com/");
+  AutocompleteInput input(u"",  // Note: empty input.
+                          GetParam(), TestSchemeClassifier());
+  // Note: no page title.
+  input.set_current_title(u"");
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  provider_->Start(input, false);
+
+  if (IsVerbatimMatchEligible()) {
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"", provider_->matches()[0].description);
+  }
+}
+
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       MissingPageTitle_WithHistoryService) {
+  // Install history service mock.
+  auto mock_service_up = std::make_unique<MockHistoryService>();
+  auto& mock_service = *mock_service_up;
+  mock_client_.set_history_service(std::move(mock_service_up));
+
+  std::string url("https://www.wired.com/");
+  AutocompleteInput input(u"",  // Note: empty input.
+                          GetParam(), TestSchemeClassifier());
+  // Note: no page title.
+  input.set_current_title(u"");
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+
+  if (!IsVerbatimMatchEligible()) {
+    return;
+  }
+
+  history::HistoryService::QueryURLCallback callback;
+  {
+    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
+        .WillOnce([&](GURL url, bool want_visits,
+                      history::HistoryService::QueryURLCallback cb,
+                      base::CancelableTaskTracker* tracker)
+                      -> base::CancelableTaskTracker::TaskId {
+          EXPECT_EQ("https://www.wired.com/", url.spec());
+          EXPECT_FALSE(want_visits);
+          callback = std::move(cb);
+          return {};
+        });
+    provider_->Start(input, false);
+
+    // Default matches with no title.
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"", provider_->matches()[0].description);
+  }
+
+  {
+    // Resolve history service.
+    history::QueryURLResult history_row;
+    history_row.row.set_title(u"Testing");
+    std::move(callback).Run(std::move(history_row));
+
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"Testing", provider_->matches()[0].description);
+  }
+}
+
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       MissingPageTitle_WithHistoryService_Synchronous) {
+  // Install history service mock.
+  auto mock_service_up = std::make_unique<MockHistoryService>();
+  auto& mock_service = *mock_service_up;
+  mock_client_.set_history_service(std::move(mock_service_up));
+
+  std::string url("https://www.wired.com/");
+  AutocompleteInput input(u"",  // Note: empty input.
+                          GetParam(), TestSchemeClassifier());
+  // Note: no page title.
+  input.set_current_title(u"");
+  input.set_omit_asynchronous_matches(true);
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+
+  if (!IsVerbatimMatchEligible()) {
+    return;
+  }
+
+  {
+    EXPECT_CALL(mock_service, QueryURL(_, _, _, _)).Times(0);
+    provider_->Start(input, false);
+
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"", provider_->matches()[0].description);
+  }
+}
+
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       MissingPageTitle_CallbackCanceled) {
+  // Install history service mock.
+  auto mock_service_up = std::make_unique<MockHistoryService>();
+  auto& mock_service = *mock_service_up;
+  mock_client_.set_history_service(std::move(mock_service_up));
+
+  std::string url("https://www.wired.com/");
+  AutocompleteInput input(u"",  // Note: empty input.
+                          GetParam(), TestSchemeClassifier());
+  // Note: no page title.
+  input.set_current_title(u"");
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+
+  if (!IsVerbatimMatchEligible()) {
+    return;
+  }
+
+  history::HistoryService::QueryURLCallback callback;
+  {
+    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
+        .WillOnce([&](GURL url, bool want_visits,
+                      history::HistoryService::QueryURLCallback cb,
+                      base::CancelableTaskTracker* tracker)
+                      -> base::CancelableTaskTracker::TaskId {
+          EXPECT_EQ("https://www.wired.com/", url.spec());
+          EXPECT_FALSE(want_visits);
+          callback = std::move(cb);
+          return {};
+        });
+    provider_->Start(input, false);
+
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"", provider_->matches()[0].description);
+  }
+
+  // Cancel action.
+  provider_->Stop(false, false);
+
+  {
+    // Resolve history service.
+    // Expect NO AutocompleteMatch.
+    history::QueryURLResult history_row;
+    history_row.row.set_title(u"Testing");
+    std::move(callback).Run(std::move(history_row));
+
+    ASSERT_FALSE(provider_->matches().empty());
+    ASSERT_EQ(u"https://www.wired.com", provider_->matches()[0].fill_into_edit);
+    ASSERT_EQ(u"", provider_->matches()[0].description);
   }
 }
 
@@ -292,6 +481,8 @@ INSTANTIATE_TEST_SUITE_P(
         metrics::OmniboxEventProto::NTP,
         metrics::OmniboxEventProto::BLANK,
         metrics::OmniboxEventProto::HOME_PAGE,
+        metrics::OmniboxEventProto::OTHER_ON_CCT,
+        metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_ON_CCT,
         metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS),
 
     // Ensure clarity when error message is printed out.
