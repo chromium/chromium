@@ -11683,6 +11683,24 @@
             ]
         }
     ],
+    "NavigationPredictorIntersectionObserver": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240328",
+                    "params": {
+                        "random_anchor_sampling_period": "1"
+                    },
+                    "enable_features": [
+                        "NavigationPredictor"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbyShareNameEnabled": [
         {
             "platforms": [
