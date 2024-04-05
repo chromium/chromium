@@ -216,7 +216,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RegisterApp(data);
   EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
 
-  metadata->RemoveApp("someappid");
+  metadata->RemoveApp("someAPPID");
   EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
 
   metadata->RemoveApp("someappid2");

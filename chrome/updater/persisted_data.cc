@@ -418,7 +418,7 @@ bool PersistedData::RemoveApp(const std::string& id) {
                               update_client::kPersistedDataPreference);
   base::Value::Dict* apps = update->FindDict("apps");
 
-  return apps ? apps->Remove(id) : false;
+  return apps ? apps->Remove(base::ToLowerASCII(id)) : false;
 }
 
 std::vector<std::string> PersistedData::GetAppIds() const {

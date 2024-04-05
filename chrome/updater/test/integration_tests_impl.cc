@@ -35,6 +35,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -939,7 +940,7 @@ void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {
       base::MakeRefCounted<PersistedData>(
           scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetAppIds(),
-      app_id));
+      base::ToLowerASCII(app_id)));
 }
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
@@ -947,7 +948,7 @@ void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
       base::MakeRefCounted<PersistedData>(
           scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetAppIds(),
-      app_id));
+      base::ToLowerASCII(app_id)));
 }
 
 void ExpectAppTag(UpdaterScope scope,
