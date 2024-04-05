@@ -158,7 +158,7 @@ constexpr int kCompactPaddingForEffectiveBounds = 16;
 
 // The horizontal and vertical distance from the bottom left corner of the grid
 // area to the origin of the `feedback_widget_`.
-constexpr int kFeedbackCornerSpacing = 30;
+constexpr int kFeedbackCornerSpacing = 8;
 
 // The minimum height of the grid area in order for the feedback button to be
 // visible.
@@ -3364,7 +3364,6 @@ void OverviewGrid::UpdateFeedbackButton() {
 
   if (!feedback_widget_) {
     auto contents_view = std::make_unique<PillButton>(
-        // TODO(hewer): Add callback to open a feedback page.
         base::BindRepeating(&OverviewGrid::ShowFeedbackPage,
                             base::Unretained(this)),
         u"Send Feedback", PillButton::Type::kDefaultWithIconLeading,
@@ -3385,9 +3384,6 @@ void OverviewGrid::UpdateFeedbackButton() {
 
   const gfx::Size contents_size =
       feedback_widget_->GetContentsView()->GetPreferredSize();
-
-  // TODO(hewer): Change the fixed distance of the button from the corner once
-  // the crop area is implemented.
   feedback_widget_->SetBounds(
       gfx::Rect(grid_bounds.bottom_left().x() + kFeedbackCornerSpacing,
                 grid_bounds.bottom_left().y() - kFeedbackCornerSpacing -
