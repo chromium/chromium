@@ -1067,6 +1067,9 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
 
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 2, 1);
+  histogram_tester.ExpectBucketCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, false,
+      1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
@@ -1121,6 +1124,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       0);
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 }
 
 TEST_F(SearchEngineChoiceServiceTest,
@@ -1146,6 +1151,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   {
     // Non-EEA country.
@@ -1162,6 +1169,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 
   {
     // Mismatch between the variations and choice screen data country.
@@ -1179,6 +1188,8 @@ TEST_F(SearchEngineChoiceServiceTest,
 
   histogram_tester.ExpectBucketCount(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, true, 1);
 
   // None of the above should have logged the full list of indices.
   histogram_tester.ExpectTotalCount(

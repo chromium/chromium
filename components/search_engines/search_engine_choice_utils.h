@@ -27,6 +27,8 @@ extern const char kSearchEngineChoiceScreenEventsHistogram[];
 extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
 extern const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[];
 extern const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[];
+extern const char
+    kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[];
 extern const char kSearchEngineChoiceWipeReasonHistogram[];
 extern const char kSearchEngineChoiceRepromptHistogram[];
 extern const char kSearchEngineChoiceRepromptWildcardHistogram[];
@@ -262,6 +264,12 @@ void RecordChoiceScreenSelectedIndex(int selected_engine_index);
 // `SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState()`.
 void RecordChoiceScreenPositions(
     const std::vector<SearchEngineType>& displayed_search_engines);
+
+// Records whether `RecordChoiceScreenPositions()` had to be skipped due to
+// a mismatch between the Variations/UMA country and the profile/choice
+// country. If `has_mismatch` is `true`, we record that it was "skipped", or
+// that it was "not skipped" otherwise.
+void RecordChoiceScreenPositionsCountryMismatch(bool has_mismatch);
 
 // For debugging purposes, record the ID of the current default search engine
 // that does not exist in the prepopulated search providers data.

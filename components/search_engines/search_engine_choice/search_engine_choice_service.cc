@@ -368,6 +368,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   }
 
   if (display_state.country_id != variations_country_id_) {
+    RecordChoiceScreenPositionsCountryMismatch(true);
     // Not recording if adding position data, which can be used as a proxy for
     // the profile country, would add new hard to control location info to a
     // logs session.
@@ -376,6 +377,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
+  RecordChoiceScreenPositionsCountryMismatch(false);
   RecordChoiceScreenPositions(display_state.search_engines);
 }
 

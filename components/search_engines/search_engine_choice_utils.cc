@@ -67,6 +67,9 @@ const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[] =
 const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
     "Search.ChoiceScreenShowedEngineAt.Index%d";
 
+const char kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[] =
+    "Search.ChoiceScreenShowedEngineAt.CountryMismatch";
+
 const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
 
 const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
@@ -173,6 +176,12 @@ void RecordChoiceScreenSelectedIndex(int selected_engine_index) {
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram,
       selected_engine_index,
       TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
+}
+
+void RecordChoiceScreenPositionsCountryMismatch(bool has_mismatch) {
+  base::UmaHistogramBoolean(
+      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram,
+      has_mismatch);
 }
 
 void RecordChoiceScreenPositions(
