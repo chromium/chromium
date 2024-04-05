@@ -21,6 +21,7 @@
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_paste_request.h"
 #include "ash/picker/picker_rich_media.h"
+#include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_positioning.h"
@@ -281,21 +282,17 @@ void PickerController::GetResultsForCategory(PickerCategory category,
               .Then(std::move(callback)));
       return;
     case PickerCategory::kDatesTimes:
-      NOTIMPLEMENTED_LOG_ONCE();
+      std::move(callback).Run(CreateSingleSectionFromResults(
+          PickerSectionType::kSuggestions, PickerSuggestedDateResults()));
       break;
     case PickerCategory::kUnitsMaths:
       NOTIMPLEMENTED_LOG_ONCE();
       break;
     case PickerCategory::kClipboard:
-      clipboard_provider_->FetchResults(base::BindOnce(
-          [](SearchResultsCallback callback,
-             std::vector<PickerSearchResult> results) {
-            std::move(callback).Run({
-                PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
-                                           std::move(results)),
-            });
-          },
-          std::move(callback)));
+      clipboard_provider_->FetchResults(
+          base::BindOnce(CreateSingleSectionFromResults,
+                         PickerSectionType::kRecentlyUsed)
+              .Then(std::move(callback)));
       return;
   }
 }

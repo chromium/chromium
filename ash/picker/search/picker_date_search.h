@@ -21,6 +21,8 @@ ASH_EXPORT std::vector<PickerSearchResult> PickerDateSearch(
     const base::Time& now,
     std::u16string_view query);
 
+ASH_EXPORT std::vector<PickerSearchResult> PickerSuggestedDateResults();
+
 }  // namespace ash
 
 #endif  // ASH_PICKER_SEARCH_PICKER_DATE_SEARCH_H_

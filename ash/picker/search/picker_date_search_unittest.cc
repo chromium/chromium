@@ -17,7 +17,10 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::Combine;
+using ::testing::Each;
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pointwise;
 using ::testing::Property;
@@ -200,6 +203,21 @@ TEST_P(PickerDateSearchTest, ReturnsExpectedDates) {
   EXPECT_THAT(PickerDateSearch(
                   TimeFromDateString(base::StrCat({date, " ", time})), query),
               Pointwise(ResultMatchesDate(), expected_results));
+}
+
+TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
+  std::vector<PickerSearchResult> results = PickerSuggestedDateResults();
+  EXPECT_THAT(results, Not(IsEmpty()));
+  EXPECT_THAT(
+      results,
+      Each(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::TextData>(AllOf(
+              Field("primary_text", &PickerSearchResult::TextData::primary_text,
+                    Not(IsEmpty())),
+              Field("secondary_text",
+                    &PickerSearchResult::TextData::secondary_text,
+                    Not(IsEmpty())))))));
 }
 }  // namespace
 }  // namespace ash

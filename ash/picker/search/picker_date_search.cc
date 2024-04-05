@@ -62,12 +62,26 @@ constexpr std::u16string_view kNumberToDayOfWeek[] = {
     u"Sunday",   u"Monday", u"Tuesday", u"Wednesday",
     u"Thursday", u"Friday", u"Saturday"};
 
+constexpr std::tuple<std::u16string_view, std::u16string_view>
+    kSuggestedDates[] = {
+        {u"today", u"Today's date"},
+        {u"tomorrow", u"Tomorrow's date"},
+        {u"2 weeks from now", u"Two weeks from now"},
+};
+
 PickerSearchResult MakeResult(const base::Time time,
                               std::u16string_view secondary_text = u"") {
   return PickerSearchResult::Text(
       base::LocalizedTimeFormatWithPattern(time, "LLLd"), secondary_text,
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface));
+}
+
+PickerSearchResult OverrideSecondaryText(PickerSearchResult result,
+                                         std::u16string_view secondary_text) {
+  const PickerSearchResult::TextData& data =
+      std::get<PickerSearchResult::TextData>(result.data());
+  return PickerSearchResult::Text(data.primary_text, secondary_text, data.icon);
 }
 
 void HandleSpecificDayQueries(const base::Time& now,
@@ -172,6 +186,20 @@ std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
   HandleSpecificDayQueries(now, clean_query, results);
   HandleDaysOrWeeksAwayQueries(now, clean_query, results);
   HandleDayOfWeekQueries(now, clean_query, results);
+  return results;
+}
+
+std::vector<PickerSearchResult> PickerSuggestedDateResults() {
+  std::vector<PickerSearchResult> results;
+
+  for (const auto& date : kSuggestedDates) {
+    std::vector<PickerSearchResult> query_results =
+        PickerDateSearch(base::Time::Now(), std::get<0>(date));
+    for (const auto& result : query_results) {
+      results.push_back(OverrideSecondaryText(result, std::get<1>(date)));
+    }
+  }
+
   return results;
 }
 
