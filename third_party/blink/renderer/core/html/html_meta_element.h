@@ -88,6 +88,7 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
+  void DidNotifySubtreeInsertionsToDocument() override;
 
   static float ParsePositiveNumber(Document*,
                                    bool report_warnings,

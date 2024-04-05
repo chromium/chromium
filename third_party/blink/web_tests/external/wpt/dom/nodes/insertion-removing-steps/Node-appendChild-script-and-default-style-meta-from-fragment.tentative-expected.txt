@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Inserting <meta> that uses alternate stylesheets, applies the style during DOM insertion, and before script runs as a result of any atomic insertions
+  assert_equals: display: none; style was applied during DOM insertion, before later-inserted script runs expected "none" but got "block"
+Harness: the test ran to completion.
+

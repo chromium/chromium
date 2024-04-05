@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] <meta name=referrer> should apply before script, as it is an insertion step and not a post-insertion step
+  assert_equals: expected "" but got "http://web-platform.test:8001/dom/nodes/insertion-removing-steps/Node-append-meta-referrer-and-script-from-fragment.tentative.html"
+Harness: the test ran to completion.
+
