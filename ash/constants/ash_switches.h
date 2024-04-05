@@ -515,6 +515,12 @@ bool IsMahiSecretKeyMatched();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest();
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsModifierSplitSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest();
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

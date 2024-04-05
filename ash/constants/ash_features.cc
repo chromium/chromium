@@ -4041,26 +4041,8 @@ bool IsOobeJellyEnabled() {
 }
 
 bool IsModifierSplitEnabled() {
-  static std::optional<bool> enabled;
-  if (enabled) {
-    return *enabled;
-  }
-
-  if (!base::FeatureList::IsEnabled(kModifierSplit)) {
-    enabled = false;
-    return false;
-  }
-
-  const std::string debug_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kModifierSplitFeatureKey));
-
-  const std::string hash =
-      "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B"
-      "\x7E\x10\x99";
-  enabled = debug_key_hash == hash;
-
-  return *enabled;
+  return base::FeatureList::IsEnabled(kModifierSplit) &&
+         switches::IsModifierSplitSecretKeyMatched();
 }
 
 bool IsSplitKeyboardRefactorEnabled() {

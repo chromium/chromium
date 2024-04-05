@@ -44,6 +44,14 @@ constexpr char kMahiHashKey[] =
 // Whether checking the mahi secret key is ignored.
 bool g_ignore_mahi_secret_key = false;
 
+// The hash value for the secret key of the mahi feature.
+constexpr char kModifierSplitHashKey[] =
+    "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B\x7E"
+    "\x10\x99";
+
+// Whether checking the mahi secret key is ignored.
+bool g_ignore_modifier_split_secret_key = false;
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -1411,6 +1419,32 @@ bool IsMahiSecretKeyMatched() {
 
 base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest() {
   return {&g_ignore_mahi_secret_key, true};
+}
+
+bool IsModifierSplitSecretKeyMatched() {
+  if (g_ignore_modifier_split_secret_key) {
+    return true;
+  }
+
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --modifier-split-feature-key="INSERT KEY HERE"
+  //  --enable-features=ModifierSplit
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kModifierSplitFeatureKey));
+
+  bool modifier_split_key_matched =
+      (provided_key_hash == kModifierSplitHashKey);
+  if (!modifier_split_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return modifier_split_key_matched;
+}
+
+base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest() {
+  return {&g_ignore_modifier_split_secret_key, true};
 }
 
 }  // namespace ash::switches
