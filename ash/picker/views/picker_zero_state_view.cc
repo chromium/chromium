@@ -332,6 +332,9 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
 
 void PickerZeroStateView::OnFetchSuggestedResults(
     std::vector<PickerSearchResult> results) {
+  if (results.empty()) {
+    return;
+  }
   if (!suggested_section_view_) {
     suggested_section_view_ = section_list_view_->AddSectionAt(0);
     suggested_section_view_->AddTitleLabel(

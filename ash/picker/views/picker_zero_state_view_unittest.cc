@@ -147,6 +147,24 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
           u"test", /*display_image=*/{}));
 }
 
+TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
+  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
+  EXPECT_CALL(mock_clipboard, GetHistoryValues)
+      .WillOnce(
+          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+            std::move(callback).Run({});
+          });
+
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      kAllCategories, true, kPickerWidth, base::DoNothing(),
+      base::DoNothing()));
+  widget->Show();
+
+  EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
+}
+
 TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
