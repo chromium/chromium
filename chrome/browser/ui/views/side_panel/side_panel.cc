@@ -248,7 +248,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
       base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
                           base::Unretained(browser_view)));
 
-  animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT);
+  animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
   animation_.SetSlideDuration(base::Milliseconds(kAnimationDurationMs));
 
