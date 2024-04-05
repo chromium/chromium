@@ -94,6 +94,10 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
             state->icon(), state->label_text()));
 
     slider_button->SetSelected(state->state_value().value() == current_state);
+
+    if (state->view_id() != -1) {
+      slider_button->SetID(state->view_id());
+    }
   }
   tab_slider_ = AddChildView(std::move(tab_slider));
 }

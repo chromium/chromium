@@ -56,6 +56,13 @@ constexpr int kRecentlyUsedImagesFullLength = 336;
 constexpr int kRecentlyUsedImagesHeight = 64;
 constexpr int kRecentlyUsedImagesSpacing = 10;
 
+constexpr int kRecentlyUsedImageButtonId[] = {
+    BubbleViewID::kBackgroundImage0,
+    BubbleViewID::kBackgroundImage1,
+    BubbleViewID::kBackgroundImage2,
+    BubbleViewID::kBackgroundImage3,
+};
+
 // Helper for getting the size of each recently used images.
 gfx::Size CalculateWantedImageSize(const int index, int image_count) {
   CHECK_LT(index, image_count);
@@ -84,10 +91,12 @@ class RecentlyUsedImageButton : public views::ImageButton {
   RecentlyUsedImageButton(
       const gfx::ImageSkia& image,
       const std::string& metadata,
+      int id,
       const base::RepeatingCallback<void()>& image_button_callback)
       : ImageButton(image_button_callback),
         check_icon_(&kBackgroundSelectionIcon,
                     cros_tokens::kCrosSysFocusRingOnPrimaryContainer) {
+    SetID(id);
     background_image_ = image;
 
     SetImageModel(ButtonState::STATE_NORMAL,
@@ -125,6 +134,12 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
   // Extract medata then decode it.
   void SetAccessibilityLabelFromMetadata(const std::string& metadata) {
+    // Used for testing.
+    if (metadata.empty()) {
+      SetAccessibilityLabelFromRecentSeaPenImageInfo(nullptr);
+      return;
+    }
+
     const std::string extracted_metadata =
         ExtractDcDescriptionContents(metadata);
 
@@ -138,14 +153,17 @@ class RecentlyUsedImageButton : public views::ImageButton {
   // Called when decoding metadata complete.
   void SetAccessibilityLabelFromRecentSeaPenImageInfo(
       personalization_app::mojom::RecentSeaPenImageInfoPtr info) {
-    const auto& text = info->user_visible_query->text;
-    std::u16string query;
-    if (!base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
-      query.clear();
-    }
     SetAccessibleRole(ax::mojom::Role::kListItem);
     SetAccessibleDescription(l10n_util::GetStringUTF16(
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION));
+
+    std::u16string query;
+    if (!info.is_null() && !info->user_visible_query.is_null()) {
+      const auto& text = info->user_visible_query->text;
+      if (!base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
+        query.clear();
+      }
+    }
     SetAccessibleName(
         query, query.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                              : ax::mojom::NameFrom::kAttribute);
@@ -229,7 +247,7 @@ class RecentlyUsedBackgroundView : public views::View {
           kSetCameraBackgroundViewRadius, image);
 
       AddChildView(std::make_unique<RecentlyUsedImageButton>(
-          image, images_info[i].metadata,
+          image, images_info[i].metadata, kRecentlyUsedImageButtonId[i],
           base::BindRepeating(&RecentlyUsedBackgroundView::OnImageButtonClicked,
                               weak_factory_.GetWeakPtr(), i,
                               images_info[i].basename)));
@@ -276,6 +294,7 @@ class CreateImageButton : public views::LabelButton {
             l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME)),
         controller_(controller) {
+    SetID(BubbleViewID::kCreateWithAiButton);
     SetBorder(views::CreateEmptyBorder(kCreateImageButtonBorderInsets));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetImageLabelSpacing(kCreateImageButtonBetweenChildSpacing);

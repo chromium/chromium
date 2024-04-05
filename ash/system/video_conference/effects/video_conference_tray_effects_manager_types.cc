@@ -15,12 +15,14 @@ VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
                              const std::u16string& label_text,
                              int accessible_name_id,
                              base::RepeatingClosure button_callback,
-                             std::optional<int> state_value)
+                             std::optional<int> state_value,
+                             int view_id)
     : icon_(icon),
       label_text_(label_text),
       accessible_name_id_(accessible_name_id),
       button_callback_(std::move(button_callback)),
-      state_value_(state_value) {
+      state_value_(state_value),
+      view_id_(view_id) {
   DCHECK(icon);
 }
 

@@ -228,7 +228,8 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void AddBackgroundBlurStateToEffect(VcHostedEffect* effect,
                                       const gfx::VectorIcon& icon,
                                       int state_value,
-                                      int string_id);
+                                      int string_id,
+                                      int view_id);
 
   // A helper for easier binding.
   void SetCameraEffectsInCameraHalDispatcherImpl(

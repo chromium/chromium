@@ -52,7 +52,34 @@ enum BubbleViewID {
   // The view that contains elements for setting camera background.
   kSetCameraBackgroundView,
 
-  kNextAvailableId = kSetCameraBackgroundView + 1,
+  // Background blur off button.
+  kBackgroundBlurOffButton,
+
+  // Background blur light button.
+  kBackgroundBlurLightButton,
+
+  // Background blur full button.
+  kBackgroundBlurFullButton,
+
+  // Background blur image button.
+  kBackgroundBlurImageButton,
+
+  // The first recently used background image.
+  kBackgroundImage0,
+
+  // The second recently used background image.
+  kBackgroundImage1,
+
+  // The third recently used background image.
+  kBackgroundImage2,
+
+  // The fourth recently used background image.
+  kBackgroundImage3,
+
+  // The create with AI button.
+  kCreateWithAiButton,
+
+  kNextAvailableId = kCreateWithAiButton + 1,
 };
 
 }  // namespace ash::video_conference

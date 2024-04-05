@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray.h"
@@ -968,23 +969,27 @@ void CameraEffectsController::InitializeEffectControls() {
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurOffIcon,
         /*state_value=*/BackgroundBlurPrefValue::kOff,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF);
+        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF,
+        video_conference::BubbleViewID::kBackgroundBlurOffButton);
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurLightIcon,
         /*state_value=*/BackgroundBlurPrefValue::kLight,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT);
+        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT,
+        video_conference::BubbleViewID::kBackgroundBlurLightButton);
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
         /*state_value=*/BackgroundBlurPrefValue::kMaximum,
         /*string_id=*/
-        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
+        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL,
+        video_conference::BubbleViewID::kBackgroundBlurFullButton);
 
     if (features::IsVcBackgroundReplaceEnabled()) {
       AddBackgroundBlurStateToEffect(
           effect.get(), kAiImageIcon,
           /*state_value=*/BackgroundBlurPrefValue::kImage,
           /*string_id=*/
-          IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE);
+          IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE,
+          video_conference::BubbleViewID::kBackgroundBlurImageButton);
     }
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
@@ -1031,7 +1036,8 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
     VcHostedEffect* effect,
     const gfx::VectorIcon& icon,
     int state_value,
-    int string_id) {
+    int string_id,
+    int view_id) {
   DCHECK(effect);
   effect->AddState(std::make_unique<VcEffectState>(
       &icon,
@@ -1042,7 +1048,7 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kBackgroundBlur,
                           /*value=*/state_value),
-      /*state=*/state_value));
+      /*state=*/state_value, view_id));
 }
 
 void CameraEffectsController::SetCameraEffectsInCameraHalDispatcherImpl(

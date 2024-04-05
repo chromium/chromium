@@ -43,7 +43,8 @@ class ASH_EXPORT VcEffectState {
                 const std::u16string& label_text,
                 int accessible_name_id,
                 base::RepeatingClosure button_callback,
-                std::optional<int> state_value = std::nullopt);
+                std::optional<int> state_value = std::nullopt,
+                int view_id = -1);
 
   VcEffectState(const VcEffectState&) = delete;
   VcEffectState& operator=(const VcEffectState&) = delete;
@@ -54,6 +55,7 @@ class ASH_EXPORT VcEffectState {
   const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
+  int view_id() const { return view_id_; }
   const base::RepeatingClosure& button_callback() const {
     return button_callback_;
   }
@@ -76,6 +78,9 @@ class ASH_EXPORT VcEffectState {
 
   // The state value.
   std::optional<int> state_value_;
+
+  // Optional id used to identify the state view.
+  const int view_id_;
 };
 
 // Designates the type of user-adjustments made to this effect.
