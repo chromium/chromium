@@ -972,12 +972,12 @@ RTCInsertableStreams* RTCRtpSender::createEncodedStreams(
     return nullptr;
   }
   if (kind_ == "audio")
-    return createEncodedAudioStreams(script_state, exception_state);
+    return CreateEncodedAudioStreams(script_state, exception_state);
   DCHECK_EQ(kind_, "video");
-  return createEncodedVideoStreams(script_state, exception_state);
+  return CreateEncodedVideoStreams(script_state, exception_state);
 }
 
-RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
+RTCInsertableStreams* RTCRtpSender::CreateEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1003,7 +1003,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
   return encoded_audio_streams_.Get();
 }
 
-RTCInsertableStreams* RTCRtpSender::createEncodedVideoStreams(
+RTCInsertableStreams* RTCRtpSender::CreateEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

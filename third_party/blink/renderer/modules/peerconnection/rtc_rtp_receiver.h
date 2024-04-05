@@ -82,11 +82,6 @@ class RTCRtpReceiver final : public ScriptWrappable,
       ExceptionState&);
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
-  // TODO(crbug.com/1069295): Make these methods private.
-  RTCInsertableStreams* createEncodedAudioStreams(ScriptState*,
-                                                  ExceptionState&);
-  RTCInsertableStreams* createEncodedVideoStreams(ScriptState*,
-                                                  ExceptionState&);
 
   RTCRtpReceiverPlatform* platform_receiver();
   MediaKind kind() const;
@@ -101,28 +96,36 @@ class RTCRtpReceiver final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  // Insertable Streams audio support methods
+  RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*,
+                                                  ExceptionState&);
   void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
   void InitializeEncodedAudioStreams(ScriptState*);
-  void OnAudioFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-          encoded_audio_frame);
-  void RegisterEncodedVideoStreamCallback();
-  void UnregisterEncodedVideoStreamCallback();
-  void InitializeEncodedVideoStreams(ScriptState*);
-  void OnVideoFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-          encoded_video_frame);
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetAudioUnderlyingSink(
       RTCEncodedAudioUnderlyingSink* new_underlying_sink);
+  void OnAudioFrameFromDepacketizer(
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+          encoded_audio_frame);
+
+  // Insertable Streams video support methods
+  RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*,
+                                                  ExceptionState&);
+  void RegisterEncodedVideoStreamCallback();
+  void UnregisterEncodedVideoStreamCallback();
+  void InitializeEncodedVideoStreams(ScriptState*);
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetVideoUnderlyingSink(
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
+  void OnVideoFrameFromDepacketizer(
+      std::unique_ptr<webrtc::TransformableVideoFrameInterface>
+          encoded_video_frame);
+
   void LogMessage(const std::string& message);
 
   // If createEncodedStreams has not yet been called, instead tell the webrtc
