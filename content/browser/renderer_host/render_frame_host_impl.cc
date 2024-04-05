@@ -9653,6 +9653,8 @@ void RenderFrameHostImpl::HandleAXEvents(
                           GetProcess()->IsInitializedAndNotDead());
     SCOPED_CRASH_KEY_NUMBER("ax", "render_frame_state",
                             static_cast<int>(render_frame_state_));
+    SCOPED_CRASH_KEY_NUMBER("ax", "inner_tree_main_frame_tree_node_id",
+                            inner_tree_main_frame_tree_node_id_);
     // TODO: crbug.com/40069097 - switch to CHECK.
     DUMP_WILL_BE_CHECK(false);
   }
