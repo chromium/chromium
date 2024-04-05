@@ -199,10 +199,7 @@ class MahiPanelViewTest : public AshTestBase {
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
         &mock_mahi_manager_);
 
-    widget_ = CreateFramelessTestWidget();
-    widget_->SetFullscreen(true);
-    panel_view_ = widget_->SetContentsView(
-        std::make_unique<MahiPanelView>(&ui_controller_));
+    CreatePanelWidget();
   }
 
   void TearDown() override {
@@ -215,10 +212,14 @@ class MahiPanelViewTest : public AshTestBase {
     new_window_delegate_ = nullptr;
   }
 
-  void RecreatePanelView() {
+  // Creates a widget hosting `MahiPanelView`. Recreates if there is one.
+  void CreatePanelWidget() {
     // Avoid creating a dangling pointer.
     panel_view_ = nullptr;
 
+    widget_.reset();
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
     panel_view_ = widget_->SetContentsView(
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
@@ -839,7 +840,7 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     // TODO(http://b/319731862): Check the label contents.
     EXPECT_FALSE(error_status_label->GetText().empty());
 
-    RecreatePanelView();
+    CreatePanelWidget();
   }
 }
 
@@ -861,28 +862,28 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
                                        std::move(callback));
         });
 
-    MahiPanelView mahi_view(ui_controller());
+    CreatePanelWidget();
     Mock::VerifyAndClear(&mock_mahi_manager());
 
     // Before outlines are loaded with an error, the summary & outlines section
     // should show.
     const auto* const question_answer_view =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
     CHECK(question_answer_view);
     EXPECT_FALSE(question_answer_view->GetVisible());
 
-    const auto* const summary_outlines_section =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kSummaryOutlinesSection);
+    const auto* const summary_outlines_section = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kSummaryOutlinesSection);
     CHECK(summary_outlines_section);
     EXPECT_TRUE(summary_outlines_section->GetVisible());
 
     const auto* const error_status_view =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
     CHECK(error_status_view);
     EXPECT_FALSE(error_status_view->GetVisible());
 
     const auto* const error_status_label = views::AsViewClass<views::Label>(
-        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
     CHECK(error_status_label);
     EXPECT_TRUE(error_status_label->GetText().empty());
 
@@ -915,28 +916,28 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
                                       std::move(callback));
         });
 
-    MahiPanelView mahi_view(ui_controller());
+    CreatePanelWidget();
     Mock::VerifyAndClear(&mock_mahi_manager());
 
     // Before the summary is loaded with an error, the summary & outlines
     // section should show.
     const auto* const question_answer_view =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
     CHECK(question_answer_view);
     EXPECT_FALSE(question_answer_view->GetVisible());
 
-    const auto* const summary_outlines_section =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kSummaryOutlinesSection);
+    const auto* const summary_outlines_section = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kSummaryOutlinesSection);
     CHECK(summary_outlines_section);
     EXPECT_TRUE(summary_outlines_section->GetVisible());
 
     const auto* const error_status_view =
-        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
     CHECK(error_status_view);
     EXPECT_FALSE(error_status_view->GetVisible());
 
     const auto* const error_status_label = views::AsViewClass<views::Label>(
-        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
     CHECK(error_status_label);
     EXPECT_TRUE(error_status_label->GetText().empty());
 

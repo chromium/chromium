@@ -453,11 +453,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                                       ui_controller_))
                                   .SetID(mahi_constants::ViewId::
                                              kQuestionAnswerView)
-                                  .CopyAddressTo(&question_answer_view_)
-                                  .SetVisible(false))),
+                                  .CopyAddressTo(&question_answer_view_))),
               views::Builder<MahiErrorStatusView>(
-                  std::make_unique<MahiErrorStatusView>(ui_controller_))
-                  .SetVisible(false))
+                  std::make_unique<MahiErrorStatusView>(ui_controller_)))
           .Build());
 
   auto* ask_question_container = AddChildView(
@@ -522,6 +520,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   footer_row->AddChildView(std::move(learn_more_link));
 
   AddChildView(std::move(footer_row));
+
+  // Refresh contents after all child views are built.
+  ui_controller_->RefreshContents();
 }
 
 MahiPanelView::~MahiPanelView() = default;
@@ -541,8 +542,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
           views::Builder<BackButton>(
               std::make_unique<BackButton>(ui_controller_))
               .CopyAddressTo(&back_button_)
-              .SetID(mahi_constants::ViewId::kBackButton)
-              .SetVisible(false),  // Visible when Q&A View is showing.
+              .SetID(mahi_constants::ViewId::kBackButton),
           // The Panel's title label
           views::Builder<views::Label>()
               // TODO(b/319264190): Replace the string used here with the

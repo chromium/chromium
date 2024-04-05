@@ -128,8 +128,6 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetVisible(false)
           .Build());
-
-  LoadSummaryAndOutlines();
 }
 
 SummaryOutlinesSection::~SummaryOutlinesSection() = default;

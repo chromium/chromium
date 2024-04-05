@@ -134,7 +134,6 @@ MahiErrorStatusView::MahiErrorStatusView(MahiUiController* ui_controller)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetID(mahi_constants::ViewId::kErrorStatusView)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetVisible(false)
       .AddChild(views::Builder<views::View>(
           std::make_unique<ErrorContentsView>(ui_controller)))
       .BuildChildren();
