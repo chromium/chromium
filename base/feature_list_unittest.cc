@@ -9,6 +9,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,7 +44,7 @@ constinit Feature kFeatureOffByDefault(kFeatureOffByDefaultName,
                                        FEATURE_DISABLED_BY_DEFAULT);
 
 std::string SortFeatureListString(const std::string& feature_list) {
-  std::vector<base::StringPiece> features =
+  std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
   ranges::sort(features);
   return JoinString(features, ",");

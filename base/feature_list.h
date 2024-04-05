@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -102,7 +102,8 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   constexpr Feature(const char* name, FeatureState default_state)
       : name(name), default_state(default_state) {
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
-    if (StringPiece(name).find(BUILDFLAG(BANNED_BASE_FEATURE_PREFIX)) == 0) {
+    if (std::string_view(name).find(BUILDFLAG(BANNED_BASE_FEATURE_PREFIX)) ==
+        0) {
       LOG(FATAL) << "Invalid feature name " << name << " starts with "
                  << BUILDFLAG(BANNED_BASE_FEATURE_PREFIX);
     }
@@ -236,11 +237,11 @@ class BASE_EXPORT FeatureList {
     // Callers of this MUST ensure that there is a consistent, compile-time
     // default value associated.
     FeatureList::OverrideState GetOverrideStateByFeatureName(
-        StringPiece feature_name);
+        std::string_view feature_name);
 
     // Look up the feature, and, if present, populate |params|.
     // See GetFieldTrialParams in field_trial_params.h for more documentation.
-    bool GetParamsByFeatureName(StringPiece feature_name,
+    bool GetParamsByFeatureName(std::string_view feature_name,
                                 std::map<std::string, std::string>* params);
 
    private:
@@ -360,7 +361,7 @@ class BASE_EXPORT FeatureList {
   // Returns the field trial associated with the given feature |name|. Used for
   // getting the FieldTrial without requiring a struct Feature.
   base::FieldTrial* GetAssociatedFieldTrialByFeatureName(
-      StringPiece name) const;
+      std::string_view name) const;
 
   // DO NOT USE outside of internal field trial implementation code. Instead use
   // GetAssociatedFieldTrialByFeatureName(), which performs some additional
@@ -371,11 +372,11 @@ class BASE_EXPORT FeatureList {
   // GetAssociatedFieldTrialByFeatureName(), this function must be called during
   // |FeatureList| initialization; the returned value will report whether the
   // provided |name| has been used so far.
-  bool HasAssociatedFieldTrialByFeatureName(StringPiece name) const;
+  bool HasAssociatedFieldTrialByFeatureName(std::string_view name) const;
 
   // Get associated field trial for the given feature |name| only if override
   // enables it.
-  FieldTrial* GetEnabledFieldTrialByFeatureName(StringPiece name) const;
+  FieldTrial* GetEnabledFieldTrialByFeatureName(std::string_view name) const;
 
   // Construct an accessor allowing access to GetOverrideStateByFeatureName().
   // This can only be called before the FeatureList is initialized, and is
@@ -407,7 +408,7 @@ class BASE_EXPORT FeatureList {
   // (since they are used in command-line API functions that require ASCII) and
   // whether there are any reserved characters present, returning true if the
   // string is valid.
-  static bool IsValidFeatureOrFieldTrialName(StringPiece name);
+  static bool IsValidFeatureOrFieldTrialName(std::string_view name);
 
   // If the given |feature| is overridden, returns its enabled state; otherwise,
   // returns an empty optional. Must only be called after the singleton instance
@@ -422,8 +423,8 @@ class BASE_EXPORT FeatureList {
 
   // Splits a comma-separated string containing feature names into a vector. The
   // resulting pieces point to parts of |input|.
-  static std::vector<base::StringPiece> SplitFeatureListString(
-      base::StringPiece input);
+  static std::vector<std::string_view> SplitFeatureListString(
+      std::string_view input);
 
   // Checks and parses the |enable_feature| (e.g.
   // FeatureName<Study.Group:Param1/value1/) obtained by applying
@@ -432,7 +433,7 @@ class BASE_EXPORT FeatureList {
   // be the field trial name and its group name if the field trial is specified
   // or field trial parameters are given, |params| to be the field trial
   // parameters if exists.
-  static bool ParseEnableFeatureString(StringPiece enable_feature,
+  static bool ParseEnableFeatureString(std::string_view enable_feature,
                                        std::string* feature_name,
                                        std::string* study_name,
                                        std::string* group_name,
@@ -552,7 +553,7 @@ class BASE_EXPORT FeatureList {
   // Returns the override for the field trial associated with the given feature
   // |name| or null if the feature is not found.
   const base::FeatureList::OverrideEntry* GetOverrideEntryByFeatureName(
-      StringPiece name) const;
+      std::string_view name) const;
 
   // Finalizes the initialization state of the FeatureList, so that no further
   // overrides can be registered. This is called by SetInstance() on the
@@ -576,7 +577,8 @@ class BASE_EXPORT FeatureList {
   OverrideState GetOverrideState(const Feature& feature) const;
 
   // Same as GetOverrideState(), but without a default value.
-  OverrideState GetOverrideStateByFeatureName(StringPiece feature_name) const;
+  OverrideState GetOverrideStateByFeatureName(
+      std::string_view feature_name) const;
 
   // Returns the field trial associated with the given |feature|. This is
   // invoked by the public FeatureList::GetFieldTrial() static function on the
@@ -598,7 +600,7 @@ class BASE_EXPORT FeatureList {
   // the feature, which will activate the field trial when the feature state is
   // queried. If an override is already registered for the given feature, it
   // will not be changed.
-  void RegisterOverride(StringPiece feature_name,
+  void RegisterOverride(std::string_view feature_name,
                         OverrideState overridden_state,
                         FieldTrial* field_trial);
 
