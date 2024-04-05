@@ -8,6 +8,7 @@
     "is_skylab": true,
     "ozone_platform_headless": true,
     "target_os": "chromeos",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
