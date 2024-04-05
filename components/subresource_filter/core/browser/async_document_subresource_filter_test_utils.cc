@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
+
+#include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace subresource_filter {
-namespace testing {
+namespace subresource_filter::testing {
 
 TestActivationStateCallbackReceiver::TestActivationStateCallbackReceiver() =
     default;
@@ -44,5 +46,4 @@ void TestActivationStateCallbackReceiver::Callback(
     std::move(quit_closure_).Run();
 }
 
-}  // namespace testing
-}  // namespace subresource_filter
+}  // namespace subresource_filter::testing

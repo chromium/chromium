@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"

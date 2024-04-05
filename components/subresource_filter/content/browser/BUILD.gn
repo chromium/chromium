@@ -10,8 +10,6 @@ static_library("browser") {
     "activation_state_computing_navigation_throttle.h",
     "ads_intervention_manager.cc",
     "ads_intervention_manager.h",
-    "async_document_subresource_filter.cc",
-    "async_document_subresource_filter.h",
     "child_frame_navigation_filtering_throttle.cc",
     "child_frame_navigation_filtering_throttle.h",
     "content_activation_list_utils.cc",
@@ -98,8 +96,6 @@ static_library("test_support") {
   sources = [
     "ad_tagging_browser_test_utils.cc",
     "ad_tagging_browser_test_utils.h",
-    "async_document_subresource_filter_test_utils.cc",
-    "async_document_subresource_filter_test_utils.h",
     "child_frame_navigation_test_utils.cc",
     "child_frame_navigation_test_utils.h",
     "fake_safe_browsing_database_manager.cc",
@@ -153,7 +149,6 @@ source_set("unit_tests") {
   sources = [
     "activation_state_computing_navigation_throttle_unittest.cc",
     "ads_intervention_manager_unittest.cc",
-    "async_document_subresource_filter_unittest.cc",
     "child_frame_navigation_filtering_throttle_unittest.cc",
     "content_activation_list_utils_unittest.cc",
     "content_subresource_filter_throttle_manager_unittest.cc",

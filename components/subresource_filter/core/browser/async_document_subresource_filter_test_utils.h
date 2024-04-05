@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
-namespace subresource_filter {
-namespace testing {
+namespace subresource_filter::testing {
 
 // This test class is intended to be used in conjunction with an
 // AsyncDocumentSubresourceFilter, and can be used to expect a certain
@@ -41,7 +39,6 @@ class TestActivationStateCallbackReceiver {
   base::OnceClosure quit_closure_;
 };
 
-}  // namespace testing
-}  // namespace subresource_filter
+}  // namespace subresource_filter::testing
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_TEST_UTILS_H_

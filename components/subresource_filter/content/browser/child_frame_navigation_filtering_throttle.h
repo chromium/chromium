@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"

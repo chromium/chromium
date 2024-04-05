@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
-#include "components/subresource_filter/core/common/scoped_timers.h"
-#include "components/subresource_filter/core/common/time_measurements.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/document_subresource_filter.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace subresource_filter {
 
