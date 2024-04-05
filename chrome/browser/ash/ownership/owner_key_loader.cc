@@ -31,7 +31,7 @@ namespace ash {
 // Enable storing a newly created owner key in the private slot.
 BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
              "StoreOwnerKeyInPrivateSlot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable migration of the owner key from the public to the private slot. This
 // experiment represents the second stage of `kStoreOwnerKeyInPrivateSlot` and
