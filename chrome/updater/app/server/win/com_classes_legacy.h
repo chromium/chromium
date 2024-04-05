@@ -191,7 +191,9 @@ class LegacyProcessLauncherImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IProcessLauncher,
-          IProcessLauncher2> {
+          IProcessLauncherSystem,
+          IProcessLauncher2,
+          IProcessLauncher2System> {
  public:
   LegacyProcessLauncherImpl();
   LegacyProcessLauncherImpl(const LegacyProcessLauncherImpl&) = delete;

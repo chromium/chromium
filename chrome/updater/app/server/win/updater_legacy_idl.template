@@ -581,7 +581,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "addToLibrary": [""],
+    "uuid": {
+      "system":"PLACEHOLDER-GUID-FFBAEC45-C5EC-4287-85CD-A831796BE952"
+    },
+    "tokensToSuffix": ["IProcessLauncher"],
+    "addToLibrary": ["", "system"],
     "includeFor": ["system"]
   }
 )
@@ -605,7 +609,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "addToLibrary": [""],
+    "uuid": {
+      "system":"PLACEHOLDER-GUID-5F41DC50-029C-4F5A-9860-EF352A0B66D2"
+    },
+    "tokensToSuffix": ["IProcessLauncher2", "IProcessLauncher"],
+    "addToLibrary": ["", "system"],
     "includeFor": ["system"]
   }
 )
