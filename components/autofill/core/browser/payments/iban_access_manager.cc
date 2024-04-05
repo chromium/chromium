@@ -47,7 +47,8 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
           ->payments_data_manager()
           .RecordUseOfIban(iban_copy);
       if (client_->GetPersonalDataManager()
-              ->IsPaymentMethodsMandatoryReauthEnabled()) {
+              ->payments_data_manager()
+              .IsPaymentMethodsMandatoryReauthEnabled()) {
         StartDeviceAuthenticationForFilling(
             std::move(on_iban_fetched), iban_copy.value(),
             NonInteractivePaymentMethodType::kLocalIban);
@@ -120,7 +121,8 @@ void IbanAccessManager::OnUnmaskResponseReceived(
   autofill_metrics::LogServerIbanUnmaskStatus(is_successful);
   if (is_successful) {
     if (client_->GetPersonalDataManager()
-            ->IsPaymentMethodsMandatoryReauthEnabled()) {
+            ->payments_data_manager()
+            .IsPaymentMethodsMandatoryReauthEnabled()) {
       // On some operating systems (for example, macOS and Windows), the
       // device authentication prompt freezes Chrome. Thus we can only trigger
       // the prompt after the progress dialog has been closed, which we can do

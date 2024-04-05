@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
@@ -29,7 +30,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace autofill {
+
+using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
+using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 namespace {
 
@@ -902,6 +910,67 @@ bool PaymentsDataManager::IsServerCard(const CreditCard* credit_card) const {
     }
   }
   return false;
+}
+
+void PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
+    bool enabled) {
+  prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
+}
+
+bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+  return prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_);
+}
+
+bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
+  // There is no need to show the promo if the feature is already enabled.
+  if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
+#if BUILDFLAG(IS_ANDROID)
+    // The mandatory reauth feature is always enabled on automotive, there
+    // is/was no opt-in. As such, there is no need to log anything here on
+    // automotive.
+    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+      LogMandatoryReauthOfferOptInDecision(
+          MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
+    }
+#else
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
+#endif  // BUILDFLAG(IS_ANDROID)
+    return false;
+  }
+
+  // If the user has explicitly opted out of this feature previously, then we
+  // should not show the opt-in promo.
+  if (prefs::IsPaymentMethodsMandatoryReauthSetExplicitly(pref_service_)) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kAlreadyOptedOut);
+    return false;
+  }
+
+  // We should only show the opt-in promo if we have not reached the maximum
+  // number of shows for the promo.
+  bool allowed_by_strike_database =
+      prefs::IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
+          pref_service_);
+  if (!allowed_by_strike_database) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kBlockedByStrikeDatabase);
+  }
+  return allowed_by_strike_database;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+}
+
+void PaymentsDataManager::
+    IncrementPaymentMethodsMandatoryReauthPromoShownCounter() {
+  prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
 std::vector<VirtualCardUsageData*>

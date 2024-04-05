@@ -848,7 +848,8 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   LogMandatoryReauthOptInOrOutUpdateEvent(
       MandatoryReauthOptInOrOutSource::kSettingsPage,
       /*opt_in=*/
-      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled(),
+      !personal_data_manager->payments_data_manager()
+           .IsPaymentMethodsMandatoryReauthEnabled(),
       MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
   client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
@@ -883,8 +884,8 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
   // mandatory reauth feature. If the mandatory reauth toggle on the settings is
   // currently enabled, then the `opt_in` bool will be false because the user is
   // opting-out, otherwise the `opt_in` bool will be true.
-  const bool opt_in =
-      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled();
+  const bool opt_in = !personal_data_manager->payments_data_manager()
+                           .IsPaymentMethodsMandatoryReauthEnabled();
   LogMandatoryReauthOptInOrOutUpdateEvent(
       MandatoryReauthOptInOrOutSource::kSettingsPage, opt_in,
       reauth_succeeded ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
@@ -892,7 +893,8 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
   if (reauth_succeeded) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
-    personal_data_manager->SetPaymentMethodsMandatoryReauthEnabled(opt_in);
+    personal_data_manager->payments_data_manager()
+        .SetPaymentMethodsMandatoryReauthEnabled(opt_in);
   }
 #endif
 }
@@ -912,7 +914,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
   if (!personal_data_manager || !personal_data_manager->IsDataLoaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
-  if (personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()) {
+  if (personal_data_manager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled()) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
     LogMandatoryReauthSettingsPageEditCardEvent(

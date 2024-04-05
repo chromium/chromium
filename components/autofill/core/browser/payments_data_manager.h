@@ -304,6 +304,25 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Check whether a card is a server card or has a duplicated server card.
   bool IsServerCard(const CreditCard* credit_card) const;
 
+  // The functions below are related to the payments mandatory re-auth feature.
+  // All of this functionality is done through per-profile per-device prefs.
+  // `SetPaymentMethodsMandatoryReauthEnabled()` is used to update the opt-in
+  // status of the feature, and is called when a user successfully completes a
+  // full re-auth opt-in flow (with a successful authentication).
+  // `IsPaymentMethodsMandatoryReauthEnabled()` is checked before triggering the
+  // re-auth feature during a payments autofill flow.
+  // `ShouldShowPaymentMethodsMandatoryReauthPromo()` is used to check whether
+  // we should show the re-auth opt-in promo once a user submits a form, and
+  // there was no interactive authentication for the most recent payments
+  // autofill flow. `IncrementPaymentMethodsMandatoryReauthPromoShownCounter()`
+  // increments the counter that denotes the number of times that the promo has
+  // been shown, and this counter is used very similarly to a strike database
+  // when it comes time to check whether we should show the promo.
+  virtual void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
+  virtual bool IsPaymentMethodsMandatoryReauthEnabled();
+  bool ShouldShowPaymentMethodsMandatoryReauthPromo();
+  void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
+
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();

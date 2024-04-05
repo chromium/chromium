@@ -46,7 +46,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
@@ -90,14 +89,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace autofill {
-
-using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
-using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 namespace {
 
@@ -757,63 +749,11 @@ void PersonalDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
 
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
     bool enabled) {
-  prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
+  payments_data_manager_->SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
 bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
-  return prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_);
-}
-
-bool PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauth)) {
-    return false;
-  }
-
-  // There is no need to show the promo if the feature is already enabled.
-  if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
-#if BUILDFLAG(IS_ANDROID)
-    // The mandatory reauth feature is always enabled on automotive, there
-    // is/was no opt-in. As such, there is no need to log anything here on
-    // automotive.
-    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-      LogMandatoryReauthOfferOptInDecision(
-          MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
-    }
-#else
-    LogMandatoryReauthOfferOptInDecision(
-        MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
-#endif  // BUILDFLAG(IS_ANDROID)
-    return false;
-  }
-
-  // If the user has explicitly opted out of this feature previously, then we
-  // should not show the opt-in promo.
-  if (prefs::IsPaymentMethodsMandatoryReauthSetExplicitly(pref_service_)) {
-    LogMandatoryReauthOfferOptInDecision(
-        MandatoryReauthOfferOptInDecision::kAlreadyOptedOut);
-    return false;
-  }
-
-  // We should only show the opt-in promo if we have not reached the maximum
-  // number of shows for the promo.
-  bool allowed_by_strike_database =
-      prefs::IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
-          pref_service_);
-  if (!allowed_by_strike_database) {
-    LogMandatoryReauthOfferOptInDecision(
-        MandatoryReauthOfferOptInDecision::kBlockedByStrikeDatabase);
-  }
-  return allowed_by_strike_database;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-}
-
-void PersonalDataManager::
-    IncrementPaymentMethodsMandatoryReauthPromoShownCounter() {
-  prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
+  return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
 }
 
 bool PersonalDataManager::IsPaymentCvcStorageEnabled() {

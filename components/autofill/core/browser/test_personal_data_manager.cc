@@ -81,19 +81,6 @@ CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
   return account_info_;
 }
 
-bool TestPersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
-  if (payment_methods_mandatory_reauth_enabled_.has_value()) {
-    return payment_methods_mandatory_reauth_enabled_.value();
-  }
-  return PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled();
-}
-
-void TestPersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
-    bool enabled) {
-  payment_methods_mandatory_reauth_enabled_ = enabled;
-  PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
-}
-
 bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
   if (payments_cvc_storage_enabled_.has_value()) {
     return payments_cvc_storage_enabled_.value();

@@ -64,8 +64,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
-  bool IsPaymentMethodsMandatoryReauthEnabled() override;
-  void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   bool IsPaymentCvcStorageEnabled() override;
 
   // Unique to TestPersonalDataManager:
@@ -148,7 +146,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string default_country_code_;
   std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> eligible_for_account_storage_;
-  std::optional<bool> payment_methods_mandatory_reauth_enabled_;
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;
   std::optional<bool> payments_cvc_storage_enabled_;

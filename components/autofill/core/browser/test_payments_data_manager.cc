@@ -206,6 +206,19 @@ bool TestPaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
   return PaymentsDataManager::IsAutofillPaymentMethodsEnabled();
 }
 
+bool TestPaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+  if (payment_methods_mandatory_reauth_enabled_.has_value()) {
+    return payment_methods_mandatory_reauth_enabled_.value();
+  }
+  return PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled();
+}
+
+void TestPaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
+    bool enabled) {
+  payment_methods_mandatory_reauth_enabled_ = enabled;
+  PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
+}
+
 void TestPaymentsDataManager::ClearCreditCards() {
   local_credit_cards_.clear();
   server_credit_cards_.clear();

@@ -45,6 +45,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void ClearServerCvcs() override;
   void ClearLocalCvcs() override;
   bool IsAutofillPaymentMethodsEnabled() const override;
+  bool IsPaymentMethodsMandatoryReauthEnabled() override;
+  void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
 
@@ -62,6 +64,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void RemoveCardWithoutNotification(const CreditCard& card);
 
   std::optional<bool> autofill_payment_methods_enabled_;
+  std::optional<bool> payment_methods_mandatory_reauth_enabled_;
 };
 
 }  // namespace autofill

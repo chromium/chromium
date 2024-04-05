@@ -1218,7 +1218,8 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
 
   // Check if we need to authenticate the user before filling the local card
   // or full server card.
-  if (personal_data_manager_->IsPaymentMethodsMandatoryReauthEnabled()) {
+  if (personal_data_manager_->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled()) {
     // `StartDeviceAuthenticationForFilling()` will asynchronously trigger
     // the re-authentication flow, so we should avoid calling `Reset()`
     // until the re-authentication flow is complete.
@@ -1410,7 +1411,8 @@ void CreditCardAccessManager::
 
 void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
     CreditCard::RecordType record_type) {
-  if (personal_data_manager_->IsPaymentMethodsMandatoryReauthEnabled()) {
+  if (personal_data_manager_->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled()) {
     // On some operating systems (for example, macOS and Windows), the
     // device authentication prompt freezes Chrome. Thus we can only trigger
     // the prompt after the progress dialog has been closed, which we can do
