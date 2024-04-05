@@ -31,8 +31,6 @@ import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
-import java.util.List;
-
 /**
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
  * from listening the window insets updates, and pushing updates to the tab strip.
@@ -189,12 +187,9 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
                             mWidestUnoccludedRect.left,
                             mInsetsRectProvider.getWindowRect().width()
                                     - mWidestUnoccludedRect.right);
-            // TODO(crbug/328446763): Get the rect based on tab strip's size.
-            mRootView.setSystemGestureExclusionRects(List.of(mWidestUnoccludedRect));
         } else if (mDesktopWindowingEnabled) {
             // Only reset when we are exiting desktop windowing mode.
             mAppHeaderDelegateSupplier.get().updateHorizontalPaddings(0, 0);
-            mRootView.setSystemGestureExclusionRects(List.of());
         }
     }
 

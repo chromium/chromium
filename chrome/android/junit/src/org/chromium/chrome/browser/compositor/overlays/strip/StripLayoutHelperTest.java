@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
@@ -129,7 +130,8 @@ public class StripLayoutHelperTest {
     private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
     private static final float SCREEN_WIDTH = 800.f;
     private static final float SCREEN_WIDTH_LANDSCAPE = 1200.f;
-    private static final float SCREEN_HEIGHT = 1600.f;
+    // TODO(wenyufu): This needs to be renamed to TAB_STRIP_HEIGHT.
+    private static final float SCREEN_HEIGHT = 40.f;
     private static final float TAB_WIDTH_1 = 140.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_OVERLAP_WIDTH = 28.f;
@@ -716,9 +718,8 @@ public class StripLayoutHelperTest {
                 EPSILON);
     }
 
-
     @Test
-    public void testNewTabButtonXPosition_NotAnchored() {
+    public void testNewTabButtonXPosition() {
         // Setup
         int tabCount = 1;
         initializeTest(false, false, false, 0, tabCount);
@@ -733,10 +734,15 @@ public class StripLayoutHelperTest {
                 271.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
+        // rightBound(311) = expectedNtbDrawX(271) + ntbWidth(32) + touchSlop(8)
+        assertEquals(
+                "TouchableRect does not match. Right size should match ntb.getDrawX() + width.",
+                new RectF(PADDING_LEFT, 0, 311.f, SCREEN_HEIGHT),
+                mStripLayoutHelper.getTouchableRect());
     }
 
     @Test
-    public void testNewTabButtonXPosition_NotAnchored_TabStripFull() {
+    public void testNewTabButtonXPosition_TabStripFull() {
         // Setup
         int tabCount = 5;
         initializeTest(false, false, false, 0, tabCount);
@@ -751,10 +757,14 @@ public class StripLayoutHelperTest {
                 740.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
+        assertEquals(
+                "TouchableRect does not match. Strip is full, touch size should match the strip.",
+                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                mStripLayoutHelper.getTouchableRect());
     }
 
     @Test
-    public void testNewTabButtonXPosition_NotAnchored_RTL() {
+    public void testNewTabButtonXPosition_RTL() {
         int tabCount = 1;
         initializeTest(true, false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
@@ -769,10 +779,15 @@ public class StripLayoutHelperTest {
                 487,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
+        // leftBound(479) = drawX(487) - touchSlop(8)
+        assertEquals(
+                "TouchableRect does not match. Left side should equal to ntb.getDrawX()",
+                new RectF(479.f, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                mStripLayoutHelper.getTouchableRect());
     }
 
     @Test
-    public void testNewTabButtonXPosition_NotAnchored_TabStripFull_RTL() {
+    public void testNewTabButtonXPosition_TabStripFull_RTL() {
         // Setup
         int tabCount = 5;
         initializeTest(true, false, false, 0, tabCount);
@@ -787,6 +802,10 @@ public class StripLayoutHelperTest {
                 18.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
+        assertEquals(
+                "TouchableRect does not match. Strip is full, touch size should match the strip.",
+                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                mStripLayoutHelper.getTouchableRect());
     }
 
     @Test
@@ -3599,6 +3618,11 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should not be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
         assertNotEquals("Should be tab margin after tab 4.", 0, tabs[4].getTrailingMargin());
+
+        assertEquals(
+                "TouchableRect does not match. Touch size should match the strip during drag.",
+                new RectF(PADDING_LEFT, 0, SCREEN_WIDTH_LANDSCAPE - PADDING_RIGHT, SCREEN_HEIGHT),
+                mStripLayoutHelper.getTouchableRect());
     }
 
     @Test

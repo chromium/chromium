@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.desktop_windowing;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -233,7 +232,6 @@ public class AppHeaderCoordinatorUnitTest {
 
         verify(mInsetsRectProvider).destroy();
         verify(mTabStripTransitionCoordinator).setInsetRectProvider(isNull());
-        verify(mSpyRootView, times(0)).setSystemGestureExclusionRects(any());
         verify(mAppHeaderDelegate, times(0)).updateHorizontalPaddings(anyInt(), anyInt());
     }
 
@@ -291,6 +289,5 @@ public class AppHeaderCoordinatorUnitTest {
                 mAppHeaderCoordinator.isDesktopWindowingEnabled());
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
-        verify(mSpyRootView, atLeastOnce()).setSystemGestureExclusionRects(any());
     }
 }

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -298,6 +299,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripLayoutTab mTabAtPositionForTesting;
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
+    private final RectF mTouchableRect = new RectF();
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -602,6 +604,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             view.getVirtualViews(views);
         }
         if (mNewTabButton.isVisible()) mNewTabButton.getVirtualViews(views);
+    }
+
+    /**
+     * Get the touchable area within the strip, presented as a {@link RectF}, where (0,0) is the
+     * top-left point of the StripLayoutHelper. The area will include the tabs and new tab button.
+     */
+    RectF getTouchableRect() {
+        return mTouchableRect;
     }
 
     /**
@@ -1453,6 +1463,31 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
             currTab.setEndDividerVisible(endDividerVisible);
         }
+    }
+
+    private void updateTouchableRect() {
+        // Make the entire strip touchable when during dragging / reordering mode.
+        boolean isTabDraggingInProgress =
+                mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
+        if (isTabStripFull() || mInReorderMode || isTabDraggingInProgress) {
+            mTouchableRect.set(getVisibleLeftBound(), 0, getVisibleRightBound(), mHeight);
+            return;
+        }
+
+        // When the tab strip is not full and not in recording mode, NTB is always showing after
+        // the last visible tab on strip.
+        RectF touchableRect = new RectF(0, 0, 0, mHeight);
+        RectF ntbTouchRect = new RectF();
+        getNewTabButton().getTouchTarget(ntbTouchRect);
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        if (isRtl) {
+            touchableRect.right = getVisibleRightBound();
+            touchableRect.left = Math.max(ntbTouchRect.left, getVisibleLeftBound());
+        } else {
+            touchableRect.left = getVisibleLeftBound();
+            touchableRect.right = Math.min(ntbTouchRect.right, getVisibleRightBound());
+        }
+        mTouchableRect.set(touchableRect);
     }
 
     @VisibleForTesting
@@ -2833,6 +2868,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 9. Show dividers between inactive tabs.
         updateTabContainersAndDividers();
+
+        // 10. Update the touchable rect.
+        updateTouchableRect();
     }
 
     private void computeTabInitialPositions() {

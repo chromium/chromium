@@ -23,7 +23,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
@@ -41,6 +43,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -122,6 +126,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private StatusBarColorController mStatusBarColorController;
     @Mock private OneshotSupplier<AppHeaderCoordinator> mAppHeaderCoordinatorSupplier;
     @Mock private AppHeaderCoordinator mAppHeaderCoordinator;
+    @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -999,6 +1004,83 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Ensure top padding increase the entire height",
                 motionEvenHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testUpdateTouchableAreas_WithModelSelectorButton() {
+        int leftPadding = 10;
+        int rightPadding = 20;
+        int topPadding = 5;
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
+
+        // Ensure incognito icon is showing.
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.updateOverlay(0, 0);
+
+        verify(mToolbarContainerView)
+                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
+        assertEquals(
+                "Number of exclusion rects is wrong.",
+                2,
+                mSystemExclusionRectCaptor.getValue().size());
+
+        Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+        assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
+        assertEquals(
+                "rect.bottom should be the height of the strip.",
+                TAB_STRIP_HEIGHT_PX + topPadding,
+                rect.bottom);
+
+        Rect rect2 = mSystemExclusionRectCaptor.getValue().get(1);
+        // Left: 728 = width(800) - rightPadding(20) - modelSelectorWidth(32) - endPadding(8) -
+        // clickSlop(12)
+        // Top: 5 = max(topPadding(5) , topPadding(5) + modelSelectorYOffset(3) - clickSlop(12)))
+        // Right: 784 =  width(800) - rightPadding(20) - endPadding(8) + clickSlop(12)
+        // Bottom: 45 = min(height(45),  topPadding(5) + modelSelectorHeight(32) + clickSlop(12))
+        assertEquals(
+                "2nd rect should represent model selector button.",
+                new Rect(728, 5, 784, 45),
+                rect2);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testUpdateTouchableAreas_NoModelSelectorButton() {
+        int leftPadding = 10;
+        int rightPadding = 20;
+        int topPadding = 5;
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
+
+        // Ensure incognito icon is NOT showing.
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(false);
+
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.updateOverlay(0, 0);
+
+        verify(mToolbarContainerView)
+                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
+        assertEquals(
+                "Number of exclusion rects is wrong.",
+                1,
+                mSystemExclusionRectCaptor.getValue().size());
+
+        Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+        assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
+        assertEquals(
+                "rect.bottom should be the height of the strip.",
+                TAB_STRIP_HEIGHT_PX + topPadding,
+                rect.bottom);
     }
 
     private boolean motionEvenHandled(float x, float y) {

@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -84,6 +87,7 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -185,6 +189,7 @@ public class StripLayoutHelperManager
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
+    private final View mToolbarControlContainer;
     private final ViewStub mTabHoverCardViewStub;
     private float mModelSelectorWidth;
     private float mLastVisibleViewportOffsetY;
@@ -385,6 +390,7 @@ public class StripLayoutHelperManager
         mLifecycleDispatcher.register(this);
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
+        mToolbarControlContainer = toolbarContainerView;
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
 
@@ -877,6 +883,38 @@ public class StripLayoutHelperManager
         return false;
     }
 
+    /** Update the touchable area on the strip and exclude those from system gesture area. */
+    private void updateTouchableAreas() {
+        // #setSystemGestureExclusionRects requires API Q.
+        if (VERSION.SDK_INT < VERSION_CODES.Q || !mIsLayoutOptimizationsEnabled) return;
+
+        List<Rect> rects = new ArrayList<>();
+        RectF tabStripRectDp = new RectF(getActiveStripLayoutHelper().getTouchableRect());
+        tabStripRectDp.top = mTopPadding;
+        tabStripRectDp.bottom = mHeight;
+
+        Rect tabStripRect =
+                new Rect(
+                        (int) Math.floor(tabStripRectDp.left * mDensity),
+                        (int) Math.floor(tabStripRectDp.top * mDensity),
+                        (int) Math.ceil(tabStripRectDp.right * mDensity),
+                        (int) Math.ceil(tabStripRectDp.bottom * mDensity));
+        rects.add(tabStripRect);
+
+        if (mModelSelectorButton.isVisible()) {
+            var msbTouchRect = new RectF();
+            mModelSelectorButton.getTouchTarget(msbTouchRect);
+            Rect msbRect =
+                    new Rect(
+                            (int) Math.floor(msbTouchRect.left * mDensity),
+                            (int) Math.max(Math.floor(msbTouchRect.top * mDensity), mTopPadding),
+                            (int) Math.ceil(msbTouchRect.right * mDensity),
+                            (int) Math.min(Math.ceil(msbTouchRect.bottom * mDensity), mHeight));
+            rects.add(msbRect);
+        }
+        mToolbarControlContainer.setSystemGestureExclusionRects(rects);
+    }
+
     /**
      * @return The opacity to use for the fade on the left side of the tab strip.
      */
@@ -1226,7 +1264,14 @@ public class StripLayoutHelperManager
     @Override
     public boolean updateOverlay(long time, long dt) {
         getInactiveStripLayoutHelper().finishAnimationsAndPushTabUpdates();
-        return getActiveStripLayoutHelper().updateLayout(time);
+        boolean animationFinished = getActiveStripLayoutHelper().updateLayout(time);
+        if (animationFinished) {
+            // Update the touchable area when tab strip has an update on its layout. This is
+            // probably an overkill, since the touch size does not change when the tab is full.
+            // TODO(crbug/332957442): Reduce the call freq for this method.
+            updateTouchableAreas();
+        }
+        return animationFinished;
     }
 
     @Override
