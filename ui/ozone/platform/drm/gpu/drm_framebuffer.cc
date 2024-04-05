@@ -67,7 +67,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
                                    params.handles, params.strides,
                                    params.offsets, modifiers, &framebuffer_id,
                                    params.flags)) {
-    VLOG(1) << "AddFramebuffer2:" << "size=" << params.width << "x"
+    VLOG(4) << "AddFramebuffer2:" << "size=" << params.width << "x"
             << params.height << " drm_format=" << (int)drm_format
             << " fb_id=" << framebuffer_id << " flags=" << params.flags;
     return nullptr;
@@ -79,7 +79,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
                                    params.handles, params.strides,
                                    params.offsets, modifiers,
                                    &opaque_framebuffer_id, params.flags)) {
-    VLOG(1) << "AddFramebuffer2:" << "size=" << params.width << "x"
+    VLOG(4) << "AddFramebuffer2:" << "size=" << params.width << "x"
             << params.height << " drm_format=" << (int)drm_format
             << " fb_id=" << opaque_framebuffer_id << " flags=" << params.flags;
     drm_device->RemoveFramebuffer(framebuffer_id);
@@ -149,12 +149,12 @@ DrmFramebuffer::DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
 
 DrmFramebuffer::~DrmFramebuffer() {
   if (!drm_device_->RemoveFramebuffer(framebuffer_id_)) {
-    VLOG(1) << "RemoveFramebuffer";
+    VLOG(4) << "RemoveFramebuffer";
   }
 
   if (opaque_framebuffer_id_ &&
       !drm_device_->RemoveFramebuffer(opaque_framebuffer_id_)) {
-    VLOG(1) << "RemoveFramebuffer";
+    VLOG(4) << "RemoveFramebuffer";
   }
 }
 
