@@ -445,11 +445,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await waitAfterNextRender(dropdownMenu);
     assertEquals(TimePeriod.LAST_DAY.toString(), selectElement.value);
 
-    // Changing the dropdown selection does not persist its value to the pref.
+    // Changing the dropdown selection does persist its value to the pref.
     selectElement.value = TimePeriod.LAST_WEEK.toString();
     selectElement.dispatchEvent(new CustomEvent('change'));
     await waitAfterNextRender(dropdownMenu);
-    assertEquals(TimePeriod.LAST_DAY, element.getPref(prefName).value);
+    assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
 
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
@@ -458,13 +458,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
-    // Confirming the deletion persists the dropdown selection to the pref and
-    // sends the time range for clearing.
+    // Confirming the deletion sends the time range for clearing.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
     actionButton.click();
-    assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const timeRange = args[1];
     assertEquals(TimePeriod.LAST_WEEK, timeRange);
