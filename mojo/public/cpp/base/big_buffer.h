@@ -73,6 +73,9 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
 // The |size()| of the data cannot be manipulated.
 class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
  public:
+  using iterator = base::span<uint8_t>::iterator;
+  using const_iterator = base::span<const uint8_t>::iterator;
+
   static constexpr size_t kMaxInlineBytes = 64 * 1024;
 
   enum class StorageType {
@@ -110,7 +113,8 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   BigBuffer& operator=(BigBuffer&& other);
 
   // Returns a pointer to the data stored by this BigBuffer, regardless of
-  // backing storage type.
+  // backing storage type. Prefer to use `base::span(big_buffer)` instead, or
+  // the implicit conversion to `base::span`.
   uint8_t* data();
   const uint8_t* data() const;
 
@@ -120,6 +124,9 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   StorageType storage_type() const { return storage_type_; }
 
+  // WARNING: This method does not work for buffers backed by shared memory. To
+  // get a span independent of the storage type, write `base::span(big_buffer)`,
+  // or rely on the implicit conversion.
   base::span<const uint8_t> byte_span() const {
     DCHECK_EQ(storage_type_, StorageType::kBytes);
     return bytes_.as_span();
@@ -129,6 +136,11 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
     DCHECK_EQ(storage_type_, StorageType::kSharedMemory);
     return shared_memory_.value();
   }
+
+  iterator begin() { return base::span(*this).begin(); }
+  iterator end() { return base::span(*this).end(); }
+  const_iterator begin() const { return base::span(*this).begin(); }
+  const_iterator end() const { return base::span(*this).end(); }
 
  private:
   friend class BigBufferView;
@@ -176,6 +188,8 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
 
   BigBuffer::StorageType storage_type() const { return storage_type_; }
 
+  // WARNING: This method does not work for buffers backed by shared memory. To
+  // get a span independent of the storage type, use `data()`.
   base::span<const uint8_t> bytes() const {
     DCHECK_EQ(storage_type_, BigBuffer::StorageType::kBytes);
     return bytes_;

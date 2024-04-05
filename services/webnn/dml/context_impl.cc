@@ -8,6 +8,8 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/buffer_impl.h"
@@ -198,8 +200,10 @@ void ContextImpl::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
 
   CHECK(mapped_upload_data);
 
-  memcpy(static_cast<uint8_t*>(mapped_upload_data), src_buffer.data(),
-         src_buffer.size());
+  // SAFETY: `upload_buffer` was constructed with size `src_buffer.size()`.
+  UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(mapped_upload_data), src_buffer.size()))
+      .copy_from(src_buffer);
 
   upload_buffer->Unmap(0, nullptr);
 

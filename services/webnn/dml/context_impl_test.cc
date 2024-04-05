@@ -84,8 +84,7 @@ class WebNNContextDMLImplTest : public TestBase {
 
 bool IsBufferDataEqual(const mojo_base::BigBuffer& a,
                        const mojo_base::BigBuffer& b) {
-  return a.size() == b.size() && std::equal(a.data(), a.data() + a.size(),
-                                            b.data(), b.data() + b.size());
+  return base::span(a) == base::span(b);
 }
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {

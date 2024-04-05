@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ml/webnn/features.mojom-features.h"
@@ -160,7 +161,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   void WriteBuffer(mojo_base::BigBuffer src_buffer) override {
     ASSERT_LE(src_buffer.size(), buffer_.size());
-    memcpy(buffer_.data(), src_buffer.data(), src_buffer.size());
+    base::span(buffer_).first(src_buffer.size()).copy_from(src_buffer);
   }
 
   void OnConnectionError() {
@@ -317,18 +318,13 @@ ScriptPromise<MLGraph> BuildSimpleGraph(V8TestingScope& scope,
 
 bool IsBufferDataEqual(DOMArrayBuffer* array_buffer,
                        base::span<const uint8_t> expected_data) {
-  return array_buffer->ByteLength() == expected_data.size() &&
-         std::equal(expected_data.data(),
-                    expected_data.data() + expected_data.size(),
-                    static_cast<const uint8_t*>(array_buffer->Data()),
-                    static_cast<const uint8_t*>(array_buffer->Data()) +
-                        array_buffer->ByteLength());
+  return array_buffer->ByteSpan() == expected_data;
 }
 
 MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
     DOMArrayBuffer* array_buffer,
     base::span<const uint8_t> data) {
-  memcpy(array_buffer->Data(), data.data(), data.size());
+  array_buffer->ByteSpan().first(data.size()).copy_from(data);
   return MaybeShared<DOMArrayBufferView>(
       blink::DOMUint8Array::Create(array_buffer, /*byte_offset=*/0,
                                    /*length=*/array_buffer->ByteLength()));
