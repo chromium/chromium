@@ -104,28 +104,27 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
       // no-op.
       break;
   }
-
-  if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
-    bool dev_mode =
-        profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-    if (!dev_mode) {
+  if (base::FeatureList::IsEnabled(
+          features::kSafetyHubExtensionsOffStoreTrigger)) {
+    if (extensions::Manifest::IsUnpackedLocation(extension.location())) {
+      bool dev_mode =
+          profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
       // Only show offstore extension in extension module if developer mode is
       // disabled.
+      return !dev_mode;
+    }
+
+    if (!extension_management->UpdatesFromWebstore(extension)) {
+      // extension does not update from the webstore.
+      return true;
+    }
+
+    if (cws_info.has_value() && !cws_info->is_present) {
+      // Handles the edge case where Chrome thinks that the extension is
+      // updating from the webstore but CWS has no knowledge of the extension.
       return true;
     }
   }
-
-  if (!extension_management->UpdatesFromWebstore(extension)) {
-    // extension does not update from the webstore.
-    return true;
-  }
-
-  if (cws_info.has_value() && !cws_info->is_present) {
-    // Handles the edge case where Chrome thinks that the extension is
-    // updating from the webstore but CWS has no knowledge of the extension.
-    return true;
-  }
-
   return false;
 }
 
