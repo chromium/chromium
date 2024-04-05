@@ -1356,10 +1356,23 @@ dictionary MaterializedView {
   DOMString name;
 };
 
+// Used by EntryData to store the file system of the entry.
+dictionary FileSystemData {
+  // Name of the file system. Will be unique.
+  DOMString name;
+
+  // File system URL of the root entry of the file system.
+  DOMString rootUrl;
+};
+
 // Representation of an entry as a replacement for File/Directory Entries.
 dictionary EntryData {
   // File system URL of the entry.
   DOMString entryUrl;
+
+  boolean isDirectory;
+
+  FileSystemData filesystem;
 };
 
 // Callback that does not take arguments.

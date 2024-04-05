@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MATERIALIZED_VIEWS_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MATERIALIZED_VIEWS_H_
 
+#include "base/files/file_error_or.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -37,6 +39,11 @@ class FileManagerPrivateReadMaterializedViewFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnEntryDataRetrieved(
+      std::vector<base::FileErrorOr<api::file_manager_private::EntryData>>
+          entry_results);
 };
 
 }  // namespace extensions

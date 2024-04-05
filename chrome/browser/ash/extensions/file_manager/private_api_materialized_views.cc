@@ -9,8 +9,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -80,15 +83,36 @@ FileManagerPrivateReadMaterializedViewFunction::Run() {
   }
 
   std::vector<GURL> items = holding_space->GetPinnedFiles();
-  std::vector<api::file_manager_private::EntryData> entries;
 
-  for (const auto& item : items) {
-    api::file_manager_private::EntryData entry;
-    entry.entry_url = item.spec();
-    entries.push_back(std::move(entry));
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
+
+  auto barrier_callback = base::BarrierCallback<
+      base::FileErrorOr<api::file_manager_private::EntryData>>(
+      items.size(),
+      base::BindOnce(
+          &FileManagerPrivateReadMaterializedViewFunction::OnEntryDataRetrieved,
+          this));
+
+  for (const GURL& item : items) {
+    file_manager::util::GURLToEntryData(file_system_context, item,
+                                        barrier_callback);
   }
 
-  return RespondNow(ArgumentList(
+  return RespondLater();
+}
+
+void FileManagerPrivateReadMaterializedViewFunction::OnEntryDataRetrieved(
+    std::vector<base::FileErrorOr<api::file_manager_private::EntryData>>
+        entry_results) {
+  std::vector<api::file_manager_private::EntryData> entries;
+  for (auto& entry : entry_results) {
+    if (entry.has_value()) {
+      entries.push_back(std::move(*entry));
+    }
+  }
+  Respond(ArgumentList(
       api::file_manager_private::ReadMaterializedView::Results::Create(
           entries)));
 }
