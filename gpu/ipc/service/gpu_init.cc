@@ -1183,11 +1183,13 @@ bool GpuInit::InitializeDawn() {
       device_properties.device_id = adapter_properties.deviceID;
       device_properties.driver_version = adapter_properties_vk.driverVersion;
 
+#if BUILDFLAG(IS_ANDROID)
       if (!CheckVulkanCompatibilities(device_properties, gpu_info_)) {
         // The device is not compatible with Vulkan.
         dawn_context_provider_.reset();
         return false;
       }
+#endif
 #endif
     }
 
