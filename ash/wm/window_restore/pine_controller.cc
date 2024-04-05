@@ -21,10 +21,12 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_dialog_delegate_view.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -290,7 +292,7 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   }
 
   AnchoredNudgeData nudge_data(
-      kEducationNudgeId, NudgeCatalogName::kPineEducationNudge,
+      pine::kSuggestionsNudgeId, NudgeCatalogName::kPineEducationNudge,
       l10n_util::GetStringUTF16(IDS_ASH_PINE_EDUCATION_NUDGE));
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
@@ -376,14 +378,23 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
+
   if (restore_on) {
     return;
   }
+
   // The onboarding dialog would only be shown if `GetActivePrefService()` is
   // not null.
   GetActivePrefService()->SetInteger(
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
+
+  // Show toast letting users know the pref change will effect them next
+  // session.
+  Shell::Get()->toast_manager()->Show(
+      ToastData(pine::kOnboardingToastId, ToastCatalogName::kPineOnboarding,
+                l10n_util::GetStringUTF16(IDS_ASH_PINE_ONBOARDING_TOAST)));
+
   // We only record the action taken if the user had Restore off.
   RecordOnboardingAction(/*restore=*/true);
 }

@@ -15,9 +15,6 @@
 
 namespace ash {
 
-// Public so it can be used by tests.
-inline constexpr char kEducationNudgeId[] = "PineEducationNudge";
-
 struct PineContentsData;
 
 // Controls showing the pine dialog. Receives data from the full restore

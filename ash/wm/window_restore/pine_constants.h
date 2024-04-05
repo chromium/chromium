@@ -67,6 +67,9 @@ inline constexpr int kScreenshotIconRowIconSize = 20;
 inline constexpr gfx::Size kScreenshotIconRowImageViewSize(20, 20);
 inline constexpr int kScreenshotFaviconSpacing = 2;
 
+inline constexpr char kSuggestionsNudgeId[] = "PineSuggestionsNudge";
+inline constexpr char kOnboardingToastId[] = "PineOnboardingTabletToast";
+
 // IDs used for the views that compose the pine dialog UI. Use these for easy
 // access to the views during the unit tests. Note that these IDs are only
 // guaranteed to be unique inside `PineContentsView`. We don't use an enum class

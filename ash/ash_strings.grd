@@ -7949,6 +7949,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_CANCEL" translateable="false" desc="Label of the cancel button if the user had Restore off.">
       Keep restore off
       </message>
+      <message name="IDS_ASH_PINE_ONBOARDING_TOAST" translateable="false" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
+      Your windows and apps will be restored next time when you sign in
+      </message>
       <message name="IDS_ASH_PINE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>

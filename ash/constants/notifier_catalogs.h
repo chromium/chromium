@@ -295,7 +295,8 @@ enum class ToastCatalogName {
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
   kAppNotClosable = 49,
   kGameDashboardEnterTablet = 50,
-  kMaxValue = kGameDashboardEnterTablet
+  kPineOnboarding = 51,
+  kMaxValue = kPineOnboarding
 };
 
 }  // namespace ash

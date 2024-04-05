@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
@@ -377,36 +378,40 @@ TEST_F(PineTest, NudgePreferences) {
 
   auto test_start_and_end_overview = [&]() {
     // Reset the nudge if it's currently showing.
-    anchored_nudge_manager->Cancel(kEducationNudgeId);
+    anchored_nudge_manager->Cancel(pine::kSuggestionsNudgeId);
     StartPineOverviewSession(MakeTestAppIds(1));
     ToggleOverview();
   };
 
   // Start pine session, then end overview. Test we show the nudge.
   test_start_and_end_overview();
-  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  EXPECT_TRUE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
 
   // Start and end overview. This does not show the nudge as 24 hours have not
   // elapsed since the nudge was shown.
   test_start_and_end_overview();
-  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
-
+  EXPECT_FALSE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
   // Start and end overview after waiting 25 hours. The nudge should now show
   // for the second time.
   SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
-  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  EXPECT_TRUE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
 
   // Show the nudge for a third time. This will be the last time it is shown.
   SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
-  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  EXPECT_TRUE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
 
   // Advance the clock and attempt to show the nudge for a fourth time. Verify
   // that it will not show.
   SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
-  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  EXPECT_FALSE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
 }
 
 // Tests that we only show the nudge for pine overview.
@@ -415,8 +420,9 @@ TEST_F(PineTest, NudgePine) {
 
   ToggleOverview();
   auto* anchored_nudge_manager = Shell::Get()->anchored_nudge_manager();
-  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
-  anchored_nudge_manager->Cancel(kEducationNudgeId);
+  EXPECT_TRUE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
+  anchored_nudge_manager->Cancel(pine::kSuggestionsNudgeId);
 
   // Reset `pine_contents_data` so we start normal overview.
   PineTestApi().SetPineContentsDataForTesting(nullptr);
@@ -426,7 +432,21 @@ TEST_F(PineTest, NudgePine) {
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
   ToggleOverview();
-  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  EXPECT_FALSE(
+      anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
+}
+
+// Tests that the onboarding dialog toast shows up when clicking the accept
+// button for the onboarding dialog, if restore was previously off.
+TEST_F(PineTest, OnboardingToast) {
+  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+
+  EXPECT_FALSE(ToastManager::Get()->IsToastShown(pine::kOnboardingToastId));
+  Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
+      /*restore_on=*/false);
+  auto* dialog = PineTestApi().GetOnboardingDialog();
+  LeftClickOn(dialog->GetAcceptButtonForTesting());
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(pine::kOnboardingToastId));
 }
 
 // Tests the onboarding metrics are recorded correctly.
@@ -441,8 +461,7 @@ TEST_F(PineTest, OnboardingMetrics) {
 
   // Press "Accept". Test we increment `true`.
   auto* pine_controller = Shell::Get()->pine_controller();
-  pine_controller->MaybeShowPineOnboardingMessage(
-      /*restore_on=*/false);
+  pine_controller->MaybeShowPineOnboardingMessage(/*restore_on=*/false);
   auto* dialog = PineTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
