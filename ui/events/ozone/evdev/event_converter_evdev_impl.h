@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   bool HasStylusSwitch() const override;
   ui::StylusState GetStylusSwitchState() override;
   bool HasAssistantKey() const override;
+  bool HasFunctionKey() const override;
   void SetKeyFilter(bool enable_filter,
                     std::vector<DomCode> allowed_keys) override;
   void OnDisabled() override;
@@ -100,6 +101,8 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   bool has_stylus_switch_;
   // `has_assistant_key_` can only be true if the device is a keyboard.
   bool has_assistant_key_;
+  // `has_function_key_` can only be true if the device is a keyboard.
+  bool has_function_key_;
 
   // LEDs for this device.
   bool has_caps_lock_led_;

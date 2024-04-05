@@ -617,7 +617,8 @@ void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
   for (auto& converter : converters_) {
     if (converter.second->HasKeyboard()) {
       keyboards.emplace_back(converter.second->input_device(),
-                             converter.second->HasAssistantKey());
+                             converter.second->HasAssistantKey(),
+                             converter.second->HasFunctionKey());
       key_bits_mapping[converter.second->id()] =
           converter.second->GetKeyboardKeyBits();
     }

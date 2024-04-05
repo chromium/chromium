@@ -163,6 +163,10 @@ bool EventConverterEvdev::HasAssistantKey() const {
   return false;
 }
 
+bool EventConverterEvdev::HasFunctionKey() const {
+  return false;
+}
+
 bool EventConverterEvdev::HasCapsLockLed() const {
   return false;
 }

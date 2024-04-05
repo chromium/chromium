@@ -63,6 +63,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
       has_assistant_key_(devinfo.HasKeyEvent(KEY_ASSISTANT)),
+      has_function_key_(devinfo.HasKeyEvent(KEY_FN)),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
@@ -132,6 +133,10 @@ bool EventConverterEvdevImpl::HasStylusSwitch() const {
 
 bool EventConverterEvdevImpl::HasAssistantKey() const {
   return has_assistant_key_;
+}
+
+bool EventConverterEvdevImpl::HasFunctionKey() const {
+  return has_function_key_;
 }
 
 void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
