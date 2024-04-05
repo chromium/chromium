@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/session/connection_holder.h"
@@ -22,6 +23,17 @@ ChromeGameDashboardDelegate::~ChromeGameDashboardDelegate() {}
 
 void ChromeGameDashboardDelegate::GetIsGame(const std::string& app_id,
                                             IsGameCallback callback) {
+  if (arc::GetArcAndroidSdkVersionAsInt() <= arc::kArcVersionP) {
+    // Android sends a list of `arc::mojom::AppInfo` objects to Chrome, and is
+    // stored in `ArcAppListPrefs`. crrev.com/c/4419690 extended the AppInfo
+    // object to include the `app_category` field. Since ARC-P was frozen, that
+    // change was never ported to it. This delegate cannot determine whether
+    // the given `app-id`'s category on devices running ARC P. Assume the app is
+    // not a game.
+    std::move(callback).Run(/*is_game=*/false);
+    return;
+  }
+
   // Get the app category from ArcAppListPrefs.
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
