@@ -112,6 +112,7 @@ public class StripStackerUnitTest {
                 StripLayoutView[] indexOrderedViews,
                 boolean tabClosing,
                 boolean tabCreating,
+                boolean mGroupTitleSliding,
                 float cachedTabWidth) {}
 
         @Override

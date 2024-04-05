@@ -17,11 +17,13 @@ public class ScrollingStripStacker extends StripStacker {
             StripLayoutView[] indexOrderedViews,
             boolean tabClosing,
             boolean tabCreating,
+            boolean groupTitleSlidingAnimRunning,
             float cachedTabWidth) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
             StripLayoutView view = indexOrderedViews[i];
-            // When a tab is closed, drawX and width update will be animated so skip this.
-            if (!tabClosing) {
+            // When a tab is closed or group title sliding animation is running, drawX and width
+            // update will be animated so skip this.
+            if (!tabClosing && !groupTitleSlidingAnimRunning) {
                 view.setDrawX(view.getIdealX() + view.getOffsetX());
 
                 if (view instanceof StripLayoutTab tab) {

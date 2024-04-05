@@ -377,7 +377,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabResizeAnimRunning;
-    private boolean mStripViewSliding;
+    private boolean mGroupTitleSliding;
     private boolean mTabCreating;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
@@ -2806,7 +2806,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
         mStripStacker.setViewOffsets(
-                mStripViews, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
+                mStripViews,
+                mMultiStepTabCloseAnimRunning,
+                mTabCreating,
+                mGroupTitleSliding,
+                mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
@@ -2870,7 +2874,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
                 }
 
-                if (!mStripViewSliding) {
+                if (!mGroupTitleSliding) {
                     view.setIdealX(tabPosition + drawXOffset);
                 }
                 delta = view.getWidth() + deltaOffset;
@@ -4278,13 +4282,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             ANIM_TAB_MOVE_MS);
             slideAnimationList.add(animator);
 
-            mStripViewSliding = true;
+            mGroupTitleSliding = true;
             startAnimationList(
                     slideAnimationList,
                     new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            mStripViewSliding = false;
+                            mGroupTitleSliding = false;
                         }
                     });
         }

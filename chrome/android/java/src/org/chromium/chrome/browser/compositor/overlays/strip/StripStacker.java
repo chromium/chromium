@@ -55,6 +55,7 @@ public abstract class StripStacker {
             StripLayoutView[] indexOrderedViews,
             boolean tabClosing,
             boolean tabCreating,
+            boolean groupTitleSlidingAnimRunning,
             float cachedTabWidth);
 
     /**
