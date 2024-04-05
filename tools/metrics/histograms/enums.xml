@@ -27880,8 +27880,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<!-- Not used in current metrics, see OmniboxSearchEngineType instead. -->
-
 <enum name="OmniboxSearchEngineType">
   <int value="0" label="Other"/>
   <int value="1" label="AOL"/>
@@ -27955,6 +27953,9 @@ Called by update_net_error_codes.py.-->
   <int value="69" label="Quendu"/>
   <int value="70" label="Brave"/>
   <int value="71" label="Karma"/>
+  <int value="72" label="YouSearch"/>
+  <int value="73" label="StarterPackAskGoogle"/>
+  <int value="74" label="Lilo"/>
 </enum>
 
 <enum name="OnboardingStartupState">

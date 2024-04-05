@@ -90,6 +90,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_KARMA = 71,
   SEARCH_ENGINE_YOU = 72,
   SEARCH_ENGINE_STARTER_PACK_ASK_GOOGLE = 73,
+  SEARCH_ENGINE_LILO = 74,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };

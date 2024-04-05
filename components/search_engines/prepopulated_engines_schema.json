@@ -102,9 +102,7 @@
     {
       "field": "type",
       "type": "enum",
-      "ctype": "SearchEngineType",
-      "default": "SEARCH_ENGINE_OTHER",
-      "optional": true
+      "ctype": "SearchEngineType"
     },
     // Whether a connection to search_url should regularly be established when
     // the engine is set as the "default search engine". "ALLOWED" is the only
