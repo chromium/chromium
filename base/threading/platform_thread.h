@@ -286,11 +286,8 @@ class BASE_EXPORT PlatformThreadApple : public PlatformThreadBase {
 
   static TimeDelta GetCurrentThreadRealtimePeriodForTest();
 
-  // Signals that the feature list has been initialized which allows to check
-  // the feature's value now and initialize state. This prevents race
-  // conditions where the feature is being checked while it is being
-  // initialized, which can cause a crash.
-  static void InitFeaturesPostFieldTrial();
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures();
 };
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -355,9 +352,8 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   static void SetCrossProcessPlatformThreadDelegate(
       CrossProcessPlatformThreadDelegate* delegate);
 
-  // Signals that the feature list has been initialized. Used for preventing
-  // race conditions and crashes, see comments in PlatformThreadApple.
-  static void InitFeaturesPostFieldTrial();
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures();
 
   // Toggles a specific thread's type at runtime. This is the ChromeOS-specific
   // version and includes Linux's functionality but does slightly more. See

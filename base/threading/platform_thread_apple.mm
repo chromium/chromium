@@ -145,18 +145,12 @@ std::atomic<TimeConstraints> g_time_constraints;
 }  // namespace
 
 // static
-void PlatformThreadApple::InitFeaturesPostFieldTrial() {
-  // A DCHECK is triggered on FeatureList initialization if the state of a
-  // feature has been checked before. To avoid triggering this DCHECK in unit
-  // tests that call this before initializing the FeatureList, only check the
-  // state of the feature if the FeatureList is initialized.
-  if (FeatureList::GetInstance()) {
-    g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
-    g_use_optimized_realtime_threading.store(
-        IsOptimizedRealtimeThreadingMacEnabled());
-    g_user_interactive_compositing.store(
-        FeatureList::IsEnabled(kUserInteractiveCompositingMac));
-  }
+void PlatformThreadApple::InitializeFeatures() {
+  g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
+  g_use_optimized_realtime_threading.store(
+      IsOptimizedRealtimeThreadingMacEnabled());
+  g_user_interactive_compositing.store(
+      FeatureList::IsEnabled(kUserInteractiveCompositingMac));
 }
 
 // static

@@ -105,6 +105,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   ~MessagePumpKqueue() override;
 
+  // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
   // MessagePump:

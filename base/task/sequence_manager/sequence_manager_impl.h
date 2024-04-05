@@ -102,8 +102,7 @@ class BASE_EXPORT SequenceManagerImpl
   SequenceManagerImpl& operator=(const SequenceManagerImpl&) = delete;
   ~SequenceManagerImpl() override;
 
-  // Initializes the state of all the sequence manager features. Must be invoked
-  // after FeatureList initialization.
+  // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
   // SequenceManager implementation:

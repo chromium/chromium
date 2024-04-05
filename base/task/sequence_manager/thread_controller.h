@@ -12,6 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -143,10 +144,9 @@ class BASE_EXPORT ThreadController {
   virtual void DetachFromMessagePump() = 0;
 #endif
 
-  // Initializes the state of all the thread controller features. Must be
-  // invoked after FeatureList initialization. Set `record_sample_metadata` to
-  // always enable recording sample metadata in this class.
-  static void InitializeFeatures(bool record_sample_metadata);
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures(
+      features::EmitThreadControllerProfilerMetadata emit_profiler_metadata);
 
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);

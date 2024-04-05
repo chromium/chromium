@@ -34,6 +34,22 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 #endif
 
+// Policy for emitting profiler metadata from `ThreadController`.
+enum class EmitThreadControllerProfilerMetadata {
+  // Always emit metadata.
+  kForce,
+  // Emit metadata only if enabled via the `FeatureList`.
+  kFeatureDependent,
+};
+
+// Initializes global variables that depend on `FeatureList`. Must be invoked
+// early on process startup, but after `FeatureList` initialization. Different
+// parts of //base read experiment state from global variables instead of
+// directly from `FeatureList` to avoid data races (default values are used
+// before this function is called to initialize the global variables).
+BASE_EXPORT void Init(EmitThreadControllerProfilerMetadata
+                          emit_thread_controller_profiler_metadata);
+
 }  // namespace base::features
 
 #endif  // BASE_FEATURES_H_

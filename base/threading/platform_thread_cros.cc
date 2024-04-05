@@ -306,7 +306,7 @@ void SetThreadNiceFromType(ProcessId process_id,
   }
 }
 
-void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
+void PlatformThreadChromeOS::InitializeFeatures() {
   DCHECK(FeatureList::GetInstance());
   g_threads_bg_enabled.store(FeatureList::IsEnabled(kSetThreadBgForBgProcess));
   g_display_threads_rt.store(FeatureList::IsEnabled(kSetRtForDisplayThreads));

@@ -33,9 +33,7 @@ class BASE_EXPORT InputHintChecker {
   // Returns the singleton.
   static InputHintChecker& GetInstance();
 
-  // Enables reading the input hint according to the field trial configuration.
-  // Other methods of this class return trivial results before this
-  // initialization is completed.
+  // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
   // Obtains a weak reference to |root_view| so that the following calls to

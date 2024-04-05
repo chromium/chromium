@@ -12,8 +12,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/dcheck_is_on.h"
+#include "base/features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -30,12 +30,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequence_manager/sequence_manager_impl.h"
-#include "base/task/sequence_manager/thread_controller.h"
-#include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -108,7 +104,6 @@
 
 #include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
-#include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
@@ -125,10 +120,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
-#include "base/message_loop/message_pump_apple.h"
-#include "base/message_loop/message_pump_default.h"
-#include "base/message_loop/message_pump_kqueue.h"
-#include "base/synchronization/condition_variable.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -170,7 +161,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/input_hint_checker.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
@@ -832,6 +822,12 @@ void AddFeatureFlagsToCommandLine() {
 }
 #endif  // BUILDFLAG(IS_OZONE)
 
+bool IsCanaryDev() {
+  const auto channel = chrome::GetChannel();
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
+}
+
 }  // namespace
 
 ChromeMainDelegate::ChromeMainDelegate()
@@ -979,6 +975,14 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
 
+  // Force emitting `ThreadController` profiler metadata on Canary and Dev only,
+  // since they are the only channels where the data is used.
+  base::features::Init(
+      IsCanaryDev()
+          ? base::features::EmitThreadControllerProfilerMetadata::kForce
+          : base::features::EmitThreadControllerProfilerMetadata::
+                kFeatureDependent);
+
   content::InitializeMojoCore();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1122,11 +1126,6 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   // Similarly, enable network state partitioning by default.
   net::NetworkAnonymizationKey::PartitionByDefault();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Threading features.
-  base::PlatformThread::InitFeaturesPostFieldTrial();
-#endif
-
   // Start memory observation as early as possible so it can start recording
   // memory allocations. This includes heap profiling.
   InitializeMemorySystem();
@@ -1136,12 +1135,6 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
     ash::InitializeMGLRU();
 #endif
   }
-
-#if BUILDFLAG(IS_WIN)
-  base::sequence_manager::internal::ThreadControllerPowerMonitor::
-      InitializeOnMainThread();
-  base::InitializePlatformThreadFeatures();
-#endif
 
   // Initialize the HangWatcher.
   base::HangWatcher::ProcessType hang_watcher_process_type;
@@ -1166,13 +1159,10 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
                        }},
       invoked_in);
 
-  const bool is_canary_dev =
-      chrome::GetChannel() == version_info::Channel::CANARY ||
-      chrome::GetChannel() == version_info::Channel::DEV;
   const bool emit_crashes =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      is_canary_dev;
+      IsCanaryDev();
 #else
       false;
 #endif
@@ -1180,27 +1170,6 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
                                             /*is_zygote_child=*/is_zygote_child,
                                             emit_crashes);
-
-  base::InitializeCpuReductionExperiment();
-  base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
-  // Set `record_sample_metadata` on dev and canary channels since these are the
-  // only channels where this metadata is expected to be useful for the
-  // foreseeable future. Please refer to
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/profiler/
-  // for more context.
-  base::sequence_manager::internal::ThreadController::InitializeFeatures(
-      /*record_sample_metadata=*/is_canary_dev);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  base::MessagePumpLibevent::InitializeFeatures();
-#elif BUILDFLAG(IS_MAC)
-  base::PlatformThread::InitFeaturesPostFieldTrial();
-  base::MessagePumpCFRunLoopBase::InitializeFeatures();
-  base::MessagePumpKqueue::InitializeFeatures();
-  base::ConditionVariable::InitializeFeatures();
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  base::android::InputHintChecker::InitializeFeatures();
-#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2030,14 +1999,11 @@ void ChromeMainDelegate::InitializeMemorySystem() {
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
   const bool is_browser_process = process_type.empty();
-  const version_info::Channel channel = chrome::GetChannel();
-  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                              channel == version_info::Channel::DEV);
-  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
+  const bool gwp_asan_boost_sampling = is_browser_process || IsCanaryDev();
 
   memory_system::Initializer()
       .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
-      .SetProfilingClientParameters(channel,
+      .SetProfilingClientParameters(chrome::GetChannel(),
                                     GetProfileParamsProcess(*command_line))
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kEnforce,

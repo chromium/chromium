@@ -78,9 +78,11 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 // static
-void ThreadController::InitializeFeatures(bool record_sample_metadata) {
+void ThreadController::InitializeFeatures(
+    features::EmitThreadControllerProfilerMetadata emit_profiler_metadata) {
   g_thread_controller_sets_profiler_metadata.store(
-      record_sample_metadata ||
+      emit_profiler_metadata ==
+              features::EmitThreadControllerProfilerMetadata::kForce ||
           base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
       std::memory_order_relaxed);
 }

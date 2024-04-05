@@ -199,9 +199,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   ~MessagePumpLibevent() override;
 
-  // Must be called early in process startup, but after FeatureList
-  // initialization. This allows MessagePumpLibevent to query and cache the
-  // enabled state of any relevant features.
+  // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
   bool WatchFileDescriptor(int fd,

@@ -47,7 +47,7 @@ bool ThreadControllerPowerMonitor::IsProcessInPowerSuspendState() {
 }
 
 // static
-void ThreadControllerPowerMonitor::InitializeOnMainThread() {
+void ThreadControllerPowerMonitor::InitializeFeatures() {
   DCHECK(!g_use_thread_controller_power_monitor_);
   g_use_thread_controller_power_monitor_ =
       FeatureList::IsEnabled(kUsePowerMonitorWithThreadController);
