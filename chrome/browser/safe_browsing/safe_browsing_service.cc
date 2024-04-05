@@ -117,6 +117,40 @@ void PopulateDownloadWarningActions(download::DownloadItem* download,
       "SafeBrowsing.ClientSafeBrowsingReport.DownloadWarningActionSize",
       report->download_warning_actions_size());
 }
+
+std::unique_ptr<ClientSafeBrowsingReportRequest> CreateDownloadReport(
+    download::DownloadItem* download,
+    ClientSafeBrowsingReportRequest::ReportType report_type,
+    bool did_proceed,
+    std::optional<bool> show_download_in_folder) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(download));
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(report_type);
+  report->set_download_verdict(
+      DownloadProtectionService::GetDownloadProtectionVerdict(download));
+  report->set_url(download->GetURL().spec());
+  report->set_did_proceed(did_proceed);
+  if (show_download_in_folder.has_value()) {
+    report->set_show_download_in_folder(show_download_in_folder.value());
+  }
+  std::string token = DownloadProtectionService::GetDownloadPingToken(download);
+  if (!token.empty()) {
+    report->set_token(std::move(token));
+  }
+  if (IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    PopulateDownloadWarningActions(download, report.get());
+    base::Time warning_first_shown_time =
+        DownloadItemWarningData::WarningFirstShownTime(download);
+    if (!warning_first_shown_time.is_null() &&
+        base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision)) {
+      report->set_warning_shown_timestamp_msec(
+          warning_first_shown_time.InMillisecondsSinceUnixEpoch());
+    }
+  }
+  return report;
+}
 #endif
 
 void OnGotCookies(
@@ -498,33 +532,27 @@ bool SafeBrowsingService::SendDownloadReport(
     bool did_proceed,
     std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto report = CreateDownloadReport(download, report_type, did_proceed,
+                                     show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download));
-  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
-  report->set_type(report_type);
-  report->set_download_verdict(
-      DownloadProtectionService::GetDownloadProtectionVerdict(download));
-  report->set_url(download->GetURL().spec());
-  report->set_did_proceed(did_proceed);
-  if (show_download_in_folder) {
-    report->set_show_download_in_folder(show_download_in_folder.value());
-  }
-  std::string token = DownloadProtectionService::GetDownloadPingToken(download);
-  if (!token.empty()) {
-    report->set_token(token);
-  }
-  if (IsExtendedReportingEnabled(*profile->GetPrefs())) {
-    PopulateDownloadWarningActions(download, report.get());
-    base::Time warning_first_shown_time =
-        DownloadItemWarningData::WarningFirstShownTime(download);
-    if (!warning_first_shown_time.is_null() &&
-        base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision)) {
-      report->set_warning_shown_timestamp_msec(
-          warning_first_shown_time.InMillisecondsSinceUnixEpoch());
-    }
-  }
   return ChromePingManagerFactory::GetForBrowserContext(profile)
              ->ReportThreatDetails(std::move(report)) ==
+         PingManager::ReportThreatDetailsResult::SUCCESS;
+}
+
+bool SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
+    download::DownloadItem* download,
+    ClientSafeBrowsingReportRequest::ReportType report_type,
+    bool did_proceed,
+    std::optional<bool> show_download_in_folder) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto report = CreateDownloadReport(download, report_type, did_proceed,
+                                     show_download_in_folder);
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(download));
+  return ChromePingManagerFactory::GetForBrowserContext(profile)
+             ->PersistThreatDetailsAndReportOnNextStartup(std::move(report)) ==
          PingManager::ReportThreatDetailsResult::SUCCESS;
 }
 

@@ -1913,23 +1913,45 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
       ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder) override {
-    actual_report_type_ = report_type;
-    actual_did_proceed_ = did_proceed;
+    actual_sent_report_type_ = report_type;
+    actual_sent_did_proceed_ = did_proceed;
     return true;
   }
 
-  std::optional<ReportType> GetActualReportType() {
-    return actual_report_type_;
+  bool PersistDownloadReportAndSendOnNextStartup(
+      download::DownloadItem* download,
+      ReportType report_type,
+      bool did_proceed,
+      std::optional<bool> show_download_in_folder) override {
+    actual_persisted_report_type_ = report_type;
+    actual_persisted_did_proceed_ = did_proceed;
+    return true;
   }
 
-  std::optional<bool> GetActualDidProceedValue() { return actual_did_proceed_; }
+  std::optional<ReportType> GetActualSentReportType() {
+    return actual_sent_report_type_;
+  }
+
+  std::optional<bool> GetActualSentDidProceedValue() {
+    return actual_sent_did_proceed_;
+  }
+
+  std::optional<ReportType> GetActualPersistedReportType() {
+    return actual_persisted_report_type_;
+  }
+
+  std::optional<bool> GetActualPersistedDidProceedValue() {
+    return actual_persisted_did_proceed_;
+  }
 
  protected:
   ~FakeSafeBrowsingService() override = default;
 
  private:
-  std::optional<ReportType> actual_report_type_;
-  std::optional<bool> actual_did_proceed_;
+  std::optional<ReportType> actual_sent_report_type_;
+  std::optional<ReportType> actual_persisted_report_type_;
+  std::optional<bool> actual_sent_did_proceed_;
+  std::optional<bool> actual_persisted_did_proceed_;
 };
 
 class ChromeDownloadManagerDelegateTestWithSafeBrowsing
@@ -2274,8 +2296,12 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
   EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_AUTO_DELETED,
-            safe_browsing_service()->GetActualReportType().value());
-  EXPECT_FALSE(safe_browsing_service()->GetActualDidProceedValue().value());
+            safe_browsing_service()->GetActualSentReportType().value());
+  EXPECT_FALSE(safe_browsing_service()->GetActualSentDidProceedValue().value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualPersistedReportType().has_value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualPersistedDidProceedValue().has_value());
 }
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
@@ -2290,8 +2316,9 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_CALL(*download_item, Cancel(false)).Times(1);
   task_environment()->FastForwardBy(base::Hours(1));
 
-  EXPECT_FALSE(safe_browsing_service()->GetActualReportType().has_value());
-  EXPECT_FALSE(safe_browsing_service()->GetActualDidProceedValue().has_value());
+  EXPECT_FALSE(safe_browsing_service()->GetActualSentReportType().has_value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualSentDidProceedValue().has_value());
 }
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
@@ -2308,13 +2335,14 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_CALL(*download_item, Cancel(false)).Times(0);
   task_environment()->FastForwardBy(base::Hours(1));
 
-  EXPECT_FALSE(safe_browsing_service()->GetActualReportType().has_value());
-  EXPECT_FALSE(safe_browsing_service()->GetActualDidProceedValue().has_value());
+  EXPECT_FALSE(safe_browsing_service()->GetActualSentReportType().has_value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualSentDidProceedValue().has_value());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
-       CanceledReportAtShutdown_Sent) {
+       CanceledReportAtShutdown_Persisted) {
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -2325,8 +2353,12 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
   EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_PROFILE_CLOSED,
-            safe_browsing_service()->GetActualReportType().value());
-  EXPECT_FALSE(safe_browsing_service()->GetActualDidProceedValue().value());
+            safe_browsing_service()->GetActualPersistedReportType().value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualPersistedDidProceedValue().value());
+  EXPECT_FALSE(safe_browsing_service()->GetActualSentReportType().has_value());
+  EXPECT_FALSE(
+      safe_browsing_service()->GetActualSentDidProceedValue().has_value());
 }
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,

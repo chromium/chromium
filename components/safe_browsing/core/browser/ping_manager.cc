@@ -264,6 +264,13 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
   return ReportThreatDetailsResult::SUCCESS;
 }
 
+PingManager::ReportThreatDetailsResult
+PingManager::PersistThreatDetailsAndReportOnNextStartup(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  // TODO(crbug.com/329471668): Persist report on disk.
+  return ReportThreatDetailsResult::SUCCESS;
+}
+
 void PingManager::AttachThreatDetailsAndLaunchSurvey(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   // Return early if HaTS survey is disabled by policy.

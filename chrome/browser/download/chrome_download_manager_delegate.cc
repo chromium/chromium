@@ -1821,16 +1821,23 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(
   }
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
-  if (sb_service) {
-    // Note: We cannot go through download_protection_service here, because this
-    // function may be called at shutdown. The download_protection_service
-    // object may already be deleted at this point.
+  if (!sb_service) {
+    return;
+  }
+  // Note: We cannot go through download_protection_service here, because this
+  // function may be called at shutdown. The download_protection_service
+  // object may already be deleted at this point.
+  if (is_shutdown) {
+    sb_service->PersistDownloadReportAndSendOnNextStartup(
+        download,
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_PROFILE_CLOSED,
+        /*did_proceed=*/false, std::nullopt);
+  } else {
     sb_service->SendDownloadReport(
         download,
-        is_shutdown ? safe_browsing::ClientSafeBrowsingReportRequest::
-                          DANGEROUS_DOWNLOAD_PROFILE_CLOSED
-                    : safe_browsing::ClientSafeBrowsingReportRequest::
-                          DANGEROUS_DOWNLOAD_AUTO_DELETED,
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_AUTO_DELETED,
         /*did_proceed=*/false, std::nullopt);
   }
 #endif

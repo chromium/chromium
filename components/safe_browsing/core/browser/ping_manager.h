@@ -105,6 +105,11 @@ class PingManager : public KeyedService {
   virtual ReportThreatDetailsResult ReportThreatDetails(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
+  // Similar to |ReportThreatDetails|, but persists the report on disk and sends
+  // it on next startup.
+  virtual ReportThreatDetailsResult PersistThreatDetailsAndReportOnNextStartup(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+
   // Launches a survey and attaches ThreatDetails to the survey response.
   virtual void AttachThreatDetailsAndLaunchSurvey(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
