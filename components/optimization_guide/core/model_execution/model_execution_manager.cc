@@ -240,10 +240,10 @@ ModelExecutionManager::StartSession(
       disable_server_fallback
           ? base::BindRepeating(&NoOpExecuteRemoteFn)
           : base::BindRepeating(&ModelExecutionManager::ExecuteModel,
-                                base::Unretained(this));
+                                weak_ptr_factory_.GetWeakPtr());
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->CreateSession(
-        feature, execute_fn, optimization_guide_logger_.get(),
+        feature, execute_fn, optimization_guide_logger_->GetWeakPtr(),
         model_quality_uploader_service_, config_params);
     if (session) {
       RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
@@ -259,7 +259,7 @@ ModelExecutionManager::StartSession(
   return std::make_unique<SessionImpl>(
       base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
       /*safety_config=*/std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_.get(), model_quality_uploader_service_,
+      optimization_guide_logger_->GetWeakPtr(), model_quality_uploader_service_,
       config_params);
 }
 

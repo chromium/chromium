@@ -72,7 +72,7 @@ class OnDeviceModelServiceController
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       ModelBasedCapabilityKey feature,
       ExecuteRemoteFn execute_remote_fn,
-      OptimizationGuideLogger* logger,
+      base::WeakPtr<OptimizationGuideLogger> logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);

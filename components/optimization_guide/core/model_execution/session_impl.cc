@@ -146,7 +146,7 @@ SessionImpl::SessionImpl(
     base::WeakPtr<OnDeviceModelServiceController> controller,
     const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
     ExecuteRemoteFn execute_remote_fn,
-    OptimizationGuideLogger* optimization_guide_logger,
+    base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params)
@@ -171,11 +171,14 @@ SessionImpl::SessionImpl(
     // Prewarm the initial session to make sure the service is started.
     GetOrCreateSession();
   }
-  OPTIMIZATION_GUIDE_LOGGER(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_logger_)
-      << "Starting on-device session for "
-      << std::string(GetStringNameForModelExecutionFeature(feature_));
+  if (optimization_guide_logger_ &&
+      optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_logger_.get())
+        << "Starting on-device session for "
+        << std::string(GetStringNameForModelExecutionFeature(feature_));
+  }
 }
 
 SessionImpl::~SessionImpl() {
@@ -344,10 +347,11 @@ void SessionImpl::ExecuteModel(
   logged_request->set_execution_num_tokens_processed(
       features::GetOnDeviceModelMaxTokensForOutput());
 
-  if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+  if (optimization_guide_logger_ &&
+      optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_logger_)
+        optimization_guide_logger_.get())
         << "Executing model "
         << (input->should_ignore_input_context
                 ? ""

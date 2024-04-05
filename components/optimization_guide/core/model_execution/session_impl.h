@@ -109,7 +109,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       base::WeakPtr<OnDeviceModelServiceController> controller,
       const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
       ExecuteRemoteFn execute_remote_fn,
-      OptimizationGuideLogger* optimization_guide_logger,
+      base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);
@@ -282,9 +282,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Has a value when using the on device model.
   std::optional<OnDeviceState> on_device_state_;
 
-  // Logger is owned by the Optimization Guide Keyed Service, which should
-  // outlive this session.
-  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  // Logger is owned by the Optimization Guide Keyed Service.
+  base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
   // passed through the ModelQualityLogEntry to invoke upload during log
