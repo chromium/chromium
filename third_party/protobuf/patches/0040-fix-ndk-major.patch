@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index 753d242d40e1d..f1c46c2a1b284 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -257,7 +257,7 @@
+ #if __has_cpp_attribute(clang::musttail) && !defined(__arm__) && \
+     !defined(_ARCH_PPC) && !defined(__wasm__) &&                 \
+     !(defined(_MSC_VER) && defined(_M_IX86)) &&                  \
+-    !(defined(__NDK_MAJOR__) && __NDK_MAJOR <= 24)
++    !(defined(__NDK_MAJOR__) && __NDK_MAJOR__ <= 24)
+ #  ifndef PROTO2_OPENSOURCE
+ // Compilation fails on ARM32: b/195943306
+ // Compilation fails on powerpc64le: b/187985113

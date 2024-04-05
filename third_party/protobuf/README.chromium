@@ -225,3 +225,8 @@ Description of the patches:
   third_party/mediapipe. This replaces checked-in precompiled .pb.cc files. See
   https://crbug.com/332939935, which when/if resolved should make this patch
   obsolete.
+
+- 0040-fix-ndk-major.patch
+
+  Fix Android compile error that affects webrtc. Fixed in upstream
+  https://github.com/protocolbuffers/protobuf/commit/9471a882256eaf01027524e8b6c15cbb5e42bef6
