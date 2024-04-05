@@ -262,9 +262,9 @@ int HttpStreamFactory::Job::Preconnect(int num_streams) {
   bool connect_one_stream =
       base::FeatureList::IsEnabled(kLimitEarlyPreconnectsExperiment) &&
       !http_server_properties->IsInitialized() &&
-      request_info_.url.SchemeIsCryptographic();
+      origin_url_.SchemeIsCryptographic();
   if (connect_one_stream || http_server_properties->SupportsRequestPriority(
-                                url::SchemeHostPort(request_info_.url),
+                                url::SchemeHostPort(origin_url_),
                                 request_info_.network_anonymization_key)) {
     num_streams_ = 1;
   } else {
@@ -733,7 +733,7 @@ int HttpStreamFactory::Job::StartInternal() {
 int HttpStreamFactory::Job::DoStart() {
   // Don't connect to restricted ports.
   if (!IsPortAllowedForScheme(destination_.port(),
-                              request_info_.url.scheme_piece())) {
+                              origin_url_.scheme_piece())) {
     return ERR_UNSAFE_PORT;
   }
 
@@ -905,7 +905,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     int server_cert_verifier_flags) {
   url::SchemeHostPort destination;
-  GURL url(request_info_.url);
 
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
@@ -926,7 +925,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
       SessionUsage::kDestination, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
-      server_cert_verifier_flags, url, net_log_, &net_error_details_,
+      server_cert_verifier_flags, origin_url_, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
