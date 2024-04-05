@@ -164,10 +164,6 @@ constexpr int kFeedbackCornerSpacing = 30;
 // visible.
 constexpr int kFeedbackGridMinHeight = 100;
 
-// Vertical spacing between the desk bar widget's bottom edge and the clipped
-// wallpaper's top edge.
-const int kSpaceBetweenBottomOfDeskBarAndClipWallpaper = 16;
-
 // The bottom padding applied to the bottom of the birch bar.
 constexpr int kBirchBarBottomPadding = 16;
 
@@ -1694,13 +1690,7 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
   const bool has_desk_bar =
       desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
 
-  // TODO(http://b/326087216): extend the expanded desk bar height by 16px for
-  // Forest feature.
-  const int desk_bar_padding_with_clip_wallpaper =
-      forest_enabled ? kSpaceBetweenBottomOfDeskBarAndClipWallpaper : 0;
-  vertical_paddings.set_top(
-      has_desk_bar ? GetDesksBarHeight() + desk_bar_padding_with_clip_wallpaper
-                   : 0);
+  vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight() : 0);
 
   // TODO(http://b/325963519): implement the paddings in tablet mode when the
   // design is finalized.

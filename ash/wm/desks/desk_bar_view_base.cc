@@ -619,7 +619,9 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
         height = kDeskBarZeroStateHeight;
       } else {
         height = DeskPreviewView::GetHeight(root) +
-                 kDeskBarNonPreviewAllocatedHeight;
+                 (features::IsForestFeatureEnabled()
+                      ? kExpandedDeskBarHeightWithOak
+                      : kDeskBarNonPreviewAllocatedHeight);
       }
       break;
   }
