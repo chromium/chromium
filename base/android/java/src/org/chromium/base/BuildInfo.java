@@ -18,6 +18,8 @@ import android.os.Build.VERSION_CODES;
 import android.os.Process;
 import android.text.TextUtils;
 
+import androidx.core.os.BuildCompat;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.compat.ApiHelperForP;
@@ -142,8 +144,8 @@ public class BuildInfo {
             Build.HARDWARE,
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? "1" : "0",
             isAutomotive ? "1" : "0",
-            Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE ? "1" : "0",
-            targetsAtLeastU() ? "1" : "0",
+            BuildCompat.isAtLeastV() ? "1" : "0",
+            targetsAtLeastV() ? "1" : "0",
             Build.VERSION.CODENAME,
             String.valueOf(vulkanDeqpLevel),
             isFoldable ? "1" : "0",
@@ -399,23 +401,23 @@ public class BuildInfo {
     }
 
     /**
-     * Checks if the application targets pre-release SDK U.
-     * This must be manually maintained as the SDK goes through finalization!
-     * Avoid depending on this if possible; this is only intended for WebView.
+     * Checks if the application targets pre-release SDK V. This must be manually maintained as the
+     * SDK goes through finalization! Avoid depending on this if possible; this is only intended for
+     * WebView.
      */
-    public static boolean targetsAtLeastU() {
+    public static boolean targetsAtLeastV() {
         int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
 
         // Logic for pre-API-finalization:
-        // return BuildCompat.isAtLeastU() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
+        return BuildCompat.isAtLeastV() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
 
         // Logic for after API finalization but before public SDK release has to just hardcode the
         // appropriate SDK integer. This will include Android builds with the finalized SDK, and
         // also pre-API-finalization builds (because CUR_DEVELOPMENT == 10000).
-        // return target >= 34;
+        // return target >= 35;
 
         // Now that the public SDK is upstreamed we can use the defined constant. All users of this
         // should now just inline this check themselves.
-        return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        // return target >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 }

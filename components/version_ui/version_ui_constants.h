@@ -60,8 +60,8 @@ extern const char kOSVersion[];
 extern const char kVersionCode[];
 extern const char kTargetSdkVersionName[];
 extern const char kTargetSdkVersion[];
-extern const char kTargetsUName[];
-extern const char kTargetsU[];
+extern const char kTargetsVName[];
+extern const char kTargetsV[];
 extern const char kGmsName[];
 extern const char kGmsVersion[];
 #endif

@@ -17,8 +17,8 @@ class AndroidAboutAppInfo {
   static std::string GetOsInfo();
 
   // Returns a string containing info about whether the device is at least
-  // Android U and whether Chrome targets at least U.
-  static std::string GetTargetsUInfo();
+  // Android U and whether Chrome targets at least V.
+  static std::string GetTargetsVInfo();
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_ANDROID_ABOUT_APP_INFO_H_
