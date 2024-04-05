@@ -1472,7 +1472,7 @@ chromium-metrics-reviews@google.com.
     Size of encoded image data of ParkableImages that are on disk. Collected
     once, 5 minutes after the first ParkableImage is created.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1487,7 +1487,7 @@ chromium-metrics-reviews@google.com.
     against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1509,7 +1509,7 @@ chromium-metrics-reviews@google.com.
     Total time spent reading images from disk. Collected once, 5 minutes after
     the first ParkableImage is created.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1521,7 +1521,7 @@ chromium-metrics-reviews@google.com.
     Total size of encoded image data of ParkableImages. Collected once, 5
     minutes after the first ParkableImage is created.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1543,7 +1543,7 @@ chromium-metrics-reviews@google.com.
     Size of encoded image data of ParkableImages that are not written to disk.
     Collected once, 5 minutes after the first ParkableImage is created.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1558,7 +1558,7 @@ chromium-metrics-reviews@google.com.
     against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1570,7 +1570,7 @@ chromium-metrics-reviews@google.com.
     Recorded each time a ParkableImage is written to disk. Records the size of
     the write, in KiB.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1605,7 +1605,7 @@ chromium-metrics-reviews@google.com.
     biased against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1617,12 +1617,12 @@ chromium-metrics-reviews@google.com.
     Original size of a compressed ParkableString, recorded at decompression
     time.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskReadTime.5min" units="ms"
-    expires_after="2024-09-22">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
     minutes of a renderer lifetime. Starting time is from the first
     ParkableString being added.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1655,7 +1655,7 @@ chromium-metrics-reviews@google.com.
     renderer, at the same time as
     &quot;Memory.ParkableString.MemorySavings.5min&quot;.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1669,7 +1669,31 @@ chromium-metrics-reviews@google.com.
     will be biased against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
 
-    This histogram was expired before 2024-03=19, be careful of missing data.
+    This histogram was expired before 2024-03-19, be careful of missing data.
+  </summary>
+</histogram>
+
+<histogram name="Memory.ParkableString.TotalParkingThreadTime.5min" units="ms"
+    expires_after="2024-06-30">
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Total thread time (on background threads) used by ParkableStrings for
+    compression over the first 5 minutes of a renderer lifetime. Starting time
+    is from the first ParkableString being added. This always happens on
+    background thread, so the reported value is thread time, not wall clock.
+  </summary>
+</histogram>
+
+<histogram name="Memory.ParkableString.TotalUnparkingTime.5min" units="ms"
+    expires_after="2024-06-30">
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Total time used by ParkableStrings for unparking over the first 5 minutes of
+    a renderer lifetime. Starting time is from the first ParkableString being
+    added. Note that unparking can happen on the main thread or on a background
+    one, so this is not the sum of main thread time.
   </summary>
 </histogram>
 

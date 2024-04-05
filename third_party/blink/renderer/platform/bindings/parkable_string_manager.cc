@@ -353,6 +353,15 @@ size_t ParkableStringManager::Size() const {
 }
 
 void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
+  if (!CompressionEnabled()) {
+    return;
+  }
+
+  base::UmaHistogramTimes("Memory.ParkableString.TotalParkingThreadTime.5min",
+                          total_parking_thread_time_);
+  base::UmaHistogramTimes("Memory.ParkableString.TotalUnparkingTime.5min",
+                          total_unparking_time_);
+
   // These metrics only make sense if the disk allocator is used.
   if (data_allocator().may_write()) {
     Statistics stats = ComputeStatistics();
