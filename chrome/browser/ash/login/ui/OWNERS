@@ -1,4 +1,4 @@
 per-file login_display_host*.*=set noparent
 per-file login_display_host*.*=file://ash/login/LOGIN_LOCK_OWNERS
 
-per-file kiosk_app*=file://chrome/browser/ash/app_mode/OWNERS
+per-file kiosk_app*=file://chromeos/components/kiosk/OWNERS

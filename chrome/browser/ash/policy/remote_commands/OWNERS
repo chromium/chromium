@@ -8,8 +8,8 @@ per-file device_command_remote_powerwash_job*=file://chromeos/ash/components/pol
 # For DEVICE_SCREENSHOT and DEVICE_SET_VOLUME commands. Report issues at
 #  - https://issuetracker.google.com/issues/new?component=892153 (internal) or
 #  - https://issuetracker.google.com/issues/new?component=1227365 (public).
-per-file device_command_screenshot_job**=file://chrome/browser/ash/app_mode/OWNERS
-per-file device_command_set_volume_job**=file://chrome/browser/ash/app_mode/OWNERS
+per-file device_command_screenshot_job**=file://chromeos/components/kiosk/OWNERS
+per-file device_command_set_volume_job**=file://chromeos/components/kiosk/OWNERS
 
 # For DEVICE_FETCH_STATUS command. Report issues at
 #  - https://issuetracker.google.com/issues/new?component=817866 (internal) or
