@@ -503,7 +503,8 @@
           <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
-              has-partial-output="{{hasPartialOutput_}}">
+              has-partial-output="{{hasPartialOutput_}}"
+              on-result-edit="onResultEdit_">
           </compose-result-text>
           <div id="resultOptions"
               inert$="[[!outputComplete_]]">
