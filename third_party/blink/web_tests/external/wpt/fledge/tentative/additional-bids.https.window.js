@@ -345,3 +345,27 @@ subsetTest(promise_test, async test => {
 }, 'higher additional bid is filtered by negative targeting by two negative ' +
    'interest groups, but because of a joining origin mismatch, it still wins');
 
+// Ensure that trusted seller signals are retrieved for additional bids.
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const auctionNonce = await navigator.createAuctionNonce();
+  const seller = SINGLE_SELLER_AUCTION_SELLER;
+
+  const buyer = OTHER_ORIGIN1;
+  const additionalBid = additionalBidHelper.createAdditionalBid(
+      uuid, auctionNonce, seller, buyer, 'horses', 1.99);
+
+  let renderURL = createRenderURL(uuid);
+  await runBasicFledgeTestExpectingWinner(
+      test, uuid,
+      { interestGroupBuyers: [buyer],
+        auctionNonce: auctionNonce,
+        additionalBids: additionalBidHelper.fetchAdditionalBids(
+            seller, [additionalBid]),
+        decisionLogicURL: createDecisionScriptURL(
+            uuid,
+            { scoreAd:
+                `if(!"${renderURL}" in trustedScoringSignals.renderURL) ` +
+                  'throw "missing trusted signals";'}),
+        trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL});
+}, 'trusted seller signals retrieved for additional bids');
