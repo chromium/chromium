@@ -297,12 +297,12 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     }
   }
 
-  if ((fenced_frame_reporter_ || is_ad_component_) &&
-      entity != FencedFrameEntity::kCrossOriginContent) {
+  if (fenced_frame_reporter_ || is_ad_component_) {
     // An ad component should use its parent's fenced frame reporter. Even
     // though it does not have a reporter in its `FencedFrameProperties`, this
     // flag is still marked as true. Content that is cross-origin to the
-    // config's mapped url will not get access to its parent's reporter.
+    // config's mapped url gets access to its parent's reporter only if both the
+    // parent and the content opt in to cross-origin event reporting.
     redacted_properties.has_fenced_frame_reporting_ = true;
   }
 
@@ -319,6 +319,11 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     redacted_properties.can_disable_untrusted_network_ =
         can_disable_untrusted_network_;
   }
+
+  redacted_properties.is_cross_origin_content_ =
+      entity == FencedFrameEntity::kCrossOriginContent;
+  redacted_properties.allow_cross_origin_event_reporting_ =
+      allow_cross_origin_event_reporting_;
 
   return redacted_properties;
 }

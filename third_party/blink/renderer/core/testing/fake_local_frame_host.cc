@@ -256,11 +256,12 @@ void FakeLocalFrameHost::ReceivedDelegatedCapability(
 void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     const WTF::String& event_data,
     const WTF::String& event_type,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
-}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
+    bool cross_origin_exposed) {}
 
 void FakeLocalFrameHost::SendFencedFrameReportingBeaconToCustomURL(
-    const blink::KURL& destination_url) {}
+    const blink::KURL& destination_url,
+    bool cross_origin_exposed) {}
 
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type,

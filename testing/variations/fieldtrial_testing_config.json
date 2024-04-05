@@ -7595,6 +7595,26 @@
             ]
         }
     ],
+    "FencedFramesEnableCrossOriginEventReporting": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FencedFramesCrossOriginEventReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "FencedFramesEnableM120Features": [
         {
             "platforms": [
