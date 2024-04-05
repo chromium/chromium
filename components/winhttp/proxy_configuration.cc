@@ -50,7 +50,7 @@ std::wstring ProxyConfiguration::proxy_bypass() const {
 // resolved by calling `WinHttpGetProxyForUrl`, and set on the request handle
 // later on.
 int ProxyConfiguration::DoGetAccessType() const {
-  if (proxy_info_.auto_detect || !proxy_info_.auto_config_url.empty()) {
+  if (proxy_info_.auto_detect) {
     return WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
   } else if (!proxy_info_.proxy.empty()) {
     return WINHTTP_ACCESS_TYPE_NAMED_PROXY;
