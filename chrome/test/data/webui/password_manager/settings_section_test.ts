@@ -623,4 +623,66 @@ suite('SettingsSectionTest', function() {
         ],
     );
   });
+
+  test('Change Password Manager PIN is not available ', async function() {
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const changePasswordManagerPinRow =
+        section.shadowRoot!.querySelector<HTMLElement>(
+            '#changePasswordManagerPinRow');
+
+    assertFalse(!!changePasswordManagerPinRow);
+  });
+
+  test('Change Password Manager PIN is available', async function() {
+    passwordManager.data.isPasswordManagerPinAvailable = true;
+
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const changePasswordManagerPinRow =
+        section.shadowRoot!.querySelector<HTMLElement>(
+            '#changePasswordManagerPinRow');
+
+    assertTrue(!!changePasswordManagerPinRow);
+
+    changePasswordManagerPinRow.click();
+    await passwordManager.whenCalled('changePasswordManagerPin');
+  });
+
+  test('Change Password Manager PIN row hides with sync', async function() {
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
+    passwordManager.data.isPasswordManagerPinAvailable = true;
+
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+    await passwordManager.whenCalled('isPasswordManagerPinAvailable');
+
+    let changePasswordManagerPinRow =
+        section.shadowRoot!.querySelector<HTMLElement>(
+            '#changePasswordManagerPinRow');
+
+    assertTrue(!!changePasswordManagerPinRow);
+
+    passwordManager.data.isPasswordManagerPinAvailable = false;
+    webUIListenerCallback('sync-info-changed', {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: false,
+    });
+    await flushTasks();
+    await passwordManager.whenCalled('isPasswordManagerPinAvailable');
+
+    changePasswordManagerPinRow =
+        section.shadowRoot!.querySelector<HTMLElement>(
+            '#changePasswordManagerPinRow');
+
+    assertFalse(!!changePasswordManagerPinRow);
+  });
 });

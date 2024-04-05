@@ -138,6 +138,13 @@
       </pref-link-row>
     </template>
   </if>
+  <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
+    <cr-link-row id="changePasswordManagerPinRow"
+        class="cr-row settings-cr-link-row"
+        label="Change Google Password Manager PIN (UNTRANSLATED)"
+        on-click="onChangePasswordManagerPinRowClick_">
+    </cr-link-row>
+  </template>
   <if expr="is_win or is_macosx">
     <template is="dom-if" if="[[hasPasskeys_]]" restamp>
       <cr-link-row id="managePasskeysRow" external
