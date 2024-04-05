@@ -19,7 +19,7 @@ items:
 - caption: Disable device location reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 schema:
   type: boolean

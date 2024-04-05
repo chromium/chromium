@@ -16,7 +16,7 @@ items:
 - caption: Do not report print jobs
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - mattme@google.com
 schema:
