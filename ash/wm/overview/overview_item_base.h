@@ -361,9 +361,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // The shadow around `this`.
   std::unique_ptr<SystemShadow> shadow_;
 
-  // True if `this` overview item is currently being dragged around.
-  bool is_being_dragged_ = false;
-
   // True when `this` is dragged and dropped on another desk's mini view and the
   // transform needs to be restored immediately without any animations.
   bool is_moving_to_another_desk_ = false;

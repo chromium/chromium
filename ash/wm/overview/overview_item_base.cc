@@ -60,7 +60,11 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
 }
 
 bool OverviewItemBase::IsDragItem() const {
-  return overview_session_->GetCurrentDraggedOverviewItem() == this;
+  // `overview_session_` may be null in tests.
+  // TODO(https://b/299391958): `overview_session_` should not be null even in
+  // tests.
+  return overview_session_ &&
+         overview_session_->GetCurrentDraggedOverviewItem() == this;
 }
 
 void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
