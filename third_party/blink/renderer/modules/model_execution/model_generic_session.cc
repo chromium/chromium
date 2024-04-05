@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -211,8 +212,7 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
     const WTF::String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+    ThrowInvalidContextException(exception_state);
     return ScriptPromise<IDLString>();
   }
 
@@ -243,8 +243,7 @@ ReadableStream* ModelGenericSession::executeStreaming(
     const WTF::String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+    ThrowInvalidContextException(exception_state);
     return nullptr;
   }
 

@@ -16,8 +16,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -75,8 +77,7 @@ ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+    ThrowInvalidContextException(exception_state);
     return ScriptPromise<V8GenericModelAvailability>();
   }
 
@@ -92,18 +93,19 @@ ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
 
   if (!GetModelManagerRemote().is_connected()) {
     ResolveAvailability(resolver, ModelAvailability::kNo);
-  } else {
-    GetModelManagerRemote()->CanCreateGenericSession(WTF::BindOnce(
-        [](ScriptPromiseResolver<V8GenericModelAvailability>* resolver,
-           bool can_create) {
-          ModelAvailability availability = ModelAvailability::kNo;
-          if (can_create) {
-            availability = ModelAvailability::kReadily;
-          }
-          ResolveAvailability(resolver, availability);
-        },
-        WrapPersistent(resolver)));
+    return promise;
   }
+
+  GetModelManagerRemote()->CanCreateGenericSession(WTF::BindOnce(
+      [](ScriptPromiseResolver<V8GenericModelAvailability>* resolver,
+         bool can_create) {
+        if (can_create) {
+          ResolveAvailability(resolver, ModelAvailability::kReadily);
+        } else {
+          ResolveAvailability(resolver, ModelAvailability::kNo);
+        }
+      },
+      WrapPersistent(resolver)));
 
   return promise;
 }
@@ -112,10 +114,8 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
     ScriptState* script_state,
     ModelGenericSessionOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid() ||
-      !GetModelManagerRemote().is_connected()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
     return ScriptPromise<ModelGenericSession>();
   }
 
@@ -129,6 +129,11 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
           script_state);
   auto promise = resolver->Promise();
 
+  if (!GetModelManagerRemote().is_connected()) {
+    RejectPromiseWithInternalError(resolver);
+    return promise;
+  }
+
   mojom::blink::ModelGenericSessionSamplingParamsPtr sampling_params;
   if (options) {
     if (!options->hasTopK() && !options->hasTemperature()) {
@@ -137,10 +142,11 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
       sampling_params = mojom::blink::ModelGenericSessionSamplingParams::New(
           options->topK(), options->temperature());
     } else {
-      exception_state.ThrowTypeError(
+      resolver->Reject(DOMException::Create(
           "Initializing a new session must either specify both topK and "
-          "temperature, or neither of them.");
-      return ScriptPromise<ModelGenericSession>();
+          "temperature, or neither of them.",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      return promise;
     }
   }
 
@@ -154,7 +160,10 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
             if (success) {
               resolver->Resolve(generic_session);
             } else {
-              resolver->Reject();
+              resolver->Reject(DOMException::Create(
+                  "The session cannot be created.",
+                  DOMException::GetErrorName(
+                      DOMExceptionCode::kInvalidStateError)));
             }
           },
           WrapPersistent(resolver), WrapPersistent(generic_session)));
@@ -166,8 +175,7 @@ ScriptPromise<ModelGenericSessionOptions>
 ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+    ThrowInvalidContextException(exception_state);
     return ScriptPromise<ModelGenericSessionOptions>();
   }
 
@@ -183,23 +191,21 @@ ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
   auto promise = resolver->Promise();
 
   if (!GetModelManagerRemote().is_connected()) {
-    resolver->Reject(DOMException::Create(
-        "Unable to fetch default generic session options", "NotReadableError"));
-  } else {
-    GetModelManagerRemote()->GetDefaultGenericSessionSamplingParams(
-        WTF::BindOnce(
-            [](ScriptPromiseResolver<ModelGenericSessionOptions>* resolver,
-               mojom::blink::ModelGenericSessionSamplingParamsPtr
-                   default_params) {
-              ModelGenericSessionOptions* options =
-                  ModelGenericSessionOptions::Create();
-              CHECK(default_params);
-              options->setTopK(default_params->top_k);
-              options->setTemperature(default_params->temperature);
-              resolver->Resolve(options);
-            },
-            WrapPersistent(resolver)));
+    RejectPromiseWithInternalError(resolver);
+    return promise;
   }
+
+  GetModelManagerRemote()->GetDefaultGenericSessionSamplingParams(WTF::BindOnce(
+      [](ScriptPromiseResolver<ModelGenericSessionOptions>* resolver,
+         mojom::blink::ModelGenericSessionSamplingParamsPtr default_params) {
+        ModelGenericSessionOptions* options =
+            ModelGenericSessionOptions::Create();
+        CHECK(default_params);
+        options->setTopK(default_params->top_k);
+        options->setTemperature(default_params->temperature);
+        resolver->Resolve(options);
+      },
+      WrapPersistent(resolver)));
 
   return promise;
 }
