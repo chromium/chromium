@@ -237,11 +237,6 @@ BASE_FEATURE(kJavaScriptRegExpUnicodeSets,
              "JavaScriptRegExpUnicodeSets",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the JSON.parse with source proposal.
-BASE_FEATURE(kJavaScriptJsonParseWithSource,
-             "JavaScriptJsonParseWithSource",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the ArrayBuffer transfer proposal.
 BASE_FEATURE(kJavaScriptArrayBufferTransfer,
              "JavaScriptArrayBufferTransfer",
