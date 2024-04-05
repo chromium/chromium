@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
@@ -746,7 +747,7 @@ void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
     search_page_->search_view()->UpdateForNewSearch(!trimmed_query.empty());
     if (!trimmed_query.empty()) {
       ShowPage(AppListBubblePage::kSearch);
-    } else if (app_list_features::IsAppsCollectionsEnabled()) {
+    } else if (AppsCollectionsController::Get()->ShouldShowAppsCollection()) {
       ShowPage(AppListBubblePage::kAppsCollections);
     } else {
       ShowPage(AppListBubblePage::kApps);

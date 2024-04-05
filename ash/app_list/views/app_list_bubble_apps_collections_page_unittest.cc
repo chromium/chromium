@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/apps_collection_section_view.h"
 #include "ash/app_list/views/apps_collections_dismiss_dialog.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -235,6 +238,40 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
   // Apps collections page is still visible.
   EXPECT_TRUE(apps_collections_page->GetVisible());
   EXPECT_EQ(AppListSortOrder::kCustom, helper->model()->requested_sort_order());
+}
+
+TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterClearingSearch) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  AppListToastContainerView* toast_container =
+      apps_collections_page->GetToastContainerViewForTest();
+  EXPECT_TRUE(toast_container->IsToastVisible());
+
+  // Click on close button to dismiss the toast.
+  LeftClickOn(toast_container->GetToastButton());
+  EXPECT_FALSE(toast_container->IsToastVisible());
+
+  // Apps collections page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
+
+  // Start a search query and verify visibility.
+  helper->GetBubbleSearchBoxView()->RequestFocus();
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_TRUE(helper->GetBubbleSearchPage()->GetVisible());
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_FALSE(helper->GetBubbleAppsPage()->GetVisible());
+
+  // Delete the character in the textfield and check visibility.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_BACK);
+  EXPECT_FALSE(helper->GetBubbleSearchPage()->GetVisible());
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
 }
 
 TEST_F(AppListBubbleAppsCollectionsPageTest,
