@@ -86,12 +86,12 @@ suite('<borealis-installer-app>', async () => {
     await clickButton('install');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
 
-    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
+    fakeBrowserProxy.page.onProgressUpdate(0.56789, '3 seconds left');
     await flushTasks();
-    assertEquals(shadowRoot().querySelector('paper-progress')!.value, 50);
+    assertEquals(shadowRoot().querySelector('paper-progress')!.value, 57);
     assertEquals(
         shadowRoot().querySelector('#progress-message')!.textContent!.trim(),
-        '50% completed | 3 seconds left');
+        '57% completed | 3 seconds left');
     fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
     await flushTasks();
 
@@ -157,7 +157,7 @@ suite('<borealis-installer-app>', async () => {
 
     fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
     await flushTasks();
-    await clickButton('cancel');
+    await clickButton('close');
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
     assertEquals(fakeBrowserProxy.handler.getCallCount('shutDown'), 1);
   });

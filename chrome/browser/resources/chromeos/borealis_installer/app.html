@@ -131,9 +131,15 @@
     </div>
   </div>
   <div id="button-container">
-    <cr-button id ="cancel" class="cancel-button"
-        on-click="onCancelButtonClicked">
+    <cr-button id="cancel" class="cancel-button"
+        on-click="onCancelButtonClicked"
+        hidden="[[eq(state, 'completed')]]">
       $i18n{cancel}
+    </cr-button>
+    <cr-button id="close" class="cancel-button"
+        on-click="onCancelButtonClicked"
+        hidden="[[!eq(state, 'completed')]]">
+      $i18n{close}
     </cr-button>
     <cr-button id="install" class="action-button"
         on-click="onInstallButtonClicked"
