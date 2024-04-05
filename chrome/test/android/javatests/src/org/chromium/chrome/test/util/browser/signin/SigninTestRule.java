@@ -17,6 +17,7 @@ import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -79,10 +80,17 @@ public class SigninTestRule extends AccountManagerTestRule {
 
     /** Adds an account and seeds it in native code. */
     // TODO(crbug.com/40234741): Replace this with a method that takes AccountInfo instead.
+    @Deprecated
     public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
         final CoreAccountInfo coreAccountInfo = addAccount(accountName);
         waitForSeeding();
         return coreAccountInfo;
+    }
+
+    /** Adds an account and seeds it in native code. */
+    public void addAccountAndWaitForSeeding(AccountInfo accountInfo) {
+        addAccount(accountInfo);
+        waitForSeeding();
     }
 
     /** Removes an account and seed it in native code. */
@@ -158,20 +166,18 @@ public class SigninTestRule extends AccountManagerTestRule {
     /** Adds a child account, and waits for auto-signin to complete. */
     public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo =
-                addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
+        addAccountAndWaitForSeeding(TEST_CHILD_ACCOUNT);
 
         // The child will be force signed in (by SigninChecker).
         // Wait for this to complete before enabling sync.
-        waitForSignin(coreAccountInfo);
-        return coreAccountInfo;
+        waitForSignin(TEST_CHILD_ACCOUNT);
+        return TEST_CHILD_ACCOUNT;
     }
 
     /**
      * Adds a child account, waits for auto-signin to complete, and enables sync.
      *
-     * @param syncService SyncService object to set up sync, if null, sync won't
-     *         start.
+     * @param syncService SyncService object to set up sync, if null, sync won't start.
      */
     public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
         CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
