@@ -15,8 +15,8 @@ items:
 - caption: Do not allow granular reporting controls
   value: false
 owners:
-- cros-reporting-team@google.com
-- tylergarrett@google.com
+- cros-reporting-eng@google.com
+- lbaraz@chromium.org
 schema:
   type: boolean
 supported_on:
