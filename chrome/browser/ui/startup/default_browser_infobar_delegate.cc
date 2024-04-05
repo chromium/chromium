@@ -16,6 +16,7 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -65,19 +66,6 @@ void DefaultBrowserInfoBarDelegate::AllowExpiry() {
   should_expire_ = true;
 }
 
-void DefaultBrowserInfoBarDelegate::UpdatePrefsForDeclinedPrompt(
-    Profile* profile) {
-  base::Time now = base::Time::Now();
-  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
-                                now.ToInternalValue());
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
-  local_state->SetInteger(
-      prefs::kDefaultBrowserDeclinedCount,
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
-}
-
 infobars::InfoBarDelegate::InfoBarIdentifier
 DefaultBrowserInfoBarDelegate::GetIdentifier() const {
   return DEFAULT_BROWSER_INFOBAR_DELEGATE;
@@ -96,7 +84,7 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
   // |profile_| may be null in tests.
   if (profile_) {
-    UpdatePrefsForDeclinedPrompt(profile_);
+    DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(profile_);
   }
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",

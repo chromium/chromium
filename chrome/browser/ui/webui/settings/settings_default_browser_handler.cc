@@ -84,8 +84,7 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
 
   // If the user attempted to make Chrome the default browser, notify
   // them when this changes.
-  DefaultBrowserPromptManager::GetInstance()->ResetDefaultBrowserPromptPrefs(
-      Profile::FromWebUI(web_ui()));
+  DefaultBrowserPromptManager::ResetPromptPrefs(Profile::FromWebUI(web_ui()));
 }
 
 void DefaultBrowserHandler::OnDefaultBrowserSettingChange() {
@@ -105,8 +104,7 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
   if (state == shell_integration::IS_DEFAULT) {
     // Notify the user in the future if Chrome ceases to be the user's chosen
     // default browser.
-    DefaultBrowserPromptManager::GetInstance()->ResetDefaultBrowserPromptPrefs(
-        Profile::FromWebUI(web_ui()));
+    DefaultBrowserPromptManager::ResetPromptPrefs(Profile::FromWebUI(web_ui()));
   }
 
   base::Value::Dict dict;

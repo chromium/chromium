@@ -89,8 +89,7 @@ void OnCheckIsDefaultBrowserFinished(
   if (state == shell_integration::IS_DEFAULT) {
     // Notify the user in the future if Chrome ceases to be the user's chosen
     // default browser.
-    DefaultBrowserPromptManager::GetInstance()->ResetDefaultBrowserPromptPrefs(
-        profile);
+    DefaultBrowserPromptManager::ResetPromptPrefs(profile);
   } else if (state == shell_integration::NOT_DEFAULT &&
              shell_integration::CanSetAsDefaultBrowser() &&
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {

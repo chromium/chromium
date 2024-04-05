@@ -28,13 +28,6 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
-void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 // static
 void DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort() {
   PrefService* local_state = g_browser_process->local_state();
@@ -72,9 +65,39 @@ void DefaultBrowserPromptManager::EnsureStickToDefaultBrowserPromptCohort() {
       enrolled_study_group);
 }
 
+// static
+void DefaultBrowserPromptManager::ResetPromptPrefs(Profile* profile) {
+  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
+
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
+  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+}
+
+// static
+void DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
+    Profile* profile) {
+  base::Time now = base::Time::Now();
+  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
+                                now.ToInternalValue());
+
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
+  local_state->SetInteger(
+      prefs::kDefaultBrowserDeclinedCount,
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
+}
+
 DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
+
+void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   if (ShouldShowInfoBarPrompt()) {
@@ -110,15 +133,6 @@ void DefaultBrowserPromptManager::CloseAllInfoBars() {
   }
 
   infobars_.clear();
-}
-
-void DefaultBrowserPromptManager::ResetDefaultBrowserPromptPrefs(
-    Profile* profile) {
-  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
-  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
 }
 
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {

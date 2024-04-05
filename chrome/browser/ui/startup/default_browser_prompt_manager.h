@@ -37,11 +37,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   static DefaultBrowserPromptManager* GetInstance();
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
-
   // Enrolls this client with a synthetic field trial based on the Finch params.
   // Should be called when the default browser prompt is potentially shown, then
   // the client needs to register again on each process startup by calling
@@ -53,14 +48,24 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // per browser process startup.
   static void EnsureStickToDefaultBrowserPromptCohort();
 
+  // Resets the tracking preferences for the default browser prompts so that
+  // they are re-shown if the browser ceases to be the user's chosen default.
+  static void ResetPromptPrefs(Profile* profile);
+
+  // Updates the tracking preferences for the default browser prompts to reflect
+  // that the prompt was just dismissed. This will ensure the proper delay
+  // before re-prompting.
+  static void UpdatePrefsForDismissedPrompt(Profile* profile);
+
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
 
-  void MaybeShowPrompt();
+  bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
 
-  // Resets the tracking preferences for the default browser prompts so that
-  // they are re-shown if the browser ceases to be the user's chosen default.
-  static void ResetDefaultBrowserPromptPrefs(Profile* profile);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void MaybeShowPrompt();
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
