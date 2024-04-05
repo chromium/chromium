@@ -12,7 +12,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -22,12 +22,10 @@ namespace {
 std::unique_ptr<views::View> CreateLabelWrapper() {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
-  auto label_wrapper = std::make_unique<views::FlexLayoutView>();
+  auto label_wrapper = std::make_unique<views::BoxLayoutView>();
   label_wrapper->SetOrientation(views::LayoutOrientation::kVertical);
   label_wrapper->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(0, icon_label_spacing));
-  label_wrapper->SetProperty(views::kCrossAxisAlignmentKey,
-                             views::LayoutAlignment::kStretch);
   label_wrapper->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -86,13 +84,9 @@ views::Label* RichControlsContainerView::AddSecondaryLabel(
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetMultiLine(true);
   secondary_label->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
-          .WithWeight(1));
-  secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
-                               views::LayoutAlignment::kStart);
+      views::kBoxLayoutFlexKey,
+      views::BoxLayoutFlexSpecification().WithWeight(1));
+
   // TODO(https://crbug.com/326376201): Consider using
   // views::style::STYLE_BODY_5 when CR2023 is enabled to
   // be consistent with AddSecondaryStyledLabel, as most uses of this method
@@ -108,13 +102,9 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
   secondary_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
-          .WithWeight(1));
-  secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
-                               views::LayoutAlignment::kStart);
+      views::kBoxLayoutFlexKey,
+      views::BoxLayoutFlexSpecification().WithWeight(1));
+
   if (features::IsChromeRefresh2023()) {
     secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
     secondary_label->SetDefaultEnabledColorId(
@@ -126,21 +116,20 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
 gfx::Size RichControlsContainerView::FlexRule(
     const views::View* view,
     const views::SizeBounds& maximum_size) const {
-  gfx::Size preferred_size = GetPreferredSize();
-  if (!maximum_size.width().is_bounded()) {
-    return preferred_size;
-  }
-
-  const int maximum_width = maximum_size.width().value();
-  // If content view contains scrollbar, update the preferred width to account
-  // for it.
-  const int scrollbar_width = std::max(GetMinBubbleWidth() - maximum_width, 0);
-  const int width =
-      std::max(preferred_size.width() - scrollbar_width, maximum_width);
-  return gfx::Size(width, views::View::GetHeightForWidth(width));
+  return CalculatePreferredSize(maximum_size);
 }
 
+// TODO(crbug.com/40232718): Remove this once we eliminate GetPreferredSize().
 gfx::Size RichControlsContainerView::CalculatePreferredSize() const {
+  return CalculatePreferredSize({});
+}
+
+gfx::Size RichControlsContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (available_size.width().is_bounded()) {
+    return GetLayoutManager()->GetPreferredSize(this, available_size);
+  }
+
   // Secondary labels can be multiline. To wrap them properly, calculate here
   // the width of the row without them. This way, if a secondary label is too
   // long, it won't expand the width of the row.

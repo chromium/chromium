@@ -50,7 +50,11 @@ class RichControlsContainerView : public views::FlexLayoutView {
                      const views::SizeBounds& maximum_size) const;
 
   // views::View:
+  // TODO(crbug.com/40232718): Remove this once we eliminate
+  // `View::GetPreferredSize()`.
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   views::Label* title() { return title_; }
 
