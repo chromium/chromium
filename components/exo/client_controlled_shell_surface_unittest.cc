@@ -35,6 +35,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
+#include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -2427,8 +2428,12 @@ TEST_P(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 
   // Clamshell mode -> tablet mode. The bounds start from top-left corner.
   EnableTabletMode(true);
-  EXPECT_EQ(gfx::Rect(0, 0, 396, 564), delegate->requested_bounds().back());
-  shell_surface->SetGeometry(gfx::Rect(0, 0, 396, 568));
+  EXPECT_EQ(
+      gfx::Rect(0, 0, 400 - chromeos::wm::kSplitviewDividerShortSideLength / 2,
+                564),
+      delegate->requested_bounds().back());
+  shell_surface->SetGeometry(gfx::Rect(
+      0, 0, 400 - chromeos::wm::kSplitviewDividerShortSideLength / 2, 568));
   surface->SetFrame(SurfaceFrameType::AUTOHIDE);
   surface->Commit();
 

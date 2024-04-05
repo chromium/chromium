@@ -86,6 +86,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Updates divider position while resizing, keeping it within allowed range.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
+  // Returns the root window of this.
+  aura::Window* GetRootWindow() const;
+
   // Resizing functions used when resizing with `split_view_divider_` in the
   // tablet split view mode or clamshell mode if `kSnapGroup` is enabled.
   void StartResizeWithDivider(const gfx::Point& location_in_screen);
@@ -153,9 +156,6 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   friend class SplitViewController;
 
   void CreateDividerWidget(int divider_position);
-
-  // Returns the root window of this.
-  aura::Window* GetRootWindow() const;
 
   // Refreshes the stacking order of the `divider_widget_` to be right on top of
   // the `observed_windows_` and reparents the split view divider to be on the

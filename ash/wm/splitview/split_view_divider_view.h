@@ -62,9 +62,12 @@ class SplitViewDividerView : public views::View,
   // `swap_windows` is true, swaps the windows after resizing.
   void EndResizing(gfx::Point location, bool swap_windows);
 
-  // Initializes or refreshes the visibility of the `feedback_button_` on the
-  // divider.
+  // Initializes, refreshes bounds, or updates visibility for the
+  // `feedback_button_` on the divider.
   void RefreshFeedbackButton(bool visible);
+
+  // Refreshes the bounds of the `feedback_button_`.
+  void RefreshFeedbackButtonBounds();
 
   // Triggered when the feedback button is pressed to open feedback form.
   void OnFeedbackButtonPressed();

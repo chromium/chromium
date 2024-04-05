@@ -1939,14 +1939,13 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   no_windows_widget = GetOverviewSession()->grid_list()[0]->no_windows_widget();
   ASSERT_TRUE(no_windows_widget);
 
-  // There is a 8dp divider in splitview, the indicator should take that into
-  // account.
-  const int bounds_left = 200 + 4;
+  // Take that into account of the divider width.
+  const int bounds_left = 200 + kSplitviewDividerShortSideLength / 2;
   int expected_x = bounds_left + (400 - (bounds_left)) / 2;
-  const int workarea_bottom_inset =
-      ShelfConfig::Get()->in_app_shelf_size() +
-      ShelfConfig::Get()->system_shelf_size() +
-      ShelfConfig::Get()->hotseat_bottom_padding();
+  ShelfConfig* shelf_config = ShelfConfig::Get();
+  const int workarea_bottom_inset = shelf_config->in_app_shelf_size() +
+                                    shelf_config->system_shelf_size() +
+                                    shelf_config->hotseat_bottom_padding();
   const int expected_y = (300 - workarea_bottom_inset) / 2;
   EXPECT_EQ(gfx::Point(expected_x, expected_y),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());

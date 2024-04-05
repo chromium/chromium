@@ -194,6 +194,10 @@ void SplitViewDivider::UpdateDividerPosition(
   SetDividerPosition(potential_divider_position);
 }
 
+aura::Window* SplitViewDivider::GetRootWindow() const {
+  return controller_->GetRootWindow();
+}
+
 void SplitViewDivider::StartResizeWithDivider(
     const gfx::Point& location_in_screen) {
   // `is_resizing_with_divider_` may be true here, because you can start
@@ -288,8 +292,7 @@ void SplitViewDivider::CleanUpWindowResizing() {
 }
 
 void SplitViewDivider::DoSpawningAnimation(int spawning_position) {
-  static_cast<SplitViewDividerView*>(divider_widget_->GetContentsView())
-      ->DoSpawningAnimation(spawning_position);
+  divider_view_->DoSpawningAnimation(spawning_position);
 }
 
 void SplitViewDivider::UpdateDividerBounds() {
@@ -312,8 +315,7 @@ void SplitViewDivider::SetAdjustable(bool adjustable) {
   divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
       adjustable ? aura::EventTargetingPolicy::kTargetAndDescendants
                  : aura::EventTargetingPolicy::kNone);
-  static_cast<SplitViewDividerView*>(divider_view_)
-      ->SetDividerBarVisible(adjustable);
+  divider_view_->SetDividerBarVisible(adjustable);
 }
 
 bool SplitViewDivider::IsAdjustable() const {
@@ -502,10 +504,6 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   wm::TransientWindowManager::GetOrCreate(divider_widget_native_window)
       ->set_parent_controls_lifetime(false);
   divider_widget_->Show();
-}
-
-aura::Window* SplitViewDivider::GetRootWindow() const {
-  return controller_->GetRootWindow();
 }
 
 void SplitViewDivider::RefreshStackingOrder() {

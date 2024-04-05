@@ -36,10 +36,10 @@ class SplitViewDividerHandlerView::SelectionAnimation
 
   void UpdateWhiteHandlerBounds() {
     white_handler_view_->SetBounds(
-        CurrentValueBetween(kSplitviewWhiteBarShortSideLength,
-                            kSplitviewWhiteBarRadius * 2),
-        CurrentValueBetween(kSplitviewWhiteBarLongSideLength,
-                            kSplitviewWhiteBarRadius * 2),
+        CurrentValueBetween(kDividerHandlerShortSideLength,
+                            kDividerHandlerRadius * 2),
+        CurrentValueBetween(kDividerHandlerLongSideLength,
+                            kDividerHandlerRadius * 2),
         /*signed_offset=*/0);
   }
 
@@ -48,7 +48,7 @@ class SplitViewDividerHandlerView::SelectionAnimation
   void AnimationProgressed(const gfx::Animation* animation) override {
     UpdateWhiteHandlerBounds();
     white_handler_view_->UpdateCornerRadius(CurrentValueBetween(
-        kSplitviewWhiteBarCornerRadius, kSplitviewWhiteBarRadius));
+        kDividerHandlerCornerRadius, kDividerHandlerRadius));
   }
 
   raw_ptr<SplitViewDividerHandlerView> white_handler_view_;
@@ -64,8 +64,8 @@ class SplitViewDividerHandlerView::SpawningAnimation
         white_handler_view_(white_handler_view),
         spawn_signed_offset_(divider_signed_offset +
                              (divider_signed_offset > 0
-                                  ? kSplitviewWhiteBarSpawnUnsignedOffset
-                                  : -kSplitviewWhiteBarSpawnUnsignedOffset)) {
+                                  ? kDividerHandlerSpawnUnsignedOffset
+                                  : -kDividerHandlerSpawnUnsignedOffset)) {
     SetSlideDuration(kSplitviewDividerSpawnDuration);
     SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
   }
@@ -86,9 +86,9 @@ class SplitViewDividerHandlerView::SpawningAnimation
   void UpdateWhiteHandlerBounds() {
     DCHECK(IsActive());
     white_handler_view_->SetBounds(
-        kSplitviewWhiteBarShortSideLength,
-        CurrentValueBetween(kSplitviewWhiteBarSpawnLongSideLength,
-                            kSplitviewWhiteBarLongSideLength),
+        kDividerHandlerShortSideLength,
+        CurrentValueBetween(kDividerHandlerSpawnLongSideLength,
+                            kDividerHandlerLongSideLength),
         CurrentValueBetween(spawn_signed_offset_, 0));
   }
 
@@ -116,7 +116,7 @@ SplitViewDividerHandlerView::SplitViewDividerHandlerView()
     : selection_animation_(std::make_unique<SelectionAnimation>(this)) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysOnSurface, kSplitviewWhiteBarCornerRadius));
+      cros_tokens::kCrosSysOnSecondary, kDividerHandlerCornerRadius));
 }
 
 SplitViewDividerHandlerView::~SplitViewDividerHandlerView() = default;

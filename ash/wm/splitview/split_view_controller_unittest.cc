@@ -1999,18 +1999,23 @@ TEST_F(SplitViewControllerTest, SnapWindowWithMinimumSizeTest) {
   UpdateDisplay("800x600");
   aura::test::TestWindowDelegate* delegate =
       static_cast<aura::test::TestWindowDelegate*>(window1->delegate());
-  delegate->set_minimum_size(gfx::Size(396, 0));
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  delegate->set_minimum_size(
+      gfx::Size(800 * chromeos::kDefaultSnapRatio - divider_delta, 0));
   EXPECT_TRUE(split_view_controller()->CanSnapWindow(
       window1.get(), chromeos::kDefaultSnapRatio));
-  delegate->set_minimum_size(gfx::Size(397, 0));
+  delegate->set_minimum_size(
+      gfx::Size(800 * chromeos::kDefaultSnapRatio - divider_delta + 1, 0));
   EXPECT_FALSE(split_view_controller()->CanSnapWindow(
       window1.get(), chromeos::kDefaultSnapRatio));
 
   UpdateDisplay("799x600");
-  delegate->set_minimum_size(gfx::Size(395, 0));
+  delegate->set_minimum_size(
+      gfx::Size(799 * chromeos::kDefaultSnapRatio - divider_delta, 0));
   EXPECT_TRUE(split_view_controller()->CanSnapWindow(
       window1.get(), chromeos::kDefaultSnapRatio));
-  delegate->set_minimum_size(gfx::Size(396, 0));
+  delegate->set_minimum_size(
+      gfx::Size(799 * chromeos::kDefaultSnapRatio - divider_delta + 1, 0));
   EXPECT_FALSE(split_view_controller()->CanSnapWindow(
       window1.get(), chromeos::kDefaultSnapRatio));
 }

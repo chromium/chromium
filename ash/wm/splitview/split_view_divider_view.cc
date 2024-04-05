@@ -38,8 +38,11 @@ namespace {
 // bottom / right of the work area.
 constexpr int kFeedbackButtonDistanceFromEdge = 58;
 
-// Size of the feedback button.
+// Feedback button size.
 constexpr gfx::Size kFeedbackButtonSize{40, 40};
+
+// Feedback button icon size.
+constexpr int kFeedbackButtonIconSize = 20;
 
 }  // namespace
 
@@ -54,12 +57,8 @@ SplitViewDividerView::SplitViewDividerView(LayoutDividerController* controller,
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      /*corner_radius=*/0,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
-
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSecondary));
   RefreshFeedbackButton(false);
 }
 
@@ -113,26 +112,6 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
-  divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
-
-  if (feedback_button_) {
-    const gfx::Size feedback_button_size = feedback_button_->GetPreferredSize();
-    gfx::Rect feedback_button_bounds = gfx::Rect();
-    if (IsLayoutHorizontal(GetWidget()->GetNativeWindow()->GetRootWindow())) {
-      feedback_button_bounds = gfx::Rect(
-          (width() - feedback_button_size.width()) / 2.f,
-          height() - feedback_button_size.height() -
-              kFeedbackButtonDistanceFromEdge,
-          feedback_button_size.width(), feedback_button_size.height());
-    } else {
-      feedback_button_bounds = gfx::Rect(
-          width() - feedback_button_size.width() / 2.f -
-              kFeedbackButtonDistanceFromEdge,
-          height() - feedback_button_size.height() / 2,
-          feedback_button_size.width(), feedback_button_size.height());
-    }
-    feedback_button_->SetBoundsRect(feedback_button_bounds);
-  }
   divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 }
 
@@ -301,16 +280,36 @@ void SplitViewDividerView::RefreshFeedbackButton(bool visible) {
     feedback_button_->SetPaintToLayer();
     feedback_button_->layer()->SetFillsBoundsOpaquely(false);
     feedback_button_->SetPreferredSize(kFeedbackButtonSize);
-    feedback_button_->SetIconColor(cros_tokens::kCrosSysInverseWhiteblack);
+    feedback_button_->SetIconSize(kFeedbackButtonIconSize);
+    feedback_button_->SetIconColor(cros_tokens::kCrosSysOnSecondary);
     feedback_button_->SetVisible(true);
     feedback_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemBaseElevated,
-        kFeedbackButtonSize.height() / 2.f));
-    feedback_button_->SetVisible(/*visible=*/false);
-    return;
+        cros_tokens::kCrosSysSecondary, kFeedbackButtonSize.height() / 2.f));
   }
 
   feedback_button_->SetVisible(visible);
+  RefreshFeedbackButtonBounds();
+}
+
+void SplitViewDividerView::RefreshFeedbackButtonBounds() {
+  if (feedback_button_ && feedback_button_->GetVisible()) {
+    const gfx::Size feedback_button_size = feedback_button_->GetPreferredSize();
+    gfx::Rect feedback_button_bounds = gfx::Rect();
+    if (IsLayoutHorizontal(divider_->GetRootWindow())) {
+      feedback_button_bounds = gfx::Rect(
+          (width() - feedback_button_size.width()) / 2.f,
+          height() - feedback_button_size.height() -
+              kFeedbackButtonDistanceFromEdge,
+          feedback_button_size.width(), feedback_button_size.height());
+    } else {
+      feedback_button_bounds = gfx::Rect(
+          width() - feedback_button_size.width() / 2.f -
+              kFeedbackButtonDistanceFromEdge,
+          height() - feedback_button_size.height() / 2,
+          feedback_button_size.width(), feedback_button_size.height());
+    }
+    feedback_button_->SetBoundsRect(feedback_button_bounds);
+  }
 }
 
 void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {

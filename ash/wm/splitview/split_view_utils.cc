@@ -773,7 +773,7 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
       // If window with `window_for_minimum_size` gets snapped, the
       // `split_view_divider_` will then be adjusted to its default position and
       // `window_size` will be computed accordingly.
-      window_size = work_area_size / 2 - kSplitviewDividerShortSideLength / 2;
+      window_size = (work_area_size - kSplitviewDividerShortSideLength) / 2;
       // If `work_area_size` is odd, then the default divider position is
       // rounded down, toward the left or top, but then if `snap_left_or_top` is
       // false, that means `window_size` should now be rounded up.
