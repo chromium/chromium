@@ -179,7 +179,7 @@ views::BoxLayout* ConfigureFeatureRowLayout(views::Button* button,
   button->SetEnabled(enabled);
   button->SetBackground(views::CreateThemedRoundedRectBackground(
       enabled ? cros_tokens::kCrosSysSystemOnBase
-              : cros_tokens::kCrosSysDisabledContainer,
+              : cros_tokens::kCrosSysSystemOnBaseOpaque,
       corners));
 
   // Set up highlight ink drop and focus ring.
@@ -227,8 +227,7 @@ class FeatureHeader : public views::View {
     auto* icon_container = AddChildView(std::make_unique<views::View>());
     icon_container->SetLayoutManager(std::make_unique<views::FillLayout>());
     icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-        is_enabled ? cros_tokens::kCrosSysSystemOnBase
-                   : cros_tokens::kCrosSysDisabledContainer,
+        cros_tokens::kCrosSysSystemOnBase,
         /*radius=*/12.0f));
     icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     icon_container->SetProperty(views::kMarginsKey,
