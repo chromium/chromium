@@ -321,11 +321,14 @@ def main():
       'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
       'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
 
-      # OS X and iOS builtin libraries for the _IsOSVersionAtLeast runtime
-      # function.
+      # Builtin libraries for the _IsOSVersionAtLeast runtime function.
       'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
       'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
       'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
+      'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
+      'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
+      'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
+      'lib/clang/$V/lib/darwin/libclang_rt.xrossim.a',
 
       # Profile runtime (used by profiler and code coverage).
       'lib/clang/$V/lib/darwin/libclang_rt.profile_iossim.a',
