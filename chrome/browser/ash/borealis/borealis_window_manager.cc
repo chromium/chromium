@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
-#include "base/memory/raw_ptr.h"
 
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "borealis_util.h"
@@ -21,12 +21,12 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace borealis {
 
-const char kBorealisWindowPrefix[] = "org.chromium.guest_os.borealis.";
 const char kBorealisClientSuffix[] = "wmclass.Steam";
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 const int kSteamClientGameId = 769;
@@ -90,25 +90,10 @@ std::string ShelfAppId(Profile* profile, const aura::Window* window) {
 
 }  // namespace
 
-// static
-bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
-  const std::string* id = WaylandWindowId(window);
-  if (!id)
-    return false;
-  return IsBorealisWindowId(*id);
-}
-
-// static
-bool BorealisWindowManager::IsBorealisWindowId(
-    const std::string& wayland_window_id) {
-  return base::StartsWith(wayland_window_id, borealis::kBorealisWindowPrefix);
-}
-
-// static
 bool BorealisWindowManager::IsSteamGameWindow(Profile* profile,
                                               const aura::Window* window) {
   // Only windows from the Borealis VM can possibly be Steam games.
-  if (!IsBorealisWindow(window)) {
+  if (!ash::borealis::IsBorealisWindow(window)) {
     return false;
   }
 
@@ -162,7 +147,7 @@ void BorealisWindowManager::RemoveObserver(
 }
 
 std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
-  if (!IsBorealisWindow(window)) {
+  if (!ash::borealis::IsBorealisWindow(window)) {
     return {};
   }
 
@@ -183,8 +168,9 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
 void BorealisWindowManager::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   aura::Window* window = update.Window();
-  if (!IsBorealisWindow(window))
+  if (!ash::borealis::IsBorealisWindow(window)) {
     return;
+  }
   if (update.IsCreation()) {
     HandleWindowCreation(window, update.AppId());
   } else if (update.IsDestruction()) {

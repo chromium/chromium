@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "content/public/test/browser_task_environment.h"
 
 namespace game_mode {

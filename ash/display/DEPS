@@ -8,4 +8,8 @@ specific_include_rules = {
     "+third_party/qcms/src/qcms.h",
     "+third_party/zlib/google/compression_utils.h",
   ],
+  "refresh_rate_controller_unittest.cc": [
+    "+chromeos/ash/components/display",
+    "+chromeos/ash/components/game_mode",
+  ]
 }

@@ -23,9 +23,6 @@ class Window;
 
 namespace borealis {
 
-// Borealis windows are created with app/startup ids beginning with this.
-extern const char kBorealisWindowPrefix[];
-
 // Base64-encoded shell application id of borealis client when it is in full-
 // screen mode.
 extern const char kFullscreenClientShellId[];
@@ -43,12 +40,6 @@ extern const char kBorealisAnonymousPrefix[];
 // presence of borealis windows with an unknown app (see go/anonymous-apps).
 class BorealisWindowManager : public apps::InstanceRegistry::Observer {
  public:
-  // Returns true if this window belongs to a borealis VM (based on its app_id
-  // and startup_id).
-  static bool IsBorealisWindow(const aura::Window* window);
-
-  // Returns true if this window's ID belongs to a borealis VM.
-  static bool IsBorealisWindowId(const std::string& window_id);
 
   // Whether this window belongs to a Steam game within the Borealis VM.
   static bool IsSteamGameWindow(Profile* profile, const aura::Window* window);

@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "ash/public/cpp/app_types_util.h"
-#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -75,8 +75,9 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
   if (IsArcWindow(top_level_window))
     return ui::EndpointType::kArc;
 
-  if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
+  if (ash::borealis::IsBorealisWindow(top_level_window)) {
     return ui::EndpointType::kBorealis;
+  }
 
   if (crosapi::browser_util::IsLacrosWindow(top_level_window))
     return ui::EndpointType::kLacros;

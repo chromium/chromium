@@ -46,6 +46,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -590,7 +591,7 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     // Set fullscreen properties.
     exo::SetShellUseImmersiveForFullscreen(window, false);
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
-  } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+  } else if (ash::borealis::IsBorealisWindow(window)) {
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
     window->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
@@ -695,7 +696,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     return ash::ShelfID(app_constants::kLacrosAppId);
 
   std::string shelf_app_id;
-  if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+  if (ash::borealis::IsBorealisWindow(window)) {
     for (Profile* profile : profile_list_) {
       shelf_app_id = borealis::BorealisService::GetForProfile(profile)
                          ->WindowManager()

@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("display") {
+  sources = [
+    "refresh_rate_controller.cc",
+    "refresh_rate_controller.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chromeos/ash/components/game_mode",
+    "//dbus",
+    "//ui/display",
+    "//ui/display/manager",
+    "//ui/display/types",
+    "//ui/display/util",
+  ]
+}

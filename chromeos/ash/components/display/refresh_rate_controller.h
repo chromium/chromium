@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#define CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_
 
 #include <vector>
 
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/game_mode/game_mode_controller.h"
+#include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 
@@ -106,4 +106,4 @@ class RefreshRateController
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_

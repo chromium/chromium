@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/game_mode/game_mode_controller.h"
+#include "chromeos/ash/components/game_mode/game_mode_controller.h"
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "ui/views/widget/widget.h"
 
 namespace game_mode {
-
-using borealis::BorealisWindowManager;
 
 namespace {
 
@@ -58,7 +56,7 @@ void GameModeController::OnWindowFocused(aura::Window* gained_focus,
   if (!window_state)
     return;
 
-  if (BorealisWindowManager::IsBorealisWindow(window)) {
+  if (ash::borealis::IsBorealisWindow(window)) {
     focused_ = std::make_unique<WindowTracker>(
         window_state, std::move(maybe_keep_focused),
         base::BindRepeating(
@@ -104,7 +102,7 @@ void GameModeController::WindowTracker::UpdateGameModeStatus(
   auto* window = window_state->window();
 
   if (!window_state->IsFullscreen() ||
-      !BorealisWindowManager::IsBorealisWindow(window)) {
+      !ash::borealis::IsBorealisWindow(window)) {
     game_mode_enabler_.reset();
     return;
   }

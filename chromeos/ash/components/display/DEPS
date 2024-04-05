@@ -1,0 +1,8 @@
+include_rules = [
+  "+ash/constants",
+  "+ash/display",
+  "+ash/system/power",
+  "+ui/base",
+  "+ui/display",
+  "+chromeos/ash/components/game_mode",
+]

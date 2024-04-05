@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/user_manager/user_manager.h"
@@ -77,7 +78,7 @@ bool ShouldSkipWindow(aura::Window* window) {
          arc::GetWindowTaskOrSessionId(window).has_value() ||
          crosapi::browser_util::IsLacrosWindow(window) ||
          plugin_vm::IsPluginVmAppWindow(window) ||
-         borealis::BorealisWindowManager::IsBorealisWindow(window);
+         ash::borealis::IsBorealisWindow(window);
 }
 
 }  // namespace

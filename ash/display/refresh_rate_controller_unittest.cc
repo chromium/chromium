@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/display/refresh_rate_controller.h"
+#include "chromeos/ash/components/display/refresh_rate_controller.h"
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/game_mode/game_mode_controller.h"
+#include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_tree_host.h"

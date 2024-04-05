@@ -10,8 +10,8 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/wm/window_properties.h"
-#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -112,7 +112,7 @@ void ExoAppTypeResolver::PopulateProperties(
 
   out_properties_container.SetProperty(exo::kMaximumSizeForResizabilityOnly,
                                        true);
-  if (borealis::BorealisWindowManager::IsBorealisWindowId(
+  if (ash::borealis::IsBorealisWindowId(
           params.app_id.empty() ? params.startup_id : params.app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
     out_properties_container.SetProperty(
