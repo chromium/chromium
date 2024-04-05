@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -2114,29 +2115,32 @@ TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
 
 TEST_F(SyncServiceImplTest,
        ShouldOnlyForwardEnabledTypesToSyncClientUponGetLocalDataDescriptions) {
-  PopulatePrefsForInitialSyncFeatureSetupComplete();
-  SignInWithSyncConsent();
-  // Only PASSWORDS datatype is enabled.
-  InitializeService({{PASSWORDS, true}});
+  SignInWithoutSyncConsent();
+  // Only DEVICE_INFO datatype is enabled for transport mode.
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, false}});
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(service()->GetActiveDataTypes(), ModelTypeSet({NIGORI, PASSWORDS}));
+  ASSERT_EQ(service()->GetActiveDataTypes(),
+            ModelTypeSet({NIGORI, DEVICE_INFO}));
 
-  // PASSWORDS and BOOKMARKS is queried from the sync service.
-  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
-  // Only PASSWORDS datatype is queried from the sync client.
-  EXPECT_CALL(*sync_client(),
-              GetLocalDataDescriptions(ModelTypeSet{PASSWORDS}, ::testing::_));
+  // DEVICE_INFO and AUTOFILL_WALLET_DATA are queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // Only DEVICE_INFO is queried from the sync client.
+  EXPECT_CALL(*sync_client(), GetLocalDataDescriptions(
+                                  ModelTypeSet{DEVICE_INFO}, ::testing::_));
 
   service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldNotForwardToSyncClientUponGetLocalDataDescriptionsIfSyncDisabled) {
-  PopulatePrefsForInitialSyncFeatureSetupComplete();
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
-  SignInWithSyncConsent();
-  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  SignInWithoutSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}});
   base::RunLoop().RunUntilIdle();
 
   // Sync was disabled due to the policy.
@@ -2146,42 +2150,71 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // PASSWORDS and BOOKMARKS is queried from the sync service.
-  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // DEVICE_INFO is queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO};
+  base::MockOnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      callback;
   // No query to the sync client.
-  EXPECT_CALL(*sync_client(),
-              GetLocalDataDescriptions(ModelTypeSet{}, ::testing::_))
-      .Times(0);
+  EXPECT_CALL(*sync_client(), GetLocalDataDescriptions).Times(0);
+  // Returns empty.
+  EXPECT_CALL(callback, Run(IsEmpty()));
 
-  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+  service()->GetLocalDataDescriptions(requested_types, callback.Get());
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldReturnEmptyUponGetLocalDataDescriptionsForSyncingUsers) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
+
+  // DEVICE_INFO is queried from the sync service.
+  ModelTypeSet requested_types{BOOKMARKS};
+  base::MockOnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      callback;
+  // No query to the sync client.
+  EXPECT_CALL(*sync_client(), GetLocalDataDescriptions).Times(0);
+  // Returns empty.
+  EXPECT_CALL(callback, Run(IsEmpty()));
+
+  service()->GetLocalDataDescriptions(requested_types, callback.Get());
 }
 
 TEST_F(SyncServiceImplTest,
        ShouldOnlyForwardEnabledTypesToSyncClientUponTriggerLocalDataMigration) {
-  PopulatePrefsForInitialSyncFeatureSetupComplete();
-  SignInWithSyncConsent();
-  // Only PASSWORDS datatype is enabled.
-  InitializeService({{PASSWORDS, true}});
+  SignInWithoutSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, false}});
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(service()->GetActiveDataTypes(), ModelTypeSet({NIGORI, PASSWORDS}));
+  // Only DEVICE_INFO is enabled since AUTOFILL_WALLET_DATA is not supported in
+  // transport-only mode.
+  ASSERT_EQ(service()->GetActiveDataTypes(),
+            ModelTypeSet({NIGORI, DEVICE_INFO}));
 
-  // PASSWORDS and BOOKMARKS is queried from the sync service.
-  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
-  // Only PASSWORDS datatype is queried from the sync client.
+  // DEVICE_INFO and AUTOFILL_WALLET_DATA is queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // Only DEVICE_INFO is queried from the sync client.
   EXPECT_CALL(*sync_client(),
-              TriggerLocalDataMigration(ModelTypeSet{PASSWORDS}));
+              TriggerLocalDataMigration(ModelTypeSet{DEVICE_INFO}));
 
-  service()->TriggerLocalDataMigration(ModelTypeSet{PASSWORDS, BOOKMARKS});
+  service()->TriggerLocalDataMigration(requested_types);
 }
 
 TEST_F(
     SyncServiceImplTest,
     ShouldNotForwardToSyncClientUponTriggerLocalDataMigrationIfSyncDisabled) {
-  PopulatePrefsForInitialSyncFeatureSetupComplete();
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
-  SignInWithSyncConsent();
-  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  SignInWithoutSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}});
   base::RunLoop().RunUntilIdle();
 
   // Sync was disabled due to the policy.
@@ -2191,11 +2224,29 @@ TEST_F(
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // PASSWORDS and BOOKMARKS is queried from the sync service.
-  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // DEVICE_INFO is queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO};
   // No query to the sync client.
-  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration(ModelTypeSet{}))
-      .Times(0);
+  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration).Times(0);
+
+  service()->TriggerLocalDataMigration(requested_types);
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldDoNothingUponTriggerLocalDataMigrationForSyncingUsers) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
+
+  // DEVICE_INFO is queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO};
+  // No query to the sync client.
+  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration).Times(0);
 
   service()->TriggerLocalDataMigration(requested_types);
 }

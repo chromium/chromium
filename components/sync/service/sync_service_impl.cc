@@ -2462,6 +2462,13 @@ void SyncServiceImpl::GetLocalDataDescriptions(
     ModelTypeSet types,
     base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
         callback) {
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data.
+  if (HasSyncConsent()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // Return early if sync is disabled, or paused because of a persistent auth
   // error.
   if (GetTransportState() == TransportState::DISABLED ||
@@ -2477,6 +2484,12 @@ void SyncServiceImpl::GetLocalDataDescriptions(
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data to migrate.
+  if (HasSyncConsent()) {
+    return;
+  }
+
   // Return early if sync is disabled, or paused because of a persistent auth
   // error.
   if (GetTransportState() == TransportState::DISABLED ||
