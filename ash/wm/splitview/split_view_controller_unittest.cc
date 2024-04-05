@@ -3968,6 +3968,63 @@ TEST_F(SplitViewControllerTest,
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
 }
 
+// Tests that snap across multi-displays works correctly. Regression test for
+// b/331663949.
+TEST_F(SplitViewControllerTest, SnapToCorrectDisplay) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  UpdateDisplay("800x600,800x600");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  auto get_drag_point = [](aura::Window* window) -> gfx::Point {
+    const gfx::Rect window_bounds = window->GetBoundsInScreen();
+    return {window_bounds.CenterPoint().x(), window_bounds.y() + 10};
+  };
+
+  // Create 2 test windows with non-overlapping bounds so we can drag them.
+  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w2(
+      CreateTestWindow(gfx::Rect(400, 0, 400, 400)));
+
+  // Drag to snap `w1` on display 1.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(get_drag_point(w1.get()));
+  event_generator->DragMouseTo(0, 100);
+  const gfx::Rect work_area1 =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  EXPECT_EQ(gfx::Rect(0, 0, work_area1.width() / 2, work_area1.height()),
+            w1->GetBoundsInScreen());
+
+  // Drag to snap `w2` on display 1.
+  event_generator->set_current_screen_location(get_drag_point(w2.get()));
+  event_generator->DragMouseTo(799, 100);
+  EXPECT_EQ(gfx::Rect(work_area1.width() / 2, 0, work_area1.width() / 2,
+                      work_area1.height()),
+            w2->GetBoundsInScreen());
+
+  // Drag to snap `w2` on display 2.
+  event_generator->set_current_screen_location(get_drag_point(w2.get()));
+  event_generator->DragMouseTo(800, 100);
+  const gfx::Rect work_area2 =
+      display_manager_test.GetSecondaryDisplay().work_area();
+  EXPECT_EQ(
+      gfx::Rect(work_area2.x(), 0, work_area2.width() / 2, work_area2.height()),
+      w2->GetBoundsInScreen());
+
+  // Drag to snap `w2` back on display 1.
+  event_generator->set_current_screen_location(get_drag_point(w2.get()));
+  event_generator->DragMouseTo(799, 100);
+  EXPECT_EQ(gfx::Rect(work_area1.width() / 2, 0, work_area1.width() / 2,
+                      work_area1.height()),
+            w2->GetBoundsInScreen());
+
+  // Drag to snap `w2` back on display 2. Test the bounds are correct.
+  event_generator->set_current_screen_location(get_drag_point(w2.get()));
+  event_generator->DragMouseTo(800, 100);
+  EXPECT_EQ(
+      gfx::Rect(work_area2.x(), 0, work_area2.width() / 2, work_area2.height()),
+      w2->GetBoundsInScreen());
+}
+
 // The test class that enables the feature flag of portrait mode split view
 // virtual keyboard improvement and the virtual keyboard.
 class SplitViewKeyboardTest : public SplitViewControllerTest {
