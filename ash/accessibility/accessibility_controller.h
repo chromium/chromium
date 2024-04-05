@@ -141,6 +141,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     // update own enabled state.
     void ObserveConflictingFeature();
 
+    // Logs the amount of time this feature has been on, if it was turned on
+    // during the logged in state. Clears the `enabled_time_`.
+    void LogDurationMetric();
+
    protected:
     const A11yFeatureType type_;
     // Some features cannot be enabled while others are on. When a conflicting
@@ -161,6 +165,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     // Specifies if this feature can be toggled from the accessibility options
     // available in the quicksettings menu.
     const bool toggleable_in_quicksettings_;
+
+    // The time at which this feature was last enabled. Used for metrics.
+    base::Time enabled_time_;
 
     const raw_ptr<AccessibilityController> owner_;
   };

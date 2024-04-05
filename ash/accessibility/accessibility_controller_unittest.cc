@@ -24,6 +24,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -112,8 +113,15 @@ class AccessibilityControllerTest : public AshTestBase {
     AshTestBase::SetUp();
   }
 
+  void ExpectSessionDurationMetricCount(const std::string& feature_name,
+                                        int count) {
+    histogram_tester_.ExpectTotalCount(
+        "Accessibility." + feature_name + ".SessionDuration", count);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
@@ -273,10 +281,12 @@ TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
   controller->autoclick().SetEnabled(true);
   EXPECT_TRUE(controller->autoclick().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosAutoclick", 0);
 
   controller->autoclick().SetEnabled(false);
   EXPECT_FALSE(controller->autoclick().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosAutoclick", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -293,10 +303,12 @@ TEST_F(AccessibilityControllerTest, SetCaretHighlightEnabled) {
   controller->caret_highlight().SetEnabled(true);
   EXPECT_TRUE(controller->caret_highlight().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCaretHighlight", 0);
 
   controller->caret_highlight().SetEnabled(false);
   EXPECT_FALSE(controller->caret_highlight().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCaretHighlight", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -315,6 +327,7 @@ TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
   controller->color_correction().SetEnabled(true);
   EXPECT_TRUE(controller->color_correction().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosColorCorrection", 0);
 
   // The first time we should show the settings for color correction.
   EXPECT_EQ(1, GetSystemTrayClient()->show_color_correction_settings_count());
@@ -322,10 +335,12 @@ TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
   controller->color_correction().SetEnabled(false);
   EXPECT_FALSE(controller->color_correction().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosColorCorrection", 1);
 
   controller->color_correction().SetEnabled(true);
   EXPECT_TRUE(controller->color_correction().enabled());
   EXPECT_EQ(3, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosColorCorrection", 1);
 
   // The second time, the settings window should not be opened.
   EXPECT_EQ(1, GetSystemTrayClient()->show_color_correction_settings_count());
@@ -333,6 +348,7 @@ TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
   controller->color_correction().SetEnabled(false);
   EXPECT_FALSE(controller->color_correction().enabled());
   EXPECT_EQ(4, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosColorCorrection", 2);
 
   controller->RemoveObserver(&observer);
 }
@@ -349,10 +365,12 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
   controller->cursor_highlight().SetEnabled(true);
   EXPECT_TRUE(controller->cursor_highlight().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorHighlight", 0);
 
   controller->cursor_highlight().SetEnabled(false);
   EXPECT_FALSE(controller->cursor_highlight().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorHighlight", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -369,10 +387,12 @@ TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
   controller->cursor_color().SetEnabled(true);
   EXPECT_TRUE(controller->cursor_color().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
   controller->cursor_color().SetEnabled(false);
   EXPECT_FALSE(controller->cursor_color().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -389,10 +409,12 @@ TEST_F(AccessibilityControllerTest, SetFaceGazeEnabled) {
   controller->face_gaze().SetEnabled(true);
   EXPECT_TRUE(controller->face_gaze().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosFaceGaze", 0);
 
   controller->face_gaze().SetEnabled(false);
   EXPECT_FALSE(controller->face_gaze().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosFaceGaze", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -449,10 +471,12 @@ TEST_F(AccessibilityControllerTest, SetFocusHighlightEnabled) {
   controller->focus_highlight().SetEnabled(true);
   EXPECT_TRUE(controller->focus_highlight().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosFocusHighlight", 0);
 
   controller->focus_highlight().SetEnabled(false);
   EXPECT_FALSE(controller->focus_highlight().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosFocusHighlight", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -469,10 +493,12 @@ TEST_F(AccessibilityControllerTest, SetHighContrastEnabled) {
   controller->high_contrast().SetEnabled(true);
   EXPECT_TRUE(controller->high_contrast().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosHighContrast", 0);
 
   controller->high_contrast().SetEnabled(false);
   EXPECT_FALSE(controller->high_contrast().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosHighContrast", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -489,10 +515,12 @@ TEST_F(AccessibilityControllerTest, SetLargeCursorEnabled) {
   controller->large_cursor().SetEnabled(true);
   EXPECT_TRUE(controller->large_cursor().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 0);
 
   controller->large_cursor().SetEnabled(false);
   EXPECT_FALSE(controller->large_cursor().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -549,10 +577,12 @@ TEST_F(AccessibilityControllerTest, SetLiveCaptionEnabled) {
   controller->live_caption().SetEnabled(true);
   EXPECT_TRUE(controller->live_caption().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosLiveCaption", 0);
 
   controller->live_caption().SetEnabled(false);
   EXPECT_FALSE(controller->live_caption().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosLiveCaption", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -682,10 +712,12 @@ TEST_F(AccessibilityControllerTest, SetMouseKeysEnabled) {
   mouse_keys.SetEnabled(true);
   EXPECT_TRUE(mouse_keys.enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosMouseKeys", 0);
 
   mouse_keys.SetEnabled(false);
   EXPECT_FALSE(mouse_keys.enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosMouseKeys", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -1231,6 +1263,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 
   // Expect cursor color in cursor_window_controller to be green.
   EXPECT_EQ(SK_ColorGREEN, cursor_window_controller->GetCursorColorForTest());
+  ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
   // Simulate using chrome settings webui to set cursor color to black, which
   // which also turns off the cursor color enabled pref.
@@ -1238,6 +1271,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
   prefs->SetBoolean(prefs::kAccessibilityCursorColorEnabled, false);
   EXPECT_EQ(kDefaultCursorColor,
             cursor_window_controller->GetCursorColorForTest());
+  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 }
 
 TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
@@ -1252,10 +1286,12 @@ TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
   controller->mono_audio().SetEnabled(true);
   EXPECT_TRUE(controller->mono_audio().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosMonoAudio", 0);
 
   controller->mono_audio().SetEnabled(false);
   EXPECT_FALSE(controller->mono_audio().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosMonoAudio", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -1272,10 +1308,12 @@ TEST_F(AccessibilityControllerTest, SetSpokenFeedbackEnabled) {
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_SHOW);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosSpokenFeedback", 0);
 
   controller->SetSpokenFeedbackEnabled(false, A11Y_NOTIFICATION_NONE);
   EXPECT_FALSE(controller->spoken_feedback().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosSpokenFeedback", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -1334,11 +1372,13 @@ TEST_F(AccessibilityControllerTest, SetStickyKeysEnabled) {
   EXPECT_TRUE(sticky_keys_controller->enabled_for_test());
   EXPECT_TRUE(controller->sticky_keys().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosStickyKeys", 0);
 
   controller->sticky_keys().SetEnabled(false);
   EXPECT_FALSE(sticky_keys_controller->enabled_for_test());
   EXPECT_FALSE(controller->sticky_keys().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosStickyKeys", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -1356,11 +1396,13 @@ TEST_F(AccessibilityControllerTest, SetVirtualKeyboardEnabled) {
   EXPECT_TRUE(keyboard::GetAccessibilityKeyboardEnabled());
   EXPECT_TRUE(controller->virtual_keyboard().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosVirtualKeyboard", 0);
 
   controller->virtual_keyboard().SetEnabled(false);
   EXPECT_FALSE(keyboard::GetAccessibilityKeyboardEnabled());
   EXPECT_FALSE(controller->virtual_keyboard().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosVirtualKeyboard", 1);
 
   controller->RemoveObserver(&observer);
 }
@@ -1630,6 +1672,41 @@ TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
   ASSERT_TRUE(controller->dictation().enabled());
   ASSERT_FALSE(controller->dictation_active());
   ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
+}
+
+TEST_F(AccessibilityControllerTest, LogsDurationAtSessionLogout) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  controller->large_cursor().SetEnabled(true);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 0);
+
+  // Logging out causes a duration to be logged.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
+}
+
+TEST_F(AccessibilityControllerTest, LogsDurationAtSessionLock) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  controller->large_cursor().SetEnabled(true);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 0);
+
+  // Locking the device causes a duration to be logged.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
+}
+
+TEST_F(AccessibilityControllerTest, LogsDurationAtShutdown) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  controller->large_cursor().SetEnabled(true);
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 0);
+
+  // Shutdown causes a duration to be logged.
+  controller->Shutdown();
+  ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 }
 
 namespace {

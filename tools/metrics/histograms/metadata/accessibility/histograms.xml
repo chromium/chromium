@@ -1010,6 +1010,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Cros{FeatureName}.SessionDuration"
+    units="seconds" expires_after="2025-02-28">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the duration of time that the {FeatureName} feature was enabled
+    within a login session. This may start when the user logs in or when they
+    enable the feature, and may stop when the user ends their session by logging
+    out or turning off the machine, or when they disable the feature.
+  </summary>
+  <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
+    <variant name="Autoclick"/>
+    <variant name="CursorColor"/>
+    <variant name="FaceGaze"/>
+    <variant name="LiveCaption"/>
+    <variant name="MonoAudio"/>
+    <variant name="MouseKeys"/>
+    <variant name="SpokenFeedback"/>
+  </token>
+</histogram>
+
 <!-- This set of histograms is recorded once, 45 seconds after startup.
 Do not add new variants to this histogram unless they are recorded in the same way,
 even if they fit the naming pattern. -->

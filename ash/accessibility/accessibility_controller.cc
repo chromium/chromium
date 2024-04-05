@@ -72,6 +72,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -881,11 +883,113 @@ void AccessibilityController::Feature::UpdateFromPref() {
     enabled = false;
   }
 
+  if (enabled) {
+    // If it was turned on and we are in a active logged in session,
+    // prepare to record duration metrics.
+    session_manager::SessionState session_state =
+        Shell::Get()->session_controller()->GetSessionState();
+    if (session_state == session_manager::SessionState::ACTIVE) {
+      enabled_time_ = base::Time::Now();
+    }
+  } else {
+    // Disabled. Log the duration since it was enabled, if needed.
+    LogDurationMetric();
+  }
+
   if (enabled == enabled_)
     return;
 
   enabled_ = enabled;
   owner_->UpdateFeatureFromPref(type_);
+}
+
+// don't pass prefservice here because it might be old.
+// instead save the session state type from when enabled_time_ was set.
+// maybe don't bother logging user type. just have this be for logged in??
+// is session state more interesting?
+// duration if session state is ACTIVE
+void AccessibilityController::Feature::LogDurationMetric() {
+  if (enabled_time_ == base::Time()) {
+    return;
+  }
+
+  std::string feature_duration_metric = "Accessibility.";
+  switch (type_) {
+    case FeatureType::kAutoclick:
+      feature_duration_metric += "CrosAutoclick";
+      break;
+    case FeatureType::kCaretHighlight:
+      feature_duration_metric += "CrosCaretHighlight";
+      break;
+    case FeatureType::kColorCorrection:
+      feature_duration_metric += "CrosColorCorrection";
+      break;
+    case FeatureType::kCursorColor:
+      feature_duration_metric += "CrosCursorColor";
+      break;
+    case FeatureType::kCursorHighlight:
+      feature_duration_metric += "CrosCursorHighlight";
+      break;
+    case FeatureType::kDictation:
+      feature_duration_metric += "CrosDictation";
+      break;
+    case FeatureType::kDockedMagnifier:
+      feature_duration_metric += "CrosDockedMagnifier";
+      break;
+    case FeatureType::kFaceGaze:
+      feature_duration_metric += "CrosFaceGaze";
+      break;
+    case FeatureType::kFocusHighlight:
+      feature_duration_metric += "CrosFocusHighlight";
+      break;
+    case FeatureType::kFullscreenMagnifier:
+      feature_duration_metric += "CrosScreenMagnifier";
+      break;
+    case FeatureType::kHighContrast:
+      feature_duration_metric += "CrosHighContrast";
+      break;
+    case FeatureType::kLargeCursor:
+      feature_duration_metric += "CrosLargeCursor";
+      break;
+    case FeatureType::kLiveCaption:
+      feature_duration_metric += "CrosLiveCaption";
+      break;
+    case FeatureType::kMonoAudio:
+      feature_duration_metric += "CrosMonoAudio";
+      break;
+    case FeatureType::kMouseKeys:
+      feature_duration_metric += "CrosMouseKeys";
+      break;
+    case FeatureType::kReducedAnimations:
+      feature_duration_metric += "CrosReducedAnimations";
+      break;
+    case FeatureType::kSelectToSpeak:
+      feature_duration_metric += "CrosSelectToSpeak";
+      break;
+    case FeatureType::kSpokenFeedback:
+      feature_duration_metric += "CrosSpokenFeedback";
+      break;
+    case FeatureType::kStickyKeys:
+      feature_duration_metric += "CrosStickyKeys";
+      break;
+    case FeatureType::kSwitchAccess:
+      feature_duration_metric += "CrosSwitchAccess";
+      break;
+    case FeatureType::kVirtualKeyboard:
+      feature_duration_metric += "CrosVirtualKeyboard";
+      break;
+    default:
+      return;
+  }
+
+  feature_duration_metric += ".SessionDuration";
+
+  base::TimeDelta duration = base::Time::Now() - enabled_time_;
+  base::UmaHistogramCustomCounts(feature_duration_metric, duration.InSeconds(),
+                                 1, base::Days(1) / base::Seconds(1), 100);
+
+  // Reset enabled time as this duration is now logged and accounted for.
+  enabled_time_ = base::Time();
 }
 
 void AccessibilityController::Feature::SetConflictingFeature(
@@ -1320,6 +1424,11 @@ void AccessibilityController::RegisterProfilePrefs(
 }
 
 void AccessibilityController::Shutdown() {
+  // Log metrics at shutdown.
+  for (auto& feature : features_) {
+    feature->LogDurationMetric();
+  }
+
   display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
@@ -2060,6 +2169,12 @@ void AccessibilityController::OnActiveUserPrefServiceChanged(
 
 void AccessibilityController::OnSessionStateChanged(
     session_manager::SessionState state) {
+  if (state != SessionState::ACTIVE) {
+    // Log metrics for how long the features were enabled if needed.
+    for (auto& feature : features_) {
+      feature->LogDurationMetric();
+    }
+  }
   // Everything behind the lock screen is in
   // kShellWindowId_NonLockScreenContainersContainer. If the session state is
   // changed to block the user session due to the lock screen or similar,
@@ -2124,7 +2239,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
     if (feature->conflicting_feature() != FeatureType::kNoConflictingFeature) {
       feature->ObserveConflictingFeature();
     }
-    feature->UpdateFromPref();
+    // Features will be initialized from current prefs later.
   }
 
   pref_change_registrar_->Add(
@@ -2240,11 +2355,16 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
             base::Unretained(this)));
   }
 
-  // Load current state.
   for (const std::unique_ptr<Feature>& feature : features_) {
+    // Log previous duration and clear duration metric if necessary
+    // when the profile has changed.
+    feature->LogDurationMetric();
+
+    // Load current state.
     feature->UpdateFromPref();
   }
 
+  // Load current state of other prefs.
   UpdateAutoclickDelayFromPref();
   UpdateAutoclickEventTypeFromPref();
   UpdateAutoclickRevertToLeftClickFromPref();
