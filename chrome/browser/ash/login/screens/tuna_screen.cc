@@ -30,7 +30,7 @@ constexpr char kUserActionNextButtonClicked[] = "next";
 std::string TunaScreen::GetResultString(Result result) {
   switch (result) {
     case Result::kNext:
-      return "Manual";
+      return "Next";
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
