@@ -80,17 +80,6 @@
         'os_type': 'chromeos',
         'cros_board': 'jacuzzi',
       },
-      # TODO(b/314226799): Remove this after renaming of this builder.
-      'chromeos-jacuzzi-chrome-skylab': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'jacuzzi',
-      },
       'chromeos-octopus-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
