@@ -18,12 +18,22 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/structured_headers.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-wasm.h"
 
 namespace auction_worklet {
+
+namespace {
+
+const char kAllowTrustedScoringSignalsHeader[] =
+    "Ad-Auction-Allow-Trusted-Scoring-Signals-From";
+
+}  // namespace
+
 WorkletLoaderBase::Result::Result()
     : state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
@@ -115,6 +125,16 @@ void WorkletLoaderBase::OnDownloadComplete(
                        weak_ptr_factory_.GetWeakPtr(), false,
                        std::move(error_msg)));
     return;
+  }
+
+  std::string allow_trusted_scoring_signals_from_header;
+  if (mime_type_ == AuctionDownloader::MimeType::kJavascript && headers &&
+      headers->GetNormalizedHeader(
+          kAllowTrustedScoringSignalsHeader,
+          &allow_trusted_scoring_signals_from_header)) {
+    pending_result_.allow_trusted_scoring_signals_from_ =
+        WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+            allow_trusted_scoring_signals_from_header);
   }
 
   pending_result_.DownloadReady(v8_helper_, body->size(),
@@ -241,6 +261,42 @@ v8::Global<v8::UnboundScript> WorkletLoader::TakeScript(Result&& result) {
   result.state_.reset();  // Destroy V8State since its data gone.
   result.set_success(false);
   return script;
+}
+
+// static
+std::vector<url::Origin>
+WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+    const std::string& allow_trusted_scoring_signals_from_header) {
+  // Following RFC 8941 guidance, this acts as if the field wasn't there,
+  // e.g. returns an empty vector, on any error, but parameters are ignored.
+
+  std::optional<net::structured_headers::List> origin_list =
+      net::structured_headers::ParseList(
+          allow_trusted_scoring_signals_from_header);
+  if (!origin_list.has_value()) {
+    return std::vector<url::Origin>();
+  }
+
+  std::vector<url::Origin> result;
+  for (const net::structured_headers::ParameterizedMember& list_entry :
+       *origin_list) {
+    if (list_entry.member_is_inner_list) {
+      return std::vector<url::Origin>();
+    }
+    CHECK_EQ(1u, list_entry.member.size());
+    const net::structured_headers::Item& item = list_entry.member[0].item;
+    if (!item.is_string()) {
+      return std::vector<url::Origin>();
+    }
+
+    GURL url(item.GetString());
+    if (!url.is_valid() || !url.SchemeIs("https")) {
+      return std::vector<url::Origin>();
+    }
+
+    result.push_back(url::Origin::Create(url));
+  }
+  return result;
 }
 
 WorkletWasmLoader::WorkletWasmLoader(

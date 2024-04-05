@@ -26,6 +26,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-wasm.h"
 
+using testing::ElementsAre;
 using testing::HasSubstr;
 using testing::StartsWith;
 
@@ -320,6 +321,87 @@ TEST_F(WorkletLoaderTest, LoadWasmError) {
   EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/ "));
   EXPECT_THAT(last_error_msg(),
               HasSubstr("Uncaught CompileError: WasmModuleObject::Compile"));
+}
+
+TEST_F(WorkletLoaderTest, TrustedSignalsHeader) {
+  const char kHeader[] =
+      "Ad-Auction-Allowed: true\r\n"
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://a.com\", "
+      "\"https://b.com\"";
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType,
+              /*charset=*/std::nullopt, kValidScript, kHeader);
+  WorkletLoader worklet_loader(
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_TRUE(result_.success()) << last_error_msg();
+  EXPECT_THAT(result_.TakeAllowTrustedScoringSignalsFrom(),
+              ElementsAre(url::Origin::Create(GURL("https://a.com")),
+                          url::Origin::Create(GURL("https://b.com"))));
+}
+
+// List headers are combined in the usual HTTP way when specified more than
+// once.
+TEST_F(WorkletLoaderTest, TrustedSignalsHeaderCombine) {
+  const char kHeader[] =
+      "Ad-Auction-Allowed: true\r\n"
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://a.com\"\r\n"
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://b.com\"\r\n";
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType,
+              /*charset=*/std::nullopt, kValidScript, kHeader);
+  WorkletLoader worklet_loader(
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_TRUE(result_.success()) << last_error_msg();
+  EXPECT_THAT(result_.TakeAllowTrustedScoringSignalsFrom(),
+              ElementsAre(url::Origin::Create(GURL("https://a.com")),
+                          url::Origin::Create(GURL("https://b.com"))));
+}
+
+TEST_F(WorkletLoaderTest, ParseAllowTrustedScoringSignalsFromHeader) {
+  // Not a valid structured headers list
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader("1.1.1"),
+              ElementsAre());
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(""),
+              ElementsAre());
+
+  // List with a non-string (tokens in this case)
+  EXPECT_THAT(
+      WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader("foo, bar"),
+      ElementsAre());
+
+  // Valid one.
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+                  R"("https://example.org/a", "https://example.com")"),
+              ElementsAre(url::Origin::Create(GURL("https://example.org")),
+                          url::Origin::Create(GURL("https://example.com"))));
+
+  // non-https isn't OK.
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+                  R"("http://example.org/a", "gopher://example.com")"),
+              ElementsAre());
+
+  // Parameters are ignored.
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+                  R"("https://example.org/a";v=1, "https://example.com";v=2)"),
+              ElementsAre(url::Origin::Create(GURL("https://example.org")),
+                          url::Origin::Create(GURL("https://example.com"))));
+
+  // Inner lists are not OK.
+  EXPECT_THAT(WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+                  R"(("https://example.org/a" "https://example.ie"))"),
+              ElementsAre());
 }
 
 }  // namespace

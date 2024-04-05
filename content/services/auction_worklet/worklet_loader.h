@@ -62,6 +62,13 @@ class CONTENT_EXPORT WorkletLoaderBase {
     size_t original_size_bytes() const { return original_size_bytes_; }
     base::TimeDelta download_time() const { return download_time_; }
 
+    // Returns parsed value of the header which specifies which origins
+    // cross-origin trusted scoring signals may come from for this script.
+    // Set only for JS (and relevant only for seller JS).
+    std::vector<url::Origin> TakeAllowTrustedScoringSignalsFrom() {
+      return std::move(allow_trusted_scoring_signals_from_);
+    }
+
    private:
     friend class WorkletLoader;
     friend class WorkletLoaderBase;
@@ -100,6 +107,8 @@ class CONTENT_EXPORT WorkletLoaderBase {
     size_t original_size_bytes_ = 0;
     // Used only for metrics; the time required to download.
     base::TimeDelta download_time_;
+
+    std::vector<url::Origin> allow_trusted_scoring_signals_from_;
 
     bool success_ = false;
   };
@@ -204,6 +213,14 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
   // Should only be called on the V8 thread. Requires `result.success()` to be
   // true.
   static v8::Global<v8::UnboundScript> TakeScript(Result&& result);
+
+  // Parses a header describing which origins may provide trusted seller
+  // signals. It is expected to be a structured header list of strings,
+  // each of each is an https:// URL denoting the corresponding origin.
+  //
+  // Public for testing.
+  static std::vector<url::Origin> ParseAllowTrustedScoringSignalsFromHeader(
+      const std::string& allow_trusted_scoring_signals_from_header);
 };
 
 class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
