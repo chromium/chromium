@@ -88,11 +88,8 @@
     cancel-button-label="$i18n{nearbyShareActionsCancel}"
     cancel-button-event-name="close">
   <div id=center-content slot="content">
-    <iron-media-query query="(prefers-color-scheme: dark)"
-        query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
     <iron-icon id="splash-image-column"
-        icon="[[getOnboardingSplashIcon_(isDarkModeActive_, isJellyEnabled_)]]"
+        icon="nearby-images:nearby-onboarding-splash"
         aria-hidden="true">>
     </iron-icon>
     <div id="nearby-settings-column">

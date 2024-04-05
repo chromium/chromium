@@ -13,7 +13,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 // <if expr='chromeos_ash'>
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
@@ -22,7 +21,6 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,15 +28,6 @@ import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnb
 import {getTemplate} from './nearby_onboarding_one_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
 import type {NearbySettings} from './nearby_share_settings_mixin.js';
-
-const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
-    'nearby-images:nearby-onboarding-splash-light';
-
-const ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON =
-    'nearby-images:nearby-onboarding-splash-dark';
-
-const ONE_PAGE_ONBOARDING_SPLASH_JELLY_ICON =
-    'nearby-images:nearby-onboarding-splash-jelly';
 
 export interface NearbyOnboardingOnePageElement {
   $: {
@@ -70,26 +59,6 @@ export class NearbyOnboardingOnePageElement extends
       },
 
       /**
-       * Whether the onboarding page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Return true if the Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
-
-      /**
        * Onboarding page entry point
        */
       entryPoint_: {
@@ -102,8 +71,6 @@ export class NearbyOnboardingOnePageElement extends
 
   errorMessage: string;
   settings: NearbySettings|null;
-  private isDarkModeActive_: boolean;
-  private isJellyEnabled_: boolean;
   private entryPoint_: NearbyShareOnboardingEntryPoint;
 
   override ready(): void {
@@ -215,17 +182,6 @@ export class NearbyOnboardingOnePageElement extends
 
   private hasErrorMessage_(errorMessage: string): boolean {
     return errorMessage !== '';
-  }
-
-  /**
-   * Returns the icon based on Light/Dark mode.
-   */
-  private getOnboardingSplashIcon_(): string {
-    if (this.isJellyEnabled_) {
-      return ONE_PAGE_ONBOARDING_SPLASH_JELLY_ICON;
-    }
-    return this.isDarkModeActive_ ? ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON :
-                                    ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON;
   }
 
   /**

@@ -12,7 +12,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
@@ -24,12 +23,6 @@ import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnb
 import {getTemplate} from './nearby_onboarding_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
 import type {NearbySettings} from './nearby_share_settings_mixin.js';
-
-const ONBOARDING_SPLASH_LIGHT_ICON =
-    'nearby-images:nearby-onboarding-splash-light';
-
-const ONBOARDING_SPLASH_DARK_ICON =
-    'nearby-images:nearby-onboarding-splash-dark';
 
 export interface NearbyOnboardingPageElement {
   $: {
@@ -61,14 +54,6 @@ export class NearbyOnboardingPageElement extends
       },
 
       /**
-       * Whether the onboarding page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Onboarding page entry point
        */
       entryPoint_: {
@@ -81,7 +66,6 @@ export class NearbyOnboardingPageElement extends
 
   errorMessage: string;
   settings: NearbySettings|null;
-  private isDarkModeActive_: boolean;
   private entryPoint_: NearbyShareOnboardingEntryPoint;
 
   override ready(): void {
@@ -166,14 +150,6 @@ export class NearbyOnboardingPageElement extends
 
   private hasErrorMessage_(errorMessage: string): boolean {
     return errorMessage !== '';
-  }
-
-  /**
-   * Returns the icon based on Light/Dark mode.
-   */
-  private getOnboardingSplashIcon_(): string {
-    return this.isDarkModeActive_ ? ONBOARDING_SPLASH_DARK_ICON :
-                                    ONBOARDING_SPLASH_LIGHT_ICON;
   }
 }
 
