@@ -83,6 +83,9 @@
     "open",
     // invokeaction for input and select
     "showPicker",
+    // invokeaction for number input
+    "stepUp",
+    "stepDown",
     // invokeaction for fullscreen
     "toggleFullscreen",
     "requestFullscreen",

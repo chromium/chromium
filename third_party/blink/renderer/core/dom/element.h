@@ -201,6 +201,9 @@ enum class InvokeAction {
   // kClose
   // Input / Select
   kShowPicker,
+  // Number Input
+  kStepUp,
+  kStepDown,
   // Fullscreen
   kToggleFullscreen,
   kRequestFullscreen,

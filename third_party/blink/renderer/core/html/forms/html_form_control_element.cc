@@ -488,9 +488,17 @@ InvokeAction HTMLFormControlElement::GetInvokeAction() const {
     return InvokeAction::kNone;
   }
 
-  // Input Cases
+  // Input/Select Cases
   if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
     return InvokeAction::kShowPicker;
+  }
+
+  // Number Input Cases
+  if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
+    return InvokeAction::kStepUp;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
+    return InvokeAction::kStepDown;
   }
 
   // Fullscreen Cases
