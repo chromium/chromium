@@ -881,4 +881,41 @@ TEST_F(PowerManagerClientTest, SetAmbientLightSensorEnabled) {
   client_->SetAmbientLightSensorEnabled(expected_sensor_enabled2);
 }
 
+// Tests that |HasAmbientLightSensor| calls the DBus method with the same name.
+TEST_F(PowerManagerClientTest, HasAmbientLightSensor) {
+  // Device has an ambient light sensor.
+  EXPECT_CALL(*proxy_,
+              DoCallMethod(
+                  HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter(response.get()).AppendBool(true);
+
+        std::move(*callback).Run(response.get());
+      });
+
+  client_->HasAmbientLightSensor(
+      base::BindOnce([](std::optional<bool> has_ambient_light_sensor) {
+        EXPECT_TRUE(has_ambient_light_sensor.value());
+      }));
+
+  // Device does not have an ambient light sensor.
+  EXPECT_CALL(*proxy_,
+              DoCallMethod(
+                  HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter(response.get()).AppendBool(false);
+
+        std::move(*callback).Run(response.get());
+      });
+
+  client_->HasAmbientLightSensor(
+      base::BindOnce([](std::optional<bool> has_ambient_light_sensor) {
+        EXPECT_FALSE(has_ambient_light_sensor.value());
+      }));
+}
+
 }  // namespace chromeos

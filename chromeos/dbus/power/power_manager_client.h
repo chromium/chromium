@@ -245,6 +245,11 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // calculations.
   virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
 
+  // Asynchronously gets whether the device has at least one ambient light
+  // sensor. On error (e.g. powerd not running), |callback| will be run with
+  // nullopt.
+  virtual void HasAmbientLightSensor(DBusMethodCallback<bool> callback) = 0;
+
   // Decreases the keyboard brightness.
   virtual void DecreaseKeyboardBrightness() = 0;
 

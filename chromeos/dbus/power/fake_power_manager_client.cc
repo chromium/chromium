@@ -150,6 +150,13 @@ void FakePowerManagerClient::SetAmbientLightSensorEnabled(bool enabled) {
   is_ambient_light_sensor_enabled_ = enabled;
 }
 
+void FakePowerManagerClient::HasAmbientLightSensor(
+    DBusMethodCallback<bool> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), has_ambient_light_sensor_));
+}
+
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
 
 void FakePowerManagerClient::IncreaseKeyboardBrightness() {
