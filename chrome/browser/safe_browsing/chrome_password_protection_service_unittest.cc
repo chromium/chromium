@@ -1283,6 +1283,22 @@ TEST_F(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
 }
 
+TEST_F(
+    ChromePasswordProtectionServiceTest,
+    VerifyTriggerOnPolicySpecifiedPasswordReuseDetectedForEnterprisePasswordOnChromeExtension) {
+  TestExtensionEventObserver event_observer(test_event_router_);
+  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                    PASSWORD_REUSE);
+  service_->MaybeStartProtectedPasswordEntryRequest(
+      web_contents(),
+      /*main_frame_url=*/GURL("chrome-extension://some-fab-extension"),
+      /*username=*/"enterprise_user", PasswordType::ENTERPRISE_PASSWORD,
+      /*matching_reused_credentials=*/{}, /*password_field_exists=*/false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, test_event_router_->GetEventCount(
+                   OnPolicySpecifiedPasswordReuseDetected::kEventName));
+}
+
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyTriggerOnPolicySpecifiedPasswordReuseDetectedForGsuiteUser) {
   TestExtensionEventObserver event_observer(test_event_router_);
