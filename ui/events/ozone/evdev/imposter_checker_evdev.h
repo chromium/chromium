@@ -33,7 +33,6 @@ class COMPONENT_EXPORT(EVDEV) ImposterCheckerEvdev {
 
  private:
   std::vector<int> GetIdsOnSamePhys(const std::string& phys_path);
-  std::string StandardizedPhys(const std::string& phys_path);
   bool IsSuspectedKeyboardImposter(EventConverterEvdev* converter,
                                    bool shared_phys);
   bool IsSuspectedMouseImposter(EventConverterEvdev* converter,
