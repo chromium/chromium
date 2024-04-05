@@ -83,6 +83,8 @@ public class ToolbarTest {
     @Before
     public void setUp() throws InterruptedException {
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
+        // This is required to initialize the AppHeaderCoordinator.
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
@@ -304,17 +306,49 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @DisabledTest(message = "https://crbug.com/330213938")
-    public void testOnTopResumedActivityChanged() {
+    public void testOnTopResumedActivityChanged_UnfocusedInDesktopWindow() {
+        // TODO (crbug/330213938): Also test other scenarios for different values of desktop
+        // windowing mode / activity focus states; tests for other input combinations are currently
+        // failing even locally due to incorrect tab switcher icon tint. This test is passing
+        // locally but we need to refine some testing criteria for this to work on the bots.
+        // Re-enable this test and add new tests for other combinations in a subsequent CL.
+        doTestOnTopResumedActivityChanged(
+                /* isInDesktopWindow= */ true, /* isActivityFocused= */ false);
+    }
+
+    private void doTestOnTopResumedActivityChanged(
+            boolean isInDesktopWindow, boolean isActivityFocused) {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        var unfocusedTint =
-                ThemeUtils.getThemedToolbarIconTintForActivityState(
-                        activity, BrandedColorScheme.APP_DEFAULT, /* isActivityFocused= */ false);
 
-        // Assume that the current activity lost focus.
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onTopResumedActivityChanged(false));
+        var omniboxIconTint =
+                ThemeUtils.getThemedToolbarIconTint(activity, BrandedColorScheme.APP_DEFAULT);
+        var nonOmniboxIconTint =
+                isInDesktopWindow
+                        ? ThemeUtils.getThemedToolbarIconTintForActivityState(
+                                activity, BrandedColorScheme.APP_DEFAULT, isActivityFocused)
+                        : omniboxIconTint;
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var appHeaderCoordinator =
+                            activity.getRootUiCoordinatorForTesting()
+                                    .getAppHeaderCoordinatorSupplier()
+                                    .get();
+                    Criteria.checkThat(appHeaderCoordinator, Matchers.notNullValue());
+                });
+
+        // Assume that the current activity lost focus in desktop windowing mode.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var appHeaderCoordinator =
+                            activity.getRootUiCoordinatorForTesting()
+                                    .getAppHeaderCoordinatorSupplier()
+                                    .get();
+                    appHeaderCoordinator.set(isInDesktopWindow);
+                    activity.onTopResumedActivityChanged(isActivityFocused);
+                });
 
         // Verify the toolbar icon tints.
         CriteriaHelper.pollUiThread(
@@ -322,21 +356,23 @@ public class ToolbarTest {
                     var toolbarTablet =
                             (ToolbarTablet)
                                     activity.getToolbarManager().getToolbarLayoutForTesting();
-                    // Tint for toolbar icons other than those on the omnibox should be updated.
                     Criteria.checkThat(
+                            "Home button tint is incorrect",
                             toolbarTablet.getHomeButton().getImageTintList(),
-                            Matchers.is(unfocusedTint));
+                            Matchers.is(nonOmniboxIconTint));
                     Criteria.checkThat(
+                            "Tab switcher icon tint is incorrect.",
                             toolbarTablet.getTabSwitcherButton().getImageTintList(),
-                            Matchers.is(unfocusedTint));
+                            Matchers.is(nonOmniboxIconTint));
                     Criteria.checkThat(
+                            "App menu button tint is incorrect.",
                             ((ImageButton) activity.getToolbarManager().getMenuButtonView())
                                     .getImageTintList(),
-                            Matchers.is(unfocusedTint));
-                    // Tint for omnibox button(s) should not be updated.
+                            Matchers.is(nonOmniboxIconTint));
                     Criteria.checkThat(
+                            "Bookmark button tint is incorrect.",
                             toolbarTablet.getBookmarkButtonForTesting().getImageTintList(),
-                            Matchers.not(unfocusedTint));
+                            Matchers.is(omniboxIconTint));
                 });
     }
 

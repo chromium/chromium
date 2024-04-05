@@ -538,6 +538,10 @@ public class RootUiCoordinator
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null);
+        mAppHeaderCoordinatorSupplier.onAvailable(
+                appHeaderCoordinator ->
+                        mTopUiThemeColorProvider.setDesktopWindowModeSupplier(
+                                appHeaderCoordinator));
 
         mStatusBarColorController =
                 new StatusBarColorController(
@@ -1474,7 +1478,8 @@ public class RootUiCoordinator
                             mBackPressManager,
                             mOverviewColorSupplier,
                             mBaseChromeLayout,
-                            mReadAloudControllerSupplier);
+                            mReadAloudControllerSupplier,
+                            mAppHeaderCoordinatorSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

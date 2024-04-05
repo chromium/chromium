@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -79,6 +80,9 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
      */
     protected boolean mIsTopResumedActivity;
 
+    /** A boolean supplier to determine whether the current activity is in a desktop window. */
+    protected ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
+
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
@@ -106,9 +110,20 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        // TODO (crbug/328055199): Check if in desktop windowing mode, and if losing focus to a
-        // non-Chrome task.
+        // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
+        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) return;
         mIsTopResumedActivity = isTopResumedActivity;
+    }
+
+    /**
+     * Sets an {@link ObservableSupplier} to observe desktop windowing mode changes.
+     *
+     * @param desktopWindowModeSupplier The {@link ObservableSupplier} to observe desktop windowing
+     *     mode changes.
+     */
+    public void setDesktopWindowModeSupplier(
+            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
+        mDesktopWindowModeSupplier = desktopWindowModeSupplier;
     }
 
     /**
@@ -197,8 +212,8 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
     protected ColorStateList calculateActivityFocusTint(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
-        // TODO (crbug/328055199): Also check if in desktop windowing mode.
         return mActivityLifecycleDispatcher == null
+                        || (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier))
                 ? iconTint
                 : ThemeUtils.getThemedToolbarIconTintForActivityState(
                         context, brandedColorScheme, mIsTopResumedActivity);
