@@ -22,7 +22,8 @@ type ApplicationConfig = resource table {
     /// implementation.
     3: web_url string;
 
-    4: reserved;
+    // Removed in https://crrev.com/c/1793791.
+    // 4: bool touch_enabled_policy;
 
     // If true, enable remote debugging for this application.
     // if false or unset, remote debugging is disabled for this application.
