@@ -44,6 +44,7 @@ class DeviceWeeklyScheduledSuspendController
 
   void SetTaskExecutorFactoryForTesting(
       std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory);
+  void SetClockForTesting(base::Clock* clock);
 
  private:
   // Called on `kDeviceWeeklyScheduledSuspend` preference update.
@@ -70,6 +71,8 @@ class DeviceWeeklyScheduledSuspendController
 
   std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory>
       task_executor_factory_;
+
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

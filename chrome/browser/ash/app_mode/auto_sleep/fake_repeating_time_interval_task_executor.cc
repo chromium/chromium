@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 

@@ -137,9 +137,10 @@ void DeviceWeeklyScheduledSuspendController::DarkSuspendImminent() {
   // happens we want to transition to a full resume. Check `resume_after_`
   // to know when a full resume is due: the first dark resume after this
   // time will trigger a full resume; earlier events are ignored.
-  if (!resume_after_ || resume_after_.value() > base::Time::Now()) {
+  if (!resume_after_ || resume_after_.value() > clock_->Now()) {
     return;
   }
+
   // Trigger a full resume.
   resume_after_ = std::nullopt;
   chromeos::PowerManagerClient::Get()->NotifyUserActivity(
@@ -154,6 +155,11 @@ DeviceWeeklyScheduledSuspendController::GetIntervalExecutorsForTesting() const {
 void DeviceWeeklyScheduledSuspendController::SetTaskExecutorFactoryForTesting(
     std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory) {
   task_executor_factory_ = std::move(factory);
+}
+
+void DeviceWeeklyScheduledSuspendController::SetClockForTesting(
+    base::Clock* clock) {
+  clock_ = clock;
 }
 
 void DeviceWeeklyScheduledSuspendController::
@@ -203,7 +209,7 @@ void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart(
   // the chance of missing the end of a sleep interval due to random timing
   // issues, and is otherwise imperceptible if it causes an early full resume.
   constexpr auto tolerance = base::Seconds(2);
-  resume_after_ = base::Time::Now() + duration - tolerance;
+  resume_after_ = clock_->Now() + duration - tolerance;
 }
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd() {
