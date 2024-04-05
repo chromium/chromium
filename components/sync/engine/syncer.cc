@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -102,6 +103,7 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
 bool Syncer::PollSyncShare(ModelTypeSet request_types, SyncCycle* cycle) {
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
   VLOG(1) << "Polling types " << ModelTypeSetToDebugString(request_types);
+  recordreplay::Diagnostic("[TT-198] Syncer::PollSyncShare: %s", ModelTypeSetToDebugString(request_types).c_str());
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&request_types, cycle, PollGetUpdatesDelegate());
   return HandleCycleEnd(cycle, sync_pb::SyncEnums::PERIODIC);
