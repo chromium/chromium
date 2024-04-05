@@ -159,9 +159,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
-// TODO(https://crbug.com/316993299) disabled due to flake.
-IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
-                       DISABLED_SuccessfulTransition) {
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
   OobeScreenWaiter(ManagementTransitionScreenView::kScreenId).Wait();
 
   test::OobeJS().ExpectVisiblePath(kManagementDialog);
@@ -187,9 +185,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, PRE_TransitionTimeout) {
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
-// Flaky on linux-chromeos-rel (see https://crbug.com/1032997)
-IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
-                       DISABLED_TransitionTimeout) {
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, TransitionTimeout) {
   OobeScreenWaiter(ManagementTransitionScreenView::kScreenId).Wait();
 
   test::OobeJS().ExpectVisiblePath(kManagementDialog);
