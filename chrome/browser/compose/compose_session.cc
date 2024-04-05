@@ -866,6 +866,8 @@ void ComposeSession::EditResult(const std::string& new_result) {
     most_recent_ok_state_->SetModelingLogEntry(
         undo_states_.top()->TakeModelingLogEntry());
     most_recent_ok_state_->SetMojoState(undo_states_.top()->TakeMojoState());
+    current_state_->response->undo_available =
+        most_recent_ok_state_->mojo_state()->response->undo_available;
     undo_states_.pop();
     return;
   }
@@ -881,6 +883,10 @@ void ComposeSession::EditResult(const std::string& new_result) {
     // Set the user edited field in the restored ok state.
     most_recent_ok_state_->SetUserEdited(
         most_recent_ok_state_->mojo_state()->response->result);
+
+    // Update the undo_available field to show that there is an undo state.
+    most_recent_ok_state_->mojo_state()->response->undo_available = true;
+    current_state_->response->undo_available = true;
   }
 
   // Update result to be the edited result.
