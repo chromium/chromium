@@ -262,12 +262,14 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-snackbar-item",
         .gtest_name = "CrosSnackbarItem",
     },
-    {
-        .script_src =
-            "chrome://resources/cros_components/orca_feedback/orca-feedback.js",
-        .component_name = "mako-orca-feedback",
-        .gtest_name = "CrosOrcaFeedbackItem",
-    },
+    // TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
+    // properly.
+    // {
+    //     .script_src =
+    //         "chrome://resources/cros_components/orca_feedback/orca-feedback.js",
+    //     .component_name = "mako-orca-feedback",
+    //     .gtest_name = "CrosOrcaFeedbackItem",
+    // },
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
