@@ -10,7 +10,6 @@
 
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
