@@ -137,9 +137,7 @@ mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
 }
 
 std::optional<std::string> UserScriptInjector::GetExecutionWorldId() const {
-  // TODO(https://crbug.com/331680187): Allow user scripts to set the world ID
-  // for a given script registration.
-  return std::nullopt;
+  return script_->world_id();
 }
 
 blink::mojom::WantResultOption UserScriptInjector::ExpectsResults() const {

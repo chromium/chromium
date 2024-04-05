@@ -245,5 +245,108 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Verify that multiple user script worlds are unique and can each have a
+  // different CSP specified.
+  async function configureWorld_MultipleWorldsAreUnique_Csp() {
+    await chrome.userScripts.unregister();
 
+    // Configure "world 1" to allow eval.
+    await chrome.userScripts.configureWorld(
+        {
+          worldId: 'world 1',
+          csp: `script-src 'unsafe-eval'`,
+        });
+
+    const evalScriptWithWorld =
+        `try {
+           eval('result = "eval allowed"');
+           document.title = document.title + 'WORLD_ID: eval allowed';
+         } catch (e) {
+           document.title = document.title + 'WORLD_ID: eval disallowed';
+         }`;
+    const world1Script = evalScriptWithWorld.replaceAll('WORLD_ID', 'world 1');
+    const world2Script = evalScriptWithWorld.replaceAll('WORLD_ID', 'world 2');
+
+    // Register two user scripts: one to inject in "world 1" and a second to
+    // inject in "world 2".
+    const userScripts =
+        [
+          {
+            id: 'us1',
+            matches: ['*://*/*'],
+            js: [{code: world1Script}],
+            worldId: 'world 1',
+          },
+          {
+            id: 'us2',
+            matches: ['*://*/*'],
+            js: [{code: world2Script}],
+            worldId: 'world2',
+          },
+        ];
+    await chrome.userScripts.register(userScripts);
+
+    // Inject the scripts. The first world should allow eval, while the second
+    // should not.
+    let tab = await navigateToRequestedUrl();
+    chrome.test.assertTrue(tab.title.includes('world 1: eval allowed'),
+                           tab.title);
+    chrome.test.assertTrue(tab.title.includes('world 2: eval disallowed'),
+                           tab.title);
+    chrome.test.succeed();
+  },
+
+  // Verify that multiple user script worlds are unique and can each have a
+  // different value for whether messaging APIs are exposed.
+  async function configureWorld_MultipleWorldsAreUnique_Messaging() {
+    await chrome.userScripts.unregister();
+
+    // Configure "world 1" to allow messaging APIs.
+    await chrome.userScripts.configureWorld(
+        {
+          worldId: 'world 1',
+          messaging: true,
+        });
+
+    const messagingScriptWithWorld =
+        `let titleAddition;
+         if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+           titleAddition = 'WORLD_ID: messaging enabled';
+         } else {
+           titleAddition = 'WORLD_ID: messaging disabled';
+         }
+         document.title = document.title + titleAddition;`;
+    const world1Script =
+        messagingScriptWithWorld.replaceAll('WORLD_ID', 'world 1');
+    const world2Script =
+        messagingScriptWithWorld.replaceAll('WORLD_ID', 'world 2');
+
+    // Register two user scripts: one to inject in "world 1" and a second to
+    // inject in "world 2".
+    const userScripts =
+        [
+          {
+            id: 'us1',
+            matches: ['*://*/*'],
+            js: [{code: world1Script}],
+            worldId: 'world 1',
+          },
+          {
+            id: 'us2',
+            matches: ['*://*/*'],
+            js: [{code: world2Script}],
+            worldId: 'world2',
+          },
+        ];
+    await chrome.userScripts.register(userScripts);
+
+    // Inject the scripts. The first world should allow messaging, while the
+    // second should not.
+    let tab = await navigateToRequestedUrl();
+    chrome.test.assertTrue(tab.title.includes('world 1: messaging enabled'),
+                           tab.title);
+    chrome.test.assertTrue(tab.title.includes('world 2: messaging disabled'),
+                           tab.title);
+    chrome.test.succeed();
+  },
 ]);

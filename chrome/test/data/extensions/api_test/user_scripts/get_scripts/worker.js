@@ -19,7 +19,14 @@ chrome.test.runTests([
         id: 'script2',
         matches: ['*://requested.com/*'],
         js: [{file: 'empty2.js'}],
-        runAt: 'document_end'
+        runAt: 'document_end',
+        worldId: 'world 1',
+      },
+      {
+        id: 'script3',
+        matches: ['*://requested.com/*'],
+        js: [{file: 'empty2.js'}],
+        runAt: 'document_idle',
       }
     ];
 
@@ -44,8 +51,17 @@ chrome.test.runTests([
         js: [{file: 'empty2.js'}],
         allFrames: false,
         runAt: 'document_end',
-        world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
-      }
+        world: chrome.userScripts.ExecutionWorld.USER_SCRIPT,
+        worldId: 'world 1',
+      },
+      {
+        id: 'script3',
+        matches: ['*://requested.com/*'],
+        js: [{file: 'empty2.js'}],
+        allFrames: false,
+        runAt: 'document_idle',
+        world: chrome.userScripts.ExecutionWorld.USER_SCRIPT,
+      },
     ];
 
     await chrome.userScripts.register(userScriptsToRegister);

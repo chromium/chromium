@@ -65,5 +65,8 @@ namespace scriptsInternal {
     Source source;
     // The JavaScript "world" to run the script in.
     extensionTypes.ExecutionWorld world;
+    // The ID of the world into which to inject. If omitted, uses the default
+    // world.
+    DOMString? worldId;
   };
 };

@@ -65,6 +65,13 @@ namespace userScripts {
     // The JavaScript execution environment to run the script in. The default is
     // <code>`USER_SCRIPT`</code>.
     ExecutionWorld? world;
+
+    // If specified, specifies a specific user script world ID to execute in.
+    // Only valid if `world` is omitted or is `USER_SCRIPT`. If omitted, the
+    // script will execute in the default user script world.
+    // Values with leading underscores (`_`) are reserved.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] DOMString? worldId;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.
@@ -75,12 +82,19 @@ namespace userScripts {
   };
 
   // An object used to update the <code>`USER_SCRIPT`</code> world
-  // configuration. If a propertie is not specified, it will reset it to its
+  // configuration. If a property is not specified, it will reset it to its
   // default value.
   dictionary WorldProperties{
+    // Specifies the ID of the specific user script world to update.
+    // If not provided, updates the properties of the default user script world.
+    // Values with leading underscores (`_`) are reserved.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] DOMString? worldId;
+
     // Specifies the world csp. The default is the <code>`ISOLATED`</code>
     // world csp.
     DOMString? csp;
+
     // Specifies whether messaging APIs are exposed. The default is
     // <code>false</code>.
     boolean? messaging;

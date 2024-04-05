@@ -22,6 +22,7 @@
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/api/user_scripts.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -79,6 +80,11 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.matches = std::move(*user_script.matches);
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiUserScriptsMultipleWorlds)) {
+    serialized_script.world_id = std::move(user_script.world_id);
+  }
 
   return serialized_script;
 }
@@ -177,6 +183,7 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
   result.matches = std::move(serialized_script.matches);
   result.run_at = serialized_script.run_at;
   result.world = convert_execution_world(serialized_script.world);
+  result.world_id = std::move(serialized_script.world_id);
 
   return result;
 }
@@ -461,6 +468,10 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.world = new_script.world;
   }
 
+  if (new_script.world_id) {
+    original_script.world_id = std::move(new_script.world_id);
+  }
+
   // Note: for the update application, we disregard allowed_in_incognito.
   // We'll set it on the resulting scripts.
   constexpr bool kAllowedInIncognito = false;
@@ -538,12 +549,21 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> csp = params->properties.csp;
+  std::optional<std::string> csp = std::move(params->properties.csp);
   bool enable_messaging = params->properties.messaging.value_or(false);
 
-  // TODO(https://crbug.com/331680187): Add support for passing `world_id` to
-  // allow configuration of multiple user script worlds.
   std::optional<std::string> world_id;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiUserScriptsMultipleWorlds)) {
+    world_id = std::move(params->properties.world_id);
+  }
+
+  // TODO(https://crbug.com/331680187): Disallow world IDs that begin with
+  // underscores here and in the script registration flow.
+
+  // TODO(https://crbug.com/331680187): Add some reasonable limit to the number
+  // of worlds an extension may create and configure.
+
   util::SetUserScriptWorldInfo(*extension(), browser_context(), world_id, csp,
                                enable_messaging);
 

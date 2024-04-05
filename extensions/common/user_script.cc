@@ -195,6 +195,7 @@ std::unique_ptr<UserScript> UserScript::CopyMetadataFrom(
   script->match_origin_as_fallback_ = other.match_origin_as_fallback_;
   script->incognito_enabled_ = other.incognito_enabled_;
   script->execution_world_ = other.execution_world_;
+  script->world_id_ = other.world_id_;
 
   return script;
 }
@@ -269,6 +270,9 @@ void UserScript::Pickle(base::Pickle* pickle) const {
   pickle->WriteInt(static_cast<int>(match_origin_as_fallback()));
   pickle->WriteBool(is_incognito_enabled());
   pickle->WriteInt(static_cast<int>(execution_world()));
+  // Pickling doesn't really have support for optionals. If there's no world ID
+  // specified, simply pass an "_".
+  pickle->WriteString(world_id().value_or("_"));
 
   PickleHostID(pickle, host_id_);
   pickle->WriteInt(consumer_instance_type());
@@ -336,6 +340,14 @@ void UserScript::Unpickle(const base::Pickle& pickle,
   CHECK(execution_world >= static_cast<int>(mojom::ExecutionWorld::kIsolated) &&
         execution_world <= static_cast<int>(mojom::ExecutionWorld::kMaxValue));
   execution_world_ = static_cast<mojom::ExecutionWorld>(execution_world);
+
+  std::string world_id_str;
+  CHECK(iter->ReadString(&world_id_str));
+  if (world_id_str != "_") {
+    // Pickling doesn't support optionals. We pass an "_" as a placeholder if
+    // there was no world ID specified on the original UserScript.
+    world_id_ = world_id_str;
+  }
 
   UnpickleHostID(pickle, iter, &host_id_);
 

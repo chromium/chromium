@@ -204,7 +204,8 @@ chrome.test.runTests([
       matches: ['*://hostperms-b.com/*'],
       excludeMatches: ['*://def.com/*'],
       js: [{file: 'user_script_2.js'}],
-      allFrames: false
+      allFrames: false,
+      worldId: 'another world',
     }];
     await chrome.userScripts.update(scriptsToUpdate);
 
@@ -216,7 +217,8 @@ chrome.test.runTests([
       js: [{file: 'user_script_2.js'}],
       runAt: 'document_end',
       allFrames: false,
-      world: 'USER_SCRIPT'
+      world: 'USER_SCRIPT',
+      worldId: 'another world',
     }];
     registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
