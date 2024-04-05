@@ -143,6 +143,12 @@ class EnclaveManager : public KeyedService {
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
   void AddDeviceAndPINToAccount(std::string pin, Callback callback);
+  // Change the GPM PIN on the account. If a RAPT (Reauthentication Proof Token)
+  // is given then it will be used, otherwise the UV key will be used, causing
+  // system UI to appear to verify the user.
+  void ChangePIN(std::string updated_pin,
+                 std::optional<std::string> rapt,
+                 Callback callback);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.

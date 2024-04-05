@@ -776,6 +776,40 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   DoAssertion(std::move(entity), std::move(claimed_pin));
 }
 
+TEST_F(EnclaveManagerTest, ChangePIN) {
+  security_domain_service_->pretend_there_are_members();
+  ConfigureVaultResponses();
+  const std::string pin = "pin";
+  const std::string new_pin = "newpin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolCallback add_callback;
+  manager_.AddDeviceAndPINToAccount(pin, add_callback.callback());
+  add_callback.WaitForCallback();
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_TRUE(manager_.wrapped_pin_is_arbitrary());
+
+  BoolCallback change_callback;
+  manager_.ChangePIN(new_pin, "rapt", change_callback.callback());
+  change_callback.WaitForCallback();
+  ASSERT_TRUE(std::get<0>(change_callback.result().value()));
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(new_pin, manager_.GetWrappedPIN());
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin));
+}
+
 TEST_F(EnclaveManagerTest, EnclaveForgetsClient_SetupWithPIN) {
   ASSERT_TRUE(Register());
   CorruptDeviceId();

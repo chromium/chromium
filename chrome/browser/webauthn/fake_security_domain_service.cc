@@ -115,6 +115,35 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     // If the client specified an epoch, it must be the correct one.
     CHECK(request_epoch == 0 || request_epoch == epoch_);
 
+    if (proto_request.security_domain_member().member_type() ==
+        trusted_vault_pb::SecurityDomainMember::
+            MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN) {
+      CHECK(proto_request.security_domain_member().has_member_metadata());
+      CHECK(proto_request.security_domain_member()
+                .member_metadata()
+                .has_google_password_manager_pin_metadata());
+      CHECK(!proto_request.security_domain_member()
+                 .member_metadata()
+                 .google_password_manager_pin_metadata()
+                 .encrypted_pin_hash()
+                 .empty());
+
+      const auto existing_pin =
+          base::ranges::find_if(members_, [](const auto& member) -> bool {
+            return member.member_type() ==
+                   trusted_vault_pb::SecurityDomainMember::
+                       MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+          });
+      if (existing_pin == members_.end()) {
+        CHECK(proto_request.current_public_key_to_replace().empty());
+      } else {
+        CHECK(!proto_request.current_public_key_to_replace().empty());
+        CHECK_EQ(proto_request.current_public_key_to_replace(),
+                 existing_pin->public_key());
+        members_.erase(existing_pin);
+      }
+    }
+
     members_.push_back(proto_request.security_domain_member());
 
     trusted_vault_pb::JoinSecurityDomainsResponse response;

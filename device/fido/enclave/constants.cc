@@ -91,6 +91,9 @@ const char kRegisterCommandName[] = "device/register";
 const char kWrapKeyCommandName[] = "keys/wrap";
 const char kGenKeyPairCommandName[] = "keys/genpair";
 const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
+const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
+const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
+    "recovery_key_store/wrap_as_member";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
 const char kRegisterDeviceIdKey[] = "device_id";
@@ -100,6 +103,11 @@ const char kUserVerificationKey[] = "uv";
 
 const char kWrappingPurpose[] = "purpose";
 const char kWrappingKeyToWrap[] = "key";
+
+const char kPinHash[] = "pin_hash";
+const char kGeneration[] = "pin_generation";
+const char kClaimKey[] = "pin_claim_key";
+const char kWrappedSecret[] = "wrapped_secret";
 
 const char kWrappingResponsePublicKey[] = "pub_key";
 const char kWrappingResponseWrappedPrivateKey[] = "priv_key";
