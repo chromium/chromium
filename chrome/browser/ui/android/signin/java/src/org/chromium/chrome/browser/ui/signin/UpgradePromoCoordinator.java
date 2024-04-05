@@ -10,17 +10,23 @@ import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
 public final class UpgradePromoCoordinator
@@ -49,9 +55,27 @@ public final class UpgradePromoCoordinator
         void onFlowComplete();
     }
 
+    /**
+     * The view switcher child UIs and their order. The order matches the order of the children
+     * views in upgrade_promo_portrait/landscape_view.xml
+     */
+    @IntDef({
+        ViewSwitcherChild.SIGNIN,
+        ViewSwitcherChild.HISTORY_SYNC,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ViewSwitcherChild {
+        /** The fullscreen sign-in UI. */
+        int SIGNIN = 0;
+
+        /** The History Sync opt-in UI. */
+        int HISTORY_SYNC = 1;
+    }
+
     private final Context mContext;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
     private final Delegate mDelegate;
+    private final boolean mDidShowSignin;
     private ViewSwitcher mViewSwitcher;
     private FullscreenSigninCoordinator mSigninCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
@@ -67,12 +91,16 @@ public final class UpgradePromoCoordinator
         mProfileSupplier = profileSupplier;
         mDelegate = delegate;
         inflateViewSwitcher();
-        mSigninCoordinator =
-                new FullscreenSigninCoordinator(
-                        mContext, modalDialogManager, this, privacyPreferencesManager);
-        mSigninCoordinator.setView(
-                mViewSwitcher.findViewById(
-                        org.chromium.chrome.browser.ui.signin.R.id.fullscreen_signin));
+        if (isSignedIn()) {
+            advanceToNextPage();
+            mDidShowSignin = false;
+        } else {
+            mSigninCoordinator =
+                    new FullscreenSigninCoordinator(
+                            mContext, modalDialogManager, this, privacyPreferencesManager);
+            mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
+            mDidShowSignin = true;
+        }
     }
 
     public void destroy() {
@@ -105,25 +133,26 @@ public final class UpgradePromoCoordinator
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
     public void advanceToNextPage() {
-        if (!shouldShowHistorySync()) {
+        // TODO(b/41493788): Update this method to account for enterprise policies, supervised
+        // accounts, etc..
+        if (!isSignedIn() || mViewSwitcher.getDisplayedChild() == ViewSwitcherChild.HISTORY_SYNC) {
             mDelegate.onFlowComplete();
             return;
         }
-        // TODO(b/41493788): Add support for showing only the history sync screen when the user is
-        // already signed in.
+        mViewSwitcher.setDisplayedChild(ViewSwitcherChild.HISTORY_SYNC);
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mContext,
                         this,
                         mProfileSupplier.get().getOriginalProfile(),
                         SigninAccessPoint.SIGNIN_PROMO,
-                        /* showEmailInFooter= */ false,
+                        /* showEmailInFooter= */ !mDidShowSignin,
                         /* shouldSignOutOnDecline= */ false,
-                        mViewSwitcher.findViewById(
-                                org.chromium.chrome.browser.ui.signin.R.id.history_sync));
-        mViewSwitcher.showNext();
-        mSigninCoordinator.destroy();
-        mSigninCoordinator = null;
+                        mViewSwitcher.getCurrentView());
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
+        }
     }
 
     @Override
@@ -202,22 +231,15 @@ public final class UpgradePromoCoordinator
                         LayoutInflater.from(mContext)
                                 .inflate(
                                         useLandscapeLayout
-                                                ? org.chromium.chrome.browser.ui.signin.R.layout
-                                                        .upgrade_promo_landscape_view
-                                                : org.chromium.chrome.browser.ui.signin.R.layout
-                                                        .upgrade_promo_portrait_view,
+                                                ? R.layout.upgrade_promo_landscape_view
+                                                : R.layout.upgrade_promo_portrait_view,
                                         null);
     }
 
-    private boolean shouldShowHistorySync() {
-        // TODO(b/41493788): Update this method to account for enterprise policies, supervised
-        // accounts, etc..
+    private boolean isSignedIn() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
                         .getIdentityManager(mProfileSupplier.get().getOriginalProfile());
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return true;
-        }
-        return false;
+        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 }

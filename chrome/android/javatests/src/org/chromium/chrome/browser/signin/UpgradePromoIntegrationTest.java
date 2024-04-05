@@ -111,7 +111,25 @@ public class UpgradePromoIntegrationTest {
                 .check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.test.R.id.signin_fre_continue_button)).perform(click());
 
-        // Verify that the history opt-in dialog is shown and refuse.
+        // Verify that the history opt-in dialog is shown and accept.
+        onView(withId(org.chromium.chrome.test.R.id.history_sync)).check(matches(isDisplayed()));
+        onView(allOf(withId(org.chromium.chrome.test.R.id.button_primary), isCompletelyDisplayed()))
+                .perform(click());
+
+        SyncTestUtil.waitForHistorySyncEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    public void testUserAlreadySignedIn_onlyShowsHistorySync() {
+        mSigninTestRule.addTestAccountThenSignin();
+
+        launchActivity();
+
+        // Verify that the history opt-in dialog is shown and accept.
         onView(withId(org.chromium.chrome.test.R.id.history_sync)).check(matches(isDisplayed()));
         onView(allOf(withId(org.chromium.chrome.test.R.id.button_primary), isCompletelyDisplayed()))
                 .perform(click());
