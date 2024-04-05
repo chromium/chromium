@@ -203,6 +203,9 @@ export class BluetoothBrailleDisplayUiElement extends
             (display.connected ? 'chromeVoxBluetoothBrailleDisplayDisconnect' :
                                  'chromeVoxBluetoothBrailleDisplayConnect'));
     connectOrDisconnect.onclick = () => {
+      chrome.metricsPrivate.recordBoolean(
+          'ChromeOS.Settings.Accessibility.ConnectBrailleDisplay',
+          !display.connected);
       if (display.connected) {
         this.manager_.disconnect(display);
       } else {

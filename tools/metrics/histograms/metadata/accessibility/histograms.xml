@@ -884,6 +884,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
+    enum="BooleanConnected" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged whenever the connection state of a braille display changes between
+    disconnected and connected.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosStatusArea.{FeatureName}"
     enum="BooleanToggled" expires_after="2025-02-28">
   <owner>anastasi@google.com</owner>

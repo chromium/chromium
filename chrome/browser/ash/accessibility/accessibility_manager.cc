@@ -1901,6 +1901,12 @@ void AccessibilityManager::OnFocusChangedInPage(
 
 void AccessibilityManager::OnBrailleDisplayStateChanged(
     const DisplayState& display_state) {
+  if (braille_display_connected_ != display_state.available) {
+    base::UmaHistogramBoolean(
+        "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+        "ConnectionChanged",
+        display_state.available);
+  }
   braille_display_connected_ = display_state.available;
   AccessibilityController::Get()->BrailleDisplayStateChanged(
       braille_display_connected_);
