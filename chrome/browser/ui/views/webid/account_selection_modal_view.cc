@@ -349,7 +349,7 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   }
 
   const int per_account_size = content->GetPreferredSize().height() / num_rows;
-  scroll_view->ClipHeightTo(0, static_cast<int>(per_account_size * 2.5f));
+  scroll_view->ClipHeightTo(0, static_cast<int>(per_account_size * 3.5f));
   return scroll_view;
 }
 
