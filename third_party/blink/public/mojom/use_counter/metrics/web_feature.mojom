@@ -4317,6 +4317,9 @@ enum WebFeature {
 
   kFoldableAPIs = 4938,
 
+  // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+  kSnapEvent = 4939,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

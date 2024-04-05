@@ -11483,6 +11483,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4936" label="EventTimingOrphanPointerup"/>
   <int value="4937" label="NavigatorCookieEnabledThirdParty"/>
   <int value="4938" label="FoldableAPIs"/>
+  <int value="4939" label="SnapEvent"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

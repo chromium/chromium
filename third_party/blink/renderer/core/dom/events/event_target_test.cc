@@ -169,4 +169,26 @@ TEST_F(EventTargetTest,
   EXPECT_FALSE(event_target->HasEventListeners());
 }
 
+TEST_F(EventTargetTest, UseCountSnapchanging) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"HTML(
+    const element = document.createElement('div');
+    element.addEventListener('snapchanging', () => {});
+  )HTML")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
+}
+
+TEST_F(EventTargetTest, UseCountSnapchanged) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"HTML(
+    const element = document.createElement('div');
+    element.addEventListener('snapchanged', () => {});
+  )HTML")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
+}
+
 }  // namespace blink

@@ -21,6 +21,8 @@ CORE_EXPORT bool IsMouseButtonEventType(const AtomicString& event_type);
 
 CORE_EXPORT bool IsPointerEventType(const AtomicString& event_type);
 
+CORE_EXPORT bool IsSnapEventType(const AtomicString& event_type);
+
 struct MutationEventInfo {
   bool is_mutation_event;
   WebFeature listener_feature;

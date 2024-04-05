@@ -77,6 +77,11 @@ MutationEventInfo IsDOMMutationEventType(const AtomicString& event_type) {
   return {.is_mutation_event = false};
 }
 
+bool IsSnapEventType(const AtomicString& event_type) {
+  return event_type == event_type_names::kSnapchanging ||
+         event_type == event_type_names::kSnapchanged;
+}
+
 }  // namespace event_util
 
 }  // namespace blink
