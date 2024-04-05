@@ -21,6 +21,9 @@ namespace mojo::core::ipcz_driver {
 
 namespace {
 
+// Growth factor for reallocations.
+constexpr int kGrowthFactor = 2;
+
 // Data pipe attachments come in two parts within a message's handle list: the
 // DataPipe object wherever it was placed by the sender, and its control portal
 // as a separate attachment at the end of the handle list. For a message with
@@ -186,7 +189,8 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
   const size_t required_storage_size = std::max(new_data_size, kMinBufferSize);
   if (required_storage_size > data_storage_size_) {
     const size_t copy_size = std::min(new_data_size, data_storage_size_);
-    data_storage_size_ = std::max(data_size * 2, required_storage_size);
+    data_storage_size_ =
+        std::max(data_size * kGrowthFactor, required_storage_size);
     DataPtr new_storage(
         static_cast<uint8_t*>(base::AllocNonScannable(data_storage_size_)));
     base::ranges::copy(base::make_span(data_storage_.get(), copy_size),

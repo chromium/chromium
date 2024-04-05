@@ -41,13 +41,8 @@ namespace {
 
 std::atomic_bool g_use_trivial_messages{false};
 
-// To ensure amortized O(1) appends, need to be >1. Most STL implementations
-// use 2, but it may be too much for us, and we do see OOM crashes in the
-// reallocation.
-//
-// TODO(1301294): Consider asking the memory allocator for a
-// suitable size.
-constexpr float kGrowthFactor = 1.5;
+// TODO(1301294): Consider asking the memory allocator for a suitable size.
+constexpr int kGrowthFactor = 2;
 
 static_assert(
     IsAlignedForChannelMessage(sizeof(Channel::Message::LegacyHeader)),
