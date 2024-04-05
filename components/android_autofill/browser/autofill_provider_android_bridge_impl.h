@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <optional>
+#include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/span.h"
@@ -53,17 +54,16 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
 
   // Informs the `Delegate` that the linked form should be sent to the renderer
   // for filling. Invoked when the user has accepted Autofill.
-  void OnAutofillAvailable(JNIEnv* env, jobject jcaller);
+  void OnAutofillAvailable(JNIEnv* env);
 
   // Informs the `Delegate` that the datalist `value` should be accepted in the
   // renderer. Invoked when the user has accepted a datalist entry.
-  void OnAcceptDataListSuggestion(JNIEnv* env, jobject jcaller, jstring value);
+  void OnAcceptDataListSuggestion(JNIEnv* env, std::u16string value);
 
   // Informs the `Delegate` that the `WebContents`' native view should set the
   // anchor rect for `anchor_view` to the specified bounds. Invoked when opening
   // a datalist popup.
   void SetAnchorViewRect(JNIEnv* env,
-                         jobject jcaller,
                          jobject anchor_view,
                          jfloat x,
                          jfloat y,

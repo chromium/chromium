@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -757,20 +758,17 @@ public class AutofillProvider {
      * @param nativeAutofillProvider the native autofill provider.
      */
     private void autofill(long nativeAutofillProvider) {
-        AutofillProviderJni.get()
-                .onAutofillAvailable(nativeAutofillProvider, AutofillProvider.this);
+        AutofillProviderJni.get().onAutofillAvailable(nativeAutofillProvider);
     }
 
     private void acceptDataListSuggestion(long nativeAutofillProvider, String value) {
-        AutofillProviderJni.get()
-                .onAcceptDataListSuggestion(nativeAutofillProvider, AutofillProvider.this, value);
+        AutofillProviderJni.get().onAcceptDataListSuggestion(nativeAutofillProvider, value);
     }
 
     private void setAnchorViewRect(long nativeAutofillProvider, View anchorView, RectF rect) {
         AutofillProviderJni.get()
                 .setAnchorViewRect(
                         nativeAutofillProvider,
-                        AutofillProvider.this,
                         anchorView,
                         rect.left,
                         rect.top,
@@ -798,17 +796,14 @@ public class AutofillProvider {
 
         void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroidBridgeImpl);
 
-        void onAutofillAvailable(
-                long nativeAutofillProviderAndroidBridgeImpl, AutofillProvider caller);
+        void onAutofillAvailable(long nativeAutofillProviderAndroidBridgeImpl);
 
         void onAcceptDataListSuggestion(
                 long nativeAutofillProviderAndroidBridgeImpl,
-                AutofillProvider caller,
-                String value);
+                @JniType("std::u16string") String value);
 
         void setAnchorViewRect(
                 long nativeAutofillProviderAndroidBridgeImpl,
-                AutofillProvider caller,
                 View anchorView,
                 float x,
                 float y,

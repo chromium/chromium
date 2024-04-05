@@ -7,8 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/jni_array.h"
-#include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
@@ -21,9 +19,6 @@ namespace autofill {
 namespace {
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::GetClass;
 using base::android::ScopedJavaLocalRef;
 
 }  // namespace

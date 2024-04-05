@@ -20,7 +20,6 @@
 namespace autofill {
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -233,20 +232,17 @@ void AutofillProviderAndroidBridgeImpl::DetachFromJavaAutofillProvider(
   java_ref_.reset();
 }
 
-void AutofillProviderAndroidBridgeImpl::OnAutofillAvailable(JNIEnv* env,
-                                                            jobject jcaller) {
+void AutofillProviderAndroidBridgeImpl::OnAutofillAvailable(JNIEnv* env) {
   delegate_->OnAutofillAvailable();
 }
 
 void AutofillProviderAndroidBridgeImpl::OnAcceptDataListSuggestion(
     JNIEnv* env,
-    jobject jcaller,
-    jstring value) {
-  delegate_->OnAcceptDatalistSuggestion(ConvertJavaStringToUTF16(env, value));
+    std::u16string value) {
+  delegate_->OnAcceptDatalistSuggestion(value);
 }
 
 void AutofillProviderAndroidBridgeImpl::SetAnchorViewRect(JNIEnv* env,
-                                                          jobject jcaller,
                                                           jobject anchor_view,
                                                           jfloat x,
                                                           jfloat y,
