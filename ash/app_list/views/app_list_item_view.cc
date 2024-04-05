@@ -15,6 +15,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/folder_image.h"
@@ -24,6 +25,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -292,6 +294,14 @@ bool IsIndexMovingToDifferentRow(GridIndex old_index,
          old_index.page != new_index.page;
 }
 
+bool IsReorderCommand(int command_id) {
+  CommandId command = static_cast<CommandId>(command_id);
+
+  return (command == CommandId::REORDER_BY_NAME_ALPHABETICAL ||
+          command == CommandId::REORDER_BY_NAME_REVERSE_ALPHABETICAL ||
+          command == CommandId::REORDER_BY_COLOR);
+}
+
 }  // namespace
 
 class AppListItemView::FolderIconView : public views::View,
@@ -529,6 +539,53 @@ class AppListItemView::FolderIconView : public views::View,
   std::string dragged_item_id_;
 };
 
+// An AppMenuAdapter specific to AppListItems that are shown in the context of
+// the AppsCollections. The adapter intercepts sort requests and delegates them
+// to AppsCollectionsController.
+class AppsCollectionsMenuModelAdapter : public AppListMenuModelAdapter {
+ public:
+  AppsCollectionsMenuModelAdapter(
+      const std::string& app_id,
+      std::unique_ptr<ui::SimpleMenuModel> menu_model,
+      views::Widget* widget_owner,
+      ui::MenuSourceType source_type,
+      const AppLaunchedMetricParams& metric_params,
+      AppListViewAppType type,
+      base::OnceClosure on_menu_closed_callback,
+      bool is_tablet_mode,
+      AppCollection collection)
+      : AppListMenuModelAdapter(app_id,
+                                std::move(menu_model),
+                                widget_owner,
+                                source_type,
+                                metric_params,
+                                type,
+                                std::move(on_menu_closed_callback),
+                                is_tablet_mode,
+                                collection) {}
+
+  AppsCollectionsMenuModelAdapter(const AppsCollectionsMenuModelAdapter&) =
+      delete;
+  AppsCollectionsMenuModelAdapter& operator=(
+      const AppsCollectionsMenuModelAdapter&) = delete;
+
+  ~AppsCollectionsMenuModelAdapter() override = default;
+
+  void ExecuteCommand(int id, int mouse_event_flags) override {
+    // Intercept Reorder commands to show the reorder confirmation dialog.
+    if (IsReorderCommand(id)) {
+      AppsCollectionsController::Get()->RequestAppReorder(
+          static_cast<CommandId>(id) == CommandId::REORDER_BY_COLOR
+              ? AppListSortOrder::kColor
+              : AppListSortOrder::kNameAlphabetical);
+      return;
+    }
+
+    // Note that ExecuteCommand might delete us.
+    AppListMenuModelAdapter::ExecuteCommand(id, mouse_event_flags);
+  }
+};
+
 BEGIN_METADATA(AppListItemView, FolderIconView)
 END_METADATA
 
@@ -675,7 +732,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   item->AddObserver(this);
 
   if (is_folder_) {
-    context_menu_for_folder_ = std::make_unique<AppsGridContextMenu>();
+    context_menu_for_folder_ = std::make_unique<AppsGridContextMenu>(
+        AppsGridContextMenu::GridType::kAppsGrid);
     set_context_menu_controller(context_menu_for_folder_.get());
   } else {
     set_context_menu_controller(this);
@@ -1319,12 +1377,23 @@ void AppListItemView::OnContextMenuModelReceived(
   }
   view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
-  item_menu_model_adapter_ = std::make_unique<AppListMenuModelAdapter>(
-      item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),
-      source_type, metric_params, app_type,
-      base::BindOnce(&AppListItemView::OnMenuClosed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      view_delegate_->IsInTabletMode(), item_weak_->collection_id());
+  if (context_ == Context::kAppsCollection) {
+    item_menu_model_adapter_ =
+        std::make_unique<AppsCollectionsMenuModelAdapter>(
+            item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),
+            source_type, metric_params, app_type,
+            base::BindOnce(&AppListItemView::OnMenuClosed,
+                           weak_ptr_factory_.GetWeakPtr()),
+            view_delegate_->IsInTabletMode(), item_weak_->collection_id());
+
+  } else {
+    item_menu_model_adapter_ = std::make_unique<AppListMenuModelAdapter>(
+        item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),
+        source_type, metric_params, app_type,
+        base::BindOnce(&AppListItemView::OnMenuClosed,
+                       weak_ptr_factory_.GetWeakPtr()),
+        view_delegate_->IsInTabletMode(), item_weak_->collection_id());
+  }
 
   item_menu_model_adapter_->Run(
       anchor_rect, views::MenuAnchorPosition::kBubbleRight, run_types);
@@ -1356,11 +1425,21 @@ void AppListItemView::ShowContextMenuForViewImpl(
   views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
                                             nullptr);
 
-  // When the context menu comes from the apps grid it has sorting options. When
-  // it comes from recent apps it has an option to hide the continue section.
-  AppListItemContext item_context = context_ == Context::kAppsGridView
-                                        ? AppListItemContext::kAppsGrid
-                                        : AppListItemContext::kRecentApps;
+  // When the context menu comes from the apps grid or the apps collections grid
+  // it has sorting options. When it comes from recent apps it has an option to
+  // hide the continue section.
+  AppListItemContext item_context;
+  switch (context_) {
+    case Context::kAppsGridView:
+      item_context = AppListItemContext::kAppsGrid;
+      break;
+    case Context::kAppsCollection:
+      item_context = AppListItemContext::kAppsCollectionsGrid;
+      break;
+    case Context::kRecentAppsView:
+      item_context = AppListItemContext::kRecentApps;
+      break;
+  }
   view_delegate_->GetContextMenuModel(
       item_weak_->id(), item_context,
       base::BindOnce(&AppListItemView::OnContextMenuModelReceived,

@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 
@@ -92,4 +93,15 @@ void AppsCollectionsController::SetClient(AppListClient* client) {
   client_ = client;
 }
 
+void AppsCollectionsController::RequestAppReorder(AppListSortOrder order) {
+  CHECK(reorder_callback_);
+
+  reorder_callback_.Run(order);
+}
+
+void AppsCollectionsController::SetReorderCallback(ReorderCallback callback) {
+  CHECK(callback);
+
+  reorder_callback_ = std::move(callback);
+}
 }  // namespace ash

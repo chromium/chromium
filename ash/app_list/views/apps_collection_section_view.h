@@ -60,6 +60,7 @@ class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
   AppCollection collection() { return collection_; }
 
  private:
+  friend class AppListBubbleAppsCollectionsPageTest;
   friend class AppsCollectionSectionViewTest;
 
   // Calculates how much padding is assigned to the AppListItemView.

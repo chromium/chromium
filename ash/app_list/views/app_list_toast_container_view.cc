@@ -58,6 +58,11 @@ constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 
 }  // namespace
 
+AppsGridContextMenu::GridType
+AppListToastContainerView::Delegate::GetGridTypeForContextMenu() {
+  return AppsGridContextMenu::GridType::kAppsGrid;
+}
+
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
     AppListKeyboardController* keyboard_controller,
@@ -85,7 +90,8 @@ AppListToastContainerView::AppListToastContainerView(
   if (!tablet_mode_) {
     // `context_menu_` is only set in clamshell mode. The sort options in tablet
     // mode are handled in RootWindowController with ShelfContextMenuModel.
-    context_menu_ = std::make_unique<AppsGridContextMenu>();
+    context_menu_ = std::make_unique<AppsGridContextMenu>(
+        delegate->GetGridTypeForContextMenu());
     set_context_menu_controller(context_menu_.get());
   }
 }

@@ -186,6 +186,8 @@ enum class AppListItemContext {
   kAppsGrid,
   // Recent apps.
   kRecentApps,
+  // The apps collections grid.
+  kAppsCollectionsGrid,
 };
 
 // All possible orders to sort app list items.

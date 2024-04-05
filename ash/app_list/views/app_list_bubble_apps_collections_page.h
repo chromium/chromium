@@ -62,6 +62,7 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
 
   // AppListToastContainerView::Delegate:
   void OnNudgeRemoved() override;
+  AppsGridContextMenu::GridType GetGridTypeForContextMenu() override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

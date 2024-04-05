@@ -8,11 +8,15 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_menu_model_adapter.h"
+#include "ash/app_list/views/apps_collection_section_view.h"
 #include "ash/app_list/views/apps_collections_dismiss_dialog.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,9 +31,9 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
-namespace {
 
 class AppListBubbleAppsCollectionsPageTest : public AshTestBase {
  public:
@@ -42,6 +46,26 @@ class AppListBubbleAppsCollectionsPageTest : public AshTestBase {
          app_list_features::kForceShowAppsCollections},
         {});
     AshTestBase::SetUp();
+  }
+
+  AppsCollectionSectionView* GetViewForCollection(AppCollection id) {
+    views::View* collections_container =
+        GetAppListTestHelper()->GetAppCollectionsSectionsContainer();
+    for (views::View* child : collections_container->children()) {
+      AppsCollectionSectionView* collection =
+          views::AsViewClass<AppsCollectionSectionView>(child);
+      if (collection->collection() == id) {
+        return collection;
+      }
+    }
+    return nullptr;
+  }
+
+  AppListItemView* GetAppItemAtIndex(AppsCollectionSectionView* collection,
+                                     size_t index) {
+    return index < collection->item_views_.view_size()
+               ? collection->item_views_.view_at(index)
+               : nullptr;
   }
 
  private:
@@ -213,7 +237,8 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
   EXPECT_EQ(AppListSortOrder::kCustom, helper->model()->requested_sort_order());
 }
 
-TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterSorting) {
+TEST_F(AppListBubbleAppsCollectionsPageTest,
+       ShowAppsPageAfterSortingFromAppsGrid) {
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -336,5 +361,82 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, KeyboardSelectToBottomLogsAction) {
                                 2);
 }
 
-}  // namespace
+TEST_F(AppListBubbleAppsCollectionsPageTest,
+       ShowAppsPageAfterSortingFromAppItem) {
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 2);
+  helper->ShowAppList();
+
+  AppsCollectionSectionView* entertainment_collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(entertainment_collection);
+  ASSERT_EQ(entertainment_collection->GetItemViewCount(), 2u);
+
+  AppListItemView* app_list_item_view =
+      GetAppItemAtIndex(entertainment_collection, 0);
+  GetEventGenerator()->MoveMouseTo(
+      app_list_item_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+
+  AppListMenuModelAdapter* menu_model_adapter =
+      app_list_item_view->item_menu_model_adapter();
+  ASSERT_TRUE(menu_model_adapter);
+  EXPECT_TRUE(menu_model_adapter->IsShowingMenu());
+
+  menu_model_adapter->ExecuteCommand(REORDER_BY_COLOR, 0);
+  ASSERT_TRUE(helper->GetBubbleSearchPageDialog());
+
+  views::Widget* widget = helper->GetBubbleSearchPageDialog()->widget();
+  views::WidgetDelegate* widget_delegate = widget->widget_delegate();
+  views::test::WidgetDestroyedWaiter widget_waiter(widget);
+  LeftClickOn(static_cast<AppsCollectionsDismissDialog*>(widget_delegate)
+                  ->accept_button_for_test());
+  widget_waiter.Wait();
+
+  // Apps collections page is not visible.
+  EXPECT_FALSE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+  EXPECT_EQ(AppListSortOrder::kColor, helper->model()->requested_sort_order());
+}
+
+TEST_F(AppListBubbleAppsCollectionsPageTest,
+       CancelDismissDialogAfterAttempingSortFromAppItem) {
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 2);
+  helper->ShowAppList();
+
+  AppsCollectionSectionView* entertainment_collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(entertainment_collection);
+  ASSERT_EQ(entertainment_collection->GetItemViewCount(), 2u);
+
+  AppListItemView* app_list_item_view =
+      GetAppItemAtIndex(entertainment_collection, 0);
+  GetEventGenerator()->MoveMouseTo(
+      app_list_item_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+
+  ash::AppListMenuModelAdapter* menu_model_adapter =
+      app_list_item_view->item_menu_model_adapter();
+  ASSERT_TRUE(menu_model_adapter);
+  EXPECT_TRUE(menu_model_adapter->IsShowingMenu());
+
+  menu_model_adapter->ExecuteCommand(REORDER_BY_NAME_ALPHABETICAL, 0);
+  ASSERT_TRUE(helper->GetBubbleSearchPageDialog());
+
+  views::Widget* widget = helper->GetBubbleSearchPageDialog()->widget();
+  views::WidgetDelegate* widget_delegate = widget->widget_delegate();
+  views::test::WidgetDestroyedWaiter widget_waiter(widget);
+  LeftClickOn(static_cast<AppsCollectionsDismissDialog*>(widget_delegate)
+                  ->cancel_button_for_test());
+  widget_waiter.Wait();
+
+  // Apps collections page is still visible.
+  EXPECT_TRUE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+  EXPECT_EQ(AppListSortOrder::kCustom, helper->model()->requested_sort_order());
+}
+
 }  // namespace ash
