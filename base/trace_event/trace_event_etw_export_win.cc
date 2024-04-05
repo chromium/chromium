@@ -4,11 +4,14 @@
 
 #include "base/trace_event/trace_event_etw_export_win.h"
 
+#include <windows.h>
+
 #include <evntrace.h>
 #include <guiddef.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <windows.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -350,7 +353,7 @@ void TraceEventETWExport::AddCompleteEndEvent(
 
 // static
 bool TraceEventETWExport::IsCategoryGroupEnabled(
-    StringPiece category_group_name) {
+    std::string_view category_group_name) {
   DCHECK(!category_group_name.empty());
 
   auto* instance = GetInstanceIfExists();
@@ -363,7 +366,7 @@ bool TraceEventETWExport::IsCategoryGroupEnabled(
   StringViewTokenizer category_group_tokens(category_group_name.begin(),
                                             category_group_name.end(), ",");
   while (category_group_tokens.GetNext()) {
-    StringPiece category_group_token = category_group_tokens.token_piece();
+    std::string_view category_group_token = category_group_tokens.token_piece();
     if (instance->IsCategoryEnabled(category_group_token)) {
       return true;
     }
@@ -397,7 +400,8 @@ bool TraceEventETWExport::UpdateEnabledCategories() {
   return true;
 }
 
-bool TraceEventETWExport::IsCategoryEnabled(StringPiece category_name) const {
+bool TraceEventETWExport::IsCategoryEnabled(
+    std::string_view category_name) const {
   // Try to find the category and return its status if found
   auto it = categories_status_.find(category_name);
   if (it != categories_status_.end())
@@ -478,7 +482,7 @@ uint64_t CategoryGroupToETWKeyword(std::string_view category_group_name) {
   StringViewTokenizer category_group_tokens(category_group_name.begin(),
                                             category_group_name.end(), ",");
   while (category_group_tokens.GetNext()) {
-    StringPiece category_group_token = category_group_tokens.token_piece();
+    std::string_view category_group_token = category_group_tokens.token_piece();
 
     // Lookup the keyword for this part of the category_group_name
     // and or in the keyword.

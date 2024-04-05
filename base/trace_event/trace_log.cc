@@ -1600,7 +1600,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
       } else {
         // This is a thread id that we've seen before, but potentially with a
         // new name.
-        std::vector<StringPiece> existing_names = base::SplitStringPiece(
+        std::vector<std::string_view> existing_names = base::SplitStringPiece(
             existing_name->second, ",", base::KEEP_WHITESPACE,
             base::SPLIT_WANT_NONEMPTY);
         if (!Contains(existing_names, new_name)) {

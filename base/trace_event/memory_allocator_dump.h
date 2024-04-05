@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -54,7 +55,7 @@ class BASE_EXPORT MemoryAllocatorDump {
     // By design name, units and value_string are  always coming from
     // indefinitely lived const char* strings, the only reason we copy
     // them into a std::string is to handle Mojo (de)serialization.
-    // TODO(hjd): Investigate optimization (e.g. using StringPiece).
+    // TODO(hjd): Investigate optimization (e.g. using std::string_view).
     Entry();  // Only for deserialization.
     Entry(std::string name, std::string units, uint64_t value);
     Entry(std::string name, std::string units, std::string value);

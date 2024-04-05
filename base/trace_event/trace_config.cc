@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -254,7 +255,7 @@ bool TraceConfig::EventFilterConfig::GetArgAsSet(
 }
 
 bool TraceConfig::EventFilterConfig::IsCategoryGroupEnabled(
-    const StringPiece& category_group_name) const {
+    std::string_view category_group_name) const {
   return category_filter_.IsCategoryGroupEnabled(category_group_name);
 }
 
@@ -277,12 +278,12 @@ TraceConfig::TraceConfig() {
   InitializeDefault();
 }
 
-TraceConfig::TraceConfig(StringPiece category_filter_string,
-                         StringPiece trace_options_string) {
+TraceConfig::TraceConfig(std::string_view category_filter_string,
+                         std::string_view trace_options_string) {
   InitializeFromStrings(category_filter_string, trace_options_string);
 }
 
-TraceConfig::TraceConfig(StringPiece category_filter_string,
+TraceConfig::TraceConfig(std::string_view category_filter_string,
                          TraceRecordMode record_mode) {
   InitializeFromStrings(category_filter_string,
                         TraceConfig::TraceRecordModeToStr(record_mode));
@@ -292,7 +293,7 @@ TraceConfig::TraceConfig(const Value::Dict& config) {
   InitializeFromConfigDict(config);
 }
 
-TraceConfig::TraceConfig(StringPiece config_string) {
+TraceConfig::TraceConfig(std::string_view config_string) {
   if (!config_string.empty())
     InitializeFromConfigString(config_string);
   else
@@ -371,7 +372,7 @@ std::string TraceConfig::ToCategoryFilterString() const {
 }
 
 bool TraceConfig::IsCategoryGroupEnabled(
-    const StringPiece& category_group_name) const {
+    std::string_view category_group_name) const {
   // TraceLog should call this method only as part of enabling/disabling
   // categories.
   return category_filter_.IsCategoryGroupEnabled(category_group_name);
@@ -480,7 +481,7 @@ void TraceConfig::InitializeFromConfigDict(const Value::Dict& dict) {
   }
 }
 
-void TraceConfig::InitializeFromConfigString(StringPiece config_string) {
+void TraceConfig::InitializeFromConfigString(std::string_view config_string) {
   std::optional<Value> dict = JSONReader::Read(config_string);
   if (dict && dict->is_dict())
     InitializeFromConfigDict(dict->GetDict());
@@ -488,8 +489,8 @@ void TraceConfig::InitializeFromConfigString(StringPiece config_string) {
     InitializeDefault();
 }
 
-void TraceConfig::InitializeFromStrings(StringPiece category_filter_string,
-                                        StringPiece trace_options_string) {
+void TraceConfig::InitializeFromStrings(std::string_view category_filter_string,
+                                        std::string_view trace_options_string) {
   if (!category_filter_string.empty())
     category_filter_.InitializeFromString(category_filter_string);
 

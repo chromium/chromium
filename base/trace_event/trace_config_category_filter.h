@@ -6,10 +6,10 @@
 #define BASE_TRACE_EVENT_TRACE_CONFIG_CATEGORY_FILTER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace base::trace_event {
@@ -29,7 +29,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
 
   // Initializes from category filter string. See TraceConfig constructor for
   // description of how to write category filter string.
-  void InitializeFromString(const StringPiece& category_filter_string);
+  void InitializeFromString(std::string_view category_filter_string);
 
   // Initializes TraceConfigCategoryFilter object from the config dictionary.
   void InitializeFromConfigDict(const Value::Dict& dict);
@@ -41,20 +41,20 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   // Returns true if at least one category in the list is enabled by this
   // trace config. This is used to determine if the category filters are
   // enabled in the TRACE_* macros.
-  bool IsCategoryGroupEnabled(const StringPiece& category_group_name) const;
+  bool IsCategoryGroupEnabled(std::string_view category_group_name) const;
 
   // Returns true if the category is enabled according to this trace config.
   // This tells whether a category is enabled from the TraceConfig's
   // perspective. Please refer to IsCategoryGroupEnabled() to determine if a
   // category is enabled from the tracing runtime's perspective.
-  bool IsCategoryEnabled(const StringPiece& category_name) const;
+  bool IsCategoryEnabled(std::string_view category_name) const;
 
   void ToDict(Value::Dict& dict) const;
 
   std::string ToFilterString() const;
 
   // Returns true if category name is a valid string.
-  static bool IsCategoryNameAllowed(StringPiece str);
+  static bool IsCategoryNameAllowed(std::string_view str);
 
   const StringList& included_categories() const { return included_categories_; }
   const StringList& excluded_categories() const { return excluded_categories_; }
