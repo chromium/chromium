@@ -11,6 +11,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './history_embeddings_promo.html.js';
 
+// Key used in localStorage to determine if this promo has been shown. Any value
+// is considered truthy.
+export const HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY: string =
+    'history-embeddings-promo';
+
 export interface HistoryEmbeddingsPromoElement {
   $: {
     close: HTMLElement,
@@ -29,13 +34,19 @@ export class HistoryEmbeddingsPromoElement extends PolymerElement {
 
   static get properties() {
     return {
-      shown_: Boolean,
+      shown_: {
+        type: Boolean,
+        value: () =>
+            !(window.localStorage.getItem(HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY)),
+      },
     };
   }
 
-  private shown_: boolean = true;
+  private shown_: boolean;
 
   private onCloseClick_() {
+    window.localStorage.setItem(
+        HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, true.toString());
     this.shown_ = false;
   }
 }
