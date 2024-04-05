@@ -16,7 +16,7 @@ items:
 - caption: Do not report security status
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - tylergarrett@google.com
 schema:
   type: boolean
