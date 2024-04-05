@@ -114,4 +114,14 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
         }
         return false;
     }
+
+    @Override
+    public void launchUpgradePromoActivityIfAllowed(Context context, Profile profile) {
+        if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
+                || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
+                        profile, SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED)) {
+            Intent intent = SigninAndHistoryOptInActivity.createIntentForUpgradePromo(context);
+            context.startActivity(intent);
+        }
+    }
 }

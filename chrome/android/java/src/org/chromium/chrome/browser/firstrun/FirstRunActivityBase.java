@@ -42,6 +42,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
+// TODO(b/41493788): Consider renaming it now that it is also the base for the upgrade promo.
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
@@ -167,6 +168,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         super.finishNativeInitialization();
         mNativeInitialized = true;
         mNativeInitializedTime = SystemClock.elapsedRealtime();
+        // TODO(b/41493788): Do not record this outside of the FRE.
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.NativeInitialized", mNativeInitializedTime - mStartTime);
         mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());

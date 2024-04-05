@@ -55,7 +55,7 @@ found in the LICENSE file.
                         app:srcCompat="@drawable/history_sync_illustration"
                         android:importantForAccessibility="no" />
                     <ImageView
-                        android:id="@+id/account_image"
+                        android:id="@+id/history_sync_account_image"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_centerVertical="@id/history_sync_illustration"

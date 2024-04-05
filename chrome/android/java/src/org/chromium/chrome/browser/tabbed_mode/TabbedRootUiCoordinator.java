@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
@@ -1329,6 +1330,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 profile,
                 SyncConsentActivityLauncherImpl.get(),
+                SigninAndHistoryOptInActivityLauncherImpl.get(),
                 VersionInfo.getProductMajorVersion())) {
             return true;
         }
