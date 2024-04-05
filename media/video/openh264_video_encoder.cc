@@ -258,10 +258,12 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   codec_ = std::move(codec);
 
-  VideoEncoderInfo info;
-  info.implementation_name = "OpenH264VideoEncoder";
-  info.is_hardware_accelerated = false;
-  BindCallbackToCurrentLoopIfNeeded(std::move(info_cb)).Run(info);
+  if (info_cb) {
+    VideoEncoderInfo info;
+    info.implementation_name = "OpenH264VideoEncoder";
+    info.is_hardware_accelerated = false;
+    BindCallbackToCurrentLoopIfNeeded(std::move(info_cb)).Run(info);
+  }
 
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }

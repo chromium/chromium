@@ -193,7 +193,9 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args,
 }
 
 void VideoEncoderFallback::CallInfo(const VideoEncoderInfo& encoder_info) {
-  info_cb_.Run(encoder_info);
+  if (info_cb_) {
+    info_cb_.Run(encoder_info);
+  }
 }
 
 void VideoEncoderFallback::CallOutput(VideoEncoderOutput output,

@@ -972,7 +972,9 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   supports_frame_size_change_ = info.supports_frame_size_change;
-  info_cb_.Run(info);
+  if (info_cb_) {
+    info_cb_.Run(info);
+  }
 }
 
 void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
