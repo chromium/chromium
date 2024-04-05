@@ -47,7 +47,8 @@
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/util_constants.h"
-#include "google_update/google_update_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using base::Time;
 using base::win::RegKey;
@@ -423,6 +424,11 @@ BOOL __stdcall LaunchGoogleChrome() {
   }
 
   bool impersonation_success = false;
+  absl::Cleanup revert_to_self = [&] {
+    if (impersonation_success) {
+      ::RevertToSelf();
+    }
+  };
   if (IsRunningElevated()) {
     wchar_t* curr_proc_sid;
     if (!GetUserIdForProcess(GetCurrentProcessId(), &curr_proc_sid)) {
@@ -472,25 +478,24 @@ BOOL __stdcall LaunchGoogleChrome() {
 
   base::CommandLine chrome_command(chrome_exe_path);
 
-  bool ret = false;
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID,
+  // to make sure that marshaling loads the proxy/stub from the correct (HKLM)
+  // hive.
+  // If Omaha's process launcher does not work, Omaha may not be installed at
+  // system level. Try just running Chrome instead.
+  ComPtr<IUnknown> unknown;
   ComPtr<IProcessLauncher> ipl;
-  if (SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
-                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&ipl)))) {
-    if (SUCCEEDED(
-            ipl->LaunchCmdLine(chrome_command.GetCommandLineString().c_str())))
-      ret = true;
-    ipl.Reset();
-  } else {
-    // Couldn't get Omaha's process launcher, Omaha may not be installed at
-    // system level. Try just running Chrome instead.
-    ret = base::LaunchProcess(chrome_command.GetCommandLineString(),
-                              base::LaunchOptions())
-              .IsValid();
-  }
-
-  if (impersonation_success)
-    ::RevertToSelf();
-  return ret;
+  return (SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
+                                       CLSCTX_LOCAL_SERVER,
+                                       IID_PPV_ARGS(&unknown))) &&
+          (SUCCEEDED(unknown.CopyTo(__uuidof(IProcessLauncherSystem),
+                                    IID_PPV_ARGS_Helper(&ipl))) ||
+           SUCCEEDED(unknown.As(&ipl))) &&
+          SUCCEEDED(ipl->LaunchCmdLine(
+              chrome_command.GetCommandLineString().c_str()))) ||
+         base::LaunchProcess(chrome_command.GetCommandLineString(),
+                             base::LaunchOptions())
+             .IsValid();
 }
 
 BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,
