@@ -328,8 +328,8 @@ public class MediaNotificationInfo {
         result = 31 * result + mActions;
         result = 31 * result + id;
         result = 31 * result + listener.hashCode();
-        result = 31 * result + mediaSessionActions.hashCode();
-        result = 31 * result + mediaPosition.hashCode();
+        result = 31 * result + (mediaSessionActions == null ? 0 : mediaSessionActions.hashCode());
+        result = 31 * result + (mediaPosition == null ? 0 : mediaPosition.hashCode());
         return result;
     }
 }
