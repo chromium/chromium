@@ -312,8 +312,10 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
 
 std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
   // If both of them are full shown, hide the tooltip.
-  if (name_->GetPreferredSize().width() <= name_->width() &&
-      email_->GetPreferredSize().width() <= email_->width()) {
+  if (name_->GetPreferredSize(views::SizeBounds(name_->width(), {})).width() <=
+          name_->width() &&
+      email_->GetPreferredSize(views::SizeBounds(email_->width(), {}))
+              .width() <= email_->width()) {
     return std::u16string();
   }
   return views::Button::GetTooltipText(p);

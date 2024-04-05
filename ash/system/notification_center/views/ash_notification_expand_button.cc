@@ -218,9 +218,12 @@ gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
   // its size in our calculation here, so that size change animation can be
   // performed correctly.
   if (label_fading_out_) {
-    return gfx::Size(size.width() - label_->GetPreferredSize().width() -
-                         kLabelInsets.width(),
-                     size.height());
+    return gfx::Size(
+        size.width() -
+            label_->GetPreferredSize(views::SizeBounds(label_->width(), {}))
+                .width() -
+            kLabelInsets.width(),
+        size.height());
   }
 
   return size;

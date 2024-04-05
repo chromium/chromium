@@ -166,7 +166,7 @@ int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
   // `LayoutManager`. When the shelf orientation is vertical, the `BoxLayout`
   // will also have vertical orientation and will invoke `GetHeightForWidth()`
   // instead of `GetPreferredSize()` when determining preferred size.
-  return GetPreferredSize().height();
+  return GetPreferredSize(views::SizeBounds(width, {})).height();
 }
 
 gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {

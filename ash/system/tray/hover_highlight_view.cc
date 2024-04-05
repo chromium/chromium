@@ -294,7 +294,7 @@ gfx::Size HoverHighlightView::CalculatePreferredSize() const {
 }
 
 int HoverHighlightView::GetHeightForWidth(int width) const {
-  return GetPreferredSize().height();
+  return GetPreferredSize(views::SizeBounds(width, {})).height();
 }
 
 void HoverHighlightView::OnFocus() {
