@@ -334,7 +334,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);
-  NSString* error_string = l10n_util::GetNSString(IDS_HEADING_NEW);
+  NSString* error_string = l10n_util::GetNSString(IDS_SAFEBROWSING_HEADING);
   EXPECT_TRUE([page containsString:error_string]);
 }
 

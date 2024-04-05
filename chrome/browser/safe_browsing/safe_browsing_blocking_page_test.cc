@@ -2371,40 +2371,41 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
 
   // Safe browsing blocking page should use new heading and primary,
   // explanation, and proceed paragraph strings.
-  ASSERT_EQ(load_time_data.Find("heading")->GetString(),
-            base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_HEADING_NEW)));
+  ASSERT_EQ(
+      load_time_data.Find("heading")->GetString(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING)));
   SBThreatType threat_type = GetThreatType();
   if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
       threat_type == SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW)));
+                  IDS_PHISHING_V4_PRIMARY_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW)));
+                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW)));
+                  IDS_PHISHING_V4_PROCEED_PARAGRAPH)));
   } else if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_MALWARE) {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
-              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW)));
+              base::UTF16ToUTF8(
+                  l10n_util::GetStringUTF16(IDS_MALWARE_V3_PRIMARY_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW)));
+                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
-              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW)));
+              base::UTF16ToUTF8(
+                  l10n_util::GetStringUTF16(IDS_MALWARE_V3_PROCEED_PARAGRAPH)));
   } else {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
-              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW)));
+              base::UTF16ToUTF8(
+                  l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PRIMARY_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW)));
+                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH)));
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
-              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                  IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW)));
+              base::UTF16ToUTF8(
+                  l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PROCEED_PARAGRAPH)));
   }
 }
 
@@ -2431,13 +2432,14 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
 
   // Safe browsing blocking page should use new header and enhanced protection
   // promo message strings.
-  ASSERT_EQ(load_time_data.Find("heading")->GetString(),
-            base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_HEADING_NEW)));
+  ASSERT_EQ(
+      load_time_data.Find("heading")->GetString(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING)));
   ASSERT_EQ(
       load_time_data.Find(security_interstitials::kEnhancedProtectionMessage)
           ->GetString(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-          IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW)));
+          IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE)));
 }
 
 class SafeBrowsingBlockingPageDelayedWarningBrowserTest

@@ -90,9 +90,9 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
   load_time_data.Set(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data.Set(security_interstitials::kEnhancedProtectionMessage,
-                     l10n_util::GetStringUTF16(
-                         IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW));
+  load_time_data.Set(
+      security_interstitials::kEnhancedProtectionMessage,
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 
   if (always_show_back_to_safety()) {
     load_time_data.Set("hide_primary_button", false);
@@ -256,61 +256,56 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
 void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", false);
-  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
-  load_time_data.Set(
-      "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
+  load_time_data.Set("primaryParagraph", l10n_util::GetStringUTF16(
+                                             IDS_MALWARE_V3_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
       is_subresource()
           ? l10n_util::GetStringFUTF16(
-                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
                 common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(
-                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW));
-  load_time_data.Set(
-      "finalParagraph",
-      l10n_util::GetStringUTF16(IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW));
+          : l10n_util::GetStringUTF16(IDS_MALWARE_V3_EXPLANATION_PARAGRAPH));
+  load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
+                                           IDS_MALWARE_V3_PROCEED_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", false);
-  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
-  load_time_data.Set(
-      "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
+  load_time_data.Set("primaryParagraph", l10n_util::GetStringUTF16(
+                                             IDS_HARMFUL_V3_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
       is_subresource()
           ? l10n_util::GetStringFUTF16(
-                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
                 common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(
-                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW));
-  load_time_data.Set(
-      "finalParagraph",
-      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW));
+          : l10n_util::GetStringUTF16(IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH));
+  load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
+                                           IDS_HARMFUL_V3_PROCEED_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("phishing", true);
-  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_HEADING_NEW));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
   load_time_data.Set(
       "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW));
+      l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
       is_subresource()
           ? l10n_util::GetStringFUTF16(
-                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE,
                 common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(
-                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW));
-  load_time_data.Set(
-      "finalParagraph",
-      l10n_util::GetStringUTF16(IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW));
+          : l10n_util::GetStringUTF16(IDS_PHISHING_V4_EXPLANATION_PARAGRAPH));
+  load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
+                                           IDS_PHISHING_V4_PROCEED_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
