@@ -280,9 +280,6 @@ source_set("renderer") {
     "//third_party/zlib/google:compression_utils",
   ]
 
-  # Temporarily allow crash_key; see https://crbug.com/1034755
-  deps += [ "//components/crash/core/common:crash_key" ]
-
   if (enable_pdf) {
     deps += [
       "//pdf:buildflags",
