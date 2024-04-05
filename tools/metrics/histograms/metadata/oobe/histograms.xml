@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="CommonScreenName">
   <variant name="Adb-sideloading"/>
   <variant name="Add-child"/>
+  <variant name="Ai-intro"/>
   <variant name="App-downloading"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Autolaunch"/>
@@ -65,6 +66,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Theme-selection"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
+  <variant name="Tuna"/>
   <variant name="Update-required"/>
   <variant name="User-creation"/>
   <variant name="Wrong-hwid"/>
@@ -90,6 +92,7 @@ chromium-metrics-reviews@google.com.
 <variants name="OOBELegacyScreenName">
   <variant name="Adb-sideloading"/>
   <variant name="Add-child"/>
+  <variant name="Ai-intro"/>
   <variant name="App-downloading"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Auto-enrollment-check"/>
@@ -142,6 +145,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Tos"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
+  <variant name="Tuna"/>
   <variant name="Update-required"/>
   <variant name="User-creation"/>
   <variant name="Wrong-hwid"/>
@@ -206,6 +210,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Add-child.EnterpriseEnroll"/>
   <variant name="Add-child.KioskEnterpriseEnroll"/>
   <variant name="Add-child.SignInAsChild"/>
+  <variant name="Ai-intro.Next"/>
   <variant name="App-downloading.Next"/>
   <variant name="Assistant-optin-flow.Next"/>
   <variant name="Auto-enrollment-check.Next"/>
@@ -305,6 +310,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Accepted"/>
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
+  <variant name="Tuna.Back"/>
+  <variant name="Tuna.Next"/>
   <variant name="User-creation.Cancel"/>
   <variant name="User-creation.EnterpriseEnrollShortcut"/>
   <variant name="User-creation.EnterpriseEnrollTriage"/>
