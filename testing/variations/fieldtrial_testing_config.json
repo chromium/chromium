@@ -19345,8 +19345,10 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ClearLoginDatabaseForUPMUsers",
                         "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
-                        "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration"
+                        "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
+                        "kUnifiedPasswordManagerSyncOnlyInGMSCore"
                     ]
                 }
             ]
