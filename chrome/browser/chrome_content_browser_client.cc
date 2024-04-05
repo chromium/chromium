@@ -8092,9 +8092,10 @@ bool ChromeContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
     const HostContentSettingsMap* const content_settings =
         HostContentSettingsMapFactory::GetForProfile(
             render_frame_host->GetBrowserContext());
-    if (content_settings->GetContentSetting(
+    if (content_settings &&
+        content_settings->GetContentSetting(
             url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) ==
-        CONTENT_SETTING_ALLOW) {
+            CONTENT_SETTING_ALLOW) {
       return false;
     }
   }
