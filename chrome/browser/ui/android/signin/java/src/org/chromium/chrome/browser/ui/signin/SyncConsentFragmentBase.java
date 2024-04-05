@@ -430,6 +430,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private WindowAndroid getWindowAndroid() {
         return getDelegate().getWindowAndroid();
     }
+
+    @Nullable
     private Profile getProfile() {
         return getDelegate().getProfile();
     }
@@ -620,28 +622,33 @@ public abstract class SyncConsentFragmentBase extends Fragment
             mSigninView.getAccountTextSecondary().setVisibility(View.GONE);
         }
 
-        // Promise may not yet be fulfilled.
-        mAccountManagerFacade.getCoreAccountInfos().then((List<CoreAccountInfo> accounts) -> {
-            CoreAccountInfo account =
-                    AccountUtils.findCoreAccountInfoByEmail(accounts, accountEmail);
-            if (account == null) {
-                return;
-            }
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
 
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(getProfile());
-            if (SigninFeatureMap.isEnabled(
-                        SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
-                // Shows buttons hidden by createSigninView.
-                // MinorModeHelper.resolveMinorMode will either
-                // show the buttons immediately or after a short timeout during which the button
-                // configuration is retrieved.
-                MinorModeHelper.resolveMinorMode(
-                        identityManager, account, mSigninView::recreateButtons);
-            } else {
-                MinorModeHelper.trackLatency(identityManager, account);
-            }
-        });
+        // Promise may not yet be fulfilled.
+        mAccountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        (List<CoreAccountInfo> accounts) -> {
+                            CoreAccountInfo account =
+                                    AccountUtils.findCoreAccountInfoByEmail(accounts, accountEmail);
+                            if (account == null) {
+                                return;
+                            }
+
+                            if (SigninFeatureMap.isEnabled(
+                                    SigninFeatures
+                                            .MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
+                                // Shows buttons hidden by createSigninView.
+                                // MinorModeHelper.resolveMinorMode will either show the buttons
+                                // immediately or after a short timeout during which the button
+                                // configuration is retrieved.
+                                MinorModeHelper.resolveMinorMode(
+                                        identityManager, account, mSigninView::recreateButtons);
+                            } else {
+                                MinorModeHelper.trackLatency(identityManager, account);
+                            }
+                        });
     }
 
     private void showButtonBar() {

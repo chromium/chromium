@@ -41,19 +41,20 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
     public SyncConsentFirstRunFragment() {
         mSyncConsentDelegate =
                 new SyncConsentDelegate() {
-                    @NonNull
+                    @Nullable
                     @Override
                     public WindowAndroid getWindowAndroid() {
-                        return getPageDelegate().getWindowAndroid();
+                        FirstRunPageDelegate delegate = getPageDelegate();
+                        if (delegate == null) return null;
+                        return delegate.getWindowAndroid();
                     }
 
-                    @NonNull
+                    @Nullable
                     @Override
                     public Profile getProfile() {
-                        return getPageDelegate()
-                                .getProfileProviderSupplier()
-                                .get()
-                                .getOriginalProfile();
+                        FirstRunPageDelegate delegate = getPageDelegate();
+                        if (delegate == null) return null;
+                        return delegate.getProfileProviderSupplier().get().getOriginalProfile();
                     }
                 };
     }
