@@ -399,10 +399,12 @@ public class LanguagesManager {
     /** Return the {@link LanguagesManager} associated with the current {@link Profile}. */
     public static LanguagesManager getForProfile(Profile profile) {
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            sProfileMap =
+                    new ProfileKeyedMap<>(
+                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                            ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
-        Profile originalProfile = profile.getOriginalProfile();
-        return sProfileMap.getForProfile(originalProfile, LanguagesManager::new);
+        return sProfileMap.getForProfile(profile, LanguagesManager::new);
     }
 
     /** Called to release unused resources. */

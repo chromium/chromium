@@ -28,12 +28,16 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 public class ProfileKeyedMapTest {
     @Mock private Profile mProfile1;
+    @Mock private Profile mIncognitoProfile1;
     @Mock private Profile mProfile2;
     @Mock private Profile mProfile3;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        Mockito.when(mProfile1.getOriginalProfile()).thenReturn(mProfile1);
+        Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
     }
 
     @Test
@@ -112,5 +116,30 @@ public class ProfileKeyedMapTest {
         map.destroy();
         Mockito.verify(destroyable1).destroy();
         Mockito.verify(destroyable2).destroy();
+    }
+
+    @Test
+    public void testProfileSelection_OWN_INSTANCE() {
+        ProfileKeyedMap<Object> map =
+                new ProfileKeyedMap<Object>(
+                        ProfileKeyedMap.ProfileSelection.OWN_INSTANCE, NO_REQUIRED_CLEANUP_ACTION);
+        Object originalObj1 = new Object();
+        Object incognitoObj1 = new Object();
+        Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));
+        Assert.assertEquals(
+                incognitoObj1, map.getForProfile(mIncognitoProfile1, (profile) -> incognitoObj1));
+    }
+
+    @Test
+    public void testProfileSelection_REDIRECTED_TO_ORIGINAL() {
+        ProfileKeyedMap<Object> map =
+                new ProfileKeyedMap<Object>(
+                        ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                        NO_REQUIRED_CLEANUP_ACTION);
+        Object originalObj1 = new Object();
+        Object incognitoObj1 = new Object();
+        Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));
+        Assert.assertEquals(
+                originalObj1, map.getForProfile(mIncognitoProfile1, (profile) -> incognitoObj1));
     }
 }

@@ -135,10 +135,12 @@ public class PasswordManagerHelper {
      */
     public static PasswordManagerHelper getForProfile(Profile profile) {
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            sProfileMap =
+                    new ProfileKeyedMap<>(
+                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                            ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
-        Profile originalProfile = profile.getOriginalProfile();
-        return sProfileMap.getForProfile(originalProfile, PasswordManagerHelper::new);
+        return sProfileMap.getForProfile(profile, PasswordManagerHelper::new);
     }
 
     /**

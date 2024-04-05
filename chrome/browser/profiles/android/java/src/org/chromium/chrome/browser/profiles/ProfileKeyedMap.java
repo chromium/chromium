@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -26,28 +29,75 @@ public class ProfileKeyedMap<T> {
     /** Indicates no cleanup action is required when destroying an object in the map. */
     public static final Callback NO_REQUIRED_CLEANUP_ACTION = null;
 
+    /** Uses to determine what Profile reference should be used and stored in the map. */
+    @IntDef({ProfileSelection.OWN_INSTANCE, ProfileSelection.REDIRECTED_TO_ORIGINAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ProfileSelection {
+        /** Original: Self -- OTR: Self */
+        int OWN_INSTANCE = 0;
+
+        /** Original: Self -- OTR: Original */
+        int REDIRECTED_TO_ORIGINAL = 1;
+    }
+
     private final Map<Profile, T> mData = new HashMap<>();
+    @ProfileSelection private final int mProfileSelection;
     private final @Nullable Callback<T> mDestroyAction;
 
     private ProfileManager.Observer mProfileManagerObserver;
 
     /**
      * Creates a map of Profile -> Object that handles automatically cleaning up when the profiles
-     * are destroyed.
-     * @param destroyAction The action to be taken on the object during destruction of this map
-     *                      or when a Profile is destroyed.
+     * are destroyed. Utilizes {@link ProfileSelection#OWN_INSTANCE} for determining the profile.
+     *
+     * @param destroyAction The action to be taken on the object during destruction of this map or
+     *     when a Profile is destroyed.
      */
     public ProfileKeyedMap(@Nullable Callback<T> destroyAction) {
+        this(ProfileSelection.OWN_INSTANCE, destroyAction);
+    }
+
+    /**
+     * Creates a map of Profile -> Object that handles automatically cleaning up when the profiles
+     * are destroyed.
+     *
+     * @param profileSelection Determines what {@link Profile} should be used.
+     * @param destroyAction The action to be taken on the object during destruction of this map or
+     *     when a Profile is destroyed.
+     */
+    public ProfileKeyedMap(
+            @ProfileSelection int profileSelection, @Nullable Callback<T> destroyAction) {
+        mProfileSelection = profileSelection;
         mDestroyAction = destroyAction;
     }
 
     /**
-     * @return A data structure that maps Profile to Destroyable objects that will be destroyed
-     *         when appropriate.
+     * @return A data structure that maps Profile to Destroyable objects that will be destroyed when
+     *     appropriate. Utilizes {@link ProfileSelection#OWN_INSTANCE} for determining the profile.
      * @param <T> The object type being mapped against the Profile.
      */
     public static <T extends Destroyable> ProfileKeyedMap<T> createMapOfDestroyables() {
-        return new ProfileKeyedMap<>((e) -> e.destroy());
+        return createMapOfDestroyables(ProfileSelection.OWN_INSTANCE);
+    }
+
+    /**
+     * @param profileSelection Determines what {@link Profile} should be used.
+     * @return A data structure that maps Profile to Destroyable objects that will be destroyed when
+     *     appropriate.
+     * @param <T> The object type being mapped against the Profile.
+     */
+    public static <T extends Destroyable> ProfileKeyedMap<T> createMapOfDestroyables(
+            @ProfileSelection int profileSelection) {
+        return new ProfileKeyedMap<>(profileSelection, (e) -> e.destroy());
+    }
+
+    private static Profile getProfileToUse(
+            Profile profile, @ProfileSelection int profileSelection) {
+        if (profileSelection == ProfileSelection.REDIRECTED_TO_ORIGINAL) {
+            return profile.getOriginalProfile();
+        }
+        assert profileSelection == ProfileSelection.OWN_INSTANCE;
+        return profile;
     }
 
     /**
@@ -58,6 +108,8 @@ public class ProfileKeyedMap<T> {
      * @return The object associated with the passed in Profile.
      */
     public T getForProfile(Profile profile, Function<Profile, T> factory) {
+        profile = getProfileToUse(profile, mProfileSelection);
+
         T obj = mData.get(profile);
         if (obj == null) {
             obj = factory.apply(profile);
