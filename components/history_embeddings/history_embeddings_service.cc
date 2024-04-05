@@ -103,7 +103,10 @@ void FinishSearchResultWithHistory(
 
 HistoryEmbeddingsService::HistoryEmbeddingsService(
     history::HistoryService* history_service)
-    : history_service_(history_service), weak_ptr_factory_(this) {
+    : history_service_(history_service),
+      query_id_(0u),
+      query_id_weak_ptr_factory_(&query_id_),
+      weak_ptr_factory_(this) {
   if (!base::FeatureList::IsEnabled(kHistoryEmbeddings)) {
     // If the feature flag is disabled, skip initialization. Note we don't also
     // check the pref here, because the pref can change at runtime.
@@ -147,8 +150,10 @@ void HistoryEmbeddingsService::RetrievePassages(
 void HistoryEmbeddingsService::Search(std::string query,
                                       size_t count,
                                       SearchResultCallback callback) {
+  query_id_++;
   storage_.AsyncCall(&Storage::Search)
-      .WithArgs(std::move(query), count)
+      .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
+                std::move(query), count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback)));
@@ -159,6 +164,8 @@ base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
 }
 
 void HistoryEmbeddingsService::Shutdown() {
+  query_id_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   storage_.Reset();
 }
 
@@ -184,10 +191,21 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
 }
 
 std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
+    base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
+    size_t query_id,
     std::string query,
     size_t count) {
-  std::vector<ScoredUrl> scored_urls =
-      sql_database.FindNearest(count, StubComputeQueryEmbedding(query));
+  std::vector<ScoredUrl> scored_urls = sql_database.FindNearest(
+      count, StubComputeQueryEmbedding(query),
+      base::BindRepeating(
+          [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
+             size_t query_id) {
+            // If the service shut down or started a new query, this one is no
+            // longer needed. Signal to exit early. Best result so far will be
+            // returned.
+            return !weak_latest_query_id || *weak_latest_query_id != query_id;
+          },
+          std::move(weak_latest_query_id), query_id));
 
   // Populate source passages.
   for (ScoredUrl& scored_url : scored_urls) {

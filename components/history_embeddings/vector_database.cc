@@ -98,8 +98,10 @@ std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
-                                                   const Embedding& query) {
+std::vector<ScoredUrl> VectorDatabase::FindNearest(
+    size_t count,
+    const Embedding& query,
+    base::RepeatingCallback<bool()> is_search_halted) {
   if (count == 0) {
     return {};
   }
@@ -124,6 +126,9 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
   std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
 
   while (const UrlEmbeddings* item = iterator->Next()) {
+    if (is_search_halted.Run()) {
+      break;
+    }
     while (q.size() > count) {
       q.pop();
     }

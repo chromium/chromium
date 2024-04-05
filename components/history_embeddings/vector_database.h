@@ -128,7 +128,10 @@ class VectorDatabase {
 
   // Searches the database for embeddings near given `query` and returns
   // information about where they were found and how nearly the query matched.
-  std::vector<ScoredUrl> FindNearest(size_t count, const Embedding& query);
+  std::vector<ScoredUrl> FindNearest(
+      size_t count,
+      const Embedding& query,
+      base::RepeatingCallback<bool()> is_search_halted);
 };
 
 // This is an in-memory vector store that supports searching and saving to

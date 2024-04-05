@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SERVICE_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SERVICE_H_
 
+#include <atomic>
 #include <string>
 #include <vector>
 
@@ -86,7 +87,11 @@ class HistoryEmbeddingsService : public KeyedService,
                                  UrlPassages url_passages);
 
     // Runs search on worker sequence.
-    std::vector<ScoredUrl> Search(std::string query, size_t count);
+    std::vector<ScoredUrl> Search(
+        base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
+        size_t query_id,
+        std::string query,
+        size_t count);
 
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
@@ -124,6 +129,14 @@ class HistoryEmbeddingsService : public KeyedService,
   // complete' mechanism.
   base::RepeatingCallback<void(UrlPassages)> callback_for_tests_ =
       base::DoNothing();
+
+  // A thread-safe invalidation mechanism to halt searches for stale queries:
+  // Each query is run with the current `query_id_` and a weak pointer to the
+  // atomic value itself. When it changes, any queries other than the latest
+  // can be halted. Note this is not task cancellation, it breaks the inner
+  // search loop while running so the atomic is needed for thread safety.
+  std::atomic<size_t> query_id_;
+  base::WeakPtrFactory<std::atomic<size_t>> query_id_weak_ptr_factory_;
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
