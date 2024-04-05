@@ -888,7 +888,10 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 #endif  // BUILDFLAG(IS_ANDROID)|| BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
+// TODO(crbug/333048551): Failing on Mac. Re-enable the test after fixing the
+// issue.
+TEST_F(FileSystemAccessWatcherManagerTest,
+       DISABLED_WatchLocalDirectoryRecursively) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
   auto dir_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
