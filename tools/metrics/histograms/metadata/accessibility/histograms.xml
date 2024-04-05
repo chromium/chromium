@@ -908,7 +908,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSpokenFeedback{AccessibilityEveryReport}"
-    enum="BooleanEnabled" expires_after="2025-02-28">
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>aleventhal@google.com</owner>
