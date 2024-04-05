@@ -83,7 +83,14 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
               prefs, affiliations_prefetcher));
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
-    case UseUpmLocalAndSeparateStoresState::kOff:
+    case UseUpmLocalAndSeparateStoresState::kOff: {
+      // Even though this is a backend for a ProfilePasswordStore it has to
+      // talk to the account. Before the store split, the `ProfilePasswordStore`
+      // only supports talking to the account storage in GMS Core. All local
+      // storage requests go to the built-in backend instead.
+      auto android_account_backend = std::make_unique<
+          password_manager::PasswordStoreAndroidAccountBackend>(
+          prefs, affiliations_prefetcher, password_manager::kProfileStore);
       if (base::FeatureList::IsEnabled(
               password_manager::features::
                   kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
@@ -91,10 +98,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
         // to the account GMSCore storage. Only PasswordStoreProxyBackend is
         // created.
         return std::make_unique<password_manager::PasswordStoreProxyBackend>(
-            std::move(built_in_backend),
-            std::make_unique<
-                password_manager::PasswordStoreAndroidLocalBackend>(
-                prefs, affiliations_prefetcher),
+            std::move(built_in_backend), std::move(android_account_backend),
             prefs);
       }
       // The password store migration decorator is created as backend.
@@ -103,15 +107,9 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       // core account store.
       return std::make_unique<
           password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
-          std::move(built_in_backend),
-          // Even though this is a backend for a ProfilePasswordStore it has to
-          // talk to the account. Before the store split, the ProfileStore only
-          // supports talking to the account storage in GMS Core. All local
-          // storage requests go to the built-in backend instead.
-          std::make_unique<
-              password_manager::PasswordStoreAndroidAccountBackend>(
-              prefs, affiliations_prefetcher, password_manager::kProfileStore),
+          std::move(built_in_backend), std::move(android_account_backend),
           prefs);
+    }
   }
 }
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
