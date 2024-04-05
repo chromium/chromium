@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_log.h"
+#include "media/base/video_types.h"
 #include "media/gpu/mac/vt_config_util.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
@@ -247,7 +248,9 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     // Update session configuration.
     session_metadata_ = VideoToolboxDecompressionSessionMetadata{
         /*allow_software_decoding=*/false,
-        /*is_hbd=*/sequence_header.color_config.bitdepth > 8,
+        /*bit_depth=*/
+        base::checked_cast<uint8_t>(sequence_header.color_config.bitdepth),
+        /*chroma_sampling=*/VideoChromaSampling::k420,
         /*has_alpha=*/false,
         /*visible_rect=*/pic.visible_rect()};
   }

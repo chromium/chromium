@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_aspect_ratio.h"
+#include "media/base/video_types.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/color_space.h"
@@ -24,8 +25,10 @@ namespace media {
 struct MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionMetadata {
   // Enables platform software decoders.
   bool allow_software_decoding = false;
-  // Selects a HBD pixel format.
-  bool is_hbd = false;
+  // Selects a pixel format based on bit depth.
+  uint8_t bit_depth = 8;
+  // Selects a pixel format based on chroma sampling.
+  VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
   // Selects a pixel format with alpha.
   bool has_alpha = false;
   // Selects the output image size.

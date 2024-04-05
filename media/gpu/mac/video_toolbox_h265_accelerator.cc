@@ -143,7 +143,8 @@ bool VideoToolboxH265Accelerator::CreateFormat(scoped_refptr<H265Picture> pic) {
   // Record session metadata.
   active_session_metadata_ = VideoToolboxDecompressionSessionMetadata{
       /*allow_software_decoding=*/true,
-      /*is_hbd=*/frame_is_hbd_,
+      /*bit_depth=*/frame_bit_depth_,
+      /*chroma_sampling=*/frame_chroma_sampling_,
       /*has_alpha=*/frame_has_alpha_,
       /*visible_rect=*/pic->visible_rect()};
 
@@ -178,7 +179,8 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
 
   // Update frame state.
   frame_is_keyframe_ = slice_hdr->irap_pic;
-  frame_is_hbd_ = sps->bit_depth_y > 8;
+  frame_bit_depth_ = sps->bit_depth_y;
+  frame_chroma_sampling_ = sps->GetChromaSampling();
   frame_has_alpha_ = alpha_vps_ids_.contains(sps->sps_video_parameter_set_id);
 
   return Status::kOk;
@@ -387,8 +389,9 @@ void VideoToolboxH265Accelerator::ResetFrameData() {
   frame_sps_ids_.clear();
   frame_pps_ids_.clear();
   frame_slice_data_.clear();
+  frame_bit_depth_ = 8;
+  frame_chroma_sampling_ = VideoChromaSampling::k420;
   frame_is_keyframe_ = false;
-  frame_is_hbd_ = false;
   frame_has_alpha_ = false;
   drop_frame_ = false;
 }

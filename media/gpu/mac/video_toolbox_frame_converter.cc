@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -21,6 +22,7 @@
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_types.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,6 +52,10 @@ std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
       return viz::MultiPlaneFormat::kP010;
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return viz::MultiPlaneFormat::kNV12A;
+    case kCVPixelFormatType_32BGRA:
+      return viz::SinglePlaneFormat::kBGRA_8888;
+    case kCVPixelFormatType_ARGB2101010LEPacked:
+      return viz::SinglePlaneFormat::kBGRA_1010102;
     default:
       return std::nullopt;
   }
@@ -63,6 +69,10 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
       return PIXEL_FORMAT_P016LE;
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return PIXEL_FORMAT_NV12A;
+    case kCVPixelFormatType_32BGRA:
+      return PIXEL_FORMAT_ARGB;
+    case kCVPixelFormatType_ARGB2101010LEPacked:
+      return PIXEL_FORMAT_XR30;
     default:
       return PIXEL_FORMAT_UNKNOWN;
   }

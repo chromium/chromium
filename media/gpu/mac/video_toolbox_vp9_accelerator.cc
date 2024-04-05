@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "media/base/media_log.h"
+#include "media/base/video_types.h"
 #include "media/gpu/mac/vt_config_util.h"
 
 namespace media {
@@ -195,7 +196,8 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
     session_metadata_ = VideoToolboxDecompressionSessionMetadata{
         /*allow_software_decoding=*/false,
-        /*is_hbd=*/pic->frame_hdr->bit_depth > 8,
+        /*bit_depth=*/pic->frame_hdr->bit_depth,
+        /*chroma_sampling=*/VideoChromaSampling::k420,
         /*has_alpha=*/false,
         /*visible_rect=*/pic->visible_rect()};
 

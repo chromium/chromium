@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "media/base/media_log.h"
+#include "media/base/video_types.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
@@ -225,16 +226,30 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
   // VideoToolboxFrameConverter, it may be possible to introspect the IOSurfaces
   // at run time and map them to viz formats.
   //
-  // For now we just ask VideoToolbox to convert everything to NV12/P010.
+  // For now we just ask VideoToolbox to convert all 400/420 contents to
+  // NV12/P010 contents and all 422/444 contents to RGBA which could avoid
+  // chroma downsampling.
   //
   // TODO(crbug.com/1331597): Do not create an image config for known-supported
   // formats, and add full-range versions as supported formats.
-  FourCharCode pixel_format =
-      session_metadata.has_alpha
-          ? kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar
-          : (session_metadata.is_hbd
-                 ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
-                 : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
+  // TODO(crbug.com/331679628): Add 422/444 multi-planar format for 8/10/12-bit
+  // 422/444 contents.
+  FourCharCode pixel_format;
+
+  if (session_metadata.chroma_sampling == VideoChromaSampling::k422 ||
+      session_metadata.chroma_sampling == VideoChromaSampling::k444) {
+    pixel_format = session_metadata.bit_depth > 8
+                       ? kCVPixelFormatType_ARGB2101010LEPacked
+                       : kCVPixelFormatType_32BGRA;
+  } else {
+    pixel_format = session_metadata.bit_depth > 8
+                       ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+                       : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+  }
+
+  if (session_metadata.has_alpha) {
+    pixel_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+  }
 
   NSDictionary* image_config =
       @{CFToNSPtrCast(kCVPixelBufferPixelFormatTypeKey) : @(pixel_format)};

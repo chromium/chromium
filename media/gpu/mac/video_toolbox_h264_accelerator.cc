@@ -10,6 +10,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
+#include "media/base/video_types.h"
 
 namespace media {
 
@@ -217,7 +218,8 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
 #else
       /*allow_software_decoding=*/false,
 #endif  // defined(ARCH_CPU_X86_FAMILY)
-      /*is_hbd=*/false,
+      /*bit_depth=*/8,
+      /*chroma_sampling=*/VideoChromaSampling::k420,
       /*has_alpha=*/false,
       /*visible_rect=*/pic->visible_rect()};
   decode_cb_.Run(std::move(sample), session_metadata, std::move(pic));
