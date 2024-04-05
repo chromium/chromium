@@ -20,17 +20,21 @@ class FacetURI;
 
 // This class prefetches affiliation information on start-up for all registered
 // affiliation sources.
-class AffiliationPrefetcher {
+class AffiliationPrefetcher : public AffiliationSource::Observer {
  public:
   explicit AffiliationPrefetcher(
       affiliations::AffiliationService* affiliation_service);
-  ~AffiliationPrefetcher();
+  ~AffiliationPrefetcher() override;
 
   // Registers an affiliation source.
   void RegisterSource(std::unique_ptr<AffiliationSource> source);
 
  private:
   void OnResultFromSingleSourceReceived(std::vector<FacetURI> results);
+
+  // AffiliationSource::Observer:
+  void OnFacetsAdded(std::vector<FacetURI> facets) override;
+  void OnFacetsRemoved(std::vector<FacetURI> facets) override;
 
   // Triggered once affiliation requests for all sources are returned. It
   // collects all facets from all sources and triggers a single affiliations

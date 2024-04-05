@@ -16,11 +16,17 @@ namespace affiliations {
 
 class MockAffiliationSource : public AffiliationSource {
  public:
-  MockAffiliationSource();
+  explicit MockAffiliationSource(AffiliationSource::Observer* observer);
   ~MockAffiliationSource() override;
 
   MOCK_METHOD(void, GetFacets, (ResultCallback), (override));
   MOCK_METHOD(void, StartObserving, (), (override));
+
+  void AddFacet(FacetURI facet);
+  void RemoveFacet(FacetURI facet);
+
+ private:
+  raw_ptr<AffiliationSource::Observer> observer_;
 };
 
 class MockAffiliationSourceObserver : public AffiliationSource::Observer {

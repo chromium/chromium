@@ -6,7 +6,16 @@
 
 namespace affiliations {
 
-MockAffiliationSource::MockAffiliationSource() = default;
+MockAffiliationSource::MockAffiliationSource(
+    AffiliationSource::Observer* observer)
+    : observer_(observer) {}
+
+void MockAffiliationSource::AddFacet(FacetURI facet) {
+  observer_->OnFacetsAdded({facet});
+}
+void MockAffiliationSource::RemoveFacet(FacetURI facet) {
+  observer_->OnFacetsRemoved({facet});
+}
 
 MockAffiliationSource::~MockAffiliationSource() = default;
 

@@ -39,7 +39,7 @@ class AffiliationPrefetcherTest : public testing::Test {
   }
 
   MockAffiliationSource* AddSource() {
-    auto source = std::make_unique<MockAffiliationSource>();
+    auto source = std::make_unique<MockAffiliationSource>(prefetcher());
     MockAffiliationSource* src_ptr = source.get();
     prefetcher()->RegisterSource(std::move(source));
     return src_ptr;
@@ -131,6 +131,44 @@ TEST_F(AffiliationPrefetcherTest, DuplicateFacetsArePrefetchWithMultiplicity) {
   FastForwardBy(kInitializationDelayOnStartup);
 }
 
+// Verifies that affiliations are prefetched if new facets are added by sources
+// after initialization. It also checks that invalid facets are filtered out.
+TEST_F(AffiliationPrefetcherTest,
+       PrefetchAffiliationsForFacetAddedAfterInitialization) {
+  MockAffiliationSource* src_ptr = AddSource();
+  FastForwardBy(kInitializationDelayOnStartup);
+  RunUntilIdle();
+
+  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec("https://foo.com");
+  FacetURI invalid_facet =
+      FacetURI::FromPotentiallyInvalidSpec("invalid facet");
+  EXPECT_CALL(*mock_affiliation_service(), Prefetch(facet, base::Time::Max()));
+  EXPECT_CALL(*mock_affiliation_service(),
+              Prefetch(invalid_facet, base::Time::Max()))
+      .Times(0);
+  src_ptr->AddFacet(facet);
+  src_ptr->AddFacet(invalid_facet);
+}
+
+// Verifies that affiliations are dropped if facets are removed by sources after
+// initialization.
+TEST_F(AffiliationPrefetcherTest,
+       PrefetchAffiliationsForFacetRemovedAfterInitialization) {
+  MockAffiliationSource* src_ptr = AddSource();
+  FastForwardBy(kInitializationDelayOnStartup);
+  RunUntilIdle();
+
+  FacetURI facet = FacetURI::FromCanonicalSpec("https://foo.com");
+  {
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*mock_affiliation_service(),
+                CancelPrefetch(facet, base::Time::Max()));
+    EXPECT_CALL(*mock_affiliation_service(), TrimCacheForFacetURI(facet));
+  }
+
+  src_ptr->RemoveFacet(facet);
+}
+
 // Verifies that affiliations are refetched for all sources if a new source is
 // registered `kInitializationDelayOnStartup` seconds after start-up.
 TEST_F(AffiliationPrefetcherTest, TestSourceRegisteredLater) {
@@ -156,7 +194,7 @@ TEST_F(AffiliationPrefetcherTest, TestSourceRegisteredLater) {
   };
 
   std::unique_ptr<MockAffiliationSource> src_ptr2 =
-      std::make_unique<MockAffiliationSource>();
+      std::make_unique<MockAffiliationSource>(nullptr);
 
   std::vector<FacetURI> result;
   result.insert(result.end(), facets1.begin(), facets1.end());
@@ -193,9 +231,9 @@ TEST_F(AffiliationPrefetcherTest, TestSourcesRegisteredAfterDelay) {
   result.insert(result.end(), facets2.begin(), facets2.end());
 
   std::unique_ptr<MockAffiliationSource> src_ptr1 =
-      std::make_unique<MockAffiliationSource>();
+      std::make_unique<MockAffiliationSource>(nullptr);
   std::unique_ptr<MockAffiliationSource> src_ptr2 =
-      std::make_unique<MockAffiliationSource>();
+      std::make_unique<MockAffiliationSource>(nullptr);
 
   base::OnceCallback<void(std::vector<FacetURI>)> first_callback;
   {
