@@ -380,7 +380,10 @@ void GraphImpl::ComputeImpl(
         compute_resource_info().output_name_to_byte_length_map.at(name);
     [feature_value.multiArrayValue
         getBytesWithHandler:^(const void* bytes, NSInteger size) {
-          CHECK_EQ(static_cast<uint32_t>(size), expected_size);
+          // CoreML sometimes returns a buffer larger than expected.
+          // For an FP16 6 value buffer, an output of size 384 is observed
+          // when running the BuildAndComputeSingleOperatorCast unit test.
+          CHECK_GE(static_cast<uint32_t>(size), expected_size);
           named_outputs_raw_ptr->push_back(std::make_pair(
               name, mojo_base::BigBuffer(base::make_span(
                         static_cast<const uint8_t*>(bytes), expected_size))));

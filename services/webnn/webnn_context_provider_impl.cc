@@ -236,7 +236,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_MAC)
-  if (__builtin_available(macOS 13, *)) {
+  if (__builtin_available(macOS 14, *)) {
     // The remote sent to the renderer.
     mojo::PendingRemote<mojom::WebNNContext> blink_remote;
     // The receiver bound to WebNNContextImpl.

@@ -202,6 +202,14 @@ struct OperandInfo {
   mojom::Operand::DataType type;
   std::vector<uint32_t> dimensions;
   std::vector<T> values;
+#if BUILDFLAG(IS_MAC)
+  OperandInfo<int32_t> ToInt32() {
+    return OperandInfo<int32_t>{
+        .type = mojom::Operand::DataType::kInt32,
+        .dimensions = dimensions,
+        .values = std::vector<int32_t>(values.begin(), values.end())};
+  }
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 void VerifyIsEqual(mojo_base::BigBuffer actual,
@@ -326,7 +334,7 @@ class WebNNGraphImplBackendTest : public testing::Test {
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
-  if (base::mac::MacOSVersion() < 13'00'00) {
+  if (base::mac::MacOSVersion() < 14'00'00) {
     GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
                  << base::mac::MacOSVersion();
   }
@@ -334,6 +342,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
       "BuildAndComputeSingleOperatorElementWiseBinary",
+      "BuildAndComputeSingleOperatorCast",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
@@ -1603,10 +1612,33 @@ struct ElementWiseBinaryTester {
         builder.BuildInput("lhs", lhs.dimensions, lhs.type);
     uint64_t rhs_operand_id =
         builder.BuildInput("rhs", rhs.dimensions, rhs.type);
+    auto graph_output_type = output.type;
+#if BUILDFLAG(IS_MAC)
+    if (output.type == mojom::Operand::DataType::kUint8) {
+      // macOS only supports FP16,FP32,DOUBLE,INT32 as outputs of graph.
+      // For testing, we cast the output of the element-wise logical
+      // operators to Int32 and set the graph output to Int32.
+      graph_output_type = mojom::Operand::DataType::kInt32;
+    }
+#endif  // BUILD_FLAG(IS_MAC)
     uint64_t output_operand_id =
-        builder.BuildOutput("output", output.dimensions, output.type);
+        builder.BuildOutput("output", output.dimensions, graph_output_type);
+    uint64_t element_wise_binary_output_operand_id = output_operand_id;
+#if BUILDFLAG(IS_MAC)
+    if (output.type == mojom::Operand::DataType::kUint8) {
+      element_wise_binary_output_operand_id = builder.BuildIntermediateOperand(
+          output.dimensions, mojom::Operand::DataType::kUint8);
+    }
+#endif  // BUILD_FLAG(IS_MAC)
     builder.BuildElementWiseBinary(kind, lhs_operand_id, rhs_operand_id,
-                                   output_operand_id);
+                                   element_wise_binary_output_operand_id);
+#if BUILDFLAG(IS_MAC)
+    if (output.type == mojom::Operand::DataType::kUint8) {
+      builder.BuildElementWiseUnary(mojom::ElementWiseUnary::Kind::kCast,
+                                    element_wise_binary_output_operand_id,
+                                    output_operand_id);
+    }
+#endif  // BUILD_FLAG(IS_MAC)
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"lhs", VectorToBigBuffer(lhs.values)});
@@ -1615,6 +1647,13 @@ struct ElementWiseBinaryTester {
 
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
                     named_outputs);
+
+#if BUILDFLAG(IS_MAC)
+    if (output.type == mojom::Operand::DataType::kUint8) {
+      VerifyIsEqual(std::move(named_outputs["output"]), output.ToInt32());
+      return;
+    }
+#endif  // BUILD_FLAG(IS_MAC)
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
   }
@@ -1873,9 +1912,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {-1, 0, 1, 2, 3, 4}}}
         .Test(*this);
   }
-  // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
-  // after adding support for other binary operators.
-#if !BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
   // after adding support for other binary operators.
 #if !BUILDFLAG(WEBNN_USE_TFLITE)
@@ -2045,7 +2081,6 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
-#endif  // !BUILDFLAG(IS_MAC)
 }
 
 template <typename T, typename O = T>
@@ -2524,7 +2559,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_int32}
           .Test(*this);
     }
-
+// TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
+// after adding support for testing uint32/int8/uint8 outputs.
+#if !BUILDFLAG(IS_MAC)
     {
       ElementWiseUnaryTester<float, uint32_t>{
           .input = test_operand_info_float32,
@@ -2548,6 +2585,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_uint8}
           .Test(*this);
     }
+#endif  // !BUILDFLAG(IS_MAC)
   }
   // Test all combinations from float16 data type.
   {
@@ -2565,7 +2603,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_int32}
           .Test(*this);
     }
-
+// TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
+// after adding support for testing uint32/int8/uint8 outputs.
+#if !BUILDFLAG(IS_MAC)
     {
       ElementWiseUnaryTester<float16, uint32_t>{
           .input = test_operand_info_float16,
@@ -2589,6 +2629,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_uint8}
           .Test(*this);
     }
+#endif  // !BUILDFLAG(IS_MAC)
   }
   // Test all combinations from int32 data type.
   {
@@ -2607,7 +2648,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_float16}
           .Test(*this);
     }
-
+// TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
+// after adding support for testing uint32/int8/uint8 outputs.
+#if !BUILDFLAG(IS_MAC)
     {
       ElementWiseUnaryTester<int32_t, uint32_t>{
           .input = test_operand_info_int32,
@@ -2631,7 +2674,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_uint8}
           .Test(*this);
     }
+#endif  // !BUILDFLAG(IS_MAC)
   }
+// TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
+// after adding support for testing uint32/int8/uint8 inputs.
+#if !BUILDFLAG(IS_MAC)
   // Test all combinations from uint32 data type.
   {
     {
@@ -2758,6 +2805,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .Test(*this);
     }
   }
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 struct Pool2dAttributes {

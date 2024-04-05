@@ -42,6 +42,14 @@ namespace webnn::coreml {
 using mojom::Operand;
 using mojom::Operation;
 
+//
+// Documentation for the CoreML MIL Ops:
+// https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html
+// For the supported OS versions for any OP, the translation between iOS version
+// numbers and macOS version numbers is documented here:
+// https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/_deployment_compatibility.py#L25
+//
+
 namespace {
 
 constexpr char kWriteFileErrorMessage[] = "Failed to write constant to file.";
@@ -80,10 +88,16 @@ constexpr char kIntermediateOperandPrefix[] = "var";
 // Used when some op parameters are passed as values instead of operands.
 constexpr char kConstValuePrefix[] = "value";
 constexpr char kStringSeparator[] = "_";
+// Used for names of internal operands when a WebNN op needs to be
+// decomposed into multiple CoreML ops.
+constexpr char kInternalNamePrefix[] = "internal";
 
 // model op related consts.
 constexpr char kPlaceholderOuputName[] = "placeholder_output";
+
+// op names
 constexpr char kOpConstTypeName[] = "const";
+constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpAddTypeName[] = "add";
 constexpr char kOpMultiplyTypeName[] = "mul";
 constexpr char kOpDivideTypeName[] = "real_div";
@@ -93,6 +107,16 @@ constexpr char kOpMinimumTypeName[] = "minimum";
 constexpr char kOpPowerTypeName[] = "pow";
 constexpr char kOpTransposeTypeName[] = "transpose";
 constexpr char kOpConv2dTypeName[] = "conv";
+constexpr char kOpLogicalEqual[] = "equal";
+constexpr char kOpLogicalGreater[] = "greater";
+constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
+constexpr char kOpLogicalLess[] = "less";
+constexpr char kOpLogicalLessEqual[] = "less_equal";
+
+// General op params that are shared across multiple ops.
+constexpr char kOpParamX[] = "x";
+constexpr char kOpParamY[] = "y";
+constexpr char kOpDataTypeName[] = "dtype";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -194,6 +218,29 @@ CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
       return CoreML::Specification::MILSpec::DataType::INT8;
     case mojom::Operand::DataType::kUint8:
       return CoreML::Specification::MILSpec::DataType::UINT8;
+  }
+}
+
+std::string_view DataTypeToString(webnn::mojom::Operand::DataType data_type) {
+  switch (data_type) {
+    case webnn::mojom::Operand::DataType::kFloat32:
+      return "fp32";
+    case webnn::mojom::Operand::DataType::kFloat16:
+      return "fp16";
+    case webnn::mojom::Operand::DataType::kInt32:
+      return "int32";
+    case webnn::mojom::Operand::DataType::kInt8:
+      return "int8";
+    case webnn::mojom::Operand::DataType::kUint8:
+      return "uint8";
+    case webnn::mojom::Operand::DataType::kUint32:
+    case webnn::mojom::Operand::DataType::kInt64:
+    case webnn::mojom::Operand::DataType::kUint64:
+      // The supported data types are an intersection of all the data types
+      // in WebNN and the data types supported by the dtype parameter for
+      // currently supported CoreML ops. Expand this list as needed for
+      // new ops.
+      NOTREACHED_NORETURN() << "Unsupported data type.";
   }
 }
 
@@ -407,12 +454,16 @@ GraphBuilder::~GraphBuilder() = default;
 GraphBuilder::BuildCoreMLModel() {
   CHECK_EQ(ml_model_.specificationversion(), 0);
   // Based on comment in Model.proto
-  //  * 7 : iOS 16, macOS 13, tvOS 16, watchOS 9 (Core ML 6)
-  //  * - FLOAT16 array data type
-  //  * - GRAYSCALE_FLOAT16 image color space.
-  // use the model specification version supported on macOS 13 which is
-  // version 7.
-  ml_model_.set_specificationversion(7);
+  //  * 8 : iOS 17, macOS 14, tvOS 17, watchOS 10 (Core ML 7)
+  //  * - iOS 17 ops
+  //  * - Scene print v2
+  //  * - ClassConfidenceThresholding model
+  // use the model specification version supported on macOS 14 which is
+  // version 8. We need to use version 8 because Cast in version 7 does
+  // not support casting to uint8, which is required for logical binary
+  // operators. Logical binary operators return bool tensors in CoreML
+  // they need to be cast to uint8 to match WebNN.
+  ml_model_.set_specificationversion(8);
   ml_model_.set_isupdatable(false);
 
   program_ = ml_model_.mutable_mlprogram();
@@ -420,12 +471,10 @@ GraphBuilder::BuildCoreMLModel() {
 
   // Creates a Program with a single main function, and a single block within
   // the function. The block contains all the ops right now.
-  // TODO(https://crbug.com/327216253): figure out when to use CoreML7 for some
-  // ops.
   auto& main_function = (*program_->mutable_functions())["main"];
-  // CoreML6 means specification version 7.
-  main_function.set_opset("CoreML6");
-  auto& block = (*main_function.mutable_block_specializations())["CoreML6"];
+  // CoreML7 means specification version 8.
+  main_function.set_opset("CoreML7");
+  auto& block = (*main_function.mutable_block_specializations())["CoreML7"];
 
   for (const auto& [operand_id, _] : graph_info_->id_to_operand_map) {
     UpdateCoreMLInputInfoMap(operand_id);
@@ -455,6 +504,11 @@ GraphBuilder::BuildCoreMLModel() {
             *operation->get_element_wise_binary(), block));
         break;
       }
+      case mojom::Operation::Tag::kElementWiseUnary: {
+        RETURN_IF_ERROR(
+            AddOperationForUnary(*operation->get_element_wise_unary(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -468,7 +522,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kClamp:
       case mojom::Operation::Tag::kConcat:
-      case mojom::Operation::Tag::kElementWiseUnary:
       case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGather:
@@ -619,9 +672,9 @@ void GraphBuilder::AddPlaceholderInput(
   // The model compute only succeeds when the placeholder is used in one op.
   CoreML::Specification::MILSpec::Operation* placeholder_op =
       block.add_operations();
-  (*placeholder_op->mutable_inputs())["x"].add_arguments()->set_name(
+  (*placeholder_op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
       kPlaceholderInputName);
-  (*placeholder_op->mutable_inputs())["y"].add_arguments()->set_name(
+  (*placeholder_op->mutable_inputs())[kOpParamY].add_arguments()->set_name(
       kPlaceholderInputName);
   placeholder_op->set_type(kOpAddTypeName);
   CoreML::Specification::MILSpec::NamedValueType& outputs =
@@ -678,9 +731,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  (*op->mutable_inputs())["x"].add_arguments()->set_name(input_lhs.coreml_name);
-  (*op->mutable_inputs())["y"].add_arguments()->set_name(input_rhs.coreml_name);
+  (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
+      input_lhs.coreml_name);
+  (*op->mutable_inputs())[kOpParamY].add_arguments()->set_name(
+      input_rhs.coreml_name);
 
+  bool is_logical_binary_operation = false;
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
       op->set_type(kOpAddTypeName);
@@ -710,16 +766,104 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
       op->set_type(kOpPowerTypeName);
       break;
     }
-    case mojom::ElementWiseBinary::Kind::kEqual:
-    case mojom::ElementWiseBinary::Kind::kGreater:
-    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-    case mojom::ElementWiseBinary::Kind::kLesser:
-    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return NewNotSupportedError("Unimplemented Binary Operator.");
+    case mojom::ElementWiseBinary::Kind::kEqual: {
+      op->set_type(kOpLogicalEqual);
+      is_logical_binary_operation = true;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreater: {
+      op->set_type(kOpLogicalGreater);
+      is_logical_binary_operation = true;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      op->set_type(kOpLogicalGreaterEqual);
+      is_logical_binary_operation = true;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesser: {
+      op->set_type(kOpLogicalLess);
+      is_logical_binary_operation = true;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      op->set_type(kOpLogicalLessEqual);
+      is_logical_binary_operation = true;
+      break;
+    }
   }
 
-  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
-  PopulateNamedValueType(operation.output_operand_id, output);
+  if (is_logical_binary_operation) {
+    // The output of logical binary ops need to be cast from a boolean
+    // tensor that CoreML provides to an UInt8 that WebNN expects.
+
+    std::string internal_output_name = GenerateCoreMLNameForInternalOperand();
+    auto* named_value_type = op->add_outputs();
+    named_value_type->set_name(internal_output_name);
+    auto& value_type = *named_value_type->mutable_type();
+    PopulateValueType(
+        *graph_info_->id_to_operand_map.at(operation.output_operand_id),
+        value_type);
+    value_type.mutable_tensortype()->set_datatype(
+        CoreML::Specification::MILSpec::DataType::BOOL);
+
+    // Note: Input data type passed in here is kUint8, since the actual
+    // datatype bool cannot be represented as an Operand::DataType.
+    RETURN_IF_ERROR(
+        AddOperationForCast(internal_output_name, operation.output_operand_id,
+                            webnn::mojom::Operand::DataType::kUint8, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForUnary(
+    const mojom::ElementWiseUnary& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  switch (operation.kind) {
+    case mojom::ElementWiseUnary::Kind::kCast: {
+      const OperandInfo& input = GetOperandInfo(operation.input_operand_id);
+      RETURN_IF_ERROR(AddOperationForCast(input.coreml_name,
+                                          operation.output_operand_id,
+                                          input.data_type, block));
+      break;
+    }
+    default:
+      return NewNotSupportedError("Unimplemented Unary Operator.");
+  }
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
+    const std::string& input_name,
+    uint64_t output_operand_id,
+    webnn::mojom::Operand::DataType input_data_type,
+    CoreML::Specification::MILSpec::Block& block) {
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.elementwise_unary.cast
+  // Input can be one of the following types: int8, uint8, int16, uint16,
+  // int32, fp16, fp32, or bool.
+  static constexpr auto kSupportedCastOpsTypes =
+      base::MakeFixedFlatSet<webnn::mojom::Operand::DataType>(
+          {webnn::mojom::Operand::DataType::kFloat32,
+           webnn::mojom::Operand::DataType::kFloat16,
+           webnn::mojom::Operand::DataType::kInt32,
+           webnn::mojom::Operand::DataType::kInt8,
+           webnn::mojom::Operand::DataType::kUint8});
+  if (!kSupportedCastOpsTypes.contains(input_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+  const mojom::Operand::DataType& output_data_type =
+      GetOperand(output_operand_id).data_type;
+  if (!kSupportedCastOpsTypes.contains(output_data_type)) {
+    return NewNotSupportedError("Unsupported output datatype.");
+  }
+  (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(input_name);
+  op->set_type(kOpCastTypeName);
+  (*(*op->mutable_inputs())[kOpDataTypeName].add_arguments()->mutable_value()) =
+      CreateStringValue(DataTypeToString(output_data_type));
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
@@ -740,8 +884,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  static constexpr char kParamX[] = "x";
-  static constexpr char kParamPerm[] = "perm";
+  constexpr char kParamPerm[] = "perm";
   // Permutation is passed as a vector, adds a const op for this, then uses the
   // const's output as the transpose's input. This op needs to be added to
   // `block` before the transpose op.
@@ -760,7 +903,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
-  (*op->mutable_inputs())[kParamX].add_arguments()->set_name(
+  (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
       input_operand.coreml_name);
 
   (*op->mutable_inputs())[kParamPerm].add_arguments()->set_name(
@@ -801,7 +944,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
     return NewNotSupportedError("activation is not supported.");
   }
 
-  static constexpr char kParamX[] = "x";
   static constexpr char kParamWeight[] = "weight";
   static constexpr char kParamStrides[] = "strides";
   static constexpr char kParamPadType[] = "pad_type";
@@ -859,7 +1001,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   google::protobuf::Map<std::string,
                         ::CoreML::Specification::MILSpec::Argument>& inputs =
       (*op->mutable_inputs());
-  inputs[kParamX].add_arguments()->set_name(input_operand.coreml_name);
+  inputs[kOpParamX].add_arguments()->set_name(input_operand.coreml_name);
   inputs[kParamWeight].add_arguments()->set_name(
       GetOperandInfo(operation.filter_operand_id).coreml_name);
 
@@ -1047,7 +1189,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
     case mojom::Operand::DataType::kUint64:
     case mojom::Operand::DataType::kInt8:
     case mojom::Operand::DataType::kUint8:
-      return NewNotSupportedError("Unsupported input datatype.");
+      // CoreML only supports limited data types as input/output for a
+      // model. Within the model wider set of data types are supported.
+      return NewNotSupportedError("Unsupported datatype at model boundary.");
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers
@@ -1063,6 +1207,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
   feature_description.mutable_name()->assign(
       GetCoreMLNameFromOperand(operand_id));
   return base::ok();
+}
+
+std::string GraphBuilder::GenerateCoreMLNameForInternalOperand() {
+  // Prefix is added to internal operands generated for WebNN operations that
+  // need to be decomposed into multiple CoreML operations.
+  return base::JoinString(
+      {kInternalNamePrefix, base::NumberToString(internal_operand_id_++)},
+      kStringSeparator);
 }
 
 void GraphBuilder::PopulateNamedValueType(

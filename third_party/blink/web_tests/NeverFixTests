@@ -2120,11 +2120,13 @@ crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Skip ]
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 
-# WebNN is supported on Mac13 and newer versions.
+# WebNN is supported on macOS 14 and newer versions.
 [ Mac11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 [ Mac11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 [ Mac12 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 [ Mac12-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+[ Mac13 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+[ Mac13-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 
 # WebNN feature work in-progress.
 crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/buffer.https.any.html [ Skip ]

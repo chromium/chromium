@@ -27,7 +27,11 @@ namespace webnn::coreml {
 // the graph.
 // Mac OS 13.0+ is required for model compilation
 // https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
-class API_AVAILABLE(macos(13.0)) GraphImpl final : public WebNNGraphImpl {
+// Mac OS 14.0+ is required to support WebNN logical binary operators because
+// the cast operator does not support casting to uint8 prior to Mac OS 14.0.
+// CoreML returns bool tensors for logical operators which need to be cast to
+// uint8 tensors to match WebNN expectations.
+class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback);

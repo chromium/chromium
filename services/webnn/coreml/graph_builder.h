@@ -121,7 +121,14 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
       const mojom::Conv2d& operation,
       CoreML::Specification::MILSpec::Block& block);
-
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForUnary(
+      const mojom::ElementWiseUnary& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
+      const std::string& input_name,
+      uint64_t output_operand_id,
+      webnn::mojom::Operand::DataType input_data_type,
+      CoreML::Specification::MILSpec::Block& block);
   // Add constants as immediate values in the model file.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
@@ -167,10 +174,16 @@ class GraphBuilder {
   std::string GetCoreMLNameFromOperand(uint64_t operand_id);
   std::string GetCoreMLNameForParam(uint64_t operand_id,
                                     std::string_view param_name);
+  [[nodiscard]] std::string GenerateCoreMLNameForInternalOperand();
+
   // A reference to the WebNN compute graph that `this` instance is converting
   // to CoreML model. The creator of `this` must ensure the GraphInfo reference
   // passed into `CreateAndBuild()` is valid for as long as `this` exists.
   base::raw_ref<const mojom::GraphInfo> graph_info_;
+
+  // Used to generate unique names for internal operands generated for WebNN
+  // operations that need to be decomposed into multiple CoreML operations.
+  uint64_t internal_operand_id_ = 0;
 
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;
