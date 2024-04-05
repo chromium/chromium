@@ -321,6 +321,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
@@ -382,6 +384,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kWindowDestroyed,
     kWindowDragged,
     kWindowFloated,
+    kWindowMovedToAnotherDisplay,
   };
 
   // These functions return |primary_window_| and |secondary_window_|, swapped

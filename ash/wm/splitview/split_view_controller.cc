@@ -1183,15 +1183,16 @@ void SplitViewController::OnWindowBoundsChanged(
 void SplitViewController::OnWindowDestroyed(aura::Window* window) {
   DCHECK(InSplitViewMode());
   DCHECK(IsWindowInSplitView(window));
-  auto iter = snapping_window_transformed_bounds_map_.find(window);
-  if (iter != snapping_window_transformed_bounds_map_.end()) {
-    snapping_window_transformed_bounds_map_.erase(iter);
-  }
 
   OnSnappedWindowDetached(window, WindowDetachedReason::kWindowDestroyed);
+}
 
-  if (to_be_activated_window_ == window) {
-    to_be_activated_window_ = nullptr;
+void SplitViewController::OnWindowRemovingFromRootWindow(
+    aura::Window* window,
+    aura::Window* new_root) {
+  if (new_root != root_window_) {
+    OnSnappedWindowDetached(window,
+                            WindowDetachedReason::kWindowMovedToAnotherDisplay);
   }
 }
 
@@ -2021,7 +2022,7 @@ void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
           window_state, WindowState::BoundsChangeAnimationType::kAnimate);
     }
   } else {
-    const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
+    const gfx::Rect requested_bounds = GetSnappedWindowBoundsInParent(
         GetPositionOfSnappedWindow(window), window,
         window_util::GetSnapRatioForWindow(window));
     const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
@@ -2227,8 +2228,18 @@ void SplitViewController::OnWindowSnapped(
 
 void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
                                                   WindowDetachedReason reason) {
-  const bool is_window_destroyed =
-      reason == WindowDetachedReason::kWindowDestroyed;
+  auto iter = snapping_window_transformed_bounds_map_.find(window);
+  if (iter != snapping_window_transformed_bounds_map_.end()) {
+    snapping_window_transformed_bounds_map_.erase(iter);
+  }
+
+  if (to_be_activated_window_ == window) {
+    to_be_activated_window_ = nullptr;
+  }
+
+  const bool is_window_destroyed_or_moved =
+      reason == WindowDetachedReason::kWindowDestroyed ||
+      reason == WindowDetachedReason::kWindowMovedToAnotherDisplay;
   const SnapPosition position_of_snapped_window =
       GetPositionOfSnappedWindow(window);
 
@@ -2237,7 +2248,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   // the window that is not going to be destroyed, we still need its bounds and
   // state to be updated to match the updated divider position before detaching
   // it from splitview.
-  if (is_window_destroyed) {
+  if (is_window_destroyed_or_moved) {
     StopObserving(position_of_snapped_window);
   }
 
@@ -2251,7 +2262,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     EndResizeWithDividerImpl();
   }
 
-  if (!is_window_destroyed) {
+  if (!is_window_destroyed_or_moved) {
     StopObserving(position_of_snapped_window);
   }
 
