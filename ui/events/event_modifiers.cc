@@ -5,6 +5,7 @@
 #include "ui/events/event_modifiers.h"
 
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 
 namespace ui {
 
@@ -24,6 +25,7 @@ static const int kEventFlagFromModifiers[] = {
     EF_RIGHT_MOUSE_BUTTON,    // MODIFIER_RIGHT_MOUSE_BUTTON
     EF_BACK_MOUSE_BUTTON,     // MODIFIER_BACK_MOUSE_BUTTON
     EF_FORWARD_MOUSE_BUTTON,  // MODIFIER_FORWARD_MOUSE_BUTTON
+    EF_FUNCTION_DOWN,         // MODIFIER_FUNCTION
 };
 
 }  // namespace
@@ -112,6 +114,8 @@ int EventModifiers::GetModifierFromEventFlag(int flag) {
       return MODIFIER_ALTGR;
     case EF_MOD3_DOWN:
       return MODIFIER_MOD3;
+    case EF_FUNCTION_DOWN:
+      return MODIFIER_FUNCTION;
     case EF_CAPS_LOCK_ON:
       return MODIFIER_CAPS_LOCK;
     case EF_LEFT_MOUSE_BUTTON:

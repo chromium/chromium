@@ -258,6 +258,9 @@ enum KeyboardCode : unsigned short {
   VKEY_ALL_APPLICATIONS = 0xEF,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  VKEY_FUNCTION = 0xFF,
+  VKEY_RIGHT_ALT = 0x100,
+
   // The following values are used to be able to recognize button events within
   // ChromeOS. They have no functionality by default.
   VKEY_BUTTON_0 = 0xFF00,

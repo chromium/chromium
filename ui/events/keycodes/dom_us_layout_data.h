@@ -6,6 +6,7 @@
 #define UI_EVENTS_KEYCODES_DOM_US_LAYOUT_DATA_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
@@ -410,13 +411,15 @@ const struct DomCodeToKeyboardCodeEntry {
     // which is the USB physical key code.
     // DomCode::HYPER                              0x000010 Hyper
     // DomCode::SUPER                              0x000011 Super
-    // DomCode::FN                                 0x000012 Fn
     // DomCode::FN_LOCK                            0x000013 FLock
     // DomCode::SUSPEND                            0x000014 Suspend
     // DomCode::RESUME                             0x000015 Resume
     // DomCode::TURBO                              0x000016 Turbo
     {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {DomCode::FN, VKEY_FUNCTION},  // 0x010097 Fn
+#endif
 #if BUILDFLAG(IS_POSIX)
     {DomCode::MICROPHONE_MUTE_TOGGLE,
      VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x0100A9 MicrophoneMuteToggle
