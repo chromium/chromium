@@ -23,7 +23,7 @@ namespace i18n {
 namespace {
 UnicodeString UnicodeStringFromStringView(std::string_view str) {
   return UnicodeString::fromUTF8(
-      icu::StringPiece(str.data(), base::checked_cast<int32_t>(str.size())));
+      std::string_view(str.data(), base::checked_cast<int32_t>(str.size())));
 }
 }  // anonymous namespace
 
