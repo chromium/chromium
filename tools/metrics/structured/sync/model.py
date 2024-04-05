@@ -11,7 +11,6 @@ formatted version XML.
 
 import textwrap as tw
 import xml.etree.ElementTree as ET
-from typing import List
 import re
 
 import sync.model_util as util
