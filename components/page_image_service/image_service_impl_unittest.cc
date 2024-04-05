@@ -45,8 +45,8 @@ class ImageServiceTestOptGuide : public TestOptimizationGuideDecider {
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      proto::RequestContextMetadata* request_context_metadata =
-          nullptr) override {
+      std::optional<proto::RequestContextMetadata> request_context_metadata =
+          std::nullopt) override {
     requests_received_++;
 
     // For this test, we just want to store the parameters which were used in

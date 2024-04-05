@@ -72,7 +72,8 @@ class OptimizationGuideDecider {
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      proto::RequestContextMetadata* request_context_metadata = nullptr) = 0;
+      std::optional<proto::RequestContextMetadata> request_context_metadata =
+          std::nullopt) = 0;
 };
 
 }  // namespace optimization_guide

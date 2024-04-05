@@ -36,7 +36,7 @@ void TestOptimizationGuideDecider::CanApplyOptimizationOnDemand(
     const base::flat_set<proto::OptimizationType>& optimization_types,
     proto::RequestContext request_context,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-    proto::RequestContextMetadata* request_context_metadata) {
+    std::optional<proto::RequestContextMetadata> request_context_metadata) {
   for (const auto& url : urls) {
     base::flat_map<proto::OptimizationType,
                    OptimizationGuideDecisionWithMetadata>

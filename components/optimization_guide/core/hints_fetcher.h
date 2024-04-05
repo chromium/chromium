@@ -75,7 +75,7 @@ class HintsFetcher {
       const std::string& access_token,
       bool skip_cache,
       HintsFetchedCallback hints_fetched_callback,
-      proto::RequestContextMetadata* request_context_metadata);
+      std::optional<proto::RequestContextMetadata> request_context_metadata);
 
   // Set |time_clock_| for testing.
   void SetTimeClockForTesting(const base::Clock* time_clock);

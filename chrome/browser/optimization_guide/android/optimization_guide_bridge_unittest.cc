@@ -149,7 +149,8 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
                                optimization_guide::proto::DEFER_ALL_SCRIPT),
           optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB,
           base::test::IsNotNullCallback(),
-          An<optimization_guide::proto::RequestContextMetadata*>()))
+          An<std::optional<
+              optimization_guide::proto::RequestContextMetadata>>()))
       .WillOnce(DoAll(base::test::RunCallback<3>(GURL("https://example.com/"),
                                                  ByRef(url1_decisions)),
                       base::test::RunCallback<3>(GURL("https://example2.com/"),
