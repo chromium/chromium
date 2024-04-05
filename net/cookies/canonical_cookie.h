@@ -56,8 +56,12 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // the resulting CanonicalCookies should not be relied on to be canonical
   // unless the caller has done appropriate validation and canonicalization
   // themselves.
-  // NOTE: Prefer using CreateSanitizedCookie() over directly using this
-  // constructor.
+  //
+  // NOTE: Prefer using Create, CreateSanitizedCookie, or FromStorage (depending
+  // on the use case) over directly using this constructor.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   CanonicalCookie(base::PassKey<CanonicalCookie>,
                   std::string name,
                   std::string value,
@@ -72,9 +76,9 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                   CookieSameSite same_site,
                   CookiePriority priority,
                   std::optional<CookiePartitionKey> partition_key,
-                  CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-                  int source_port = url::PORT_UNSPECIFIED,
-                  CookieSourceType source_type = CookieSourceType::kUnknown);
+                  CookieSourceScheme scheme_secure,
+                  int source_port,
+                  CookieSourceType source_type);
 
   // Creates a new |CanonicalCookie| from the |cookie_line| and the
   // |creation_time|.  Canonicalizes inputs.  May return nullptr if
@@ -162,7 +166,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookieSourceType source_type = CookieSourceType::kUnknown);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
-  // for tests. This factory should NOT be used in production.
+  // for tests. Use this only if you want to bypass parameter validation to
+  // create a cookie that otherwise shouldn't be possible to store.
   static std::unique_ptr<CanonicalCookie> CreateUnsafeCookieForTesting(
       const std::string& name,
       const std::string& value,
