@@ -462,11 +462,6 @@ class ShoppingService : public KeyedService,
   // Called to stop tracking all parcels.
   void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
-  // Called to fetch product specs for a set of urls.
-  void GetProductSpecificationsSetForUrls(
-      const std::vector<GURL>& urls,
-      base::OnceCallback<void(const ProductSpecificationSet)> callback);
-
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -668,10 +663,6 @@ class ShoppingService : public KeyedService,
 
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
-
-  void CreateProductSpecificationsSet(
-      base::OnceCallback<void(const ProductSpecificationSet)> callback,
-      const std::vector<UrlProductIdentifierTuple>& result);
 
   // Updates the bookmark model used for sync (and shopping) if needed. Invoked
   // when sync state changes.

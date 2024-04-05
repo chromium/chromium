@@ -176,12 +176,6 @@ struct ParcelTrackingStatus {
   base::Time estimated_delivery_time;
 };
 
-// Information returned by ProductSpecifications API.
-struct ProductSpecificationSet {
- public:
-  GURL product_spec_url;
-};
-
 // Callbacks and typedefs for various accessors in the shopping service.
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
