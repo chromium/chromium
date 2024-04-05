@@ -4388,7 +4388,8 @@
       getter: "GetPositionVisibility",
       type_name: "PositionVisibility",
       converter: "ConvertPositionVisibility",
-      keywords: ["always", "anchors-valid", "anchors-visible", "no-overflow"],
+      // TODO(crbug.com/332933527): Support anchors-valid and no-overflow.
+      keywords: ["always", "anchors-visible"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSPositionVisibility",
     },

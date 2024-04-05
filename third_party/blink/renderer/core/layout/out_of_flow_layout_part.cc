@@ -307,29 +307,13 @@ void UpdatePositionVisibilityAfterLayout(
     return;
   }
 
-  PaintLayer* layer = node.GetLayoutBox()->Layer();
-  CHECK(layer);
-  bool has_no_overflow_visibility =
-      node.Style().HasPositionVisibility(PositionVisibility::kNoOverflow);
-  layer->SetInvisibleForPositionVisibility(
-      LayerPositionVisibility::kNoOverflow,
-      has_no_overflow_visibility && offset_info.overflows_containing_block);
+  // TODO(crbug.com/332933527): Support anchors-valid and no-overflow.
 
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
-  // For now we hide the anchored element if it's not anchor positioned. We need
-  // to revisit based on the final decision for the spec of
-  // `position-visibility: anchors-valid`.
-  bool has_anchors_valid_visibility =
-      node.Style().HasPositionVisibility(PositionVisibility::kAnchorsValid);
   // TODO(wangxianzhu): We may be anchored in cases where we do not need scroll
   // adjustment, such as when the anchor and anchored have the same containing
   // block. For now though, these flags are true in this case.
   bool is_anchor_positioned = offset_info.needs_scroll_adjustment_in_x ||
                               offset_info.needs_scroll_adjustment_in_y;
-  layer->SetInvisibleForPositionVisibility(
-      LayerPositionVisibility::kAnchorsValid,
-      has_anchors_valid_visibility && !is_anchor_positioned);
-
   bool has_anchors_visible_visibility =
       node.Style().HasPositionVisibility(PositionVisibility::kAnchorsVisible);
   Element* anchored = DynamicTo<Element>(node.GetDOMNode());
@@ -1893,13 +1877,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   EPositionTryOrder position_try_order = iter.PositionTryOrder();
 
   unsigned attempts_left = kMaxTryAttempts;
-  bool has_no_overflow_visibility =
-      RuntimeEnabledFeatures::CSSPositionVisibilityEnabled() &&
-      node_info.node.Style().HasPositionVisibility(
-          PositionVisibility::kNoOverflow);
+  // TODO(crbug.com/332933527): Check for position-visibility: no-overflow.
   // If `position-try-options` or `position-visibility: no-overflow` exists,
   // let |TryCalculateOffset| check if the result fits the available space.
-  bool try_fit_available_space = has_try_options || has_no_overflow_visibility;
+  bool try_fit_available_space = has_try_options;
   // Non-overflowing candidates (i.e. successfully placed candidates) are
   // collected into a vector. If position-try-order is non-normal, then we
   // collect *all* such candidates into the vector, and sort them according

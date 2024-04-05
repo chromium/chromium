@@ -965,6 +965,8 @@
     {
       // Support the position-visibility property for anchor positioning.
       // https://github.com/w3c/csswg-drafts/issues/7758
+      // TODO(crbug.com/332933527): Support anchors-valid and no-overflow. For
+      // now, this only supports always and anchors-visible.
       // TODO(pdr,wangxianzhu): Once implementation is complete, switch this to:
       //   implied_by: ["CSSAnchorPositioning"]
       name: "CSSPositionVisibility",
