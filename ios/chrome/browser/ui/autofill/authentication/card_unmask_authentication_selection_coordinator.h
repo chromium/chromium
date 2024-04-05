@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_CARD_UNMASK_AUTHENTICATION_SELECTION_COORDINATOR_H_
 
 #import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // This class coordinates the selecting the authentication method for unmasking

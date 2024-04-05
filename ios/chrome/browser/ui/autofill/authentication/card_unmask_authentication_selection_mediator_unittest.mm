@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_consumer.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -27,11 +28,16 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     consumer_ =
         OCMProtocolMock(@protocol(CardUnmaskAuthenticationSelectionConsumer));
+    delegate_ = OCMProtocolMock(
+        @protocol(CardUnmaskAuthenticationSelectionMediatorDelegate));
   }
 
   void TearDown() override {
     if (consumer_) {
       EXPECT_OCMOCK_VERIFY((id)consumer_);
+    }
+    if (delegate_) {
+      EXPECT_OCMOCK_VERIFY((id)delegate_);
     }
   }
 
@@ -42,13 +48,18 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
     controller_ = std::make_unique<
         autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
         challenge_options, confirm_unmasking_method_callback_.Get(),
-        base::DoNothing());
+        cancel_unmasking_closure_.Get());
     mediator_ = std::make_unique<CardUnmaskAuthenticationSelectionMediator>(
         controller_->GetWeakPtr(), consumer_);
+    mediator_->set_delegate(delegate_);
     return mediator_.get();
   }
 
   id<CardUnmaskAuthenticationSelectionConsumer> consumer() { return consumer_; }
+
+  id<CardUnmaskAuthenticationSelectionMediatorDelegate> delegate() {
+    return delegate_;
+  }
 
   autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl*
   controller() {
@@ -91,9 +102,11 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
  protected:
   base::MockOnceCallback<void(const std::string&)>
       confirm_unmasking_method_callback_;
+  base::MockOnceClosure cancel_unmasking_closure_;
 
  private:
   id<CardUnmaskAuthenticationSelectionConsumer> consumer_;
+  id<CardUnmaskAuthenticationSelectionMediatorDelegate> delegate_;
   // Mediator listed first to destruct the controller (which holds a reference
   // to the mediator) before the mediator.
   std::unique_ptr<CardUnmaskAuthenticationSelectionMediator> mediator_;
@@ -157,4 +170,47 @@ TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
   EXPECT_CALL(confirm_unmasking_method_callback_,
               Run(CvcAutofillChallengeOption().id.value()));
   [mediator->AsMutator() didAcceptSelection];
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       OnCancelSelection_CallsCancelUnmaskingClosure) {
+  CardUnmaskAuthenticationSelectionMediator* mediator = InitializeMediator(
+      {SmsAutofillChallengeOption(), CvcAutofillChallengeOption()});
+  mediator->DidSelectChallengeOption(CvcIOSChallengeOption());
+
+  EXPECT_CALL(cancel_unmasking_closure_, Run());
+  [mediator->AsMutator() didCancelSelection];
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       OnCancelSelection_CallsDelegateToDismiss) {
+  CardUnmaskAuthenticationSelectionMediator* mediator =
+      InitializeMediator({SmsAutofillChallengeOption()});
+
+  OCMExpect([delegate() dismissAuthenticationSelection]);
+  [mediator->AsMutator() didCancelSelection];
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       ServerProcessedAuthentication_DoesNotCallCancelUnmaskingClosure) {
+  InitializeMediator({SmsAutofillChallengeOption()});
+
+  EXPECT_CALL(cancel_unmasking_closure_, Run()).Times(0);
+  controller()->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+      /*server_success=*/true);
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       ServerProcessedAuthentication_DoesNotDismissAuthenticationSelection) {
+  id<CardUnmaskAuthenticationSelectionMediatorDelegate> delegate =
+      OCMStrictProtocolMock(
+          @protocol(CardUnmaskAuthenticationSelectionMediatorDelegate));
+  CardUnmaskAuthenticationSelectionMediator* mediator =
+      InitializeMediator({SmsAutofillChallengeOption()});
+  mediator->set_delegate(delegate);
+
+  // No calls to delegate() are expected, and OCMStrictProtocolMock will fail
+  // this test if [delegate() dismissAuthenticationSelection] is called.
+  controller()->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+      /*server_success=*/true);
 }

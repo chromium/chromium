@@ -8,8 +8,15 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_view_controller.h"
+
+@interface CardUnmaskAuthenticationSelectionCoordinator () <
+    CardUnmaskAuthenticationSelectionMediatorDelegate>
+@end
 
 @implementation CardUnmaskAuthenticationSelectionCoordinator {
   // A reference to the base view controller with UINavigationController type.
@@ -27,6 +34,8 @@
       _modelController;
 
   std::unique_ptr<CardUnmaskAuthenticationSelectionMediator> _mediator;
+
+  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -40,6 +49,8 @@
             browser->GetWebStateList()->GetActiveWebState());
     _modelController =
         tabHelper->GetCardUnmaskAuthenticationSelectionDialogController();
+    _browserCoordinatorCommands = HandlerForProtocol(
+        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
     CHECK(_modelController);
   }
   return self;
@@ -53,6 +64,7 @@
   _mediator = std::make_unique<CardUnmaskAuthenticationSelectionMediator>(
       _modelController->GetWeakPtr(),
       /*consumer=*/selectionViewController);
+  _mediator->set_delegate(self);
   selectionViewController.mutator = _mediator->AsMutator();
   _selectionViewController = selectionViewController;
 
@@ -63,6 +75,12 @@
 - (void)stop {
   [_baseNavigationController popViewControllerAnimated:YES];
   _selectionViewController.mutator = nil;
+}
+
+#pragma mark - CardUnmaskAuthenticationSelectionMediatorDelegate
+
+- (void)dismissAuthenticationSelection {
+  [_browserCoordinatorCommands dismissCardUnmaskAuthentication];
 }
 
 @end

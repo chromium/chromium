@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_consumer.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator_bridge_target.h"
 
 @protocol CardUnmaskAuthenticationSelectionMutator;
@@ -47,6 +48,12 @@ class CardUnmaskAuthenticationSelectionMediator
   void Dismiss(bool user_closed_dialog, bool server_success) override;
   void UpdateContent() override;
 
+  // Set the delegate of this mediator.
+  void set_delegate(
+      id<CardUnmaskAuthenticationSelectionMediatorDelegate> delegate) {
+    delegate_ = delegate;
+  }
+
   // Returns an implementation of the mutator that forwards to this mediator.
   // We need this bridge since this mediator is C++ whereas the ViewController
   // expects the Objective-C protocol.
@@ -56,7 +63,12 @@ class CardUnmaskAuthenticationSelectionMediator
   base::WeakPtr<autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
       model_controller_;
   __weak id<CardUnmaskAuthenticationSelectionConsumer> consumer_;
+  __weak id<CardUnmaskAuthenticationSelectionMediatorDelegate> delegate_;
   CardUnmaskAuthenticationSelectionMutatorBridge* mutator_bridge_;
+
+  // Set to true the prompt has been dismissed.
+  bool was_dismissed_ = false;
+
   base::WeakPtrFactory<CardUnmaskAuthenticationSelectionMutatorBridgeTarget>
       weak_ptr_factory_{this};
 

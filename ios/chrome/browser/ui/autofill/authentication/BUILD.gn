@@ -60,6 +60,7 @@ source_set("card_unmask_authentication_selection_coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 
@@ -67,6 +68,7 @@ source_set("card_unmask_authentication_selection_mediator") {
   sources = [
     "card_unmask_authentication_selection_mediator.h",
     "card_unmask_authentication_selection_mediator.mm",
+    "card_unmask_authentication_selection_mediator_delegate.h",
   ]
   deps = [
     ":card_unmask_authentication_selection_mutator_bridge",

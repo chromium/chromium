@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator_bridge.h"
 
 namespace {
@@ -59,17 +60,23 @@ void CardUnmaskAuthenticationSelectionMediator::DidAcceptSelection() {
 }
 
 void CardUnmaskAuthenticationSelectionMediator::DidCancelSelection() {
-  // TODO(crbug.com/40282545): Implement cancelling out of the authentication
-  // selection.
+  Dismiss(/*user_closed_dialog=*/true, /*server_success=*/false);
 }
 
 // Implemention of autofill::CardUnmaskAuthenticationSelectionDialog follows:
 
 void CardUnmaskAuthenticationSelectionMediator::Dismiss(bool user_closed_dialog,
                                                         bool server_success) {
-  // TODO(crbug.com/40282545): Implement dismissal of the authentication
-  // selection view by delegating to the coordinator.
+  DCHECK(!was_dismissed_);
+  was_dismissed_ = true;
   model_controller_->OnDialogClosed(user_closed_dialog, server_success);
+  // If the user dismissed the authentication selection, then the dismissal
+  // needs to be delegated up through our delegate (a coordinator).
+  // If Dismiss() was called after a response from the server, then we expect
+  // another prompt to be initiated without dismissal of the overall flow.
+  if (user_closed_dialog) {
+    [delegate_ dismissAuthenticationSelection];
+  }
 }
 
 void CardUnmaskAuthenticationSelectionMediator::UpdateContent() {
