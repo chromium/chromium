@@ -2038,65 +2038,20 @@ AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
 }
 
-// TODO(crbug.com/1121806): Move non-UI card benefit logic to
-// PaymentsDataManager.
 std::optional<Suggestion::Text>
 AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
     const CreditCard& credit_card) const {
-  // Benefits are only displayed for app locale set to U.S. English.
-  if (personal_data().app_locale() != "en-US") {
-    return std::nullopt;
-  }
-  CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
-      credit_card.instrument_id());
-
-  // 1. Check merchant benefit.
-  std::optional<CreditCardMerchantBenefit> merchant_benefit =
+  const std::u16string& benefit_description =
       personal_data()
           .payments_data_manager()
-          .GetMerchantBenefitByInstrumentIdAndOrigin(
-              benefit_instrument_id,
-              autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());
-  if (merchant_benefit && merchant_benefit->IsActiveBenefit()) {
-    return GetBenefitTextWithTermsAppended(
-        merchant_benefit->benefit_description());
-  }
-
-  // 2. Check category benefit.
-  // TODO(crbug.com/331961211): Query PaymentsDataManager before Optimization
-  // Guide for category benefits
-  if (auto* autofill_optimization_guide =
-          autofill_client_->GetAutofillOptimizationGuide()) {
-    CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
-        autofill_optimization_guide
-            ->AttemptToGetEligibleCreditCardBenefitCategory(
-                credit_card.issuer_id(),
-                autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());
-    if (category_benefit_type !=
-        CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
-      std::optional<CreditCardCategoryBenefit> category_benefit =
-          personal_data()
-              .payments_data_manager()
-              .GetCategoryBenefitByInstrumentIdAndCategory(
-                  benefit_instrument_id, category_benefit_type);
-      if (category_benefit && category_benefit->IsActiveBenefit()) {
-        return GetBenefitTextWithTermsAppended(
-            category_benefit->benefit_description());
-      }
-    }
-  }
-
-  // 3. Check flat rate benefit.
-  std::optional<CreditCardFlatRateBenefit> flat_rate_benefit =
-      personal_data().payments_data_manager().GetFlatRateBenefitByInstrumentId(
-          benefit_instrument_id);
-  if (flat_rate_benefit && flat_rate_benefit->IsActiveBenefit()) {
-    return GetBenefitTextWithTermsAppended(
-        flat_rate_benefit->benefit_description());
-  }
-
-  // No eligible benefit to display.
-  return std::nullopt;
+          .GetApplicableBenefitDescriptionForCardAndOrigin(
+              credit_card,
+              autofill_client_->GetLastCommittedPrimaryMainFrameOrigin(),
+              autofill_client_->GetAutofillOptimizationGuide());
+  return benefit_description.empty()
+             ? std::nullopt
+             : std::optional<Suggestion::Text>(
+                   GetBenefitTextWithTermsAppended(benefit_description));
 }
 
 void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
