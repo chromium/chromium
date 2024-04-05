@@ -40,6 +40,8 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
  private:
   friend class SelectToSpeakSpeedBubbleControllerTest;
 
+  void MaybeRecordDurationHistogram();
+
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   void BubbleViewDestroyed() override;
@@ -52,6 +54,8 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
 
   // SelectToSpeakSpeedView::Delegate:
   void OnSpeechRateSelected(double speech_rate) override;
+
+  base::Time last_show_time_;
 
   // Owned by views hierarchy.
   raw_ptr<TrayBubbleView> bubble_view_ = nullptr;

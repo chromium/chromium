@@ -12,12 +12,20 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 namespace ash {
+
+namespace {
+constexpr char kMenuBubbleDurationMetric[] =
+    "Accessibility.CrosSelectToSpeak.MenuBubbleVisibleDuration";
+constexpr char kSpeedBubbleDurationMetric[] =
+    "Accessibility.CrosSelectToSpeak.SpeedBubbleVisibleDuration";
+}  // namespace
 
 class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
  public:
@@ -73,8 +81,19 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
                                                         /*speech_rate=*/1.2);
   }
 
+  void ExpectTotalMenuBubbleDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(kMenuBubbleDurationMetric,
+                                       expected_count);
+  }
+
+  void ExpectTotalSpeedBubbleDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(kSpeedBubbleDurationMetric,
+                                       expected_count);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
@@ -106,9 +125,11 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectTotalMenuBubbleDurationSamples(0);
   GetAccessibilitController()->HideSelectToSpeakPanel();
   EXPECT_TRUE(GetMenuView());
   EXPECT_FALSE(GetBubbleWidget()->IsVisible());
+  ExpectTotalMenuBubbleDurationSamples(1);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PauseButtonPressed) {
@@ -269,10 +290,14 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
   EXPECT_TRUE(GetSpeedBubbleController() &&
               GetSpeedBubbleController()->IsVisible());
 
+  ExpectTotalSpeedBubbleDurationSamples(0);
+
   // Clicking button again closes the speed selection bubble.
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(!GetSpeedBubbleController() ||
               !GetSpeedBubbleController()->IsVisible());
+
+  ExpectTotalSpeedBubbleDurationSamples(1);
 }
 
 }  // namespace ash
