@@ -125,6 +125,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       // once the necessary members are rewritten and the raw_ptr enforcement
       // plugin is up to date.
       options_.check_ptrs_to_non_string_literals = true;
+    } else if (arg == "check-span-fields") {
+      options_.check_span_fields = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

@@ -241,6 +241,111 @@ class RawPtrToStackAllocatedMatcher : public MatchFinder::MatchCallback {
   unsigned error_no_raw_ptr_to_stack_;
 };
 
+const char kNeedRawSpanSignature[] =
+    "[chromium-rawptr] Use raw_span<T> instead of a span<T>.";
+
+const char kNeedContainerSpanSignature[] =
+    "[chromium-rawptr] Use raw_span<T> instead of a span<T> in the field "
+    "type's template arguments.";
+
+class SpanFieldMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit SpanFieldMatcher(
+      clang::CompilerInstance& compiler,
+      const RawPtrAndRefExclusionsOptions& exclusion_options)
+      : compiler_(compiler), exclusion_options_(exclusion_options) {
+    error_need_span_signature_ = compiler_.getDiagnostics().getCustomDiagID(
+        clang::DiagnosticsEngine::Error, kNeedRawSpanSignature);
+
+    error_need_container_span_signature_ =
+        compiler_.getDiagnostics().getCustomDiagID(
+            clang::DiagnosticsEngine::Error, kNeedContainerSpanSignature);
+  }
+
+  void Register(MatchFinder& match_finder) {
+    auto raw_span = hasTemplateArgument(
+        2, refersToType(qualType(hasCanonicalType(qualType(hasDeclaration(
+               mapAnyOf(classTemplateSpecializationDecl, classTemplateDecl)
+                   .with(hasName("raw_ptr"))))))));
+
+    auto string_literals_span = hasTemplateArgument(
+        0, refersToType(qualType(hasCanonicalType(
+               anyOf(asString("const char"), asString("const wchar_t"),
+                     asString("const char8_t"), asString("const char16_t"),
+                     asString("const char32_t"))))));
+
+    auto excluded_spans = anyOf(raw_span, string_literals_span);
+
+    auto span_type = anyOf(
+        qualType(hasCanonicalType(
+            qualType(hasDeclaration(classTemplateSpecializationDecl(
+                hasName("base::span"), unless(excluded_spans)))))),
+        qualType(hasCanonicalType(qualType(type(templateSpecializationType(
+            hasDeclaration(classTemplateDecl(hasName("base::span"))),
+            unless(excluded_spans)))))));
+
+    auto optional_span_type = anyOf(
+        qualType(
+            hasCanonicalType(hasDeclaration(classTemplateSpecializationDecl(
+                hasName("optional"),
+                hasTemplateArgument(0, refersToType(span_type)))))),
+        qualType(hasCanonicalType(qualType(type(templateSpecializationType(
+            hasDeclaration(classTemplateDecl(hasName("optional"))),
+            hasAnyTemplateArgument(refersToType(span_type))))))));
+
+    auto container_methods =
+        anyOf(allOf(hasMethod(hasName("push_back")),
+                    hasMethod(hasName("pop_back")), hasMethod(hasName("size"))),
+              allOf(hasMethod(hasName("insert")), hasMethod(hasName("erase")),
+                    hasMethod(hasName("size"))),
+              allOf(hasMethod(hasName("push")), hasMethod(hasName("pop")),
+                    hasMethod(hasName("size"))));
+
+    auto template_argument =
+        templateArgument(refersToType(anyOf(span_type, optional_span_type)));
+    auto template_arguments = anyOf(hasTemplateArgument(0, template_argument),
+                                    hasTemplateArgument(1, template_argument));
+
+    auto container_of_span_type =
+        qualType(hasCanonicalType(anyOf(
+                     qualType(hasDeclaration(classTemplateSpecializationDecl(
+                         container_methods, template_arguments))),
+                     qualType(type(templateSpecializationType(
+                         hasDeclaration(classTemplateDecl(
+                             has(cxxRecordDecl(container_methods)))),
+                         template_arguments))))))
+            .bind("container_type");
+
+    auto field_decl_matcher =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 fieldDecl(hasType(qualType(anyOf(span_type, optional_span_type,
+                                                  container_of_span_type))),
+                           unless(PtrAndRefExclusions(exclusion_options_)))
+                     .bind("affectedFieldDecl"));
+    match_finder.addMatcher(field_decl_matcher, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    const clang::FieldDecl* field_decl =
+        result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
+    assert(field_decl && "matcher should bind 'fieldDecl'");
+
+    if (result.Nodes.getNodeAs<clang::QualType>("container_type")) {
+      compiler_.getDiagnostics().Report(field_decl->getLocation(),
+                                        error_need_container_span_signature_);
+    } else {
+      compiler_.getDiagnostics().Report(field_decl->getLocation(),
+                                        error_need_span_signature_);
+    }
+  }
+
+ private:
+  clang::CompilerInstance& compiler_;
+  unsigned error_need_span_signature_;
+  unsigned error_need_container_span_signature_;
+  const RawPtrAndRefExclusionsOptions& exclusion_options_;
+};
+
 void FindBadRawPtrPatterns(Options options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
@@ -296,6 +401,11 @@ void FindBadRawPtrPatterns(Options options,
   if (options.check_raw_ptr_to_stack_allocated &&
       !options.disable_check_raw_ptr_to_stack_allocated_error) {
     raw_ptr_to_stack.Register(match_finder);
+  }
+
+  SpanFieldMatcher raw_span_matcher(compiler, exclusion_options);
+  if (options.check_span_fields) {
+    raw_span_matcher.Register(match_finder);
   }
 
   match_finder.matchAST(ast_context);

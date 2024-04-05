@@ -15,6 +15,9 @@ struct vector {
   ~vector();
   vector& operator=(const vector&);
   vector& operator=(vector&&);
+  unsigned int size() { return 0; }
+  void insert() {}
+  void erase() {}
 };
 
 }  // namespace std

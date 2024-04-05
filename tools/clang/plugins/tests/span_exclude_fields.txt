@@ -1,0 +1,4 @@
+span_exclude_fields.cpp:11:25: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<SomeClass> span_field;
+                        ^
+1 error generated.
