@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
+import 'chrome://managed-user-profile-notice/legacy_managed_user_profile_notice_app.js';
 
-import type {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
+import type {LegacyManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/legacy_managed_user_profile_notice_app.js';
 import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -17,8 +17,8 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_profile_notice_browser_proxy.js';
 
 
-suite('ManagedUserProfileNoticeTest', function() {
-  let app: ManagedUserProfileNoticeAppElement;
+suite('LegacyManagedUserProfileNoticeTest', function() {
+  let app: LegacyManagedUserProfileNoticeAppElement;
   let browserProxy: TestManagedUserProfileNoticeBrowserProxy;
 
   const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
@@ -40,7 +40,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         new TestManagedUserProfileNoticeBrowserProxy(testManagedUserProfileInfo);
     ManagedUserProfileNoticeBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('managed-user-profile-notice-app');
+    app = document.createElement('legacy-managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     return browserProxy.whenCalled('initialized');
@@ -78,7 +78,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('managed-user-profile-notice-app');
+    app = document.createElement('legacy-managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     await browserProxy.whenCalled('initialized');
@@ -108,7 +108,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('managed-user-profile-notice-app');
+    app = document.createElement('legacy-managed-user-profile-notice-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     await browserProxy.whenCalled('initialized');

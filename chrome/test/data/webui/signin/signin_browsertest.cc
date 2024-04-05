@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(SigninTest, ProfileCustomizationTest) {
   RunTest("signin/profile_customization_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
+IN_PROC_BROWSER_TEST_F(SigninTest, SigninLegacyManagedUserProfileNotice) {
   set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
-  RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
+  RunTest("signin/legacy_managed_user_profile_notice_test.js", "mocha.run()");
 }

@@ -18,7 +18,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './managed_user_profile_notice_app.html.js';
+import {getTemplate} from './legacy_managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
 
@@ -36,20 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.width = 'auto';
 });
 
-export interface ManagedUserProfileNoticeAppElement {
+export interface LegacyManagedUserProfileNoticeAppElement {
   $: {
     cancelButton: CrButtonElement,
     proceedButton: CrButtonElement,
   };
 }
 
-const ManagedUserProfileNoticeAppElementBase =
+const LegacyManagedUserProfileNoticeAppElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-export class ManagedUserProfileNoticeAppElement extends
-    ManagedUserProfileNoticeAppElementBase {
+export class LegacyManagedUserProfileNoticeAppElement extends
+    LegacyManagedUserProfileNoticeAppElementBase {
   static get is() {
-    return 'managed-user-profile-notice-app';
+    return 'legacy-managed-user-profile-notice-app';
   }
 
   static get template() {
@@ -89,7 +89,7 @@ export class ManagedUserProfileNoticeAppElement extends
       },
 
       showLinkDataCheckbox_: {
-        type: String,
+        type: Boolean,
         value() {
           return loadTimeData.getBoolean('showLinkDataCheckbox');
         },
@@ -185,9 +185,11 @@ export class ManagedUserProfileNoticeAppElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'managed-user-profile-notice-app': ManagedUserProfileNoticeAppElement;
+    'legacy-managed-user-profile-notice-app':
+        LegacyManagedUserProfileNoticeAppElement;
   }
 }
 
 customElements.define(
-  ManagedUserProfileNoticeAppElement.is, ManagedUserProfileNoticeAppElement);
+    LegacyManagedUserProfileNoticeAppElement.is,
+    LegacyManagedUserProfileNoticeAppElement);

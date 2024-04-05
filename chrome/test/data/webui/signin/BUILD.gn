@@ -14,7 +14,7 @@ build_webui_tests("build") {
     "profile_picker_app_test.ts",
     "profile_picker_main_view_test.ts",
     "test_manage_profiles_browser_proxy.ts",
-    "managed_user_profile_notice_test.ts",
+    "legacy_managed_user_profile_notice_test.ts",
     "profile_customization_test.ts",
     "profile_switch_test.ts",
     "profile_type_choice_test.ts",
