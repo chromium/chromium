@@ -14,6 +14,7 @@
 // cards.
 @interface CardUnmaskAuthenticationSelectionViewController
     : ChromeTableViewController <CardUnmaskAuthenticationSelectionConsumer,
+                                 UIAdaptivePresentationControllerDelegate,
                                  UITableViewDelegate>
 
 // The delegate for user actions.
