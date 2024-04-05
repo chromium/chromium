@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 
 namespace ash {
 
@@ -34,6 +35,12 @@ class BrightnessControlDelegate {
   // Sets whether the ambient light sensor should be used in brightness
   // calculations.
   virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
+
+  // Asynchronously invokes |callback| with true if the device has at least one
+  // ambient light sensor. In case of error, |callback| will be run with
+  // nullopt.
+  virtual void HasAmbientLightSensor(
+      base::OnceCallback<void(std::optional<bool>)> callback) = 0;
 };
 
 }  // namespace ash

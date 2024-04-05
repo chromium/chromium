@@ -149,6 +149,10 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
   void SetAmbientLightSensorEnabled(bool enabled) override {
     is_ambient_light_sensor_enabled_ = enabled;
   }
+  void HasAmbientLightSensor(
+      base::OnceCallback<void(std::optional<bool>)> callback) override {
+    std::move(callback).Run(has_ambient_light_sensor_);
+  }
 
   double brightness_percent() const { return brightness_percent_; }
   bool is_ambient_light_sensor_enabled() const {
@@ -159,6 +163,7 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
   double brightness_percent_;
   // Enabled by default to match system behavior.
   bool is_ambient_light_sensor_enabled_ = true;
+  bool has_ambient_light_sensor_ = true;
 };
 
 }  // namespace
