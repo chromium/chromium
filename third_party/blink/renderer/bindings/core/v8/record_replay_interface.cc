@@ -91,6 +91,12 @@ extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<
 extern "C" void V8RecordReplayFinishRecording();
 extern "C" void V8RecordReplaySetCrashReason(const char* reason);
 extern "C" char* V8RecordReplayReadAssetFileContents(const char* aPath, size_t* aLength);
+extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
+extern "C" void V8RecordReplayAddMetadata(const char* jsonString);
+extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
+extern "C" void V8RecordReplayRegisterBrowserEventCallback(
+  void (*callback)(const char* name, const char* payload)
+);
 
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
@@ -2419,11 +2425,6 @@ static void InvokeOnAnnotation(const v8::FunctionCallbackInfo<v8::Value>& args) 
   recordreplay::OnAnnotation(*kind, *contents);
 }
 
-extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
-extern "C" void V8RecordReplayRegisterBrowserEventCallback(
-  void (*callback)(const char* name, const char* payload)
-);
-
 /**
  * Copied from gin/try_catch.h.
  */
@@ -2613,11 +2614,17 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   SetFunctionProperty(isolate, args, "checkPersistentId", fromJsCheckPersistentId);
 }
 
-void InitializeRecordReplay(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
+void InitializeRecordReplay(
+  const char* processType,
+  v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
   V8RecordReplaySetAPIObjectIdCallback(GetBlinkPersistentId);
   gActiveNetworkRequests =
       new std::unordered_map<std::string, NetworkRequestStatus>();
   gCurrentNetworkStreamData = new std::vector<uint8_t>();
+  
+  // Add process type metadata.
+  std::string metadata = std::string("{ \"process\": \"") + processType + "\" }";
+  V8RecordReplayAddMetadata(metadata.c_str());
 }
 
 void InitializeRecordReplayAfterCheckpoint() {
@@ -2672,13 +2679,6 @@ void OnRootFrameInit(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8:
       localFrame->IsCrossOriginToParentOrOuterDocument(),
       localFrame->GetDocument()->Url().GetString().Utf8().c_str()
       );
-
-  if (gReplayScriptsAlive) {
-    // Our "V8RecordReplaySetDefaultContext" logic implies a single local
-    // root frame per render process.
-    recordreplay::Warning("ReplayScript Multiple_OnRootFrameInit");
-    return;
-  }
   
   // NOTE: The root `LocalFrame` can change over time.
   gRootLocalFrame = localFrame;
@@ -2727,9 +2727,6 @@ void OnNewWindowAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame, v8
     parentFrame ? parentFrame->RecordReplayId() : 0
   );
 }
-
-
-extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
 
 static ErrorEvent* gCurrentErrorEvent;
 

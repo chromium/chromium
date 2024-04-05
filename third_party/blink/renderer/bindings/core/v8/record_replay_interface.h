@@ -14,7 +14,9 @@
 namespace blink {
 // Initialize command state after the first context is created, but before the
 // first checkpoint in the recording is created.
-void InitializeRecordReplay(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
+void InitializeRecordReplay(
+  const char* processType,
+  v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 
 // Do any remaining initialization after the first checkpoint is created.
 void InitializeRecordReplayAfterCheckpoint();
