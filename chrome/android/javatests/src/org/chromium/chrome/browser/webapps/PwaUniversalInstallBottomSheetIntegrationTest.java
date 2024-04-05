@@ -69,6 +69,14 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     private static final String HISTOGRAM_DIALOG_TYPE =
             "WebApk.UniversalInstall.DialogShownForAppType";
     private static final String HISTOGRAM_DIALOG_ACTION = "WebApk.UniversalInstall.DialogAction";
+    private static final String HISTOGRAM_TIMOUT_WITH_APP_TYPE =
+            "WebApk.UniversalInstall.TimeoutWithAppType";
+    private static final String HISTOGRAM_FETCH_TIME_WEBAPK =
+            "WebApk.UniversalInstall.WebApk.AppDataFetchTime";
+    private static final String HISTOGRAM_FETCH_TIME_HOMEBREW =
+            "WebApk.UniversalInstall.Homebrew.AppDataFetchTime";
+    private static final String HISTOGRAM_FETCH_TIME_SHORTCUT =
+            "WebApk.UniversalInstall.Shortcut.AppDataFetchTime";
 
     private PwaUniversalInstallBottomSheetCoordinator mPwaUniversalInstallBottomSheetCoordinator;
 
@@ -229,9 +237,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testInstallWebappCallbackAfterTimeout() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.WEBAPK)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
-                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 5) // Dialog shown after timeout.
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 1) // Install app.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -277,9 +287,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testAddShortcutCallbackAfterTimeout() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.SHORTCUT)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.SHORTCUT)
-                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 5) // Dialog shown after timeout.
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 3) // Create shortcut.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_SHORTCUT)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -306,9 +318,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testAddShortcutToWebappCallbackAfterTimeout() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.WEBAPK)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
-                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 5) // Dialog shown after timeout.
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 4) // Create shortcut to app.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -355,9 +369,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testOpenAppCallbackAfterTimeout() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.WEBAPK)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
-                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 5) // Dialog shown after timeout.
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 2) // Open existing.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -404,9 +420,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testCallbackDisabledIfInstallDisabledAfterTimeout() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.SHORTCUT)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.SHORTCUT)
-                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 5) // Dialog shown after timeout.
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 3) // Create shortcut.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_SHORTCUT)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -436,8 +454,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testTypeShortcutSkipsDialog() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.SHORTCUT)
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
+                        .expectNoRecords(HISTOGRAM_DIALOG_TYPE)
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 7) // Redirect to Create Shortcut.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_SHORTCUT)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -460,8 +480,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testTypeCraftedWebappShowsDialogOnLeafPage() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -482,8 +504,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testTypeHomebrewWebappShowsDialogOnLeafPage() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
                         .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK_DIY)
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_HOMEBREW)
                         .build();
 
         showPwaUniversalInstallBottomSheet(
@@ -505,8 +529,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testTypeCraftedWebAppSkipsDialogOnRoot() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
+                        .expectNoRecords(HISTOGRAM_DIALOG_TYPE)
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 8) // Redirect to Install App.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
                         .build();
 
         // Navigate to the root of the test server.
@@ -536,8 +562,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public void testTypeHomebrewWebAppSkipsDialogOnRoot() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK_DIY)
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
+                        .expectNoRecords(HISTOGRAM_DIALOG_TYPE)
                         .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 9) // Redirect (homebrew app).
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_HOMEBREW)
                         .build();
 
         // Navigate to the root of the test server.

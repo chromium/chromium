@@ -116,7 +116,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                 mMediator.getModel(), mView, PwaUniversalInstallBottomSheetViewBinder::bind);
 
         if (sShowBeforeAppTypeKnownForTesting) {
-            show(/* wasTimeout= */ false);
+            show(/* wasTimeout= */ true);
         }
 
         mFetchStartTime = SystemClock.elapsedRealtime();
@@ -231,7 +231,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                 .fetchAppData(PwaUniversalInstallBottomSheetCoordinator.this, webContents);
     }
 
-    private void logMetrics(@AppType int appType, long fetchDuration) {
+    private void logFetchTimeMetrics(@AppType int appType, long fetchDuration) {
         switch (appType) {
             case AppType.WEBAPK:
                 RecordHistogram.recordLongTimesHistogram(
@@ -248,18 +248,12 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             default:
                 assert false;
         }
-        RecordHistogram.recordEnumeratedHistogram(
-                "WebApk.UniversalInstall.DialogShownForAppType", appType, AppType.COUNT);
-        if (!mWaitingToShow) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "WebApk.UniversalInstall.TimeoutWithAppType", appType, AppType.COUNT);
-        }
     }
 
     @CalledByNative
     public void onAppDataFetched(@AppType int appType, Bitmap icon, boolean adaptive) {
         long fetchDuration = SystemClock.elapsedRealtime() - mFetchStartTime;
-        logMetrics(appType, fetchDuration);
+        logFetchTimeMetrics(appType, fetchDuration);
 
         mView.setIcon(icon, adaptive);
         mAppType = appType;
@@ -282,6 +276,12 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         }
 
         if (!mWaitingToShow) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "WebApk.UniversalInstall.TimeoutWithAppType", appType, AppType.COUNT);
+            // If we are not waiting to show, that means the dialog has shown already while the app
+            // type was not known. This allows the metric to catch up to that fact.
+            RecordHistogram.recordEnumeratedHistogram(
+                    "WebApk.UniversalInstall.DialogShownForAppType", mAppType, AppType.COUNT);
             return;
         }
 
@@ -320,6 +320,9 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             }
             return;
         }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogShownForAppType", mAppType, AppType.COUNT);
 
         show(/* wasTimeout= */ false);
     }
