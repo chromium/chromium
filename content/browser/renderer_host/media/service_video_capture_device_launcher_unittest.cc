@@ -99,7 +99,7 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
                   &mock_source_, std::move(*source_receiver));
             }));
 
-    ON_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+    ON_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
         .WillByDefault(Invoke(
             [this](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                        subscriber,
@@ -109,7 +109,7 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
                        video_capture::mojom::PushVideoStreamSubscription>
                        subscription,
                    video_capture::mojom::VideoSource::
-                       CreatePushSubscriptionCallback& callback) {
+                       CreatePushSubscriptionCallback callback) {
               subscription_receivers_.Add(&mock_subscription_,
                                           std::move(subscription));
               std::move(callback).Run(
@@ -210,7 +210,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   base::RunLoop step_2_run_loop;
 
   base::OnceClosure create_push_subscription_success_answer_cb;
-  EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+  EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
           [&create_push_subscription_success_answer_cb, &step_1_run_loop,
            &service_result_code](
@@ -221,7 +221,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
               mojo::PendingReceiver<
                   video_capture::mojom::PushVideoStreamSubscription>
                   subscription,
-              video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
+              video_capture::mojom::VideoSource::CreatePushSubscriptionCallback
                   callback) {
             // Prepare the callback, but save it for now instead of invoking it.
             create_push_subscription_success_answer_cb = base::BindOnce(
@@ -269,7 +269,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        LaunchingDeviceFailsBecauseDeviceNotFound) {
   base::RunLoop run_loop;
 
-  EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+  EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
           [](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                  subscriber,
@@ -278,7 +278,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
              mojo::PendingReceiver<
                  video_capture::mojom::PushVideoStreamSubscription>
                  subscription,
-             video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
+             video_capture::mojom::VideoSource::CreatePushSubscriptionCallback
                  callback) {
             // Note: We post this to the end of the message queue to make it
             // asynchronous.
@@ -351,7 +351,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
 
   video_capture::mojom::VideoSource::CreatePushSubscriptionCallback
       create_subscription_cb;
-  EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+  EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
           [&create_subscription_cb](
               mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
@@ -361,7 +361,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
               mojo::PendingReceiver<
                   video_capture::mojom::PushVideoStreamSubscription>
                   subscription,
-              video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
+              video_capture::mojom::VideoSource::CreatePushSubscriptionCallback
                   callback) {
             // Simulate connection lost by not invoking |callback| and releasing
             // |subscription|. We have to save |callback| and invoke it later

@@ -116,7 +116,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
               source_receivers_.Add(&mock_source_, std::move(*receiver));
             }));
 
-    ON_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+    ON_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
         .WillByDefault(Invoke(
             [this](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                        subscriber,
@@ -126,7 +126,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
                        video_capture::mojom::PushVideoStreamSubscription>
                        subscription,
                    video_capture::mojom::VideoSource::
-                       CreatePushSubscriptionCallback& callback) {
+                       CreatePushSubscriptionCallback callback) {
               subscription_receivers_.Add(&mock_subscription_,
                                           std::move(subscription));
               std::move(callback).Run(

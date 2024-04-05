@@ -18,27 +18,21 @@ class MockVideoSource : public video_capture::mojom::VideoSource {
   MockVideoSource();
   ~MockVideoSource() override;
 
-  void CreatePushSubscription(
-      mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber,
-      const media::VideoCaptureParams& requested_settings,
-      bool force_reopen_with_new_settings,
-      mojo::PendingReceiver<video_capture::mojom::PushVideoStreamSubscription>
-          subscription,
-      CreatePushSubscriptionCallback callback) override;
+  MOCK_METHOD(
+      void,
+      CreatePushSubscription,
+      (mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber,
+       const media::VideoCaptureParams& requested_settings,
+       bool force_reopen_with_new_settings,
+       mojo::PendingReceiver<video_capture::mojom::PushVideoStreamSubscription>
+           subscription,
+       CreatePushSubscriptionCallback callback),
+      (override));
 
-  MOCK_METHOD5(
-      DoCreatePushSubscription,
-      void(mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
-               subscriber,
-           const media::VideoCaptureParams& requested_settings,
-           bool force_reopen_with_new_settings,
-           mojo::PendingReceiver<
-               video_capture::mojom::PushVideoStreamSubscription> subscription,
-           CreatePushSubscriptionCallback& callback));
-
-  MOCK_METHOD1(
+  MOCK_METHOD(
+      void,
       RegisterVideoEffectsProcessor,
-      void(mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>));
+      (mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>));
 };
 
 }  // namespace video_capture
