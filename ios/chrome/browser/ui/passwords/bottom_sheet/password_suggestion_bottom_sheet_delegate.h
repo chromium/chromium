@@ -12,20 +12,10 @@
 // Delegate for the passwords bottom sheet.
 @protocol PasswordSuggestionBottomSheetDelegate
 
-// Sends the information about which suggestion from the bottom sheet was
-// selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectSuggestion:(NSInteger)row;
-
-// Notification that the bottom sheet is dismissed, possibly refocusing
-// the field which originally triggered the bottom sheet after the bottom sheet
-// has been dismissed.
-- (void)dismiss;
-
-// Disables future refocus requests.
-- (void)disableRefocus;
-
-// Notifies that a suggestion will be selected.
-- (void)willSelectSuggestion;
+// Request to disable the bottom sheet, potentially refocusing the field which
+// originally triggered the bottom sheet after the bottom sheet has been
+// disabled.
+- (void)disableBottomSheet;
 
 // Returns the username at a given row with the appended suffix removed.
 - (NSString*)usernameAtRow:(NSInteger)row;

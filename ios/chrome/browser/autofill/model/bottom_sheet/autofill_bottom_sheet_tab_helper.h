@@ -96,7 +96,7 @@ class AutofillBottomSheetTabHelper
 
   // Detach the password listeners, which will deactivate the password bottom
   // sheet on all frames.
-  void DetachPasswordListenersForAllFrames(bool refocus);
+  void DetachPasswordListenersForAllFrames();
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on the provided frame.

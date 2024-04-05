@@ -25,7 +25,7 @@
 - (void)secondaryButtonTapped;
 
 // Handles the view disappearing.
-- (void)viewDidDisappear:(BOOL)animated;
+- (void)viewDidDisappear;
 
 @end
 

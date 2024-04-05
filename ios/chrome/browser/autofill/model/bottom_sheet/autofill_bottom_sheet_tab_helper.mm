@@ -212,8 +212,7 @@ void AutofillBottomSheetTabHelper::DetachPasswordListeners(
       registered_password_renderer_ids_[frame_id], frame, refocus);
 }
 
-void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
-    bool refocus) {
+void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames() {
   // Verify that the password bottom sheet feature is enabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kIOSPasswordBottomSheet)) {
@@ -222,7 +221,7 @@ void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
 
   for (auto& registered_renderer_ids : registered_password_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
-                            registered_renderer_ids.second, refocus);
+                            registered_renderer_ids.second, /*refocus=*/true);
   }
 }
 

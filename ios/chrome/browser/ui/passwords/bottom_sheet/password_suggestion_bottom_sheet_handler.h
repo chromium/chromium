@@ -16,8 +16,14 @@
 // Displays the password details menu.
 - (void)displayPasswordDetailsForFormSuggestion:(FormSuggestion*)formSuggestion;
 
-// Cleanup bottom sheet after it has been dismissed.
-- (void)stop;
+// Handles tapping the primary button. The selected suggestion must be provided.
+- (void)primaryButtonTapped:(FormSuggestion*)formSuggestion;
+
+// Handles tapping the secondary button.
+- (void)secondaryButtonTapped;
+
+// Handles the view disappearing.
+- (void)viewDidDisappear;
 
 @end
 

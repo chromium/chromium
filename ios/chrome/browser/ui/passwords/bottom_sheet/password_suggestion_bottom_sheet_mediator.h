@@ -7,6 +7,7 @@
 
 #import <optional>
 
+#import "base/ios/block_types.h"
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
@@ -77,6 +78,14 @@ class GURL;
 
 // Logs bottom sheet exit reasons, like dismissal or using a password.
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
+
+// Sends the information about which suggestion from the bottom sheet was
+// selected by the user, which is expected to fill the relevant fields.
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                 completion:(ProceduralBlock)completion;
+
+// Notify that the bottom sheet is getting dismissed.
+- (void)dismiss;
 
 // Set vector of credentials that is used for testing.
 - (void)setCredentialsForTesting:

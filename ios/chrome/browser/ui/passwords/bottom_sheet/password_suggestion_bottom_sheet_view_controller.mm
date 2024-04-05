@@ -61,6 +61,9 @@ CGFloat const kSpacingAfterTitle = 4;
 // The password controller handler used to open the password manager.
 @property(nonatomic, weak) id<PasswordSuggestionBottomSheetHandler> handler;
 
+// Whether the bottom sheet will be disabled on exit. Default is YES.
+@property(nonatomic, assign) BOOL disableBottomSheetOnExit;
+
 @end
 
 @implementation PasswordSuggestionBottomSheetViewController
@@ -72,6 +75,7 @@ CGFloat const kSpacingAfterTitle = 4;
   if (self) {
     self.handler = handler;
     _URL = URL;
+    self.disableBottomSheetOnExit = YES;
   }
   return self;
 }
@@ -123,8 +127,12 @@ CGFloat const kSpacingAfterTitle = 4;
                                   self.aboveTitleView.accessibilityLabel);
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [self.delegate dismiss];
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if (self.disableBottomSheetOnExit) {
+    [self.delegate disableBottomSheet];
+  }
+  [self.handler viewDidDisappear];
 }
 
 #pragma mark - PasswordSuggestionBottomSheetConsumer
@@ -149,11 +157,7 @@ CGFloat const kSpacingAfterTitle = 4;
 }
 
 - (void)dismiss {
-  __weak __typeof(self) weakSelf = self;
-  [self dismissViewControllerAnimated:NO
-                           completion:^{
-                             [weakSelf.handler stop];
-                           }];
+  [self dismissViewControllerAnimated:NO completion:NULL];
 }
 
 #pragma mark - UITableViewDelegate
@@ -222,20 +226,17 @@ CGFloat const kSpacingAfterTitle = 4;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  // Use password button
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate willSelectSuggestion];
-  [self dismissViewControllerAnimated:NO
-                           completion:^{
-                             // Send a notification to fill the
-                             // username/password fields
-                             [weakSelf didSelectSuggestion];
-                           }];
+  NSInteger index = [self selectedRow];
+  [self.handler primaryButtonTapped:_suggestions[index]];
+
+  if ([self rowCount] > 1) {
+    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
+                                (int)index);
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // "Use Keyboard" button, which dismisses the bottom sheet.
-  [self dismiss];
+  [self.handler secondaryButtonTapped];
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -313,23 +314,12 @@ CGFloat const kSpacingAfterTitle = 4;
   [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
 }
 
-// Notifies the delegate that a password suggestion was selected by the user.
-- (void)didSelectSuggestion {
-  NSInteger index = [self selectedRow];
-  [self.delegate didSelectSuggestion:index];
-
-  if ([self rowCount] > 1) {
-    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
-                                (int)index);
-  }
-}
-
 // Creates the UI action used to open the password manager.
 - (UIAction*)openPasswordManagerAction {
   __weak __typeof(self) weakSelf = self;
   void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Manager.
-    [weakSelf.delegate disableRefocus];
+    weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler displayPasswordManager];
   };
   UIImage* keyIcon =
@@ -349,7 +339,7 @@ CGFloat const kSpacingAfterTitle = 4;
   FormSuggestion* formSuggestion = [_suggestions objectAtIndex:indexPath.row];
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Details.
-    [weakSelf.delegate disableRefocus];
+    weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler displayPasswordDetailsForFormSuggestion:formSuggestion];
   };
 

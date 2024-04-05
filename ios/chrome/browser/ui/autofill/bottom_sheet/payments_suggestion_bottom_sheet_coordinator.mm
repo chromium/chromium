@@ -157,7 +157,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   [self.viewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
+- (void)viewDidDisappear {
   if (_dismissing) {
     return;
   }

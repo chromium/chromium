@@ -152,7 +152,7 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, SecondaryButton) {
   [coordinator_ start];
 
   [coordinator_ secondaryButtonTapped];
-  [coordinator_ viewDidDisappear:NO];
+  [coordinator_ viewDidDisappear];
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();

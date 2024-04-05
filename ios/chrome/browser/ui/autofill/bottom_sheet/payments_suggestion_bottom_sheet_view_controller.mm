@@ -136,7 +136,7 @@ CGFloat const kTitleLogoHeight = 24;
   if (self.disableBottomSheetOnExit) {
     [self.delegate disableBottomSheet];
   }
-  [self.handler viewDidDisappear:animated];
+  [self.handler viewDidDisappear];
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer

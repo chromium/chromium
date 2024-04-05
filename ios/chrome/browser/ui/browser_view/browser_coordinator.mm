@@ -180,7 +180,6 @@
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
@@ -290,7 +289,6 @@ enum class ToolbarKind {
     PasswordSettingsCoordinatorDelegate,
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
-    PasswordSuggestionBottomSheetCoordinatorDelegate,
     PriceNotificationsCommands,
     PhoneNumberCommands,
     PromosManagerCommands,
@@ -709,7 +707,9 @@ enum class ToolbarKind {
 
   [self stopPasswordProtectionCoordinator];
 
-  [self stopPasswordSuggestionBottomSheetCoordinator];
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
+
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
@@ -778,13 +778,6 @@ enum class ToolbarKind {
   [self.recentTabsCoordinator stop];
   self.recentTabsCoordinator.delegate = nil;
   self.recentTabsCoordinator = nil;
-}
-
-// Stops the password suggestion bottom sheet coordinator.
-- (void)stopPasswordSuggestionBottomSheetCoordinator {
-  [self.passwordSuggestionBottomSheetCoordinator stop];
-  self.passwordSuggestionBottomSheetCoordinator.delegate = nil;
-  self.passwordSuggestionBottomSheetCoordinator = nil;
 }
 
 // Stop the store kit coordinator.
@@ -1369,7 +1362,8 @@ enum class ToolbarKind {
 
   [self stopPasswordProtectionCoordinator];
 
-  [self stopPasswordSuggestionBottomSheetCoordinator];
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1641,7 +1635,11 @@ enum class ToolbarKind {
                              browser:self.browser
                               params:params
                             delegate:self];
-  self.passwordSuggestionBottomSheetCoordinator.delegate = self;
+  self.passwordSuggestionBottomSheetCoordinator.settingsHandler =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
+  self.passwordSuggestionBottomSheetCoordinator
+      .browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
@@ -1936,6 +1934,11 @@ enum class ToolbarKind {
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
   [_voiceSearchController prepareToAppear];
+}
+
+- (void)dismissPasswordSuggestions {
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 }
 
 - (void)dismissPaymentSuggestions {
@@ -3358,14 +3361,6 @@ enum class ToolbarKind {
 - (void)hideMiniMap {
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
-}
-
-#pragma mark - PasswordSuggestionBottomSheetCoordinatorDelegate
-
-- (void)passwordSuggestionBottomSheetCoordinatorWantsToBeStopped:
-    (PasswordSuggestionBottomSheetCoordinator*)coordinator {
-  CHECK_EQ(coordinator, self.passwordSuggestionBottomSheetCoordinator);
-  [self stopPasswordSuggestionBottomSheetCoordinator];
 }
 
 #pragma mark - PasswordProtectionCoordinator

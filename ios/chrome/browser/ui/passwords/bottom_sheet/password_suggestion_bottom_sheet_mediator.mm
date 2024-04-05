@@ -50,8 +50,6 @@ namespace {
 const char kImageFetcherUmaClient[] = "PasswordBottomSheet";
 const CGFloat kProfileImageSize = 80.0;
 
-using PasswordSuggestionBottomSheetExitReason::kDismissal;
-using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 using ReauthenticationEvent::kAttempt;
 using ReauthenticationEvent::kFailure;
 using ReauthenticationEvent::kMissingPasscode;
@@ -118,14 +116,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   // via the password sharing feature. Empty otherwise.
   NSMutableArray<UIImage*>* _senderImages;
 
-  // Whether the field that triggered the bottom sheet will need to refocus when
-  // the bottom sheet is dismissed. Default is true.
-  bool _needsRefocus;
-
-  // Whether the user has chosen to use one of the proposed suggestions to fill
-  // the fields. Default is false.
-  bool _suggestionSelected;
-
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -162,8 +152,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   if (self = [super init]) {
-    _needsRefocus = true;
-    _suggestionSelected = false;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
@@ -301,24 +289,22 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 #pragma mark - PasswordSuggestionBottomSheetDelegate
 
-- (void)didSelectSuggestion:(NSInteger)row {
-  DCHECK(row >= 0);
-
-  FormSuggestion* suggestion = [self.suggestions objectAtIndex:row];
-
-  [self logExitReason:kUsePasswordSuggestion];
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                 completion:(ProceduralBlock)completion {
   [self logReauthEvent:kAttempt];
   [self markSharedPasswordNotificationsDisplayed];
 
   if (!suggestion.requiresReauth) {
     [self logReauthEvent:kSuccess];
     [self selectSuggestion:suggestion];
+    completion();
     return;
   }
   if ([_reauthenticationModule canAttemptReauth]) {
     __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
       [weakSelf selectSuggestion:suggestion reauthenticationResult:result];
+      completion();
     };
 
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
@@ -329,17 +315,17 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   } else {
     [self logReauthEvent:kMissingPasscode];
     [self selectSuggestion:suggestion];
+    completion();
   }
 }
 
 - (void)dismiss {
-  if (_needsRefocus && _webStateList) {
-    if (!_suggestionSelected) {
-      [self logExitReason:kDismissal];
-      [self incrementDismissCount];
-      [self markSharedPasswordNotificationsDisplayed];
-    }
+  [self incrementDismissCount];
+  [self markSharedPasswordNotificationsDisplayed];
+}
 
+- (void)disableBottomSheet {
+  if (_webStateList) {
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     if (!activeWebState) {
       return;
@@ -351,17 +337,8 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
       return;
     }
 
-    tabHelper->DetachPasswordListenersForAllFrames(_needsRefocus);
-    [self disconnect];
+    tabHelper->DetachPasswordListenersForAllFrames();
   }
-}
-
-- (void)disableRefocus {
-  _needsRefocus = false;
-}
-
-- (void)willSelectSuggestion {
-  _suggestionSelected = true;
 }
 
 - (NSString*)usernameAtRow:(NSInteger)row {
@@ -425,7 +402,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 #pragma mark - Private
 
 - (void)onWebStateChange {
-  _needsRefocus = false;
   [self.consumer dismiss];
 }
 

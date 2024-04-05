@@ -11,10 +11,6 @@
 // Delegate for the payments bottom sheet.
 @protocol PaymentsSuggestionBottomSheetDelegate
 
-// Sends the information about which credit card from the bottom sheet was
-// selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData;
-
 // Request to disable the bottom sheet, potentially refocusing the field which
 // originally triggered the bottom sheet after the bottom sheet has been
 // disabled.

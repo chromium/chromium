@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
@@ -25,12 +25,17 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+using PasswordSuggestionBottomSheetExitReason::kDismissal;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
+using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 @interface PasswordSuggestionBottomSheetCoordinator () {
   // The password controller delegate used to open the password manager.
   id<PasswordControllerDelegate> _passwordControllerDelegate;
+
+  // Currently in the process of dismissing the bottom sheet.
+  bool _dismissing;
 }
 
 // This mediator is used to fetch data related to the bottom sheet.
@@ -55,6 +60,7 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _passwordControllerDelegate = delegate;
+    _dismissing = NO;
 
     WebStateList* webStateList = browser->GetWebStateList();
     const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
@@ -130,20 +136,22 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 #pragma mark - PasswordSuggestionBottomSheetHandler
 
 - (void)displayPasswordManager {
+  _dismissing = YES;
   [self.mediator logExitReason:kShowPasswordManager];
 
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf stop];
+                           [weakSelf displaySavedPasswordList];
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPasswordSuggestions];
                          }];
-
-  [_passwordControllerDelegate displaySavedPasswordList];
 }
 
 - (void)displayPasswordDetailsForFormSuggestion:
     (FormSuggestion*)formSuggestion {
+  _dismissing = YES;
   [self.mediator logExitReason:kShowPasswordDetails];
   std::optional<password_manager::CredentialUIEntry> credential =
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
@@ -152,14 +160,47 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf stop];
+                           // TODO(crbug.com/1422344): Add metric for when the
+                           // credential is nil.
+                           if (credential.has_value()) {
+                             [weakSelf
+                                 showPasswordDetailsForCredential:credential
+                                                                      .value()];
+                           }
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPasswordSuggestions];
                          }];
+}
 
-  if (credential.has_value()) {
-    [_passwordControllerDelegate
-        showPasswordDetailsForCredential:credential.value()];
+- (void)primaryButtonTapped:(FormSuggestion*)formSuggestion {
+  _dismissing = YES;
+  [self.mediator logExitReason:kUsePasswordSuggestion];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+  };
+  [self.viewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf.mediator didSelectSuggestion:formSuggestion
+                                                       completion:completion];
+                         }];
+}
+
+- (void)secondaryButtonTapped {
+  // "Use Keyboard" button, which dismisses the bottom sheet.
+  [self.viewController dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)viewDidDisappear {
+  if (_dismissing) {
+    return;
   }
-  // TODO(crbug.com/1422344): Add metric for when the credential is nil.
+
+  [self.mediator logExitReason:kDismissal];
+  [self.mediator dismiss];
+  [self.mediator disconnect];
+  [_browserCoordinatorCommandsHandler dismissPasswordSuggestions];
 }
 
 #pragma mark - Private
@@ -167,6 +208,15 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 - (void)setInitialVoiceOverFocus {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.viewController.aboveTitleView);
+}
+
+- (void)displaySavedPasswordList {
+  [_passwordControllerDelegate displaySavedPasswordList];
+}
+
+- (void)showPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  [_passwordControllerDelegate showPasswordDetailsForCredential:credential];
 }
 
 @end

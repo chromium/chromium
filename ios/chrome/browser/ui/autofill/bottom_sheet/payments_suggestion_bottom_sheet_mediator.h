@@ -45,6 +45,10 @@ class WebStateList;
 // Logs bottom sheet exit reasons, like dismissal or using a payment method.
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason;
 
+// Sends the information about which credit card from the bottom sheet was
+// selected by the user, which is expected to fill the relevant fields.
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
