@@ -29,6 +29,7 @@ extern const char kModifyManagedError[];
 extern const char kInvalidParamError[];
 extern const char kCannotSetUrlOfFolderError[];
 extern const char kBookmarkNodesNotFoundFromIdListError[];
+extern const char kInvalidMoveDestinationError[];
 
 }  // namespace bookmark_api_constants
 }  // namespace extensions

@@ -606,6 +606,10 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
     return Error(bookmark_api_constants::kInvalidParentError);
   }
 
+  if (parent->HasAncestor(node)) {
+    return Error(bookmark_api_constants::kInvalidMoveDestinationError);
+  }
+
   size_t index;
   if (params->destination.index) {  // Optional (defaults to end).
     if (*params->destination.index < 0 ||

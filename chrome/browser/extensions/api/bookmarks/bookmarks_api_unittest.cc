@@ -35,20 +35,25 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
 
     const bookmarks::BookmarkNode* folder_node =
         model_->AddFolder(model_->other_node(), 0, u"Empty folder");
+    const bookmarks::BookmarkNode* subfolder_node =
+        model_->AddFolder(folder_node, 0, u"Empty subfolder");
     const bookmarks::BookmarkNode* url_node =
         model_->AddURL(model_->other_node(), 0, u"URL", url_);
     folder_node_id_ = base::NumberToString(folder_node->id());
+    subfolder_node_id_ = base::NumberToString(subfolder_node->id());
     url_node_id_ = base::NumberToString(url_node->id());
   }
 
   raw_ptr<bookmarks::BookmarkModel> model() const { return model_; }
   std::string folder_node_id() const { return folder_node_id_; }
+  std::string subfolder_node_id() const { return subfolder_node_id_; }
   std::string url_node_id() const { return url_node_id_; }
   const GURL url() const { return url_; }
 
  private:
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
   std::string folder_node_id_;
+  std::string subfolder_node_id_;
   std::string url_node_id_;
   const GURL url_ = GURL("https://example.org");
 };
@@ -112,6 +117,28 @@ TEST_F(BookmarksApiUnittest, Move_NoParent) {
   const bookmarks::BookmarkNode* url_node =
       model()->GetMostRecentlyAddedUserNodeForURL(url());
   ASSERT_TRUE(url_node->children().empty());
+}
+
+// Tests that attempting to move a folder to itself returns an error.
+TEST_F(BookmarksApiUnittest, Move_FolderToItself) {
+  auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      move_function.get(),
+      base::StringPrintf(R"(["%s", {"parentId": "%s"}])",
+                         folder_node_id().c_str(), folder_node_id().c_str()),
+      profile());
+  ASSERT_EQ("Can't move a folder to itself or its descendant.", error);
+}
+
+// Tests that attempting to move a folder to its descendant returns an error.
+TEST_F(BookmarksApiUnittest, Move_FolderToDescendant) {
+  auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      move_function.get(),
+      base::StringPrintf(R"(["%s", {"parentId": "%s"}])",
+                         folder_node_id().c_str(), subfolder_node_id().c_str()),
+      profile());
+  ASSERT_EQ("Can't move a folder to itself or its descendant.", error);
 }
 
 }  // namespace extensions

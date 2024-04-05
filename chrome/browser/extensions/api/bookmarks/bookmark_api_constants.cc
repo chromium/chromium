@@ -27,6 +27,8 @@ const char kInvalidParamError[] = "Parameter 'key' is invalid.";
 const char kCannotSetUrlOfFolderError[] = "Can't set URL of a bookmark folder.";
 const char kBookmarkNodesNotFoundFromIdListError[] =
     "Could not find bookmark nodes with given ids: [*]";
+const char kInvalidMoveDestinationError[] =
+    "Can't move a folder to itself or its descendant.";
 
 }  // namespace bookmark_api_constants
 }  // namespace extensions
