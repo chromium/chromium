@@ -640,6 +640,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                   direction:back ? BubbleArrowDirectionLeading
                                                  : BubbleArrowDirectionTrailing
                                        text:l10n_util::GetNSString(textId)];
+  self.swipeBackForwardGestureIPH.edgeSwipe = YES;
   if (back && forward) {
     self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
     self.swipeBackForwardGestureIPH.bidirectional = YES;

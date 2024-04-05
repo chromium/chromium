@@ -64,6 +64,11 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// calling `startAnimation(WithDelay):`. Optional; Defaults to `NO`.
 @property(nonatomic, assign) BOOL bidirectional;
 
+/// Optional, defaults to `NO`. If set to `YES`, the user has to swipe
+/// from within this distance of the edge of the view to perform the gesture.
+/// Should be set before calling `startAnimation(WithDelay):`.
+@property(nonatomic, assign, getter=isEdgeSwipe) BOOL edgeSwipe;
+
 /// Starts the view animation immediately in its original direction. The
 /// animation will be repeated 3 times, and the view will be dismissed when
 /// animation completes. This should only be called when the view is in the view

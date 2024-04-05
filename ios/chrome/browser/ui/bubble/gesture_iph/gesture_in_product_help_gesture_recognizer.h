@@ -31,6 +31,10 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// bidirectional `GestureInProductHelpView`s.
 @property(nonatomic, assign) BOOL bidirectional;
 
+/// Optional, defaults to `NO`. If set to `YES`, the gesture recognizer
+/// only recognizes swipes from the edge of the `GestureInProductHelpView`.
+@property(nonatomic, assign, getter=isEdgeSwipe) BOOL edgeSwipe;
+
 /// The actual swipe direction initiated by the user. If `bidirection` is `YES`,
 /// it is possible that this is the direction opposite to the expected
 /// direction; otherwise, it should always be the same as the expected

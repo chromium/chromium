@@ -20,6 +20,8 @@ namespace {
 const CGFloat kMaxSwipeAngle = 65;
 /// The minimum distance between touches for a swipe to begin.
 const CGFloat kDefaultMinSwipeThreshold = 4;
+// Swipe starting distance from edge.
+const CGFloat kSwipeEdge = 20;
 
 /// Returns the opposite direction to `direction`.
 UISwipeGestureRecognizerDirection GetOppositeDirection(
@@ -53,6 +55,8 @@ UISwipeGestureRecognizerDirection GetOppositeDirection(
   self = [super initWithTarget:target action:action];
   if (self) {
     _expectedSwipeDirection = direction;
+    _bidirectional = NO;
+    _edgeSwipe = NO;
     _startPoint = CGPointZero;
     _actualSwipeDirection = 0;
     [self setMaximumNumberOfTouches:1];
@@ -125,6 +129,29 @@ UISwipeGestureRecognizerDirection GetOppositeDirection(
              (180 - kMaxSwipeAngle < degrees && degrees < 180)) {
     state = UIGestureRecognizerStateBegan;
     _actualSwipeDirection = GetOppositeDirection(_expectedSwipeDirection);
+  }
+
+  // If `[self isEdgeSwipe]`, determine whether the touch has started
+  // from the edge.
+  if ([self isEdgeSwipe]) {
+    CGFloat startPointFromEdge = CGFLOAT_MAX;
+    switch (_actualSwipeDirection) {
+      case UISwipeGestureRecognizerDirectionUp:
+        startPointFromEdge = CGRectGetHeight(self.view.bounds) - _startPoint.y;
+        break;
+      case UISwipeGestureRecognizerDirectionDown:
+        startPointFromEdge = _startPoint.y;
+        break;
+      case UISwipeGestureRecognizerDirectionLeft:
+        startPointFromEdge = CGRectGetWidth(self.view.bounds) - _startPoint.x;
+        break;
+      case UISwipeGestureRecognizerDirectionRight:
+        startPointFromEdge = _startPoint.x;
+        break;
+    }
+    if (startPointFromEdge > kSwipeEdge) {
+      state = UIGestureRecognizerStateFailed;
+    }
   }
   self.state = state;
 }

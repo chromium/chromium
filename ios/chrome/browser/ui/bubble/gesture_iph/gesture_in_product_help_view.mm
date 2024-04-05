@@ -47,6 +47,9 @@ const CGFloat
 const CGFloat kGestureIndicatorDistanceAnimatedDefault = 140.0f;
 const CGFloat kGestureIndicatorDistanceAnimatedVerticalSwipeInCompactHeight =
     80.0f;
+// The distance between the gesture indicator and the edge for horizontal side
+// swipe gestures within compact widths.
+const CGFloat kSideSwipeGestureIndicatorDistance = 22.0f;
 
 // The distance between the dismiss button and the bottom edge (or the top edge,
 // when the bubble points down.)
@@ -280,7 +283,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     _blurringSuperview = NO;
     _currentAnimationRepeatCount = 0;
     _animationRepeatCount = 3;
-    _bidirectional = NO;
     _reduceMotion = UIAccessibilityIsReduceMotionEnabled() ||
                     UIAccessibilityIsVoiceOverRunning();
     _dismissed = NO;
@@ -436,12 +438,25 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   }
 }
 
-#pragma mark - Public
+#pragma mark - Public Properties
+
+- (BOOL)bidirectional {
+  return _gestureRecognizer.bidirectional;
+}
 
 - (void)setBidirectional:(BOOL)bidirectional {
-  _bidirectional = bidirectional;
   _gestureRecognizer.bidirectional = bidirectional;
 }
+
+- (BOOL)isEdgeSwipe {
+  return [_gestureRecognizer isEdgeSwipe];
+}
+
+- (void)setEdgeSwipe:(BOOL)edgeSwipe {
+  _gestureRecognizer.edgeSwipe = edgeSwipe;
+}
+
+#pragma mark - Public
 
 - (void)startAnimation {
   [self startAnimationAfterDelay:base::TimeDelta()];
@@ -724,9 +739,16 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           UIUserInterfaceSizeClassCompact &&
       (_bubbleView.direction == BubbleArrowDirectionUp ||
        _bubbleView.direction == BubbleArrowDirectionDown);
-  return verticalSwipeInCompactHeight
-             ? kGestureIndicatorDistanceAnimatedVerticalSwipeInCompactHeight
-             : kGestureIndicatorDistanceAnimatedDefault;
+  if (verticalSwipeInCompactHeight) {
+    CGFloat swipeDistance =
+        kGestureIndicatorDistanceAnimatedVerticalSwipeInCompactHeight;
+    if ([self isEdgeSwipe]) {
+      CGFloat bubbleWidth = CGRectGetWidth(_bubbleView.bounds);
+      swipeDistance += bubbleWidth / 2 - kSideSwipeGestureIndicatorDistance;
+    }
+    return swipeDistance;
+  }
+  return kGestureIndicatorDistanceAnimatedDefault;
 }
 
 // If the bubble view is fully visible in safe area, do nothing; otherwise, move
@@ -788,7 +810,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 // instead of the bubble's, so that the gesture indicator's movement during the
 // animation would NOT be influenced by the bubble's movement.
 - (NSLayoutConstraint*)initialGestureIndicatorMarginConstraint {
-  CGSize bubbleSize = _bubbleView.frame.size;
+  CGSize bubbleSize = _bubbleView.bounds.size;
   CGFloat gestureIndicatorToBubbleSpacing =
       [self initialGestureIndicatorToBubbleSpacing];
   switch (_bubbleView.direction) {
@@ -813,8 +835,11 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     case BubbleArrowDirectionLeading: {
       CGFloat margin;
       if (ShouldGestureIndicatorOffsetFromCenter(self.traitCollection)) {
-        // Gesture indicator should be center-aligned with the bubble.
-        margin = bubbleSize.width / 2;
+        // If the user should swipe from the edge, the gesture indicator should
+        // start from the edge of the view; otherwise, it should be
+        // center-aligned with the bubble.
+        margin = [self isEdgeSwipe] ? kSideSwipeGestureIndicatorDistance
+                                    : bubbleSize.width / 2;
       } else {
         // Gesture indicator should be `kInitialGestureIndicatorToBubbleSpacing`
         // away from the bubble's trailing edge.
@@ -827,8 +852,11 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     case BubbleArrowDirectionTrailing: {
       CGFloat margin;
       if (ShouldGestureIndicatorOffsetFromCenter(self.traitCollection)) {
-        // Gesture indicator should be center-aligned with the bubble.
-        margin = bubbleSize.width / 2;
+        // If the user should swipe from the edge, the gesture indicator should
+        // start from the edge of the view; otherwise, it should be
+        // center-aligned with the bubble.
+        margin = [self isEdgeSwipe] ? kSideSwipeGestureIndicatorDistance
+                                    : bubbleSize.width / 2;
       } else {
         // Gesture indicator should be `gestureIndicatorToBubbleSpacing`
         // away from the bubble's leading edge.
