@@ -323,6 +323,32 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             "type": "source-reporting-origin-per-site-limit"
           }])json",
       },
+      {
+          .result = StoreSourceResult::ExceedsMaxChannelCapacity(3.1),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+              "body": {
+                "attribution_destination": "https://conversion.test",
+                "limit": 3.1,
+                "source_event_id": "123",
+                "source_site": "https://impression.test"
+              },
+              "type": "source-channel-capacity-limit"
+            }])json",
+      },
+      {
+          .result = StoreSourceResult::ExceedsMaxTriggerStateCardinality(3),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+              "body": {
+                "attribution_destination": "https://conversion.test",
+                "limit": "3",
+                "source_event_id": "123",
+                "source_site": "https://impression.test"
+              },
+              "type": "source-trigger-state-cardinality-limit"
+            }])json",
+      },
   };
 
   for (bool is_debug_cookie_set : {false, true}) {

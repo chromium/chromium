@@ -11,6 +11,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -56,9 +57,16 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit ReportingOriginsPerSiteLimitReached(int limit) : limit(limit) {}
   };
 
-  struct ExceedsMaxChannelCapacity {};
+  struct ExceedsMaxChannelCapacity {
+    double limit;
+    explicit ExceedsMaxChannelCapacity(double limit) : limit(limit) {}
+  };
 
-  struct ExceedsMaxTriggerStateCardinality {};
+  struct ExceedsMaxTriggerStateCardinality {
+    absl::uint128 limit;
+    explicit ExceedsMaxTriggerStateCardinality(absl::uint128 limit)
+        : limit(limit) {}
+  };
 
   using Result = absl::variant<Success,
                                InternalError,

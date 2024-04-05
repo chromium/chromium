@@ -66,6 +66,12 @@ double AttributionStorageDelegate::GetMaxChannelCapacity(
   }
 }
 
+absl::uint128 AttributionStorageDelegate::GetMaxTriggerStateCardinality()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return config_.event_level_limit.max_trigger_state_cardinality;
+}
+
 int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.aggregate_limit.max_aggregatable_reports_per_source;

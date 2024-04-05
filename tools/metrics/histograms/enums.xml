@@ -4144,6 +4144,8 @@ Called by update_net_error_codes.py.-->
       label="trigger-event-attributions-per-source-destination-limit"/>
   <int value="31"
       label="trigger-aggregate-attributions-per-source-destination-limit"/>
+  <int value="32" label="source-channel-capacity-limit"/>
+  <int value="33" label="source-trigger-state-cardinality-limit"/>
 </enum>
 
 <enum name="CookieAccessType">

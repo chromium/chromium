@@ -75,7 +75,7 @@
       // This source would hit channel capacity limit, storage limit, unexpired
       // destination limit, reporting origin per site limit, time-based
       // destination per site limit, time-based destination limit, reporting
-      // origin limit. No debug report should be created.
+      // origin limit. Should be reported as `source-channel-capacity-limit`.
       {
         "timestamp": "86392000",
         "registration_request": {
@@ -95,31 +95,6 @@
                   "https://destination5.test"
                 ],
                 "source_event_id": "334",
-                "debug_reporting": true
-              }
-            }
-          }
-        ]
-      },
-      // Verifies that there is no matching source as the previous source is
-      // not registered.
-      {
-        "timestamp": "86392001",
-        "registration_request": {
-          "context_origin": "https://destination4.test",
-          "Attribution-Reporting-Eligible": "trigger"
-        },
-        "responses": [
-          {
-            "url": "https://sub.reporter1.test/register-trigger",
-            "debug_permission": true,
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
-                "event_trigger_data": [
-                  {
-                    "trigger_data": "0"
-                  }
-                ],
                 "debug_reporting": true
               }
             }
@@ -477,11 +452,14 @@
       {
         "payload": [ {
            "body": {
-              "attribution_destination": "https://destination4.test"
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": 12.0,
+              "source_event_id": "334",
+              "source_site": "https://source.test"
            },
-           "type": "trigger-no-matching-source"
+           "type": "source-channel-capacity-limit"
         } ],
-        "report_time": "86392001",
+        "report_time": "86392000",
         "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
       },
       {

@@ -67,32 +67,11 @@
             }
           }
         ]
-      },
-      {
-        "timestamp": "3000",
-        "registration_request": {
-          "context_origin": "https://destination.test"
-        },
-        "responses": [
-          {
-            "url": "https://reporter2.test/register-trigger",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
-                "event_trigger_data": [
-                  {
-                    "trigger_data": "2"
-                  }
-                ]
-              }
-            }
-          }
-        ]
       }
     ]
   },
   "output": {
     "reports": [
-      // No debug reports are generated for exceeding trigger state cardinality.
       {
         "payload": [
           {
@@ -106,6 +85,19 @@
         ],
         "report_time": "0",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "3",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+           },
+           "type": "source-trigger-state-cardinality-limit"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
