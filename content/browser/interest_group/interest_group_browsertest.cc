@@ -5379,6 +5379,66 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidTrustedScoringSignalsUrl2) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  // Various trailing URL fields that can make it invalid
+  const char* kTests[] = {"?foo", "#foo", "?", "#"};
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsURL: $1 + $3
+  })";
+
+  for (const char* test : kTests) {
+    SCOPED_TRACE(test);
+    EXPECT_EQ(base::StringPrintf(
+                  "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                  "trustedScoringSignalsURL '%s%s' for AuctionAdConfig with "
+                  "seller '%s' must not include a query, a fragment string, or "
+                  "embedded credentials.",
+                  origin.Serialize().c_str(), test, origin.Serialize().c_str()),
+              RunAuctionAndWait(
+                  JsReplace(kAuctionConfigTemplate, origin, url, test)));
+    WaitForAccessObserved({});
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidTrustedScoringSignalsUrl3) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  GURL::Replacements replacements;
+  replacements.SetUsernameStr("user");
+  replacements.SetPasswordStr("pass");
+  replacements.SetPathStr("");
+  GURL url_with_pass = url.ReplaceComponents(replacements);
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsURL: $3
+  })";
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "trustedScoringSignalsURL '%s' for AuctionAdConfig with "
+                "seller '%s' must not include a query, a fragment string, or "
+                "embedded credentials.",
+                url_with_pass.spec().c_str(), origin.Serialize().c_str()),
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, origin, url, url_with_pass)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionPositiveMaxTrustedScoringSignalsURLLength) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);

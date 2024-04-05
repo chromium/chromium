@@ -327,6 +327,8 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       KURL(String::FromUTF8("https://user:pass@origin.test/")),
       // References also aren't allowed, as they aren't sent over HTTP.
       KURL(String::FromUTF8("https://origin.test/#foopy")),
+      // Even empty ones.
+      KURL(String::FromUTF8("https://origin.test/#")),
 
       // Invalid URLs.
       KURL(String::FromUTF8("")),
@@ -388,6 +390,16 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       /*expected_error_field_name=*/
       String::FromUTF8("trustedBiddingSignalsURL"),
       /*expected_error_field_value=*/rejected_url.GetString(),
+      /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
+
+  // That includes an empty query string.
+  KURL rejected_url2 = KURL(String::FromUTF8("https://origin.test/?"));
+  blink_interest_group->trusted_bidding_signals_url = rejected_url2;
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("trustedBiddingSignalsURL"),
+      /*expected_error_field_value=*/rejected_url2.GetString(),
       /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
 }
 

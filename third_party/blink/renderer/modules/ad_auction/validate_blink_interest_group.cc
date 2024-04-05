@@ -243,7 +243,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     // `trusted_bidding_signals_url` must not have a query string, since the
     // query parameter needs to be set as part of running an auction.
     if (!IsUrlAllowed(*group.trusted_bidding_signals_url, group) ||
-        !group.trusted_bidding_signals_url->Query().empty()) {
+        !group.trusted_bidding_signals_url->Query().IsNull()) {
       error_field_name = "trustedBiddingSignalsURL";
       error_field_value = group.trusted_bidding_signals_url->GetString();
       error =

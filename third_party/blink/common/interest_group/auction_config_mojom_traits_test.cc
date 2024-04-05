@@ -166,6 +166,32 @@ TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
+TEST(AuctionConfigMojomTraitsTest, TrustedScoringSignalsFields) {
+  AuctionConfig auction_config =
+      CreateBasicAuctionConfig(GURL("https://seller.test"));
+
+  const struct {
+    const char* url_str;
+    bool expected_ok = false;
+  } kTests[] = {
+      {"https://seller.test/foo.json", /*expected_ok=*/true},
+      {"https://seller.test/foo.json?query"},
+      {"https://seller.test/foo.json?"},
+      {"https://seller.test/foo.json#foo"},
+      {"https://seller.test/foo.json#"},
+      {"https://user:pass@seller.test/foo.json"},
+      // This is actually the same as https://seller.test/foo.json
+      {"https://:@seller.test/foo.json", /*expected_ok=*/true},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.url_str);
+
+    auction_config.trusted_scoring_signals_url = GURL(test.url_str);
+    EXPECT_EQ(test.expected_ok, SerializeAndDeserialize(auction_config));
+  }
+}
+
 TEST(AuctionConfigMojomTraitsTest, FullConfig) {
   AuctionConfig auction_config = CreateFullAuctionConfig();
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));

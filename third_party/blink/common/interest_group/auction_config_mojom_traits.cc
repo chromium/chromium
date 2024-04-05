@@ -388,11 +388,12 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
   // share the seller's origin, and must be HTTPS. Need to explicitly check the
   // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob
-  // URLs).
+  // URLs). Trusted signals URLs also have additional restrictions (no query,
+  // etc).
   if ((out->decision_logic_url &&
        !out->IsHttpsAndMatchesSellerOrigin(*out->decision_logic_url)) ||
       (out->trusted_scoring_signals_url &&
-       !out->IsHttpsAndMatchesSellerOrigin(
+       !out->IsValidTrustedScoringSignalsURL(
            *out->trusted_scoring_signals_url))) {
     return false;
   }

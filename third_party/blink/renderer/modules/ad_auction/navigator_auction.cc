@@ -1340,6 +1340,17 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
     return false;
   }
 
+  if (!trusted_scoring_signals_url.User().empty() ||
+      !trusted_scoring_signals_url.Pass().empty() ||
+      trusted_scoring_signals_url.HasFragmentIdentifier() ||
+      !trusted_scoring_signals_url.Query().IsNull()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "trustedScoringSignalsURL", input.trustedScoringSignalsURL(),
+        "must not include a query, a fragment string, or "
+        "embedded credentials."));
+    return false;
+  }
+
   output.trusted_scoring_signals_url = trusted_scoring_signals_url;
   return true;
 }
