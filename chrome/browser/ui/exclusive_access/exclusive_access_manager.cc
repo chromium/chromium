@@ -59,7 +59,8 @@ ExclusiveAccessManager::ExclusiveAccessManager(
       pointer_lock_controller_(this),
       exclusive_access_controllers_({&fullscreen_controller_,
                                      &keyboard_lock_controller_,
-                                     &pointer_lock_controller_}) {}
+                                     &pointer_lock_controller_}),
+      permission_manager_(exclusive_access_context) {}
 
 ExclusiveAccessManager::~ExclusiveAccessManager() = default;
 

@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -31,11 +33,9 @@ constexpr base::TimeDelta kEffectiveUserEscapeDuration =
 PointerLockController::PointerLockController(ExclusiveAccessManager* manager)
     : ExclusiveAccessControllerBase(manager),
       pointer_lock_state_(POINTERLOCK_UNLOCKED),
-      fake_pointer_lock_for_test_(false),
-      bubble_hide_callback_for_test_() {}
+      fake_pointer_lock_for_test_(false) {}
 
-PointerLockController::~PointerLockController() {
-}
+PointerLockController::~PointerLockController() = default;
 
 bool PointerLockController::IsPointerLocked() const {
   return pointer_lock_state_ == POINTERLOCK_LOCKED ||
@@ -47,8 +47,8 @@ bool PointerLockController::IsPointerLockedSilently() const {
 }
 
 void PointerLockController::RequestToLockPointer(WebContents* web_contents,
-                                             bool user_gesture,
-                                             bool last_unlocked_by_target) {
+                                                 bool user_gesture,
+                                                 bool last_unlocked_by_target) {
   DCHECK(!IsPointerLocked());
 
   // To prevent misbehaving sites from constantly re-locking the pointer, the
@@ -74,31 +74,19 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
       return;
     }
   }
-  SetTabWithExclusiveAccess(web_contents);
-
-  // Lock pointer.
-  if (fake_pointer_lock_for_test_ ||
-      web_contents->GotResponseToPointerLockRequest(
-          blink::mojom::PointerLockResult::kSuccess)) {
-    if (last_unlocked_by_target &&
-        web_contents_granted_silent_pointer_lock_permission_ == web_contents) {
-      pointer_lock_state_ = POINTERLOCK_LOCKED_SILENTLY;
-    } else {
-      pointer_lock_state_ = POINTERLOCK_LOCKED;
-    }
-  } else {
-    SetTabWithExclusiveAccess(nullptr);
-    pointer_lock_state_ = POINTERLOCK_UNLOCKED;
+  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    LockPointer(web_contents->GetWeakPtr(), last_unlocked_by_target);
+    return;
   }
-
-  if (!ShouldSuppressBubbleReshowForStateChange()) {
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        base::BindOnce(&PointerLockController::OnBubbleHidden,
-                       weak_ptr_factory_.GetWeakPtr(), web_contents));
-  }
-
-  if (lock_state_callback_for_test_)
-    std::move(lock_state_callback_for_test_).Run();
+  exclusive_access_manager()->permission_manager().QueuePermissionRequest(
+      blink::PermissionType::POINTER_LOCK,
+      base::BindOnce(&PointerLockController::LockPointer,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
+                     last_unlocked_by_target),
+      base::BindOnce(&PointerLockController::RejectRequestToLockPointer,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     web_contents->GetWeakPtr()),
+      web_contents);
 }
 
 void PointerLockController::ExitExclusiveAccessIfNecessary() {
@@ -163,6 +151,62 @@ void PointerLockController::UnlockPointer() {
 
   if (pointer_lock_view)
     pointer_lock_view->UnlockPointer();
+}
+
+void PointerLockController::LockPointer(
+    base::WeakPtr<content::WebContents> web_contents,
+    bool last_unlocked_by_target) {
+  if (!web_contents) {
+    if (lock_state_callback_for_test_) {
+      std::move(lock_state_callback_for_test_).Run();
+    }
+    return;
+  }
+  SetTabWithExclusiveAccess(web_contents.get());
+  // Focus may have moved to the modal, so move it back to the WebContents.
+  web_contents->Focus();
+
+  // Lock the mouse pointer.
+  if (fake_pointer_lock_for_test_ ||
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kSuccess)) {
+    if (last_unlocked_by_target &&
+        web_contents_granted_silent_pointer_lock_permission_ ==
+            web_contents.get()) {
+      pointer_lock_state_ = POINTERLOCK_LOCKED_SILENTLY;
+    } else {
+      pointer_lock_state_ = POINTERLOCK_LOCKED;
+    }
+  } else {
+    SetTabWithExclusiveAccess(nullptr);
+    pointer_lock_state_ = POINTERLOCK_UNLOCKED;
+  }
+
+  if (!ShouldSuppressBubbleReshowForStateChange()) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        base::BindOnce(&PointerLockController::OnBubbleHidden,
+                       weak_ptr_factory_.GetWeakPtr(), web_contents.get()));
+  }
+  if (lock_state_callback_for_test_) {
+    std::move(lock_state_callback_for_test_).Run();
+  }
+}
+
+void PointerLockController::RejectRequestToLockPointer(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    if (lock_state_callback_for_test_) {
+      std::move(lock_state_callback_for_test_).Run();
+    }
+    return;
+  }
+  // Focus has moved to the modal, so move it back to the WebContents.
+  web_contents->Focus();
+  web_contents->GotResponseToPointerLockRequest(
+      blink::mojom::PointerLockResult::kUserRejected);
+  if (lock_state_callback_for_test_) {
+    std::move(lock_state_callback_for_test_).Run();
+  }
 }
 
 void PointerLockController::OnBubbleHidden(

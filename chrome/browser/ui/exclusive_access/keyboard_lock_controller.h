@@ -8,6 +8,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -69,7 +70,8 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   };
 
   // Notifies |web_contents| that it can activate keyboard lock.
-  void LockKeyboard(content::WebContents* web_contents, bool esc_key_locked);
+  void LockKeyboard(base::WeakPtr<content::WebContents> web_contents,
+                    bool esc_key_locked);
 
   // Notifies the exclusive access tab that it must deactivate keyboard lock.
   void UnlockKeyboard();
@@ -95,6 +97,8 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   raw_ptr<const base::TickClock> esc_repeat_tick_clock_ = nullptr;
 
   base::circular_deque<base::TimeTicks> esc_keypress_tracker_;
+
+  base::WeakPtrFactory<KeyboardLockController> weak_ptr_factory_{this};
 };
 
 #endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_

@@ -1176,6 +1176,8 @@ static_library("ui") {
       "exclusive_access/exclusive_access_controller_base.h",
       "exclusive_access/exclusive_access_manager.cc",
       "exclusive_access/exclusive_access_manager.h",
+      "exclusive_access/exclusive_access_permission_manager.cc",
+      "exclusive_access/exclusive_access_permission_manager.h",
       "exclusive_access/fullscreen_controller.cc",
       "exclusive_access/fullscreen_controller.h",
       "exclusive_access/fullscreen_observer.h",

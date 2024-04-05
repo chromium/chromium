@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
@@ -86,6 +87,10 @@ class ExclusiveAccessManager {
     return exclusive_access_controllers_;
   }
 
+  ExclusiveAccessPermissionManager& permission_manager() {
+    return permission_manager_;
+  }
+
   const base::OneShotTimer& esc_key_hold_timer_for_test() {
     return esc_key_hold_timer_;
   }
@@ -109,6 +114,7 @@ class ExclusiveAccessManager {
   PointerLockController pointer_lock_controller_;
   base::flat_set<raw_ptr<ExclusiveAccessControllerBase>>
       exclusive_access_controllers_;
+  ExclusiveAccessPermissionManager permission_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_

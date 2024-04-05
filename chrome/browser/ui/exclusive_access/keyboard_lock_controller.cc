@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "content/public/browser/web_contents.h"
@@ -93,7 +94,18 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
   DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
-  LockKeyboard(web_contents, esc_key_locked);
+  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
+    return;
+  }
+  exclusive_access_manager()->permission_manager().QueuePermissionRequest(
+      blink::PermissionType::KEYBOARD_LOCK,
+      base::BindOnce(&KeyboardLockController::LockKeyboard,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
+                     esc_key_locked),
+      base::BindOnce(&KeyboardLockController::UnlockKeyboard,
+                     weak_ptr_factory_.GetWeakPtr()),
+      web_contents);
 }
 
 bool KeyboardLockController::HandleKeyEvent(
@@ -141,29 +153,33 @@ void KeyboardLockController::CancelKeyboardLockRequest(WebContents* tab) {
     UnlockKeyboard();
 }
 
-void KeyboardLockController::LockKeyboard(content::WebContents* web_contents,
-                                          bool esc_key_locked) {
+void KeyboardLockController::LockKeyboard(
+    base::WeakPtr<content::WebContents> web_contents,
+    bool esc_key_locked) {
+  if (!web_contents) {
+    return;
+  }
   // Call GotResponseToKeyboardLockRequest() to notify `web_contents` of the
   // result, regardless of the fullscreen state.
-  if (web_contents->GotResponseToKeyboardLockRequest(true) &&
-      web_contents->IsFullscreen()) {
-    KeyboardLockState new_lock_state =
-        esc_key_locked ? KeyboardLockState::kLockedWithEsc
-                       : KeyboardLockState::kLockedWithoutEsc;
-    // Only re-show the exit bubble if the requesting web_contents has changed
-    // (or is new) or if the esc key lock state has changed.
-    bool reshow_exit_bubble = exclusive_access_tab() != web_contents ||
-                              new_lock_state != keyboard_lock_state_;
-    keyboard_lock_state_ = new_lock_state;
-    SetTabWithExclusiveAccess(web_contents);
-    if (reshow_exit_bubble) {
-      exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-          bubble_hide_callback_for_test_
-              ? base::BindOnce(bubble_hide_callback_for_test_)
-              : ExclusiveAccessBubbleHideCallback());
-    }
-  } else {
+  if (!web_contents->GotResponseToKeyboardLockRequest(true) ||
+      !web_contents->IsFullscreen()) {
     UnlockKeyboard();
+    return;
+  }
+  KeyboardLockState new_lock_state = esc_key_locked
+                                         ? KeyboardLockState::kLockedWithEsc
+                                         : KeyboardLockState::kLockedWithoutEsc;
+  // Only re-show the exit bubble if the requesting web_contents has changed
+  // (or is new) or if the esc key lock state has changed.
+  bool reshow_exit_bubble = exclusive_access_tab() != web_contents.get() ||
+                            new_lock_state != keyboard_lock_state_;
+  keyboard_lock_state_ = new_lock_state;
+  SetTabWithExclusiveAccess(web_contents.get());
+  if (reshow_exit_bubble) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        bubble_hide_callback_for_test_
+            ? base::BindOnce(bubble_hide_callback_for_test_)
+            : ExclusiveAccessBubbleHideCallback());
   }
 }
 

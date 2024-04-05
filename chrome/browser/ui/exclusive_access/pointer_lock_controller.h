@@ -63,6 +63,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
     POINTERLOCK_LOCKED_SILENTLY
   };
 
+  void LockPointer(base::WeakPtr<content::WebContents> web_contents,
+                   bool last_unlocked_by_target);
+  void RejectRequestToLockPointer(
+      base::WeakPtr<content::WebContents> web_contents);
+
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
 
