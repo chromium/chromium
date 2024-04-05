@@ -20,37 +20,50 @@ namespace {
 
 static bool allow_external_sampling_without_native_buffers_for_testing = false;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
+bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
+  return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
+}
+#endif
+
 // Computes the texture target to use for a SharedImage that was created with
 // `metadata` and the given type of GpuMemoryBuffer(Handle) supplied by the
 // client (which will be gfx::EmptyBuffer if the client did not supply a
 // GMB/GMBHandle). Conceptually:
 // * On Mac the native buffer target is required if either (1) the client
 //   gave a native buffer or (2) the usages require a native buffer.
-// * On all other platforms except iOS the native buffer target is required iff
-//   external sampling is being used, which is dictated by the format of the
-//   SharedImage. Notes:
-//   * External sampling is not used on iOS.
+// * On Ozone the native buffer target is required iff external sampling is
+//   being used, which is dictated by the format of the SharedImage. Note
 //   * Fuchsia does not support import of external images to GL for usage with
 //     external sampling.  The ClientSharedImage's texture target must be 0 in
 //     the case where external sampling would be used to signal this lack of
 //     support to the //media code, which detects the lack of support *based on*
 //     on the texture target being 0.
+// * On all other platforms GL_TEXTURE_2D is always used (external sampling is
+//   supported in Chromium only on Ozone).
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
     gfx::GpuMemoryBufferType client_gmb_type,
     scoped_refptr<SharedImageInterface> sii) {
   CHECK(sii);
 
-#if BUILDFLAG(IS_IOS)
-  // The target to use on IOS is always GL_TEXTURE_2D, regardless of whether
-  // native buffers are being used or not.
-  return GL_TEXTURE_2D;
-#else  // BUILDFLAG(IS_IOS)
-  bool client_side_native_buffer_used =
-      client_gmb_type != gfx::EMPTY_BUFFER &&
-      client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
+#if !BUILDFLAG(IS_OZONE)
+  // External sampling with GMBs is supported in Chromium only for Ozone.
+  // Android uses a bespoke path for external sampling where the AHB doesn't get
+  // put in a GMB and multiplanar formats aren't used, and Windows doesn't use
+  // external sampling at all. It is not possible to set
+  // PrefersExternalSampler() on a MP SIF outside of Ozone, but legacy MP
+  // formats could theoretically be used on any platform. Such usage would be
+  // incorrect outside of Ozone as legacy MP formats work only with external
+  // sampling. This DUMP_WILL_BE_CHECK() is added in advance of adding the
+  // invariant via a CHECK that legacy MP formats are *actually* used only on
+  // Ozone.
+  DUMP_WILL_BE_CHECK(!metadata.format.IsLegacyMultiplanar());
+#endif
 
-#if BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
+  return GL_TEXTURE_2D;
+#elif BUILDFLAG(IS_MAC)
   // Check for IOSurfaces being used.
   // NOTE: WebGPU usage on Mac results in SharedImages being backed by
   // IOSurfaces.
@@ -58,14 +71,14 @@ uint32_t ComputeTextureTargetForSharedImage(
                                             SHARED_IMAGE_USAGE_WEBGPU_READ |
                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
-  bool uses_native_buffer = client_side_native_buffer_used ||
+  bool uses_native_buffer = GMBIsNative(client_gmb_type) ||
                             (metadata.usage & usages_requiring_native_buffer);
 
   return uses_native_buffer
              ? sii->GetCapabilities().macos_specific_texture_target
              : GL_TEXTURE_2D;
-#else
-  // Check for external sampling.
+#else  // Ozone
+  // Check for external sampling being used.
   bool uses_external_sampler = metadata.format.PrefersExternalSampler() ||
                                metadata.format.IsLegacyMultiplanar();
 
@@ -73,23 +86,12 @@ uint32_t ComputeTextureTargetForSharedImage(
     return GL_TEXTURE_2D;
   }
 
-#if !BUILDFLAG(IS_OZONE)
-  // External sampling with GMBs is supported in Chromium only for Ozone.
-  // Android uses a bespoke path for external sampling where the AHB doesn't get
-  // put in a GMB, and Windows doesn't use external sampling at all. It is not
-  // possible to set PrefersExternalSampler() on a MP SIF outside of Ozone, but
-  // legacy MP formats could theoretically be used on any platform. This
-  // DUMP_WILL_BE_CHECK() is added in advance of adding the invariant that they
-  // are *actually* used only on Ozone.
-  DUMP_WILL_BE_CHECK(false);
-#endif
-
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
   // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
   // turn this into a CHECK.
   DUMP_WILL_BE_CHECK(
-      client_side_native_buffer_used ||
+      GMBIsNative(client_gmb_type) ||
       allow_external_sampling_without_native_buffers_for_testing);
 
   // See the note at the top of this function wrt Fuchsia.
@@ -98,8 +100,7 @@ uint32_t ComputeTextureTargetForSharedImage(
 #else
   return GL_TEXTURE_EXTERNAL_OES;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
 }
 
 }  // namespace
