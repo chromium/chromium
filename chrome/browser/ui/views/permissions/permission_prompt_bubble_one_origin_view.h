@@ -47,6 +47,19 @@ class PermissionPromptBubbleOneOriginView :
   // PermissionPromptBubbleBaseView:
   void RunButtonCallback(int button_id) override;
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  const std::optional<PermissionPromptPreviewsCoordinator>&
+  GetMediaPreviewsForTesting() const {
+    return media_previews_;
+  }
+  const raw_ptr<views::Label> GetCameraPermissionLabelForTesting() const {
+    return camera_permission_label_;
+  }
+  const raw_ptr<views::Label> GetMicPermissionLabelForTesting() const {
+    return mic_permission_label_;
+  }
+#endif
+
  private:
   // PermissionPromptBubbleBaseView:
   void ChildPreferredSizeChanged(views::View* child) override;

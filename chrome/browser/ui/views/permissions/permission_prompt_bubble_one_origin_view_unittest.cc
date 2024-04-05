@@ -19,12 +19,40 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "components/media_effects/test/fake_audio_service.h"
+#include "components/media_effects/test/fake_video_capture_service.h"
+#include "components/media_effects/test/scoped_media_device_info.h"
+#include "components/strings/grit/components_strings.h"
+#include "third_party/blink/public/common/features.h"
+#endif
+
 using PermissionPromptBubbleOneOriginViewTest = ChromeViewsTestBase;
 
 namespace {
 
 class TestDelegate : public permissions::PermissionPrompt::Delegate {
  public:
+  TestDelegate(
+      const GURL& origin,
+      const std::vector<permissions::RequestType> request_types,
+      const std::vector<std::string> requested_audio_capture_device_ids,
+      const std::vector<std::string> requested_video_capture_device_ids) {
+    requests_ = base::ToVector(
+        request_types,
+        [&](auto& request_type)
+            -> std::unique_ptr<permissions::PermissionRequest> {
+          return std::make_unique<permissions::MockPermissionRequest>(
+              origin, request_type, requested_audio_capture_device_ids,
+              requested_video_capture_device_ids);
+        });
+    InitializeRawRequests();
+  }
+
   explicit TestDelegate(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types) {
@@ -35,6 +63,10 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
           return std::make_unique<permissions::MockPermissionRequest>(
               origin, request_type);
         });
+    InitializeRawRequests();
+  }
+
+  void InitializeRawRequests() {
     raw_requests_ = base::ToVector(
         requests_,
         [](const auto& request)
@@ -160,3 +192,211 @@ TEST_F(PermissionPromptBubbleOneOriginViewTest,
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "move your camera", title);
   EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "use your camera", title);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+
+namespace {
+
+constexpr char kCameraId[] = "camera_id";
+constexpr char kCameraName[] = "camera_name";
+constexpr char kCameraId2[] = "camera_id_2";
+constexpr char kCameraName2[] = "camera_name_2";
+
+constexpr char kMicId[] = "mic_id";
+constexpr char kMicName[] = "mic_name";
+constexpr char kGroupId[] = "group_id";
+constexpr char kMicId2[] = "mic_id_2";
+constexpr char kMicName2[] = "mic_name_2";
+constexpr char kGroupId2[] = "group_id_2";
+
+}  // namespace
+
+// Takes care of all setup needed to initialize page info permission prompt one
+// origin view (e.g. permission prompt delegate, ...), as well as media previews
+// (e.g. audio service, video service, ...).
+class PermissionPromptBubbleOneOriginViewTestMediaPreview
+    : public TestWithBrowserView {
+ protected:
+  PermissionPromptBubbleOneOriginViewTestMediaPreview() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kCameraMicPreview);
+  }
+
+  void SetUp() override {
+    TestWithBrowserView::SetUp();
+    base::test::TestFuture<void> mic_infos, camera_infos;
+    audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
+        mic_infos.GetCallback());
+    video_service_.SetOnRepliedWithSourceInfosCallback(
+        camera_infos.GetCallback());
+
+    media_device_info_.emplace();
+
+    ASSERT_TRUE(mic_infos.WaitAndClear());
+    ASSERT_TRUE(camera_infos.WaitAndClear());
+  }
+
+  void InitializePremissionPrompt(
+      const std::vector<permissions::RequestType>& request_types) {
+    test_delegate_.emplace(GURL("https://test.origin"), request_types,
+                           std::vector<std::string>{kMicId},
+                           std::vector<std::string>{kCameraId});
+    permission_prompt_ = std::make_unique<PermissionPromptBubbleOneOriginView>(
+        browser(), test_delegate_->GetWeakPtr(), base::TimeTicks::Now(),
+        PermissionPromptStyle::kBubbleOnly);
+  }
+
+  void TearDown() override {
+    permission_prompt_.reset();
+    test_delegate_.reset();
+    TestWithBrowserView::TearDown();
+  }
+
+  std::u16string GetExpectedCameraLabelText(size_t devices) {
+    return l10n_util::GetStringFUTF16(
+        IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+        base::NumberToString16(devices));
+  }
+
+  std::u16string GetExpectedMicLabelText(size_t devices) {
+    return l10n_util::GetStringFUTF16(
+        IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+        base::NumberToString16(devices));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  media_effects::ScopedFakeAudioService audio_service_;
+  media_effects::ScopedFakeVideoCaptureService video_service_;
+  std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
+
+  std::optional<TestDelegate> test_delegate_;
+  std::unique_ptr<PermissionPromptBubbleOneOriginView> permission_prompt_;
+};
+
+// Verify the device counter as well as the tooltip for the mic permission
+// label.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewMicOnly) {
+  InitializePremissionPrompt({permissions::RequestType::kMicStream});
+  ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
+  ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
+  auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
+  ASSERT_TRUE(mic_label);
+
+  // TODO(b/332604136): Remove `base::RunLoop().RunUntilIdle()` here and
+  // below, once fully migrate to use cached media device infos.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(0));
+  EXPECT_EQ(mic_label->GetTooltipText(), std::u16string());
+
+  ASSERT_TRUE(
+      audio_service_.AddFakeInputDeviceBlocking({kMicName, kMicId, kGroupId}));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
+  EXPECT_EQ(mic_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kMicName)));
+
+  ASSERT_TRUE(audio_service_.AddFakeInputDeviceBlocking(
+      {kMicName2, kMicId2, kGroupId2}));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(2));
+  EXPECT_EQ(mic_label->GetTooltipText(),
+            base::UTF8ToUTF16(kMicName + std::string("\n") + kMicName2));
+
+  ASSERT_TRUE(audio_service_.RemoveFakeInputDeviceBlocking(kMicId));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
+  EXPECT_EQ(mic_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kMicName2)));
+}
+
+// Verify the device counter as well as the tooltip for the camera permission
+// label.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewCameraOnly) {
+  InitializePremissionPrompt({permissions::RequestType::kCameraStream});
+  ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
+  auto camera_label = permission_prompt_->GetCameraPermissionLabelForTesting();
+  ASSERT_TRUE(camera_label);
+  ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
+  EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
+
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName, kCameraId}));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(1));
+  EXPECT_EQ(camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kCameraName)));
+
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName2, kCameraId2}));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(2));
+  EXPECT_EQ(camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(kCameraName + std::string("\n") + kCameraName2));
+
+  ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(1));
+  EXPECT_EQ(camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kCameraName)));
+}
+
+// Verify the device counter as well as the tooltip for both the camera and the
+// mic permission labels.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewCameraAndMic) {
+  InitializePremissionPrompt({permissions::RequestType::kMicStream,
+                              permissions::RequestType::kCameraStream});
+  ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
+  auto camera_label = permission_prompt_->GetCameraPermissionLabelForTesting();
+  ASSERT_TRUE(camera_label);
+  auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
+  ASSERT_TRUE(mic_label);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
+  EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(0));
+  EXPECT_EQ(mic_label->GetTooltipText(), std::u16string());
+
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName, kCameraId}));
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName2, kCameraId2}));
+  ASSERT_TRUE(
+      audio_service_.AddFakeInputDeviceBlocking({kMicName, kMicId, kGroupId}));
+  ASSERT_TRUE(audio_service_.AddFakeInputDeviceBlocking(
+      {kMicName2, kMicId2, kGroupId2}));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(2));
+  EXPECT_EQ(camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(kCameraName + std::string("\n") + kCameraName2));
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(2));
+  EXPECT_EQ(mic_label->GetTooltipText(),
+            base::UTF8ToUTF16(kMicName + std::string("\n") + kMicName2));
+
+  ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId));
+  ASSERT_TRUE(audio_service_.RemoveFakeInputDeviceBlocking(kMicId));
+  ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
+  EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
+  EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
+  EXPECT_EQ(mic_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kMicName2)));
+}
+
+// Verify there is no preview created when there is no camera or mic permissions
+// requested.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewNoCameraOrMic) {
+  InitializePremissionPrompt({permissions::RequestType::kGeolocation});
+  ASSERT_FALSE(permission_prompt_->GetMediaPreviewsForTesting());
+  ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
+  ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
+}
+
+#endif
