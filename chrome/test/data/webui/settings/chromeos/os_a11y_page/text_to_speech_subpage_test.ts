@@ -210,4 +210,27 @@ suite('<settings-text-to-speech-subpage>', function() {
     assertEquals(
         page.i18n('pdfOcrDownloadCompleteLabel'), pdfOcrToggle.subLabel);
   });
+
+  test('test pdf ocr toggle default subtitle', async () => {
+    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
+    await initPage();
+    // Simulate enabling the ChromeVox.
+    page.hasScreenReader = true;
+
+    const pdfOcrToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosPdfOcrToggle');
+    assertTrue(!!pdfOcrToggle);
+    await flushTasks();
+
+    // If `DOWNLOADED` is set without `DOWNLOADING` being set, it means that
+    // the screen-ai library is already installed and ready on the device. In
+    // this case, the default subtitle should be shown.
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
+    assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
+  });
+
 });

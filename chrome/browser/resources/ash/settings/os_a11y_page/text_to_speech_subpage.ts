@@ -119,6 +119,7 @@ export class SettingsTextToSpeechSubpageElement extends
   hasScreenReader: boolean;
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
+  private hasPdfOcrDownloadingStatusEverBeenSet_: boolean = false;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
@@ -174,17 +175,23 @@ export class SettingsTextToSpeechSubpageElement extends
       case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
-        return this.i18n('pdfOcrDownloadCompleteLabel');
+        // Show the default subtitle if the downloaded status was set without
+        // the downloading status being set; it means that the ScreenAI was
+        // already installed and available on the device.
+        return this.hasPdfOcrDownloadingStatusEverBeenSet_ ?
+            this.i18n('pdfOcrDownloadCompleteLabel') :
+            this.i18n('pdfOcrSubtitle');
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
-        // No subtitle update in this case
-      default:
-        // This is a generic subtitle describing the feature.
+        // No subtitle update, so show a generic subtitle describing PDF OCR.
         return this.i18n('pdfOcrSubtitle');
     }
   }
 
   private onPdfOcrStateChanged_(pdfOcrState: ScreenAiInstallStatus): void {
     this.pdfOcrStatus_ = pdfOcrState;
+    if (pdfOcrState === ScreenAiInstallStatus.DOWNLOADING) {
+      this.hasPdfOcrDownloadingStatusEverBeenSet_ = true;
+    }
   }
 
   private onPdfOcrDownloadingProgressChanged_(progress: number): void {
