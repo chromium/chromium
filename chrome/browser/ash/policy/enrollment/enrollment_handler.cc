@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -267,19 +266,26 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  // Currently reven devices don't support server-backed state keys, but they
-  // also don't support FRE/AutoRE so don't block enrollment on the
-  // availability of state keys.
-  // TODO(b/208705225): Remove this special case when reven supports state keys.
-  if (ash::switches::IsRevenBranding()) {
+  // Request state keys if FRE is enabled.
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    LOG(WARNING) << "Requesting state keys.";
+    state_keys_broker_->RequestStateKeys(base::BindOnce(
+        // This simply allows the keys to be wrapped in an std::optional, which
+        // the compiler can't do if we just bind
+        // &EnrollmentHandler::HandleStateKeys.
+        [](base::WeakPtr<EnrollmentHandler> self,
+           const std::vector<std::string>& keys) {
+          if (self) {
+            self->HandleStateKeys(keys);
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Skip the request for state keys, but handle their absence and move to the
+    // next step.
     LOG(WARNING) << "Skipping state keys.";
-    HandleStateKeysResult({});
-    return;
+    HandleStateKeys(std::nullopt);
   }
-  LOG(WARNING) << "Requesting state keys.";
-  state_keys_broker_->RequestStateKeys(
-      base::BindOnce(&EnrollmentHandler::HandleStateKeysResult,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<CloudPolicyClient> EnrollmentHandler::ReleaseClient() {
@@ -399,12 +405,13 @@ void EnrollmentHandler::OnStoreError(CloudPolicyStore* store) {
                                                store_->validation_status()));
 }
 
-void EnrollmentHandler::HandleStateKeysResult(
-    const std::vector<std::string>& state_keys) {
+void EnrollmentHandler::HandleStateKeys(
+    std::optional<std::vector<std::string>> opt_state_keys) {
   DCHECK_EQ(STEP_STATE_KEYS, enrollment_step_);
 
-  // Make sure state keys are available if forced re-enrollment is on.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (opt_state_keys.has_value()) {
+    auto state_keys = opt_state_keys.value();
+
     client_->SetStateKeysToUpload(state_keys);
     register_params_->current_state_key =
         state_keys_broker_->current_state_key();
@@ -414,11 +421,13 @@ void EnrollmentHandler::HandleStateKeysResult(
           EnrollmentStatus::Code::kNoStateKeys));
       return;
     }
+
+    // Logging as "WARNING" to make sure it's preserved in the logs.
+    LOG(WARNING) << "State keys generated, success=" << !state_keys.empty();
+  } else {
+    LOG(WARNING) << "State keys are not used.";
   }
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
-  LOG(WARNING) << "State keys generated, success=" << !state_keys.empty();
   SetStep(STEP_LOADING_STORE);
   StartRegistration();
 }
