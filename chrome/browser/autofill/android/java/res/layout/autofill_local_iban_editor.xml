@@ -57,16 +57,11 @@ found in the LICENSE file.
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/iban_local_save_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/iban_local_save_footer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="@dimen/local_iban_footer_top_margin"
-            android:text="@string/autofill_iban_editor_local_save_footer" />
-    </LinearLayout>
+        android:layout_marginStart="@dimen/local_iban_footer_start_margin"
+        android:layout_marginTop="@dimen/local_iban_footer_top_margin"
+        android:text="@string/autofill_iban_editor_local_save_footer" />
 </merge>
