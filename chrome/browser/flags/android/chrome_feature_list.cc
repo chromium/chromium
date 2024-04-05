@@ -367,6 +367,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kPwaUniversalInstallUi,
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
+    &switches::kPersistentSearchEngineChoiceImport,
 };
 
 // static
