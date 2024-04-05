@@ -31,7 +31,7 @@ namespace {
 constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
 
 // Padding around each row of small items.
-constexpr auto kSmallGridItemRowMargins = gfx::Insets::TLBR(0, 8, 8, 8);
+constexpr auto kSmallGridItemRowMargins = gfx::Insets::TLBR(0, 16, 8, 16);
 
 // Preferred size of small grid items.
 constexpr gfx::Size kSmallGridItemPreferredSize(32, 32);

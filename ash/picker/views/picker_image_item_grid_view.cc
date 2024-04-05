@@ -23,14 +23,18 @@
 namespace ash {
 namespace {
 
-// Padding between and around image grid items.
+// Padding between image grid items.
 constexpr int kImageGridPadding = 8;
+
+// Horizontal margin for the image grid.
+constexpr int kImageGridMargin = 16;
 
 // Number of columns in an image grid.
 constexpr int kNumImageGridColumns = 2;
 
 int GetImageGridColumnWidth(int grid_width) {
-  return (grid_width - (kNumImageGridColumns + 1) * kImageGridPadding) /
+  return (grid_width - (kNumImageGridColumns - 1) * kImageGridPadding +
+          kImageGridMargin * 2) /
          kNumImageGridColumns;
 }
 
@@ -76,7 +80,7 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
                /*height=*/0);
 
-  SetProperty(views::kMarginsKey, gfx::Insets::VH(0, kImageGridPadding));
+  SetProperty(views::kMarginsKey, gfx::Insets::VH(0, kImageGridMargin));
 
   AddChildView(CreateImageGridColumn());
   AddChildView(CreateImageGridColumn());
