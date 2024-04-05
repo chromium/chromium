@@ -91,27 +91,25 @@ export class CdpTargetManager {
     cdpClient.on('Target.attachedToTarget', (params) => {
       this.#handleAttachedToTargetEvent(params, cdpClient);
     });
-    cdpClient.on('Target.detachedFromTarget', (params) => {
-      this.#handleDetachedFromTargetEvent(params);
-    });
-    cdpClient.on('Target.targetInfoChanged', (params) => {
-      this.#handleTargetInfoChangedEvent(params);
-    });
+    cdpClient.on(
+      'Target.detachedFromTarget',
+      this.#handleDetachedFromTargetEvent.bind(this)
+    );
+    cdpClient.on(
+      'Target.targetInfoChanged',
+      this.#handleTargetInfoChangedEvent.bind(this)
+    );
     cdpClient.on('Inspector.targetCrashed', () => {
       this.#handleTargetCrashedEvent(cdpClient);
     });
 
     cdpClient.on(
       'Page.frameAttached',
-      (params: Protocol.Page.FrameAttachedEvent) => {
-        this.#handleFrameAttachedEvent(params);
-      }
+      this.#handleFrameAttachedEvent.bind(this)
     );
     cdpClient.on(
       'Page.frameDetached',
-      (params: Protocol.Page.FrameDetachedEvent) => {
-        this.#handleFrameDetachedEvent(params);
-      }
+      this.#handleFrameDetachedEvent.bind(this)
     );
   }
 
@@ -121,13 +119,13 @@ export class CdpTargetManager {
     );
     if (parentBrowsingContext !== undefined) {
       BrowsingContextImpl.create(
-        parentBrowsingContext.cdpTarget,
-        this.#realmStorage,
         params.frameId,
         params.parentFrameId,
         parentBrowsingContext.userContext,
+        parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,
+        this.#realmStorage,
         this.#logger
       );
     }
@@ -148,12 +146,6 @@ export class CdpTargetManager {
     const {sessionId, targetInfo} = params;
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
-    this.#logger?.(
-      LogType.debugInfo,
-      'AttachedToTarget event received:',
-      params
-    );
-
     switch (targetInfo.type) {
       case 'page':
       case 'iframe': {
@@ -169,18 +161,20 @@ export class CdpTargetManager {
           // OOPiF.
           maybeContext.updateCdpTarget(cdpTarget);
         } else {
+          const userContext =
+            targetInfo.browserContextId &&
+            targetInfo.browserContextId !== this.#defaultUserContextId
+              ? targetInfo.browserContextId
+              : 'default';
           // New context.
           BrowsingContextImpl.create(
-            cdpTarget,
-            this.#realmStorage,
             targetInfo.targetId,
             null,
-            targetInfo.browserContextId &&
-              targetInfo.browserContextId !== this.#defaultUserContextId
-              ? targetInfo.browserContextId
-              : 'default',
+            userContext,
+            cdpTarget,
             this.#eventManager,
             this.#browsingContextStorage,
+            this.#realmStorage,
             this.#logger
           );
         }

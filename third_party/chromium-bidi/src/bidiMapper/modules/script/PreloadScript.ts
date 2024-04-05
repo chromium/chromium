@@ -139,16 +139,18 @@ export class PreloadScript {
    * Removes this script from all CDP targets.
    */
   async remove() {
-    for (const cdpPreloadScript of this.#cdpPreloadScripts) {
-      const cdpTarget = cdpPreloadScript.target;
-      const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
-      await cdpTarget.cdpClient.sendCommand(
-        'Page.removeScriptToEvaluateOnNewDocument',
-        {
-          identifier: cdpPreloadScriptId,
-        }
-      );
-    }
+    await Promise.all([
+      this.#cdpPreloadScripts.map(async (cdpPreloadScript) => {
+        const cdpTarget = cdpPreloadScript.target;
+        const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
+        return await cdpTarget.cdpClient.sendCommand(
+          'Page.removeScriptToEvaluateOnNewDocument',
+          {
+            identifier: cdpPreloadScriptId,
+          }
+        );
+      }),
+    ]);
   }
 
   /** Removes the provided cdp target from the list of cdp preload scripts. */

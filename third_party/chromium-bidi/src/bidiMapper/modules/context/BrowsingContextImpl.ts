@@ -78,43 +78,43 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
 
   private constructor(
-    cdpTarget: CdpTarget,
-    realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
+    cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
+    realmStorage: RealmStorage,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
-    this.#realmStorage = realmStorage;
     this.#id = id;
     this.#parentId = parentId;
     this.userContext = userContext;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
     this.#logger = logger;
   }
 
   static create(
-    cdpTarget: CdpTarget,
-    realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
+    cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
+    realmStorage: RealmStorage,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
-      cdpTarget,
-      realmStorage,
       id,
       parentId,
       userContext,
+      cdpTarget,
       eventManager,
       browsingContextStorage,
+      realmStorage,
       logger
     );
 

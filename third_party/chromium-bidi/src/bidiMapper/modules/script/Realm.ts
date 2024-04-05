@@ -304,25 +304,23 @@ export abstract class Realm {
   async #flattenKeyValuePairs(
     mappingLocalValue: Script.MappingLocalValue
   ): Promise<Protocol.Runtime.CallArgument[]> {
-    const keyValueArray: Protocol.Runtime.CallArgument[] = [];
+    const keyValueArray = await Promise.all(
+      mappingLocalValue.map(async ([key, value]) => {
+        let keyArg;
+        if (typeof key === 'string') {
+          // Key is a string.
+          keyArg = {value: key};
+        } else {
+          // Key is a serialized value.
+          keyArg = await this.deserializeForCdp(key);
+        }
+        const valueArg = await this.deserializeForCdp(value);
 
-    for (const [key, value] of mappingLocalValue) {
-      let keyArg;
-      if (typeof key === 'string') {
-        // Key is a string.
-        keyArg = {value: key};
-      } else {
-        // Key is a serialized value.
-        keyArg = await this.deserializeForCdp(key);
-      }
+        return [keyArg, valueArg];
+      })
+    );
 
-      const valueArg = await this.deserializeForCdp(value);
-
-      keyValueArray.push(keyArg);
-      keyValueArray.push(valueArg);
-    }
-
-    return keyValueArray;
+    return keyValueArray.flat();
   }
 
   async #flattenValueList(
