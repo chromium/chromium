@@ -3544,21 +3544,6 @@
             ]
         }
     ],
-    "ChromeOSDocumentScanAsyncDiscovery": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AsynchronousScannerDiscovery"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSGlanceablesTimeManagementTasksView": [
         {
             "platforms": [
