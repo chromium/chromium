@@ -157,6 +157,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
     const OofInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool requires_content_before_breaking = false;
+    bool is_hidden_for_paint = false;
 
     NodeInfo(BlockNode node,
              const LogicalStaticPosition static_position,
@@ -166,7 +167,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              const OofContainingBlock<LogicalOffset>& containing_block,
              const OofContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const OofInlineContainer<LogicalOffset>& fixedpos_inline_container,
-             bool requires_content_before_breaking)
+             bool requires_content_before_breaking,
+             bool is_hidden_for_paint)
         : node(node),
           static_position(static_position),
           container_info(container_info),
@@ -174,7 +176,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
           containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
-          requires_content_before_breaking(requires_content_before_breaking) {}
+          requires_content_before_breaking(requires_content_before_breaking),
+          is_hidden_for_paint(is_hidden_for_paint) {}
 
     void Trace(Visitor* visitor) const;
   };

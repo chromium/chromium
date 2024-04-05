@@ -1679,12 +1679,12 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(node, oof_node.static_position, container_info,
-                  GetConstraintSpace().GetWritingDirection(),
-                  /* is_fragmentainer_descendant */ containing_block_fragment,
-                  containing_block, fixedpos_containing_block,
-                  fixedpos_inline_container,
-                  oof_node.requires_content_before_breaking);
+  return NodeInfo(
+      node, oof_node.static_position, container_info,
+      GetConstraintSpace().GetWritingDirection(),
+      /* is_fragmentainer_descendant */ containing_block_fragment,
+      containing_block, fixedpos_containing_block, fixedpos_inline_container,
+      oof_node.requires_content_before_breaking, oof_node.is_hidden_for_paint);
 }
 
 const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
@@ -2358,6 +2358,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(offset_info.container_content_size);
   builder.SetIsFixedInlineSize(true);
+  builder.SetIsHiddenForPaint(node_info.is_hidden_for_paint);
 
   // In some cases we will need the fragment size in order to calculate the
   // offset. We may have to lay out to get the fragment size. For block

@@ -1373,7 +1373,10 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
         ChildAvailableSize().inline_size);
   }
 
-  container_builder_.AddOutOfFlowChildCandidate(child, static_offset);
+  container_builder_.AddOutOfFlowChildCandidate(
+      child, static_offset, LogicalStaticPosition::kInlineStart,
+      LogicalStaticPosition::kBlockStart,
+      line_clamp_data_.ShouldHideForPaint());
 }
 
 void BlockLayoutAlgorithm::HandleFloat(

@@ -207,7 +207,8 @@ class CORE_EXPORT FragmentBuilder {
       BlockNode,
       const LogicalOffset& child_offset,
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
-      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
+      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
+      bool is_hidden_for_paint = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining
@@ -215,7 +216,8 @@ class CORE_EXPORT FragmentBuilder {
   void AddOutOfFlowInlineChildCandidate(
       BlockNode,
       const LogicalOffset& child_offset,
-      TextDirection inline_container_direction);
+      TextDirection inline_container_direction,
+      bool is_hidden_for_paint = false);
 
   void AddOutOfFlowFragmentainerDescendant(
       const LogicalOofNodeForFragmentation& descendant);

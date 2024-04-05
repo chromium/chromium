@@ -162,12 +162,14 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
   // Whether or not this is an PhysicalOofNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
   unsigned requires_content_before_breaking : 1;
+  unsigned is_hidden_for_paint : 1;
   OofInlineContainer<PhysicalOffset> inline_container;
 
   PhysicalOofPositionedNode(
       BlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
+      bool is_hidden_for_paint,
       OofInlineContainer<PhysicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
         static_position(static_position.offset),
@@ -175,6 +177,7 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
         static_position_vertical_edge(static_position.vertical_edge),
         is_for_fragmentation(false),
         requires_content_before_breaking(requires_content_before_breaking),
+        is_hidden_for_paint(is_hidden_for_paint),
         inline_container(inline_container) {
     DCHECK(node.IsBlock());
   }
@@ -213,16 +216,20 @@ struct CORE_EXPORT LogicalOofPositionedNode {
 
   unsigned requires_content_before_breaking : 1;
 
+  unsigned is_hidden_for_paint : 1;
+
   LogicalOofPositionedNode(
       BlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
+      bool is_hidden_for_paint,
       OofInlineContainer<LogicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
         is_for_fragmentation(false),
-        requires_content_before_breaking(requires_content_before_breaking) {
+        requires_content_before_breaking(requires_content_before_breaking),
+        is_hidden_for_paint(is_hidden_for_paint) {
     DCHECK(node.IsBlock());
   }
 
@@ -262,6 +269,7 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
       BlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
+      bool is_hidden_for_paint,
       OofInlineContainer<PhysicalOffset> inline_container = {},
       OofContainingBlock<PhysicalOffset> containing_block = {},
       OofContainingBlock<PhysicalOffset> fixedpos_containing_block = {},
@@ -269,6 +277,7 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
       : PhysicalOofPositionedNode(node,
                                   static_position,
                                   requires_content_before_breaking,
+                                  is_hidden_for_paint,
                                   inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
@@ -298,6 +307,7 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
       BlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
+      bool is_hidden_for_paint,
       OofInlineContainer<LogicalOffset> inline_container = {},
       OofContainingBlock<LogicalOffset> containing_block = {},
       OofContainingBlock<LogicalOffset> fixedpos_containing_block = {},
@@ -305,6 +315,7 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
       : LogicalOofPositionedNode(node,
                                  static_position,
                                  requires_content_before_breaking,
+                                 is_hidden_for_paint,
                                  inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
@@ -317,6 +328,7 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
       : LogicalOofPositionedNode(oof_node.Node(),
                                  oof_node.static_position,
                                  oof_node.requires_content_before_breaking,
+                                 oof_node.is_hidden_for_paint,
                                  oof_node.inline_container) {
     is_for_fragmentation = true;
   }
