@@ -39,6 +39,9 @@ namespace features {
 BASE_FEATURE(kPreconnectToSearch,
              "PreconnectToSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled,
+             "PreconnectToSearchWithPrivacyModeEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 SearchEnginePreconnector::SearchEnginePreconnector(
@@ -109,6 +112,13 @@ void SearchEnginePreconnector::PreconnectDSE() {
         net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
     loading_predictor->PreconnectURLIfAllowed(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPreconnectToSearchWithPrivacyModeEnabled)) {
+      loading_predictor->PreconnectURLIfAllowed(preconnect_url,
+                                                /*allow_credentials=*/false,
+                                                network_anonymziation_key);
+    }
   }
 
   // The delay beyond the idle socket timeout that net uses when
