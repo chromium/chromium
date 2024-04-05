@@ -252,7 +252,7 @@ void OverlayProcessorWin::SetIsPageFullscreen(bool enabled) {
 }
 
 void OverlayProcessorWin::ProcessOnDCLayerOverlayProcessorForTesting(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     const FilterOperationsMap& render_pass_filters,
     const FilterOperationsMap& render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,

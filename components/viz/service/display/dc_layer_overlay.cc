@@ -141,7 +141,7 @@ DCLayerResult ValidateYUVQuad(
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
-    DisplayResourceProvider* resource_provider) {
+    const DisplayResourceProvider* resource_provider) {
   // Note: Do not override this value based on base::Feature values. It is the
   // result after the GPU blocklist has been consulted.
   if (!has_overlay_support)
@@ -254,7 +254,7 @@ DCLayerResult ValidateTextureQuad(
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
-    DisplayResourceProvider* resource_provider) {
+    const DisplayResourceProvider* resource_provider) {
   // Check that resources are overlay compatible first so that subsequent
   // assumptions are valid.
   for (const auto& resource : quad->resources) {
@@ -295,7 +295,7 @@ DCLayerResult ValidateTextureQuad(
 
 void FromTextureQuad(const TextureDrawQuad* quad,
                      const gfx::Transform& transform_to_root_target,
-                     DisplayResourceProvider* resource_provider,
+                     const DisplayResourceProvider* resource_provider,
                      OverlayCandidate* dc_layer) {
   dc_layer->resource_id = quad->resource_id();
   dc_layer->plane_z_order = 1;
@@ -590,7 +590,7 @@ bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
 }
 
 bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     const QuadList::ConstIterator& it,
     bool force_overlay_for_auto_hdr) {
   if (!IsClearVideoQuad(it)) {
@@ -654,7 +654,7 @@ struct ValidateDrawQuadResult {
 };
 
 ValidateDrawQuadResult ValidateDrawQuad(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     const QuadList::ConstIterator& it,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
     const bool has_overlay_support,
@@ -707,7 +707,7 @@ ValidateDrawQuadResult ValidateDrawQuad(
   return result;
 }
 
-void FromDrawQuad(DisplayResourceProvider* resource_provider,
+void FromDrawQuad(const DisplayResourceProvider* resource_provider,
                   const AggregatedRenderPass* render_pass,
                   bool is_page_fullscreen_mode,
                   const QuadList::ConstIterator& it,
@@ -891,7 +891,7 @@ void DCLayerOverlayProcessor::UpdateDamageRect(
 }
 
 void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     RenderPassOverlayDataMap& render_pass_overlay_data_map,
     RenderPassCurrentFrameStateMap& render_pass_state_map) {
   // The number of frames all overlay candidates need to be stable before we
@@ -952,7 +952,7 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
 }
 
 void DCLayerOverlayProcessor::CollectCandidates(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
     const FilterOperationsMap& render_pass_backdrop_filters,
     RenderPassOverlayData& overlay_data,
@@ -1042,7 +1042,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
 }
 
 void DCLayerOverlayProcessor::PromoteCandidates(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
     const FilterOperationsMap& render_pass_filters,
     const RenderPassPreviousFrameState& previous_frame_state,
@@ -1132,7 +1132,7 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 }
 
 void DCLayerOverlayProcessor::Process(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     const FilterOperationsMap& render_pass_filters,
     const FilterOperationsMap& render_pass_backdrop_filters,
     const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
@@ -1296,7 +1296,7 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
 }
 
 void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
     const QuadList::Iterator& it,
     const gfx::Rect& quad_rect_in_target_space,

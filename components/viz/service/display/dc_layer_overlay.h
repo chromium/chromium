@@ -74,7 +74,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // underlays. The caller must aggregate overlays from all render passes into
   // a global overlay list, taking into account the render pass's z-order.
   virtual void Process(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
@@ -247,7 +247,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // render pass, the damage rect in |overlay_data| is unioned with the previous
   // frame's overlay damages, and the previous frame state is cleared.
   void CollectCandidates(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const FilterOperationsMap& render_pass_backdrop_filters,
       RenderPassOverlayData& overlay_data,
@@ -266,7 +266,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // |current_frame_state|'s fields and |processed_yuv_overlay_count| to reflect
   // the actual number of overlays promoted.
   void PromoteCandidates(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const FilterOperationsMap& render_pass_filters,
       const RenderPassPreviousFrameState& previous_frame_state,
@@ -281,7 +281,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // Creates an OverlayCandidate for a quad candidate and updates the states
   // for the render pass.
   void UpdateDCLayerOverlays(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const QuadList::Iterator& it,
       const gfx::Rect& quad_rectangle_in_target_space,
@@ -330,7 +330,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // to be in overlay, but we also exclude them from de-promotion to keep the
   // protection benefits of being in an overlay.
   void RemoveClearVideoQuadCandidatesIfMoving(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       RenderPassOverlayDataMap& render_pass_overlay_data_map,
       RenderPassCurrentFrameStateMap& render_pass_current_state_map);
 

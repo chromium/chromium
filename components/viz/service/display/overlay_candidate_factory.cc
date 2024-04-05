@@ -219,7 +219,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
 
 OverlayCandidateFactory::OverlayCandidateFactory(
     const AggregatedRenderPass* render_pass,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     const SurfaceDamageRectList* surface_damage_rect_list,
     const SkM44* output_color_matrix,
     const gfx::RectF primary_rect,

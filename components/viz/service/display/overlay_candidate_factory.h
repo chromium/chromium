@@ -69,7 +69,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   // produced by this factory.
   OverlayCandidateFactory(
       const AggregatedRenderPass* render_pass,
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       const SurfaceDamageRectList* surface_damage_rect_list,
       const SkM44* output_color_matrix,
       const gfx::RectF primary_rect,
@@ -169,7 +169,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   void SetDisplayRect(const DrawQuad& quad, OverlayCandidate& candidate) const;
 
   raw_ptr<const AggregatedRenderPass> render_pass_;
-  raw_ptr<DisplayResourceProvider> resource_provider_;
+  raw_ptr<const DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
   const gfx::RectF primary_rect_;
   raw_ptr<const OverlayProcessorInterface::FilterOperationsMap>
