@@ -3935,6 +3935,13 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
+const char kClearLoginDatabaseForUPMUsersDescription[] =
+    "This feature clears LoginDatabase for syncing users when UPM is properly "
+    "enabled. Only works if UnifiedPasswordManagerSyncOnlyInGMSCore feature "
+    "flag is also enabled.";
+const char kClearLoginDatabaseForUPMUsersName[] =
+    "Clear LoginDatabase for UPM users";
+
 const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
 const char kTabStateFlatBufferDescription[] =
     "Migrates TabState from a pickle based schema to a FlatBuffer based "

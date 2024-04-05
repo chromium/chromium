@@ -11196,6 +11196,14 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"clear-login-database-for-upm-users",
+     flag_descriptions::kClearLoginDatabaseForUPMUsersName,
+     flag_descriptions::kClearLoginDatabaseForUPMUsersDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kClearLoginDatabaseForUPMUsers)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

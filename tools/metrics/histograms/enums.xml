@@ -16486,6 +16486,7 @@ from previous Chrome versions.
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
+  <int value="-2013085118" label="ClearLoginDatabaseForUPMUsers:enabled"/>
   <int value="-2013071623" label="BacklightOcr:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
   <int value="-2012779758" label="ReduceUserAgent:disabled"/>
@@ -24476,6 +24477,7 @@ from previous Chrome versions.
   <int value="1582400283" label="VideoTutorials:enabled"/>
   <int value="1582661177" label="SharedZstd:enabled"/>
   <int value="1582771017" label="kDiagnosticsAppJelly:disabled"/>
+  <int value="1583509900" label="ClearLoginDatabaseForUPMUsers:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
   <int value="1584111738" label="NtpChromeCartHistoryClusterCoexist:enabled"/>

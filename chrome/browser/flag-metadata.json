@@ -1367,6 +1367,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "clear-login-database-for-upm-users",
+    "owners": [ "vsemeniuk@google.com", "ioanap@chromium.org" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "click-to-call",
     "owners": [ "ellyjones@chromium.org" ],
     "expiry_milestone": 115
