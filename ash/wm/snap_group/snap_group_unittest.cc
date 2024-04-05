@@ -2146,6 +2146,26 @@ TEST_F(SnapGroupTest, SnapToTheOppositeSideToExit) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
+// Tests to verify that dragging a window out of a snap group breaks the group
+// and removes the divider.
+TEST_F(SnapGroupTest, DragWindowOutToBreakSnapGroup) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+
+  auto* event_generator = GetEventGenerator();
+  gfx::Point drag_point(w2->GetBoundsInScreen().top_center());
+  drag_point.Offset(0, 10);
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+  EXPECT_FALSE(snap_group_divider());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 // Test that maximizing a snapped window breaks the snap group.
 TEST_F(SnapGroupTest, MaximizeSnappedWindowExitPointTest) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -2577,6 +2597,46 @@ TEST_F(SnapGroupTest, SnapGroupDividerBoundsTest) {
     MaximizeToClearTheSession(w1.get());
     MaximizeToClearTheSession(w2.get());
   }
+}
+
+// Tests to verify that when a window is dragged out of a snap group and onto
+// another display, it snaps correctly with accurate bounds on the destination
+// display. See regression at http://b/331663949.
+TEST_F(SnapGroupTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(3U, displays.size());
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  const gfx::PointF point_in_display2(802, 0);
+  EXPECT_FALSE(
+      displays[0].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
+  EXPECT_TRUE(
+      displays[1].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
+
+  auto* event_generator = GetEventGenerator();
+  gfx::Point drag_point(w2->GetBoundsInScreen().top_center());
+  drag_point.Offset(0, 10);
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(gfx::ToRoundedPoint(point_in_display2));
+
+  ASSERT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+
+  gfx::Rect display1_left_half, display1_right_half;
+  displays[1].work_area().SplitVertically(display1_left_half,
+                                          display1_right_half);
+
+  EXPECT_EQ(display1_left_half, w2->GetBoundsInScreen());
 }
 
 TEST_F(SnapGroupTest, OverviewEnterExitBasic) {

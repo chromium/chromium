@@ -268,10 +268,14 @@ void SnapGroup::UpdateGroupWindowsBounds(bool account_for_divider_width) {
 void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
                                           bool account_for_divider_width,
                                           std::optional<float> snap_ratio) {
-  const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
+  gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
       GetPositionOfSnappedWindow(window), window,
       snap_ratio.value_or(window_util::GetSnapRatioForWindow(window)),
       account_for_divider_width);
+  // Convert window bounds to parent coordinates to ensure correct window bounds
+  // are applied when window is moved across displays (see regression
+  // http://b/331663949).
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &requested_bounds);
   const SetBoundsWMEvent event(requested_bounds, /*animate=*/false);
   WindowState::Get(window)->OnWMEvent(&event);
 }
