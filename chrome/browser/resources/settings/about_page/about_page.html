@@ -120,28 +120,41 @@
         </div>
       </template>
 </if>
-      <cr-link-row class="hr" id="help" on-click="onHelpClick_"
-          label="$i18n{aboutGetHelpUsingChrome}"
-          external></cr-link-row>
+      <template is="dom-if" if="[[!showGetTheMostOutOfChromeSection_]]">
+        <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+            label="$i18n{aboutGetHelpUsingChrome}"
+            external></cr-link-row>
+      </template>
 <if expr="_google_chrome">
-      <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
-          hidden="[[!prefs.feedback_allowed.value]]"
-          label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+      <template is="dom-if" if="[[!showGetTheMostOutOfChromeSection_]]">
+        <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
+            hidden="[[!prefs.feedback_allowed.value]]"
+            label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+      </template>
       <cr-link-row class="hr" id="privacyPolicy"
         on-click="onPrivacyPolicyClick_" label="$i18n{aboutPrivacyPolicy}"
         external></cr-link-row>
-      <cr-link-row class="hr" id="getTheMostOutOfChrome"
-          on-click="onGetTheMostOutOfChromeClick_"
-          label="$i18n{getTheMostOutOfChrome}"
-          sub-label="$i18n{getTheMostOutOfChromeDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          hidden$="[[!showGetTheMostOutOfChromeSection_]]"></cr-link-row>
 </if>
       <cr-link-row class="hr" on-click="onManagementPageClick_"
           start-icon="[[managedByIcon_]]" label="$i18n{managementPage}"
           role-description="$i18n{subpageArrowRoleDescription}"
           hidden$="[[!isManaged_]]"></cr-link-row>
     </settings-section>
+
+<if expr="_google_chrome">
+    <template is="dom-if" if="[[showGetTheMostOutOfChromeSection_]]">
+      <get-most-chrome-section></get-most-chrome-section>
+
+      <settings-section page-title="Get Help">
+        <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+            label="$i18n{aboutGetHelpUsingChrome}"
+            external></cr-link-row>
+        <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
+            hidden="[[!prefs.feedback_allowed.value]]"
+            label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+      </settings-section>
+    </template>
+</if>
 
     <settings-section>
       <div class="info-sections">

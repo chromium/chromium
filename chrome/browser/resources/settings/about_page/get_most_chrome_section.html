@@ -1,0 +1,29 @@
+<style include="cr-shared-style">
+  .get-most-chrome-item {
+    display: flex;
+    flex: 1;
+    word-break: break-word;
+    align-items: center;
+    padding: 19px 10px;
+    gap: var(--about-page-image-space);
+  }
+</style>
+
+<settings-section page-title="$i18n{getTheMostOutOfChrome}">
+  <cr-link-row class="hr" id="getTheMostOutOfChrome"
+      on-click="onGetTheMostOutOfChromeClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+    <template is="dom-repeat" items="[[entries_]]">
+      <div class="get-most-chrome-item">
+        <picture>
+          <source
+              srcset="chrome://settings/images/[[item.iconDark]]"
+              media="(prefers-color-scheme: dark)">
+          <img id="banner" alt=""
+              src="chrome://settings/images/[[item.iconLight]]">
+        </picture>
+        <div>[[item.label]]</div>
+      </div>
+    </template>
+  </cr-link-row>
+</settings-section>

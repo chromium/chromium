@@ -574,6 +574,12 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME},
       {"getTheMostOutOfChromeBeyondCookies",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES},
+      {"getTheMostOutOfChromeWorkBetterForYou",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_WORK_BETTER_FOR_YOU},
+      {"getTheMostOutOfChromeSearchHistory",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_SEARCH_HISTORY},
+      {"getTheMostOutOfChromeThirdPartyCookies",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

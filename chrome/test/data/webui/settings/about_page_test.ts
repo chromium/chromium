@@ -13,6 +13,7 @@ import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 // <if expr="_google_chrome">
 import {ABOUT_PAGE_PRIVACY_POLICY_URL, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 // </if>
 
@@ -333,16 +334,19 @@ suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let testRoutes: SettingsRoutes;
 
   setup(function() {
-    setupRouter();
+    testRoutes = setupRouter();
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstance(browserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
+    Router.getInstance().navigateTo(testRoutes.ABOUT);
     document.body.appendChild(page);
+    return flushTasks();
   });
 
   test('ReportAnIssue', async function() {

@@ -72,6 +72,15 @@
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES" desc="Title of the 'Beyond cookies' section of the 'Get the most out of Chrome' page.">
       Beyond cookies
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_WORK_BETTER_FOR_YOU" desc="Prompt on the link to the 'Get the most out of Chrome' page.">
+      How does data help Chrome work better for you?
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_SEARCH_HISTORY" desc="Prompt on the link to the 'Get the most out of Chrome' page.">
+      How are browsing and search history different?
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES" desc="Prompt on the link to the 'Get the most out of Chrome' page.">
+      Why is Chrome moving beyond third-party cookies?
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">
