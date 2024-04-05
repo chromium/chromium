@@ -152,7 +152,7 @@ suite('cr-input', function() {
     input.focus();
     await crInput.updateComplete;
     assertTrue(crInput.hasAttribute('focused_'));
-    assertNotEquals(originalLabelColor, getComputedStyle(label).color);
+    assertEquals(originalLabelColor, getComputedStyle(label).color);
     let events = await whenTransitionsEnd;
     // Ensure transitions finished in the expected order.
     assertEquals(2, events.length);

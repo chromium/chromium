@@ -44,8 +44,7 @@
   pointer-events: none;
 }
 
-:host-context([chrome-refresh-2023]):host([disabled])
-    :is(#label, #error, #input-container) {
+:host([disabled]) :is(#label, #error, #input-container) {
   opacity: 1;
 }
 
@@ -59,15 +58,11 @@
 }
 
 #input {
-  border-bottom: var(--cr-input-border-bottom, none);
+  border-bottom: none;
   letter-spacing: var(--cr-input-letter-spacing);
 }
 
-:host-context([chrome-refresh-2023]) #input {
-  border-bottom: none;
-}
-
-:host-context([chrome-refresh-2023]) #input-container {
+#input-container {
   border: var(--cr-input-border, none);
 }
 
@@ -104,18 +99,12 @@
      forward. */
   color: var(--cr-input-error-color);
   display: var(--cr-input-error-display, block);
-  font-size: var(--cr-form-field-label-font-size);
-  height: var(--cr-form-field-label-height);
-  line-height: var(--cr-form-field-label-line-height);
-  margin: 8px 0;
-  visibility: hidden;
-  white-space: var(--cr-input-error-white-space);
-}
-
-:host-context([chrome-refresh-2023]) #error {
   font-size: 11px;
+  height: var(--cr-form-field-label-height);
   line-height: 16px;
   margin: 4px 10px;
+  visibility: hidden;
+  white-space: var(--cr-input-error-white-space);
 }
 
 :host([invalid]) #error {
@@ -132,7 +121,7 @@
   position: relative;
 }
 
-:host-context([chrome-refresh-2023]) #inner-input-content {
+#inner-input-content {
   gap: 4px;
   height: 16px;
   /* Ensures content sits above the hover layer */
