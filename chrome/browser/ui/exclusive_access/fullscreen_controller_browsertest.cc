@@ -561,6 +561,28 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
+                       ExitBrowserFullscreenOnMultipleEscKeyDown) {
+  // Enter browser fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  // Send repeating keydown events to simulate platform-specific behavior.
+  const base::Time start = task_runner()->Now();
+  {
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
+    while (IsFullscreenForBrowser()) {
+      SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+      task_runner()->FastForwardBy(base::Milliseconds(300));
+    }
+  }
+  const base::TimeDelta time_to_exit = task_runner()->Now() - start;
+  // Fullscreen should exit about 1.5 seconds after the first keypress.
+  EXPECT_GT(time_to_exit, base::Seconds(1));
+  // Allow some time for the async `IsFullscreenForBrowser()` change.
+  EXPECT_LT(time_to_exit, base::Seconds(3));
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        ExitBrowserAndTabFullscreenOnPressAndHoldEsc) {
   // Enter tab fullscreen and browser fullscreen.
   GetFullscreenController()->ToggleBrowserFullscreenMode();
