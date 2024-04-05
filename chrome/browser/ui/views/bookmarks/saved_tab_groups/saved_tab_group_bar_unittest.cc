@@ -128,6 +128,29 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
     browser_.reset(Browser::Create(params));
   }
 
+  std::vector<base::Uuid> GetButtonGUIDs() {
+    std::vector<base::Uuid> guids;
+    for (views::View* view : saved_tab_group_bar()->children()) {
+      const SavedTabGroupButton* button =
+          views::AsViewClass<SavedTabGroupButton>(view);
+      if (!button) {
+        continue;
+      }
+
+      guids.push_back(button->guid());
+    }
+
+    // Also check that we found the right number of buttons and that they're
+    // contiguous at the start of `children()`.
+    const size_t num_children = saved_tab_group_bar()->children().size();
+    EXPECT_EQ(guids.size(), num_children - 1);
+    EXPECT_NE(views::AsViewClass<SavedTabGroupOverflowButton>(
+                  saved_tab_group_bar()->children()[num_children - 1]),
+              nullptr);
+
+    return guids;
+  }
+
   Browser* browser() { return browser_.get(); }
 
  private:
@@ -216,12 +239,14 @@ TEST_P(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   saved_tab_group_model()->Add(kSavedTabGroup1);
-  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(IsV2UIEnabled() ? 1u : 2u,
+            saved_tab_group_bar()->children().size());
 
   SavedTabGroup group_2_with_position = kSavedTabGroup2;
   group_2_with_position.SetPosition(1);
   saved_tab_group_model()->AddedFromSync(group_2_with_position);
-  EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(IsV2UIEnabled() ? 2u : 3u,
+            saved_tab_group_bar()->children().size());
 }
 
 TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
@@ -411,77 +436,64 @@ TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   SavedTabGroupButton* new_button_2 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[1]);
 
-  ASSERT_TRUE(!!new_button_1);
-  ASSERT_TRUE(!!new_button_2);
+  if (IsV2UIEnabled()) {
+    ASSERT_TRUE(!!new_button_1);
+    ASSERT_FALSE(!!new_button_2);
 
-  EXPECT_EQ(new_button_1->GetText(), kNewTitle);
-  EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
-  EXPECT_EQ(new_button_2->GetText(), kNewTitle);
-  EXPECT_EQ(new_button_2->tab_group_color_id(), kNewColor);
+    EXPECT_EQ(new_button_1->GetText(), kNewTitle);
+    EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
+  } else {
+    ASSERT_TRUE(!!new_button_1);
+    ASSERT_TRUE(!!new_button_2);
+
+    EXPECT_EQ(new_button_1->GetText(), kNewTitle);
+    EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
+    EXPECT_EQ(new_button_2->GetText(), kNewTitle);
+    EXPECT_EQ(new_button_2->tab_group_color_id(), kNewColor);
+  }
 }
 
 TEST_P(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
-  const auto get_button_guids = [this]() {
-    std::vector<base::Uuid> guids;
-    for (views::View* view : saved_tab_group_bar()->children()) {
-      const SavedTabGroupButton* button =
-          views::AsViewClass<SavedTabGroupButton>(view);
-      if (!button) {
-        continue;
-      }
-
-      guids.push_back(button->guid());
-    }
-
-    // Also check that we found the right number of buttons and that they're
-    // contiguous at the start of `children()`.
-    const size_t num_children = saved_tab_group_bar()->children().size();
-    EXPECT_EQ(guids.size(), num_children - 1);
-    EXPECT_NE(views::AsViewClass<SavedTabGroupOverflowButton>(
-                  saved_tab_group_bar()->children()[num_children - 1]),
-              nullptr);
-
-    return guids;
-  };
-
   const base::Uuid guid_1 = kSavedTabGroup1.saved_guid();
   const base::Uuid guid_2 = kSavedTabGroup2.saved_guid();
   const base::Uuid guid_3 = kSavedTabGroup3.saved_guid();
 
-  saved_tab_group_model()->Add(kSavedTabGroup1);
-  saved_tab_group_model()->Add(kSavedTabGroup2);
-  saved_tab_group_model()->Add(kSavedTabGroup3);
-
   if (IsV2UIEnabled()) {
-    ASSERT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_3, guid_2, guid_1));
+    SavedTabGroup group1 = kSavedTabGroup1;
+    group1.SetPinned(true);
+    SavedTabGroup group2 = kSavedTabGroup2;
+    group2.SetPinned(true);
+    SavedTabGroup group3 = kSavedTabGroup3;
+    group3.SetPinned(true);
+    saved_tab_group_model()->Add(group1);
+    saved_tab_group_model()->Add(group2);
+    saved_tab_group_model()->Add(group3);
+
+    ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3, guid_2, guid_1));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  2);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_3, guid_1, guid_2));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3, guid_1, guid_2));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  0);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_2, guid_3, guid_1));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_2, guid_3, guid_1));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  1);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_3, guid_2, guid_1));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3, guid_2, guid_1));
   } else {
-    ASSERT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_1, guid_2, guid_3));
+    saved_tab_group_model()->Add(kSavedTabGroup1);
+    saved_tab_group_model()->Add(kSavedTabGroup2);
+    saved_tab_group_model()->Add(kSavedTabGroup3);
+
+    ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_1, guid_2, guid_3));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  2);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_1, guid_3, guid_2));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_1, guid_3, guid_2));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  0);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_2, guid_1, guid_3));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_2, guid_1, guid_3));
     saved_tab_group_model()->ReorderGroupLocally(kSavedTabGroup2.saved_guid(),
                                                  1);
-    EXPECT_THAT(get_button_guids(),
-                testing::ElementsAre(guid_1, guid_2, guid_3));
+    EXPECT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_1, guid_2, guid_3));
   }
 }
 
@@ -575,6 +587,98 @@ TEST_P(SavedTabGroupBarUnitTest,
 
   EXPECT_LT(exact_width, new_width);
   EXPECT_GT(new_width, actual_width);
+}
+
+// Verify add pinned tab group will add a button.
+TEST_P(SavedTabGroupBarUnitTest, AddPinnedTabGroupButton) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  SavedTabGroup group1 = kSavedTabGroup1;
+  group1.SetPinned(true);
+
+  saved_tab_group_model()->Add(group1);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_TRUE(!!views::AsViewClass<SavedTabGroupButton>(
+      saved_tab_group_bar()->children()[0]));
+}
+
+// Verify pin an existing tab group will add a button.
+TEST_P(SavedTabGroupBarUnitTest, PinTabGroupAddButton) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->TogglePinState(kSavedTabGroup1.saved_guid());
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_TRUE(!!views::AsViewClass<SavedTabGroupButton>(
+      saved_tab_group_bar()->children()[0]));
+}
+
+// Verify unpin an existing tab group will remove a button.
+TEST_P(SavedTabGroupBarUnitTest, UnpinTabGroupRemoveButton) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  SavedTabGroup group1 = kSavedTabGroup1;
+  group1.SetPinned(true);
+
+  saved_tab_group_model()->Add(group1);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->TogglePinState(kSavedTabGroup1.saved_guid());
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+}
+
+TEST_P(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
+  const base::Uuid guid_1 = kSavedTabGroup1.saved_guid();
+  const base::Uuid guid_2 = kSavedTabGroup2.saved_guid();
+  const base::Uuid guid_3 = kSavedTabGroup3.saved_guid();
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+  saved_tab_group_model()->Add(kSavedTabGroup2);
+  saved_tab_group_model()->Add(kSavedTabGroup3);
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->TogglePinState(guid_1);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_1));
+
+  saved_tab_group_model()->TogglePinState(guid_2);
+  EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
+  ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_2, guid_1));
+
+  saved_tab_group_model()->TogglePinState(guid_3);
+  EXPECT_EQ(4u, saved_tab_group_bar()->children().size());
+  ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3, guid_2, guid_1));
+
+  saved_tab_group_model()->TogglePinState(guid_1);
+  EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
+  ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3, guid_2));
+
+  saved_tab_group_model()->TogglePinState(guid_2);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(guid_3));
+
+  saved_tab_group_model()->TogglePinState(guid_3);
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,

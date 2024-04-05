@@ -238,6 +238,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // animate or not.
   const bool animations_enabled_ = true;
 
+  // Whether the kTabGroupsSaveUIUpdate flag is enabled.
+  const bool v2_ui_enabled_;
+
   // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
   // safety if BookmarkBarView is deleted after getting the callback.
   base::WeakPtrFactory<SavedTabGroupBar> weak_ptr_factory_{this};
