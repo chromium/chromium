@@ -114,17 +114,19 @@ suite('NetworkDiagnosticsTest', () => {
       header!.click();
       await flushTasks();
       assertTrue(group.expanded.valueOf());
-      for (const routine of container!.shadowRoot!
-               .querySelectorAll<HTMLElement>('.routine-container')) {
-        const msg = routine.shadowRoot!.querySelector(
-                                           '#result-msg')!.textContent!.trim();
+
+      const routineContainers =
+          container!.querySelectorAll<HTMLElement>('.routine-container');
+      assertGT(routineContainers.length, 0);
+      for (const routine of routineContainers) {
+        const msg = routine.querySelector('#result-msg')!.textContent!.trim();
         const parts = msg!.split(': ');
 
         switch (verdict) {
           case RoutineVerdict.kNoProblem:
             assertEquals(parts.length, 1);
             assertEquals(
-                parts[0], networkDiagnostics.i18n('networkDiagnosticsPassed'));
+                parts[0], networkDiagnostics.i18n('NetworkDiagnosticsPassed'));
             break;
           case RoutineVerdict.kProblem:
             assertGT(parts.length, 0);
