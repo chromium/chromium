@@ -131,13 +131,6 @@ class NET_EXPORT ConfiguredProxyResolutionService
                    const NetLogWithSource& net_log) override;
 
   // ProxyResolutionService
-  bool MarkProxiesAsBadUntil(
-      const ProxyInfo& results,
-      base::TimeDelta retry_delay,
-      const std::vector<ProxyChain>& additional_bad_proxies,
-      const NetLogWithSource& net_log) override;
-
-  // ProxyResolutionService
   void ReportSuccess(const ProxyInfo& proxy_info) override;
 
   // Sets the PacFileFetcher and DhcpPacFileFetcher dependencies. This

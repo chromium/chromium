@@ -5380,18 +5380,14 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   net::ProxyResolutionService* proxy_resolution_service =
       network_context->url_request_context()->proxy_resolution_service();
 
-  // Very starting conditions: zero bad proxies.
+  // Verify starting conditions: zero bad proxies.
   EXPECT_EQ(0UL, proxy_resolution_service->proxy_retry_info().size());
 
   // Simulate network error to add one proxy to the bad proxy list.
   net::ProxyInfo proxy_info;
   proxy_info.UseNamedProxy("http://foo1.com");
+  proxy_info.Fallback(net::OK, net::NetLogWithSource());
   proxy_resolution_service->ReportSuccess(proxy_info);
-  std::vector<net::ProxyChain> proxies;
-  proxies.push_back(net::ProxyUriToProxyChain("http://foo1.com",
-                                              net::ProxyServer::SCHEME_HTTP));
-  proxy_resolution_service->MarkProxiesAsBadUntil(
-      proxy_info, base::Days(1), proxies, net::NetLogWithSource());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1UL, proxy_resolution_service->proxy_retry_info().size());
 

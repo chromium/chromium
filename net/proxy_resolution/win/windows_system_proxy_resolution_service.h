@@ -55,11 +55,6 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   void ReportSuccess(const ProxyInfo& proxy_info) override;
   void SetProxyDelegate(ProxyDelegate* delegate) override;
   void OnShutdown() override;
-  bool MarkProxiesAsBadUntil(
-      const ProxyInfo& results,
-      base::TimeDelta retry_delay,
-      const std::vector<ProxyChain>& additional_bad_proxies,
-      const NetLogWithSource& net_log) override;
   void ClearBadProxiesCache() override;
   const ProxyRetryInfoMap& proxy_retry_info() const override;
   base::Value::Dict GetProxyNetLogValues() override;

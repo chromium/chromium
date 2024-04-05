@@ -2053,42 +2053,6 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyBypassList) {
   EXPECT_EQ("[foopy1:8080]", info[1].proxy_chain().ToDebugString());
 }
 
-TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
-  ProxyConfig config;
-  config.proxy_rules().ParseFromString(
-      "http=foopy1:8080;http=foopy2:8080;http=foopy3:8080;http=foopy4:8080");
-  config.set_auto_detect(false);
-
-  ProxyList proxy_list;
-  std::vector<ProxyChain> additional_bad_proxies;
-  for (const ProxyChain& proxy_chain :
-       config.proxy_rules().proxies_for_http.AllChains()) {
-    proxy_list.AddProxyChain(proxy_chain);
-    if (proxy_chain == config.proxy_rules().proxies_for_http.First()) {
-      continue;
-    }
-
-    additional_bad_proxies.emplace_back(proxy_chain);
-  }
-
-  EXPECT_EQ(3u, additional_bad_proxies.size());
-
-  ConfiguredProxyResolutionService service(
-      std::make_unique<MockProxyConfigService>(config), nullptr, nullptr,
-      /*quick_check_enabled=*/true);
-  ProxyInfo proxy_info;
-  proxy_info.UseProxyList(proxy_list);
-  const ProxyRetryInfoMap& retry_info = service.proxy_retry_info();
-  service.MarkProxiesAsBadUntil(proxy_info, base::Seconds(1),
-                                additional_bad_proxies, NetLogWithSource());
-  ASSERT_EQ(4u, retry_info.size());
-  for (const ProxyChain& proxy_chain :
-       config.proxy_rules().proxies_for_http.AllChains()) {
-    auto i = retry_info.find(proxy_chain);
-    ASSERT_TRUE(i != retry_info.end());
-  }
-}
-
 TEST_F(ConfiguredProxyResolutionServiceTest, PerProtocolProxyTests) {
   ProxyConfig config;
   config.proxy_rules().ParseFromString("http=foopy1:8080;https=foopy2:8080");

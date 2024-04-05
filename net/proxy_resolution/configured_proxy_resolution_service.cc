@@ -1175,17 +1175,6 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
   SetReady();
 }
 
-bool ConfiguredProxyResolutionService::MarkProxiesAsBadUntil(
-    const ProxyInfo& result,
-    base::TimeDelta retry_delay,
-    const std::vector<ProxyChain>& additional_bad_proxies,
-    const NetLogWithSource& net_log) {
-  result.proxy_list().UpdateRetryInfoOnFallback(&proxy_retry_info_, retry_delay,
-                                                false, additional_bad_proxies,
-                                                OK, net_log);
-  return result.proxy_list().size() > (additional_bad_proxies.size() + 1);
-}
-
 void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

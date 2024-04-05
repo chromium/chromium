@@ -111,17 +111,6 @@ void WindowsSystemProxyResolutionService::OnShutdown() {
   // this so OnShutdown() can be removed.
 }
 
-bool WindowsSystemProxyResolutionService::MarkProxiesAsBadUntil(
-    const ProxyInfo& results,
-    base::TimeDelta retry_delay,
-    const std::vector<ProxyChain>& additional_bad_proxies,
-    const NetLogWithSource& net_log) {
-  // TODO(https://crbug.com/1032820): Implement bad proxy cache. We should be
-  // able to share logic with the ConfiguredProxyResolutionService to accomplish
-  // this.
-  return false;
-}
-
 void WindowsSystemProxyResolutionService::ClearBadProxiesCache() {
   proxy_retry_info_.clear();
 }
