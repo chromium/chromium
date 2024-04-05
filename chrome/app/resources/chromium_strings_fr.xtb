@@ -239,6 +239,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5427571867875391349">Définir Chromium comme navigateur par défaut</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Bêta</translation>
 <translation id="5473971139929175403">Chromium risque de ne pas fonctionner correctement, car la compatibilité n'est plus assurée sur cette distribution Linux.</translation>
+<translation id="5475924890392386523">Chromium a bloqué ce téléchargement, car le fichier peut compromettre vos comptes personnels et de réseaux sociaux</translation>
 <translation id="5480860683791598150">Chromium a besoin d'accéder à votre position pour la partager avec ce site</translation>
 <translation id="5487574057737591516">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Si Chromium se trompe ou que vous ne voulez pas voir certaines annonces, vous pouvez supprimer un centre d'intérêt.</translation>
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour du système.</translation>
@@ -367,6 +368,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="734373864078049451">Votre contenu Web, vos favoris et toutes vos données Chromium sont conservés ici.</translation>
 <translation id="7349591376906416160">Votre administrateur système a configuré Chromium de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Chromium a bloqué ce téléchargement, car le fichier peut compromettre vos comptes personnels et de réseaux sociaux, y compris <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
@@ -453,6 +455,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
+<translation id="904366664621834601">Chromium a bloqué ce téléchargement, car le fichier d'archive contient d'autres fichiers susceptibles de dissimuler un logiciel malveillant</translation>
 <translation id="907832235989677238">Connectez-vous à Chromium. Si vous souhaitez vous connecter à un compte une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium a été fermé automatiquement</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>

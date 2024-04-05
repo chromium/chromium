@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Portale sospetto</translation>
 <translation id="1232610416724362657">una cascata</translation>
 <translation id="1238612778414822719">Latenza HTTPS</translation>
+<translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1274654146705270731">arance</translation>
 <translation id="1275718070701477396">Selezionato</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">App Diagnostica</translation>
 <translation id="175763766237925754">Buono (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Cambia velocemente i tasti</translation>
 <translation id="1768959921651994223">Tipo di autenticazione</translation>
 <translation id="1776228893584526149">Tonalità sfondo</translation>
 <translation id="1777913922912475695">ponte</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">un vasto oceano</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
+<translation id="2082932131694554252">Tasto della tastiera assegnato</translation>
 <translation id="2085089206770112532">Riduci la luminosità del display</translation>
 <translation id="2102231663024125441">Modifica del testo</translation>
 <translation id="2105810540595158374">Il dispositivo è un controller.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
+<translation id="2645380101799517405">Controlli</translation>
 <translation id="2652403576514495859">attivare o attivare la dettatura</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2656001153562991489">Solo per Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Attiva questa impostazione per ottenere risultati ottimali con questo sfondo. Puoi disattivare questa impostazione in qualsiasi momento.</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2880569433548999039">Salvaschermo Flusso di nuvole</translation>
+<translation id="2882230315487799269">Personalizza prompt IA</translation>
 <translation id="2888298276507578975">Inserisci una richiesta come "scrivi un biglietto di ringraziamento"</translation>
 <translation id="2890557891229184386">un'isola tropicale</translation>
 <translation id="2895772081848316509">scuro</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Alta latenza a siti web HTTPS</translation>
 <translation id="361575905210396100">Grazie per il tuo feedback</translation>
 <translation id="3621072146987826699">elefanti</translation>
+<translation id="3632040286124154621">Suggerimento utile</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
+<translation id="3644695927181369554">Suggerimento sbagliato</translation>
 <translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
 <translation id="3661106764436337772">Scrivi più velocemente e con maggiore sicurezza</translation>
 <translation id="3662461537616691585">bordeaux e granata</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
 <translation id="3715651196924935218">Esci da stato mobile</translation>
+<translation id="3716250181321371108">Crea controllo</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
 <translation id="3771294271822695279">File video</translation>
+<translation id="3780740315729837296">Assegna un tasto della tastiera</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3790109258688020991">puntinato</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">acquisisci screenshot</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non assegnato</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
 <translation id="3954678691475912818">Tipo di dispositivo sconosciuto.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Download dell'immagine in corso…</translation>
 <translation id="4063039537646912479">azzurro</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Crea un altro controllo</translation>
 <translation id="4091002263446255071">romantico</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="409427325554347132">Salva dettagli del test</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
 <translation id="4650608062294027130">Maiusc destro</translation>
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
+<translation id="4655868084888499342">Immagine impostata come sfondo</translation>
 <translation id="4661249927038176904">Surreale</translation>
 <translation id="4664651912255946953">pelliccia</translation>
 <translation id="4665014895760275686">Produttore</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Il sistema sospetta la presenza di un firewall</translation>
 <translation id="4691278870498629773">Operazione interrotta - Vassoio mancante</translation>
 <translation id="469379815867856270">Intensità segnale</translation>
+<translation id="4697260493945012995">Seleziona il tipo di controllo</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Crea con l'IA</translation>
 <translation id="6112878310391905610">Questa impostazione è gestita dagli amministratori</translation>
 <translation id="6113701710518389813">Freccia su</translation>
+<translation id="6116005346231504406">Crea il primo controllo</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> + altri <ph name="NUMBER" /> album</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">Riassegna selezionando un nuovo tasto</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7154020516215182599">Condividi il tuo feedback o descrivi il problema. Se possibile, includi i passaggi per riprodurre il problema.</translation>
 <translation id="7155037718620478619">Scopri altri APN</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7344788170842919262">naturale</translation>
+<translation id="7346768383111016081">Definisci il controllo per un'azione di gioco per giocare con la tastiera</translation>
 <translation id="7353413232959255829">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per navigare alla scorciatoia.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">sala da tè</translation>
 <translation id="8538236298648811558">IA di Google integrata</translation>
+<translation id="8550364285433943656">Definisci i controlli per le azioni di gioco per giocare con i tasti della tastiera</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Impossibile connettersi a questa rete tramite APN rilevati automaticamente. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Impossibile contattare il gateway da app Android</translation>
+<translation id="921080052717160800">Immagine impostata come sfondo della fotocamera</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>
 <translation id="932327136139879170">Home page</translation>
 <translation id="939519157834106403">SSID</translation>

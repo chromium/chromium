@@ -785,7 +785,6 @@
 <translation id="2452098632681057184">Экологи, хүрээлэн буй орчин</translation>
 <translation id="2452837234288608067">Үүнд туслах боломжгүй. Дахин оролдоно уу.</translation>
 <translation id="2456755709261364512">Таны батарейг <ph name="REQUIRED_BATTERY_PRECENT" />%-иас дээш цэнэглэсэн байх ёстой</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" />-г хайх</translation>
 <translation id="2462932596748424101">Сошиал сүлжээнүүд</translation>
 <translation id="2463739503403862330">Бөглөх</translation>
 <translation id="2465688316154986572">Үдэх</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Теле хурал</translation>
 <translation id="6753269504797312559">Тохиргооны утга</translation>
+<translation id="6753390234084146956">табууд</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> оруулгыг устгах</translation>
 <translation id="6754547388777247439">Хадгаламжийн данснууд</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@
 <translation id="8075588646978457437">Өөрөө наалддаг цаас</translation>
 <translation id="8075736640322370409">Шинэ Google Хүснэгт шуурхай үүсгээрэй</translation>
 <translation id="8075898834294118863">Сайтын тохиргоог удирдах</translation>
-<translation id="8076492880354921740">Таб</translation>
 <translation id="8077669823243888800">Хятад дугтуй #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Нууцлалтай файлыг байршуулах уу?}other{Нууцлалтай файлуудыг байршуулах уу?}}</translation>
 <translation id="8078141288243656252">Эргүүлсэн үед тэмдэглэгээ хийх боломжгүй</translation>
@@ -3720,7 +3719,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> дахь файлыг унших боломжгүй байна. Энэ файл нь устгагдсан, шилжигдсэн, эсвэл хандалтыг хазгаарласан байж болно.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}}</translation>
 <translation id="81563721597823545">Хоккейн хэрэгсэл</translation>
-<translation id="815788908807586564">Chat with Gemini</translation>
 <translation id="8161095570253161196">Үргэлжлүүлж үзэх</translation>
 <translation id="8163866351304776260">Зүүн ирмэг дагуу дөрвөн нүх цоолох</translation>
 <translation id="8164078261547504572">Үнэ буурсан тохиолдолд имэйл авахыг хүсэж байна уу?</translation>

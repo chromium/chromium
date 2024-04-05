@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है. कृपया उस डिवाइस पर यह पिन कोड डालें: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">इससे <ph name="APP_NAME" /> के साथ-साथ अन्य सभी ऐप्लिकेशन और वेबसाइटों को जगह की जानकारी को ऐक्सेस करने की अनुमति मिलती है. साथ ही, ChromeOS को वाई-फ़ाई और मोबाइल नेटवर्क की जगह की जानकारी को इस्तेमाल करने की अनुमति मिलती है.</translation>
 <translation id="1017556409696559990">Chrome में गतिविधि का कोई पिछला इतिहास न होने पर, सबसे ऊपर वाली विंडो को छोटा करें</translation>
+<translation id="101823271612280837">रिकॉर्डिंग बंद हो गई. टैबलेट मोड में गेम डैशबोर्ड का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> को सेव करें</translation>
 <translation id="1032891413405719768">स्टाइलस की बैटरी कम हो गई है</translation>
 <translation id="1036073649888683237">सूचनाएं मैनेज करने के लिए, सेटिंग में जाएं</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Explore खोलें</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">किसी भी समय <ph name="LAUNCHER_KEY_NAME" /> + g दबाएं</translation>
 <translation id="1306549533752902673">सुझाए गए ऐप्लिकेशन</translation>
 <translation id="1311294419381837540">टैब को कास्ट किया जा रहा है. आपके पास किसी भी समय कास्ट को रोकने या बंद करने का विकल्प होता है.</translation>
 <translation id="1312604459020188865">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@
 <translation id="1882814835921407042">आपके फ़ोन में मोबाइल नेटवर्क उपलब्ध नहीं है</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
 <translation id="1885785240814121742">फ़िंगरप्रिंट से अनलॉक करें</translation>
+<translation id="1894024878080591367">अपने कीबोर्ड की मदद से गेम खेलने के लिए, इसे सेट अप करें</translation>
 <translation id="1904997243703671177">ब्लूटूथ बंद करने पर, <ph name="DEVICE_COUNT" /> बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे. इनमें ये डिवाइस भी शामिल हैं:</translation>
 <translation id="1908992311423394684">अभी इंस्टॉल किया गया है</translation>
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
@@ -326,6 +329,8 @@
 <translation id="2367972762794486313">ऐप्स  दिखाएं</translation>
 <translation id="2368828502825385061">फ़ोन का पता लगाएं</translation>
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
+<translation id="2370971919968699910">इससे डेटा खर्च हो सकता है.
+<ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
 <translation id="2382875860893882175">फ़िलहाल, कास्ट करने की प्रोसेस रोकी गई है. इसे कभी भी बंद या शुरू किया जा सकता है.</translation>
 <translation id="2386292613071805067">पेज पर मौजूद सब कुछ चुनें</translation>
 <translation id="2392659840443812875">कोई हॉटस्पॉट उपलब्ध नहीं है. पक्का करें कि आपका डिवाइस आस-पास हो और उसका ब्लूटूथ चालू हो.</translation>
@@ -395,6 +400,7 @@
 <translation id="2624588537172718173">डिवाइस का ऑडियो और माइक्रोफ़ोन</translation>
 <translation id="263399434338050016">"सभी को चुनें"</translation>
 <translation id="2644422758626431000">विंडो को बाईं ओर पिन करें</translation>
+<translation id="2645380101799517405">कंट्रोल</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">विंडो कैप्चर</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
@@ -407,6 +413,7 @@
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">कीबोर्ड की सेटिंग दिखाएं. <ph name="KEYBOARD_NAME" /> को चुना गया है.</translation>
 <translation id="2700493154570097719">अपना कीबोर्ड सेट करें</translation>
+<translation id="2701576323154693023">हॉटस्पॉट चालू है (वाई-फ़ाई बंद है)</translation>
 <translation id="2704781753052663061">अन्य वाई-फ़ाई नेटवर्क से कनेक्ट करें</translation>
 <translation id="2705001408393684014">माइक टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ऊपर</translation>
@@ -428,6 +435,7 @@
 <translation id="2785499565474703580">1 डिवाइस कनेक्ट है</translation>
 <translation id="2791421900609674576">जहां पिछली बार छोड़ा था वहीं से इस्तेमाल शुरू करने के लिए, आपको सुझाव दिखेंगे.  दबाकर रखने से, इन सुझावों को बंद किया जा सकता है.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2798702144670138229">टैबलेट मोड चालू है. गेम डैशबोर्ड उपलब्ध नहीं है.</translation>
 <translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> को चुना गया</translation>
 <translation id="2805756323405976993">ऐप्लिकेशन</translation>
@@ -476,6 +484,7 @@
 <translation id="2992327365391326550">डिवाइस के माइक्रोफ़ोन का बटन बंद है.</translation>
 <translation id="2996462380875591307">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा चालू है. उसे बंद पर टॉगल करने के लिए Ctrl+Search+D फिर से दबाएं.</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
+<translation id="3001391739687111021">स्क्रीन के साइज़ में बदलाव करें</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="301282384882049174">आपके एडमिन ने शेयर किया है</translation>
@@ -505,6 +514,7 @@
 <translation id="3100274880412651815">कैप्चर मोड खारिज करें</translation>
 <translation id="3105917916468784889">स्क्रीनशॉट लें</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
+<translation id="3107155169630537783">स्वागत वाली सूचना दिखाने की सेटिंग <ph name="STATE" /> है</translation>
 <translation id="3113492864356515707">शेल्फ़ पर पिछला आइटम हाइलाइट करने के लिए</translation>
 <translation id="311799651966070385">सूचना बंद करें</translation>
 <translation id="3120421559657122717">क्या डिवाइस को शट डाउन करना है?</translation>
@@ -744,6 +754,7 @@
 <translation id="3984536049089846927">अगला पेज</translation>
 <translation id="3986082989454912832">जवाब दें</translation>
 <translation id="3990002060657467458">वाई-फ़ाई, ब्लूटूथ, और आवाज़ जैसी अक्सर इस्तेमाल होने वाली चीज़ों को क्विक सेटिंग से कंट्रोल किया जा सकता है. यहीं से स्क्रीनशॉट भी लिया जा सकता है.</translation>
+<translation id="3991203706072366707"><ph name="GAME_APP_NAME" /> के लिए बंद है</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="4002066346123236978">टाइटल</translation>
 <translation id="40062176907008878">हैंडराइटिंग</translation>
@@ -837,6 +848,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Home बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="4324840740119394760">यह <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
+<translation id="4327147325944669226">गेम रिकॉर्ड करें</translation>
 <translation id="4333628967105022692">अगर एक से ज़्यादा उपयोगकर्ताओं ने साइन इन किया हो, तो Lacros काम नहीं करता.</translation>
 <translation id="4338109981321384717">आवर्धक ग्लास</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
@@ -872,6 +884,8 @@
 <translation id="4471432286288241507">{0,plural, =0{डिवाइस को अभी अपडेट करें}=1{डिवाइस को 1 सेकंड के अंदर अपडेट करें}one{डिवाइस को # सेकंड के अंदर अपडेट करें}other{डिवाइस को # सेकंड के अंदर अपडेट करें}}</translation>
 <translation id="4472575034687746823">शुरू करें</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
+<translation id="4477751544736611934">इससे डेटा खर्च हो सकता है.
+एक डिवाइस कनेक्ट है.</translation>
 <translation id="4477892968187500306">इस डिवाइस में ऐसे ऐप्लिकेशन हो सकते हैं जिनकी Google ने पुष्टि नहीं की है.</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4481530544597605423">अयुग्मित किए गए डिवाइस</translation>
@@ -1001,6 +1015,7 @@
 <translation id="4945196315133970626">सूचनाएं पाने की सुविधा बंद करें</translation>
 <translation id="4946376291507881335">कैप्चर करें</translation>
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
+<translation id="4950800194215951939">गेम खेलने के अनुभव को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="4952936045814352993">अलार्म की आवाज़ें बंद करने पर, फ़ोन का पता लगाने की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अपने <ph name="DEVICE_TYPE" /> को पिछले वर्शन पर रोल बैक करें. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
@@ -1015,6 +1030,8 @@
 <translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> में बदलाव किया गया</translation>
 <translation id="4987738733603015246">डेस्क 16</translation>
 <translation id="4989163558385430922">सभी देखें</translation>
+<translation id="4995963195354861331">स्वागत वाला डायलॉग</translation>
+<translation id="4996265698919320288">रिकॉर्ड किया जा रहा है</translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5004607513195820459">नेटवर्क को एडमिन मैनेज करता है</translation>
 <translation id="5009463889040999939">प्रोफ़ाइल का नाम बदला जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
@@ -1106,6 +1123,8 @@
 <translation id="533282197239610265">कास्ट डिवाइस दिखाएं</translation>
 <translation id="5344128444027639014">दाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="5352250171825660495">गहरे रंग वाली थीम चालू है</translation>
+<translation id="5354804064646502504">इससे डेटा खर्च हो सकता है.
+कोई डिवाइस कनेक्ट नहीं है.</translation>
 <translation id="5356963482258194581">गहरे और हल्के रंग वाली थीम के बीच स्विच करें. डेस्कटॉप पर दायां क्लिक करें और 'वॉलपेपर और स्टाइल' चुनें.</translation>
 <translation id="536019650977002321">आपका एडमिन, ऑडियो कैप्चर करने की अनुमति नहीं देता. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> की बोली पहचानने वाली फ़ाइलों का कुछ हिस्सा डाउनलोड हो गया है</translation>
@@ -1205,6 +1224,7 @@
 <translation id="5712132663381964774">अपने <ph name="PRODUCT_NAME" /> पर ज़रूरत के मुताबिक हर काम करने के लिए, ऐप्लिकेशन इस्तेमाल करें. अपने ऐप्लिकेशन, लॉन्चर में खोजे जा सकते हैं.</translation>
 <translation id="571295407079589142">मोबाइल डेटा बंद है</translation>
 <translation id="5727460725221669831">अगर आपको अपना पासवर्ड याद नहीं है या आपने हाल ही में अपने Google खाते का पासवर्ड बदला है, तो इस खाते का पासवर्ड रीसेट करें.</translation>
+<translation id="5733630091161562207">स्वागत वाली सूचना</translation>
 <translation id="573413375004481890">यह डिवाइस आपके सभी डिसप्ले के साथ काम नहीं कर सकता. इसलिए, एक डिसप्ले को डिसकनेक्ट किया गया है</translation>
 <translation id="5740328398383587084">आस-पास शेयर करने की सुविधा</translation>
 <translation id="574392208103952083">मीडियम</translation>
@@ -1390,6 +1410,7 @@
 <translation id="6453179446719226835">भाषा बदल दी गई है</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> पर स्क्रीन विस्तृत कर रहा है</translation>
 <translation id="6464094930452079790">इमेज</translation>
+<translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> के लिए चालू है</translation>
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल</translation>
 <translation id="6477681113376365978">फ़ाइल डाउनलोड नहीं की जा सकी</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
@@ -1779,6 +1800,7 @@
 <translation id="7963689218131240420">'परेशान न करें' सुविधा बंद है.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> से</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
+<translation id="7973756967040444713">टूलबार बंद करें</translation>
 <translation id="797512352675305461">फ़ुलस्क्रीन मोड में ज़ूम करने की सुविधा को चालू या बंद करने के लिए</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क खोजे जा रहे हैं...</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -1931,6 +1953,7 @@
 <translation id="861045123704058818">ऐप्लिकेशन कुछ समय के लिए, कैटगरी के हिसाब से व्यवस्थित किए जाते हैं</translation>
 <translation id="8612216344243590325">ज़रूरी फ़ाइलों को डेस्कटॉप के बजाय, <ph name="HOLDING_SPACE_TITLE" /> में रखें. बस, फ़ाइलों को खींचकर <ph name="HOLDING_SPACE_TITLE" /> में छोड़ें.</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
+<translation id="8615778328722901791">टूलबार खोलें</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">आवाज़ कम करें</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> से कनेक्ट है</translation>
@@ -1953,6 +1976,7 @@
 <translation id="8703634754197148428">रिकॉर्डिंग शुरू करें. रिकॉर्डिंग शुरू होने के बाद, शेल्फ़ पर जाने के लिए Alt + Shift + L का इस्तेमाल करें और रिकॉर्डिंग बंद करने वाले बटन को ढूंढें</translation>
 <translation id="8704155109538237473">पिक्चर में पिक्चर विंडो पर फ़ोकस करें</translation>
 <translation id="870917907284186124">लिखवाने (बोलकर लिखें) की सुविधा चालू या बंद करने के लिए</translation>
+<translation id="8711169534266271368">गेम डैशबोर्ड के विकल्प</translation>
 <translation id="8714138378966541668">मोबाइल और इंटरनेट सेवा देने वाली कंपनी ने लॉक किया है</translation>
 <translation id="8717459106217102612">पिछला शब्द या अक्षर चुनें</translation>
 <translation id="8721053961083920564">आवाज़ टॉगल करें. <ph name="STATE_TEXT" /></translation>
@@ -1983,6 +2007,7 @@
 <translation id="8815390544836110344">स्क्रीनशॉट लेने का शॉर्टकट, Ctrl के साथ Shift और खास जानकारी मोड वाला बटन दबाएं</translation>
 <translation id="881757059229893486">इनपुट के तरीकों की सेटिंग</translation>
 <translation id="8819728065740986820">अडैप्टिव चार्जिंग की सुविधा चालू है</translation>
+<translation id="8822104519413696986">यह, स्क्रीन छूकर खेला जाने वाला गेम है</translation>
 <translation id="8825863694328519386">वापस जाने के लिए, स्क्रीन के बाएं किनारे से स्वाइप करें</translation>
 <translation id="8832513206237979203">बुकमार्क बार दिखाएं या छिपाएं</translation>
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
@@ -2093,6 +2118,7 @@
 <translation id="953431725143473984">डिवाइस को शट डाउन करना है?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> को डाउनलोड करने के लिए, डिवाइस में जगह कम है. जगह खाली करें.</translation>
 <translation id="954520015070501466">30 मिनट</translation>
+<translation id="956452277966142925">गेम डैशबोर्ड की सेटिंग</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> के लिए <ph name="RESULT_COUNT" /> नतीजे दिखाए जा रहे हैं</translation>
 <translation id="981011780479609956">असाइनमेंट पूरा करने की तारीख तय नहीं है</translation>
 <translation id="98120814841227350">दस्तावेज़ के आखिर में जाएं</translation>

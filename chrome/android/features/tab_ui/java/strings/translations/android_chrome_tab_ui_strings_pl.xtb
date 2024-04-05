@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Usuń z grupy</translation>
 <translation id="3008554597174452548">Przestań obserwować produkt</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona koloru grupy kart</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Masz <ph name="TABS_COUNT_ONE" /> zarchiwizowaną kartę}few{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowane karty}many{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowanych kart}other{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowanej karty}}</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Otrzymasz alert, gdy cena na otwartej karcie będzie niższa</translation>

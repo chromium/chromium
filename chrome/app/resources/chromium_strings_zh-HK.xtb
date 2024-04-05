@@ -240,7 +240,7 @@
 <translation id="5427571867875391349">將 Chromium 設為預設瀏覽器</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
 <translation id="5473971139929175403">Chromium 不再支援此 Linux 發行版本，因此可能無法正常運作</translation>
-<translation id="5475924890392386523">這個檔案可能會危害個人和社群網路帳戶，因此 Chromium 已禁止下載</translation>
+<translation id="5475924890392386523">此檔案可能會損害你的個人和社交網絡帳戶，因此 Chromium 已禁止下載</translation>
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
 <translation id="5487574057737591516">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chromium 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
@@ -368,7 +368,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="734373864078049451">您瀏覽的網頁、書籤和其他 Chromium 內容都在這裡。</translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="7355355292030546812">這個檔案可能會危害個人和社群網路帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chromium 已禁止下載</translation>
+<translation id="7355355292030546812">此檔案可能會損害你的個人和社交網絡帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chromium 已禁止下載</translation>
 <translation id="7398989605938454041">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>
@@ -455,7 +455,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
-<translation id="904366664621834601">這個封存檔案內含可能藏有惡意軟體的其他檔案，因此 Chromium 已禁止下載</translation>
+<translation id="904366664621834601">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chromium 已禁止下載</translation>
 <translation id="907832235989677238">登入 Chromium。如果您想只登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。</translation>
 <translation id="9078733879136747090">Chromium 已自動關閉</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>

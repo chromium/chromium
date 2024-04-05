@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toca para hacer clic</translation>
+<translation id="1029724557649700742">Se incluirán funciones nuevas a medida que estén disponibles y pueden variar según el dispositivo.</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
 <translation id="1032605640136438169">Revisa las Condiciones nuevas</translation>
 <translation id="103279545524624934">Libera espacio en el disco para ejecutar apps de Android.</translation>
@@ -1555,6 +1556,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2155473371917268529">Se estableció la configuración de visibilidad actual como Tus dispositivos</translation>
 <translation id="2155772377859296191">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Puede desplazarse y hacer zoom en las pestañas compartidas</translation>
 <translation id="2156877321344104010">Volver a ejecutar la Verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
@@ -1973,6 +1975,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2459706890611560967">Reanudar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Crea una copia de seguridad de tus datos del navegador y úsalos en cualquier dispositivo</translation>
 <translation id="2460482211073772897">En otras carpetas</translation>
+<translation id="2461550163693930491">No permitir que los sitios se desplacen ni hagan zoom en las pestañas compartidas</translation>
 <translation id="2461593638794842577">Puedes desactivar este parámetro de configuración para guardar tus contraseñas solo en este dispositivo</translation>
 <translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
 <translation id="2462724976360937186">ID de clave de la Entidad de certificación</translation>
@@ -2006,6 +2009,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2482895651873876648">Se movió la pestaña al grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Establece el motor de búsqueda en la configuración del navegador Chrome</translation>
 <translation id="2483698983806594329">Se descargó un archivo sin verificar</translation>
+<translation id="2484574361686148760">Actualizar información de los clientes de Wi-Fi directo</translation>
 <translation id="2484743711056182585">Quitar permiso</translation>
 <translation id="2484909293434545162">Si un sitio usa cookies, aparecerá aquí</translation>
 <translation id="2484959914739448251">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu Cuenta de Google, <ph name="BEGIN_LINK" />ingresa la frase de contraseña<ph name="END_LINK" />.</translation>
@@ -2199,6 +2203,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la biblioteca</translation>
+<translation id="2632176111713971407">Los sitios pueden solicitar permiso para desplazarse y hacer zoom en las pestañas compartidas</translation>
 <translation id="2633212996805280240">¿Quieres quitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no pudo completar la instalación, pero se continuará ejecutando desde la imagen de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3858,6 +3863,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3900966090527141178">Exportar contraseñas</translation>
 <translation id="3902789559055749153">Elige cómo quieres crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
+<translation id="3903696968689283281">Información de los propietarios de Wi-Fi directo:</translation>
 <translation id="3904326018476041253">Servicios de ubicación</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceros en el modo Incógnito</translation>
@@ -4512,6 +4518,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4409697491990005945">Márgenes</translation>
 <translation id="4409779593816003679">Contraseñas y &amp;autocompletar</translation>
 <translation id="4410545552906060960">Usa un número (PIN) en lugar de una contraseña para desbloquear el dispositivo. Puedes configurar el PIN más tarde en la configuración.</translation>
+<translation id="4411344321892622527">No puede desplazarse ni hacer zoom en las pestañas compartidas</translation>
 <translation id="4411578466613447185">Firmante del código</translation>
 <translation id="4411719918614785832">Estas llaves de acceso se guardan en Windows Hello en esta computadora. No se guardan en tu Cuenta de Google.</translation>
 <translation id="4412544493002546580">Vuelve a intentarlo o selecciona una de las inspiraciones que aparecen a continuación.</translation>
@@ -6854,6 +6861,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6257602895346497974">Activar la sincronización…</translation>
 <translation id="625827534921607067">Se preferirá esta red si hay disponible más de una red conectada o configurada anteriormente</translation>
 <translation id="62586649943626337">Organiza tus pestañas con los grupos de pestañas</translation>
+<translation id="6259776178973198997">Actualizar información de los propietarios de Wi-Fi directo</translation>
 <translation id="6262371516389954471">Se suben las copias de seguridad a Google y se encriptan con la contraseña de tu Cuenta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidad de certificación de Microsoft</translation>
 <translation id="6263284346895336537">No crítico</translation>
@@ -7553,6 +7561,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no se puede ejecutar como raíz.</translation>
 <translation id="6812841287760418429">Conservar cambios</translation>
 <translation id="6813907279658683733">Pantalla completa</translation>
+<translation id="6814754908910736855">Información de clientes de Wi-Fi directo:</translation>
 <translation id="6815376457351236663">Abrir de todos modos</translation>
 <translation id="6815787852028615386">Este archivo es engañoso y es posible que realice cambios inesperados en tu dispositivo</translation>
 <translation id="6816097980753839617">Azul-amarillo (tritanomalía)</translation>
@@ -8422,6 +8431,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Agregar a la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="7502528909759062987">Pausar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Se puede hacer zoom en las pestañas compartidas y desplazarse en ellas</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">En tu llave de seguridad, se guardará un registro de tu visita a este sitio.</translation>
 <translation id="7504145862399276792">El audio de esta pestaña está silenciado</translation>
@@ -10760,6 +10770,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="949807244219288032">Esta pestaña está conectada a un dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guía de configuración</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Lo instaló el administrador</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="952471655966876828">El dispositivo se conectará de forma automática cuando lo actives y lo uses</translation>
 <translation id="953434574221655299">Pueden saber en qué momento estás usando activamente el dispositivo</translation>

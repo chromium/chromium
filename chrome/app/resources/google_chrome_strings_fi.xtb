@@ -147,6 +147,7 @@
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
 <translation id="3112458742631356345">Chrome on estänyt tämän latauksen, koska tiedostoa ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="3114643501466072395">Jos haluat tarkistaa, ovatko muut salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromeen<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome on estänyt tämän latauksen, koska arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
 <translation id="3140883423282498090">Muutokset tulevat voimaan, kun käynnistät Google Chromen seuraavan kerran.</translation>
 <translation id="3149510190863420837">Chrome-sovellukset</translation>
 <translation id="3169523567916669830">Kokeilujen aikana voit katsella ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chrome arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
@@ -217,6 +218,7 @@
 <translation id="4334294535648607276">Lataus on valmis.</translation>
 <translation id="4335235004908507846">Chrome voi auttaa suojaamaan sinua tietosuojaloukkauksilta, haitallisilta laajennuksilta ja muilta</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on lisätty Chromeen</translation>
+<translation id="436060642166082913">Chrome on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
 <translation id="4384570495110188418">Chrome ei voi tarkistaa salasanojasi, koska et ole kirjautuneena sisään</translation>
 <translation id="4389991535395284064">Kun selaat incognito-tilassa, Chrome varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
@@ -468,6 +470,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="873133009373065397">Google Chrome ei voi tunnistaa tai asettaa oletusselainta.</translation>
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‑ ja henkilökohtaisia tilejäsi, mukaan lukien <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 on Chromen JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
 <translation id="8821043148920470810">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>

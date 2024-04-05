@@ -786,7 +786,6 @@
 <translation id="2452098632681057184">ইকোলজি ও এনভায়রনমেন্ট</translation>
 <translation id="2452837234288608067">এই অনুরোধ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="2456755709261364512">আপনার ডিভাইসের ব্যাটারিতে <ph name="REQUIRED_BATTERY_PRECENT" />%-এর বেশি চার্জ থাকতে হবে</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> সার্চ করুন</translation>
 <translation id="2462932596748424101">সোশ্যাল নেটওয়ার্ক</translation>
 <translation id="2463739503403862330">পূরণ করুন</translation>
 <translation id="2465688316154986572">স্টেপল করুন</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফারেন্সিং</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
+<translation id="6753390234084146956">ট্যাব</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> এন্ট্রি মুছুন</translation>
 <translation id="6754547388777247439">সেভিংস অ্যাকাউন্ট</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@
 <translation id="8075588646978457437">সেল্ফ অ্যাডেসিভ পেপার</translation>
 <translation id="8075736640322370409">চটপট Google Sheet তৈরি করুন</translation>
 <translation id="8075898834294118863">'সাইট সেটিংস' বোতাম ম্যানেজ করুন</translation>
-<translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8077669823243888800">এনভেলপ চিনা #৮</translation>
 <translation id="8078006011486731853">{0,plural, =1{গোপনীয় ফাইল আপলোড করবেন?}one{গোপনীয় ফাইল আপলোড করবেন?}other{গোপনীয় ফাইল আপলোড করবেন?}}</translation>
 <translation id="8078141288243656252">ঘূর্ণনের সময় ব্যাখ্যা করা যাবে না</translation>
@@ -3720,7 +3719,6 @@
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>
 <translation id="8153865548451212769">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}}</translation>
 <translation id="81563721597823545">হকির সরঞ্জাম</translation>
-<translation id="815788908807586564">Gemini ব্যবহার করে চ্যাট করুন</translation>
 <translation id="8161095570253161196">ব্রাউজিং চালু করুন</translation>
 <translation id="8163866351304776260">বাঁদিকে কোয়াড পাঞ্চ</translation>
 <translation id="8164078261547504572">দাম কমলে ইমেল পেতে চান?</translation>

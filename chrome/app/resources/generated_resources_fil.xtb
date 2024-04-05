@@ -1078,6 +1078,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1795214765651529549">Gamitin ang Classic</translation>
 <translation id="1796588414813960292">Hindi gagana ang mga feature na nangangailangan ng tunog</translation>
 <translation id="1797117170091578105">Maglaro gamit ang iyong keyboard ng Chromebook. Puwede mong i-customize ang mga key para sa mga partikular na pagkilos.</translation>
+<translation id="1798335429200675510">Mag-right click sa text box para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI. Limitado ang availability nito sa kasalukuyan.</translation>
 <translation id="180203835522132923">Search + O, pagkatapos ay W</translation>
 <translation id="1802624026913571222">I-sleep kapag nakasara ang cover</translation>
 <translation id="1802687198411089702">Hindi tumutugon ang page. Maaari mo itong hintayin o maaari kang lumabas.</translation>
@@ -1473,6 +1474,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2088092308059522196">Sinusuportahan lang ang pag-enroll pagkatapos mong i-install ang <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Built-in na TrackPoint</translation>
 <translation id="208928984520943006">Para pumunta sa Home screen anumang oras, mag-swipe pataas mula sa ibaba.</translation>
+<translation id="2089550919269323883">Na-block ng patakaran ng enterprise ang pag-install ng <ph name="VM_NAME" />. Makipag-ugnayan sa iyong administrator ng system para sa suporta. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">O</translation>
 <translation id="2090165459409185032">Upang i-recover ang impormasyon ng iyong account, pumunta sa: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Awtomatikong kumonekta kapag nag-log in ka</translation>
@@ -1516,6 +1518,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2113479184312716848">Buksan ang &amp;File...</translation>
 <translation id="2113921862428609753">Access sa Impormasyon ng Awtoridad</translation>
+<translation id="2114145607116268663">Hindi ma-install, nire-require ang pag-reboot. Paki-restart ang iyong computer at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">I-reload ang &amp;Frame</translation>
 <translation id="2114413269775311385">Gamitin ang account na ito sa mga Android app. Puwede mong kontrolin ang mga pahintulot para sa mga Android app sa <ph name="LINK_BEGIN" />Mga Setting ng App<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Tingnan ang "Mga Kamakailang Highlight" at iba pang alaala dito</translation>
@@ -2684,6 +2687,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2977480621796371840">Alisin sa grupo</translation>
 <translation id="2979639724566107830">Buksan ng bagong window</translation>
 <translation id="2979893796619951531">Huwag isama ang site</translation>
+<translation id="2981033191524548279">Paumanhin, nagkaproblema. Magbigay ng feedback na may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />, posibleng maayos ito sa pamamagitan ng pag-reboot at pagsubok ulit.</translation>
 <translation id="2981113813906970160">Ipakita ang malaking mouse cursor</translation>
 <translation id="2983102365694924129">Batay sa iyong aktibidad sa isang site. Naka-off ang setting na ito.</translation>
 <translation id="2983373101216420412"><ph name="PERCENTAGE" />% antas ng baterya ng case.</translation>
@@ -4355,6 +4359,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
 <translation id="4275788652681621337">Isara ang panel sa gilid</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
+<translation id="4276856098224910511">Hindi ma-install, nakabinbin ang update sa OS. Paki-apply ang anumang nakabinbing update sa OS, mag-restart, at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Source ng XML configuration</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Inalis ang mga pahintulot sa 1 site}one{Inalis ang mga pahintulot sa {NUM_SITES} site}other{Inalis ang mga pahintulot sa {NUM_SITES} na site}}</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
@@ -4564,6 +4569,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4426490308207168518">Mag-share ng feedback o mag-ulat ng isyu</translation>
 <translation id="4426508677408162512">Lahat ng Bookmark</translation>
 <translation id="4426513927906544654">Makakuha ng mga rekomendasyon sa content</translation>
+<translation id="4426857487270413362">Hindi ma-download ang mga installer file. Pakisuri ang iyong koneksyon sa internet at kung sapat ang bakante mong disk space at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4427365070557649936">Vine-verify ang code sa pagkumpirma...</translation>
 <translation id="4429163740524851942">Layout ng pisikal na keyboard</translation>
@@ -5166,6 +5172,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4899696330053002588">May mga ad</translation>
 <translation id="490031510406860025">Hindi pinapayagan sa site na ito</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - naka-interlace</translation>
+<translation id="490056871160016482">Ginagamit ng mga site ang feature na ito para mag-alok ng mga immersive na fullscreen na experience anuman ang mga galaw ng user</translation>
 <translation id="4900652253009739885">Hindi maalis ang tanging switch na nakatalaga sa “Piliin.” Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">I-expand ang kamakailang isinara</translation>
 <translation id="4901309472892185668">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7185,6 +7192,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6517227424170598783">Alisin ang shortcut na "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
 <translation id="6517382055541687102">Ginawang <ph name="DEVICE_NAME" /> ang napiling device</translation>
 <translation id="6517420300299531857">Awtomatikong nagsi-sync sa iyong Chromebook ang mga file mo sa Aking Drive kaya maa-access mo ang mga ito nang walang koneksyon sa internet. Gagamit ito ng humigit-kumulang <ph name="REQUIRED_SPACE" />. May available kang <ph name="FREE_SPACE_AVAILABLE" /> sa kasalukuyan.</translation>
+<translation id="651753338596587143">Paumanhin, nagkaproblema sa pag-install ng mga dependency ng DLC. Pakisubukan ang pag-reboot at kung may isyu pa rin, magbigay ng feedback na may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Posibleng hindi na gumana nang maayos ang iyong device, at posibleng makaranas ka ng mga isyu sa seguridad at performance. Puwede ring maapektuhan ng pag-off mo sa mga update ang karapatan mong maghain ng mga legal na claim kung makakaranas ka ng anumang isyu.</translation>
 <translation id="6518014396551869914">Kop&amp;yahin ang imahe</translation>
 <translation id="6518133107902771759">I-verify</translation>
@@ -7634,6 +7642,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6847125920277401289">Magbakante ng espasyo para magpatuloy</translation>
 <translation id="6848388270925200958">Sa ngayon, mayroon kang ilang card na magagamit lang sa device na ito</translation>
 <translation id="6848716236260083778">Para mag-set up ng fingerprint, ipapindot sa iyong anak ang sensor para sa fingerprint. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
+<translation id="6849623577495734856">Mga Icon sa Toolbar</translation>
 <translation id="6850286078059909152">Kulay ng text</translation>
 <translation id="6851181413209322061">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang setting na ito. Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
 <translation id="6851497530878285708">Naka-enable ang App</translation>
@@ -8391,6 +8400,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Na-extend na pag-preload</translation>
 <translation id="7456847797759667638">Buksan ang Lokasyon...</translation>
+<translation id="7457027286267861992">Hindi sapat ang disk space. Magbakante pa ng disk space at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{isang link}one{# link}other{# na link}}</translation>
 <translation id="7458168200501453431">Ginagamit ang parehong spell checker na ginagamit sa paghahanap sa Google. Ipapadala sa Google ang text na tina-type mo.</translation>
 <translation id="7458715171471938198">I-restore ang mga app?</translation>
@@ -10188,6 +10198,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8787752878731558379">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies</translation>
 <translation id="8791157330927639737">Matuto pa tungkol sa pag-update</translation>
 <translation id="8791534160414513928">Magpadala ng kahilingang ‘Do Not Track’ kasama ng iyong trapiko ng pagba-browse</translation>
+<translation id="8793390639824829328">Ginagamit ng mga site ang feature na ito para mag-scroll at mag-zoom sa mga naka-share na tab</translation>
 <translation id="879413103056696865">Habang naka-on ang hotspot, gagawin ng iyong <ph name="PHONE_NAME" /> ang mga sumusunod:</translation>
 <translation id="8795916974678578410">New Window</translation>
 <translation id="8796919761992612392">I-c&amp;ustomize ang iyong Chrome</translation>
@@ -10680,6 +10691,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9150045010208374699">Gamitin ang iyong camera</translation>
 <translation id="9150079578948279438">Hindi maalis ang profile. Pakisubukan ulit o makipag-ugnayan sa iyong carrier para sa technical support.</translation>
 <translation id="9150860646299915960">I-upgrade ang iyong Linux container</translation>
+<translation id="915112772806845021">Ginagamit ng mga site ang feature na ito para awtomatikong pumasok sa picture-in-picture. Nagbibigay-daan ito sa iyong patuloy na makapanood ng video, habang binabakante ang screen mo para sa iba pang gawain.</translation>
 <translation id="9151249085738989067">Awtomatikong palitan ang boses ng ChromeVox batay sa wika</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Impormasyon ng System ng Lacros</translation>

@@ -1066,6 +1066,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1795214765651529549">Usa classico</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
+<translation id="1798335429200675510">Fai clic con il tasto destro del mouse in una casella di testo per creare una bozza o perfezionare il lavoro esistente con IA di Google integrata. Al momento la disponibilità è limitata.</translation>
 <translation id="180203835522132923">Tasto per la ricerca + O, poi W</translation>
 <translation id="1802624026913571222">Sospendi alla chiusura dello schermo</translation>
 <translation id="1802687198411089702">La pagina non risponde. Puoi aspettare oppure chiuderla.</translation>
@@ -1460,6 +1461,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2088092308059522196">La registrazione è supportata solo dopo l'installazione di <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrato</translation>
 <translation id="208928984520943006">Per andare alla schermata Home in qualsiasi momento, scorri dal basso verso l'alto.</translation>
+<translation id="2089550919269323883">La possibilità di installare <ph name="VM_NAME" /> è bloccata dal criterio aziendale. Contatta l'amministratore di sistema per ricevere assistenza. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">OPPURE</translation>
 <translation id="2090165459409185032">Visita il sito google.com/accounts/recovery per recuperare i dati del tuo account</translation>
 <translation id="2090507354966565596">Si connette automaticamente quando effettui l'accesso</translation>
@@ -1503,6 +1505,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="21133533946938348">Blocca scheda</translation>
 <translation id="2113479184312716848">Apri &amp;file...</translation>
 <translation id="2113921862428609753">Accesso alle informazioni sull'autorità</translation>
+<translation id="2114145607116268663">Impossibile completare l'installazione. È necessario riavviare. Riavvia il computer e riprova. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Ricarica &amp;frame</translation>
 <translation id="2114413269775311385">Usa questo account con le app per Android. Puoi gestire le autorizzazioni relative alle app per Android nelle <ph name="LINK_BEGIN" />Impostazioni app<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Vedi "Foto recenti in evidenza" e altri ricordi presenti qui</translation>
@@ -2668,6 +2671,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="2979639724566107830">Apri in un'altra finestra</translation>
 <translation id="2979893796619951531">Escludi il sito</translation>
+<translation id="2981033191524548279">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />. Si potrebbe risolvere riavviando e riprovando.</translation>
 <translation id="2981113813906970160">Mostra puntatore mouse grande</translation>
 <translation id="2983102365694924129">In base alla tua attività svolta su un sito. Questa impostazione non è attiva.</translation>
 <translation id="2983373101216420412">Livello della batteria della custodia a <ph name="PERCENTAGE" />%.</translation>
@@ -4339,6 +4343,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4275397969489577657">Abilita la registrazione del flusso di eventi</translation>
 <translation id="4275788652681621337">Chiudi riquadro laterale</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
+<translation id="4276856098224910511">Impossibile completare l'installazione a causa di un aggiornamento del sistema operativo in attesa. Applica eventuali aggiornamenti del sistema operativo in attesa, riavvia e riprova. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Origine della configurazione XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Autorizzazioni rimosse da 1 sito}other{Autorizzazioni rimosse da {NUM_SITES} siti}}</translation>
 <translation id="4278390842282768270">Autorizzazione consentita</translation>
@@ -4548,6 +4553,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4426490308207168518">Condividi feedback o segnala un problema</translation>
 <translation id="4426508677408162512">Tutti i preferiti</translation>
 <translation id="4426513927906544654">Ricevi consigli sui contenuti</translation>
+<translation id="4426857487270413362">Impossibile scaricare i file di installazione. Controlla la connessione a internet e verifica che lo spazio libero su disco sia sufficiente e riprova. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4427365070557649936">Verifica del codice di conferma in corso…</translation>
 <translation id="4429163740524851942">Layout tastiera fisica</translation>
@@ -5149,6 +5155,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4899696330053002588">Contiene annunci</translation>
 <translation id="490031510406860025">Non consentito su questo sito</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - interlacciata</translation>
+<translation id="490056871160016482">I siti usano questa funzionalità per offrire esperienze immersive a schermo intero indipendentemente dai gesti dell'utente</translation>
 <translation id="4900652253009739885">Impossibile rimuovere l'unico sensore assegnato a "Seleziona". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Espandi schede chiuse di recente</translation>
 <translation id="4901309472892185668">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7165,6 +7172,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6517227424170598783">Rimuovere la scorciatoia "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
 <translation id="6517382055541687102">Il dispositivo selezionato è cambiato in <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook per potervi accedere senza connessione a internet. Spazio richiesto: circa <ph name="REQUIRED_SPACE" />. Spazio attualmente disponibile: <ph name="FREE_SPACE_AVAILABLE" />.</translation>
+<translation id="651753338596587143">Spiacenti, si è verificato un problema durante l'installazione delle dipendenze DLC. Prova a riavviare. Se il problema persiste, invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza. La disattivazione degli aggiornamenti può anche incidere sul tuo diritto a presentare rivendicazioni legali in caso di problemi.</translation>
 <translation id="6518014396551869914">Cop&amp;ia immagine</translation>
 <translation id="6518133107902771759">Verifica</translation>
@@ -7612,6 +7620,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6847125920277401289">Libera spazio per continuare</translation>
 <translation id="6848388270925200958">Al momento hai delle carte che possono essere utilizzate solo da questo dispositivo.</translation>
 <translation id="6848716236260083778">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Icone della barra degli strumenti</translation>
 <translation id="6850286078059909152">Colore testo</translation>
 <translation id="6851181413209322061">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, queste informazioni potrebbero essere salvate nel suo Account Google.</translation>
 <translation id="6851497530878285708">App attivata</translation>
@@ -8369,6 +8378,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Precaricamento esteso</translation>
 <translation id="7456847797759667638">Apri percorso...</translation>
+<translation id="7457027286267861992">Spazio su disco insufficiente. Libera altro spazio su disco e riprova. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{un link}other{# link}}</translation>
 <translation id="7458168200501453431">Consente di utilizzare lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google.</translation>
 <translation id="7458715171471938198">Vuoi ripristinare le app?</translation>
@@ -10164,6 +10174,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8787752878731558379">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti</translation>
 <translation id="8791157330927639737">Scopri di più sugli aggiornamenti</translation>
 <translation id="8791534160414513928">Invia una richiesta "Do Not Track" con il tuo traffico di navigazione</translation>
+<translation id="8793390639824829328">I siti usano questa funzionalità per scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="879413103056696865">Quando l'hotspot è attivo, il tuo <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nuova finestra</translation>
 <translation id="8796919761992612392">P&amp;ersonalizza Chrome</translation>
@@ -10655,6 +10666,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9150045010208374699">Utilizzare la fotocamera</translation>
 <translation id="9150079578948279438">Impossibile rimuovere il profilo. Riprova oppure contatta il tuo operatore per ricevere assistenza tecnica.</translation>
 <translation id="9150860646299915960">Esegui l'upgrade del tuo contenitore Linux</translation>
+<translation id="915112772806845021">I siti usano questa funzionalità per attivare automaticamente la modalità Picture in picture. In questo modo puoi continuare a guardare un video, liberando lo schermo per altre attività.</translation>
 <translation id="9151249085738989067">Cambia automaticamente la voce di ChromeVox in base alla lingua</translation>
 <translation id="9151906066336345901">fine</translation>
 <translation id="9153274276370926498">Informazioni sul sistema Lacros</translation>

@@ -293,6 +293,7 @@
 <translation id="260403163289591229">フォロー中</translation>
 <translation id="2604446170045642109">このサイトのダークモードを設定でオフにできます。</translation>
 <translation id="2612676031748830579">カード番号</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> さんから共有アイテムに招待されました。</translation>
 <translation id="2625189173221582860">パスワードがコピーされました</translation>
 <translation id="2634393460268044753">アクセスしたサイトの URL と、ページのコンテンツ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを Google セーフ ブラウジングに送信して、有害かどうか確認します。</translation>
 <translation id="2642087927315268160">ログインのボトムシートは閉じています。</translation>
@@ -399,6 +400,7 @@
 <translation id="3072980200212375806">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。また、<ph name="BEGIN_LINK3" />プライバシー ポリシー<ph name="END_LINK3" />も適用されます。</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
+<translation id="3093004810561729002">ユーザー</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">お知らせ</translation>

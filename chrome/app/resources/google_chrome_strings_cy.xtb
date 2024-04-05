@@ -151,6 +151,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3100998948628680988">Enwch eich proffil Chrome</translation>
 <translation id="3112458742631356345">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd nid yw'r ffeil yn cael ei lawrlwytho'n aml a gall fod yn beryglus</translation>
 <translation id="3114643501466072395">I wirio a yw'ch cyfrineiriau eraill yn ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd bod y ffeil archif yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="3140883423282498090">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Google Chrome.</translation>
 <translation id="3149510190863420837">Apiau Chrome</translation>
 <translation id="3169523567916669830">Yn ystod y profion, gallwch weld a chael gwared ar bynciau sydd o ddiddordeb y mae gwefannau yn eu defnyddio i ddangos hysbysebion i chi. Mae Chrome yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
@@ -221,6 +222,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4334294535648607276">Lawrlwytho wedi'i gwblhau.</translation>
 <translation id="4335235004908507846">Gall Chrome helpu i'ch amddiffyn rhag toriadau data, estyniadau gwael a rhagor</translation>
 <translation id="4343195214584226067">Mae <ph name="EXTENSION_NAME" /> wedi'i ychwanegu at Chrome</translation>
+<translation id="436060642166082913">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="4384570495110188418">Ni all Chrome wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="4389991535395284064">Wrth bori yn y modd Anhysbys, bydd Chrome yn eich rhybuddio cyn llwytho gwefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="4427306783828095590">Mae gwell amddiffyniad yn gwneud rhagor i rwystro gwe-rwydo a drwgwedd</translation>
@@ -476,6 +478,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="873133009373065397">Ni all Google Chrome bennu na gosod y porwr diofyn</translation>
 <translation id="8765470054473112089">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chrome yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="878572486461146056">Gwall gosod: Mae gweinyddwr eich rhwydwaith wedi defnyddio Polisi Grŵp sy'n atal gosod: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol, gan gynnwys <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 yw injan JavaScript a WebAssembly Chrome a ddefnyddir i wella perfformiad gwefan</translation>
 <translation id="8821043148920470810">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 7.</translation>
 <translation id="8823341990149967727">Mae Chrome yn hen</translation>

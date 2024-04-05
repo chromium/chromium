@@ -292,6 +292,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="260403163289591229">Suivi</translation>
 <translation id="2604446170045642109">Vous pouvez désactiver le thème sombre des sites dans vos paramètres.</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> vous a invité à accéder à un élément partagé.</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2634393460268044753">Envoie les URL de sites que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="2642087927315268160">La zone de contenu dans le bas de l'écran de connexion est fermée.</translation>
@@ -398,6 +399,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />. La <ph name="BEGIN_LINK3" />politique de confidentialité<ph name="END_LINK3" /> s'applique également.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
+<translation id="3093004810561729002">Quelqu'un</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annonces</translation>

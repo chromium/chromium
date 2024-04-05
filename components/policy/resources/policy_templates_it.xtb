@@ -207,7 +207,6 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se questo criterio viene impostato su Disabled, la funzionalità della lista della spesa non sarà disponibile.
       </translation>
 <translation id="1144147113722324623">Attiva gli upgrade automatici a HTTPS di audio e video e mostra l'avviso "Non sicuro" per le immagini.</translation>
-<translation id="1145928409398419809">Disattiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="1147732569915511430">L'hash SHA-256 dell'immagine dell'avatar.</translation>
 <translation id="1148415065145333943">Disattiva la modalità di ricarica avanzata della batteria</translation>
 <translation id="1149203480502386713">Attiva l'accordo chiave post-quantistico per TLS</translation>
@@ -1833,6 +1832,7 @@ Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2413899611035194909">Mostra opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
+<translation id="2419114151067000328">La funzionalità delle specifiche del prodotto non sarà disponibile per gli utenti.</translation>
 <translation id="2420958105721932612">Consente di specificare la modalità di installazione di un'app. AVAILABLE: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questo criterio non viene specificato. FORCE_INSTALLED: l'app viene installata automaticamente e l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a un criterio precedente, verrà disinstallata.</translation>
 <translation id="2421400544595297401">Non consentire a utenti non affiliati di utilizzare app per Android</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3362,6 +3362,7 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
+<translation id="361046511337768385">Consenti l'attivazione della funzionalità delle specifiche del prodotto</translation>
 <translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
       Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
       Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
@@ -3475,17 +3476,6 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
 <translation id="3727675072430693164">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware relative ai componenti SoC.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano le statistiche.</translation>
-<translation id="372853200788846114">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> richiede agli utenti una password per sbloccare il dispositivo quando questo viene sospeso o il coperchio viene chiuso.
-
-      I dispositivi si bloccano quando il coperchio viene chiuso, tranne se sono inseriti nel dock (utilizzando un monitor esterno).  In questo caso, il dispositivo non si blocca alla chiusura del coperchio, ma se il monitor esterno viene rimosso e il coperchio è ancora chiuso.
-
-      Fino a <ph name="PRODUCT_OS_NAME" /> M106, questo criterio bloccherà il dispositivo solo quando questo viene sospeso.  A partire da M106, questo criterio bloccherà il dispositivo quando questo viene sospeso o il coperchio viene chiuso.
-
-      Se questo criterio viene impostato su true e da <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> a <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, il dispositivo si blocca quando il coperchio viene chiuso, ma viene sospeso soltanto se e quando questo viene appositamente configurato in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
-
-      Se il criterio viene impostato su Disabled, agli utenti non viene richiesta la password per sbloccare il dispositivo.
-
-      Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo.</translation>
 <translation id="3729937245044939404">Questo criterio è stata deprecato in M70, utilizza invece <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> e <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Consente di attivare la funzionalità di compilazione automatica di <ph name="PRODUCT_NAME" /> e permette agli utenti di compilare automaticamente i moduli web utilizzando informazioni memorizzate in precedenza, come l'indirizzo o i dati della carta di credito.
@@ -5388,6 +5378,7 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 
 A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
+<translation id="5363412016871318326">La funzionalità delle specifiche del prodotto sarà disponibile per gli utenti.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="5366977351895725771">Se questa norma è impostata su false, la creazione di utenti supervisionati da parte di questo utente sarà disabilitata. Gli eventuali utenti supervisionati esistenti saranno comunque disponibili.
@@ -5763,31 +5754,6 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5622924058222112599">Viene attivata la procedura di lancio predefinita di CECPQ2</translation>
 <translation id="5623304306796942802">Mostra richiesta in caso di più certificati corrispondenti</translation>
 <translation id="5625771176514429288">Sarà consentita l'esecuzione delle app di Chrome su queste piattaforme</translation>
-<translation id="5627094573311711592">Consente di configurare un elenco di regole di controllo dei dati per prevenire le fughe di dati. Le fughe di dati possono verificarsi tramite operazioni di copia e incolla dei dati, allegando file a pagine web, stampando, scaricando e così via.
-
-      Ogni regola include quanto segue:
-      - Proprietà dell'origine di un'azione. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nel relativo campo <ph name="DATA_CONTROLS_SOURCES" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
-      - Proprietà della destinazione di un'azione. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nel relativo campo <ph name="DATA_CONTROLS_DESTINATIONS" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
-      - Un elenco di limitazioni da applicare ai dati delle origini.
-
-      È possibile aggiungere regole per:
-      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
-      - Controllare la stampa da tutte le origini.
-      - Controllare i file allegati a tutte le destinazioni.
-      - Controllare i file scaricati da tutte le origini.
-
-      Se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostato su True, le regole attivate vengono segnalate all'amministratore.
-      Il livello di limitazione può essere impostato su ALLOW, BLOCK, WARN, REPORT.
-      - Se il livello di limitazione è impostato su ALLOW, l'azione sarà consentita. Verranno sostituite anche le limitazioni applicate da altre regole.
-      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
-      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
-      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivo.
-
-      Note:
-      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche il criterio <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Se il criterio non viene configurato, non verranno applicate limitazioni.</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
 <translation id="5634032995857968056">Abilita la sandbox del container dell'app del renderer</translation>
@@ -6069,11 +6035,6 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Il valore <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> è una proprietà facoltativa, il cui valore predefinito è Falso.</translation>
 <translation id="5879014913445067283">Consente di controllare la funzione Condivisioni file di rete tramite il protocollo <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Attiva la funzione Tocca per cercare</translation>
-<translation id="5881715931837589500">Attiva l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
-
-Se questo criterio viene attivato o se non viene configurato, l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> viene attivata per gli utenti aziendali.
-
-Se viene disattivato, l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> viene disattivata per gli utenti aziendali.</translation>
 <translation id="5882345429632338713">Ritardo prima di avviare il browser alternativo (in millisecondi)</translation>
 <translation id="5883015257301027298">Impostazione cookie predefiniti</translation>
 <translation id="5883754873839596178">La configurazione del criterio consente di specificare il numero massimo di connessioni simultanee al server proxy. Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare il criterio su un numero inferiore per risolvere questo problema. Il valore deve essere inferiore a 100 e superiore a 6. Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo. È sconsigliato utilizzare un valore inferiore a quello predefinito.
@@ -6110,11 +6071,6 @@ Se viene disattivato, l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> vien
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
 <translation id="5898486742390981550">Quando più utenti eseguono l'accesso, solo l'utente principale può utilizzare le app Android.</translation>
 <translation id="5899751601113377553">Impedisci agli utenti di usare <ph name="LACROS_NAME" /></translation>
-<translation id="5900000623536207626">Attiva l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
-
-Se questo criterio viene attivato o se non viene configurato, l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> viene attivata per gli utenti aziendali.
-
-Se viene disattivato, l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> viene disattivata per gli utenti aziendali.</translation>
 <translation id="5900919753933009463">Segnala la configurazione di rete</translation>
 <translation id="5901427587865226597">Solo stampa fronte/retro</translation>
 <translation id="5905114360004248993">Consenti popup su questi siti</translation>
@@ -6257,14 +6213,12 @@ Questo criterio è stato ritirato a partire dalla versione M124.</translation>
 <translation id="6042407236638640864">Consenti la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /></translation>
 <translation id="604243460476563291">Disattiva il trasferimento di file nelle connessioni di assistenza da remoto da parte degli amministratori aziendali</translation>
 <translation id="6042629184389251062">La raccolta di metriche con chiave URL non è consentita</translation>
-<translation id="6045733613334942660">Driver dello scanner</translation>
 <translation id="6046615715547751255">Non consentire i controlli di reporting granulare</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
 <translation id="6048690591359317353">Non consentire all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6049117606554031363">Attiva i report sullo stato della scheda del dispositivo</translation>
 <translation id="6050796253724099706">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="605132676434455096">Non consentire l'aggiunta di nuovi profili</translation>
-<translation id="6052660755155321371">Disattiva integrazione di <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="6053260874233331700">Non consentire l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
 <translation id="6056517174496942473">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL</translation>
@@ -7876,7 +7830,6 @@ certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto att
 
       Nota: il criterio non interessa Google Drive e la memoria interna. Gli utenti possono comunque accedere ai file salvati nella cartella Download.</translation>
 <translation id="7177857088692019405">Sblocco rapido</translation>
-<translation id="7177980542896745343">Attiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /></translation>
 <translation id="7179157174254421614">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
 
 Se il criterio viene impostato su:
@@ -8110,7 +8063,6 @@ Il criterio deve essere impostato come un elenco di nomi di dominio completi. No
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7372210077527987724">Attiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
 <translation id="7373200034079131670">Riavvia all'uscita dell'utente se si avvia Android o una VM.</translation>
 <translation id="7374784840090523241">Imposta come predefinita la creazione di passkey in altri spazi di archiviazione, ad esempio il profilo <ph name="PRODUCT_NAME" />.</translation>
@@ -8620,7 +8572,6 @@ Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Int
       Se il criterio viene impostato su Falso o se non viene configurato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
 
       Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7801833005984890634">Attiva integrazione di <ph name="GOOGLE_TASKS_NAME" /></translation>
 <translation id="7804859754080118507">Segnala gli eventi di intensità del segnale e di connessione di rete sui dispositivi registrati.
 
       Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
@@ -8951,6 +8902,9 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
+<translation id="810509972572344398">Se questo criterio viene attivato o se non viene configurato, le specifiche di prodotto saranno disponibili per gli utenti.
+
+Se questo criterio viene disattivato, le specifiche del prodotto non saranno disponibili.</translation>
 <translation id="8109762054721090517">Modello per l'<ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Consente di configurare il tempo di inattività del dispositivo in secondi che deve trascorrere prima di mostrare il salvaschermo per la schermata di blocco.
 
@@ -9683,7 +9637,6 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 <translation id="8685748277907759932">Impedisci agli utenti di usare la funzionalità Tocca per cercare</translation>
 <translation id="8686700500128191717">Attiva i report sugli utenti del dispositivo</translation>
 <translation id="8687958770985542440">Riattiva l'API Web Components v0 fino alla versione M84</translation>
-<translation id="8690591325980850680">Attiva integrazione di <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="8693243869659262736">Utilizza client DNS integrato</translation>
 <translation id="8695006038397632296">Crea o carica richieste di installazione di estensioni nella Console di amministrazione</translation>
 <translation id="8695108198606654558">Questo criterio consente di controllare soltanto il comportamento di importazione alla prima esecuzione dopo l'installazione. Consente una transizione più semplice a <ph name="PRODUCT_NAME" /> negli ambienti in cui è stato ampiamente utilizzato un browser diverso prima dell'installazione del browser. Questo criterio non influisce sulle funzionalità del gestore delle password per gli Account Google.

@@ -911,6 +911,7 @@
 <translation id="6382182670717268353">স্ক্ৰীন ছেভাৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6394634179843537518">ফাইল যোগ দিয়ক</translation>
+<translation id="6396719002784938593">ড্ৰাইড ফেদাৰ গ্ৰাছ</translation>
 <translation id="639964859328803943">চাহ নাস্তা</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> ৰঙৰ <ph name="DREAMSCAPES_MATERIAL" />এ বনোৱা কোনো অধিৱাস্তৱিক <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">ব্ৰাউজাৰ সন্ধান</translation>
@@ -952,6 +953,7 @@
 <translation id="6575134580692778371">কনফিগাৰ কৰা হোৱা নাই</translation>
 <translation id="6576005492601044801">বাওঁফালে</translation>
 <translation id="6579509898032828423">এই ফট'খন ব্যৱহাৰ কৰক</translation>
+<translation id="6587870930887634392">ৰসযুক্ত</translation>
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>
 <translation id="6599673642868607614">আপোনাৰ মতামতৰ বাবে ধন্যবাদ। আপোনাৰ মতামতে আমাক Chromebook ব্যৱহাৰৰ অভিজ্ঞতা উন্নত কৰাত সহায় কৰে আৰু আমাৰ দলে সেয়া পৰ্যালোচনা কৰিব। ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আমি কোনো প্ৰত্যুত্তৰ পঠিয়াব নোৱাৰিম।</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
@@ -1110,6 +1112,7 @@
 <translation id="7497215489070763236">ছার্ভাৰ CA প্ৰমাণপত্ৰ</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502658306369382406">IPv6 ঠিকনা</translation>
+<translation id="7507061649493508884">এপাহ উজ্জ্বল <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">একেবাৰে তললৈ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">সৃষ্টি কৰক</translation>
@@ -1169,6 +1172,7 @@
 <translation id="7850847810298646851">Google AIএ সঞ্চালন কৰা ৱালপেপাৰ</translation>
 <translation id="785170686607360576">টিউলিপ</translation>
 <translation id="7856267634822906833">ব্লুটুথ টাচ্‌স্ক্ৰীন</translation>
+<translation id="7859006200041800233">কেকটাছ ফুল</translation>
 <translation id="7869143217755017858">গাঢ় ম’ড অক্ষম কৰক</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">প্ৰদানকাৰীৰ ধৰণ</translation>
@@ -1304,6 +1308,7 @@
 <translation id="8726019395068607495">বন্ধ হৈছে - দুৱাৰ খোল খাই আছে</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
+<translation id="8749478549112817787">কেমেৰাৰ পটভূমি</translation>
 <translation id="8755946156089753497">টাৱাৰ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photosৰ এলবাম</translation>

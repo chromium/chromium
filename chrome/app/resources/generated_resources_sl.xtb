@@ -1080,6 +1080,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1795214765651529549">Uporabi klasično</translation>
 <translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1797117170091578105">Igrajte s tipkovnico Chromebooka. Tipke lahko prilagodite določenim dejanjem.</translation>
+<translation id="1798335429200675510">Z desnim gumbom kliknite besedilno polje, da ustvarite osnutek ali izboljšate obstoječe delo, ki uporablja Googlovo umetno inteligenco. Trenutno je omejena razpoložljivost.</translation>
 <translation id="180203835522132923">Tipka za iskanje + O, nato W</translation>
 <translation id="1802624026913571222">Preklop v stanje pripravljenosti, ko je pokrov zaprt</translation>
 <translation id="1802687198411089702">Ta spletna stran se ne odziva. Lahko počakate ali jo zaprete.</translation>
@@ -1475,6 +1476,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2088092308059522196">Včlanitev je podprta šele po namestitvi sistema <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Vgrajena naprava TrackPoint</translation>
 <translation id="208928984520943006">Če se želite kadar koli vrniti na začetni zaslon, s prstom povlecite z dna zaslona navzgor.</translation>
+<translation id="2089550919269323883">Nameščanje aplikacije <ph name="VM_NAME" /> blokira pravilnik podjetja. Za podporo se obrnite na skrbnika sistema. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">ALI</translation>
 <translation id="2090165459409185032">Če želite obnoviti podatke računa, pojdite na: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Samodejno se poveže, ko se prijavite.</translation>
@@ -1518,6 +1520,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2113479184312716848">Odpri &amp;datoteko ...</translation>
 <translation id="2113921862428609753">Dostop do informacij urada</translation>
+<translation id="2114145607116268663">Namestitev ni mogoča. Potreben je vnovični zagon. Znova zaženite računalnik in poskusite znova. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Znova naloži &amp;okvir</translation>
 <translation id="2114413269775311385">Uporabljaj ta račun z aplikacijami za Android. Dovoljenja za aplikacije Android lahko nadzirate v <ph name="LINK_BEGIN" />nastavitvah aplikacij<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Tukaj si oglejte »Nedavno najboljšo vsebino« in druge spomine</translation>
@@ -2686,6 +2689,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
 <translation id="2979893796619951531">Izključi spletno mesto</translation>
+<translation id="2981033191524548279">Prišlo je do napake. Pošljite povratne informacije z oznako #bruschetta v opisu. Koda napake je <ph name="ERROR" />. To lahko odpravite tako, da znova zaženete in poskusite znova.</translation>
 <translation id="2981113813906970160">Pokaži velik miškin kazalec</translation>
 <translation id="2983102365694924129">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je izklopljena.</translation>
 <translation id="2983373101216420412">Raven napolnjenosti baterije škatlice: <ph name="PERCENTAGE" /> %.</translation>
@@ -4357,6 +4361,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4275397969489577657">Omogočanje beleženja toka dogodkov</translation>
 <translation id="4275788652681621337">Zapiranje stranskega podokna</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
+<translation id="4276856098224910511">Namestitev ni mogoča, posodobitev operacijskega sistema je na čakanju. Uporabite vse čakajoče posodobitve operacijskega sistema, znova zaženite in poskusite znova. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Vir konfiguracije XML-jev</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Dovoljenja odstranjena z 1 spletnega mesta}one{Dovoljenja odstranjena z {NUM_SITES} spletnega mesta}two{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}few{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}other{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}}</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
@@ -4566,6 +4571,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4426490308207168518">Pošiljanje povratnih informacij ali prijava težave</translation>
 <translation id="4426508677408162512">Vsi zaznamki</translation>
 <translation id="4426513927906544654">Prejemanje priporočil za vsebino</translation>
+<translation id="4426857487270413362">Namestitvenih datotek ni mogoče prenesti. Preverite internetno povezavo in ali imate dovolj prostora na disku ter poskusite znova. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4427365070557649936">Preverjanje potrditvene kode …</translation>
 <translation id="4429163740524851942">Postavitev fizične tipkovnice</translation>
@@ -5168,6 +5174,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4899696330053002588">Vsebuje oglase</translation>
 <translation id="490031510406860025">Ni dovoljeno na tem spletnem mestu</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – prepleteno</translation>
+<translation id="490056871160016482">Spletna mesta s to funkcijo zagotavljajo prostorno celozaslonsko izkušnjo ne glede na uporabniške poteze</translation>
 <translation id="4900652253009739885">Edinega stikala, dodeljenega dejanju »Izberi«, ni mogoče odstraniti. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Razširite nedavno zaprto</translation>
 <translation id="4901309472892185668">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7189,6 +7196,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6517227424170598783">Želite odstraniti bližnjico »<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />«?</translation>
 <translation id="6517382055541687102">Izbrana naprava je bila spremenjena na: <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Datoteke v Mojem disku se samodejno sinhronizirajo s Chromebookom, tako da lahko do njih dostopate brez internetne povezave. S tem boste porabili približno <ph name="REQUIRED_SPACE" />. Trenutno imate na voljo <ph name="FREE_SPACE_AVAILABLE" />.</translation>
+<translation id="651753338596587143">Pri namestitvi odvisnosti prenosljive vsebine je prišlo do napake. Poskusite znova zagnati in če težave ne odpravite, pošljite povratne informacije z oznako #bruschetta v opisu. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Naprava morda ne deluje več ustrezno in morda se srečujete z varnostnimi težavami in težavami z zmogljivostjo. Če izklopite posodobitve, to morda tudi vpliva na vašo pravico do zakonitih zahtevkov, če imate kakšne težave.</translation>
 <translation id="6518014396551869914">Kop&amp;iraj sliko</translation>
 <translation id="6518133107902771759">Preveri</translation>
@@ -7642,6 +7650,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6847125920277401289">Sprostite prostor, če želite nadaljevati</translation>
 <translation id="6848388270925200958">Trenutno je mogoče nekatere vaše kartice uporabljati samo v tej napravi</translation>
 <translation id="6848716236260083778">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Ikone orodne vrstice</translation>
 <translation id="6850286078059909152">Barva besedila</translation>
 <translation id="6851181413209322061">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google.</translation>
 <translation id="6851497530878285708">Aplikacija omogočena</translation>
@@ -8399,6 +8408,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Razširjeno vnaprejšnje nalaganje</translation>
 <translation id="7456847797759667638">Odpri mesto ...</translation>
+<translation id="7457027286267861992">Premalo prostora na disku. Sprostite nekaj prostora na disku in poskusite znova. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{povezavo}one{# povezavo}two{# povezavi}few{# povezave}other{# povezav}}</translation>
 <translation id="7458168200501453431">Uporablja isto preverjanje črkovanja, kot se uporablja v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu.</translation>
 <translation id="7458715171471938198">Želite obnoviti aplikacije?</translation>
@@ -10197,6 +10207,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8787752878731558379">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb</translation>
 <translation id="8791157330927639737">Preberite več o posodabljanju</translation>
 <translation id="8791534160414513928">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
+<translation id="8793390639824829328">Spletna mesta uporabljajo to funkcijo za pomikanje po deljenih zavihkih in njihovo povečavo/pomanjšavo</translation>
 <translation id="879413103056696865">Medtem ko je dostopna točka vklopljena, bo telefon <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Novo okno</translation>
 <translation id="8796919761992612392">P&amp;rilagodite Chrome</translation>
@@ -10688,6 +10699,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9150045010208374699">Uporabite kamero</translation>
 <translation id="9150079578948279438">Profila ni bilo mogoče odstraniti. Poskusite znova ali se obrnite na operaterja za tehnično podporo.</translation>
 <translation id="9150860646299915960">Nadgradite vsebnik za Linux</translation>
+<translation id="915112772806845021">Spletna mesta s to funkcijo samodejno preklopijo na način slike v sliki. Tako lahko še naprej gledate videoposnetek, na zaslonu pa izvajate druga opravila.</translation>
 <translation id="9151249085738989067">Samodejni preklop glasu ChromeVoxa glede na jezik</translation>
 <translation id="9151906066336345901">tipka end</translation>
 <translation id="9153274276370926498">Podatki o sistemu za Lacros</translation>

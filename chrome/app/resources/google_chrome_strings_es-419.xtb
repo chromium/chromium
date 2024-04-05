@@ -147,6 +147,7 @@
 <translation id="3100998948628680988">Asígnale un nombre a tu perfil de Chrome</translation>
 <translation id="3112458742631356345">Chrome bloqueó esta descarga porque el archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="3114643501466072395">Para comprobar si tus otras contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome bloqueó esta descarga porque el archivo incluye otros archivos que pueden ocultar software malicioso</translation>
 <translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3169523567916669830">Durante las pruebas, puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
@@ -217,6 +218,7 @@
 <translation id="4334294535648607276">Descarga completa</translation>
 <translation id="4335235004908507846">Chrome puede protegerte ante violaciones de la seguridad de los datos, extensiones dañadas y mucho más</translation>
 <translation id="4343195214584226067">Se agregó <ph name="EXTENSION_NAME" /> a Chrome</translation>
+<translation id="436060642166082913">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales</translation>
 <translation id="4384570495110188418">Chrome no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
 <translation id="4389991535395284064">Cuando navegues en el modo Incógnito, Chrome te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
@@ -468,6 +470,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
+<translation id="8796073561259064743">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales, incluida <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 es el motor JavaScript y WebAssembly de Chrome que se usa para mejorar el rendimiento del sitio</translation>
 <translation id="8821043148920470810">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no actualizado</translation>

@@ -183,6 +183,7 @@
 <translation id="132301787627749051">Потражите слику у привременој меморији</translation>
 <translation id="1323433172918577554">Прикажи више</translation>
 <translation id="132390688737681464">Чувај и уноси адресе</translation>
+<translation id="1325412080783393306">Претражите још опција куповине</translation>
 <translation id="1325749054628832887">Теме огласа су само једна од многих ствари које сајт може да користи за персонализацију огласа. Чак и без тема огласа, сајтови и даље могу да вам приказују огласе, али они могу да буду мање занимљиви. Сазнајте више о <ph name="BEGIN_LINK" />управљању приватношћу са огласима<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Пошаљи извештај</translation>
 <translation id="1330449323196174374">Пресавијање на левој страни у облику прозора</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
 <translation id="2456755709261364512">Батерија мора да се напуни изнад <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Претражите: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Друштвене мреже</translation>
 <translation id="2463739503403862330">Попуни</translation>
 <translation id="2465688316154986572">Спајање</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">усправно</translation>
 <translation id="3287510313208355388">Преузми када сам онлајн</translation>
 <translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
+<translation id="3289578402369490638">Из других продавница широм веба</translation>
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="3299098170013242198">Windows Hello је укључен за попуњавање лозинки</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телефонске конференције</translation>
 <translation id="6753269504797312559">Вредност смерница</translation>
+<translation id="6753390234084146956">картице</translation>
 <translation id="6753434778807740853">Избришите унос <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Штедни рачуни</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">Самолепљиви папир</translation>
 <translation id="8075736640322370409">Брзо направите нову Google табелу</translation>
 <translation id="8075898834294118863">Управљајте подешавањима сајтова</translation>
-<translation id="8076492880354921740">Картице</translation>
 <translation id="8077669823243888800">Кинеска коверта бр. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Желите да отпремите поверљиви фајл?}one{Желите да отпремите поверљиве фајлове?}few{Желите да отпремите поверљиве фајлове?}other{Желите да отпремите поверљиве фајлове?}}</translation>
 <translation id="8078141288243656252">Додавање напомене није могуће када је ротиран</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719">Датотека на адреси <ph name="URL" /> не може да се чита. Можда је уклоњена или премештена или дозволе за датотеке спречавају приступ.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Смернице администратора не препоручују преузимање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују преузимање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују преузимање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују преузимање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Опрема за хокеј</translation>
-<translation id="815788908807586564">Ћаскајте са Gemini-јем</translation>
 <translation id="8161095570253161196">Настави прегледање</translation>
 <translation id="8163866351304776260">Четвороструко бушење на левој страни</translation>
 <translation id="8164078261547504572">Желите ли имејлове када цене падну?</translation>

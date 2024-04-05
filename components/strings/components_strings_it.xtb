@@ -183,6 +183,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="132301787627749051">Cerca immagine negli appunti</translation>
 <translation id="1323433172918577554">Espandi</translation>
 <translation id="132390688737681464">Salva e compila gli indirizzi</translation>
+<translation id="1325412080783393306">Cerca altre opzioni di acquisto</translation>
 <translation id="1325749054628832887">Gli argomenti degli annunci sono solo uno dei tanti elementi che un sito può utilizzare per personalizzare gli annunci. Anche senza gli argomenti degli annunci, i siti possono continuare a mostrarti annunci, che però potrebbero essere meno interessanti per te. Scopri di più sulla <ph name="BEGIN_LINK" />gestione della privacy per gli annunci<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Invia una segnalazione</translation>
 <translation id="1330449323196174374">Piegatura a finestra a sinistra</translation>
@@ -785,7 +786,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2452098632681057184">Ecologia e ambiente</translation>
 <translation id="2452837234288608067">Non posso aiutarti. Riprova.</translation>
 <translation id="2456755709261364512">La batteria deve avere una percentuale di carica superiore al <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Cerca <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Social network</translation>
 <translation id="2463739503403862330">Compila</translation>
 <translation id="2465688316154986572">Pinzatura</translation>
@@ -1188,6 +1188,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3286372614333682499">verticale</translation>
 <translation id="3287510313208355388">Scarica quando è online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> potrebbe dover effettuare altri passaggi per verificare il pagamento</translation>
+<translation id="3289578402369490638">Da altri negozi sul web</translation>
 <translation id="3293642807462928945">Scopri di più sulla norma <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visualizza e gestisci le tue password nelle impostazioni di Chrome</translation>
 <translation id="3299098170013242198">Windows Hello è attivo per inserire le password</translation>
@@ -2967,6 +2968,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferenze</translation>
 <translation id="6753269504797312559">Valore criterio</translation>
+<translation id="6753390234084146956">schede</translation>
 <translation id="6753434778807740853">Elimina voce <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Depositi di risparmio</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3677,7 +3679,6 @@ Ulteriori dettagli:
 <translation id="8075588646978457437">Carta autoadesiva</translation>
 <translation id="8075736640322370409">Crea rapidamente un nuovo foglio Google</translation>
 <translation id="8075898834294118863">Gestisci impostazioni dei siti</translation>
-<translation id="8076492880354921740">Schede</translation>
 <translation id="8077669823243888800">Busta Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vuoi caricare un file riservato?}other{Vuoi caricare file riservati?}}</translation>
 <translation id="8078141288243656252">Non è possibile inserire annotazioni se il documento è ruotato</translation>
@@ -3716,7 +3717,6 @@ Ulteriori dettagli:
 <translation id="8150722005171944719">Il file all'indirizzo <ph name="URL" /> non è leggibile. Potrebbe essere stato rimosso, spostato oppure delle autorizzazioni del file potrebbero impedire l'accesso.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Il criterio dell'amministratore sconsiglia di scaricare questo file su <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di scaricare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Attrezzature e articoli per hockey</translation>
-<translation id="815788908807586564">Prova Gemini</translation>
 <translation id="8161095570253161196">Riprendi la navigazione</translation>
 <translation id="8163866351304776260">Perforatura quadrupla a sinistra</translation>
 <translation id="8164078261547504572">Vuoi ricevere email in caso di calo dei prezzo?</translation>

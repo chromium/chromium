@@ -183,6 +183,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="132301787627749051">Traženje slike u međuspremniku</translation>
 <translation id="1323433172918577554">Više</translation>
 <translation id="132390688737681464">Spremi i popuni adrese</translation>
+<translation id="1325412080783393306">Potražite više opcija za kupnju</translation>
 <translation id="1325749054628832887">Teme oglasa samo su jedna od mnogih mogućnosti koje web-lokacija može upotrebljavati za personalizaciju oglasa. Čak i bez tema oglasa, web-lokacije i dalje vam mogu prikazivati oglase, no oni bi mogli biti manje zanimljivi. Saznajte više o <ph name="BEGIN_LINK" />upravljanju zaštitom privatnosti u online oglašavanju<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Pošalji izvješće</translation>
 <translation id="1330449323196174374">Presavijanje s lijeve strane u obliku prozora</translation>
@@ -785,7 +786,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2452098632681057184">Ekologija i okoliš</translation>
 <translation id="2452837234288608067">Ne možemo vam pomoći s tim. Pokušajte ponovno.</translation>
 <translation id="2456755709261364512">Baterija mora biti napunjena iznad <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Pretražite <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Društvene mreže</translation>
 <translation id="2463739503403862330">Ispuni</translation>
 <translation id="2465688316154986572">Spajanje</translation>
@@ -1191,6 +1191,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Preuzmi online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> možda treba izvršiti dodatne korake za potvrdu plaćanja</translation>
+<translation id="3289578402369490638">Iz drugih trgovina na webu</translation>
 <translation id="3293642807462928945">Saznajte više o pravilu <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregled zaporki u postavkama Chromea i upravljanje njima</translation>
 <translation id="3299098170013242198">Windows Hello uključen je za unos zaporki</translation>
@@ -2970,6 +2971,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencija</translation>
 <translation id="6753269504797312559">Vrijednost pravila</translation>
+<translation id="6753390234084146956">kartice</translation>
 <translation id="6753434778807740853">Izbrišite unos <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Štedni računi</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@ Dodatne pojedinosti:
 <translation id="8075588646978457437">Samoljepljivi papir</translation>
 <translation id="8075736640322370409">Brzo izradite novu Google tablicu</translation>
 <translation id="8075898834294118863">Upravljajte postavkama web-lokacija</translation>
-<translation id="8076492880354921740">Kartice</translation>
 <translation id="8077669823243888800">Kineska omotnica br. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite li prenijeti povjerljivu datoteku?}one{Želite li prenijeti povjerljive datoteke?}few{Želite li prenijeti povjerljive datoteke?}other{Želite li prenijeti povjerljive datoteke?}}</translation>
 <translation id="8078141288243656252">Ne može dodati bilješku kada je dokument zakrenut</translation>
@@ -3719,7 +3720,6 @@ Dodatne pojedinosti:
 <translation id="8150722005171944719">Datoteka na adresi <ph name="URL" /> nije čitljiva. Možda je uklonjena ili premještena ili dozvole datoteka sprječavaju pristup.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Prema pravilima administratora ne preporučuje se preuzimanje te datoteke na: <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Oprema za hokej</translation>
-<translation id="815788908807586564">Chatajte s Geminijem</translation>
 <translation id="8161095570253161196">Nastavi pregledavanje</translation>
 <translation id="8163866351304776260">Četverostruko bušenje s lijeve strane</translation>
 <translation id="8164078261547504572">Želite li primati e-poruke kada cijene padnu?</translation>

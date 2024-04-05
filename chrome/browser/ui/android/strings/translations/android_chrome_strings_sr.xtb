@@ -292,6 +292,7 @@
 <translation id="260403163289591229">Пратите</translation>
 <translation id="2604446170045642109">Можете да искључите тамну тему за сајтове у подешавањима.</translation>
 <translation id="2612676031748830579">Број картице</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> вас позива да приступите дељеној ставци.</translation>
 <translation id="2625189173221582860">Лозинка је копирана</translation>
 <translation id="2634393460268044753">Шаље URL-ове сајтова које посећујете и мали узорак садржаја странице, преузимања, активности додатака и информација о систему у Google безбедно прегледање ради провере штетности.</translation>
 <translation id="2642087927315268160">Доња табела за пријављивање је затворена.</translation>
@@ -398,6 +399,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ће се отворити у Chrome-у. Ако наставите, прихватате <ph name="BEGIN_LINK1" />Google услове коришћења услуге<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />додатне услове коришћења услуге за Google Chrome и Chrome ОС<ph name="END_LINK2" />. Примењује се и <ph name="BEGIN_LINK3" />политика приватности<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Можете да сачувате странице да бисте их читали касније или офлајн</translation>
 <translation id="3091010850649238832">Прикажи садржај привремене меморије</translation>
+<translation id="3093004810561729002">Неко</translation>
 <translation id="3098745985164956033">Неке слике се шаљу Google-у ради побољшања описа</translation>
 <translation id="3114507951000454849">Читајте данашње вести <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Саопштења</translation>

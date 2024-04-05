@@ -413,6 +413,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computadora</translation>
+<translation id="1739422091279046802">desplazamiento y zoom</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ropa de cama</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> Chrome registra los temas que te interesan a medida que navegas. Las etiquetas de temas están predefinidas e incluyen categorías como Arte y entretenimiento, Compras y Deportes. Luego, los sitios que visites podrán pedirle a Chrome algunos de tus temas (pero no tu historial de navegación) para personalizar los anuncios que te verás.</translation>
@@ -451,6 +452,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación en salud y medicina</translation>
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
+<translation id="1816436748874040213">Puede solicitar permiso para desplazarse y hacer zoom en las pestañas compartidas</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentales</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
@@ -783,7 +785,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2452098632681057184">Ecología y medioambiente</translation>
 <translation id="2452837234288608067">No pudimos ayudarte con eso. Vuelve a intentarlo.</translation>
 <translation id="2456755709261364512">La batería debe tener una carga superior al <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Busca <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Redes sociales</translation>
 <translation id="2463739503403862330">Llenar</translation>
 <translation id="2465688316154986572">Grapa</translation>
@@ -964,6 +965,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quiere usar la información que guardó sobre ti</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
 <translation id="2839501879576190149">El sitio al que quieres acceder es falso</translation>
+<translation id="2843623755398178332">¿Quieres desplazar y acercar la pestaña compartida?</translation>
 <translation id="2851291081585704741">No tienes conexión</translation>
 <translation id="2856444702002559011">Es posible que algunos atacantes intenten robar tu información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (p. ej., contraseñas, mensajes o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 × 300 mm</translation>
@@ -1056,6 +1058,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3023165109041533893">Los anuncios sugeridos por sitios ayudan a proteger tu identidad y tu historial de navegación, a la vez que permiten que los sitios te muestren anuncios relevantes. Basándose en tu actividad, un sitio que visitaste puede sugerir anuncios relacionados mientras sigues navegando. En la configuración, puedes ver una lista de estos sitios y bloquear aquellos que no deseas.</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
 <translation id="3030331669969285614">Estas funciones experimentales evitan o revierten un cambio rotundo y solo estarán disponibles por un tiempo limitado.</translation>
+<translation id="3034526003882782781">Se permiten el desplazamiento y el zoom</translation>
 <translation id="3036894576201005614">Suministros de limpieza para el hogar</translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -1339,6 +1342,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3567778190852720481">No es posible inscribirse con una cuenta empresarial (tipo de cuenta no apta).</translation>
 <translation id="3567901620846335314">100 × 150 mm</translation>
 <translation id="3568886473829759308">Acceder al sitio web para ver la información, los recursos o los servicios que proporciona la empresa</translation>
+<translation id="3570079787344939099">Desplazamiento y zoom</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,7 +1454,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3744899669254331632">No puedes visitar <ph name="SITE" /> en este momento porque el sitio web envió credenciales encriptadas que Chromium no puede procesar. Los ataques y errores de red generalmente son temporales, por lo que esta página probablemente funcionará de nuevo más tarde.</translation>
 <translation id="3745599309295009257">El texto, el contenido y la URL de la página en la que escribas se enviarán a Google, serán revisados por personas y se usarán para mejorar esta función. No ingreses información personal (como datos médicos o financieros) ni uses esta herramienta en sitios que contengan información privada o sensible.</translation>
 <translation id="3748009735914587286">Metal (brillo intenso)</translation>
-<translation id="3748148204939282805">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3748148204939282805">Es posible que los atacantes de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
@@ -2460,6 +2464,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5772086939108830423">Usar una llave de acceso en otro dispositivo</translation>
+<translation id="5775734789739406956">Haz clic con el botón derecho para agregar tu información guardada a cualquier formulario</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="5776574724412881956">¿No se completaron los datos de la tarjeta virtual? Haz clic en los detalles de la tarjeta virtual para copiarlos en el portapapeles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Se habilitó un experimento</translation>
@@ -2476,6 +2481,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="580241730938216256">Iniciar actualización</translation>
 <translation id="5803412860119678065">¿Deseas llenar los campos con la información de tu tarjeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5806871454498484178">Se bloquearon el desplazamiento y el zoom</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
 <translation id="5810442152076338065">Tu conexión a <ph name="DOMAIN" /> está encriptada con un conjunto de cifrado obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Rehacer Agregar</translation>
@@ -2965,6 +2971,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoconferencias</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
+<translation id="6753390234084146956">pestañas</translation>
 <translation id="6753434778807740853">Borrar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Cajas de ahorro</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3472,6 +3479,7 @@ Detalles adicionales:
 <translation id="7673278391011283842">Buzón 6</translation>
 <translation id="7675325315208090829">Administrar formas de pago…</translation>
 <translation id="767550629621587224">Tiras precortadas</translation>
+<translation id="7675756033024037212">No se permiten el desplazamiento ni el zoom</translation>
 <translation id="7676643023259824263">Buscar el texto <ph name="TEXT" /> en el portapapeles</translation>
 <translation id="7679367271685653708">Ver y administrar tu historial de navegación en la configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>
@@ -3674,7 +3682,6 @@ Detalles adicionales:
 <translation id="8075588646978457437">Papel autoadhesivo</translation>
 <translation id="8075736640322370409">Crea una hoja de cálculo de Google nueva rápidamente</translation>
 <translation id="8075898834294118863">Administrar la configuración de sitios</translation>
-<translation id="8076492880354921740">Pestañas</translation>
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Quieres subir este archivo confidencial?}other{¿Quieres subir estos archivos confidenciales?}}</translation>
 <translation id="8078141288243656252">No se pueden realizar anotaciones cuando el documento está rotado</translation>
@@ -3713,7 +3720,6 @@ Detalles adicionales:
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política del administrador no recomienda descargar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda descargar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipo para hockey</translation>
-<translation id="815788908807586564">Chatea con Gemini</translation>
 <translation id="8161095570253161196">Reanudar la navegación</translation>
 <translation id="8163866351304776260">Perforación cuádruple a la izquierda</translation>
 <translation id="8164078261547504572">¿Quieres recibir correos electrónicos cuando bajen los precios?</translation>

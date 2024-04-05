@@ -1072,6 +1072,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1795214765651529549">Bruk klassisk</translation>
 <translation id="1796588414813960292">Funksjoner som krever lyd, kommer ikke til å virke</translation>
 <translation id="1797117170091578105">Spill med Chromebook-tastaturet. Du kan tilpasse taster til bestemte handlinger.</translation>
+<translation id="1798335429200675510">Høyreklikk i et tekstfelt for å opprette et utkast eller finjustere eksisterende tekst – basert på AI fra Google. Har begrenset tilgjengelighet for øyeblikket.</translation>
 <translation id="180203835522132923">Søk + O og deretter W</translation>
 <translation id="1802624026913571222">Gå i hvilemodus når dekselet lukkes</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller avslutte.</translation>
@@ -1466,6 +1467,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2088092308059522196">Registrering støttes bare etter at du har installert <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Innebygd TrackPoint</translation>
 <translation id="208928984520943006">For å gå til startskjermen når som helst, sveip opp fra bunnen.</translation>
+<translation id="2089550919269323883">Installering av <ph name="VM_NAME" /> er blokkert av bedriftsregler. Kontakt systemadministratoren din for å få hjelp. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">ELLER</translation>
 <translation id="2090165459409185032">For å gjenopprette kontoinformasjonen din, gå til: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Kobles automatisk til når du logger på</translation>
@@ -1509,6 +1511,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2113479184312716848">Åpne &amp;fil ...</translation>
 <translation id="2113921862428609753">Informasjonstilgang til instans</translation>
+<translation id="2114145607116268663">Kan ikke installere programmet. Enheten må startes på nytt. Start datamaskinen på nytt, og prøv igjen. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Last inn &amp;rammen på nytt</translation>
 <translation id="2114413269775311385">Bruk denne kontoen med Android-apper. Du kan styre tillatelser for Android-apper i <ph name="LINK_BEGIN" />innstillingene for appene<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Se «Nyeste minner» og andre minner her</translation>
@@ -2678,6 +2681,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
 <translation id="2979893796619951531">Ekskluder nettsted</translation>
+<translation id="2981033191524548279">Beklager, noe gikk galt. Send en tilbakemelding med #bruschetta i beskrivelsen. Feilkoden er <ph name="ERROR" />. Du kan muligens løse dette ved å starte på nytt og prøve igjen.</translation>
 <translation id="2981113813906970160">Vis stor musepeker</translation>
 <translation id="2983102365694924129">Basert på aktiviteten din på et nettsted. Denne innstillingen er slått av.</translation>
 <translation id="2983373101216420412">Batterinivået til etuiet er <ph name="PERCENTAGE" /> %.</translation>
@@ -4347,6 +4351,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
 <translation id="4275788652681621337">Lukk sidepanelet</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
+<translation id="4276856098224910511">Kan ikke installere Bruschetta. En OS-oppdatering er på vent. Installer alle ventende OS-oppdateringer, start på nytt, og prøv igjen. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-konfigurasjonskilde</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Tillatelser er fjernet fra 1 nettsted}other{Tillatelser er fjernet fra {NUM_SITES} nettsteder}}</translation>
 <translation id="4278390842282768270">Tillatt</translation>
@@ -4556,6 +4561,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4426490308207168518">Gi tilbakemelding, eller rapporter et problem</translation>
 <translation id="4426508677408162512">Alle bokmerker</translation>
 <translation id="4426513927906544654">Få innholdsanbefalinger</translation>
+<translation id="4426857487270413362">Kan ikke laste ned installasjonsfilene. Sjekk internettilkoblingen og at du har nok ledig diskplass, og prøv på nytt. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
@@ -5157,6 +5163,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4899696330053002588">Inneholder annonser</translation>
 <translation id="490031510406860025">Ikke tillatt på dette nettstedet</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – linjefletting</translation>
+<translation id="490056871160016482">Nettsteder bruker denne funksjonen for å tilby engasjerende fullskjermopplevelser uavhengig av brukerbevegelser</translation>
 <translation id="4900652253009739885">Kan ikke fjerne den eneste bryteren som er tilordnet «Velg». Trykk på en valgfri tast for å <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Vis nylig lukkede</translation>
 <translation id="4901309472892185668">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet.</translation>
@@ -7175,6 +7182,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6517227424170598783">Vil du fjerne snarveien «<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />»?</translation>
 <translation id="6517382055541687102">Den valgte enheten er endret til <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Filene dine i Min disk synkroniseres automatisk med Chromebooken, slik at du har tilgang til dem uten internettilkobling. Dette bruker omtrent <ph name="REQUIRED_SPACE" />. Du har <ph name="FREE_SPACE_AVAILABLE" /> ledig.</translation>
+<translation id="651753338596587143">Beklager, noe gikk galt under installering av avhengigheter for nedlastbart innhold. Prøv å starte på nytt. Hvis problemet vedvarer, kan du sende en tilbakemelding med #bruschetta i beskrivelsen. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Det kan hende at enheten din slutter å fungere som den skal, og du kan oppleve sikkerhets- og ytelsesproblemer. Hvis du slår av oppdateringer, kan det også påvirke rettighetene dine til å fremsette juridiske krav hvis du støter på problemer.</translation>
 <translation id="6518014396551869914">&amp;Kopier bilde</translation>
 <translation id="6518133107902771759">Bekreft</translation>
@@ -7622,6 +7630,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6847125920277401289">Frigjør plass for å fortsette</translation>
 <translation id="6848388270925200958">Akkurat nå har du noen kort som bare kan brukes på denne enheten</translation>
 <translation id="6848716236260083778">For å konfigurere fingeravtrykk, få barnet ditt til å berøre fingeravtrykkssensoren. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Ikoner på verktøylinjen</translation>
 <translation id="6850286078059909152">Tekstfarge</translation>
 <translation id="6851181413209322061">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
 <translation id="6851497530878285708">Appen er slått på</translation>
@@ -8379,6 +8388,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Utvidet forhåndslasting</translation>
 <translation id="7456847797759667638">Åpne sted</translation>
+<translation id="7457027286267861992">Det er for lite diskplass. Frigjør mer diskplass, og prøv på nytt. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{en link}other{# linker}}</translation>
 <translation id="7458168200501453431">Bruker samme stavekontroll som i Google Søk. Tekst du skriver inn i nettleseren, sendes til Google.</translation>
 <translation id="7458715171471938198">Vil du gjenopprette apper?</translation>
@@ -10174,6 +10184,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8787752878731558379">Hjelp oss med å forbedre Chrome ved å fortelle oss hvorfor du tillot informasjonskapsler fra tredjeparter</translation>
 <translation id="8791157330927639737">Finn ut mer om oppdatering</translation>
 <translation id="8791534160414513928">Send en «Do Not Track»-forespørsel med nettrafikken din</translation>
+<translation id="8793390639824829328">Nettsteder bruker denne funksjonen for å rulle og zoome på delte faner</translation>
 <translation id="879413103056696865">Når Wifi-sonen er på, kommer <ph name="PHONE_NAME" /> til å</translation>
 <translation id="8795916974678578410">Nytt vindu</translation>
 <translation id="8796919761992612392">T&amp;ilpass Chrome</translation>
@@ -10665,6 +10676,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9150045010208374699">bruke kameraet ditt</translation>
 <translation id="9150079578948279438">Kunne ikke fjerne profilen. Prøv på nytt, eller kontakt operatøren for å få teknisk støtte.</translation>
 <translation id="9150860646299915960">Oppgrader Linux-beholderen din</translation>
+<translation id="915112772806845021">Nettsteder bruker denne funksjonen for å starte bilde-i-bilde automatisk. Da kan du fortsette å se på videoer, samtidig som du frigjør skjermen til andre oppgaver.</translation>
 <translation id="9151249085738989067">Bytt ChromeVox-stemme automatisk, basert på språk</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros-systeminformasjon</translation>

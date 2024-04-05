@@ -292,6 +292,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="260403163289591229">Sekojat</translation>
 <translation id="2604446170045642109">Savos iestatījumos varat izslēgt tumšo motīvu vietnēm.</translation>
 <translation id="2612676031748830579">Kartes numurs</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> uzaicināja jūs piekļūt kopīgotam vienumam.</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
 <translation id="2634393460268044753">Nosūta jūsu apmeklēto vietņu vietrāžus URL un nelielu lapas satura fragmentu, informāciju par lejupielādēm un paplašinājumu darbību, kā arī sistēmas informāciju funkcijai “Google droša pārlūkošana”, lai pārbaudītu, vai šie vietrāži nav kaitīgi.</translation>
 <translation id="2642087927315268160">Pierakstīšanās ekrāna apakšdaļas lapa ir aizvērta.</translation>
@@ -398,6 +399,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="3072980200212375806">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes politika<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Varat saglabāt lapas lasīšanai vēlāk vai bezsaistē.</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
+<translation id="3093004810561729002">Kāda persona</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Paziņojumi</translation>

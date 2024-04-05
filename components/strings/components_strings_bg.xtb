@@ -183,6 +183,7 @@
 <translation id="132301787627749051">Търсене на изображението от буферната памет</translation>
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="132390688737681464">Запазване и попълване на адреси</translation>
+<translation id="1325412080783393306">Търсене на още опции за купуване</translation>
 <translation id="1325749054628832887">Рекламните теми са само едно от многото неща, чрез които даден сайт може да персонализира рекламите. Дори и без рекламни теми сайтовете пак могат да ви показват реклами, но е възможно те да не са толкова интересни. Научете повече за <ph name="BEGIN_LINK" />управлението на поверителността при рекламите<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Изпращане на сигнал</translation>
 <translation id="1330449323196174374">Сгъване на левия край навътре</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">Екология и околна среда</translation>
 <translation id="2452837234288608067">Не успях да помогна с това. Опитайте отново.</translation>
 <translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Търсене на <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Социални мрежи</translation>
 <translation id="2463739503403862330">Попълване</translation>
 <translation id="2465688316154986572">Телбодиране</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">вертикална ориентация</translation>
 <translation id="3287510313208355388">Изтегляне, когато съм онлайн</translation>
 <translation id="3288238092761586174">Може да се наложи <ph name="URL" /> да предприеме допълнителни стъпки за потвърждаване на плащането ви</translation>
+<translation id="3289578402369490638">От други магазини в мрежата</translation>
 <translation id="3293642807462928945">Научете повече за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Преглеждайте и управлявайте паролите си в настройките на Chrome</translation>
 <translation id="3299098170013242198">Функцията Windows Hello е включена за попълване на паролите</translation>
@@ -2971,6 +2972,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Стойност за правилото</translation>
+<translation id="6753390234084146956">раздели</translation>
 <translation id="6753434778807740853">Изтриване на записа <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Спестовни сметки</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3683,6 @@
 <translation id="8075588646978457437">Самозалепваща се хартия</translation>
 <translation id="8075736640322370409">Бързо създаване на таблица в Google Таблици</translation>
 <translation id="8075898834294118863">Управление на настройките за сайтовете</translation>
-<translation id="8076492880354921740">Раздели</translation>
 <translation id="8077669823243888800">Плик, китайски №8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Да се качи ли поверителният файл?}other{Да се качат ли поверителните файлове?}}</translation>
 <translation id="8078141288243656252">Добавянето на пояснения не е възможно, когато документът е завъртян</translation>
@@ -3720,7 +3721,6 @@
 <translation id="8150722005171944719">Файлът на адрес <ph name="URL" /> не може да бъде прочетен.  Възможно е да е премахнат, преместен или разрешенията му да предотвратяват достъпа.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Според администраторско правило изтеглянето на този файл на <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило изтеглянето на тези файлове на <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="81563721597823545">Екипировка за хокей</translation>
-<translation id="815788908807586564">Чат с Gemini</translation>
 <translation id="8161095570253161196">Възобновяване на сърфирането</translation>
 <translation id="8163866351304776260">Четворно перфориране отляво</translation>
 <translation id="8164078261547504572">Искате ли да получавате имейли при понижения на цени?</translation>

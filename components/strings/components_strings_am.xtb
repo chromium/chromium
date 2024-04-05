@@ -183,6 +183,7 @@
 <translation id="132301787627749051">የቅንጥብ ሰሌዳ ምስልን ይፈልጉ</translation>
 <translation id="1323433172918577554">ተጨማሪ አሳይ</translation>
 <translation id="132390688737681464">አድራሻዎችን አስቀምጥ እና ሙላ</translation>
+<translation id="1325412080783393306">ተጨማሪ የመግዣ አማራጮችን ይፈልጉ</translation>
 <translation id="1325749054628832887">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ናቸው። ምንም እንኳን የማስታወቂያ ርዕሶች ባይኖሩም ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ብዙም ሳቢ ላይሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የማስታወቂያ ግላዊነትዎን ስለማስተዳደር የበለጠ ይወቁ<ph name="LINK_END" />።</translation>
 <translation id="1329916999021038454">ሪፖርት ላክ</translation>
 <translation id="1330449323196174374">ግራ በር እጠፍ</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">ሥነ ምህዳር እና አካባቢ</translation>
 <translation id="2452837234288608067">በዚህ ላይ ማገዝ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="2456755709261364512">ባትሪዎ ከ<ph name="REQUIRED_BATTERY_PRECENT" />% በላይ ኃይል መሙላት አለበት</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" />ን ፈልግ</translation>
 <translation id="2462932596748424101">ማኅበራዊ አውታረ መረቦች</translation>
 <translation id="2463739503403862330">ሙላ</translation>
 <translation id="2465688316154986572">ስቴፕለር ምታ</translation>
@@ -1190,6 +1190,7 @@
 <translation id="3286372614333682499">የምስል ፍሬ</translation>
 <translation id="3287510313208355388">መስመር ላይ ሲሆኑ ያውርዱ</translation>
 <translation id="3288238092761586174"><ph name="URL" /> ክፍያዎን ለማረጋገጥ ተጨማሪ እርምጃዎችን መውሰድ ሊፈልግ ይችላል</translation>
+<translation id="3289578402369490638">በድሩ ላይ ካሉ ሌሎች መደብሮች</translation>
 <translation id="3293642807462928945">ስለ<ph name="POLICY_NAME" /> መመሪያው ተጨማሪ ይወቁ</translation>
 <translation id="3295444047715739395">በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="3299098170013242198">Windows Hello የይለፍ ቃላትን ለመሙላት በርቷል</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">አርኦሲ 8ኬ</translation>
 <translation id="6752086006821653994">ቴሌኮንፈረንሲንግ</translation>
 <translation id="6753269504797312559">የመምሪያ እሴት</translation>
+<translation id="6753390234084146956">ትሮች</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ግቤትን ሰርዝ</translation>
 <translation id="6754547388777247439">የቁጠባ ሒሳቦች</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">በራስ የሚለጠፍ ወረቀት</translation>
 <translation id="8075736640322370409">አዲስ Google ሉህ በፍጥነት ፍጠር</translation>
 <translation id="8075898834294118863">የጣቢያ ቅንብሮችን ያቀናብሩ</translation>
-<translation id="8076492880354921740">ትሮች</translation>
 <translation id="8077669823243888800">#8 የቻይና ፖስታ</translation>
 <translation id="8078006011486731853">{0,plural, =1{ምስጢራዊ ፋይል ይሰቀል?}one{ምስጢራዊ ፋይል ይሰቀል?}other{ምስጢራዊ ፋይሎች ይሰቀሉ?}}</translation>
 <translation id="8078141288243656252">በሚሸከርከርበት ጊዜ ማብራራት አይችልም</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> ላይ ያለው ፋይል የሚነበብ አይደለም።  ተወግዶ፣ ተወስዶ ወይም የፋይል ፍቃዶቹ መዳረሻ እየከለከሉ ሊሆኑ ይችላሉ።</translation>
 <translation id="8153865548451212769">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> ማውረድ አይመክርም}}</translation>
 <translation id="81563721597823545">የሆኪ መሣሪያዎች</translation>
-<translation id="815788908807586564">ከGemini ጋር ይወያዩ</translation>
 <translation id="8161095570253161196">ማሰስን ከቆመበት ቀጥል</translation>
 <translation id="8163866351304776260">በግራ በኩል አራቴ ብሳ</translation>
 <translation id="8164078261547504572">ዋጋዎች ሲቀንሱ ኢሜይሎች ይፈልጋሉ?</translation>

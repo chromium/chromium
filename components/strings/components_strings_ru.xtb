@@ -183,6 +183,7 @@
 <translation id="132301787627749051">Поиск по изображению из буфера обмена</translation>
 <translation id="1323433172918577554">Развернуть</translation>
 <translation id="132390688737681464">Сохранять и автоматически подставлять адреса</translation>
+<translation id="1325412080783393306">Ещё предложения</translation>
 <translation id="1325749054628832887">Сайты персонализируют рекламу на основе многих факторов, в том числе с помощью тем. Даже если эта функция отключена, сайты по-прежнему будут показывать объявления, однако они могут меньше соответствовать вашим интересам. Подробнее о том, <ph name="BEGIN_LINK" />как управлять конфиденциальностью в рекламе<ph name="LINK_END" />…</translation>
 <translation id="1329916999021038454">Отправить отчет</translation>
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">Экология и окружающая среда</translation>
 <translation id="2452837234288608067">Не удалось выполнить этот запрос. Повторите попытку.</translation>
 <translation id="2456755709261364512">Уровень заряда батареи должен быть выше <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
-<translation id="2462599289530201834">Искать: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Социальные сети</translation>
 <translation id="2463739503403862330">Заполнить</translation>
 <translation id="2465688316154986572">Скоба</translation>
@@ -1190,6 +1190,7 @@
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
+<translation id="3289578402369490638">Из других магазинов в интернете</translation>
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3299098170013242198">Windows Hello используется, чтобы указывать пароли</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференцсвязь</translation>
 <translation id="6753269504797312559">Значение правила</translation>
+<translation id="6753390234084146956">вкладки</translation>
 <translation id="6753434778807740853">Удалить запись "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">Сберегательные счета</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">Самоклеящаяся бумага</translation>
 <translation id="8075736640322370409">Быстро создать таблицу Google</translation>
 <translation id="8075898834294118863">Открыть настройки сайтов</translation>
-<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8077669823243888800">Конверт Chinese 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Загрузить конфиденциальный файл?}one{Загрузить конфиденциальные файлы?}few{Загрузить конфиденциальные файлы?}many{Загрузить конфиденциальные файлы?}other{Загрузить конфиденциальные файлы?}}</translation>
 <translation id="8078141288243656252">Недоступно, когда документ повернут</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администратор не рекомендует скачивать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="81563721597823545">Хоккейный инвентарь</translation>
-<translation id="815788908807586564">Чат с Gemini</translation>
 <translation id="8161095570253161196">Продолжить просмотр</translation>
 <translation id="8163866351304776260">Четыре отверстия слева</translation>
 <translation id="8164078261547504572">Хотите получать электронные письма о снижении цен?</translation>

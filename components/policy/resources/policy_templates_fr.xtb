@@ -206,7 +206,6 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
       Si elle est désactivée, la fonctionnalité Liste d'achats n'est pas disponible.
       </translation>
 <translation id="1144147113722324623">Activer les mises à niveau automatiques vers HTTPS pour l'audio et la vidéo, et afficher un avertissement "Non sécurisé" pour les images.</translation>
-<translation id="1145928409398419809">Désactiver l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="1147732569915511430">Hachage SHA-256 de l'image de l'avatar.</translation>
 <translation id="1148415065145333943">Désactiver le mode avancé de recharge de la batterie</translation>
 <translation id="1149203480502386713">Activer l'accord de clé post-quantique pour TLS</translation>
@@ -1821,6 +1820,7 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2413899611035194909">Afficher les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
+<translation id="2419114151067000328">Les utilisateurs ne pourront pas accéder aux caractéristiques du produit.</translation>
 <translation id="2420958105721932612">Cette règle permet de configurer l'installation d'une appli. AVAILABLE : l'appli n'est pas installée automatiquement, mais l'utilisateur peut l'installer. Il s'agit du paramètre par défaut si cette règle n'est pas configurée. FORCE_INSTALLED : l'appli est installée automatiquement, et l'utilisateur ne peut pas la désinstaller. BLOCKED : l'appli est bloquée et ne peut pas être installée. Si elle a été installée d'après une règle précédente, elle sera désinstallée.</translation>
 <translation id="2421400544595297401">Ne pas autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3332,6 +3332,7 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
+<translation id="361046511337768385">Autoriser l'activation des caractéristiques du produit</translation>
 <translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
       Si cette règle est définie sur "False", l'écran n'est pas affiché.
       Si cette règle est définie sur "True", l'écran est affiché.</translation>
@@ -3445,17 +3446,6 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
 <translation id="3727675072430693164">Si cette règle est activée, les appareils enregistrés communiquent les statistiques matérielles des composants SoC.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne fournissent pas ces statistiques.</translation>
-<translation id="372853200788846114">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> demande à l'utilisateur de saisir un mot de passe pour déverrouiller l'appareil arrêté provisoirement ou dont l'écran a été rabattu.
-
-      Un appareil se verrouille quand son écran est rabattu, sauf s'il est connecté (avec un écran externe).  Dans ce cas, il ne se verrouille pas quand l'écran est rabattu, mais il se verrouille si l'écran externe est retiré et que l'écran est encore rabattu.
-
-      Jusqu'à <ph name="PRODUCT_OS_NAME" /> M106, cette règle ne verrouille l'appareil qu'en cas d'arrêt provisoire.  À partir de M106, cette règle verrouille l'appareil quand il est arrêté provisoirement ou que l'écran est rabattu.
-
-      Si cette règle est définie sur "True" et que la règle <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> est définie sur <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, l'appareil se verrouille quand l'écran est rabattu, mais il n'est arrêté provisoirement que s'il est configuré pour l'être dans <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
-
-      Si cette règle est désactivée, l'utilisateur n'est pas invité à saisir de mot de passe pour déverrouiller l'appareil.
-
-      Si cette règle n'est pas configurée, l'utilisateur peut choisir d'être invité ou non à saisir un mot de passe pour déverrouiller l'appareil.</translation>
 <translation id="3729937245044939404">Cette règle a été abandonnée dans la version M70. Veuillez utiliser <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> et <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> à la place.
 
       Active la fonctionnalité de saisie automatique de <ph name="PRODUCT_NAME" />, qui permet aux utilisateurs de remplir automatiquement des formulaires Web à partir de données stockées précédemment, telles qu'une adresse et des infos de carte de crédit.
@@ -3758,6 +3748,7 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
+<translation id="398294729592983401">Autoriser les utilisateurs à activer ou désactiver le paramètre "Protection contre le fingerprinting" de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
 <translation id="3984773186203819634">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
 
@@ -5341,6 +5332,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
 À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.</translation>
 <translation id="5362531528507578966">Permet d'ignorer le mode d'impression d'images de fond par défaut.</translation>
+<translation id="5363412016871318326">Les utilisateurs pourront accéder aux caractéristiques du produit.</translation>
 <translation id="5365476955714838841">Paramètres de ligne de commande pour le navigateur secondaire.</translation>
 <translation id="5365946944967967336">Afficher le bouton Accueil sur la barre d'outils</translation>
 <translation id="5366977351895725771">Si cette règle est associée à la valeur "false", la création de comptes utilisateur supervisés par cet utilisateur est désactivée. Les utilisateurs supervisés existants restent disponibles.
@@ -5686,6 +5678,7 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
 
       Si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut pour interdire les hachages non sécurisés. Si elle est activée, <ph name="PRODUCT_NAME" /> autorise un serveur à utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Si elle est désactivée, <ph name="PRODUCT_NAME" /> interdit à un serveur d'utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS.</translation>
 <translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
+<translation id="5612770822986069057">Autoriser les utilisateurs à activer ou désactiver le paramètre "IP Protection" de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="5614865701790130558">Enregistrer des événements pour les installations d'extensions basées sur des règles</translation>
 <translation id="561493980641967737">Si cette règle est activée, la collecte de données anonymisées avec clé d'URL (qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation) est toujours active.
 
@@ -5715,31 +5708,6 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 <translation id="5622924058222112599">Activer le processus de déploiement CECPQ2 par défaut</translation>
 <translation id="5623304306796942802">Demander si plusieurs certificats correspondent</translation>
 <translation id="5625771176514429288">Les applis Chrome seront autorisées à s'exécuter sur ces plates-formes.</translation>
-<translation id="5627094573311711592">Configure une liste de règles de contrôle des données pour éviter les fuites de données. Ces fuites peuvent se produire lors de la copie et du collage de données, de l'ajout de fichiers à des pages Web, de l'impression, du téléchargement, etc.
-
-      Chaque règle se compose des éléments suivants :
-      - Propriétés de la source d'une action. Une règle ne se déclenche que si une action utilisateur correspond à tous les champs renseignés dans son champ <ph name="DATA_CONTROLS_SOURCES" />. Pour les sous-champs de liste, il suffit de faire correspondre une entrée. Par exemple, la règle se déclenche dès qu'un format d'URL correspond.
-      - Propriétés de la destination d'une action. Une règle ne se déclenche que si une action utilisateur correspond à tous les champs renseignés dans son champ <ph name="DATA_CONTROLS_DESTINATIONS" />. Pour les sous-champs de liste, il suffit de faire correspondre une entrée. Par exemple, la règle se déclenche dès qu'un format d'URL correspond.
-      - Une liste de restrictions à appliquer aux données des sources.
-
-      Les règles peuvent être ajoutées pour :
-      - Contrôler les données du presse-papiers partagées entre les sources et les destinations.
-      - Contrôler l'impression de n'importe quelle source.
-      - Contrôler les fichiers joints à n'importe quelle destination.
-      - Contrôler les fichiers téléchargés depuis n'importe quelle source.
-
-      Si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est définie sur "True", les règles déclenchées sont signalées à l'administrateur.
-      Le niveau de restriction peut être défini sur "ALLOW", "BLOCK", "WARN" ou "REPORT".
-      - Si le niveau de restriction est défini sur "ALLOW", l'action sera autorisée. Cela remplace également les restrictions appliquées par d'autres règles.
-      - Si le niveau de restriction est défini sur "BLOCK", l'action concernée ne sera pas autorisée.
-      - Si le niveau de restriction est défini sur "WARN", l'utilisateur sera averti et pourra choisir de continuer ou d'annuler l'action.
-      - Si le niveau de restriction est défini sur "REPORT", l'action utilisateur ne sera pas interrompue, mais un rapport sera envoyé si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est activée.
-
-      Remarques :
-      - Les formats d'URL doivent respecter les conditions énoncées sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Pour les règles de prévention des fuites de données propres à <ph name="PRODUCT_OS_NAME" />, consultez la règle <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="5630352020869108293">Restaurer la dernière session</translation>
 <translation id="5633871703004128675">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie</translation>
 <translation id="5634032995857968056">Activer le bac à sable du conteneur d'appli de moteur de rendu</translation>
@@ -5783,6 +5751,7 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 <translation id="5670249935663090320">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> est activé. Les utilisateurs pourront le lancer depuis le menu de l'application, les menus contextuels des pages, les commandes multimédias sur les sites Web compatibles Cast et l'icône Cast de la barre d'outils (si elle est affichée).
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.</translation>
+<translation id="5673254755365419402">Activer la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
 <translation id="5679540979548648200">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, et soumet l'appareil à la réinitialisation Powerwash si le téléchargement indépendant était activé auparavant</translation>
@@ -6026,11 +5995,6 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> est une propriété facultative dont la valeur par défaut est "False".</translation>
 <translation id="5879014913445067283">Contrôler la détection des partages de fichiers sur le réseau via <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Activer la fonctionnalité Appuyer pour rechercher</translation>
-<translation id="5881715931837589500">Active l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.
-
-Si cette règle est activée ou n'est pas configurée, l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" /> est activée pour les utilisateurs de la version Enterprise.
-
-Si cette règle est désactivée, l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" /> est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="5882345429632338713">Délai avant le lancement du navigateur secondaire (en millisecondes)</translation>
 <translation id="5883015257301027298">Paramètre de cookies par défaut</translation>
 <translation id="5883754873839596178">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy. Toutefois, certains serveurs proxy ne peuvent pas gérer de nombreuses connexions simultanées par client. Pour résoudre ce problème, il suffit de diminuer la valeur de cette règle, laquelle doit être supérieure à 6 et inférieure à 100. Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes. Toute diminution de la valeur par défaut est effectuée à vos propres risques.
@@ -6067,11 +6031,6 @@ Si cette règle est désactivée, l'intégration de <ph name="GOOGLE_CLASSROOM_N
 <translation id="5897913798715600338">Recharge de la batterie à l'aide d'une technologie de recharge rapide.</translation>
 <translation id="5898486742390981550">Lorsque plusieurs personnes sont connectées, l'utilisateur principal est le seul à pouvoir se servir des applications Android.</translation>
 <translation id="5899751601113377553">Empêcher les utilisateurs de se servir de <ph name="LACROS_NAME" /></translation>
-<translation id="5900000623536207626">Active l'intégration de <ph name="GOOGLE_TASKS_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.
-
-Si cette règle est activée ou n'est pas configurée, l'intégration de <ph name="GOOGLE_TASKS_NAME" /> est activée pour les utilisateurs de la version Enterprise.
-
-Si cette règle est désactivée, l'intégration de <ph name="GOOGLE_TASKS_NAME" /> est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="5900919753933009463">Signaler la configuration du réseau</translation>
 <translation id="5901427587865226597">Impression recto verso seulement</translation>
 <translation id="5905114360004248993">Autoriser les pop-up sur ces sites</translation>
@@ -6209,14 +6168,12 @@ Cette règle a été abandonnée dans la version M124.</translation>
 <translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache amélioré</translation>
 <translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="6042629184389251062">La collecte de métriques avec clé d'URL  n'est pas autorisée</translation>
-<translation id="6045733613334942660">Pilotes de scanner</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
 <translation id="6048690591359317353">Ne pas autoriser l'utilisateur à déconnecter ni modifier manuellement un VPN</translation>
 <translation id="6049117606554031363">Activer les rapports sur l'état de la carte d'appareil</translation>
 <translation id="6050796253724099706">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="605132676434455096">Interdire l'ajout de nouveaux profils</translation>
-<translation id="6052660755155321371">Désactiver l'intégration de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="6053260874233331700">Interdire l'accès à la géolocalisation sur l'écran de connexion</translation>
 <translation id="6053681087509103368">Autoriser WebRTC à utiliser des versions obsolètes du protocole TLD/DTLS</translation>
 <translation id="6056517174496942473">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL</translation>
@@ -7780,7 +7737,6 @@ La valeur de la règle est une liste de certificats X.509 encodés en base64. L
 
       Remarque : Cette règle n'a pas d'incidence sur Google Drive ni sur la mémoire de stockage interne. Les utilisateurs peuvent toujours accéder aux fichiers enregistrés dans le dossier "Téléchargements".</translation>
 <translation id="7177857088692019405">Déverrouillage rapide</translation>
-<translation id="7177980542896745343">Activer l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" /></translation>
 <translation id="7179157174254421614">Permet de définir le mode de détection automatique du fuseau horaire, sauf si la règle <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> désactive cette détection automatique. Notez que les utilisateurs ne peuvent pas modifier ce mode.
 
 Cette règle peut être définie sur les valeurs suivantes :
@@ -8015,7 +7971,6 @@ Cette règle doit être définie sous la forme d'une liste de noms de domaine co
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7372210077527987724">Activer l'intégration de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7372831798009983116">Activer la fonctionnalité d'accessibilité de clic automatique</translation>
 <translation id="7373200034079131670">Redémarrage en cas de déconnexion de l'utilisateur si Android ou une VM sont lancés</translation>
 <translation id="7374784840090523241">Créer les clés d'accès dans d'autres magasins par défaut, comme le profil <ph name="PRODUCT_NAME" />.</translation>
@@ -8525,7 +8480,6 @@ Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet�
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, les contenus <ph name="FLASH_PLUGIN_NAME" /> de provenance différente ou de petite taille peuvent être bloqués.
 
       Remarque : pour contrôler les sites autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7801833005984890634">Activer l'intégration de <ph name="GOOGLE_TASKS_NAME" /></translation>
 <translation id="7804859754080118507">Signalez les événements liés à la connexion réseau et la puissance du signal sur les appareils enregistrés.
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
@@ -8862,6 +8816,9 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
+<translation id="810509972572344398">Si cette règle est activée ou n'est pas configurée, les caractéristiques du produit seront disponibles pour les utilisateurs.
+
+Si elle est désactivée, elles ne seront pas disponibles.</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
 
@@ -9397,6 +9354,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
 <translation id="8544375438507658205">Moteur de rendu HTML par défaut pour <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
 <translation id="8549906780629620346">Activer la récupération de compte</translation>
+<translation id="855291439519960768">Désactiver la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="8553491595730354263">Permet à l'hôte d'accès à distance d'utiliser des authentifications par code ou association lorsqu'il accepte des connexions client</translation>
 <translation id="8553955290407912156">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
@@ -9588,7 +9546,6 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 <translation id="8685748277907759932">Empêcher les utilisateurs d'employer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="8686700500128191717">Activer les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="8687958770985542440">Réactiver les API Web Components v0 jusqu'à la version M84.</translation>
-<translation id="8690591325980850680">Activer l'intégration de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="8693243869659262736">Utiliser le client DNS intégré</translation>
 <translation id="8695006038397632296">Créer et importer des demandes d'installation d'extensions dans la console d'administration</translation>
 <translation id="8695108198606654558">Cette règle ne contrôle que le comportement d'importation à la première exécution après l'installation. Elle permet une transition plus fluide vers <ph name="PRODUCT_NAME" /> dans les environnements où un autre navigateur était souvent utilisé avant l'installation de celui-ci. Cette règle n'affecte pas les fonctionnalités du gestionnaire de mots de passe pour les comptes Google.

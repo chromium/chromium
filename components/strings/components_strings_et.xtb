@@ -183,6 +183,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="132301787627749051">Lõikelaua kujutise otsimine</translation>
 <translation id="1323433172918577554">Kuva rohkem</translation>
 <translation id="132390688737681464">Salvesta ja sisesta aadressid</translation>
+<translation id="1325412080783393306">Otsige rohkem ostuvõimalusi</translation>
 <translation id="1325749054628832887">Reklaamiteemad on vaid üks paljudest asjadest, mida sait võib kasutada reklaamide isikupärastamiseks. Saidid võivad teile reklaame näidata ka ilma reklaamiteemadeta, kuid need võivad olla vähem huvitavad. Vaadake lisateavet <ph name="BEGIN_LINK" />oma reklaamide privaatsuse haldamise kohta<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Teatamine</translation>
 <translation id="1330449323196174374">Vasakult väravakujuliselt volditud</translation>
@@ -785,7 +786,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2452098632681057184">Ökoloogia ja keskkond</translation>
 <translation id="2452837234288608067">Me ei saanud sellega aidata. Proovige uuesti.</translation>
 <translation id="2456755709261364512">Teie aku peab olema laetud üle <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Otsige märksõna <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Sotsiaalvõrgustikud</translation>
 <translation id="2463739503403862330">Täida</translation>
 <translation id="2465688316154986572">Kirjaklamber</translation>
@@ -1191,6 +1191,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
 <translation id="3287510313208355388">Laadi alla, kui ühendus on saadaval</translation>
 <translation id="3288238092761586174"><ph name="URL" /> peab teie makse kinnitamiseks võib-olla täiendavaid toiminguid tegema</translation>
+<translation id="3289578402369490638">Teistest veebipoodidest</translation>
 <translation id="3293642807462928945">Lisateave reegli <ph name="POLICY_NAME" /> kohta</translation>
 <translation id="3295444047715739395">Vaadake ja hallake oma paroole Chrome'i seadetes</translation>
 <translation id="3299098170013242198">Windows Hello on paroolide täitmiseks sisse lülitatud</translation>
@@ -2971,6 +2972,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonverents</translation>
 <translation id="6753269504797312559">Reegli väärtus</translation>
+<translation id="6753390234084146956">vahelehti</translation>
 <translation id="6753434778807740853">Kustuta sisestus <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Hoiukontod</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3683,6 @@ Lisateave:
 <translation id="8075588646978457437">Isekleepuv paber</translation>
 <translation id="8075736640322370409">Kiirelt uue Google'i arvutustabeli loomine</translation>
 <translation id="8075898834294118863">Saidi seadete haldamine</translation>
-<translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8077669823243888800">Ümbrik Hiina nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Kas laadida üles konfidentsiaalne fail?}other{Kas laadida üles konfidentsiaalsed failid?}}</translation>
 <translation id="8078141288243656252">Pööramisel ei saa märkusi lisada</translation>
@@ -3720,7 +3721,6 @@ Lisateave:
 <translation id="8150722005171944719">Fail <ph name="URL" /> ei ole loetav. Võimalik, et see on eemaldatud, teisaldatud või faili load takistavad juurdepääsu.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}other{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}}</translation>
 <translation id="81563721597823545">Hokivarustus</translation>
-<translation id="815788908807586564">Geminiga vestlemine</translation>
 <translation id="8161095570253161196">Jätka sirvimist</translation>
 <translation id="8163866351304776260">Neli auku vasakul</translation>
 <translation id="8164078261547504572">Kas soovite hinnalanguste kohta e-kirju?</translation>

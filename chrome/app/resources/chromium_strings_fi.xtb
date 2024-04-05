@@ -238,6 +238,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5427571867875391349">Aseta Chromium oletusselaimeksi</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium ei ehkä toimi oikein, koska sen käyttöä tällä Linux-jakelulla ei enää tueta.</translation>
+<translation id="5475924890392386523">Chromium on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
 <translation id="5480860683791598150">Chromium tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
 <translation id="5487574057737591516">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Jos Chromiumin arvio menee pieleen tai jos et halua nähdä tiettyjä mainoksia, voit poistaa haluamasi kiinnostuksen kohteen.</translation>
 <translation id="549669000822060376">Odota hetki, Chromium asentaa uusimpia järjestelmäpäivityksiä.</translation>
@@ -366,6 +367,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="734373864078049451">Tämä on verkkosi, kirjanmerkkiesi ja muun Chromium-sisältösi koti.</translation>
 <translation id="7349591376906416160">Järjestelmänvalvojasi on määrittänyt Chromiumin avaamaan osoitteen <ph name="TARGET_URL_HOSTNAME" /> selaimella <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7355355292030546812">Chromium on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‑ ja henkilökohtaisia tilejäsi, mukaan lukien <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Kun käytät Chromium-profiileja, voit pitää kaiken Chromium-sisällön erillään. Näin työ ja hauskanpito on helpompi erottaa toisistaan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
@@ -452,6 +454,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8988036198400390003">Ylläpidä Chromium-profiileja</translation>
 <translation id="9019929317751753759">Paransimme Chromiumin turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
+<translation id="904366664621834601">Chromium on estänyt tämän latauksen, koska arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
 <translation id="907832235989677238">Kirjaudu Chromiumiin. Jos haluat kirjautua tilille vain kerran, voit <ph name="GUEST_LINK_BEGIN" />käyttää laitetta vieraana<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium on suljettu automaattisesti</translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>

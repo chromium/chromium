@@ -1065,6 +1065,7 @@
 <translation id="1795214765651529549">クラシックを使用</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
+<translation id="1798335429200675510">テキスト ボックスで右クリックすると、Google AI を活用して下書きを作成したり、既存の文章を手直ししたりできます。現在、限定的にご利用いただけます。</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
@@ -1457,6 +1458,7 @@
 <translation id="2088092308059522196">登録は <ph name="DEVICE_OS" /> をインストールした後にのみ行うことができます。</translation>
 <translation id="2088564884469682888">内蔵トラックポイント</translation>
 <translation id="208928984520943006">ホーム画面は、下から上にスワイプすれば、いつでも表示できます。</translation>
+<translation id="2089550919269323883"><ph name="VM_NAME" /> のインストールは会社のポリシーによりブロックされています。サポートが必要な場合は、システム管理者にお問い合わせください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="2089925163047119068">または</translation>
 <translation id="2090165459409185032">アカウント情報を復旧するには google.com/accounts/recovery に移動します。</translation>
 <translation id="2090507354966565596">ログイン時に自動接続します</translation>
@@ -1500,6 +1502,7 @@
 <translation id="21133533946938348">タブを固定</translation>
 <translation id="2113479184312716848">ファイルを開く（&amp;F）...</translation>
 <translation id="2113921862428609753">認証局アクセス情報</translation>
+<translation id="2114145607116268663">インストールできません。再起動が必要です。パソコンを再起動して、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">フレームを再読み込み(&amp;F)</translation>
 <translation id="2114413269775311385">このアカウントを Android アプリで使用します。[<ph name="LINK_BEGIN" />アプリの設定<ph name="LINK_END" />] で Android アプリの権限を管理できます。</translation>
 <translation id="2114820389966440614">「最近のハイライト」や他の思い出をここで見ることができます</translation>
@@ -2662,6 +2665,7 @@
 <translation id="2977480621796371840">グループから削除</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2979893796619951531">サイトを除外</translation>
+<translation id="2981033191524548279">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。この問題は、再起動してもう一度試すと解決することがあります。</translation>
 <translation id="2981113813906970160">大きいマウスカーソルを表示する</translation>
 <translation id="2983102365694924129">ユーザーのウェブサイト上でのアクティビティに基づいて提案されます。この設定は無効になっています。</translation>
 <translation id="2983373101216420412">ケースのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
@@ -4331,6 +4335,7 @@
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
+<translation id="4276856098224910511">インストールできません。OS のアップデートが保留中です。保留中の OS アップデートをすべて適用し、再起動してからもう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限を削除しました}other{{NUM_SITES} 件のサイトから権限を削除しました}}</translation>
 <translation id="4278390842282768270">許可</translation>
@@ -4539,6 +4544,7 @@
 <translation id="4426490308207168518">フィードバックを送信したり、問題を報告したりできます</translation>
 <translation id="4426508677408162512">すべてのブックマーク</translation>
 <translation id="4426513927906544654">コンテンツの候補を表示する</translation>
+<translation id="4426857487270413362">インストーラ ファイルをダウンロードできません。インターネット接続とディスクの空き容量を確認し、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
@@ -5140,6 +5146,7 @@
 <translation id="4899696330053002588">広告が表示されます</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - インターレース</translation>
+<translation id="490056871160016482">サイトがユーザーの操作に関係なく没入型の全画面表示モードを使用する機能です</translation>
 <translation id="4900652253009739885">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="4901154724271753917">最近閉じたタブを展開する</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。</translation>
@@ -7157,6 +7164,7 @@
 <translation id="6517227424170598783">「<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />」のショートカットを削除しますか？</translation>
 <translation id="6517382055541687102">選択デバイスが <ph name="DEVICE_NAME" /> に変更されました</translation>
 <translation id="6517420300299531857">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE_AVAILABLE" /> です。</translation>
+<translation id="651753338596587143">DLC の依存関係のインストール中にエラーが発生しました。再起動してみても問題が解決しない場合は、説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="6517709704288360414">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。また、更新を無効にすると、問題発生時に法的申し立てを行う権利にも影響が及ぶ場合があります。</translation>
 <translation id="6518014396551869914">画像をコピー(&amp;Y)</translation>
 <translation id="6518133107902771759">確認</translation>
@@ -7602,6 +7610,7 @@
 <translation id="6847125920277401289">続行するには容量を空けてください</translation>
 <translation id="6848388270925200958">現在、このデバイスでのみ使用できるカードがいくつかあります</translation>
 <translation id="6848716236260083778">指紋を設定するには、お子様に指紋認証センサーをタッチしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="6849623577495734856">ツールバー アイコン</translation>
 <translation id="6850286078059909152">テキストの色</translation>
 <translation id="6851181413209322061">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="6851497530878285708">アプリは有効です</translation>
@@ -8358,6 +8367,7 @@
 <translation id="7456142309650173560">Dev</translation>
 <translation id="7456774706094330779">拡張プリロード</translation>
 <translation id="7456847797759667638">場所を開く...</translation>
+<translation id="7457027286267861992">ディスクの空き容量が不足しています。空き容量を増やしてもう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
 <translation id="7458168200501453431">Google 検索と同じスペルチェックを使用します。ブラウザに入力したテキストは Google に送信されます。</translation>
 <translation id="7458715171471938198">アプリを復元しますか？</translation>
@@ -10151,6 +10161,7 @@
 <translation id="8787752878731558379">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください</translation>
 <translation id="8791157330927639737">更新の詳細</translation>
 <translation id="8791534160414513928">閲覧トラフィックと一緒に「Do Not Track」リクエストを送信する</translation>
+<translation id="8793390639824829328">サイトによる共有タブのスクロールやズームの機能です</translation>
 <translation id="879413103056696865">アクセス ポイントが有効な場合、<ph name="PHONE_NAME" /> は次のように動作します。</translation>
 <translation id="8795916974678578410">新規ウインドウ</translation>
 <translation id="8796919761992612392">Chrome をカスタマイズ(&amp;U)</translation>
@@ -10642,6 +10653,7 @@
 <translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150079578948279438">プロファイルを削除できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>
 <translation id="9150860646299915960">Linux コンテナをアップグレードしてください</translation>
+<translation id="915112772806845021">サイトがピクチャー イン ピクチャーを自動的に開始する機能です。この機能を使用すると、動画の視聴を続行しながら、画面で他のタスクを行うことができます。</translation>
 <translation id="9151249085738989067">言語に基づいて ChromeVox の音声を自動的に切り替える</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9153274276370926498">Lacros システム情報</translation>

@@ -293,6 +293,7 @@
 <translation id="260403163289591229">المواقع التي تتابعها</translation>
 <translation id="2604446170045642109">يمكنك إيقاف المظهر الداكن للمواقع الإلكترونية من الإعدادات.</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
+<translation id="2620314865574742210">تلقّيت دعوة من "<ph name="NAME" />" للوصول إلى عنصر مشترَك.</translation>
 <translation id="2625189173221582860">تم نسخ كلمة المرور</translation>
 <translation id="2634393460268044753">‏يرسل هذا الإعداد إلى ميزة "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحات وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتأكّد من أنّها ليست ضارة.</translation>
 <translation id="2642087927315268160">تم إغلاق البطاقة السفلية لتسجيل الدخول.</translation>
@@ -400,6 +401,7 @@
 <translation id="3072980200212375806">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />، علمًا بأنّ <ph name="BEGIN_LINK3" />سياسة الخصوصية<ph name="END_LINK3" /> تسري أيضًا.</translation>
 <translation id="3080525922482950719">يمكنك حفظ صفحات لقرائتها لاحقًا أو بلا إنترنت.</translation>
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
+<translation id="3093004810561729002">أحد الأشخاص</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">الإعلامات</translation>

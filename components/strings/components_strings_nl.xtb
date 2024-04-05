@@ -183,6 +183,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="132301787627749051">Zoeken naar klembordafbeelding</translation>
 <translation id="1323433172918577554">Meer bekijken</translation>
 <translation id="132390688737681464">Adressen opslaan en invullen</translation>
+<translation id="1325412080783393306">Meer koopopties zoeken</translation>
 <translation id="1325749054628832887">Advertentieonderwerpen zijn maar een van de vele factoren die een site kan gebruiken om advertenties te personaliseren. Ook zonder advertentieonderwerpen kunnen sites je nog steeds advertenties tonen, maar die zijn dan misschien minder interessant. Meer informatie over hoe je <ph name="BEGIN_LINK" />je advertentieprivacy beheert<ph name="LINK_END" /></translation>
 <translation id="1329916999021038454">Een melding sturen</translation>
 <translation id="1330449323196174374">Gatefold links</translation>
@@ -785,7 +786,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2452098632681057184">Ecologie en milieu</translation>
 <translation id="2452837234288608067">Daarbij kunnen we niet helpen. Probeer het opnieuw.</translation>
 <translation id="2456755709261364512">Je batterij moet meer dan <ph name="REQUIRED_BATTERY_PRECENT" />% zijn opgeladen</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> zoeken</translation>
 <translation id="2462932596748424101">Sociale netwerken</translation>
 <translation id="2463739503403862330">Invullen</translation>
 <translation id="2465688316154986572">Nieten</translation>
@@ -1188,6 +1188,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3286372614333682499">staand</translation>
 <translation id="3287510313208355388">Downloaden wanneer online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> moet mogelijk aanvullende stappen nemen om je betaling te verifiëren</translation>
+<translation id="3289578402369490638">Van andere winkels op internet</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
 <translation id="3299098170013242198">Windows Hello staat aan om wachtwoorden in te vullen</translation>
@@ -2965,6 +2966,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telefonisch vergaderen</translation>
 <translation id="6753269504797312559">Beleidswaarde</translation>
+<translation id="6753390234084146956">tabbladen</translation>
 <translation id="6753434778807740853">Item <ph name="ENTRY_VOICEOVER" /> verwijderen</translation>
 <translation id="6754547388777247439">Spaarrekeningen</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3675,7 +3677,6 @@ Aanvullende informatie:
 <translation id="8075588646978457437">Zelfklevend papier</translation>
 <translation id="8075736640322370409">Snel een nieuwe Google-spreadsheet maken</translation>
 <translation id="8075898834294118863">Site-instellingen beheren</translation>
-<translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8077669823243888800">Envelop Chinees #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vertrouwelijk bestand uploaden?}other{Vertrouwelijke bestanden uploaden?}}</translation>
 <translation id="8078141288243656252">Kan geen aantekeningen maken als het document is gedraaid</translation>
@@ -3714,7 +3715,6 @@ Aanvullende informatie:
 <translation id="8150722005171944719">Het bestand op <ph name="URL" /> is onleesbaar. Het bestand is mogelijk verwijderd of verplaatst of de bestandsrechten zorgen ervoor dat het bestand niet kan worden geopend.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te downloaden naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te downloaden naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">IJshockeybenodigdheden</translation>
-<translation id="815788908807586564">Chatten met Gemini</translation>
 <translation id="8161095570253161196">Browsen hervatten</translation>
 <translation id="8163866351304776260">Vier perforaties links</translation>
 <translation id="8164078261547504572">Wil je e-mail ontvangen als de prijzen dalen?</translation>

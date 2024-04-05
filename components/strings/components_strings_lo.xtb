@@ -786,7 +786,6 @@
 <translation id="2452098632681057184">ລະບົບນິເວດ ແລະ ສິ່ງແວດລ້ອມ</translation>
 <translation id="2452837234288608067">ບໍ່ສາມາດຊ່ວຍເຫຼືອຕໍ່ກັບສິ່ງນັ້ນໄດ້. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="2456755709261364512">ຕ້ອງສາກແບັດເຕີຣີຂອງທ່ານໃຫ້ຫຼາຍກວ່າ <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">ຊອກຫາ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">ເຄືອຂ່າຍສັງຄົມ</translation>
 <translation id="2463739503403862330">ຕື່ມຂໍ້ມູນ</translation>
 <translation id="2465688316154986572">ກະຫຼັບເຟີ</translation>
@@ -2973,6 +2972,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ການປະຊຸມທາງໄກ</translation>
 <translation id="6753269504797312559">ຄ່າ​​ນະ​ໂຍ​ບາຍ</translation>
+<translation id="6753390234084146956">ແຖບ</translation>
 <translation id="6753434778807740853">ລຶບລາຍການ <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">ບັນຊີເງິນຝາກປະຢັດ</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3683,7 +3683,6 @@
 <translation id="8075588646978457437">ເຈ້ຍສະຕິກເກີ</translation>
 <translation id="8075736640322370409">ສ້າງ Google Sheet ໃໝ່ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="8075898834294118863">ຈັດການການຕັ້ງຄ່າເວັບໄຊ</translation>
-<translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}other{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}}</translation>
 <translation id="8078141288243656252">ບໍ່ສາມາດຂຽນອະທິບາຍຄວາມເຫັນໃນເວລາໝຸນໄດ້</translation>
@@ -3722,7 +3721,6 @@
 <translation id="8150722005171944719">ໄຟລ໌ຢູ່ທີ່ <ph name="URL" /> ບໍ່ສາມາດອ່ານໄດ້. ມັນອາດຈະຖືກເອົາອອກໄປ, ຍ້າຍໜີ,​ຫຼື ການອະນຸຍາດໄຟລ໌ອາດຈະກໍາລັງ​ປ້ອງ​ກັນການການເຂົ້າຫາ.</translation>
 <translation id="8153865548451212769">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ນີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ເຫຼົ່ານີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">ອຸປະກອນກິລາຮັອກກີ</translation>
-<translation id="815788908807586564">ສົນທະນາກັບ Gemini</translation>
 <translation id="8161095570253161196">ສືບຕໍ່ເລືອກເບິ່ງ</translation>
 <translation id="8163866351304776260">ເຈາະຮູຢູ່ເບື້ອງຍ້າຍສີ່ຮູ</translation>
 <translation id="8164078261547504572">ຕ້ອງການໃຫ້ສົ່ງອີເມວບອກເມື່ອຫຼຸດລາຄາບໍ?</translation>

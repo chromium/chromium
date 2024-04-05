@@ -786,7 +786,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2452098632681057184">Ekologi &amp; Alam Sekitar</translation>
 <translation id="2452837234288608067">Perkara itu tidak dapat dibantu. Cuba lagi.</translation>
 <translation id="2456755709261364512">Bateri anda perlu dicas melebihi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Cari <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Rangkaian Sosial</translation>
 <translation id="2463739503403862330">Isi</translation>
 <translation id="2465688316154986572">Kokot</translation>
@@ -2974,6 +2973,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telepersidangan</translation>
 <translation id="6753269504797312559">Nilai dasar</translation>
+<translation id="6753390234084146956">tab</translation>
 <translation id="6753434778807740853">Padam entri <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Akaun Simpanan</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3684,7 +3684,6 @@ Butiran tambahan:
 <translation id="8075588646978457437">Kertas Pelekat Sendiri</translation>
 <translation id="8075736640322370409">Buat Google Sheets baharu dengan pantas</translation>
 <translation id="8075898834294118863">Urus tetapan laman</translation>
-<translation id="8076492880354921740">Tab</translation>
 <translation id="8077669823243888800">Sampul Cina #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Muat naik fail sulit?}other{Muat naik fail sulit?}}</translation>
 <translation id="8078141288243656252">Tidak boleh melakukan anotasi apabila diputarkan</translation>
@@ -3723,7 +3722,6 @@ Butiran tambahan:
 <translation id="8150722005171944719">Fail di <ph name="URL" /> tidak boleh dibaca.  Fail mungkin telah dialih keluar, dipindahkan atau kebenaran fail mungkin menghalang akses.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memuat turun fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memuat turun fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Peralatan Hoki</translation>
-<translation id="815788908807586564">Sembang dengan Gemini</translation>
 <translation id="8161095570253161196">Teruskan menyemak imbas</translation>
 <translation id="8163866351304776260">Empat tebukan kiri</translation>
 <translation id="8164078261547504572">Mahu dimaklumkan melalui e-mel apabila terdapat penurunan harga?</translation>

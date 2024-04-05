@@ -183,6 +183,7 @@
 <translation id="132301787627749051">क्लिपबोर्ड इमेज खोजें</translation>
 <translation id="1323433172918577554">और दिखाएं</translation>
 <translation id="132390688737681464">पतों की जानकारी सेव करें और फ़ॉर्म में भरें</translation>
+<translation id="1325412080783393306">खरीदारी के ज़्यादा विकल्प खोजें</translation>
 <translation id="1325749054628832887">विज्ञापन के विषय, उन कई चीज़ों में से एक हैं जिनका इस्तेमाल करके कोई साइट, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखा सकती है. विज्ञापन के विषयों के बिना भी, साइटें आपको विज्ञापन दिखा सकती हैं. हालांकि, ऐसा हो सकता है कि विज्ञापन आपको कम दिलचस्प लगें. <ph name="BEGIN_LINK" />विज्ञापनों के लिए अपनी निजता को मैनेज करने<ph name="LINK_END" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="1329916999021038454">रिपोर्ट भेजें</translation>
 <translation id="1330449323196174374">बांया गेट फ़ोल्ड</translation>
@@ -786,7 +787,6 @@
 <translation id="2452098632681057184">ईकोलॉजी और एनवायरमेंट</translation>
 <translation id="2452837234288608067">इस अनुरोध को पूरा नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="2456755709261364512">आपकी बैटरी <ph name="REQUIRED_BATTERY_PRECENT" />% से ज़्यादा चार्ज होनी चाहिए</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> खोजें</translation>
 <translation id="2462932596748424101">सोशल नेटवर्क</translation>
 <translation id="2463739503403862330">भरें</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन होने पर डाउनलोड करें</translation>
 <translation id="3288238092761586174">आपके पेमेंट की पुष्टि करने के लिए, <ph name="URL" /> को अतिरिक्त कदम उठाने पड़ सकते हैं</translation>
+<translation id="3289578402369490638">वेब पर मौजूद अन्य स्टोर से</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीति के बारे में ज़्यादा जानें</translation>
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
 <translation id="3299098170013242198">Windows Hello चालू है, पासवर्ड डाला जा सकता है</translation>
@@ -2971,6 +2972,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेली कॉन्फ़्रेंसिंग</translation>
 <translation id="6753269504797312559">नीति मान</translation>
+<translation id="6753390234084146956">टैब</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> की एंट्री मिटाएं</translation>
 <translation id="6754547388777247439">बचत खाते</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3683,6 @@
 <translation id="8075588646978457437">सेल्फ़-अधीसिव पेपर</translation>
 <translation id="8075736640322370409">जल्दी से नई Google शीट बनाएं</translation>
 <translation id="8075898834294118863">साइट की सेटिंग मैनेज करें</translation>
-<translation id="8076492880354921740">टैब</translation>
 <translation id="8077669823243888800">चाइनीज़ #8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8078006011486731853">{0,plural, =1{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें अपलोड करनी हैं?}}</translation>
 <translation id="8078141288243656252">घुमाने पर एनोटेट नहीं कर सकते</translation>
@@ -3720,7 +3721,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> पर मौजूद फ़ाइल पढ़ने के लायक नहीं है.  हो सकता है कि इसे हटा दिया गया हो, कहीं ले जाया गया हो, या फ़ाइल की अनुमतियां एक्सेस को रोक रही हों.</translation>
 <translation id="8153865548451212769">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}}</translation>
 <translation id="81563721597823545">हॉकी इक्विपमेंट</translation>
-<translation id="815788908807586564">Gemini के साथ चैट करें</translation>
 <translation id="8161095570253161196">ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="8163866351304776260">बाईं ओर क्वाड पंच</translation>
 <translation id="8164078261547504572">क्या आपको प्रॉडक्ट की कीमत में गिरावट आने पर ईमेल से सूचना चाहिए?</translation>

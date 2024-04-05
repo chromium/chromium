@@ -292,6 +292,7 @@
 <translation id="260403163289591229">Spremljano</translation>
 <translation id="2604446170045642109">V nastavitvah lahko izklopite temno temo za spletna mesta.</translation>
 <translation id="2612676031748830579">Številka kartice</translation>
+<translation id="2620314865574742210">Oseba <ph name="NAME" /> vas je povabila, da dostopate do deljenega elementa.</translation>
 <translation id="2625189173221582860">Geslo kopirano</translation>
 <translation id="2634393460268044753">V Google Varno brskanje pošilja URL-je spletnih mest, ki jih obiščete, in majhen vzorec vsebine strani, prenose, dejavnost razširitve in podatke o sistemu, da preveri, ali so škodljivi.</translation>
 <translation id="2642087927315268160">Razdelek na dnu zaslona za prijavo je zaprt.</translation>
@@ -398,6 +399,7 @@
 <translation id="3072980200212375806">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Uporablja se tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
+<translation id="3093004810561729002">Nekdo</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Obvestila</translation>

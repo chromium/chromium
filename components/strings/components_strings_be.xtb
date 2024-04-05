@@ -786,7 +786,6 @@
 <translation id="2452098632681057184">Экалогія і навакольнае асяроддзе</translation>
 <translation id="2452837234288608067">Не ўдалося дапамагчы з гэтым запытам. Паўтарыце спробу.</translation>
 <translation id="2456755709261364512">Зарад акумулятара павінен быць большым за <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Пошук: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Сацыяльныя сеткі</translation>
 <translation id="2463739503403862330">Запоўніць</translation>
 <translation id="2465688316154986572">Скаба</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Тэлеканферэнцыі</translation>
 <translation id="6753269504797312559">Значэнне палітыкі</translation>
+<translation id="6753390234084146956">укладкі</translation>
 <translation id="6753434778807740853">Выдаліць запіс "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">Ашчадныя рахункі</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3682,7 +3682,6 @@
 <translation id="8075588646978457437">Самаклейная папера</translation>
 <translation id="8075736640322370409">Хутка стварыць новую табліцу Google</translation>
 <translation id="8075898834294118863">Кіраваць наладамі сайтаў</translation>
-<translation id="8076492880354921740">Укладкі</translation>
 <translation id="8077669823243888800">Канверт Chinese № 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Запампаваць канфідэнцыяльны файл?}one{Запампаваць канфідэнцыяльныя файлы?}few{Запампаваць канфідэнцыяльныя файлы?}many{Запампаваць канфідэнцыяльныя файлы?}other{Запампаваць канфідэнцыяльныя файлы?}}</translation>
 <translation id="8078141288243656252">Нельга дадаваць анатацыі, калі дакумент павернуты</translation>
@@ -3721,7 +3720,6 @@
 <translation id="8150722005171944719">Файл па адрасе "<ph name="URL" />" не чытаецца.  Магчыма, ён быў выдалены, перамешчаны або не хапае дазволаў на доступ да яго.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Хакейны рыштунак</translation>
-<translation id="815788908807586564">Чат з Gemini</translation>
 <translation id="8161095570253161196">Узнавіць прагляд</translation>
 <translation id="8163866351304776260">Чатыры дзіркі злева</translation>
 <translation id="8164078261547504572">Хочаце атрымліваць электронныя лісты пры зніжэнні цэн?</translation>

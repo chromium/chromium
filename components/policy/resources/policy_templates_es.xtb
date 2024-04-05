@@ -206,7 +206,6 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
       Si se inhabilita esta política, la función de lista de la compra no estará disponible.
       </translation>
 <translation id="1144147113722324623">Habilitar las actualizaciones automáticas a HTTPS en audio y vídeo, y mostrar una advertencia sobre las imágenes que indique que no son seguras</translation>
-<translation id="1145928409398419809">Inhabilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="1147732569915511430">El hash SHA-256 de la imagen de avatar.</translation>
 <translation id="1148415065145333943">Inhabilitar el modo avanzado de carga de la batería</translation>
 <translation id="1149203480502386713">Habilitar acuerdo de claves poscuántico para TLS</translation>
@@ -1820,6 +1819,7 @@ Si se asigna un valor a esta política, el usuario no podrá anularlo.
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
+<translation id="2419114151067000328">La función de especificaciones de producto no estará disponible para los usuarios.</translation>
 <translation id="2420958105721932612">Especifica cómo se instala una aplicación. AVAILABLE: la aplicación no se instalará automáticamente, pero el usuario podrá instalarla. Si no se asigna ningún valor a esta política, este será el predeterminado. FORCE_INSTALLED: la aplicación se instalará automáticamente y el usuario no podrá desinstalarla. BLOCKED: la aplicación estará bloqueada y no se podrá instalar. Si la aplicación se instaló cuando estaba vigente una política anterior, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2421677964966613267">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
@@ -3340,6 +3340,7 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
+<translation id="361046511337768385">Permitir que se habilite la función de especificaciones de producto</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra al usuario la pantalla de configuración del tamaño de visualización durante el primer inicio de sesión
       Si se le asigna el valor false, no se mostrará la pantalla de configuración del tamaño de visualización.
       Si le asigna el valor true, se mostrará la pantalla de configuración del tamaño de visualización.</translation>
@@ -3454,17 +3455,6 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 <translation id="3727675072430693164">Si se habilita la política, los dispositivos registrados enviarán estadísticas de hardware sobre componentes SoC.
 
       Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas.</translation>
-<translation id="372853200788846114">Si se habilita esta política, <ph name="PRODUCT_OS_NAME" /> solicitará a los usuarios una contraseña para desbloquear el dispositivo después de suspenderlo o de cerrar la tapa.
-
-      Los dispositivos se bloquean al cerrar la tapa, salvo si están conectados a una base (usando un monitor externo).  En ese caso, el dispositivo no se bloqueará cuando se cierre la tapa, pero sí se bloqueará si se quita el monitor externo y la tapa sigue cerrada.
-
-      Hasta la versión M106 de <ph name="PRODUCT_OS_NAME" />, esta política bloqueaba el dispositivo solo al suspenderlo.  A partir de la versión M106, esta política bloqueará el dispositivo al suspenderlo o al cerrar la tapa.
-
-      Si se le asigna el valor true a esta política y el valor <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" /> a <ph name="LID_CLOSE_ACTION_POLICY_NAME" />, los dispositivos se bloquearán cuando se cierre la tapa, pero solo se suspenderán si se ha configurado este comportamiento en <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
-
-      Si se inhabilita la política, no se solicitará a los usuarios una contraseña para desbloquear el dispositivo.
-
-      Si no se establece esta política, el usuario podrá elegir si quiere que se le pida una contraseña para desbloquear el dispositivo.</translation>
 <translation id="3729937245044939404">Esta política está obsoleta en M70. Utiliza <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> en su lugar.
 
       Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios rellenen formularios web automáticamente con información almacenada anteriormente, como una dirección o una tarjeta de crédito.
@@ -5360,6 +5350,7 @@ Si no se define esta política, no se permitirán excepciones de <ph name="URL_B
 
 A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite esta política en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
+<translation id="5363412016871318326">La función de especificaciones de producto estará disponible para los usuarios.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
 <translation id="5366977351895725771">Si se establece el valor "false", el usuario no podrá crear usuarios supervisados, pero seguirán estando disponibles los usuarios supervisados creados anteriormente.
@@ -5733,31 +5724,6 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
 <translation id="5622924058222112599">Habilitar proceso de lanzamiento de CECPQ2 predeterminado</translation>
 <translation id="5623304306796942802">Pedir cuando varios certificados coincidan</translation>
 <translation id="5625771176514429288">Se permitirá ejecutar aplicaciones de Chrome en estas plataformas.</translation>
-<translation id="5627094573311711592">Configura una lista de reglas de control de datos para evitar que se filtren datos. Se pueden producir filtraciones de datos al copiar y pegar datos, al adjuntar archivos a páginas web, al imprimir, al descargar, etc.
-
-      Cada regla se compone de los siguientes elementos:
-      - Las propiedades de la fuente de una acción. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en su campo de <ph name="DATA_CONTROLS_SOURCES" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
-      - Las propiedades del destino de una acción. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en su campo de <ph name="DATA_CONTROLS_DESTINATIONS" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
-      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
-
-      Se pueden añadir reglas para:
-      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
-      - Controlar la impresión desde cualquiera de las fuentes.
-      - Controlar los archivos que se adjuntan a cualquiera de los destinos.
-      - Controlar la descarga de archivos desde cualquiera de las fuentes.
-
-      Si se asigna el valor True a la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, se informará al administrador de las reglas activadas.
-      Se puede asignar al nivel de restricción uno de estos valores: ALLOW, BLOCK, WARN o REPORT.
-      - Si se asigna el valor ALLOW al nivel de restricción, la acción se permitirá. También se anularán las restricciones aplicadas por otras reglas.
-      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá.
-      - Si se asigna el valor WARN al nivel de restricción, el usuario recibirá una advertencia y podrá elegir si continúa con la acción o la cancela.
-      - Si se asigna el valor REPORT al nivel de restricción, la acción del usuario no se interrumpirá, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
-
-      Notas:
-      - Los patrones de URL deben tener el formato que se indica en esta página: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Para ver las reglas de prevención de filtraciones de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
 <translation id="5633871703004128675">Habilitar la función de accesibilidad de resaltado del símbolo de intercalación de texto</translation>
 <translation id="5634032995857968056">Habilitar el entorno aislado del contenedor de aplicaciones del renderizador</translation>
@@ -6047,11 +6013,6 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> es una propiedad opcional cuyo valor predeterminado es False.</translation>
 <translation id="5879014913445067283">Controla la búsqueda de archivos compartidos en la red mediante <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Habilitar la función Tocar para buscar</translation>
-<translation id="5881715931837589500">Habilita la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
-
-Si se habilita esta política o no se define, se habilitará la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> para los usuarios de empresa.
-
-Si se inhabilita esta política, se inhabilitará la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> para los usuarios de empresa.</translation>
 <translation id="5882345429632338713">Retraso antes de iniciar un navegador alternativo (en milisegundos)</translation>
 <translation id="5883015257301027298">Configuración de cookies predeterminada</translation>
 <translation id="5883754873839596178">Establecer esta política permite especificar el número máximo de conexiones simultáneas al servidor proxy. Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política. El valor debe ser inferior a 100 y superior a 6. Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo. Si estableces un valor inferior al predeterminado, debes hacerlo bajo tu propia responsabilidad.
@@ -6088,11 +6049,6 @@ Si se inhabilita esta política, se inhabilitará la integración de <ph name="G
 <translation id="5897913798715600338">Carga la batería usando la tecnología de carga rápida.</translation>
 <translation id="5898486742390981550">Si varios usuarios han iniciado sesión, solo podrá utilizar las aplicaciones para Android el usuario principal.</translation>
 <translation id="5899751601113377553">Evitar que los usuarios utilicen <ph name="LACROS_NAME" /></translation>
-<translation id="5900000623536207626">Habilita la integración de <ph name="GOOGLE_TASKS_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
-
-Si se habilita esta política o no se define, se habilitará la integración de <ph name="GOOGLE_TASKS_NAME" /> para los usuarios de empresa.
-
-Si se inhabilita esta política, se inhabilitará la integración de <ph name="GOOGLE_TASKS_NAME" /> para los usuarios de empresa.</translation>
 <translation id="5900919753933009463">Enviar información sobre la configuración de red</translation>
 <translation id="5901427587865226597">Solo impresión por las dos caras</translation>
 <translation id="5905114360004248993">Permitir ventanas emergentes en estos sitios</translation>
@@ -6230,14 +6186,12 @@ Esta política está obsoleta a partir de la versión M124.</translation>
 <translation id="6042407236638640864">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se guarden en la caché de páginas completas</translation>
 <translation id="604243460476563291">Inhabilitar la transferencia de archivos en conexiones de asistencia remota de administradores de empresas</translation>
 <translation id="6042629184389251062">No se permite la recogida de métricas con clave de URL</translation>
-<translation id="6045733613334942660">Controladores de escáner</translation>
 <translation id="6046615715547751255">No permitir los controles de informes granulares</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
 <translation id="6048690591359317353">No permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6049117606554031363">Habilitar los informes sobre el estado de la placa del dispositivo</translation>
 <translation id="6050796253724099706">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="605132676434455096">No permitir que se añadan nuevos perfiles</translation>
-<translation id="6052660755155321371">Inhabilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="6053260874233331700">No permitir el acceso a la geolocalización en la pantalla de inicio de sesión.</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
 <translation id="6056517174496942473">Habilitar el flujo de atestación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs</translation>
@@ -7818,7 +7772,6 @@ El valor de la política es una lista de certificados X.509 codificados en Base6
 
       Nota: La política no afecta a Google Drive ni al almacenamiento interno. Los usuarios pueden seguir accediendo a los archivos guardados en la carpeta Descargas.</translation>
 <translation id="7177857088692019405">Desbloqueo rápido</translation>
-<translation id="7177980542896745343">Habilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7179157174254421614">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, que los usuarios no pueden cambiar.
 
 Si se asignan los siguientes valores:
@@ -8054,7 +8007,6 @@ Esta política debe establecerse como una lista de nombres de dominios completos
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7372210077527987724">Habilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reinicia cuando el usuario cierra sesión si se ha iniciado Android o una máquina virtual.</translation>
 <translation id="7374784840090523241">Crear llaves de acceso de forma predeterminada en otros almacenes, como el perfil de <ph name="PRODUCT_NAME" /></translation>
@@ -8569,7 +8521,6 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si se le asigna el valor False o no se le asigna ningún valor, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o de tamaño reducido.
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="7801833005984890634">Habilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="7804859754080118507">Informa de eventos de conexión de red y de intensidad de señal en dispositivos registrados.
 
       Si se le asigna el valor false a esta política o no se le asigna ningún valor, no se enviará esta información.
@@ -8908,6 +8859,9 @@ Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas
 <translation id="8102854005031553638">El visor de PDFs usa el renderizador de AGG</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
+<translation id="810509972572344398">Si se habilita esta política o no se define, las especificaciones de producto estarán disponibles para los usuarios.
+
+Si se inhabilita, las especificaciones de producto no estarán disponibles.</translation>
 <translation id="8109762054721090517">Plantilla del <ph name="IPP_ATTRIBUTE" /> de <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configura el tiempo (en segundos) durante el que el dispositivo deberá permanecer inactivo para que se muestre el salvapantallas de la pantalla de bloqueo.
 
@@ -9643,7 +9597,6 @@ Esta política asigna IDs de configuración a las configuraciones de VM. Si una 
 <translation id="8685748277907759932">Evitar que los usuarios utilicen la función Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes sobre los usuarios del dispositivo</translation>
 <translation id="8687958770985542440">Volver a habilitar la API v0 de componentes web hasta M84.</translation>
-<translation id="8690591325980850680">Habilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la consola de administración</translation>
 <translation id="8695108198606654558">Esta política solo controla el comportamiento de importación al ejecutar el navegador por primera vez después de instalarlo. Permite una transición más fluida a <ph name="PRODUCT_NAME" /> en entornos donde se ha usado mucho otro navegador antes de instalarlo. Esta política no afecta a las funciones del gestor de contraseñas en las cuentas de Google.

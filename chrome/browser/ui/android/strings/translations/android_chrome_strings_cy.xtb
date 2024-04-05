@@ -292,6 +292,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="260403163289591229">Yn dilyn</translation>
 <translation id="2604446170045642109">Gallwch ddiffodd thema dywyll ar gyfer gwefannau yn eich gosodiadau.</translation>
 <translation id="2612676031748830579">Rhif y cerdyn</translation>
+<translation id="2620314865574742210">Mae <ph name="NAME" /> wedi eich gwahodd i gael mynediad at eitem a rennir.</translation>
 <translation id="2625189173221582860">Copïwyd cyfrinair</translation>
 <translation id="2634393460268044753">Yn anfon y cyfeiriadau URL o wefannau rydych yn ymweld â nhw a sampl bach o gynnwys tudalen, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i Bori'n Ddiogel gyda Google i wirio a ydynt yn niweidiol.</translation>
 <translation id="2642087927315268160">Mae'r ddalen waelod mewngofnodi ar gau.</translation>
@@ -398,6 +399,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="3072980200212375806">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />. Mae'r <ph name="BEGIN_LINK3" />Polisi Preifatrwydd<ph name="END_LINK3" /> hefyd yn berthnasol.</translation>
 <translation id="3080525922482950719">Gallwch gadw tudalennau i'w darllen yn nes ymlaen neu'n all-lein</translation>
 <translation id="3091010850649238832">Dangos cynnwys y clipfwrdd</translation>
+<translation id="3093004810561729002">Rhywun</translation>
 <translation id="3098745985164956033">Anfonir rhai lluniau at Google i wella disgrifiadau i chi.</translation>
 <translation id="3114507951000454849">Darllen y newyddion heddiw <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Cyhoeddiadau</translation>

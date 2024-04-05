@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1232610416724362657">fervenza</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
+<translation id="1252766349417594414">Panca de control</translation>
 <translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1274654146705270731">laranxas</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Aplicación Diagnósticos</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Cambia rapidamente de tecla</translation>
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1776228893584526149">Ton do fondo de pantalla</translation>
 <translation id="1777913922912475695">ponte</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">amplo océano</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
+<translation id="2082932131694554252">Tecla do teclado asignada</translation>
 <translation id="2085089206770112532">Reducir brillo da pantalla</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">O dispositivo é un mando de xogos.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imaxe de inicio de sesión</translation>
 <translation id="2640549051766135490">Seleccionouse o álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
+<translation id="2645380101799517405">Controis</translation>
 <translation id="2652403576514495859">activar ou desactivar o ditado</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2656001153562991489">Exclusivo de Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Activa esta opción de configuración para obter os mellores resultados con este fondo de pantalla. Podes desactivala en calquera momento.</translation>
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Protector de pantalla Fluxo das nubes</translation>
+<translation id="2882230315487799269">Personalizar a solicitude de IA</translation>
 <translation id="2888298276507578975">Escribe unha solicitude como "redacta unha nota de agradecemento"</translation>
 <translation id="2890557891229184386">illa tropical</translation>
 <translation id="2895772081848316509">escuros</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="361575905210396100">Grazas polos teus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
+<translation id="3632040286124154621">Boa suxestión</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
+<translation id="3644695927181369554">Mala suxestión</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
 <translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
 <translation id="3662461537616691585">vermello escuro e granate</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
 <translation id="3715651196924935218">Saír do estado flotante</translation>
+<translation id="3716250181321371108">Crea un control</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
+<translation id="3780740315729837296">Asigna unha tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3790109258688020991">puntillista</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sen asignar</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3954678691475912818">Descoñécese o tipo de dispositivo.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Descargando imaxe</translation>
 <translation id="4063039537646912479">azul clara</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Crear outro control</translation>
 <translation id="4091002263446255071">romántica</translation>
 <translation id="4093865285251893588">Imaxe do perfil</translation>
 <translation id="409427325554347132">Gardar detalles da proba</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Conexión wifi segura</translation>
 <translation id="4650608062294027130">Maiúsculas (dereita)</translation>
 <translation id="4654549501020883054">Cambiar todos os días</translation>
+<translation id="4655868084888499342">Imaxe definida como fondo de pantalla</translation>
 <translation id="4661249927038176904">surrealista</translation>
 <translation id="4664651912255946953">pel</translation>
 <translation id="4665014895760275686">Fabricante</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Posible firewall</translation>
 <translation id="4691278870498629773">Detívose (falta a bandexa)</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
+<translation id="4697260493945012995">Selecciona o tipo de control</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Crear con IA</translation>
 <translation id="6112878310391905610">Os teus administradores xestionan esta opción de configuración</translation>
 <translation id="6113701710518389813">Frecha arriba</translation>
+<translation id="6116005346231504406">Crear o primeiro control</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> e <ph name="NUMBER" /> álbums máis</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizo do método de introdución de texto de Chrome OS</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7144954474087165241">pagode</translation>
+<translation id="7147557737960578492">Selecciona unha nova tecla para volver asignala</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7154020516215182599">Comparte os teus comentarios ou describe o problema. Se é posible, inclúe os pasos para reproducilo.</translation>
 <translation id="7155037718620478619">Descubrir máis APN</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7344788170842919262">terrosos</translation>
+<translation id="7346768383111016081">Asigna un control a unha acción de xogo para xogar co teclado</translation>
 <translation id="7353413232959255829">Resultado da busca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Preme Introducir para navegar ata o atallo.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">casa de té</translation>
 <translation id="8538236298648811558">Con tecnoloxía da IA de Google</translation>
+<translation id="8550364285433943656">Asigna controis a accións de xogo para xogar coas teclas do teclado</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Non se puido conectar con esta rede a través de ningún APN detectado automaticamente. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións para Android</translation>
+<translation id="921080052717160800">Imaxe definida como fondo de cámara</translation>
 <translation id="9211490828691860325">Todos os escritorios</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Portaal vermoed</translation>
 <translation id="1232610416724362657">waterval</translation>
 <translation id="1238612778414822719">HTTPS-traaagheid</translation>
+<translation id="1252766349417594414">Speelstok</translation>
 <translation id="1270369111467284986">Kontroleringsportaal vermoed</translation>
 <translation id="1274654146705270731">lemoene</translation>
 <translation id="1275718070701477396">Gekies</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnostiekprogram</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Wissel vinnig sleutels</translation>
 <translation id="1768959921651994223">Stawingstipe</translation>
 <translation id="1776228893584526149">Muurpapierkleur</translation>
 <translation id="1777913922912475695">brug</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">uitgestrekte oseaan</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
+<translation id="2082932131694554252">Toegewese sleutelbordsleutel</translation>
 <translation id="2085089206770112532">Verlaag skermhelderheid</translation>
 <translation id="2102231663024125441">Teksredigering</translation>
 <translation id="2105810540595158374">Toestel is 'n speletjiebeheerder.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2638662041295312666">Aanmeldprent</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> is gekies</translation>
+<translation id="2645380101799517405">Kontroles</translation>
 <translation id="2652403576514495859">aktiveer of wissel diktering</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2656001153562991489">Eksklusief vir Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Skakel dit aan vir die beste resultate met hierdie muurpapier. Jy kan hierdie instelling enige tyd afskakel.</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="2880569433548999039">Wolkvloeisluimerskerm</translation>
+<translation id="2882230315487799269">Pasmaak AI-porteks</translation>
 <translation id="2888298276507578975">Voer porteks soos “skryf ’n dankienota” in</translation>
 <translation id="2890557891229184386">tropiese eiland</translation>
 <translation id="2895772081848316509">donker</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Hoë traagheid na HTTPS-webwerwe</translation>
 <translation id="361575905210396100">Dankie vir jou terugvoer</translation>
 <translation id="3621072146987826699">olifante</translation>
+<translation id="3632040286124154621">Goeie voorstel</translation>
 <translation id="3632579075709132555">Privaatheidskermwisselaar</translation>
+<translation id="3644695927181369554">Swak voorstel</translation>
 <translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
 <translation id="3661106764436337772">Skryf vinniger en met meer selfvertroue</translation>
 <translation id="3662461537616691585">wynrooi en maroen</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Laai tans …</translation>
 <translation id="3708186454126126312">Voorheen gekoppel</translation>
 <translation id="3715651196924935218">Verlaat swewende venster</translation>
+<translation id="3716250181321371108">Skep kontrole</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> resensies)</translation>
 <translation id="3748026146096797577">Nie gekoppel nie</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
 <translation id="3771294271822695279">Videolêers</translation>
+<translation id="3780740315729837296">Wys ’n sleutelbordsleutel toe</translation>
 <translation id="3784455785234192852">Sluit</translation>
 <translation id="3785643128701396311">piekselkuns</translation>
 <translation id="3790109258688020991">pointillisties</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">neem skermskoot</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
+<translation id="3934185438132762746">Ontoegewysde <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="3942420633017001071">Diagnostiese inligting</translation>
 <translation id="3954678691475912818">Toesteltipe is onbekend.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Laai tans prent af</translation>
 <translation id="4063039537646912479">ligblou</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Skep ’n ander kontrole</translation>
 <translation id="4091002263446255071">romanties</translation>
 <translation id="4093865285251893588">Profielprent</translation>
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="4650608062294027130">Regter-shift-sleutel</translation>
 <translation id="4654549501020883054">Verander daagliks</translation>
+<translation id="4655868084888499342">Prent is as muurpapier gestel</translation>
 <translation id="4661249927038176904">Surrealisties</translation>
 <translation id="4664651912255946953">pels</translation>
 <translation id="4665014895760275686">Vervaardiger</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Brandmuur word vermoed</translation>
 <translation id="4691278870498629773">Gestop – laai ontbreek</translation>
 <translation id="469379815867856270">Seinsterkte</translation>
+<translation id="4697260493945012995">Kies jou kontroletipe</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Skep met AI</translation>
 <translation id="6112878310391905610">Jou administrateurs bestuur hierdie instelling</translation>
 <translation id="6113701710518389813">Oppyl</translation>
+<translation id="6116005346231504406">Skep eerste kontrole</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + nog <ph name="NUMBER" /> albums</translation>
 <translation id="6122191549521593678">Aanlyn</translation>
 <translation id="6122277663991249694">Chrome-bedryfstelsel se invoermetodediens</translation>
@@ -911,6 +926,7 @@
 <translation id="6382182670717268353">Sluimerskermvoorskou</translation>
 <translation id="6388847657025262518">Die skandeerder se dokumentvoerder is geblokkeer. Gaan die dokumentvoerder na en probeer weer.</translation>
 <translation id="6394634179843537518">Voeg lêer by</translation>
+<translation id="6396719002784938593">gedroogde veergras</translation>
 <translation id="639964859328803943">teemaaltyd</translation>
 <translation id="6400680457268373900">’n Droomagtige <ph name="DREAMSCAPES_OBJECT" /> wat van <ph name="DREAMSCAPES_MATERIAL" /> in <ph name="DREAMSCAPES_COLORS" /> gemaak is</translation>
 <translation id="6401427872449207797">blaaiersoektog</translation>
@@ -952,6 +968,7 @@
 <translation id="6575134580692778371">Nie opgestel nie</translation>
 <translation id="6576005492601044801">links</translation>
 <translation id="6579509898032828423">Gebruik hierdie foto</translation>
+<translation id="6587870930887634392">vetplant</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6599673642868607614">Dankie vir jou terugvoer. Jou terugvoer help ons om die Chromebook-ervaring beter te maak en sal deur ons span nagegaan word. Weens die groot aantal verslae sal ons nie ’n antwoord kan stuur nie.</translation>
 <translation id="6618744767048954150">Werk tans</translation>
@@ -1044,6 +1061,7 @@
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">Wys weer toe deur ’n nuwe sleutel te kies</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7154020516215182599">Deel jou terugvoer of beskryf jou kwessie. Sluit indien moontlik stappe in om jou kwessie te herproduseer.</translation>
 <translation id="7155037718620478619">Ontdek meer APN’s</translation>
@@ -1089,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7344788170842919262">aards</translation>
+<translation id="7346768383111016081">Plaas kontrole op speletjie-aksie om met jou sleutelbord te speel</translation>
 <translation id="7353413232959255829">Soekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk Enter om na kortpad te gaan.</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="73631062356239394">Deel diagnostiese data</translation>
@@ -1110,6 +1129,7 @@
 <translation id="7497215489070763236">Bediener se CA-sertifikaat</translation>
 <translation id="7501957181231305652">of</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
+<translation id="7507061649493508884">’n Pragtige <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">onder</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Skep</translation>
@@ -1169,6 +1189,7 @@
 <translation id="7850847810298646851">Muurpapier aangedryf deur Google AI</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-raakskerm</translation>
+<translation id="7859006200041800233">kaktusblom</translation>
 <translation id="7869143217755017858">Deaktiveer donkermodus</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Verskaffertipe</translation>
@@ -1281,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>
 <translation id="8538236298648811558">Aangedryf deur Google AI</translation>
+<translation id="8550364285433943656">Plaas kontroles op speletjie-aksies om met sleutelbordsleutels te speel</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jou selfoonmaatskappy kan hierdie opsie vereis om aan hul netwerk te koppel. Kontak jou selfoonmaatskappy vir besonderhede.</translation>
 <translation id="8576249514688522074">Ongeïnisieer</translation>
@@ -1304,6 +1326,7 @@
 <translation id="8726019395068607495">Gestop – deur is oop</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8747900814994928677">Bevestig verandering</translation>
+<translation id="8749478549112817787">Kamera-agtergrond</translation>
 <translation id="8755946156089753497">toring</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
@@ -1398,6 +1421,7 @@
 <translation id="9189000703457422362">Kan nie aan hierdie netwerk koppel met APN’e wat outomaties bespeur is nie. Kontak jou selfoondiensverskaffer vir meer inligting.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan nie die deurgang van Android-programme af kontak nie</translation>
+<translation id="921080052717160800">Prent is as kamera-agtergrond gestel</translation>
 <translation id="9211490828691860325">Alle lessenaars</translation>
 <translation id="932327136139879170">Tuis</translation>
 <translation id="939519157834106403">SSID</translation>

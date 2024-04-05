@@ -183,6 +183,7 @@
 <translation id="132301787627749051">ကလစ်ဘုတ်ပုံ ရှာဖွေမှု</translation>
 <translation id="1323433172918577554">ပိုပြပါ</translation>
 <translation id="132390688737681464">လိပ်စာများကို သိမ်းပြီး ဖြည့်ခြင်း</translation>
+<translation id="1325412080783393306">နောက်ထပ် ဝယ်ယူမှုရွေးစရာများ ရှာခြင်း</translation>
 <translation id="1325749054628832887">ကြော်ငြာအကြောင်းအရာသည် ကြော်ငြာများ ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရာတွင် ဝဘ်ဆိုက်က သုံးနိုင်သည့် အရာများထဲမှ တစ်ခုဖြစ်သည်။ ကြော်ငြာအကြောင်းအရာများ မရှိသည့်တိုင် ဝဘ်ဆိုက်များသည် သင့်အား ကြော်ငြာပြနိုင်သော်လည်း ၎င်းတို့သည် စိတ်ဝင်စားဖွယ် ကောင်းမည်မဟုတ်ပါ။ <ph name="BEGIN_LINK" />သင့်ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း<ph name="LINK_END" /> အကြောင်း ပိုမိုလေ့လာနိုင်သည်။</translation>
 <translation id="1329916999021038454">အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="1330449323196174374">ဘယ်တံခါးရွက်ပုံစံ ခေါက်ရန်</translation>
@@ -786,7 +787,6 @@
 <translation id="2452098632681057184">ဂေဟဗေဒ၊ ပတ်ဝန်းကျင်</translation>
 <translation id="2452837234288608067">၎င်းကို လုပ်ဆောင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2456755709261364512">သင့်ဘက်ထရီကို <ph name="REQUIRED_BATTERY_PRECENT" />% အထက် အားသွင်းထားရမည်</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ကိုရှာရန်</translation>
 <translation id="2462932596748424101">လူမှုကွန်ရက်</translation>
 <translation id="2463739503403862330">ဖြည့်သွင်းရန်</translation>
 <translation id="2465688316154986572">ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
@@ -1193,6 +1193,7 @@
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3287510313208355388">အွန်လိုင်းတက်သည့်အချိန် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="3288238092761586174">သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် <ph name="URL" /> က နောက်ထပ်အဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
+<translation id="3289578402369490638">ဝဘ်ပေါ်ရှိ အခြားဆိုင်များထံမှ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> မူဝါဒအကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="3295444047715739395">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များကို ကြည့်ရှုစီမံပါ</translation>
 <translation id="3299098170013242198">စကားဝှက်ဖြည့်ရန် Windows Hello ဖွင့်ထားသည်</translation>
@@ -2971,6 +2972,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">တယ်လီအစည်းအဝေးလုပ်ခြင်း</translation>
 <translation id="6753269504797312559">ပေါ်လစီတန်ဖိုး</translation>
+<translation id="6753390234084146956">တဘ်</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ထည့်သွင်းမှု ဖျက်ရန်</translation>
 <translation id="6754547388777247439">ငွေစုစာရင်း</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3683,7 +3685,6 @@
 <translation id="8075588646978457437">ကော်အသင့်ပါသည့် စာရွက်</translation>
 <translation id="8075736640322370409">Google Sheet အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="8075898834294118863">ဝဘ်ဆိုက်ဆက်တင်များ စီမံရန်</translation>
-<translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8077669823243888800">Chinese #8 စာအိတ်</translation>
 <translation id="8078006011486731853">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို အပ်လုဒ်လုပ်မလား။}other{လျှို့ဝှက်ဖိုင်များကို အပ်လုဒ်လုပ်မလား။}}</translation>
 <translation id="8078141288243656252">လှည့်ထားသည့်အခါ မှတ်ချက်ပေး၍ မရပါ</translation>
@@ -3722,7 +3723,6 @@
 <translation id="8150722005171944719"><ph name="URL" />မှာ ရှိသော ဖိုင်ကို ဖတ်မရပါ။ ၎င်းကို ရွှေ့ပစ်ခဲ့တာ၊ ဖယ်ရှားပစ်ခဲ့တာ ဖြစ်နိုင်သည်၊ သို့မဟုတ် ဖိုင် ခွင်ပြုချက်များက ရယူမှုကို ဟန့်တားနေတာ ဖြစ်နိုင်သည်။</translation>
 <translation id="8153865548451212769">{0,plural, =1{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင် ဒေါင်းလုဒ်လုပ်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}other{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင်များ ဒေါင်းလုဒ်လုပ်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}}</translation>
 <translation id="81563721597823545">ဟော်ကီပစ္စည်း</translation>
-<translation id="815788908807586564">Gemini နှင့် ချတ်လုပ်ခြင်း</translation>
 <translation id="8161095570253161196">ဘရောက်စ်လုပ်ခြင်း ဆက်လုပ်ရန်</translation>
 <translation id="8163866351304776260">ဘယ်ဘက်တွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="8164078261547504572">ဈေးကျချိန် အီးမေးလ်ရယူလိုသလား။</translation>

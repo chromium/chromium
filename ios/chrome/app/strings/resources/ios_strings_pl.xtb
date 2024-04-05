@@ -311,6 +311,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2626236249646841566">Sprawdź połączenie i zaloguj się ponownie.</translation>
 <translation id="2637313651144986786">Wyszukaj karty...</translation>
+<translation id="2640733327287333451">Brak nazwy użytkownika ••••••</translation>
 <translation id="2648721026697078500">Nigdy nie przenoś</translation>
 <translation id="2648803196158606475">Usuń przeczytane</translation>
 <translation id="2664621323652615289">Zatrzymaj</translation>
@@ -1280,6 +1281,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7569588934989281656">Aby przełączać się między kartami, możesz przesuwać pasek kart.</translation>
 <translation id="7582857256643797524">To ustawienie jest włączone na Twoim urządzeniu</translation>
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
+<translation id="7598439272585186139">Zwiększ bezpieczeństwo</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Usuń hasło</translation>

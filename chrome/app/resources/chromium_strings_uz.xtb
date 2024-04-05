@@ -236,6 +236,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5427571867875391349">Chromium‘ni standart brauzer sifatida tayinlash.</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium brauzeri endi ishlamay qolishi mumkin, chunki uning yangi versiyalarida ushbu Linux distributivi taʼminoti toʻxtatiladi.</translation>
+<translation id="5475924890392386523">Chromium bu yuklanmani blokladi, chunki bu fayl shaxsiy va ijtimoiy tarmoqlardagi hisoblarga zarar keltirishi mumkin</translation>
 <translation id="5480860683791598150">Bu sayt manzilingizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="5487574057737591516">Maxfiylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Chromium foydalanmasligi va tegishli reklama chiqmasligi uchun qiziqishni olib tashlash mumkin.</translation>
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
@@ -364,6 +365,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="734373864078049451">Chromium’dagi barcha veb-sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
 <translation id="7349591376906416160">Tizim administratori tomonidan Chromium brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
+<translation id="7355355292030546812">Chromium bu yuklanmani blokladi, chunki bu fayl <ph name="USER_EMAIL" /> kabi shaxsiy va ijtimoiy tarmoqlardagi hisoblarga zarar keltirishi mumkin.</translation>
 <translation id="7398989605938454041">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Bunda ish va hordiqni ajratish osonlashadi.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Bu sayt kamerangizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
@@ -450,6 +452,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
 <translation id="9019929317751753759">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
+<translation id="904366664621834601">Chromium bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
 <translation id="907832235989677238">Chromium hisobiga kirish Agar bu hisob boshqa ishlatilmasa, <ph name="GUEST_LINK_BEGIN" />qurilmadan mehmon rejimida foydalanish<ph name="GUEST_LINK_END" /> mumkin.</translation>
 <translation id="9078733879136747090">Chromium avtomatik yopildi</translation>
 <translation id="9089354809943900324">Chromium versiyasi eskirdi</translation>

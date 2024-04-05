@@ -785,7 +785,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2452098632681057184">Ecology and environment</translation>
 <translation id="2452837234288608067">Couldn't help with that. Try again.</translation>
 <translation id="2456755709261364512">Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Search <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Social networks</translation>
 <translation id="2463739503403862330">Fill in</translation>
 <translation id="2465688316154986572">Staple</translation>
@@ -2971,6 +2970,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencing</translation>
 <translation id="6753269504797312559">Policy Value</translation>
+<translation id="6753390234084146956">tabs</translation>
 <translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Savings Accounts</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@ Additional details:
 <translation id="8075588646978457437">Self-adhesive paper</translation>
 <translation id="8075736640322370409">Create a new Google Sheet quickly</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
-<translation id="8076492880354921740">Tabs</translation>
 <translation id="8077669823243888800">Envelope Chinese no.8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>
@@ -3720,7 +3719,6 @@ Additional details:
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hockey Equipment</translation>
-<translation id="815788908807586564">Chat with Gemini</translation>
 <translation id="8161095570253161196">Resume browsing</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8164078261547504572">Want emails when prices drop?</translation>

@@ -785,7 +785,6 @@
 <translation id="2452098632681057184">Ecologie și mediul înconjurător</translation>
 <translation id="2452837234288608067">Nu te-am putut ajuta. Încearcă din nou.</translation>
 <translation id="2456755709261364512">Nivelul bateriei trebuie să fie peste <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
-<translation id="2462599289530201834">Caută <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Rețele sociale</translation>
 <translation id="2463739503403862330">Completează</translation>
 <translation id="2465688316154986572">Capsare</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferințe</translation>
 <translation id="6753269504797312559">Valoarea politicii</translation>
+<translation id="6753390234084146956">file</translation>
 <translation id="6753434778807740853">Șterge intrarea <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Conturi de economii</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@ Detalii suplimentare:
 <translation id="8075588646978457437">Hârtie autoadezivă</translation>
 <translation id="8075736640322370409">Creează rapid o Foaie de calcul Google</translation>
 <translation id="8075898834294118863">Butonul Gestionează setările pentru site-uri</translation>
-<translation id="8076492880354921740">File</translation>
 <translation id="8077669823243888800">Plic chinezesc 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Încarci un fișier confidențial?}few{Încarci fișiere confidențiale?}other{Încarci fișiere confidențiale?}}</translation>
 <translation id="8078141288243656252">Nu se poate adnota când este rotit</translation>
@@ -3720,7 +3719,6 @@ Detalii suplimentare:
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politica implementată de administrator nu recomandă să descarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Echipament pentru hochei</translation>
-<translation id="815788908807586564">Conversează prin chat cu Gemini</translation>
 <translation id="8161095570253161196">Reia navigarea</translation>
 <translation id="8163866351304776260">Perforare cvadruplă în stânga</translation>
 <translation id="8164078261547504572">Vrei să primești e-mailuri când scad prețurile?</translation>

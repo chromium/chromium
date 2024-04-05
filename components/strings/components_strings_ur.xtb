@@ -786,7 +786,6 @@
 <translation id="2452098632681057184">ایکولوجی اور ماحول</translation>
 <translation id="2452837234288608067">اس میں مدد نہیں کر سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2456755709261364512">آپ کی بیٹری <ph name="REQUIRED_BATTERY_PRECENT" />فیصد سے زیادہ چارج ہونی چاہیے</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> تلاش کریں</translation>
 <translation id="2462932596748424101">سوشل نیٹ ورکس</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
 <translation id="2465688316154986572">سٹیپل</translation>
@@ -2974,6 +2973,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ٹیلی کانفرنسنگ</translation>
 <translation id="6753269504797312559">پالیسی کی قدر</translation>
+<translation id="6753390234084146956">ٹیبز</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> کا اندراج حذف کریں</translation>
 <translation id="6754547388777247439">سیونگز اکاؤنٹس</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3684,7 +3684,6 @@
 <translation id="8075588646978457437">سیلف ادھیسیو پیپر</translation>
 <translation id="8075736640322370409">‏تیزی سے ایک نئی Google Sheet تخلیق کریں</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
-<translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8077669823243888800">‏Chinese #8 لفافہ</translation>
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
 <translation id="8078141288243656252">گھماتے وقت تشریح نہیں کی جا سکتی</translation>
@@ -3723,7 +3722,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
 <translation id="8153865548451212769">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="81563721597823545">ہاکی کے ساز و سامان</translation>
-<translation id="815788908807586564">‏Gemini کے ساتھ چیٹ کریں</translation>
 <translation id="8161095570253161196">براؤزنگ دوبارہ شروع کریں</translation>
 <translation id="8163866351304776260">بائیں طرف مستطیل سوراخ</translation>
 <translation id="8164078261547504572">قیمتیں گرنے پر ای میلز چاہتے ہیں؟</translation>

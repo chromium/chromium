@@ -146,6 +146,7 @@
 <translation id="3100998948628680988">Chrome profilinize bir ad verin</translation>
 <translation id="3112458742631356345">Dosya çok indirilmediği ve tehlikeli olabileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="3114643501466072395">Öteki şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chrome'da oturum açın<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Arşiv dosyası, kötü amaçlı yazılımın gizlenmiş olabileceği başka dosyalar içerdiği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="3140883423282498090">Yaptığınız değişiklikler Google Chrome'u yeniden başlattığınızda geçerli olacak.</translation>
 <translation id="3149510190863420837">Chrome Uygulamaları</translation>
 <translation id="3169523567916669830">Denemeler sırasında, sitelerin size reklam göstermek için kullandığı ilgi alanlarını görebilir ve kaldırabilirsiniz. Chrome, ilgi alanlarınızı tahmin ederken son tarama geçmişinizi kullanır.</translation>
@@ -216,6 +217,7 @@
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
 <translation id="4335235004908507846">Chrome veri ihlallerine, kötü uzantılara ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome'a eklendi</translation>
+<translation id="436060642166082913">Dosya kişisel ve sosyal ağ hesaplarınıza zarar verebileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="4384570495110188418">Oturum açmadığınızdan Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="4389991535395284064">Chrome, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
@@ -469,6 +471,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="873133009373065397">Google Chrome, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Dosya, <ph name="USER_EMAIL" /> dahil olmak üzere kişisel ve sosyal ağ hesaplarınıza zarar verebileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="8801657293260363985">Chrome'un JavaScript ve WebAssembly motoru olan V8, site performansını iyileştirmek için kullanılır</translation>
 <translation id="8821043148920470810">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="8823341990149967727">Chrome Sürümü Eski</translation>

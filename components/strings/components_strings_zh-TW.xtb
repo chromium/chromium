@@ -784,7 +784,6 @@
 <translation id="2452098632681057184">生態學與環境</translation>
 <translation id="2452837234288608067">無法協助，請再試一次。</translation>
 <translation id="2456755709261364512">請務必將電池充到 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
-<translation id="2462599289530201834">搜尋「<ph name="KEYWORD_SHORT_NAME" />」</translation>
 <translation id="2462932596748424101">社群網路</translation>
 <translation id="2463739503403862330">填入</translation>
 <translation id="2465688316154986572">釘裝</translation>
@@ -2969,6 +2968,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">電話會議</translation>
 <translation id="6753269504797312559">政策值</translation>
+<translation id="6753390234084146956">分頁</translation>
 <translation id="6753434778807740853">刪除項目，<ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">儲蓄帳戶</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3679,7 +3679,6 @@
 <translation id="8075588646978457437">自黏紙</translation>
 <translation id="8075736640322370409">快速建立新的 Google 試算表</translation>
 <translation id="8075898834294118863">管理網站設定</translation>
-<translation id="8076492880354921740">分頁</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{要上傳機密檔案嗎？}other{要上傳機密檔案嗎？}}</translation>
 <translation id="8078141288243656252">文件旋轉後無法加註</translation>
@@ -3718,7 +3717,6 @@
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8153865548451212769">{0,plural, =1{根據管理員政策，建議你不要將這個檔案下載到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案下載到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="81563721597823545">曲棍球裝備</translation>
-<translation id="815788908807586564">與 Gemini 對話</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在商品降價時收到電子郵件嗎？</translation>

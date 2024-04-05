@@ -785,7 +785,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2452098632681057184">Ökologie und Umwelt</translation>
 <translation id="2452837234288608067">Dabei konnten wir nicht helfen. Bitte versuche es noch einmal.</translation>
 <translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
-<translation id="2462599289530201834">In <ph name="KEYWORD_SHORT_NAME" /> suchen</translation>
 <translation id="2462932596748424101">Soziale Netzwerke</translation>
 <translation id="2463739503403862330">Ausfüllen</translation>
 <translation id="2465688316154986572">Heften</translation>
@@ -2969,6 +2968,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferenzen</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
+<translation id="6753390234084146956">Tabs</translation>
 <translation id="6753434778807740853">Eintrag „<ph name="ENTRY_VOICEOVER" />“ löschen</translation>
 <translation id="6754547388777247439">Sparkonten</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3679,7 +3679,6 @@ Weitere Details:
 <translation id="8075588646978457437">Selbstklebendes Papier</translation>
 <translation id="8075736640322370409">Schnell eine neue Google-Tabelle erstellen</translation>
 <translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
-<translation id="8076492880354921740">Tabs</translation>
 <translation id="8077669823243888800">Umschlag Chinesisch Nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vertrauliche Datei hochladen?}other{Vertrauliche Dateien hochladen?}}</translation>
 <translation id="8078141288243656252">Anmerkungen bei gedrehtem Dokument nicht möglich</translation>
@@ -3718,7 +3717,6 @@ Weitere Details:
 <translation id="8150722005171944719">Die Datei unter <ph name="URL" /> kann nicht gelesen werden. Sie wurde möglicherweise entfernt oder verschoben oder die Dateiberechtigungen verhindern den Zugriff.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf „<ph name="DESTINATION_NAME" />“ herunterzuladen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf „<ph name="DESTINATION_NAME" />“ herunterzuladen}}</translation>
 <translation id="81563721597823545">Hockeyausrüstung</translation>
-<translation id="815788908807586564">Chat with Gemini</translation>
 <translation id="8161095570253161196">Suche fortsetzen</translation>
 <translation id="8163866351304776260">Vierfache Lochung links</translation>
 <translation id="8164078261547504572">Möchtest du per E‑Mail über Preissenkungen informiert werden?</translation>

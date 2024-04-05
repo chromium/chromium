@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Taper pour cliquer</translation>
+<translation id="1029724557649700742">De nouvelles fonctionnalités seront ajoutées dès qu'elles seront disponibles (elles peuvent varier selon l'appareil).</translation>
 <translation id="1031362278801463162">Chargement de l'aperçu...</translation>
 <translation id="1032605640136438169">Veuillez consulter les nouvelles conditions</translation>
 <translation id="103279545524624934">Libérez de l'espace disque pour lancer des applications Android.</translation>
@@ -1559,6 +1560,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2155473371917268529">Le paramètre de visibilité actuel est "Vos appareils"</translation>
 <translation id="2155772377859296191">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker : <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Autorisé(s) à faire défiler les onglets partagés et à zoomer dessus</translation>
 <translation id="2156877321344104010">Relancer le contrôle de sécurité</translation>
 <translation id="2157474325782140681">Pour bénéficier de fonctionnalités supplémentaires, utilisez une station d'accueil Dell compatible avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
@@ -1977,6 +1979,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2459706890611560967">Reprendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Sauvegardez les données de votre navigateur et utilisez-les sur n'importe quel appareil</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
+<translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler les onglets partagés ni à zoomer dessus</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
 <translation id="2462332841984057083">Steam est déjà en cours de configuration. Attendez la fin de la configuration.</translation>
 <translation id="2462724976360937186">ID de clé de l'autorité de certification</translation>
@@ -2010,6 +2013,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2482895651873876648">Onglet déplacé vers le groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Définir le moteur de recherche dans les paramètres du navigateur Chrome</translation>
 <translation id="2483698983806594329">Fichier non validé téléchargé</translation>
+<translation id="2484574361686148760">Actualiser les infos sur les clients Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Retirer l'autorisation</translation>
 <translation id="2484909293434545162">Si un site utilise des cookies, l'info apparaîtra ici</translation>
 <translation id="2484959914739448251">Pour effacer les données de navigation sur tous vos appareils synchronisés et dans votre compte Google, <ph name="BEGIN_LINK" />saisissez votre phrase secrète<ph name="END_LINK" />.</translation>
@@ -2203,6 +2207,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2629227353894235473">Développer des applications Android</translation>
 <translation id="2629437048544561682">Effacer le canevas</translation>
 <translation id="2631498379019108537">Afficher les options de saisie sur l'étagère</translation>
+<translation id="2632176111713971407">Les sites peuvent demander à faire défiler les onglets partagés et à zoomer dessus</translation>
 <translation id="2633212996805280240">Désinstaller "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> n'a pas pu terminer l'installation, mais va poursuivre son exécution à partir de son image disque.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3862,6 +3867,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3900966090527141178">Exporter des mots de passe</translation>
 <translation id="3902789559055749153">Choisissez comment vous voulez la créer pour <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Clavier intégré</translation>
+<translation id="3903696968689283281">Infos sur les propriétaires Wi-Fi Direct :</translation>
 <translation id="3904326018476041253">Services de localisation</translation>
 <translation id="3905761538810670789">Réparer l'application</translation>
 <translation id="3908288065506437185">Bloquer les cookies tiers en mode navigation privée</translation>
@@ -4516,6 +4522,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4409779593816003679">Mots de passe et saisie automatique</translation>
 <translation id="4410545552906060960">Utilisez un numéro (code) au lieu d'un mot de passe pour déverrouiller votre appareil. Pour définir votre code ultérieurement, accédez aux paramètres.</translation>
+<translation id="4411344321892622527">Non autorisé(s) à faire défiler les onglets partagés et à zoomer dessus</translation>
 <translation id="4411578466613447185">Signataire de code</translation>
 <translation id="4411719918614785832">Ces clés d'accès sont enregistrées dans Windows Hello sur cet ordinateur. Elles ne sont pas enregistrées dans votre compte Google.</translation>
 <translation id="4412544493002546580">Réessayez ou sélectionnez l'une des sources d'inspiration ci-dessous.</translation>
@@ -6859,6 +6866,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="625827534921607067">Ce réseau sera préféré si plusieurs réseaux connectés ou configurés auparavant sont disponibles</translation>
 <translation id="62586649943626337">Organisez vos onglets avec les groupes d'onglets</translation>
+<translation id="6259776178973198997">Actualiser les infos sur les propriétaires Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
@@ -7560,6 +7568,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ne peut pas être exécuté en tant que root.</translation>
 <translation id="6812841287760418429">Conserver les modifications</translation>
 <translation id="6813907279658683733">Tout l'écran</translation>
+<translation id="6814754908910736855">Infos sur les clients Wi-Fi Direct :</translation>
 <translation id="6815376457351236663">Ouvrir quand même</translation>
 <translation id="6815787852028615386">Ce fichier est trompeur et peut apporter des modifications inattendues à votre appareil</translation>
 <translation id="6816097980753839617">Bleu-jaune (tritanomalie)</translation>
@@ -8429,6 +8438,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Ajouter à la liste "Toujours laisser ces sites actifs"</translation>
 <translation id="7502528909759062987">Suspendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Le site peut faire défiler les onglets partagés et zoomer dessus</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur le site sera conservée sur votre clé de sécurité.</translation>
 <translation id="7504145862399276792">Le son de cet onglet est désactivé</translation>
@@ -10768,6 +10778,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="949807244219288032">Cet onglet est associé à un appareil HID</translation>
 <translation id="950079950995628542">Provenant de <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guide de configuration</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installée par votre administrateur</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé ou utilisé</translation>
 <translation id="953434574221655299">Autorisés à savoir quand vous utilisez activement votre appareil</translation>

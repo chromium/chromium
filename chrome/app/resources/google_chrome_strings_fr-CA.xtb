@@ -150,6 +150,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3100998948628680988">Nommer votre profil Chrome</translation>
 <translation id="3112458742631356345">Chrome a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="3114643501466072395">Pour vérifier si vos autres mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome a bloqué ce téléchargement, car le fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="3140883423282498090">Vos modifications seront appliquées au prochain redémarrage de Google Chrome.</translation>
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3169523567916669830">Pendant les essais, vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
@@ -220,6 +221,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4334294535648607276">Téléchargement terminé.</translation>
 <translation id="4335235004908507846">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les extensions malveillantes</translation>
 <translation id="4343195214584226067">L'extension « <ph name="EXTENSION_NAME" /> » a été ajoutée à Chrome</translation>
+<translation id="436060642166082913">Chrome a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="4384570495110188418">Chrome ne peut pas vérifier vos mots de passe parce que vous n'êtes pas connecté.</translation>
 <translation id="4389991535395284064">Lors de la navigation en mode Navigation privée, Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
@@ -475,6 +477,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="873133009373065397">Google Chrome ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une politique de groupe qui empêche l'installation : <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux, notamment <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome utilisé pour améliorer les performances du site</translation>
 <translation id="8821043148920470810">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 7.</translation>
 <translation id="8823341990149967727">Google Chrome n'est plus à jour</translation>

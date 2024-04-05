@@ -183,6 +183,7 @@
 <translation id="132301787627749051">搜索剪贴板上的图片</translation>
 <translation id="1323433172918577554">展开</translation>
 <translation id="132390688737681464">保存并填写地址</translation>
+<translation id="1325412080783393306">搜索更多购买选项</translation>
 <translation id="1325749054628832887">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不符合您的兴趣。详细了解如何<ph name="BEGIN_LINK" />管理广告隐私权<ph name="LINK_END" />。</translation>
 <translation id="1329916999021038454">发送报告</translation>
 <translation id="1330449323196174374">关门折（左侧）</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">生态与环境</translation>
 <translation id="2452837234288608067">无法提供这方面的帮助。请重试。</translation>
 <translation id="2456755709261364512">电池电量必须在 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
-<translation id="2462599289530201834">在<ph name="KEYWORD_SHORT_NAME" />中搜索</translation>
 <translation id="2462932596748424101">社交网络</translation>
 <translation id="2463739503403862330">填充</translation>
 <translation id="2465688316154986572">订书钉</translation>
@@ -1189,6 +1189,7 @@
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3287510313208355388">联网时下载</translation>
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要采取额外措施来验证您的付款</translation>
+<translation id="3289578402369490638">来自网络上的其他商店</translation>
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="3299098170013242198">已开启 Windows Hello 作为填充密码时的验证机制</translation>
@@ -2966,6 +2967,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">远程会议</translation>
 <translation id="6753269504797312559">政策值</translation>
+<translation id="6753390234084146956">标签页</translation>
 <translation id="6753434778807740853">删除条目“<ph name="ENTRY_VOICEOVER" />”</translation>
 <translation id="6754547388777247439">储蓄账户</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3676,7 +3678,6 @@
 <translation id="8075588646978457437">自粘纸</translation>
 <translation id="8075736640322370409">快速创建新的 Google 表格</translation>
 <translation id="8075898834294118863">管理网站设置</translation>
-<translation id="8076492880354921740">标签页</translation>
 <translation id="8077669823243888800">中式 #8 信封</translation>
 <translation id="8078006011486731853">{0,plural, =1{上传机密文件？}other{上传机密文件？}}</translation>
 <translation id="8078141288243656252">无法在旋转后添加注释</translation>
@@ -3715,7 +3716,6 @@
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理员政策不建议将此文件下载到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件下载到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球装备</translation>
-<translation id="815788908807586564">与 Gemini 聊天</translation>
 <translation id="8161095570253161196">继续浏览</translation>
 <translation id="8163866351304776260">四孔（左侧）</translation>
 <translation id="8164078261547504572">想在商品降价时收到电子邮件通知？</translation>

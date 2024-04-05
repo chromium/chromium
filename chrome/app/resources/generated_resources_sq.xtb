@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1029317248976101138">Zmadho</translation>
 <translation id="1029526375103058355">Trokit për të klikuar</translation>
+<translation id="1029724557649700742">Veçoritë e reja do të përfshihen kur të bëhen të disponueshme; veçoritë mund të variojnë sipas pajisjes.</translation>
 <translation id="1031362278801463162">Po ngarkohet pamja paraprake...</translation>
 <translation id="1032605640136438169">Shqyrto kushtet e reja</translation>
 <translation id="103279545524624934">Liro hapësirë në disk për të nisur aplikacionet Android.</translation>
@@ -1555,6 +1556,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2155473371917268529">Cilësimi aktual i dukshmërisë është "Pajisjet e tua"</translation>
 <translation id="2155772377859296191">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Punonjësi i shërbimit: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Lejohet që të lëvizë dhe zmadhojë skedat e ndara</translation>
 <translation id="2156877321344104010">Ekzekuto përsëri kontrollin e sigurisë</translation>
 <translation id="2157474325782140681">Për të marrë veçori shtesë, përdor një stacion lidhjeje Dell të projektuar për të funksionuar me këtë Chromebook.</translation>
 <translation id="215753907730220065">Dil nga ekrani i plotë</translation>
@@ -1974,6 +1976,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2459706890611560967">Vazhdo transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Rezervo gjërat e shfletuesit dhe përdori në çdo pajisje</translation>
 <translation id="2460482211073772897">Në dosje të tjera</translation>
+<translation id="2461550163693930491">Mos lejo sajtet të lëvizin dhe zmadhojnë skedat e ndara</translation>
 <translation id="2461593638794842577">Mund ta çaktivizosh këtë cilësim për t'i ruajtur fjalëkalimet vetëm në këtë pajisje</translation>
 <translation id="2462332841984057083">Steam po konfigurohet tashmë. Prit që të përfundojë konfigurimi.</translation>
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
@@ -2007,6 +2010,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2482895651873876648">Tasti u zhvendos në grupin <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Cakto motorin e kërkimit në cilësimet e shfletuesit Chrome</translation>
 <translation id="2483698983806594329">U shkarkua një skedar i paverifikuar</translation>
+<translation id="2484574361686148760">Rifresko informacionet e klientëve të Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Hiq qasjen e dhënë</translation>
 <translation id="2484909293434545162">Nëse një sajt përdor kukit, ata do të shfaqen këtu</translation>
 <translation id="2484959914739448251">Për të pastruar të dhënat e shfletimit nga të gjitha pajisjet e tua të sinkronizuara dhe nga "Llogaria e Google", <ph name="BEGIN_LINK" />fut frazën e kalimit<ph name="END_LINK" />.</translation>
@@ -2200,6 +2204,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2629227353894235473">Zhvillo aplikacione të Android</translation>
 <translation id="2629437048544561682">Pastro kanavacën</translation>
 <translation id="2631498379019108537">Shfaq opsionet e hyrjes në raft</translation>
+<translation id="2632176111713971407">Sajtet mund të kërkojnë për të lëvizur dhe zmadhuar skedat e ndara</translation>
 <translation id="2633212996805280240">Të hiqet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nuk mund ta përfundonte instalimin, por do të vazhdojë të ekzekutohet nga imazhi i diskut.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3859,6 +3864,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3900966090527141178">Eksporto fjalëkalimet</translation>
 <translation id="3902789559055749153">Zgjidh se si dëshiron të krijosh një çelës kalimi për <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Tastiera e integruar</translation>
+<translation id="3903696968689283281">Informacionet e zotëruesve të Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Shërbimet e vendndodhjes</translation>
 <translation id="3905761538810670789">Riparo aplikacionin</translation>
 <translation id="3908288065506437185">Blloko kukit e palëve të treta në "Modalitetin 'e fshehtë'"</translation>
@@ -4513,6 +4519,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4409697491990005945">Kufijtë</translation>
 <translation id="4409779593816003679">Fjalëkalimet dhe plotësimi automatik</translation>
 <translation id="4410545552906060960">Përdor një numër (PIN) në vend të një fjalëkalimi për të shkyçur pajisjen tënde. Për ta caktuar kodin PIN më vonë, shko te "Cilësimet".</translation>
+<translation id="4411344321892622527">Nuk lejohet që të lëvizë dhe zmadhojë skedat e ndara</translation>
 <translation id="4411578466613447185">Nënshkruesi i kodit</translation>
 <translation id="4411719918614785832">Këta çelësa kalimi ruhen në Windows Hello në këtë kompjuter. Ata nuk ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="4412544493002546580">Provo përsëri ose zgjidh nga një prej frymëzimeve më poshtë.</translation>
@@ -6855,6 +6862,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="625827534921607067">Ky rrjet do të jetë i preferuar nëse ofrohen më shumë se një rrjet i lidhur ose i konfiguruar më parë</translation>
 <translation id="62586649943626337">Organizo skedat e tua me grupet e skedave</translation>
+<translation id="6259776178973198997">Rifresko informacionet e zotëruesve të Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Rezervimet e tua ngarkohen te Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë sate të Google".</translation>
 <translation id="6263082573641595914">Versioni i autoritetit të certifikimit të Microsoft</translation>
 <translation id="6263284346895336537">Jo vendimtare</translation>
@@ -7554,6 +7562,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nuk mund të ekzekutohet si një rrënjë.</translation>
 <translation id="6812841287760418429">Mbaji ndryshimet</translation>
 <translation id="6813907279658683733">Ekrani i plotë</translation>
+<translation id="6814754908910736855">Informacionet e klientëve të Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Hape sidoqoftë</translation>
 <translation id="6815787852028615386">Ky skedar është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="6816097980753839617">Blu-e verdhë (tritanomali)</translation>
@@ -8422,6 +8431,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7501957181231305652">ose</translation>
 <translation id="7502220299952823578">Shto te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="7502528909759062987">Vendos në pauzë transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Skedat e ndara mund të lëvizen dhe zmadhohen</translation>
 <translation id="7503191893372251637">Lloji i certifikatës Netscape</translation>
 <translation id="7503985202154027481">Një regjistrim i vizitës sate në këtë sajt do të ruhet në çelësin tënd të sigurisë.</translation>
 <translation id="7504145862399276792">Audioja e kësaj skede është vendosur në heshtje</translation>
@@ -10758,6 +10768,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="949807244219288032">Kjo skedë është e lidhur me një pajisje HID</translation>
 <translation id="950079950995628542">Nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instaluar nga administratori yt</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="952471655966876828">Pajisja lidhet automatikisht kur ndizet dhe përdoret</translation>
 <translation id="953434574221655299">Lejohen të dinë kur ti e përdor pajisjen tënde në mënyrë aktive</translation>

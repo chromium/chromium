@@ -240,6 +240,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5427571867875391349">Stel Chromium as jou verstekblaaier</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium sal dalk nie reg werk nie omdat dit nie meer in hierdie Linux-uitreiking gesteun word nie</translation>
+<translation id="5475924890392386523">Chromium het hierdie aflaai geblokkeer omdat die lêer jou persoonlike en sosialenetwerkrekeninge kan beskadig</translation>
 <translation id="5480860683791598150">Chromium het toegang tot jou ligging nodig om jou ligging met hierdie werf te deel</translation>
 <translation id="5487574057737591516">Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. As Chromium dit verkeerd kry of jy sekere advertensies nie wil sien nie, kan jy ’n belangstelling verwyder.</translation>
 <translation id="549669000822060376">Wag terwyl Chromium die jongste stelselopdaterings installeer.</translation>
@@ -368,6 +369,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="734373864078049451">Jou web, boekmerke en ander Chromium-goed woon hier.</translation>
 <translation id="7349591376906416160">Jou stelseladministrateur het Chromium opgestel om <ph name="ALTERNATIVE_BROWSER_NAME" /> oop te maak om by <ph name="TARGET_URL_HOSTNAME" /> in te gaan.</translation>
+<translation id="7355355292030546812">Chromium het hierdie aflaai geblokkeer omdat die lêer jou persoonlike en sosialenetwerkrekeninge kan beskadig, insluitend <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Met Chromium-profiele kan jy al jou Chromium-goed skei. Dit maak dit makliker om tussen werk en pret te verdeel.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
@@ -454,6 +456,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
+<translation id="904366664621834601">Chromium het hierdie aflaai geblokkeer omdat die argieflêer ander lêers insluit wat wanware kan versteek</translation>
 <translation id="907832235989677238">Meld by Chromium aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium is outomaties toegemaak</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>

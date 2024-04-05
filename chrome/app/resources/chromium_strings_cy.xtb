@@ -240,6 +240,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5427571867875391349">Gosod Chromium fel eich porwr diofyn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Beta Chromium</translation>
 <translation id="5473971139929175403">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar y dosbarthiad Linux hwn</translation>
+<translation id="5475924890392386523">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="5480860683791598150">Mae angen mynediad at eich lleoliad ar Chromium i rannu'ch lleoliad gyda'r wefan hon</translation>
 <translation id="5487574057737591516">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Ac os yw Chromium yn ei chael yn anghywir neu os nad ydych am weld rhai hysbysebion, gallwch ddileu diddordeb.</translation>
 <translation id="549669000822060376">Arhoswch dra bod Chromium yn gosod y diweddariadau system diweddaraf.</translation>
@@ -368,6 +369,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7339898014177206373">Ffenestr newydd</translation>
 <translation id="734373864078049451">Mae'ch gwe, nodau tudalen, a phethau Chromium eraill yn byw yma.</translation>
 <translation id="7349591376906416160">Mae gweinyddwr eich system wedi ffurfweddu Chromium i agor <ph name="ALTERNATIVE_BROWSER_NAME" /> i gael mynediad at <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol, gan gynnwys <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Gallwch wahanu eich holl bethau Chromium gyda phroffiliau Chromium. Mae hyn yn ei gwneud hi'n haws rhannu rhwng gwaith a hwyl.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Mae angen eich caniatâd ar Chromium i ddefnyddio eich camera ar gyfer y wefan hon</translation>
@@ -454,6 +456,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8988036198400390003">Rheoli proffiliau Chromium</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
+<translation id="904366664621834601">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil archif yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="907832235989677238">Mewngofnodi i Chromium. Os ydych chi am fewngofnodi cyfrif unwaith yn unig, gallwch <ph name="GUEST_LINK_BEGIN" />ddefnyddio'r ddyfais fel gwestai<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Caewyd Chromium yn awtomatig</translation>
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>

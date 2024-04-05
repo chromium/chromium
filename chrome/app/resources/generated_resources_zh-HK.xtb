@@ -41,7 +41,7 @@
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1029317248976101138">放大</translation>
 <translation id="1029526375103058355">輕按點撃功能</translation>
-<translation id="1029724557649700742">新功能推出後就會開放使用，但可用功能會因裝置而異。</translation>
+<translation id="1029724557649700742">新功能將會在推出時加入，但可用功能會因裝置而異。</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
 <translation id="1032605640136438169">請閱讀新版條款</translation>
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
@@ -1571,7 +1571,7 @@
 <translation id="2155473371917268529">目前嘅分享設定係「你嘅裝置」</translation>
 <translation id="2155772377859296191">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
-<translation id="2156707722163479690">允許捲動及縮放已分享的分頁</translation>
+<translation id="2156707722163479690">允許捲動和縮放已分享的分頁</translation>
 <translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用此 Chromebook 的專用插座。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
@@ -1993,7 +1993,7 @@
 <translation id="2459706890611560967">繼續投放分頁去 <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">備份瀏覽器資料，並在任何裝置上使用</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
-<translation id="2461550163693930491">不允許網站捲動及縮放已分享的分頁</translation>
+<translation id="2461550163693930491">不允許網站捲動和縮放已分享的分頁</translation>
 <translation id="2461593638794842577">你可關閉此設定，只將密碼儲存在此裝置</translation>
 <translation id="2462332841984057083">已有其他程序正在設定 Steam，請等待設定完成。</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
@@ -2027,7 +2027,7 @@
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="2483627560139625913">在 Chrome 瀏覽器設定中設定搜尋引擎</translation>
 <translation id="2483698983806594329">下載咗未驗證嘅檔案</translation>
-<translation id="2484574361686148760">重新整理 Wi-Fi Direct 用戶端資訊</translation>
+<translation id="2484574361686148760">重新整理 Wi-Fi Direct 客戶資料</translation>
 <translation id="2484743711056182585">移除存取權</translation>
 <translation id="2484909293434545162">使用 Cookie 的網站會在此處顯示</translation>
 <translation id="2484959914739448251">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入密碼短語<ph name="END_LINK" />。</translation>
@@ -2221,7 +2221,7 @@
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
 <translation id="2631498379019108537">在捷徑列中顯示輸入法選項</translation>
-<translation id="2632176111713971407">網站可要求捲動及縮放已分享的分頁</translation>
+<translation id="2632176111713971407">網站可要求捲動和縮放已分享的分頁</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟影像執行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3879,7 +3879,7 @@
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3902789559055749153">選擇為 <ph name="APP_NAME" /> 建立密鑰的方式</translation>
 <translation id="3903187154317825986">內置鍵盤</translation>
-<translation id="3903696968689283281">Wi-Fi Direct 擁有者資訊：</translation>
+<translation id="3903696968689283281">Wi-Fi Direct 擁有者資料：</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
@@ -4532,7 +4532,7 @@
 <translation id="4409697491990005945">邊界</translation>
 <translation id="4409779593816003679">密碼和自動填入 (&amp;A)</translation>
 <translation id="4410545552906060960">您可以使用數字 (PIN) 來解鎖裝置。如要稍後才設定 PIN，請前往「設定」。</translation>
-<translation id="4411344321892622527">不允許捲動及縮放已分享的分頁</translation>
+<translation id="4411344321892622527">不允許捲動和縮放已分享的分頁</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4411719918614785832">這些密鑰會儲存在此電腦的 Windows Hello 上，並不會儲存至您的 Google 帳戶。</translation>
 <translation id="4412544493002546580">請再試一次，或選取下方其中一個靈感。</translation>
@@ -6874,7 +6874,7 @@
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網絡，系統會優先使用此網絡</translation>
 <translation id="62586649943626337">使用分頁群組來整理分頁</translation>
-<translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資訊</translation>
+<translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資料</translation>
 <translation id="6262371516389954471">您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -7574,7 +7574,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> 無法以根使用者的身分執行。</translation>
 <translation id="6812841287760418429">保留變更</translation>
 <translation id="6813907279658683733">整個螢幕畫面</translation>
-<translation id="6814754908910736855">Wi-Fi Direct 用戶端資訊：</translation>
+<translation id="6814754908910736855">Wi-Fi Direct 客戶資料：</translation>
 <translation id="6815376457351236663">仍要開啟</translation>
 <translation id="6815787852028615386">這是欺詐檔案，可能會對裝置造成非預期的變更</translation>
 <translation id="6816097980753839617">藍 - 黃 (藍色弱視)</translation>
@@ -8443,7 +8443,7 @@
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">加去「一律啟用這些網站」清單</translation>
 <translation id="7502528909759062987">暫停將分頁投放去 <ph name="DEVICE_NAME" /></translation>
-<translation id="7502804472671406749">可捲動及縮放已分享的分頁</translation>
+<translation id="7502804472671406749">可捲動和縮放已分享的分頁</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">您的安全密鑰會保留您瀏覽此網站的記錄。</translation>
 <translation id="7504145862399276792">此分頁的音訊已設為靜音</translation>
@@ -10782,7 +10782,7 @@
 <translation id="949807244219288032">此分頁已連接至 HID 裝置</translation>
 <translation id="950079950995628542">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="950307215746360464">設定指南</translation>
-<translation id="951273949038779544"><ph name="SITE_ACCESS" />。由系統管理員安裝</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />，已經由管理員安裝</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>
 <translation id="953434574221655299">允許偵測您使用裝置的時間</translation>

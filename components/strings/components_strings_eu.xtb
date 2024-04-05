@@ -183,6 +183,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="132301787627749051">Bilatu arbeleko irudia</translation>
 <translation id="1323433172918577554">Erakutsi gehiago</translation>
 <translation id="132390688737681464">Gorde eta bete helbideak</translation>
+<translation id="1325412080783393306">Bilatu erosteko aukera gehiago</translation>
 <translation id="1325749054628832887">Iragarkien gaiak webgune batek iragarkiak pertsonalizatzeko erabil ditzakeen gauza ugarietako bat da. Iragarkien gairik gabe ere, webguneek iragarkiak erakutsi ahal izango dizkizute, baina baliteke hain interesgarriak ez izatea. Lortu informazio gehiago <ph name="BEGIN_LINK" />iragarkien pribatutasuna kudeatzeari<ph name="LINK_END" /> buruz.</translation>
 <translation id="1329916999021038454">Bidali txosten bat</translation>
 <translation id="1330449323196174374">Leiho-erako tolestura ezkerrean</translation>
@@ -785,7 +786,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2452098632681057184">Ekologia eta ingurumena</translation>
 <translation id="2452837234288608067">Ezin izan dizut lagundu horrekin. Saiatu berriro.</translation>
 <translation id="2456755709261364512">Bateria-maila % <ph name="REQUIRED_BATTERY_PRECENT" /> baino gehiagokoa izan behar da</translation>
-<translation id="2462599289530201834">Bilatu "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="2462932596748424101">Sare sozialak</translation>
 <translation id="2463739503403862330">Bete</translation>
 <translation id="2465688316154986572">Grapatu</translation>
@@ -1188,6 +1188,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3286372614333682499">bertikala</translation>
 <translation id="3287510313208355388">Deskargatu konektatuta dagoenean</translation>
 <translation id="3288238092761586174">Baliteke <ph name="URL" /> ostalariak beste urrats batzuk egin behar izatea ordainketa egiaztatzeko</translation>
+<translation id="3289578402369490638">Sareko beste dendetatik</translation>
 <translation id="3293642807462928945">Lortu informazio gehiago <ph name="POLICY_NAME" /> gidalerroari buruz</translation>
 <translation id="3295444047715739395">Ikusi eta kudeatu pasahitzak Chrome-ren ezarpenetan</translation>
 <translation id="3299098170013242198">Windows Hello aktibatuta dago pasahitzen eremuak betetzeko</translation>
@@ -2966,6 +2967,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6751487147225428522">ROC 8K (Txina)</translation>
 <translation id="6752086006821653994">Bideokonferentziak</translation>
 <translation id="6753269504797312559">Gidalerroaren balioa</translation>
+<translation id="6753390234084146956">fitxak</translation>
 <translation id="6753434778807740853">Ezabatu <ph name="ENTRY_VOICEOVER" /> sarrera</translation>
 <translation id="6754547388777247439">Aurrezki-kontuak</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3676,7 +3678,6 @@ Xehetasun gehiago:
 <translation id="8075588646978457437">Paper autoitsasgarria</translation>
 <translation id="8075736640322370409">Sortu bizkor Google-ko kalkulu-orri bat</translation>
 <translation id="8075898834294118863">Kudeatu webguneen ezarpenak</translation>
-<translation id="8076492880354921740">Fitxak</translation>
 <translation id="8077669823243888800">Gutun-azal txinatarra 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Isilpeko fitxategia kargatu nahi duzu?}other{Isilpeko fitxategiak kargatu nahi dituzu?}}</translation>
 <translation id="8078141288243656252">Ezin da oharpenik egin dokumentua biratuta dagoenean</translation>
@@ -3715,7 +3716,6 @@ Xehetasun gehiago:
 <translation id="8150722005171944719"><ph name="URL" /> orriko fitxategia ezin da irakurri. Agian kendu egin da, beste norabait eraman da edo bere baimenek atzitzea galarazten dute.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratzailearen gidalerroek ez dute gomendatzen fitxategia hemen deskargatzea: <ph name="DESTINATION_NAME" />}other{Administratzailearen gidalerroek ez dute gomendatzen fitxategiak hemen deskargatzea: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hockey-ekipamendua</translation>
-<translation id="815788908807586564">Txateatu Gemini-rekin</translation>
 <translation id="8161095570253161196">Berrekin arakatzeari</translation>
 <translation id="8163866351304776260">Lau zulo ezkerrean</translation>
 <translation id="8164078261547504572">Prezioak jaisten direnean mezu elektronikoak jaso nahi dituzu?</translation>

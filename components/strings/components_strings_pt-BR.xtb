@@ -785,7 +785,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2452098632681057184">Ecologia e meio ambiente</translation>
 <translation id="2452837234288608067">Não foi possível ajudar. Tente de novo.</translation>
 <translation id="2456755709261364512">O nível da bateria precisa estar acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Pesquisar "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="2462932596748424101">Redes sociais</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465688316154986572">Grampear</translation>
@@ -2971,6 +2970,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferência</translation>
 <translation id="6753269504797312559">Valor da política</translation>
+<translation id="6753390234084146956">guias</translation>
 <translation id="6753434778807740853">Excluir a entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Contas de poupança</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3682,7 +3682,6 @@ Mais detalhes:
 <translation id="8075588646978457437">Papel autoadesivo</translation>
 <translation id="8075736640322370409">Criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="8075898834294118863">Gerenciar configurações do site</translation>
-<translation id="8076492880354921740">Guias</translation>
 <translation id="8077669823243888800">Envelope chinês 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Quer mesmo fazer upload do arquivo confidencial?}one{Quer mesmo fazer upload do arquivo confidencial?}other{Quer mesmo fazer upload dos arquivos confidenciais?}}</translation>
 <translation id="8078141288243656252">Não é possível fazer anotações em documentos girados</translation>
@@ -3721,7 +3720,6 @@ Mais detalhes:
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda o download desses arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipamentos de hóquei</translation>
-<translation id="815788908807586564">Conversar com o Gemini</translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8163866351304776260">Perfuração quádrupla no lado esquerdo</translation>
 <translation id="8164078261547504572">Quer receber e-mails de reduções no preço?</translation>

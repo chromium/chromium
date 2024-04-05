@@ -238,6 +238,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5427571867875391349">Angiv Chromium som din standardbrowser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium beta</translation>
 <translation id="5473971139929175403">Chromium fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
+<translation id="5475924890392386523">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="5480860683791598150">Chromium skal have adgang til din lokation for at dele din lokation med dette website</translation>
 <translation id="5487574057737591516">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Hvis Chromium tager fejl, eller du ikke vil se visse annoncer, kan du fjerne en interesse.</translation>
 <translation id="549669000822060376">Vent, mens Chromium installerer de nyeste systemopdateringer.</translation>
@@ -366,6 +367,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="734373864078049451">Dit webindhold, dine bogmærker og andre Chromium-ting kan findes her.</translation>
 <translation id="7349591376906416160">Din systemadministrator har konfigureret Chromium til at åbne <ph name="ALTERNATIVE_BROWSER_NAME" /> for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk, herunder <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>
@@ -452,6 +454,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="9019929317751753759">For at gøre Chromium mere sikker har vi deaktiveret følgende udvidelser, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
+<translation id="904366664621834601">Chromium har blokeret denne download, fordi arkivfilen indeholder andre filer, der muligvis skjuler malware</translation>
 <translation id="907832235989677238">Log ind på Chromium. Hvis du kun vil logge ind på en konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium blev automatisk lukket</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>

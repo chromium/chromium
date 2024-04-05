@@ -151,6 +151,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3100998948628680988">Zadejte název profilu Chrome</translation>
 <translation id="3112458742631356345">Chrome toto stahování zablokoval, protože tento soubor se běžně nestahuje a může být nebezpečný</translation>
 <translation id="3114643501466072395">Chcete-li zkontrolovat, zda jsou ostatní hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do Chromu<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome toto stahování zablokoval, protože tento soubor archivu obsahuje další soubory, které mohou skrývat malware</translation>
 <translation id="3140883423282498090">Změny se projeví po příštím restartu prohlížeče Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikace Chrome</translation>
 <translation id="3169523567916669830">Během zkoušek můžete zobrazovat a odstraňovat zájmy, které weby používají k zobrazování reklam. Chromium zájmy odhaduje na základě vaší nedávné historie prohlížení.</translation>
@@ -221,6 +222,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4334294535648607276">Stahování bylo dokončeno.</translation>
 <translation id="4335235004908507846">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, škodlivými rozšířeními a dalšími hrozbami</translation>
 <translation id="4343195214584226067">Do Chromu bylo přidáno rozšíření <ph name="EXTENSION_NAME" /></translation>
+<translation id="436060642166082913">Chrome toto stahování zablokoval, protože tento soubor může poškodit vaše osobní účty a účty na sociálních sítích</translation>
 <translation id="4384570495110188418">Chrome nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="4389991535395284064">Při procházení v anonymním režimu vás prohlížeč Chrome před načtením webu pomocí nezabezpečeného připojení upozorní</translation>
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
@@ -476,6 +478,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="873133009373065397">Google Chrome nemůže určit ani nastavit výchozí prohlížeč</translation>
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome toto stahování zablokoval, protože tento soubor může poškodit vaše osobní účty a účty na sociálních sítích, včetně účtu <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 je modul prohlížeče Chrome pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="8821043148920470810">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastaralý</translation>

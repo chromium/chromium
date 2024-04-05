@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Това дава възможност на <ph name="APP_NAME" />, всички приложения и уебсайтове с разрешение за достъп до местоположението и ChromeOS да използват местоположението от Wi-Fi и мобилни мрежи.</translation>
 <translation id="1017556409696559990">Намаляване на прозореца от първо ниво, когато в Chrome няма история за връщане назад</translation>
+<translation id="101823271612280837">Записването спря. Таблото за управление на играта не може да се използва в режим на таблет.</translation>
 <translation id="1024364763893396229">Запазете устройството си <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
 <translation id="1036073649888683237">За да управлявате известията, отворете настройките</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Отваряне на Explore</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + g по всяко време</translation>
 <translation id="1306549533752902673">ПРЕПОРЪЧАНИ ПРИЛОЖЕНИЯ</translation>
 <translation id="1311294419381837540">Предавате раздел. Можете да поставите предаването на пауза или да го спрете по всяко време.</translation>
 <translation id="1312604459020188865">Сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="1885785240814121742">Отключване с отпечатък</translation>
+<translation id="1894024878080591367">Настройване за игра с клавиатурата</translation>
 <translation id="1904997243703671177">Когато изключите Bluetooth, ще прекратите връзката между своя <ph name="DEVICE_TYPE" /> и <ph name="DEVICE_COUNT" /> външни устройства, включително следните:</translation>
 <translation id="1908992311423394684">Наскоро инсталирано</translation>
 <translation id="1915307458270490472">Затваряне</translation>
@@ -326,6 +329,8 @@
 <translation id="2367972762794486313">Показване на приложенията</translation>
 <translation id="2368828502825385061">Намиране</translation>
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
+<translation id="2370971919968699910">Това може да доведе до разходи за данни.
+<ph name="DEVICECOUNT" /> устройства са свързани.</translation>
 <translation id="2382875860893882175">Предаването е поставено на пауза. Можете да го възобновите или спрете по всяко време.</translation>
 <translation id="2386292613071805067">Избиране на всичко на страницата</translation>
 <translation id="2392659840443812875">Няма точки за достъп. Уверете се, че устройството ви е в близост и функцията за Bluetooth е включена.</translation>
@@ -395,6 +400,7 @@
 <translation id="2624588537172718173">Аудио от устройството и микрофона</translation>
 <translation id="263399434338050016">„Select all“</translation>
 <translation id="2644422758626431000">Фиксиране на прозореца отляво</translation>
+<translation id="2645380101799517405">Контроли</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
 <translation id="2653659639078652383">Изпращане</translation>
@@ -407,6 +413,7 @@
 <translation id="2695305337569143674">мрежа</translation>
 <translation id="2697697418792422688">Показване на настройките на клавиатурата. Избрахте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Задайте клавиатура</translation>
+<translation id="2701576323154693023">Точката за достъп е включена (функцията за Wi-Fi е изключена)</translation>
 <translation id="2704781753052663061">Присъединяване към други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Превключване на микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Клавиш за нагоре</translation>
@@ -428,6 +435,7 @@
 <translation id="2785499565474703580">1 свързано устройство</translation>
 <translation id="2791421900609674576">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да докоснете и задържите дадена препоръка, за да я премахнете.</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
+<translation id="2798702144670138229">Режимът на таблет е включен. Таблото за управление на играта не е налице.</translation>
 <translation id="2801954693771979815">Размер на елементите на екрана</translation>
 <translation id="2802938996245446490">Бутонът „<ph name="BUTTON_LABEL" />“ е избран</translation>
 <translation id="2805756323405976993">Приложения</translation>
@@ -476,6 +484,7 @@
 <translation id="2992327365391326550">Бутонът за микрофона на устройството е изключен.</translation>
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
 <translation id="3000461861112256445">Монозвук</translation>
+<translation id="3001391739687111021">Редактиране на размера на екрана</translation>
 <translation id="3009178788565917040">Изход</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="301282384882049174">Споделено от администратора ви</translation>
@@ -505,6 +514,7 @@
 <translation id="3100274880412651815">Отхвърляне на режима на заснемане</translation>
 <translation id="3105917916468784889">Създаване на екранна снимка</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Приветственото известие е <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Открояване на предишния елемент в лентата</translation>
 <translation id="311799651966070385">Затваряне на подсещането</translation>
 <translation id="3120421559657122717">Да се изключи ли устройството?</translation>
@@ -743,6 +753,7 @@
 <translation id="3984536049089846927">Следваща страница</translation>
 <translation id="3986082989454912832">Отговор</translation>
 <translation id="3990002060657467458">Често използваните контроли, като например тези за Wi-Fi, Bluetooth и силата на звука, се намират в бързите настройки. Оттам можете да правите и екранни снимки.</translation>
+<translation id="3991203706072366707">Изключено за <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">устройство с USB-C (задният десен порт)</translation>
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="40062176907008878">Писане на ръка</translation>
@@ -836,6 +847,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Клавишната комбинация Ctrl + Alt + стрелка нагоре се промени. За да използвате клавиша Home, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката наляво.</translation>
 <translation id="4324840740119394760">Това разрешава достъп до камерата за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
+<translation id="4327147325944669226">Записване на играта</translation>
 <translation id="4333628967105022692">Lacros не се поддържа, когато няколко потребители са влезли в профилите си.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
@@ -871,6 +883,8 @@
 <translation id="4471432286288241507">{0,plural, =0{Актуализирайте устройството сега}=1{Актуализирайте устройството в рамките на 1 секунда}other{Актуализирайте устройството в рамките на # секунди}}</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
+<translation id="4477751544736611934">Това може да доведе до разходи за данни.
+1 устройство е свързано.</translation>
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Несдвоени устройства</translation>
@@ -1000,6 +1014,7 @@
 <translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
+<translation id="4950800194215951939">Персонализиране на изживяването от играта</translation>
 <translation id="4952936045814352993">Функцията за намиране на телефона не е налице, когато звуците на будилниците са деактивирани</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> изисква да върнете устройството си <ph name="DEVICE_TYPE" /> към предишна версия. То ще бъде нулирано и всички данни ще бъдат изтрити.</translation>
 <translation id="4961318399572185831">Предаване на екрана</translation>
@@ -1014,6 +1029,8 @@
 <translation id="4981175556418720939">Последна промяна: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Работен кът 16</translation>
 <translation id="4989163558385430922">Преглед на всички</translation>
+<translation id="4995963195354861331">Приветствен диалогов прозорец</translation>
+<translation id="4996265698919320288">Записва се</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5004607513195820459">Мрежата се управлява</translation>
 <translation id="5009463889040999939">Профилът за мобилна мрежа се преименува. Това може да отнеме няколко минути.</translation>
@@ -1105,6 +1122,8 @@
 <translation id="533282197239610265">Показване на устройствата Cast.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (дясна)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
+<translation id="5354804064646502504">Това може да доведе до разходи за данни.
+Няма свързани устройства.</translation>
 <translation id="5356963482258194581">Превключвайте между тъмната и светлата тема. Кликнете с десния бутон върху работния плот и изберете „Тапет и стил“.</translation>
 <translation id="536019650977002321">Администраторът ви не разрешава записване на аудио. За повече информация се обърнете към него.</translation>
 <translation id="5361524080961918551">Файловете за говор на <ph name="LANGUAGE" /> са изтеглени частично</translation>
@@ -1204,6 +1223,7 @@
 <translation id="5712132663381964774">Използвайте приложения, за да правите всичко необходимо на своя <ph name="PRODUCT_NAME" />. Можете да намерите приложенията си в стартовия панел.</translation>
 <translation id="571295407079589142">Мобилните данни са изключени</translation>
 <translation id="5727460725221669831">Ако сте забравили паролата си или наскоро сте променили паролата за профила си в Google, опитайте да възстановите този потребител.</translation>
+<translation id="5733630091161562207">Приветствено известие</translation>
 <translation id="573413375004481890">Това устройство не може да поддържа всичките ви екрани, затова връзката на един от тях бе прекратена</translation>
 <translation id="5740328398383587084">Споделяне наблизо</translation>
 <translation id="574392208103952083">Среден</translation>
@@ -1389,6 +1409,7 @@
 <translation id="6453179446719226835">Езикът е променен</translation>
 <translation id="6459472438155181876">Екранът се разширява на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="6464094930452079790">изображения</translation>
+<translation id="6467290994038932560">Включено за <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Превключване на точката за достъп</translation>
 <translation id="6477681113376365978">Файлът не може да бъде изтеглен</translation>
 <translation id="6482559668224714696">Лупа за увеличаване на целия екран</translation>
@@ -1778,6 +1799,7 @@
 <translation id="7963689218131240420">Режимът „Не безпокойте“ е изключен.</translation>
 <translation id="7963992254934562106">От <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Избор на папка...</translation>
+<translation id="7973756967040444713">Затваряне на лентата с инструменти</translation>
 <translation id="797512352675305461">Включване или изключване на лупата на цял екран</translation>
 <translation id="7977927628060636163">Търсят се мобилни мрежи...</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1930,6 +1952,7 @@
 <translation id="861045123704058818">Приложенията временно са организирани по категория</translation>
 <translation id="8612216344243590325">Съхранявайте важните файлове в(ъв) <ph name="HOLDING_SPACE_TITLE" /> вместо на работния плот. Трябва само да ги преместите в(ъв) <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
+<translation id="8615778328722901791">Отваряне на лентата с инструменти</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Намаляване на силата на звука</translation>
 <translation id="8627191004499078455">Установена е връзка (<ph name="DEVICE_NAME" />)</translation>
@@ -1952,6 +1975,7 @@
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8704155109538237473">Поставяне на фокуса върху прозореца в режим „картина в картината“</translation>
 <translation id="870917907284186124">Включване или изключване на диктуването (въвеждане с глас)</translation>
+<translation id="8711169534266271368">Опции за таблото за управление на играта</translation>
 <translation id="8714138378966541668">Заключено от доставчика</translation>
 <translation id="8717459106217102612">Избиране на предишната дума или буква</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@
 <translation id="8815390544836110344">Натиснете клавишната комбинация за екранна снимка: Ctrl + Shift + клавиша за общ преглед</translation>
 <translation id="881757059229893486">Настройки на методите на въвеждане</translation>
 <translation id="8819728065740986820">Функцията за адаптивно зареждане е включена</translation>
+<translation id="8822104519413696986">Това е игра със сензорно управление</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8832513206237979203">Показване или скриване на лентата на отметките</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
@@ -2092,6 +2117,7 @@
 <translation id="953431725143473984">Да се изключи ли устройството?</translation>
 <translation id="954052413789300507">Няма достатъчно място за <ph name="FILENAME" />. Освободете място.</translation>
 <translation id="954520015070501466">30 мин</translation>
+<translation id="956452277966142925">Настройки на таблото за управление на играта</translation>
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Няма крайна дата</translation>
 <translation id="98120814841227350">Преместване в края на документа</translation>

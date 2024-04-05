@@ -147,6 +147,7 @@
 <translation id="3100998948628680988">Navngiv din Chrome-profil</translation>
 <translation id="3112458742631356345">Chrome har blokeret denne download, fordi filen normalt ikke downloades og kan være skadelig</translation>
 <translation id="3114643501466072395">Du kan tjekke, om dine andre adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer, ved at <ph name="BEGIN_LINK" />logge ind på Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome har blokeret denne download, fordi arkivfilen indeholder andre filer, der muligvis skjuler malware</translation>
 <translation id="3140883423282498090">Dine ændringer træder i kraft, næste gang du åbner Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3169523567916669830">I løbet af prøveperioderne kan du se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome anslår dine interesser på baggrund af din seneste browserhistorik.</translation>
@@ -217,6 +218,7 @@
 <translation id="4334294535648607276">Download fuldført.</translation>
 <translation id="4335235004908507846">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er føjet til Chrome</translation>
+<translation id="436060642166082913">Chrome har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="4384570495110188418">Chrome kan ikke tjekke dine adgangskoder, da du ikke er logget ind</translation>
 <translation id="4389991535395284064">Når du browser i inkognitotilstand, advarer Chrome dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
@@ -468,6 +470,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk, herunder <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 er Chromes JavaScript- og WebAssembly-maskine, der bruges til at forbedre websitets effektivitet</translation>
 <translation id="8821043148920470810">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er forældet</translation>

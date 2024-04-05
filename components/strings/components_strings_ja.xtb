@@ -183,6 +183,7 @@
 <translation id="132301787627749051">クリップボードにある画像を検索します</translation>
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="132390688737681464">住所の保存と入力</translation>
+<translation id="1325412080783393306">その他の購入オプションを検索</translation>
 <translation id="1325749054628832887">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、興味を引くものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
 <translation id="1329916999021038454">報告を送信</translation>
 <translation id="1330449323196174374">左観音折り</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">生態学、環境</translation>
 <translation id="2452837234288608067">候補を生成できませんでした。もう一度お試しください。</translation>
 <translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> を検索</translation>
 <translation id="2462932596748424101">ソーシャル ネットワーク</translation>
 <translation id="2463739503403862330">入力する</translation>
 <translation id="2465688316154986572">ステープル</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">縦向き</translation>
 <translation id="3287510313208355388">オンライン時にダウンロード</translation>
 <translation id="3288238092761586174">お客様のお支払い情報を検証するため、<ph name="URL" /> は追加の手順を必要とする場合があります</translation>
+<translation id="3289578402369490638">ウェブ上の他のショップから</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理します</translation>
 <translation id="3299098170013242198">パスワード入力で Windows Hello が有効になっています</translation>
@@ -2971,6 +2972,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">テレビ会議</translation>
 <translation id="6753269504797312559">ポリシーの値</translation>
+<translation id="6753390234084146956">タブ</translation>
 <translation id="6753434778807740853">エントリ <ph name="ENTRY_VOICEOVER" /> を削除します</translation>
 <translation id="6754547388777247439">普通預金口座</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3682,7 +3684,6 @@
 <translation id="8075588646978457437">粘着紙</translation>
 <translation id="8075736640322370409">新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="8075898834294118863">サイトの設定を管理</translation>
-<translation id="8076492880354921740">タブ</translation>
 <translation id="8077669823243888800">中国 #8 封筒</translation>
 <translation id="8078006011486731853">{0,plural, =1{機密ファイルをアップロードしますか？}other{機密ファイルをアップロードしますか？}}</translation>
 <translation id="8078141288243656252">回転時に注釈を追加することはできません</translation>
@@ -3721,7 +3722,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}}</translation>
 <translation id="81563721597823545">ホッケー用品</translation>
-<translation id="815788908807586564">Gemini とチャット</translation>
 <translation id="8161095570253161196">ブラウジングを再開</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8164078261547504572">値下げがあったときにメールで通知を受け取りますか？</translation>

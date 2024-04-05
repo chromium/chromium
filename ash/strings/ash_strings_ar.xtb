@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. يُرجى إدخال رقم التعريف الشخصي هذا في هذا الجهاز: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">‏يتيح هذا الإجراء لكلّ من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها إذن تحديد الموقع الجغرافي ونظام التشغيل ChromeOS استخدام الموقع الجغرافي لشبكة Wi-Fi وشبكات الجوّال.</translation>
 <translation id="1017556409696559990">‏تصغير النافذة العلوية في حال عدم توفُّر سجلّ في Chrome للمواقع الإلكترونية التي سبق أن تمت زيارتها</translation>
+<translation id="101823271612280837">تم إيقاف التسجيل. لا يمكن استخدام "لوحة بيانات الألعاب" في وضع الجهاز اللوحي.</translation>
 <translation id="1024364763893396229">حفظ بيانات جهاز <ph name="NAME" /></translation>
 <translation id="1032891413405719768">بطارية قلم الشاشة منخفضة</translation>
 <translation id="1036073649888683237">لإدارة الإشعارات، يُرجى الانتقال إلى "الإعدادات".</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">فتح تطبيق "استكشاف"</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
+<translation id="1301513122398173424">‏اضغط على ‎<ph name="LAUNCHER_KEY_NAME" /> + g في أي وقت</translation>
 <translation id="1306549533752902673">تطبيقات مقترحة</translation>
 <translation id="1311294419381837540">يجري حاليًا بث علامة تبويب. يمكنك إيقاف البث مؤقتًا أو إيقافه متى شئت.</translation>
 <translation id="1312604459020188865">قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
@@ -229,6 +231,7 @@
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
 <translation id="1882897271359938046">نسخ إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">فتح القفل باستخدام بصمة الإصبع</translation>
+<translation id="1894024878080591367">عليك إعداد عناصر التحكّم لاستخدام لوحة المفاتيح في اللعب</translation>
 <translation id="1904997243703671177">بعد إيقاف البلوتوث، سيتم إلغاء ربط <ph name="DEVICE_COUNT" /> جهاز خارجي بجهاز <ph name="DEVICE_TYPE" />، بما في ذلك:</translation>
 <translation id="1908992311423394684">مثبَّت حديثًا</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
@@ -327,6 +330,8 @@
 <translation id="2367972762794486313">إظهار التطبيقات</translation>
 <translation id="2368828502825385061">البحث عن الهاتف</translation>
 <translation id="2369165858548251131">"مرحبًا" باللغة الصينية</translation>
+<translation id="2370971919968699910">قد يتم تحصيل رسوم منك مقابل ذلك.
+عدد الأجهزة المتصلة <ph name="DEVICECOUNT" />.</translation>
 <translation id="2382875860893882175">تم إيقاف البث مؤقتًا. يمكنك استئناف البث أو إيقافه متى شئت.</translation>
 <translation id="2386292613071805067">اختيار كل محتوى الصفحة</translation>
 <translation id="2392659840443812875">لا تتوفّر نقطة اتصال. يجب تفعيل البلوتوث ووضع جهازك بالقرب منك.</translation>
@@ -396,6 +401,7 @@
 <translation id="2624588537172718173">صوت الجهاز والميكروفون</translation>
 <translation id="263399434338050016">"اختيار الكل"</translation>
 <translation id="2644422758626431000">تثبيت النافذة على اليمين</translation>
+<translation id="2645380101799517405">عناصر التحكّم</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">لقطة نافذة</translation>
 <translation id="2653659639078652383">إرسال</translation>
@@ -408,6 +414,7 @@
 <translation id="2695305337569143674">الويب</translation>
 <translation id="2697697418792422688">عرض إعدادات لوحة المفاتيح: تمّ اختيار "<ph name="KEYBOARD_NAME" />".</translation>
 <translation id="2700493154570097719">تعيين لوحة المفاتيح</translation>
+<translation id="2701576323154693023">‏نقطة الاتصال مفعَّلة (شبكة Wi-Fi غير مفعَّلة)</translation>
 <translation id="2704781753052663061">‏الانضمام إلى شبكات Wi-Fi أخرى</translation>
 <translation id="2705001408393684014">تبديل الميكروفون: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">أعلى</translation>
@@ -429,6 +436,7 @@
 <translation id="2785499565474703580">هناك جهاز واحد متصل.</translation>
 <translation id="2791421900609674576">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر مع الاستمرار لإزالة هذه الاقتراحات.</translation>
 <translation id="2792498699870441125">‏Alt+مفتاح البحث</translation>
+<translation id="2798702144670138229">وضع الجهاز اللوحي مفعَّل. "لوحة بيانات الألعاب" غير متاحة.</translation>
 <translation id="2801954693771979815">حجم الشاشة</translation>
 <translation id="2802938996245446490">تم اختيار <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">التطبيقات</translation>
@@ -477,6 +485,7 @@
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
 <translation id="2996462380875591307">‏تم تفعيل المكبّر. يمكنك إيقافه بالضغط على Ctrl+Search+D مرة أخرى.</translation>
 <translation id="3000461861112256445">صوت أحادي</translation>
+<translation id="3001391739687111021">تعديل حجم الشاشة</translation>
 <translation id="3009178788565917040">الإخراج</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="301282384882049174">نموذج تمت مشاركته من قِبل المشرف</translation>
@@ -506,6 +515,7 @@
 <translation id="3100274880412651815">إغلاق وضع تصوير الشاشة</translation>
 <translation id="3105917916468784889">أخذ لقطة شاشة</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
+<translation id="3107155169630537783">إشعار الترحيب <ph name="STATE" /></translation>
 <translation id="3113492864356515707">تمييز العنصر السابق على الرف</translation>
 <translation id="311799651966070385">إغلاق التذكير التلقائي</translation>
 <translation id="3120421559657122717">هل تريد إيقاف تشغيل الجهاز؟</translation>
@@ -745,6 +755,7 @@
 <translation id="3984536049089846927">الصفحة التالية</translation>
 <translation id="3986082989454912832">ردّ</translation>
 <translation id="3990002060657467458">‏في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة.</translation>
+<translation id="3991203706072366707">غير مفعَّلة مع "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="3995138139523574647">‏جهاز USB-C (المنفذ الخلفي الأيمن)</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="40062176907008878">الكتابة بخط اليد</translation>
@@ -838,6 +849,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Home، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليسار".</translation>
 <translation id="4324840740119394760">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
+<translation id="4327147325944669226">تسجيل اللعبة</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
@@ -873,6 +885,8 @@
 <translation id="4471432286288241507">{0,plural, =0{تحديث الجهاز الآن}=1{تحديث الجهاز خلال ثانية واحدة}two{تحديث الجهاز خلال ثانيتين}few{تحديث الجهاز خلال # ثوانٍ}many{تحديث الجهاز خلال # ثانية}other{تحديث الجهاز خلال # ثانية}}</translation>
 <translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
+<translation id="4477751544736611934">قد يتم تحصيل رسوم منك مقابل ذلك.
+تم توصيل جهاز واحد.</translation>
 <translation id="4477892968187500306">‏يمكن أن يتضمّن هذا الجهاز تطبيقات لم تتحقّق منها Google.</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4481530544597605423">الأجهزة التي تم إلغاء إقرانها</translation>
@@ -1002,6 +1016,7 @@
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
+<translation id="4950800194215951939">تخصيص تجربة اللعب</translation>
 <translation id="4952936045814352993">ميزة "تحديد الموقع الجغرافي للهاتف" غير متاحة لأنّك أوقفت أصوات التنبيهات.</translation>
 <translation id="4960324571663582548">يتطلّب <ph name="MANAGER" /> منك العودة إلى استخدام جهاز <ph name="DEVICE_TYPE" />. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
@@ -1016,6 +1031,8 @@
 <translation id="4981175556418720939">‏تاريخ التعديل ووقته: ‎<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">سطح المكتب 16</translation>
 <translation id="4989163558385430922">عرض الكل</translation>
+<translation id="4995963195354861331">مربّع حوار الترحيب</translation>
+<translation id="4996265698919320288">جارٍ التسجيل</translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
 <translation id="5004607513195820459">الشبكة مُدارة</translation>
 <translation id="5009463889040999939">جارٍ إعادة تسمية الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
@@ -1107,6 +1124,8 @@
 <translation id="533282197239610265">عرض أجهزة البث</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
+<translation id="5354804064646502504">قد يتم تحصيل رسوم منك مقابل ذلك.
+ما مِن أجهزة متصلة.</translation>
 <translation id="5356963482258194581">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر بزر الماوس الأيمن على سطح المكتب ثم اختَر "الخلفية والأسلوب".</translation>
 <translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5361524080961918551">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> جزئيًا</translation>
@@ -1206,6 +1225,7 @@
 <translation id="5712132663381964774">استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على <ph name="PRODUCT_NAME" />. وانتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك.</translation>
 <translation id="571295407079589142">تم إيقاف بيانات الجوّال.</translation>
 <translation id="5727460725221669831">‏إذا نسيت كلمة المرور أو غيّرت كلمة مرور حسابك على Google مؤخرًا، جرِّب استرداد حساب هذا المستخدم.</translation>
+<translation id="5733630091161562207">إشعار الترحيب</translation>
 <translation id="573413375004481890">لا يمكن لهذا الجهاز توفير جميع شاشات العرض، لذلك تم قطع الاتصال بأحدها</translation>
 <translation id="5740328398383587084">المشاركة عن قرب</translation>
 <translation id="574392208103952083">متوسط</translation>
@@ -1391,6 +1411,7 @@
 <translation id="6453179446719226835">تم تغيير اللغة</translation>
 <translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">الصور</translation>
+<translation id="6467290994038932560">مفعَّلة مع "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="6469104339369989396">إيقاف/تفعيل نقطة الاتصال</translation>
 <translation id="6477681113376365978">يتعذّر تنزيل الملف</translation>
 <translation id="6482559668224714696">مُكبِّر بملء الشاشة</translation>
@@ -1781,6 +1802,7 @@
 <translation id="7963689218131240420">تم إيقاف وضع "عدم الإزعاج".</translation>
 <translation id="7963992254934562106">من <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>
+<translation id="7973756967040444713">إغلاق شريط الأدوات</translation>
 <translation id="797512352675305461">تفعيل المكبِّر بملء الشاشة أو إيقافه</translation>
 <translation id="7977927628060636163">جارٍ البحث عن شبكات الجوّال...</translation>
 <translation id="7982789257301363584">الشبكة</translation>
@@ -1933,6 +1955,7 @@
 <translation id="861045123704058818">يتم تنظيم التطبيقات حسب الفئة مؤقتًا</translation>
 <translation id="8612216344243590325">احتفِظ بالملفات المهمة في "<ph name="HOLDING_SPACE_TITLE" />" بدلاً من وضعها على سطح المكتب. ما عليك سوى سحب الملفات إلى "<ph name="HOLDING_SPACE_TITLE" />".</translation>
 <translation id="8614517853887502247">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
+<translation id="8615778328722901791">فتح شريط الأدوات</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">خفض مستوى الصوت</translation>
 <translation id="8627191004499078455">تم الاتصال بجهاز <ph name="DEVICE_NAME" /></translation>
@@ -1955,6 +1978,7 @@
 <translation id="8703634754197148428">‏بدأ التسجيل. بعد بدء التسجيل، يمكنك استخدام Alt + Shift + L للانتقال إلى الرف والبحث عن زر إيقاف التسجيل.</translation>
 <translation id="8704155109538237473">التركيز على نافذة ميزة "نافذة ضمن النافذة"</translation>
 <translation id="870917907284186124">تفعيل/إيقاف ميزة "الإملاء" (الكتابة باستخدام الصوت)</translation>
+<translation id="8711169534266271368">خيارات "لوحة بيانات الألعاب"</translation>
 <translation id="8714138378966541668">مُقفَل من خلال مشغّل الشبكة</translation>
 <translation id="8717459106217102612">اختيار الكلمة السابقة أو الحرف السابق</translation>
 <translation id="8721053961083920564">تبديل مستوى الصوت. <ph name="STATE_TEXT" /></translation>
@@ -1985,6 +2009,7 @@
 <translation id="8815390544836110344">‏اضغط على اختصار أخذ لقطة الشاشة، أو Ctrl‏ + Shift + مفتاح وضع "نظرة عامة".</translation>
 <translation id="881757059229893486">إعدادات أساليب الإدخال</translation>
 <translation id="8819728065740986820">ميزة "الشحن الذكي" مفعّلة</translation>
+<translation id="8822104519413696986">هذه اللعبة تعمل باللمس</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
 <translation id="8832513206237979203">إظهار شريط الإشارات أو إخفاؤه</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
@@ -2095,6 +2120,7 @@
 <translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>
 <translation id="954052413789300507">لا تتوفّر مساحة كافية لتنزيل الملف <ph name="FILENAME" />. عليك إخلاء بعض المساحة.</translation>
 <translation id="954520015070501466">30 دقيقة</translation>
+<translation id="956452277966142925">إعدادات "لوحة بيانات الألعاب"</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="981011780479609956">بلا تاريخ تسليم</translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>

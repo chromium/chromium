@@ -183,6 +183,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="132301787627749051">Pesquisar imagem da área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="132390688737681464">Guardar e preencher moradas</translation>
+<translation id="1325412080783393306">Pesquise mais opções de compra</translation>
 <translation id="1325749054628832887">Os tópicos de anúncios são apenas um dos muitos elementos que um site pode usar para personalizar anúncios. Mesmo sem tópicos de anúncios, os sites podem continuar a mostrar-lhe anúncios, mas estes podem ser menos interessantes. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Enviar relatório</translation>
 <translation id="1330449323196174374">Dobra simétrica à esquerda</translation>
@@ -785,7 +786,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2452098632681057184">Ecologia e ambiente</translation>
 <translation id="2452837234288608067">Não foi possível ajudar nessa questão. Tente novamente.</translation>
 <translation id="2456755709261364512">A bateria tem de estar carregada acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Pesquise <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Redes sociais</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465688316154986572">Agrafar</translation>
@@ -1191,6 +1191,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
+<translation id="3289578402369490638">De outras lojas na Web</translation>
 <translation id="3293642807462928945">Saiba mais acerca da política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e efetue a gestão das suas palavras-passe nas definições do Chrome.</translation>
 <translation id="3299098170013242198">O Windows Hello está ativado para preencher palavras-passe</translation>
@@ -2971,6 +2972,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferência</translation>
 <translation id="6753269504797312559">Valor da política</translation>
+<translation id="6753390234084146956">separadores</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Contas-poupança</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@ Detalhes adicionais:
 <translation id="8075588646978457437">Papel autoadesivo</translation>
 <translation id="8075736640322370409">Crie rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="8075898834294118863">Gerir definições de sites</translation>
-<translation id="8076492880354921740">Separadores</translation>
 <translation id="8077669823243888800">Envelope Chinese n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Carregar ficheiro confidencial?}other{Carregar ficheiros confidenciais?}}</translation>
 <translation id="8078141288243656252">Não é possível criar anotação se tiver sido aplicada uma rotação ao documento</translation>
@@ -3719,7 +3720,6 @@ Detalhes adicionais:
 <translation id="8150722005171944719">O ficheiro em <ph name="URL" /> não é legível. Pode ter sido removido, movido ou as permissões do ficheiro podem estar a impedir o acesso.</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador não recomenda a transferência deste ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda a transferência destes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipamento de hóquei</translation>
-<translation id="815788908807586564">Converse com o Gemini</translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>
 <translation id="8164078261547504572">Quer receber emails quando os preços descerem?</translation>

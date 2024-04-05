@@ -41,6 +41,7 @@
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1029317248976101138">විශාලනය</translation>
 <translation id="1029526375103058355">ක්ලික් කිරීමට තට්ටු කිරීම</translation>
+<translation id="1029724557649700742">නව විශේෂාංග ලබා ගත හැකි වන විට ඇතුළත් වනු ඇති අතර, උපාංගය අනුව විශේෂාංග වෙනස් විය හැක.</translation>
 <translation id="1031362278801463162">පෙර දැක්ම පූර්ණය වෙමින්</translation>
 <translation id="1032605640136438169">නව නියම සමාලෝචන කරන්න</translation>
 <translation id="103279545524624934">Android යෙදුම් දියත් කිරීමට තැටි ඉඩ නිදහස් කර ගන්න.</translation>
@@ -1559,6 +1560,7 @@
 <translation id="2155473371917268529">වත්මන් දෘශ්‍යතා සැකසීම ඔබේ උපාංග වේ</translation>
 <translation id="2155772377859296191">පේන විදියට <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">සේවා සේවක: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට ඉඩ දී ඇත</translation>
 <translation id="2156877321344104010">නැවත ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="2157474325782140681">අමතර විශේෂාංග ලබා ගැනීමට, මෙම Chromebook සමඟ ක්‍රියා කිරීමට සැලසුම් කර ඇති Dell ඩොක් කිරීමේ ස්ථානයක් භාවිත කරන්න.</translation>
 <translation id="215753907730220065">සම්පූර්ණ තිරයෙන් ඉවත් වන්න</translation>
@@ -1980,6 +1982,7 @@
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> වෙත පටිත්ත විකාශය කිරීම නැවත පටන් ගන්න</translation>
 <translation id="2460356425461033301">ඔබේ බ්‍රව්සර් දේවල් උපස්ථ කර එය ඕනෑම උපාංගයක භාවිතා කරන්න</translation>
 <translation id="2460482211073772897">වෙනත් ෆෝල්ඩර තුළ</translation>
+<translation id="2461550163693930491">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="2461593638794842577">මෙම උපාංගයේ පමණක් ඔබේ මුරපද සුරැකීමට ඔබට මෙම සැකසීම ක්‍රියා විරහිත කළ හැක</translation>
 <translation id="2462332841984057083">Steam දැනටමත් පිහිටුවෙමින් ඇත. පිහිටුවීම සම්පූර්ණ වන තෙක් රැඳී සිටින්න.</translation>
 <translation id="2462724976360937186">සහතිකකරණ බල යතුරු ID</translation>
@@ -2013,6 +2016,7 @@
 <translation id="2482895651873876648">ටැබය <ph name="GROUP_NAME" /> සමූහය වෙත ගෙන යන ලදි - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome බ්‍රව්සර් සැකසීම් තුළ සෙවීම් එන්ජිම සකසන්න</translation>
 <translation id="2483698983806594329">අසත්‍යාපිත ගොනුව බා ගත්තා</translation>
+<translation id="2484574361686148760">WiFi Direct සේවාලාභීන්ගේ තතු නැවුම් කරන්න</translation>
 <translation id="2484743711056182585">ප්‍රදානය ඉවත් කරන්න</translation>
 <translation id="2484909293434545162">අඩවියක් කුකීස් භාවිතා කරන්නේ නම්, එය මෙහි දිස් වනු ඇත</translation>
 <translation id="2484959914739448251">ඔබේ සියලුම සමමුහුර්ත කළ උපාංගවලින් සහ ඔබේ Google ගිණුමෙන් බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීමට, <ph name="BEGIN_LINK" />ඔබේ මුරවැකිකඩ ඇතුළත් කරන්න<ph name="END_LINK" />.</translation>
@@ -2206,6 +2210,7 @@
 <translation id="2629227353894235473">Android යෙදුම් සංවර්ධන කරන්න</translation>
 <translation id="2629437048544561682">කැන්වසය හිස් කරන්න</translation>
 <translation id="2631498379019108537">රාක්කය තුළ ආදාන විකල්ප පෙන්වන්න</translation>
+<translation id="2632176111713971407">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට අඩවිවලට විමසිය හැක</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" ඉවත් කරන්නද?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ස්ථාපනය සම්පූර්ණ කළ නොහැකි විය, නමුත් එහි ධාවක අනුරුවෙන් දිගටම ධාවනය වනු ඇත.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3866,6 +3871,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3900966090527141178">මුරපද නිර්යාත කරන්න</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> සඳහා මුරයතුරක් තනා ගැනීමට ඔබට අවශ්‍ය ආකාරය තෝරා ගන්න</translation>
 <translation id="3903187154317825986">තිළැලි යතුරුපුවරුව</translation>
+<translation id="3903696968689283281">WiFi Direct හිමිකරුවන්ගේ තතු:</translation>
 <translation id="3904326018476041253">ස්ථානීය සේවා</translation>
 <translation id="3905761538810670789">යෙදුම අලුත්වැඩියා කරන්න</translation>
 <translation id="3908288065506437185">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
@@ -4520,6 +4526,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4409697491990005945">තීරු</translation>
 <translation id="4409779593816003679">මුරපද සහ &amp;ස්වයං පිරවීම</translation>
 <translation id="4410545552906060960">ඔබගේ උපාංගය අගුලු හැරීමට මුරපදය වෙනුවට අංකයක් (PIN) භාවිතා කරන්න. ඔබගේ PIN පසුව සැකසීමට සැකසීම් වෙත යන්න.</translation>
+<translation id="4411344321892622527">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට ඉඩ නොදෙයි</translation>
 <translation id="4411578466613447185">කේත සන්කරණය</translation>
 <translation id="4411719918614785832">මෙම මුරයතුරු මෙම පරිගණකයේ Windows Hello වෙත සුරැකේ. ඒවා ඔබේ Google ගිණුමට සුරැකෙන්නේ නැත.</translation>
 <translation id="4412544493002546580">නැවත උත්සාහ කරන්න හෝ පහත ආශ්වාදයන්ගෙන් එකකින් තෝරන්න.</translation>
@@ -6863,6 +6870,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6257602895346497974">සමමුහුව ක්‍රියාත්මක කරන්න...</translation>
 <translation id="625827534921607067">කලින් සම්බන්ධ වූ හෝ වින්‍යාස කළ ජාල එකකට වඩා තිබේ නම් මෙම ජාලය වඩාත් කැමති වනු ඇත</translation>
 <translation id="62586649943626337">ටැබ සමූහ සමඟ ඔබගේ ටැබ සංවිධානය කරන්න</translation>
+<translation id="6259776178973198997">WiFi Direct හිමිකරුවන්ගේ තතු නැවුම් කරන්න</translation>
 <translation id="6262371516389954471">ඔබේ උපස්ථ Google වෙත උඩුගත කෙරෙන අතර ඔබේ Google ගිණුමේ මුරපදය භාවිත කර සංකේතන කෙරේ.</translation>
 <translation id="6263082573641595914">Microsoft CA සංස්කරණය</translation>
 <translation id="6263284346895336537">බරපතල නැත</translation>
@@ -7562,6 +7570,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> හට මූලය ලෙස ධාවනය විය නොහැක.</translation>
 <translation id="6812841287760418429">වෙනස්කම් තබාගන්න</translation>
 <translation id="6813907279658683733">සම්පූර්ණ තිරය</translation>
+<translation id="6814754908910736855">WiFi Direct සේවාලාභීන්ගේ තතු:</translation>
 <translation id="6815376457351236663">කෙසේ වුවත් විවෘත කරන්න</translation>
 <translation id="6815787852028615386">මෙම ගොනුව රැවටිලිකාර වන අතර ඔබේ උපාංගයට අනපේක්ෂිත වෙනස්කම් සිදු කළ හැක</translation>
 <translation id="6816097980753839617">නිල්-කහ (ට්‍රයිටනොමලි)</translation>
@@ -8430,6 +8439,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7501957181231305652">හෝ</translation>
 <translation id="7502220299952823578">"මෙම අඩවි සැම විටම සක්‍රියව තබා ගන්න" ලැයිස්තුවට එක් කරන්න</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> වෙත පටිත්ත විකාශනය විරාම කරන්න</translation>
+<translation id="7502804472671406749">බෙදා ගත් පටිති අනුචලනය කර විශාලනය කළ හැක</translation>
 <translation id="7503191893372251637">Netscape සහතික වර්ගය</translation>
 <translation id="7503985202154027481">ඔබේ ආරක්‍ෂක යතුරේ මෙම වෙබ් අඩවිය වෙත ඔබේ පැමිණීමේ සටහනක් තබනු ලැබේ.</translation>
 <translation id="7504145862399276792">මෙම පටිත්තේ ශ්‍රව්‍ය නිහඬ කර ඇත</translation>
@@ -10767,6 +10777,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="949807244219288032">මෙම පටිත්ත HID උපාංගයකට සම්බන්ධිතයි</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" වෙතින්</translation>
 <translation id="950307215746360464">පිහිටුවීම් මාර්ගෝපදේශය</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. ඔබේ පරිපාලක විසින් ස්ථාපනය කරන ලදි</translation>
 <translation id="951991426597076286">පිළිකෙව්</translation>
 <translation id="952471655966876828">උපාංගය ක්‍රියාත්මක විට සහ භාවිත කරන විට එය ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත</translation>
 <translation id="953434574221655299">ඔබ ඔබගේ උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමට ඉඩ දේ</translation>

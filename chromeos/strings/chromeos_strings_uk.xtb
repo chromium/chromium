@@ -911,6 +911,7 @@
 <translation id="6382182670717268353">Попередній перегляд заставки</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
 <translation id="6394634179843537518">Додати файл</translation>
+<translation id="6396719002784938593">сухої ковили</translation>
 <translation id="639964859328803943">для післяобіднього чаю</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> з <ph name="DREAMSCAPES_MATERIAL" /> у відтінках <ph name="DREAMSCAPES_COLORS" /> й сюрреалістичному стилі</translation>
 <translation id="6401427872449207797">пошук у веб-переглядачі</translation>
@@ -952,6 +953,7 @@
 <translation id="6575134580692778371">Не налаштовано</translation>
 <translation id="6576005492601044801">ліворуч</translation>
 <translation id="6579509898032828423">Використати цю фотографію</translation>
+<translation id="6587870930887634392">сукулента</translation>
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6599673642868607614">Дякуємо за відгук. Наша команда перегляне його. Ваш відгук допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="6618744767048954150">Виконується</translation>
@@ -1110,6 +1112,7 @@
 <translation id="7497215489070763236">Сертифікат ЦС для сервера</translation>
 <translation id="7501957181231305652">або</translation>
 <translation id="7502658306369382406">Адреса IPv6</translation>
+<translation id="7507061649493508884">Сяюча <ph name="FLOWER_COLOR" /> квітка <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">низ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Створити</translation>
@@ -1161,7 +1164,7 @@
 <translation id="7813073042185856802">гора</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7824219488248240180">постімпресіонізм</translation>
-<translation id="7828503206075800057"><ph name="CAFE_STYLE" /> кафе в <ph name="CAFE_TYPE" /></translation>
+<translation id="7828503206075800057"><ph name="CAFE_STYLE" /> кафе <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Увімкнути темний режим</translation>
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7849030488395653706">полярне сяйво</translation>
@@ -1169,6 +1172,7 @@
 <translation id="7850847810298646851">Фоновий малюнок, створений за допомогою ШІ від Google</translation>
 <translation id="785170686607360576">тюльпан</translation>
 <translation id="7856267634822906833">Сенсорний екран із Bluetooth</translation>
+<translation id="7859006200041800233">кактуса</translation>
 <translation id="7869143217755017858">Вимкнути темний режим</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
@@ -1304,6 +1308,7 @@
 <translation id="8726019395068607495">Зупинено – відкрито кришку принтера</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Підтвердити зміни</translation>
+<translation id="8749478549112817787">Фонове зображення для камери</translation>
 <translation id="8755946156089753497">Вежа</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фото</translation>

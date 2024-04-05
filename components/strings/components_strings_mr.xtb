@@ -785,7 +785,6 @@
 <translation id="2452098632681057184">जैवपरिस्थितिशास्त्र आणि पर्यावरण</translation>
 <translation id="2452837234288608067">त्याबाबतीत मदत करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="2456755709261364512">तुमची बॅटरी <ph name="REQUIRED_BATTERY_PRECENT" />% पेक्षा जास्त चार्ज असणे आवश्यक आहे</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> शोधा</translation>
 <translation id="2462932596748424101">सोशल नेटवर्क</translation>
 <translation id="2463739503403862330">भरून टाका</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलीकॉंफरन्सिंग</translation>
 <translation id="6753269504797312559">धोरण मूल्य</translation>
+<translation id="6753390234084146956">टॅब</translation>
 <translation id="6753434778807740853">एंट्री हटवा <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">बचत खाती</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@
 <translation id="8075588646978457437">सेल्फ-अ‍ढेसिव्ह पेपर</translation>
 <translation id="8075736640322370409">नवीन Google शीट झटपट तयार करा</translation>
 <translation id="8075898834294118863">साइट सेटिंग्ज व्यवस्थापित करा</translation>
-<translation id="8076492880354921740">टॅब</translation>
 <translation id="8077669823243888800">एन्व्हलप चायनीज #८</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोपनीय फाइल अपलोड करायची आहे का?}other{गोपनीय फाइल अपलोड करायच्या आहेत का?}}</translation>
 <translation id="8078141288243656252">फिरवल्यावर भाष्य करू शकत नाही</translation>
@@ -3720,7 +3719,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>
 <translation id="8153865548451212769">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}}</translation>
 <translation id="81563721597823545">हॉकीची उपकरणे</translation>
-<translation id="815788908807586564">Gemini सोबत चॅट करा</translation>
 <translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>
 <translation id="8163866351304776260">क्वाड पंच लेफ्ट</translation>
 <translation id="8164078261547504572">किमतीमध्ये घट झाल्यावर ईमेल मिळवायची आहेत का?</translation>

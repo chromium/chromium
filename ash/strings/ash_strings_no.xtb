@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Dette gjør at <ph name="APP_NAME" />, apper og nettsteder med posisjonstillatelse og ChromeOS kan bruke wifi- og mobilnettverksposisjoner.</translation>
 <translation id="1017556409696559990">Minimer det øverste vinduet når det ikke er noen tilbakelogg i Chrome</translation>
+<translation id="101823271612280837">Opptaket er stoppet. Kan ikke bruke Spilloversikt i nettbrettmodus.</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036073649888683237">For å administrere varsler, gå til Innstillinger</translation>
@@ -95,6 +96,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Åpne Utforsk</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Trykk på <ph name="LAUNCHER_KEY_NAME" /> + G når som helst</translation>
 <translation id="1306549533752902673">ANBEFALTE APPER</translation>
 <translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
+<translation id="1894024878080591367">Konfigurer for å spille med tastaturet</translation>
 <translation id="1904997243703671177">Når du slår av Bluetooth, blir <ph name="DEVICE_COUNT" /> eksterne enheter koblet fra <ph name="DEVICE_TYPE" />, inkludert disse:</translation>
 <translation id="1908992311423394684">Nylig installert</translation>
 <translation id="1915307458270490472">Legg på</translation>
@@ -326,6 +329,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2367972762794486313">Vis apper</translation>
 <translation id="2368828502825385061">Finn</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
+<translation id="2370971919968699910">Dette kan medføre datakostnader.
+<ph name="DEVICECOUNT" /> enheter er tilkoblet.</translation>
 <translation id="2382875860893882175">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen.</translation>
 <translation id="2386292613071805067">Merk alt på siden</translation>
 <translation id="2392659840443812875">Ingen tilgjengelig wifi-sone. Sørg for at enheten er i nærheten og Bluetooth er slått på.</translation>
@@ -395,6 +400,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2624588537172718173">Enhetslyd og mikrofon</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
 <translation id="2644422758626431000">Fest vinduet til venstre</translation>
+<translation id="2645380101799517405">Kontroller</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Vindusopptak</translation>
 <translation id="2653659639078652383">Send inn</translation>
@@ -407,6 +413,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2695305337569143674">nett</translation>
 <translation id="2697697418792422688">Vis tastaturinnstillinger. <ph name="KEYBOARD_NAME" /> er valgt.</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
+<translation id="2701576323154693023">Wifi-sonen er på (wifi er av)</translation>
 <translation id="2704781753052663061">Koble til andre Wifi-nettverk</translation>
 <translation id="2705001408393684014">Slå av/på mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Opp</translation>
@@ -428,6 +435,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2785499565474703580">1 enhet er tilkoblet</translation>
 <translation id="2791421900609674576">Du ser anbefalinger, slik at du kan fortsette der du slapp. Trykk og hold for å fjerne anbefalinger.</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
+<translation id="2798702144670138229">Nettbrettmodus er på. Spilloversikten er ikke tilgjengelig.</translation>
 <translation id="2801954693771979815">Skjermstørrelse</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valgt</translation>
 <translation id="2805756323405976993">Apper</translation>
@@ -476,6 +484,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
 <translation id="2996462380875591307">Dokket lupe er slått på. Trykk på Ctrl + Søk + D igjen for å slå det av.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
+<translation id="3001391739687111021">Endre skjermstørrelsen</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="301282384882049174">Delt av administratoren din</translation>
@@ -505,6 +514,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3100274880412651815">Lukk opptaksmodus</translation>
 <translation id="3105917916468784889">Ta skjermdump</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Velkomstvarselet er <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Fremhev det forrige elementet på hyllen</translation>
 <translation id="311799651966070385">Lukk påminnelsen</translation>
 <translation id="3120421559657122717">Vil du slå av enheten?</translation>
@@ -743,6 +753,7 @@ Koble enheten til strøm.</translation>
 <translation id="3984536049089846927">Neste side</translation>
 <translation id="3986082989454912832">Svar</translation>
 <translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper.</translation>
+<translation id="3991203706072366707">Av for <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">USB-C-enhet (porten bak på høyre side)</translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="40062176907008878">Håndskrift</translation>
@@ -836,6 +847,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Hurtigtasten Ctrl + Alt + oppoverpil er endret. For å bruke Home-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + venstrepilen.</translation>
 <translation id="4324840740119394760">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
+<translation id="4327147325944669226">Ta opp spillet</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
 <translation id="4351244548802238354">Lukk dialogboks</translation>
@@ -871,6 +883,8 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Oppdater enheten nå}=1{Oppdater enheten innen 1 sekund}other{Oppdater enheten innen # sekunder}}</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4477350412780666475">Neste spor</translation>
+<translation id="4477751544736611934">Dette kan medføre datakostnader.
+1 enhet er tilkoblet.</translation>
 <translation id="4477892968187500306">Denne enheten kan ha apper som ikke er verifisert av Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Frakoblede enheter</translation>
@@ -1000,6 +1014,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
 <translation id="495046168593986294">Rull opp</translation>
+<translation id="4950800194215951939">Tilpass spillopplevelsen din</translation>
 <translation id="4952936045814352993">Finn telefonen er ikke tilgjengelig når alarmlyder er slått av</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krever rollback av <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
@@ -1014,6 +1029,8 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4981175556418720939">Endret <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Skrivebord 16</translation>
 <translation id="4989163558385430922">Se alle</translation>
+<translation id="4995963195354861331">Velkomstdialogboks</translation>
+<translation id="4996265698919320288">Opptak pågår</translation>
 <translation id="5003993274120026347">Neste setning</translation>
 <translation id="5004607513195820459">Nettverket er administrert</translation>
 <translation id="5009463889040999939">Gir profilen nytt navn. Dette kan ta noen minutter.</translation>
@@ -1105,6 +1122,8 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="533282197239610265">Vis Cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (høyre)</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
+<translation id="5354804064646502504">Dette kan medføre datakostnader.
+Ingen enheter er tilkoblet.</translation>
 <translation id="5356963482258194581">Bytt mellom mørkt og lyst tema. Høyreklikk på skrivebordet, og velg Bakgrunn og stil.</translation>
 <translation id="536019650977002321">Administratoren din tillater ikke lydopptak. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvis lastet ned</translation>
@@ -1204,6 +1223,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5712132663381964774">Bruk apper til å gjøre alt du trenger, på <ph name="PRODUCT_NAME" />. Du finner appene dine i appoversikten.</translation>
 <translation id="571295407079589142">Mobildata er slått av</translation>
 <translation id="5727460725221669831">Hvis du har glemt passordet ditt eller nylig endret passordet for Google-kontoen din, kan du prøve å gjenopprette denne brukeren.</translation>
+<translation id="5733630091161562207">Velkomstvarsel</translation>
 <translation id="573413375004481890">Enheten kunne ikke støtte alle skjermene dine, så en av dem ble koblet fra</translation>
 <translation id="5740328398383587084">Nærdeling</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -1389,6 +1409,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6453179446719226835">Språket er endret</translation>
 <translation id="6459472438155181876">Utvider skjermen til <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">bilder</translation>
+<translation id="6467290994038932560">På for <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Slå av/på wifi-sonen</translation>
 <translation id="6477681113376365978">Kan ikke laste ned filen</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
@@ -1778,6 +1799,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7963689218131240420">Ikke forstyrr er av.</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Velg mappe…</translation>
+<translation id="7973756967040444713">Lukk verktøylinjen</translation>
 <translation id="797512352675305461">Slå forstørrelse av hele skjermen på eller av</translation>
 <translation id="7977927628060636163">Søker etter mobilnettverk …</translation>
 <translation id="7982789257301363584">Nettverk</translation>
@@ -1930,6 +1952,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="861045123704058818">Appene er organisert etter kategori inntil videre</translation>
 <translation id="8612216344243590325">Oppbevar viktige filer på <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Bare dra filer til <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Varsler fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult fordi visningsbeskyttelse er på</translation>
+<translation id="8615778328722901791">Åpne verktøylinjen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Skru ned volumet</translation>
 <translation id="8627191004499078455">Koblet til <ph name="DEVICE_NAME" /></translation>
@@ -1952,6 +1975,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8703634754197148428">Start opptak. Når opptaket har startet, kan du bruke Alt + Shift + L for å navigere til hyllen og finne knappen for å stoppe opptaket</translation>
 <translation id="8704155109538237473">Fokuser på bilde-i-bilde-vinduet</translation>
 <translation id="870917907284186124">Slå diktering på/av (skriv med stemmen)</translation>
+<translation id="8711169534266271368">Alternativer for spilloversikten</translation>
 <translation id="8714138378966541668">Låst av leverandøren</translation>
 <translation id="8717459106217102612">Velg forrige ord eller bokstav</translation>
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8815390544836110344">Trykk på snarveien for skjermdump, Ctrl + Shift + Oversiktsmodus-tasten</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8819728065740986820">Tilpasset lading er på</translation>
+<translation id="8822104519413696986">Dette er et berøringsspill</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
 <translation id="8832513206237979203">Vis eller skjul bokmerkeraden</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
@@ -2092,6 +2117,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="953431725143473984">Vil du slå av enheten?</translation>
 <translation id="954052413789300507">Ikke nok plass til <ph name="FILENAME" />. Frigjør plass.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="956452277966142925">Innstillinger for spilloversikten</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Ingen frist</translation>
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>

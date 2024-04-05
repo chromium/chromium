@@ -292,6 +292,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="260403163289591229">Fylgir</translation>
 <translation id="2604446170045642109">Þú getur slökkt á dökku þema fyrir vefsvæði í stillingunum.</translation>
 <translation id="2612676031748830579">Kortanúmer</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> bauð þér aðgang að deildu atriði.</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
 <translation id="2634393460268044753">Sendir vefslóðir vefsvæða sem þú heimsækir og sýnishorn af efni á síðu, niðurhali, virkni viðbóta og kerfisupplýsingum til öruggrar vefskoðunar Google til að athuga hvort efnið sé skaðlegt.</translation>
 <translation id="2642087927315268160">Innskráningarblað neðst er lokað.</translation>
@@ -398,6 +399,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="3072980200212375806"><ph name="APP_NAME" /> opnast í Chrome. Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Persónuverndarstefnan<ph name="END_LINK3" /> gildir einnig.</translation>
 <translation id="3080525922482950719">Þú getur vistað síður til að lesa þær síðar eða án nettengingar</translation>
 <translation id="3091010850649238832">Sýna innihald klippiborðs</translation>
+<translation id="3093004810561729002">Einhver</translation>
 <translation id="3098745985164956033">Sumar myndir eru sendar til Google til að bæta lýsingar</translation>
 <translation id="3114507951000454849">Lestu fréttir dagsins <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Tilkynningar</translation>

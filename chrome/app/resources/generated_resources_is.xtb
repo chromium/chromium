@@ -1078,6 +1078,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1797117170091578105">Spilaðu með Chromebook lyklaborðinu. Þú getur sérsniðið lykla fyrir ákveðnar aðgerðir.</translation>
+<translation id="1798335429200675510">Hægrismelltu í textareit til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google. Aðgengi er takmarkað eins og er.</translation>
 <translation id="180203835522132923">Leita + O og svo W</translation>
 <translation id="1802624026913571222">Svefn þegar hulstrið er lokað</translation>
 <translation id="1802687198411089702">Síðan svarar ekki. Þú getur beðið eftir henni eða hætt.</translation>
@@ -1473,6 +1474,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2088092308059522196">Skráning er aðeins studd eftir að þú setur upp <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Innbyggður TrackPoint</translation>
 <translation id="208928984520943006">Þú getur hvenær sem er komist á heimaskjáinn með því að strjúka upp frá neðsta hluta skjásins.</translation>
+<translation id="2089550919269323883">Lokað er á uppsetningu <ph name="VM_NAME" /> vegna fyrirtækjareglu. Hafðu samband við kerfisstjórann þinn fyrir aðstoð. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">EÐA</translation>
 <translation id="2090165459409185032">Til að endurheimta reikningsupplýsingarnar þínar skaltu fara á: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Tengist sjálfkrafa þegar þú skráir þig inn.</translation>
@@ -1516,6 +1518,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="21133533946938348">Festa flipa</translation>
 <translation id="2113479184312716848">Opna skrá...</translation>
 <translation id="2113921862428609753">Aðgangur að vottunarstöðvarupplýsingum</translation>
+<translation id="2114145607116268663">Ekki tókst að setja upp, endurræsingar er krafist. Endurræstu tölvuna og reyndu aftur. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Endurhlaða &amp;ramma</translation>
 <translation id="2114413269775311385">Nota þennan reikning með Android forritum. Hægt er að stjórna heimildum fyrir Android forrit í <ph name="LINK_BEGIN" />stillingum forrita<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Sjá „nýlega hápunkta“ og aðrar minningar hér</translation>
@@ -2684,6 +2687,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2977480621796371840">Fjarlægja úr hópi</translation>
 <translation id="2979639724566107830">Opna í nýjum glugga</translation>
 <translation id="2979893796619951531">Útiloka síðu</translation>
+<translation id="2981033191524548279">Eitthvað fór úrskeiðis. Sendu ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" /> en endurræsing og að reyna aftur gæti lagað vandamálið.</translation>
 <translation id="2981113813906970160">Sýna stóran músarbendil</translation>
 <translation id="2983102365694924129">Byggt á virkni þinni á vefsvæði. Slökkt er á þessari stillingu.</translation>
 <translation id="2983373101216420412">Staða rafhlöðu í hulstri <ph name="PERCENTAGE" />%.</translation>
@@ -4355,6 +4359,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4275397969489577657">Kveikja á skráningu viðburðarstraums</translation>
 <translation id="4275788652681621337">Loka hliðarglugga</translation>
 <translation id="4275830172053184480">Endurræstu tækið</translation>
+<translation id="4276856098224910511">Get ekki sett upp, stýrikerfisuppfærsla er í bið. Notaðu hvaða stýrikerfisuppfærslur sem eru í bið, endurræstu og reyndu aftur. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Uppruni XML-stillingar</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Heimildir fjarlægðar fyrir eitt vefsvæði}one{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}other{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="4278390842282768270">Leyft</translation>
@@ -4564,6 +4569,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4426490308207168518">Deila athugasemd eða tilkynna vandamál</translation>
 <translation id="4426508677408162512">Öll bókamerki</translation>
 <translation id="4426513927906544654">Fá efnistillögur</translation>
+<translation id="4426857487270413362">Ekki tókst að sækja uppsetningarskrár. Athugaðu nettenginguna þína og hvort þú hafir nægt diskpláss og reyndu aftur. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4427365070557649936">Staðfestir staðfestingarkóða...</translation>
 <translation id="4429163740524851942">Uppsetning vélbúnaðarlyklaborðs</translation>
@@ -5166,6 +5172,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4899696330053002588">Inniheldur auglýsingar</translation>
 <translation id="490031510406860025">Ekki leyft á þessu vefsvæði</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – samfléttað</translation>
+<translation id="490056871160016482">Vefsvæði nota þennan eiginleika til að bjóða upp á áhrifaríka upplifun á öllum skjánum, án tillits til bendinga notanda</translation>
 <translation id="4900652253009739885">Ekki er hægt að fjarlægja eina rofann sem er úthlutaður til „Velja“. Ýttu á hvaða hnapp sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Stækka „Nýlega lokað“</translation>
 <translation id="4901309472892185668">Veldu ástand tilraunar fyrir <ph name="EXPERIMENT_NAME" /> tilraunina.</translation>
@@ -7185,6 +7192,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6517227424170598783">Fjarlægja flýtileiðina „<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />“?</translation>
 <translation id="6517382055541687102">Valið tæki breyttist í <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Skrárnar á drifinu þínu samstillast sjálfkrafa við Chromebook-tækið svo þú getir nálgast þær án nettengingar. Þetta notar um <ph name="REQUIRED_SPACE" /> af geymslurýminu. Þú ert með <ph name="FREE_SPACE_AVAILABLE" /> laus.</translation>
+<translation id="651753338596587143">Eitthvað fór úrskeiðis við að setja upp ákvæði niðurhlaðanlegs efnis (DLC). Reyndu endurræsingu og ef vandamálið er viðvarandi skaltu senda ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Tækið þitt virkar hugsanlega ekki rétt lengur og vandamál varðandi öryggi og afköst gætu komið upp. Ef slökkt er á uppfærslum getur það einnig haft áhrif á réttindi þín til að leggja fram réttarkröfur ef vandamál koma upp.</translation>
 <translation id="6518014396551869914">Afrita m&amp;ynd</translation>
 <translation id="6518133107902771759">Staðfesta</translation>
@@ -7634,6 +7642,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6847125920277401289">Losaðu um pláss til að halda áfram</translation>
 <translation id="6848388270925200958">Eins og er ertu með einhver kort sem aðeins er hægt að nota í þessu tæki</translation>
 <translation id="6848716236260083778">Láttu barnið snerta fingrafaralesarann til að setja upp fingrafar. Fingrafaragögn barnsins eru í öruggri geymslu og fara aldrei út fyrir þetta <ph name="DEVICE_TYPE" /> tæki.</translation>
+<translation id="6849623577495734856">Tákn á tækjastiku</translation>
 <translation id="6850286078059909152">Textalitur</translation>
 <translation id="6851181413209322061">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa stillingu. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins.</translation>
 <translation id="6851497530878285708">Forrit virkt</translation>
@@ -8390,6 +8399,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Aukin forhleðsla</translation>
 <translation id="7456847797759667638">Opna staðsetningu...</translation>
+<translation id="7457027286267861992">Ekki nægilegt diskpláss. Losaðu um meira pláss á disknum og reyndu aftur. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{tengill}one{# tengill}other{# tenglar}}</translation>
 <translation id="7458168200501453431">Notar sömu ritvilluleit og Google leitin. Textinn sem þú skrifar í vafranum er sendur til Google.</translation>
 <translation id="7458715171471938198">Endurheimta forrit?</translation>
@@ -10185,6 +10195,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8787752878731558379">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila</translation>
 <translation id="8791157330927639737">Nánar um uppfærslu</translation>
 <translation id="8791534160414513928">Senda beiðnina „Do Not Track“ með vefumferð</translation>
+<translation id="8793390639824829328">Vefsvæði nota þennan eiginleika til að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="879413103056696865">Þegar kveikt er á heitum reit mun <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nýr gluggi</translation>
 <translation id="8796919761992612392">&amp;Sérsníddu Chrome</translation>
@@ -10676,6 +10687,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9150045010208374699">Nota myndavélina þína</translation>
 <translation id="9150079578948279438">Ekki var hægt að fjarlægja prófílinn. Reyndu aftur eða hafðu samband við símafyrirtækið þitt til að fá tæknilega aðstoð.</translation>
 <translation id="9150860646299915960">Uppfærðu Linux-geyminn</translation>
+<translation id="915112772806845021">Vefsvæði nota þennan eiginleika til að nota mynd í mynd sjálfkrafa. Þetta gerir þér kleift að horfa áfram á vídeó á meðan skjárinn er laus fyrir önnur verkefni.</translation>
 <translation id="9151249085738989067">Skipta sjálfkrafa um ChromeVox rödd eftir tungumáli</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Kerfisupplýsingar Lacros</translation>

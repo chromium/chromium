@@ -183,6 +183,7 @@
 <translation id="132301787627749051">ค้นหารูปภาพในคลิปบอร์ด</translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
 <translation id="132390688737681464">บันทึกและกรอกที่อยู่</translation>
+<translation id="1325412080783393306">ค้นหาตัวเลือกการซื้อเพิ่มเติม</translation>
 <translation id="1325749054628832887">หัวข้อโฆษณาเป็นเพียงหนึ่งในหลายอย่างที่เว็บไซต์สามารถใช้เพื่อปรับโฆษณาตามโปรไฟล์ของผู้ใช้ แม้จะไม่มีหัวข้อโฆษณา เว็บไซต์ก็ยังคงแสดงโฆษณาให้คุณเห็นได้ แต่ก็อาจน่าสนใจน้อยลง ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="LINK_END" /></translation>
 <translation id="1329916999021038454">ส่งรายงาน</translation>
 <translation id="1330449323196174374">พับทบด้านซ้าย</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">ระบบนิเวศและสิ่งแวดล้อม</translation>
 <translation id="2452837234288608067">ยังช่วยเรื่องนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="2456755709261364512">ต้องชาร์จแบตเตอรี่ให้มากกว่า <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">ค้นหา <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">โซเชียลเน็ตเวิร์ก</translation>
 <translation id="2463739503403862330">กรอกข้อมูล</translation>
 <translation id="2465688316154986572">เย็บด้วยลวดเย็บกระดาษ</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">แนวตั้ง</translation>
 <translation id="3287510313208355388">ดาวน์โหลดเมื่อออนไลน์</translation>
 <translation id="3288238092761586174"><ph name="URL" /> อาจต้องทำตามขั้นตอนเพิ่มเติมเพื่อยืนยันการชำระเงิน</translation>
+<translation id="3289578402369490638">จากร้านค้าอื่นๆ ทั่วอินเทอร์เน็ต</translation>
 <translation id="3293642807462928945">ดูข้อมูลเพิ่มเติมเกี่ยวกับนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
 <translation id="3299098170013242198">Windows Hello เปิดอยู่สำหรับการป้อนรหัสผ่าน</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">การประชุมทางไกล</translation>
 <translation id="6753269504797312559">ค่านโยบาย</translation>
+<translation id="6753390234084146956">แท็บ</translation>
 <translation id="6753434778807740853">ลบรายการข้อมูล <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">บัญชีออมทรัพย์</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">กระดาษสติกเกอร์</translation>
 <translation id="8075736640322370409">สร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="8075898834294118863">จัดการการตั้งค่าเว็บไซต์</translation>
-<translation id="8076492880354921740">แท็บ</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{อัปโหลดไฟล์ลับไหม}other{อัปโหลดไฟล์ลับไหม}}</translation>
 <translation id="8078141288243656252">เมื่อหมุนแล้วจะใส่หมายเหตุไม่ได้</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
 <translation id="8153865548451212769">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">อุปกรณ์ฮ็อกกี้</translation>
-<translation id="815788908807586564">แชทกับ Gemini</translation>
 <translation id="8161095570253161196">เรียกดูต่อ</translation>
 <translation id="8163866351304776260">เจาะรูด้านซ้าย 4 รู</translation>
 <translation id="8164078261547504572">ต้องการรับอีเมลแจ้งเมื่อราคาต่ำลงไหม</translation>

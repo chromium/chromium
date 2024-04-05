@@ -148,6 +148,7 @@
 <translation id="3100998948628680988">Chrome profilingizga nom bering</translation>
 <translation id="3112458742631356345">Chrome bu yuklamani blokladi, chunki bunday fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="3114643501466072395">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chrome hisobingizga kiring<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
 <translation id="3140883423282498090">O‘zgartirishlar Google Chrome qaytadan ishga tushirilganda kuchga kiradi.</translation>
 <translation id="3149510190863420837">Chrome ilovalari</translation>
 <translation id="3169523567916669830">Sinov davrida saytlar reklamani chiqarish uchun ishlatadigan sizga qiziq mavzularni koʻrish va olib tashlash mumkin. Chrome siz ochgan saytlar asosida sizga qiziq boʻlishi mumkin mavzularni taxmin qiladi.</translation>
@@ -218,6 +219,7 @@
 <translation id="4334294535648607276">Yuklab olindi.</translation>
 <translation id="4335235004908507846">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> kengaytmasi Chromega o‘rnatildi</translation>
+<translation id="436060642166082913">Chrome bu yuklanmani blokladi, chunki bu fayl shaxsiy va ijtimoiy tarmoqlardagi hisoblarga zarar keltirishi mumkin</translation>
 <translation id="4384570495110188418">Chrome parollaringizni faqat hisobingizga kirganingizdan keyin tekshira oladi</translation>
 <translation id="4389991535395284064">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chrome sizni ogohlantiradi.</translation>
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
@@ -473,6 +475,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="873133009373065397">Google Chrome asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi</translation>
 <translation id="8765470054473112089">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chrome yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="878572486461146056">Oʻrnatishda xato: Tarmoq administratori oʻrnatishlarni taqiqlovchi guruh siyosatini tatbiq qilgan: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome bu yuklanmani blokladi, chunki bu fayl <ph name="USER_EMAIL" /> kabi shaxsiy va ijtimoiy tarmoqlardagi hisoblarga zarar keltirishi mumkin.</translation>
 <translation id="8801657293260363985">V8 — Chromeda saytlar unumdorligini oshiradigan JavaScript va WebAssembly tizimi hisoblanadi</translation>
 <translation id="8821043148920470810">Google Chrome yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versiyasi eskirdi</translation>

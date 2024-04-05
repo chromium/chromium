@@ -150,6 +150,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3100998948628680988">Emërto profilin tënd të Chrome</translation>
 <translation id="3112458742631356345">Chrome e bllokoi këtë shkarkim sepse skedari nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="3114643501466072395">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome e bllokoi këtë shkarkim sepse skedari i arkivit përfshin skedarë të tjerë që mund të fshehin softuer keqdashës</translation>
 <translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3169523567916669830">Gjatë provave, mund të shikosh dhe të heqësh temat e interesit, të cilat sajtet i përdorin për të të shfaqur reklama. Chrome përllogarit interesat e tua bazuar në historikun më të fundit të shfletimit.</translation>
@@ -220,6 +221,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>
 <translation id="4335235004908507846">Chrome mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, shtesat e papërshtatshme etj.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> është shtuar te Chrome</translation>
+<translation id="436060642166082913">Chrome e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale</translation>
 <translation id="4384570495110188418">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="4389991535395284064">Kur shfleton në "Modalitetin 'e fshehtë'", Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
@@ -475,6 +477,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
 <translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale, duke përfshirë <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>

@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Сумња се на портал</translation>
 <translation id="1232610416724362657">водопад</translation>
 <translation id="1238612778414822719">HTTPS кашњење</translation>
+<translation id="1252766349417594414">Џојстик</translation>
 <translation id="1270369111467284986">Могућ улазни портал</translation>
 <translation id="1274654146705270731">поморанџе</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Апликација Дијагностика</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Брзо мењајте тастере</translation>
 <translation id="1768959921651994223">Тип потврде идентитета</translation>
 <translation id="1776228893584526149">Тон позадине</translation>
 <translation id="1777913922912475695">Мост</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4 или IPv6</translation>
 <translation id="2073232437457681324">огромни океан</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
+<translation id="2082932131694554252">Додељени тастер на тастатури</translation>
 <translation id="2085089206770112532">Смањите осветљеност екрана</translation>
 <translation id="2102231663024125441">Уређивање текста</translation>
 <translation id="2105810540595158374">Уређај је контролер за игре.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
 <translation id="2640549051766135490">Изабран је албум <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="2645380101799517405">Контроле</translation>
 <translation id="2652403576514495859">омогућите или укључите/искључите диктирање</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2656001153562991489">Ексклузивно за Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Укључите ово за најбоље резултате са овом позадином. То подешавање можете да искључите у сваком тренутку.</translation>
 <translation id="2878387241690264070">Испражњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="2880569433548999039">Чувар екрана са облацима</translation>
+<translation id="2882230315487799269">Прилагодите упит за вештачку интелигенцију</translation>
 <translation id="2888298276507578975">Унесите упит, на пример, „напишите поруку захвалности“</translation>
 <translation id="2890557891229184386">тропско острво</translation>
 <translation id="2895772081848316509">тамно</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
 <translation id="361575905210396100">Хвала вам на повратним информацијама</translation>
 <translation id="3621072146987826699">слонови</translation>
+<translation id="3632040286124154621">Добар предлог</translation>
 <translation id="3632579075709132555">Укључите/искључите екран за приватност</translation>
+<translation id="3644695927181369554">Лош предлог</translation>
 <translation id="3651050199673793219">Изаберите јединицу температуре</translation>
 <translation id="3661106764436337772">Пишите брже и сигурније</translation>
 <translation id="3662461537616691585">бордо и црвенкастобраон боје</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="3715651196924935218">Изађите из плутајућег приказа</translation>
+<translation id="3716250181321371108">Направи контролу</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
 <translation id="3771294271822695279">Видео датотеке</translation>
+<translation id="3780740315729837296">Доделите тастер на тастатури</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="3785643128701396311">пикселска графика</translation>
 <translation id="3790109258688020991">поинтилизам</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">снимите екран</translation>
 <translation id="3923184630988645767">Потрошња података</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
+<translation id="3934185438132762746">Недодељено <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
 <translation id="3954678691475912818">Тип уређаја је непознат.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Преузима се слика</translation>
 <translation id="4063039537646912479">светлоплав(а)</translation>
 <translation id="4070799384363688067">аниме</translation>
+<translation id="4086271957099059213">Направи још једну контролу</translation>
 <translation id="4091002263446255071">романтични</translation>
 <translation id="4093865285251893588">Слика профила</translation>
 <translation id="409427325554347132">Сачувај детаље теста</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Безбедна WiFi веза</translation>
 <translation id="4650608062294027130">Десни тастер shift</translation>
 <translation id="4654549501020883054">Мењај сваког дана</translation>
+<translation id="4655868084888499342">Слика је подешена као позадина</translation>
 <translation id="4661249927038176904">Надреално</translation>
 <translation id="4664651912255946953">крзна</translation>
 <translation id="4665014895760275686">Произвођач</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Сумња се на заштитни зид</translation>
 <translation id="4691278870498629773">Заустављено – недостаје посуда за одштампани материјал</translation>
 <translation id="469379815867856270">Јачина сигнала</translation>
+<translation id="4697260493945012995">Изаберите тип контроле</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Правите помоћу вештачке интелигенције</translation>
 <translation id="6112878310391905610">Овим подешавањем управљају администратори</translation>
 <translation id="6113701710518389813">Стрелица нагоре</translation>
+<translation id="6116005346231504406">Направи прву контролу</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, још <ph name="NUMBER" /> албума</translation>
 <translation id="6122191549521593678">Онлајн</translation>
 <translation id="6122277663991249694">Услуга метода уноса за Chrome ОС</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7144954474087165241">Пагода</translation>
+<translation id="7147557737960578492">Поново доделите тако што ћете изабрати нови тастер</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7154020516215182599">Пошаљите повратне информације или опишите проблем. Ако је то могуће, уврстите кораке за изазивање истог проблема.</translation>
 <translation id="7155037718620478619">Откријте још назива приступне тачке</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7344788170842919262">земљани</translation>
+<translation id="7346768383111016081">Поставите контролу за радњу у игри да бисте играли помоћу тастатуре</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. резултат претраге од <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Притисните Enter да бисте отишли на пречицу.</translation>
 <translation id="7359657277149375382">Тип датотеке</translation>
 <translation id="73631062356239394">Дели дијагностичке податке</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџиница</translation>
 <translation id="8538236298648811558">Омогућава Google AI</translation>
+<translation id="8550364285433943656">Поставите контроле за радње у игри да бисте играли помоћу тастера на тастатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>
 <translation id="8576249514688522074">Није покренуто</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Повезивање са овом мрежом није успело помоћу аутоматски откривених назива приступне тачке. Затражите више информација од мобилног оператера.</translation>
 <translation id="9193744392140377127">Назив приступне тачке*</translation>
 <translation id="9204237731135241582">Контакт са мрежним пролазом не успева из Android апликација</translation>
+<translation id="921080052717160800">Слика је подешена као позадина камере</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
 <translation id="932327136139879170">Почетна</translation>
 <translation id="939519157834106403">SSID</translation>

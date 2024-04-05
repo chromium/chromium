@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Przenieś tutaj</translation>
 <translation id="1014147525163127655">Brak kluczy dostępu na tym urządzeniu dla witryny <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Szybko wyszukaj głosowo. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
+<translation id="1017104654974573432">Wybieranie problemu</translation>
 <translation id="1024113959924243553">wersji deweloperskiej Chrome</translation>
 <translation id="1028699632127661925">Przesyłam na: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Wyczyścić też dane z tych stron i aplikacji?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="10614374240317010">Nigdy nie zapisane</translation>
 <translation id="107147699690128016">Jeśli zmienisz rozszerzenie pliku, będzie mogła go otworzyć inna aplikacja, co może nie być bezpieczne dla Twojego urządzenia.</translation>
+<translation id="1082920045291562218">Udostępnianie za pomocą arkusza opinii na temat podsumowania zostało zamknięte</translation>
 <translation id="1089606299949659462">Sprawdzanie zakończone</translation>
 <translation id="1095761715416917775">Zadbaj o to, by nigdy nie stracić dostępu do synchronizowanych danych</translation>
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
@@ -292,6 +294,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="260403163289591229">Obserwujesz</translation>
 <translation id="2604446170045642109">Ciemny motyw witryn możesz wyłączyć w ustawieniach.</translation>
 <translation id="2612676031748830579">Numer karty</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> zaproposił(a) Cię do skorzystania z udostępnionego elementu.</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2634393460268044753">Wysyła adresy URL witryn, które odwiedzasz, oraz niewielką próbkę zawartości, pobieranych plików, aktywności rozszerzeń i informacji o systemie do Bezpiecznego przeglądania Google w celu sprawdzenia, czy nie są szkodliwe.</translation>
 <translation id="2642087927315268160">Plansza dolna logowania jest zamknięta.</translation>
@@ -398,6 +401,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="3072980200212375806">Aplikacja <ph name="APP_NAME" /> zostanie otwarta w Chrome. Przechodząc dalej, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />. Obowiązują też postanowienia <ph name="BEGIN_LINK3" />polityki prywatności<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Możesz zapisać strony, by przeczytać je później lub offline</translation>
 <translation id="3091010850649238832">Pokaż zawartość schowka</translation>
+<translation id="3093004810561729002">Ktoś</translation>
 <translation id="3098745985164956033">Niektóre obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy</translation>
 <translation id="3114507951000454849">Przeczytaj dzisiejsze wiadomości <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Komunikaty</translation>
@@ -555,6 +559,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="4034817413553209278">{HOURS,plural, =1{# godzina}few{# godziny}many{# godzin}other{# godziny}}</translation>
 <translation id="4035877632587724847">Nie zezwalaj</translation>
 <translation id="4042941173059740150">Przejdź do witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grupa bez nazwy</translation>
 <translation id="4044708993631234325">Plansza dolna</translation>
 <translation id="405365679581583349">Zaktualizuj Usługi Google Play</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
@@ -626,6 +631,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
 <translation id="4405636711880428279">Usunąć Twoją kartę wirtualną?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> i inne karty (<ph name="TAB_COUNT" />)</translation>
 <translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
@@ -1068,6 +1074,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6595046016124923392">Obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy.</translation>
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>
+<translation id="6625890511281718257">Udostępnij za pomocą arkusza opinii na temat podsumowania</translation>
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6633067410344541938">Odblokuj tryb incognito</translation>
 <translation id="6636623428211296678">Zobacz więcej ustawień poniżej lub zakończ</translation>
@@ -1106,6 +1113,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Lista urządzeń, którym udostępnisz kartę, jest otwarta na połowę wysokości.</translation>
 <translation id="6770602306803890733">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu</translation>
+<translation id="6773061896687011391">Adres URL strony, której dotyczy Twoja opinia, zostanie wysłany przez Google i może zostać sprawdzony przez weryfikatorów w celu ulepszenia tej funkcji</translation>
 <translation id="6775840696761158817">Klikając pasek adresu lub pole wyszukiwania, a także pisząc w nich, zobaczysz sugestie z domyślnej wyszukiwarki. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="6785476624617658922">Dodatkowe warunki korzystania z Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Szybko otwórz nową kartę. Aby edytować ten skrót, otwórz Ustawienia.</translation>
@@ -1409,6 +1417,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8135406045838672858">Pobrane pliki PDF otwierają się automatycznie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nie musisz zapamiętywać tego hasła. Zapisze je Menedżer haseł Google.</translation>
 <translation id="8163820386638255770">Potwierdź swoją tożsamość, aby móc zapisywać hasła na koncie Google i ich używać</translation>
+<translation id="8171286197772512427">Udostępnianie za pomocą arkusza opinii na temat podsumowania zostało otwarte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Pozostał dzień</translation>

@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Hiermee kunnen <ph name="APP_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="1017556409696559990">Het bovenste venster minimaliseren als er geen geschiedenis voor teruggaan in Chrome is</translation>
+<translation id="101823271612280837">Opname gestopt. Kan Game Dashboard niet gebruiken in de tabletmodus.</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
 <translation id="1036073649888683237">Ga naar Instellingen om meldingen te beheren</translation>
@@ -95,6 +96,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Ontdekken openen</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Druk op elk moment op <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
 <translation id="1311294419381837540">Je cast een tabblad. Je kunt het casten op elk moment onderbreken of stoppen.</translation>
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
+<translation id="1894024878080591367">Instellen om met je toetsenbord te spelen</translation>
 <translation id="1904997243703671177">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_COUNT" /> externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken, waaronder:</translation>
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
@@ -326,6 +329,8 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2367972762794486313">Apps bekijken</translation>
 <translation id="2368828502825385061">Zoeken</translation>
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
+<translation id="2370971919968699910">Dit kan leiden tot datakosten.
+<ph name="DEVICECOUNT" /> apparaten verbonden.</translation>
 <translation id="2382875860893882175">Casten is nu onderbroken. Je kunt het casten op elk moment hervatten of stoppen.</translation>
 <translation id="2386292613071805067">Alles op pagina selecteren</translation>
 <translation id="2392659840443812875">Geen beschikbare hotspot. Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
@@ -395,6 +400,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2624588537172718173">Audio van apparaat en microfoon</translation>
 <translation id="263399434338050016">'Alles selecteren'</translation>
 <translation id="2644422758626431000">Venster links vastzetten</translation>
+<translation id="2645380101799517405">Bedieningselementen</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Vensteropname</translation>
 <translation id="2653659639078652383">Verzenden</translation>
@@ -407,6 +413,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Toetsenbordinstellingen tonen. <ph name="KEYBOARD_NAME" /> is geselecteerd.</translation>
 <translation id="2700493154570097719">Je toetsenbord instellen</translation>
+<translation id="2701576323154693023">Hotspot staat aan (wifi staat uit)</translation>
 <translation id="2704781753052663061">Verbinden met andere wifi-netwerken</translation>
 <translation id="2705001408393684014">Microfoon aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Omhoog</translation>
@@ -428,6 +435,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2785499565474703580">1 verbonden apparaat</translation>
 <translation id="2791421900609674576">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Tik en houd vast om aanbevelingen te verwijderen.</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
+<translation id="2798702144670138229">Tabletmodus staat aan. Game Dashboard is niet beschikbaar.</translation>
 <translation id="2801954693771979815">Schermgrootte</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, geselecteerd</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -476,6 +484,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
 <translation id="2996462380875591307">Vastgezet vergrootglas aanstaat. Druk nogmaals op Ctrl+Zoeken+D om dit uit te zetten.</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
+<translation id="3001391739687111021">Schermformaat bewerken</translation>
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="301282384882049174">Gedeeld door je beheerder</translation>
@@ -505,6 +514,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3100274880412651815">Opnamemodus sluiten</translation>
 <translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Welkomstmelding is <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Vorig item op de plank markeren</translation>
 <translation id="311799651966070385">Hint om te sluiten</translation>
 <translation id="3120421559657122717">Apparaat uitzetten?</translation>
@@ -743,6 +753,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3984536049089846927">Volgende pagina</translation>
 <translation id="3986082989454912832">Beantwoorden</translation>
 <translation id="3990002060657467458">Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken.</translation>
+<translation id="3991203706072366707">Uit voor <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="40062176907008878">Handschrift</translation>
@@ -836,6 +847,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">De sneltoets Ctrl + Alt + pijl-omhoog is veranderd. Als je de toets Home wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-links.</translation>
 <translation id="4324840740119394760">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
+<translation id="4327147325944669226">Game opnemen</translation>
 <translation id="4333628967105022692">Lacros wordt niet ondersteund terwijl er meerdere gebruikers zijn ingelogd.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
@@ -871,6 +883,8 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Apparaat nu updaten}=1{Apparaat binnen 1 seconde updaten}other{Apparaat binnen # seconden updaten}}</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
+<translation id="4477751544736611934">Dit kan leiden tot datakosten.
+1 apparaat verbonden.</translation>
 <translation id="4477892968187500306">Dit apparaat bevat mogelijk apps die niet zijn geverifieerd door Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ontkoppelde apparaten</translation>
@@ -1000,6 +1014,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
+<translation id="4950800194215951939">Je gamebeleving aanpassen</translation>
 <translation id="4952936045814352993">Telefoon vinden is niet beschikbaar als alarmgeluiden uitstaan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> terugzet naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="4961318399572185831">Scherm casten</translation>
@@ -1014,6 +1029,8 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4981175556418720939">Aangepast: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="4989163558385430922">Alles bekijken</translation>
+<translation id="4995963195354861331">Welkomstdialoogvenster</translation>
+<translation id="4996265698919320288">Opnemen</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
 <translation id="5004607513195820459">Netwerk wordt beheerd</translation>
 <translation id="5009463889040999939">Naam van profiel wijzigen. Dit kan een paar minuten duren.</translation>
@@ -1105,6 +1122,8 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="533282197239610265">Cast-apparaten tonen</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (rechts)</translation>
 <translation id="5352250171825660495">Donker thema staat aan</translation>
+<translation id="5354804064646502504">Dit kan leiden tot datakosten.
+Geen apparaten verbonden.</translation>
 <translation id="5356963482258194581">Schakelen tussen het donkere en lichte thema. Klik met de rechtermuisknop op het bureaublad en selecteer Achtergrond en stijl.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
@@ -1204,6 +1223,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5712132663381964774">Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher.</translation>
 <translation id="571295407079589142">Mobiele data staan uit</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
+<translation id="5733630091161562207">Welkomstmelding</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
 <translation id="5740328398383587084">Dichtbij delen</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
@@ -1389,6 +1409,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6453179446719226835">Taal is gewijzigd</translation>
 <translation id="6459472438155181876">Scherm uitbreiden naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">afbeeldingen</translation>
+<translation id="6467290994038932560">Aan voor <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Hotspot aan-/uitzetten</translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
@@ -1778,6 +1799,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7963689218131240420">Niet storen staat uit.</translation>
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
+<translation id="7973756967040444713">Werkbalk sluiten</translation>
 <translation id="797512352675305461">Vergrootglas op volledig scherm aan- of uitzetten</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7982789257301363584">Netwerk</translation>
@@ -1930,6 +1952,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
+<translation id="8615778328722901791">Werkbalk openen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Volume lager zetten</translation>
 <translation id="8627191004499078455">Verbonden met <ph name="DEVICE_NAME" /></translation>
@@ -1952,6 +1975,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8704155109538237473">De focus op het scherm-in-scherm-venster zetten</translation>
 <translation id="870917907284186124">Dicteren (typen met je stem) aan-/uitzetten</translation>
+<translation id="8711169534266271368">Game Dashboard-instellingen</translation>
 <translation id="8714138378966541668">Vergrendeld door provider</translation>
 <translation id="8717459106217102612">Het vorige woord of de vorige letter selecteren</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8815390544836110344">Druk op de snelkoppeling voor een screenshot, Ctrl plus Shift plus de toets voor de overzichtsmodus</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
+<translation id="8822104519413696986">Dit is een game met tikbediening</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8832513206237979203">Bookmarkbalk tonen of verbergen</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
@@ -2092,6 +2117,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="953431725143473984">Het apparaat uitzetten?</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="956452277966142925">Game Dashboard-instellingen</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Geen inleverdatum</translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>

@@ -292,6 +292,7 @@
 <translation id="260403163289591229">თვალს ადევნებთ</translation>
 <translation id="2604446170045642109">საიტებისთვის მუქი თემის გამორთვა შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="2612676031748830579">ბარათის ნომერი</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> გიწვევთ საზიარო ერთეულზე წვდომისთვის.</translation>
 <translation id="2625189173221582860">პაროლი დაკოპირდა</translation>
 <translation id="2634393460268044753">Google Safe Browsing-ს შესამოწმებლად უგზავნის თქვენ მიერ მონახულებული საიტების URL-ებს, ასევე, გვერდების კონტენტის, ჩამოტვირთვებისა, გაფართოებების აქტივობისა და სისტემის ინფორმაციის მცირე ნიმუშს.</translation>
 <translation id="2642087927315268160">სისტემაში შესვლის ქვედა ფურცელი დახურულია.</translation>
@@ -398,6 +399,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_LINK3" />კონფიდენციალურობის დებულება<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">სურვილისამებრ, შეგიძლიათ შეინახოთ გვერდები მოგვიანებით ან ხაზგარეშე რეჟიმში წასაკითხად</translation>
 <translation id="3091010850649238832">გაცვლის ბუფერის შიგთავსის ჩვენება</translation>
+<translation id="3093004810561729002">მომხმარებელი</translation>
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">განცხადებები</translation>

@@ -1066,6 +1066,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1797117170091578105">Juga utilitzant el teclat del Chromebook. Pots personalitzar les tecles perquè facin accions específiques.</translation>
+<translation id="1798335429200675510">Fes clic amb el botó dret en un quadre de text per crear un esborrany o definir millor el treball existent, amb la tecnologia de la IA de Google. En aquests moments té una disponibilitat limitada.</translation>
 <translation id="180203835522132923">Cerca+O i, després, W</translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
@@ -1460,6 +1461,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2088092308059522196">La inscripció només s'admet després que instal·lis <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrat</translation>
 <translation id="208928984520943006">Per anar a la pantalla d'inici en qualsevol moment, llisca cap amunt des de la part inferior.</translation>
+<translation id="2089550919269323883">La política de l'empresa ha bloquejat la instal·lació de <ph name="VM_NAME" />. Contacta amb l'administrador del sistema per obtenir assistència. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">O</translation>
 <translation id="2090165459409185032">Per recuperar la informació del compte, accediu a: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Es connecta automàticament quan inicies la sessió</translation>
@@ -1503,6 +1505,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="21133533946938348">Fixa la pestanya</translation>
 <translation id="2113479184312716848">Obre un &amp;fitxer...</translation>
 <translation id="2113921862428609753">Accés a la informació d'entitats</translation>
+<translation id="2114145607116268663">No es pot instal·lar; cal reiniciar. Reinicia l'ordinador i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Torna a carregar el &amp;marc</translation>
 <translation id="2114413269775311385">Utilitza aquest compte amb les aplicacions d'Android. Pots controlar els permisos de les aplicacions d'Android a <ph name="LINK_BEGIN" />Configuració de l'aplicació<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Consulta aquí "Fotos destacades recents" i altres records</translation>
@@ -2668,6 +2671,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2977480621796371840">Suprimeix del grup</translation>
 <translation id="2979639724566107830">Obre-ho en una finestra nova</translation>
 <translation id="2979893796619951531">Exclou el lloc web</translation>
+<translation id="2981033191524548279">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. És possible que això es corregeixi reiniciant i tornant-ho a provar.</translation>
 <translation id="2981113813906970160">Mostra el cursor del ratolí gran</translation>
 <translation id="2983102365694924129">Segons la teva activitat en un lloc web. Aquesta opció de configuració està desactivada.</translation>
 <translation id="2983373101216420412">Nivell de bateria de l'estoig: <ph name="PERCENTAGE" />%.</translation>
@@ -4338,6 +4342,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4275397969489577657">Activa el registre del flux d'esdeveniments</translation>
 <translation id="4275788652681621337">Tanca el tauler lateral</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
+<translation id="4276856098224910511">No s'ha pogut instal·lar; l'actualització del sistema operatiu està pendent. Aplica les actualitzacions del sistema operatiu pendents, reinicia i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Font de configuració XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{S'han suprimit els permisos d'1 lloc web}other{S'han suprimit els permisos de {NUM_SITES} llocs web}}</translation>
 <translation id="4278390842282768270">Permès</translation>
@@ -4547,6 +4552,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4426490308207168518">Comparteix suggeriments o informa d'un problema</translation>
 <translation id="4426508677408162512">Totes les adreces d'interès</translation>
 <translation id="4426513927906544654">Obtén recomanacions de contingut</translation>
+<translation id="4426857487270413362">No s'han pogut baixar els fitxers de l'instal·lador. Comprova la connexió a Internet i que tinguis prou espai de disc lliure, i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4427365070557649936">S'està verificant el codi de confirmació...</translation>
 <translation id="4429163740524851942">Disposició del teclat físic</translation>
@@ -5148,6 +5154,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4899696330053002588">Conté anuncis</translation>
 <translation id="490031510406860025">No es permet en aquest lloc web</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz, entrellaçat</translation>
+<translation id="490056871160016482">Els llocs web utilitzen aquesta funció per oferir experiències immersives en pantalla completa independentment dels gestos de l'usuari</translation>
 <translation id="4900652253009739885">No es pot suprimir l'únic interruptor assignat a Selecciona. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Desplega les que s'han tancat recentment</translation>
 <translation id="4901309472892185668">Selecciona l'estat de l'experiment <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7166,6 +7173,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6517227424170598783">Vols suprimir la drecera <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />?</translation>
 <translation id="6517382055541687102">El dispositiu seleccionat ha canviat a <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet. Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE_AVAILABLE" /> disponibles.</translation>
+<translation id="651753338596587143">S'ha produït un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment. La desactivació de les actualitzacions pot afectar el teu dret de presentar reclamacions legals si tens cap problema.</translation>
 <translation id="6518014396551869914">Copia&amp; la imatge</translation>
 <translation id="6518133107902771759">Verifica</translation>
@@ -7613,6 +7621,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6847125920277401289">Allibera espai per continuar</translation>
 <translation id="6848388270925200958">En aquest moment tens targetes que només es poden fer servir en aquest dispositiu</translation>
 <translation id="6848716236260083778">Per configurar una impremta digital, fes que el teu fill toqui el sensor d'empremtes digitals. Les dades de l'empremta digital del teu fill s'emmagatzemen de manera segura i no surten mai del dispositiu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Icones de la barra d'eines</translation>
 <translation id="6850286078059909152">Color del text</translation>
 <translation id="6851181413209322061">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta opció de configuració. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google.</translation>
 <translation id="6851497530878285708">Aplicació activada</translation>
@@ -8370,6 +8379,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Precàrrega ampliada</translation>
 <translation id="7456847797759667638">Obre la ubicació...</translation>
+<translation id="7457027286267861992">No hi ha prou espai de disc. Allibera més espai de disc i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{1 enllaç}other{# enllaços}}</translation>
 <translation id="7458168200501453431">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que introdueixes al navegador s'envia a Google.</translation>
 <translation id="7458715171471938198">Vols restaurar les aplicacions?</translation>
@@ -10166,6 +10176,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8787752878731558379">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers</translation>
 <translation id="8791157330927639737">Més informació sobre les actualitzacions</translation>
 <translation id="8791534160414513928">Envia una sol·licitud "Do Not Track" amb el trànsit de navegació</translation>
+<translation id="8793390639824829328">Els llocs web utilitzen aquesta funció per desplaçar-se i fer zoom a les pestanyes compartides</translation>
 <translation id="879413103056696865">Mentre el punt d'accés Wi-Fi estigui activat, el telèfon <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Finestra nova</translation>
 <translation id="8796919761992612392">P&amp;ersonalitza Chrome</translation>
@@ -10657,6 +10668,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9150045010208374699">Utilitzar la càmera</translation>
 <translation id="9150079578948279438">No s'ha pogut suprimir el perfil. Torna-ho a provar o contacta amb el teu operador per rebre assistència tècnica.</translation>
 <translation id="9150860646299915960">Actualitza el contenidor de Linux</translation>
+<translation id="915112772806845021">Els llocs web utilitzen aquesta funció per entrar automàticament al mode d'imatge sobre imatge. Això et permet continuar mirant un vídeo i alliberar la pantalla per a altres tasques.</translation>
 <translation id="9151249085738989067">Canvia la veu de ChromeVox automàticament en funció de l'idioma</translation>
 <translation id="9151906066336345901">Fi</translation>
 <translation id="9153274276370926498">Informació del sistema de Lacros</translation>

@@ -786,7 +786,6 @@
 <translation id="2452098632681057184">पर्यावरण विज्ञान तथा वातावरण</translation>
 <translation id="2452837234288608067">यस सम्बन्धमा मद्दत गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2456755709261364512">तपाईंको ब्याट्री अनिवार्य रूपमा कम्तीमा पनि <ph name="REQUIRED_BATTERY_PRECENT" />% हुने गरी चार्ज गरिएको हुनु पर्छ</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> खोज्नुहोस्</translation>
 <translation id="2462932596748424101">सामाजिक सञ्जालहरू</translation>
 <translation id="2463739503403862330">पूर्ण जानकारी भर्नुहोस्</translation>
 <translation id="2465688316154986572">स्टिच</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलिकन्फ्रेन्सिङ</translation>
 <translation id="6753269504797312559">नीति मूल्य</translation>
+<translation id="6753390234084146956">ट्याब</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ले हाल्नुभएको जानकारी मेटाउनुहोस्</translation>
 <translation id="6754547388777247439">बचत खाताहरू</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@
 <translation id="8075588646978457437">सेलफ-एधेसिभ पेपर</translation>
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
-<translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोप्य फाइल अपलोड गर्ने हो?}other{गोप्य फाइलहरू अपलोड गर्ने हो?}}</translation>
 <translation id="8078141288243656252">घुमाइएका बेला एनोटेसन गर्न मिल्दैन</translation>
@@ -3720,7 +3719,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> मा भएको फाइल पठनीय छैन। यो हटाइएको, सारिएको हुनसक्छ, वा फाइल अनुमतिले पहुँचलाई रोकेको हुन सक्छ।</translation>
 <translation id="8153865548451212769">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा डाउनलोड गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा डाउनलोड गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="81563721597823545">हक्की उपकरण</translation>
-<translation id="815788908807586564">Gemini सँग च्याट गर्नुहोस्</translation>
 <translation id="8161095570253161196">ब्राउज गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8164078261547504572">मूल्य घट्दा इमेल प्राप्त गर्न चाहनुहुन्छ?</translation>

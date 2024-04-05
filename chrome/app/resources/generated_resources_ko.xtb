@@ -1077,6 +1077,7 @@
 <translation id="1795214765651529549">기본 테마 사용</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
+<translation id="1798335429200675510">텍스트 상자를 마우스 오른쪽 버튼으로 클릭하여 Google AI를 기반으로 초안을 작성하거나 기존 작업물을 다듬어 보세요. 현재는 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="180203835522132923">검색 + O를 누른 후 W</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
@@ -1473,6 +1474,7 @@
 <translation id="2088092308059522196">등록은 <ph name="DEVICE_OS" /> 설치 후에만 지원됩니다.</translation>
 <translation id="2088564884469682888">내장 TrackPoint</translation>
 <translation id="208928984520943006">언제든지 홈 화면으로 이동하려면 하단에서 위로 스와이프하세요.</translation>
+<translation id="2089550919269323883">기업 정책에 의해 <ph name="VM_NAME" /> 설치가 차단되었습니다. 시스템 관리자에게 문의하여 지원을 받으세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="2089925163047119068">또는</translation>
 <translation id="2090165459409185032">계정 정보를 복구하려면 google.com/accounts/recovery 페이지로 이동하세요.</translation>
 <translation id="2090507354966565596">로그인하면 자동으로 연결</translation>
@@ -1516,6 +1518,7 @@
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2113479184312716848">파일 열기(&amp;F)...</translation>
 <translation id="2113921862428609753">기관 정보 액세스</translation>
+<translation id="2114145607116268663">설치할 수 없습니다. 재부팅이 필요합니다. 컴퓨터를 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="2114326799768592691">프레임 새로고침(&amp;F)</translation>
 <translation id="2114413269775311385">Android 앱에서 계정을 사용합니다. <ph name="LINK_BEGIN" />앱 설정<ph name="LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
 <translation id="2114820389966440614">여기에서 '최근 하이라이트' 및 다른 추억을 확인하세요</translation>
@@ -2685,6 +2688,7 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2979893796619951531">사이트 제외</translation>
+<translation id="2981033191524548279">죄송합니다. 문제가 발생했습니다. 설명에 #bruschetta라고 기입하여 의견을 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다. 재부팅한 후 다시 시도하면 해결될 수도 있습니다.</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
@@ -4354,6 +4358,7 @@
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
+<translation id="4276856098224910511">설치할 수 없습니다. OS 업데이트가 대기 중입니다. 대기 중인 OS 업데이트를 적용하고 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{사이트 1개에서 권한이 삭제됨}other{사이트 {NUM_SITES}개에서 권한이 삭제됨}}</translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -4563,6 +4568,7 @@
 <translation id="4426490308207168518">의견 공유 또는 문제 신고</translation>
 <translation id="4426508677408162512">모든 북마크</translation>
 <translation id="4426513927906544654">콘텐츠 추천 받기</translation>
+<translation id="4426857487270413362">설치 프로그램 파일을 다운로드할 수 없습니다. 인터넷 연결을 확인하고 디스크 공간이 충분한지 확인한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4427365070557649936">확인 코드 확인 중…</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
@@ -5165,6 +5171,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4899696330053002588">광고 포함</translation>
 <translation id="490031510406860025">이 사이트에서 허용되지 않음</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" />Hz - 인터레이스됨</translation>
+<translation id="490056871160016482">사이트에서 이 기능을 사용하여 사용자 동작과 관계없이 몰입도 높은 전체 화면 환경을 제공합니다.</translation>
 <translation id="4900652253009739885">'선택'에 할당된 스위치가 1개이므로 삭제할 수 없습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="4901154724271753917">최근에 닫은 탭 펼치기</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요.</translation>
@@ -7184,6 +7191,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6517227424170598783">"<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />" 바로가기를 삭제하시겠습니까?</translation>
 <translation id="6517382055541687102">선택한 기기가 <ph name="DEVICE_NAME" />(으)로 변경됨</translation>
 <translation id="6517420300299531857">내 드라이브에 있는 파일이 Chromebook에 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다. <ph name="REQUIRED_SPACE" /> 정도가 사용됩니다. 현재 <ph name="FREE_SPACE_AVAILABLE" /> 사용 가능합니다</translation>
+<translation id="651753338596587143">죄송합니다. DLC 종속 항목을 설치하는 중에 문제가 발생했습니다. 재부팅해 보세요. 문제가 계속되면 설명에 #bruschetta라고 기입하여 의견을 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="6517709704288360414">기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다. 업데이트를 사용 중지하면 문제 발생 시 법적 소송을 제기할 권리에 영향이 있을 수도 있습니다.</translation>
 <translation id="6518014396551869914">이미지 복사(&amp;Y)</translation>
 <translation id="6518133107902771759">확인</translation>
@@ -7631,6 +7639,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6847125920277401289">계속하려면 여유 공간을 확보하세요</translation>
 <translation id="6848388270925200958">현재 이 기기에서만 사용할 수 있는 카드가 있습니다.</translation>
 <translation id="6848716236260083778">지문을 설정하려면 자녀가 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다</translation>
+<translation id="6849623577495734856">툴바 아이콘</translation>
 <translation id="6850286078059909152">텍스트 색상</translation>
 <translation id="6851181413209322061">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="6851497530878285708">앱 사용 설정됨</translation>
@@ -8387,6 +8396,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7456142309650173560">개발자</translation>
 <translation id="7456774706094330779">확장된 미리 로드</translation>
 <translation id="7456847797759667638">위치 열기...</translation>
+<translation id="7457027286267861992">디스크 공간이 충분하지 않습니다. 디스크 공간을 확보한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{링크 1개}other{링크 #개}}</translation>
 <translation id="7458168200501453431">Google 검색에서 사용되는 것과 동일한 맞춤법 검사기를 사용합니다. 브라우저에 입력하는 텍스트는 Google로 전송됩니다.</translation>
 <translation id="7458715171471938198">앱을 복원하시겠습니까?</translation>
@@ -10183,6 +10193,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8787752878731558379">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다.</translation>
 <translation id="8791157330927639737">업데이트 자세히 알아보기</translation>
 <translation id="8791534160414513928">탐색 트래픽과 함께 'Do Not Track' 요청 전송</translation>
+<translation id="8793390639824829328">사이트에서 이 기능을 사용하여 공유한 탭을 스크롤하고 확대/축소합니다</translation>
 <translation id="879413103056696865">핫스팟이 사용 설정되어 있는 동안 <ph name="PHONE_NAME" />이(가) 다음과 같이 작동함</translation>
 <translation id="8795916974678578410">새 창</translation>
 <translation id="8796919761992612392">Chrome 맞춤설정(&amp;U)</translation>
@@ -10674,6 +10685,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9150045010208374699">카메라 사용</translation>
 <translation id="9150079578948279438">프로필을 삭제할 수 없습니다. 다시 시도하거나 이동통신사에 기술 지원을 요청하세요.</translation>
 <translation id="9150860646299915960">Linux 컨테이너 업그레이드</translation>
+<translation id="915112772806845021">사이트에서는 이 기능을 사용하여 PIP 모드로 자동 전환합니다. 이렇게 하면 동영상을 계속 시청하면서 다른 작업을 위한 화면을 확보할 수 있습니다.</translation>
 <translation id="9151249085738989067">언어에 따라 자동으로 ChromeVox 음성을 전환합니다.</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9153274276370926498">Lacros 시스템 정보</translation>

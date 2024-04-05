@@ -48,6 +48,7 @@
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
 <translation id="1232610416724362657">वॉटरफ़ॉल</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
+<translation id="1252766349417594414">जॉयस्टिक</translation>
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1274654146705270731">संतरे</translation>
 <translation id="1275718070701477396">चयनित</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">समस्या की जांच के लिए ऐप्लिकेशन</translation>
 <translation id="175763766237925754">सिग्नल अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">दो बटनों के बीच तुरंत स्विच करें</translation>
 <translation id="1768959921651994223">पुष्टि करने का तरीका</translation>
 <translation id="1776228893584526149">वॉलपेपर का रंग</translation>
 <translation id="1777913922912475695">पुल</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">विशाल महासागर</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
+<translation id="2082932131694554252">असाइन किए गए कीबोर्ड बटन</translation>
 <translation id="2085089206770112532">डिसप्ले की रोशनी कम करने वाला बटन</translation>
 <translation id="2102231663024125441">टेक्स्ट में बदलाव करना</translation>
 <translation id="2105810540595158374">डिवाइस एक गेम कंट्रोलर है.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चुना गया</translation>
+<translation id="2645380101799517405">कंट्रोल</translation>
 <translation id="2652403576514495859">लिखवाने की सुविधा को चालू या टॉगल करता है</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2656001153562991489">Chromebook Plus के लिए खास तौर पर उपलब्ध</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">इस वॉलपेपर से जुड़े बेहतरीन नतीजे पाने के लिए, इसे चालू करें. इस सेटिंग को कभी भी बंद किया जा सकता है.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
 <translation id="2880569433548999039">क्लाउड फ़्लो स्क्रीन सेवर</translation>
+<translation id="2882230315487799269">एआई को दिया जाने वाला मैसेज पसंद के मुताबिक बनाएं</translation>
 <translation id="2888298276507578975">"धन्यवाद देने के लिए नोट लिखो" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="2890557891229184386">ट्रॉपिकल आइलैंड</translation>
 <translation id="2895772081848316509">डार्क</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="361575905210396100">आपके सुझाव, शिकायत या राय के लिए धन्यवाद</translation>
 <translation id="3621072146987826699">हाथी</translation>
+<translation id="3632040286124154621">सुझाव अच्छा है</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
+<translation id="3644695927181369554">खराब सुझाव</translation>
 <translation id="3651050199673793219">तापमान की इकाई चुनें</translation>
 <translation id="3661106764436337772">तेज़ी और आत्मविश्वास के साथ लिखें</translation>
 <translation id="3662461537616691585">बर्गंडी और मरून</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
 <translation id="3715651196924935218">फ़्लोट मोड से बाहर निकलें</translation>
+<translation id="3716250181321371108">कंट्रोल बनाएं</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
 <translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
+<translation id="3780740315729837296">कोई कीबोर्ड बटन असाइन करें</translation>
 <translation id="3784455785234192852">लॉक चालू है</translation>
 <translation id="3785643128701396311">पिक्सल आर्ट</translation>
 <translation id="3790109258688020991">पॉइंटिलिस्ट</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
+<translation id="3934185438132762746">असाइन नहीं किया गया <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3954678691475912818">डिवाइस किस तरह का है, इसके बारे में जानकारी नहीं है.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">इमेज डाउनलोड हो रही है</translation>
 <translation id="4063039537646912479">हल्के नीले</translation>
 <translation id="4070799384363688067">ऐनमे</translation>
+<translation id="4086271957099059213">कोई दूसरा कंट्रोल बनाएं</translation>
 <translation id="4091002263446255071">रोमैंटिक</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">सुरक्षित वाई-फ़ाई कनेक्शन</translation>
 <translation id="4650608062294027130">दाईं ओर का Shift बटन</translation>
 <translation id="4654549501020883054">रोज़ बदलें</translation>
+<translation id="4655868084888499342">इमेज को वॉलपेपर के तौर पर सेट किया गया</translation>
 <translation id="4661249927038176904">सरीयल</translation>
 <translation id="4664651912255946953">फ़र</translation>
 <translation id="4665014895760275686">निर्माता</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">फ़ायरवॉल हो सकता है</translation>
 <translation id="4691278870498629773">बंद हो गया - ट्रे नहीं है</translation>
 <translation id="469379815867856270">सिग्नल की क्षमता</translation>
+<translation id="4697260493945012995">कंट्रोल का टाइप चुनें</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4744944742468440486">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">एआई की मदद से बनाएं</translation>
 <translation id="6112878310391905610">इस सेटिंग को आपके एडमिन मैनेज करते हैं</translation>
 <translation id="6113701710518389813">अप ऐरो</translation>
+<translation id="6116005346231504406">पहला कंट्रोल बनाएं</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> के अलावा <ph name="NUMBER" /> और एल्बम</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS के इनपुट के तरीके से जुड़ी सेवा</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7144954474087165241">पगोडा</translation>
+<translation id="7147557737960578492">नया बटन चुनकर फिर से असाइन करें</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7154020516215182599">सुझाव, शिकायत या राय शेयर करें या अपनी समस्या के बारे में बताएं. अगर हो सके, तो अपनी समस्या के बारे में सिलसिलेवार तरीके से बताएं.</translation>
 <translation id="7155037718620478619">ज़्यादा एपीएन खोजें</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7344788170842919262">अर्थी</translation>
+<translation id="7346768383111016081">कीबोर्ड की मदद से गेम खेलने के लिए, उसमें कंट्रोल जोड़ें</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> में से <ph name="LIST_POSITION" /> खोज का नतीजा: <ph name="SEARCH_RESULT_TEXT" />. शॉर्टकट पर जाने के लिए, Enter दबाएं.</translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="73631062356239394">गड़बड़ी की जानकारी का डेटा शेयर करें</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>
 <translation id="8538236298648811558">Google के एआई की मदद से बनाए गए वॉलपेपर</translation>
+<translation id="8550364285433943656">कीबोर्ड के बटन इस्तेमाल करके गेम खेलने के लिए, कंट्रोल जोड़ें</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">अपने-आप पता लगने वाले एपीएन का इस्तेमाल करके, इस नेटवर्क से कनेक्ट नहीं किया जा सकता. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="9193744392140377127">एपीएन*</translation>
 <translation id="9204237731135241582">Android ऐप्लिकेशन से, गेटवे के साथ संपर्क नहीं किया जा सकता</translation>
+<translation id="921080052717160800">इमेज को कैमरे के बैकग्राउंड के तौर पर सेट किया गया</translation>
 <translation id="9211490828691860325">सभी डेस्क</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="939519157834106403">SSID</translation>

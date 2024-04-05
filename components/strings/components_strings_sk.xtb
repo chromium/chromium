@@ -183,6 +183,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="132301787627749051">Hľadať obrázok v schránke</translation>
 <translation id="1323433172918577554">Zobraziť viac</translation>
 <translation id="132390688737681464">Ukladať a dopĺňať adresy</translation>
+<translation id="1325412080783393306">Vyhľadajte ďalšie možnosti zakúpenia</translation>
 <translation id="1325749054628832887">Témy reklám sú len jednou z mnohých možností, pomocou ktorých môže web prispôsobovať reklamy. Aj keď nie sú témy reklám povolené, weby vám stále môžu zobrazovať reklamy, ktoré však môžu byť menej zaujímavé. Prečítajte si viac o <ph name="BEGIN_LINK" />správe ochrany súkromia pri reklamách<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Podať hlásenie</translation>
 <translation id="1330449323196174374">Obojstranná fazóna s otváraním doľava</translation>
@@ -785,7 +786,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2452098632681057184">Ekológia a životné prostredie</translation>
 <translation id="2452837234288608067">S týmto nevieme pomôcť. Skúste to znova.</translation>
 <translation id="2456755709261364512">Batéria musí byť nabitá aspoň na <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
-<translation id="2462599289530201834">Hľadať <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Sociálne siete</translation>
 <translation id="2463739503403862330">Vyplniť</translation>
 <translation id="2465688316154986572">Zošiť spinkou</translation>
@@ -1188,6 +1188,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3286372614333682499">na výšku</translation>
 <translation id="3287510313208355388">Stiahnuť po obnovení pripojenia</translation>
 <translation id="3288238092761586174"><ph name="URL" /> môže vykonať ďalšie kroky na overenie vašej platby</translation>
+<translation id="3289578402369490638">Z iných obchodov na internete</translation>
 <translation id="3293642807462928945">Ďalšie informácie o pravidle <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Čítanie a správa hesiel v nastaveniach Chromu</translation>
 <translation id="3299098170013242198">Funkcia Windows Hello je zapnutá na vypĺňanie hesiel</translation>
@@ -2966,6 +2967,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencie</translation>
 <translation id="6753269504797312559">Hodnota pravidla</translation>
+<translation id="6753390234084146956">karty</translation>
 <translation id="6753434778807740853">Odstrániť záznam <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sporiace účty</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3676,7 +3678,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8075588646978457437">Samolepiaci papier</translation>
 <translation id="8075736640322370409">Rýchlo vytvoriť novú tabuľku Google</translation>
 <translation id="8075898834294118863">Spravovať nastavenia webov</translation>
-<translation id="8076492880354921740">Karty</translation>
 <translation id="8077669823243888800">Čínska obálka č. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Chcete nahrať dôverný súbor?}few{Chcete nahrať dôverné súbory?}many{Upload confidential files?}other{Chcete nahrať dôverné súbory?}}</translation>
 <translation id="8078141288243656252">Po otočení dokumentu nie je anotácia možná</translation>
@@ -3715,7 +3716,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8150722005171944719">Súbor na adrese <ph name="URL" /> nie je možné prečítať. Je možné, že bol odstránený, presunutý alebo môžu v prístupe brániť povolenia súboru.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pravidlá správcu stiahnutie tohto súboru do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu stiahnutie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}other{Pravidlá správcu stiahnutie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="81563721597823545">Hokejové vybavenie</translation>
-<translation id="815788908807586564">Čet s Gemini</translation>
 <translation id="8161095570253161196">Pokračovať v prehliadaní</translation>
 <translation id="8163866351304776260">Štyri dierky vľavo</translation>
 <translation id="8164078261547504572">Chcete dostávať správy pri poklesoch cien?</translation>

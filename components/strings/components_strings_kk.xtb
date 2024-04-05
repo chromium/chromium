@@ -183,6 +183,7 @@
 <translation id="132301787627749051">Буфер кескінін іздеу</translation>
 <translation id="1323433172918577554">Толығырақ</translation>
 <translation id="132390688737681464">Мекенжайларды сақтау және толтыру</translation>
+<translation id="1325412080783393306">Басқа сатып алу опцияларын іздеу</translation>
 <translation id="1325749054628832887">Жарнама тақырыптары — сайт жарнамаларды жекелендіру үшін қолдана алатын көп нәрсенің бірі ғана. Бұл тақырыптар болмаса да, сайттарда сізге жарнамалар көрсетіле береді, бірақ олар сізге қызықсыз болуы мүмкін. <ph name="BEGIN_LINK" />Жарнамадағы құпиялықты басқару<ph name="LINK_END" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="1329916999021038454">Есепті жіберу</translation>
 <translation id="1330449323196174374">Сол жағын қақпа тәрізді бүктеу</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">Экология және қоршаған орта</translation>
 <translation id="2452837234288608067">Ештеңе шықпады. Қайталап көріңіз.</translation>
 <translation id="2456755709261364512">Батареяңыз <ph name="REQUIRED_BATTERY_PRECENT" />%-дан аса зарядталуы қажет</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> іздеу</translation>
 <translation id="2462932596748424101">Әлеуметтік желілер</translation>
 <translation id="2463739503403862330">Толтыру</translation>
 <translation id="2465688316154986572">Қапсыру</translation>
@@ -1190,6 +1190,7 @@
 <translation id="3286372614333682499">портреттік</translation>
 <translation id="3287510313208355388">Онлайн болған кезде жүктеп алу</translation>
 <translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
+<translation id="3289578402369490638">Интернеттегі басқа дүкендерден</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
 <translation id="3299098170013242198">Құпия сөздерді толтыру үшін Windows Hello қосулы.</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Саясат мәні</translation>
+<translation id="6753390234084146956">қойындылар</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> жазбасын жою</translation>
 <translation id="6754547388777247439">Жинақ шоттары</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">Өздігінен жабысатын қағаз</translation>
 <translation id="8075736640322370409">Жаңа Google парағын жылдам жасау</translation>
 <translation id="8075898834294118863">Сайт параметрлерін басқару</translation>
-<translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8077669823243888800">Chinese #8 хатқалтасы</translation>
 <translation id="8078006011486731853">{0,plural, =1{Құпия файлды жүктеп салу керек пе?}other{Құпия файлдарды жүктеп салу керек пе?}}</translation>
 <translation id="8078141288243656252">Құжат бұрылып тұрғанда, аннотация қосу мүмкін емес.</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> сілтемесіндегі файл оқылмайды. Ол жойылған, көшірілген болуы немесе файл рұқсаттары кедергі болуы мүмкін.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}}</translation>
 <translation id="81563721597823545">Хоккей жабдығы</translation>
-<translation id="815788908807586564">Gemini-мен чатта сөйлесу</translation>
 <translation id="8161095570253161196">Шолуды жалғастыру</translation>
 <translation id="8163866351304776260">Сол жағын төрт рет тесу</translation>
 <translation id="8164078261547504572">Баға төмендеген кезде электрондық хаттар алғыңыз келе ме?</translation>

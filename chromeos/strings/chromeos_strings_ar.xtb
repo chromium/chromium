@@ -48,6 +48,7 @@
 <translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
 <translation id="1232610416724362657">شلّال</translation>
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
+<translation id="1252766349417594414">ذراع التحكّم</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1274654146705270731">برتقال</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
 <translation id="175763766237925754">إشارة جيدة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">تبديل المفاتيح بسرعة</translation>
 <translation id="1768959921651994223">نوع المصادقة</translation>
 <translation id="1776228893584526149">الدرجة اللونية للخلفية</translation>
 <translation id="1777913922912475695">جسر</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
 <translation id="2073232437457681324">محيط شاسع</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
+<translation id="2082932131694554252">مفتاح لوحة المفاتيح المخصَّص</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
 <translation id="2102231663024125441">تعديل النص</translation>
 <translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="2645380101799517405">عناصر التحكّم</translation>
 <translation id="2652403576514495859">تفعيل ميزة "إملاء" أو إيقافها</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2656001153562991489">‏حصريًا لأجهزة Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">يمكنك تفعيل هذا الوضع للحصول على أفضل النتائج باستخدام هذه الخلفية. ويمكنك إيقاف هذا الإعداد في أي وقت.</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="2880569433548999039">شاشة استراحة تعرض منظرًا انسيابيًا للسُحب</translation>
+<translation id="2882230315487799269">‏تخصيص الطلب المستنِد إلى الذكاء الاصطناعي (AI)</translation>
 <translation id="2888298276507578975">أدخِل طلبًا، مثل "كتابة رسالة شكر"</translation>
 <translation id="2890557891229184386">جزيرة استوائية</translation>
 <translation id="2895772081848316509">داكنة</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
 <translation id="361575905210396100">شكرًا على ملاحظاتك</translation>
 <translation id="3621072146987826699">أفيال</translation>
+<translation id="3632040286124154621">اقتراح جيد</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
+<translation id="3644695927181369554">اقتراح غير مناسب</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
 <translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
 <translation id="3662461537616691585">الخمريّ والكستنائي</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
 <translation id="3715651196924935218">الخروج من النافذة العائمة</translation>
+<translation id="3716250181321371108">إنشاء عنصر تحكُّم</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
 <translation id="3771294271822695279">ملفات فيديو</translation>
+<translation id="3780740315729837296">تخصيص أحد مفاتيح لوحة المفاتيح</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="3785643128701396311">فن البكسل</translation>
 <translation id="3790109258688020991">فن الرسم التنقيطي</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">أخذ لقطة شاشة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> غير مخصَّص</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
 <translation id="3954678691475912818">نوع الجهاز غير معروف.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">جارٍ تنزيل الصورة</translation>
 <translation id="4063039537646912479">أزرق فاتح</translation>
 <translation id="4070799384363688067">رسوم متحركة</translation>
+<translation id="4086271957099059213">إنشاء عنصر تحكُّم آخر</translation>
 <translation id="4091002263446255071">رومانسي</translation>
 <translation id="4093865285251893588">صورة الملف الشخصي</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
 <translation id="4650608062294027130">‏المفتاح Shift الأيمن</translation>
 <translation id="4654549501020883054">التغيير يوميًا</translation>
+<translation id="4655868084888499342">تم ضبط الصورة كخلفية</translation>
 <translation id="4661249927038176904">سريالي</translation>
 <translation id="4664651912255946953">الفَرْو</translation>
 <translation id="4665014895760275686">جهة التصنيع</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">تم الاشتباه في جدار حماية.</translation>
 <translation id="4691278870498629773">توقّفت الطابعة - دُرج الورق غير متوفّر</translation>
 <translation id="469379815867856270">قوة الإشارة</translation>
+<translation id="4697260493945012995">اختيار نوع عنصر التحكُّم</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">إنشاء باستخدام الذكاء الاصطناعي</translation>
 <translation id="6112878310391905610">يتولّى المشرفون إدارة هذا الإعداد.</translation>
 <translation id="6113701710518389813">السهم المتّجه للأعلى</translation>
+<translation id="6116005346231504406">إنشاء عنصر التحكُّم الأول</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، بالإضافة إلى <ph name="NUMBER" /> ألبوم آخر</translation>
 <translation id="6122191549521593678">متصل</translation>
 <translation id="6122277663991249694">‏خدمة أساليب الإدخال لنظام التشغيل Chrome</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7144954474087165241">معبد هندي</translation>
+<translation id="7147557737960578492">أعِد التخصيص من خلال اختيار مفتاح جديد</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7154020516215182599">يُرجى إخبارنا بملاحظاتك وآرائك أو توضيح مشكلتك. يُرجى تضمين خطوات إعادة إظهار المشكلة، إن أمكن.</translation>
 <translation id="7155037718620478619">‏استكشاف المزيد من أسماء نقاط الوصول (APN)</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7344788170842919262">ترابية</translation>
+<translation id="7346768383111016081">تحكَّم في اللعبة باستخدام لوحة المفاتيح</translation>
 <translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. اضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="73631062356239394">مشاركة بيانات التشخيص</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">لتقديم الشاي</translation>
 <translation id="8538236298648811558">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
+<translation id="8550364285433943656">تحكَّم في اللعبة باستخدام لوحة المفاتيح</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">‏يتعذّر الاتصال بهذه الشبكة باستخدام أسماء نقاط الوصول (APN) التي يتم رصدها تلقائيًا. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>
 <translation id="9193744392140377127">‫APN*‎</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>
+<translation id="921080052717160800">تم ضبط الصورة كخلفية للكاميرا</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>

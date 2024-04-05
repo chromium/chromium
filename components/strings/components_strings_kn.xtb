@@ -786,7 +786,6 @@
 <translation id="2452837234288608067">ಈ ಕುರಿತು ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2456755709261364512">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯು <ph name="REQUIRED_BATTERY_PRECENT" />%
  % ಗಿಂತ ಹೆಚ್ಚು ಚಾರ್ಜ್ ಆಗಿರಬೇಕು</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="2462932596748424101">ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="2463739503403862330">ಭರ್ತಿ ಮಾಡು</translation>
 <translation id="2465688316154986572">ಸ್ಟೇಪಲ್ ಮಾಡಿ</translation>
@@ -2970,6 +2969,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ಟೆಲಿಕಾನ್ಫರೆನ್ಸಿಂಗ್</translation>
 <translation id="6753269504797312559">ನೀತಿ ಮೌಲ್ಯ</translation>
+<translation id="6753390234084146956">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ನಮೂದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6754547388777247439">ಉಳಿತಾಯ ಖಾತೆಗಳು</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3679,7 +3679,6 @@
 <translation id="8075588646978457437">ಸ್ವಯಂ-ಅಂಟಿಕೊಳ್ಳುವ ಕಾಗದ</translation>
 <translation id="8075736640322370409">ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="8075898834294118863">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8077669823243888800">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}}</translation>
 <translation id="8078141288243656252">ಡಾಕ್ಯುಮೆಂಟ್‌ ಅನ್ನು ತಿರುಗಿಸಿದಾಗ ಟಿಪ್ಪಣಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -3718,7 +3717,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> ನಲ್ಲಿನ ಫೈಲ್ ಓದುವಂತಿರುವುದಿಲ್ಲ. ಇದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು, ಚಲಿಸಬಹುದು, ಅಥವಾ ಫೈಲ್ ಅನುಮತಿಗಳು ಪ್ರವೇಶವನ್ನು ತಡೆಗಟ್ಟುತ್ತಿರಬಹುದು.</translation>
 <translation id="8153865548451212769">{0,plural, =1{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್ ಅನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="81563721597823545">ಹಾಕಿ ಉಪಕರಣ</translation>
-<translation id="815788908807586564">Gemini ಜೊತೆ ಚಾಟ್ ಮಾಡಿ</translation>
 <translation id="8161095570253161196">ಬ್ರೌಸ್ ಮಾಡುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="8163866351304776260">ಎಡಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="8164078261547504572">ಬೆಲೆಗಳು ಕುಸಿತವಾದಾಗ ಇಮೇಲ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಬೇಕೇ?</translation>

@@ -151,6 +151,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3100998948628680988">Upe wasifu wako wa Chrome jina</translation>
 <translation id="3112458742631356345">Chrome imezuia upakuaji huu kwa sababu faili hii kwa kawaida haipakuliwi na huenda si salama</translation>
 <translation id="3114643501466072395">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome imezuia upakuaji huu kwa sababu faili iliyo kwenye kumbukumbu inajumuisha faili nyingine ambazo huenda zimeficha programu hasidi</translation>
 <translation id="3140883423282498090">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua Google Chrome.</translation>
 <translation id="3149510190863420837">Programu za Chrome</translation>
 <translation id="3169523567916669830">Vipindi vya kujaribu vinapotumika, unaweza kuona na kuondoa mada za tovuti zinazokuvutia zinazotumika kukuonyesha matangazo. Chrome hukadiria mambo yanayokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni.</translation>
@@ -221,6 +222,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4334294535648607276">Upakuaji umekamilika.</translation>
 <translation id="4335235004908507846">Chrome inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, viendelezi vibaya na zaidi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> imeongezwa kwenye Chrome</translation>
+<translation id="436060642166082913">Chrome imezuia upakuaji huu kwa sababu faili inaweza kuathiri akaunti zako binafsi na za mitandao ya kijamii</translation>
 <translation id="4384570495110188418">Chrome imeshindwa kukagua manenosiri yako kwa sababu hujaingia katika akaunti</translation>
 <translation id="4389991535395284064">Unapovinjari katika hali fiche, Chrome itakutahadharisha kabla ya kupakia tovuti kwa kutumia muunganisho usio salama</translation>
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
@@ -476,6 +478,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="873133009373065397">Google Chrome haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="8765470054473112089">Unapoandika kwenye sehemu ya anwani au kisanduku cha kutafutia, Chrome hutuma unachokiandika kwenye mtambo wako chaguomsingi wa kutafuta ili upate mapendekezo bora. Kipengele hiki huwa kimezimwa katika Hali fiche.</translation>
 <translation id="878572486461146056">Hitilafu ya kisakinishaji: Msimamizi wa mtandao wako ameweka Sera ya Jumla inayozuia usakinishaji: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome imezuia upakuaji huu kwa sababu faili inaweza kuathiri akaunti zako binafsi na za mitandao ya kijamii, ikijumuisha <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 ni mtambo wa JavaScript na WebAssembly wa Chrome unaotumika kuboresha utendaji wa tovuti</translation>
 <translation id="8821043148920470810">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo la Windows 7.</translation>
 <translation id="8823341990149967727">Toleo hili la Chrome Limepitwa na Wakati</translation>

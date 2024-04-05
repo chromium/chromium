@@ -1066,6 +1066,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1795214765651529549">Klassiek thema gebruiken</translation>
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1797117170091578105">Speel met het toetsenbord van je Chromebook. Je kunt toetsen aan specifieke acties toewijzen.</translation>
+<translation id="1798335429200675510">Klik met de rechtermuisknop in een tekstvak om een concept te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google. Deze functie is op dit moment beperkt beschikbaar.</translation>
 <translation id="180203835522132923">Zoeken + O, dan W</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
@@ -1460,6 +1461,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2088092308059522196">Inschrijving wordt alleen ondersteund nadat je <ph name="DEVICE_OS" /> hebt geïnstalleerd.</translation>
 <translation id="2088564884469682888">Geïntegreerde TrackPoint</translation>
 <translation id="208928984520943006">Je kunt het startscherm op elk moment openen door vanaf de onderkant omhoog te swipen.</translation>
+<translation id="2089550919269323883"><ph name="VM_NAME" /> installeren wordt geblokkeerd door het bedrijfsbeleid. Neem contact op met je systeembeheerder voor support. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">OF</translation>
 <translation id="2090165459409185032">Als je je accountgegevens wilt herstellen, ga je naar: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Maakt automatisch verbinding als je inlogt</translation>
@@ -1503,6 +1505,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="21133533946938348">Tabblad vastzetten</translation>
 <translation id="2113479184312716848">Bestand &amp;openen...</translation>
 <translation id="2113921862428609753">Toegang tot CA-gegevens</translation>
+<translation id="2114145607116268663">Kan niet installeren. Opnieuw opstarten is vereist. Start je computer opnieuw op en probeer het nogmaals. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">&amp;Frame opnieuw laden</translation>
 <translation id="2114413269775311385">Dit account gebruiken met Android-apps. Je kunt rechten voor Android-apps beheren via de <ph name="LINK_BEGIN" />instellingen voor apps<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Nieuwe highlights en andere herinneringen hier bekijken</translation>
@@ -2668,6 +2671,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2979893796619951531">Site uitsluiten</translation>
+<translation id="2981033191524548279">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />. Je kunt dit probleem misschien oplossen door opnieuw op te starten en het nogmaals te proberen.</translation>
 <translation id="2981113813906970160">Grote cursor bekijken</translation>
 <translation id="2983102365694924129">Gebaseerd op je activiteit op een site. Deze instelling staat uit.</translation>
 <translation id="2983373101216420412">Batterijniveau case: <ph name="PERCENTAGE" />%.</translation>
@@ -4338,6 +4342,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4275397969489577657">Registratie van gebeurtenisstream aanzetten</translation>
 <translation id="4275788652681621337">Zijvenster sluiten</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
+<translation id="4276856098224910511">Kan niet installeren. OS-update is in behandeling. Pas eventuele OS-updates toe die in behandeling zijn, start het apparaat opnieuw op en probeer het nogmaals. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-configuratiebron</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor {NUM_SITES} sites}}</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -4547,6 +4552,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4426490308207168518">Feedback delen of een probleem melden</translation>
 <translation id="4426508677408162512">Alle bookmarks</translation>
 <translation id="4426513927906544654">Contentaanbevelingen krijgen</translation>
+<translation id="4426857487270413362">Kan installatiebestanden niet downloaden. Check je internetverbinding en of je voldoende vrije schijfruimte hebt en probeer het nogmaals. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4427365070557649936">Bevestigingscode verifiëren...</translation>
 <translation id="4429163740524851942">Indeling van fysiek toetsenbord</translation>
@@ -5147,6 +5153,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4899696330053002588">Bevat advertenties</translation>
 <translation id="490031510406860025">Niet toegestaan op deze site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - geïnterlinieerd</translation>
+<translation id="490056871160016482">Sites gebruiken deze functie om een uitgebreide functionaliteit op volledig scherm te bieden, ongeacht de gebaren van gebruikers</translation>
 <translation id="4900652253009739885">Kan niet de enige schakelaar verwijderen die is toegewezen aan de actie Selecteren. Druk op een toets om te <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Recent gesloten tabbladen uitvouwen</translation>
 <translation id="4901309472892185668">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7162,6 +7169,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6517227424170598783">Snelkoppeling <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> verwijderen?</translation>
 <translation id="6517382055541687102">Het geselecteerde apparaat is gewijzigd in <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen. Hiervoor wordt ongeveer <ph name="REQUIRED_SPACE" /> gebruikt. Je hebt op dit moment <ph name="FREE_SPACE_AVAILABLE" /> beschikbaar.</translation>
+<translation id="651753338596587143">Er is iets misgegaan bij het installeren van DLC-afhankelijkheden. Start opnieuw op. Als het probleem aanhoudt, dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Je apparaat werkt misschien niet meer goed en je kunt beveiligings- en prestatieproblemen ondervinden. Als je updates uitzet, kan dit ook van invloed zijn op je recht op juridische eisen als je problemen ondervindt.</translation>
 <translation id="6518014396551869914">A&amp;fbeelding kopiëren</translation>
 <translation id="6518133107902771759">Controleren</translation>
@@ -7609,6 +7617,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6847125920277401289">Maak ruimte vrij om door te gaan</translation>
 <translation id="6848388270925200958">Je hebt momenteel enkele passen die alleen op dit apparaat kunnen worden gebruikt</translation>
 <translation id="6848716236260083778">Laat je kind de vingerafdruksensor aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="6849623577495734856">Werkbalkiconen</translation>
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="6851181413209322061">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="6851497530878285708">App staat aan</translation>
@@ -8364,6 +8373,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Uitgebreid vooraf laden</translation>
 <translation id="7456847797759667638">Open locatie...</translation>
+<translation id="7457027286267861992">Er is onvoldoende schijfruimte. Maak wat meer schijfruimte vrij en probeer het opnieuw. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{een link}other{# links}}</translation>
 <translation id="7458168200501453431">Gebruikt dezelfde spellingcontrole als voor Google Zoeken. In de browser ingevoerde tekst wordt naar Google gestuurd.</translation>
 <translation id="7458715171471938198">Apps herstellen?</translation>
@@ -10158,6 +10168,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8787752878731558379">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan</translation>
 <translation id="8791157330927639737">Meer informatie over updaten</translation>
 <translation id="8791534160414513928">Een verzoek voor 'Do Not Track' met je browseverkeer verzenden</translation>
+<translation id="8793390639824829328">Sites gebruiken deze functie om te scrollen en te zoomen op gedeelde tabbladen</translation>
 <translation id="879413103056696865">Wanneer de hotspot aanstaat, doet je <ph name="PHONE_NAME" /> het volgende:</translation>
 <translation id="8795916974678578410">Nieuw venster</translation>
 <translation id="8796919761992612392">Chrome &amp;personaliseren</translation>
@@ -10345,7 +10356,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8940081510938872932">Je computer voert op dit moment te veel acties tegelijk uit. Probeer het later opnieuw.</translation>
 <translation id="8940381019874223173">Uit je Google Foto's</translation>
-<translation id="8940888110818450052">Opties voor inloggen</translation>
+<translation id="8940888110818450052">Inlogopties</translation>
 <translation id="8941173171815156065">Het recht '<ph name="PERMISSION" />' intrekken</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> staat uit</translation>
 <translation id="894191600409472540">Maak sterke wachtwoorden</translation>
@@ -10649,6 +10660,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9150045010208374699">Je camera gebruiken</translation>
 <translation id="9150079578948279438">Kan profiel niet verwijderen. Probeer het opnieuw of neem contact op met je provider voor technische support.</translation>
 <translation id="9150860646299915960">Je Linux-container upgraden</translation>
+<translation id="915112772806845021">Sites gebruiken deze instelling om scherm-in-scherm automatisch te openen. Zo kun je een video blijven bekijken en maak je je scherm vrij voor andere taken.</translation>
 <translation id="9151249085738989067">ChromeVox-stem automatisch wijzigen op basis van taal</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros-systeeminformatie</translation>

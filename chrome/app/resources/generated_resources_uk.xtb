@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1029317248976101138">Збільшити</translation>
 <translation id="1029526375103058355">Торкнутися, щоб натиснути</translation>
+<translation id="1029724557649700742">Нові функції з’являться, щойно стануть доступними. Наявність функцій залежить від пристрою.</translation>
 <translation id="1031362278801463162">Завантаження попереднього перегляду</translation>
 <translation id="1032605640136438169">Перегляньте нові правила</translation>
 <translation id="103279545524624934">Щоб запускати додатки Android, звільніть місце на диску.</translation>
@@ -1573,6 +1574,7 @@
 <translation id="2155473371917268529">Поточне налаштування видимості: "Ваші пристрої"</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Синтаксис Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Дозволено змінювати масштаб і прокручувати вміст вкладок, які демонструються</translation>
 <translation id="2156877321344104010">Запустити перевірку безпеки знову</translation>
 <translation id="2157474325782140681">Щоб отримати додаткові функції, використовуйте док-станцію Dell, розроблену для цього комп'ютера Chromebook.</translation>
 <translation id="215753907730220065">Вийти з повноекранного режиму</translation>
@@ -1994,6 +1996,7 @@
 <translation id="2459706890611560967">Відновити трансляцію вкладки на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2460356425461033301">Створюйте резервні копії даних веб-переглядача й використовуйте їх на будь-якому пристрої</translation>
 <translation id="2460482211073772897">В інших папках</translation>
+<translation id="2461550163693930491">Заборонити сайтам змінювати масштаб і прокручувати вміст вкладок, які демонструються</translation>
 <translation id="2461593638794842577">Щоб зберігати паролі лише на поточному пристрої, вимкніть це налаштування</translation>
 <translation id="2462332841984057083">Додаток Steam уже налаштовується. Зачекайте, доки цей процес завершиться.</translation>
 <translation id="2462724976360937186">Ідентифікатор ключа центру сертифікації</translation>
@@ -2027,6 +2030,7 @@
 <translation id="2482895651873876648">Вкладку переміщено в групу "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Укажіть пошукову систему в налаштуваннях веб-переглядача Chrome</translation>
 <translation id="2483698983806594329">Завантажено неперевірений файл</translation>
+<translation id="2484574361686148760">Оновити інформацію про клієнтів Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Вилучити дозвіл на доступ</translation>
 <translation id="2484909293434545162">Якщо сайт використовує файли cookie, він з’явиться тут</translation>
 <translation id="2484959914739448251">Щоб очистити дані веб-перегляду на всіх синхронізованих пристроях і в обліковому записі Google, <ph name="BEGIN_LINK" />введіть парольну фразу<ph name="END_LINK" />.</translation>
@@ -2220,6 +2224,7 @@
 <translation id="2629227353894235473">Розробка додатків для Android</translation>
 <translation id="2629437048544561682">Очистити Полотно</translation>
 <translation id="2631498379019108537">Показувати опції введення на панелі запуску</translation>
+<translation id="2632176111713971407">Сайти можуть запитувати дозвіл на зміну масштабу й прокручування вмісту вкладок, які демонструються</translation>
 <translation id="2633212996805280240">Видалити "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> не вдалося завершити встановлення, але він продовжить працювати, використовуючи своє зображення диска.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3879,6 +3884,7 @@
 <translation id="3900966090527141178">Експортувати паролі</translation>
 <translation id="3902789559055749153">Виберіть спосіб, у який ви хочете створити ключ доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Вбудована клавіатура</translation>
+<translation id="3903696968689283281">Інформація про власників Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Геолокація</translation>
 <translation id="3905761538810670789">Відновити додаток</translation>
 <translation id="3908288065506437185">Заборонити сторонні файли cookie в режимі анонімного перегляду</translation>
@@ -4533,6 +4539,7 @@
 <translation id="4409697491990005945">Поля</translation>
 <translation id="4409779593816003679">Паролі й автозаповнення</translation>
 <translation id="4410545552906060960">Використовуйте для розблокування пристрою число (PIN-код) замість пароля. Щоб установити PIN-код пізніше, перейдіть в налаштування.</translation>
+<translation id="4411344321892622527">Заборонено змінювати масштаб і прокручувати вміст вкладок, які демонструються</translation>
 <translation id="4411578466613447185">Підписувач коду</translation>
 <translation id="4411719918614785832">Ці ключі доступу зберігаються у Windows Hello на цьому комп’ютері, а не у вашому обліковому записі Google.</translation>
 <translation id="4412544493002546580">Повторіть спробу або виберіть один із варіантів нижче.</translation>
@@ -6873,6 +6880,7 @@
 <translation id="6257602895346497974">Увімкнути синхронізацію…</translation>
 <translation id="625827534921607067">Якщо доступно кілька мереж, до яких ви раніше підключалися або які налаштовували, використовуватиметься ця мережа</translation>
 <translation id="62586649943626337">Упорядковуйте вкладки в групах</translation>
+<translation id="6259776178973198997">Оновити інформацію про власників Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
 <translation id="6263082573641595914">Версія ЦС Microsoft</translation>
 <translation id="6263284346895336537">Не вирішальні</translation>
@@ -7578,6 +7586,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> неможливо запустити з кореневого каталогу.</translation>
 <translation id="6812841287760418429">Залишити зміни</translation>
 <translation id="6813907279658683733">Увесь екран</translation>
+<translation id="6814754908910736855">Інформація про клієнтів Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Усе одно відкрити</translation>
 <translation id="6815787852028615386">Цей файл оманливий і може вносити неочікувані зміни на вашому пристрої</translation>
 <translation id="6816097980753839617">Синьо-жовтий (тританомалія)</translation>
@@ -8446,6 +8455,7 @@
 <translation id="7501957181231305652">або</translation>
 <translation id="7502220299952823578">Додати до списку "Ніколи не закривати ці сайти"</translation>
 <translation id="7502528909759062987">Призупинити трансляцію вкладки на пристрій "<ph name="DEVICE_NAME" />"</translation>
+<translation id="7502804472671406749">Ви можете прокручувати вкладки, які демонструються, і змінювати їх масштаб</translation>
 <translation id="7503191893372251637">Тип сертифіката Netscape</translation>
 <translation id="7503985202154027481">На ключі безпеки збережеться запис, що ви відвідували цей сайт.</translation>
 <translation id="7504145862399276792">Звук на цій вкладці вимкнено</translation>
@@ -10787,6 +10797,7 @@
 <translation id="949807244219288032">Цю вкладку підключено до пристрою HID</translation>
 <translation id="950079950995628542">З телефона "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Посібник із налаштування</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Установив адміністратор.</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="952471655966876828">Пристрій підключиться автоматично, якщо його ввімкнути й використовувати</translation>
 <translation id="953434574221655299">Можуть знати, коли ви активно використовуєте пристрій</translation>

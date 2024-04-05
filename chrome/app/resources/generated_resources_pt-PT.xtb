@@ -1066,6 +1066,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1795214765651529549">Usar tema clássico</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Pode personalizar as teclas para ações específicas.</translation>
+<translation id="1798335429200675510">Clique com o botão direito do rato numa caixa de texto para criar um rascunho ou refinar um trabalho existente com tecnologia de IA da Google. Atualmente, tem disponibilidade limitada.</translation>
 <translation id="180203835522132923">Pesquisa + O e, em seguida, W</translation>
 <translation id="1802624026913571222">Suspender quando a tampa for fechada</translation>
 <translation id="1802687198411089702">A página não responde. Pode esperar pela resposta ou sair.</translation>
@@ -1460,6 +1461,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2088092308059522196">A inscrição só é suportada após a instalação do <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint incorporado</translation>
 <translation id="208928984520943006">Para aceder ao ecrã principal em qualquer altura, deslize rapidamente para cima a partir da parte inferior.</translation>
+<translation id="2089550919269323883">A instalação de <ph name="VM_NAME" /> foi bloqueada pela política da empresa. Contacte o administrador de sistemas para receber apoio. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">OU</translation>
 <translation id="2090165459409185032">Para recuperar a sua informação da conta, aceda a google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Estabelece ligação automaticamente quando inicia sessão</translation>
@@ -1503,6 +1505,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="21133533946938348">Fixar Separador</translation>
 <translation id="2113479184312716848">Abrir &amp;Ficheiro...</translation>
 <translation id="2113921862428609753">Acesso a informações sobre autoridade</translation>
+<translation id="2114145607116268663">Não é possível instalar. É necessário reiniciar. Reinicie o computador e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
 <translation id="2114413269775311385">Utilize esta conta com as apps Android. Pode controlar as autorizações das apps Android nas <ph name="LINK_BEGIN" />Definições de apps<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">Veja "Destaques recentes" e outras memórias aqui</translation>
@@ -2669,6 +2672,7 @@ Quer pará-lo?</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="2979639724566107830">Abrir numa nova janela</translation>
 <translation id="2979893796619951531">Excluir site</translation>
+<translation id="2981033191524548279">Desculpe, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />. Este problema pode ser corrigido reiniciando e tentando novamente.</translation>
 <translation id="2981113813906970160">Mostrar cursor grande do rato</translation>
 <translation id="2983102365694924129">Com base na sua atividade num site. Esta definição está desativada.</translation>
 <translation id="2983373101216420412">Nível da bateria da caixa: <ph name="PERCENTAGE" />%.</translation>
@@ -4340,6 +4344,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
 <translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
+<translation id="4276856098224910511">Não é possível instalar. A atualização do SO está pendente. Aplique as atualizações do SO pendentes, reinicie e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Origem da configuração XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Autorizações removidas de 1 site}other{Autorizações removidas de {NUM_SITES} sites}}</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -4549,6 +4554,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4426490308207168518">Partilhe feedback ou comunique um problema</translation>
 <translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4426513927906544654">Receber recomendações de conteúdo</translation>
+<translation id="4426857487270413362">Não é possível transferir os ficheiros de instalação. Verifique a sua ligação à Internet, se tem espaço livre em disco suficiente e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4427365070557649936">A validar o código de validação…</translation>
 <translation id="4429163740524851942">Esquema de teclado físico</translation>
@@ -5150,6 +5156,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4899696330053002588">Contém anúncios</translation>
 <translation id="490031510406860025">Não permitido neste site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – entrelaçado</translation>
+<translation id="490056871160016482">Os sites usam esta funcionalidade para oferecer experiências de ecrã inteiro envolvente, independentemente dos gestos do utilizador</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído a "Selecionar". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Expanda os fechados recentemente</translation>
 <translation id="4901309472892185668">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />.</translation>
@@ -7170,6 +7177,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6517227424170598783">Remover o atalho "<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />"?</translation>
 <translation id="6517382055541687102">O dispositivo selecionado foi alterado para <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet. Vai usar cerca de <ph name="REQUIRED_SPACE" />. Atualmente, tem <ph name="FREE_SPACE_AVAILABLE" /> de espaço disponível.</translation>
+<translation id="651753338596587143">Desculpe, mas algo correu mal ao instalar as dependências do DLC. Experimente reiniciar e, se o problema persistir, envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">O seu dispositivo pode ter deixado de funcionar corretamente e pode deparar-se com problemas de segurança e desempenho. Desativar as atualizações também pode afetar o seu direito de apresentar queixas legais caso tenha problemas.</translation>
 <translation id="6518014396551869914">Cop&amp;iar imagem</translation>
 <translation id="6518133107902771759">Rever</translation>
@@ -7617,6 +7625,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6847125920277401289">Liberte espaço para continuar</translation>
 <translation id="6848388270925200958">De momento, tem alguns cartões que apenas podem ser utilizados neste dispositivo.</translation>
 <translation id="6848716236260083778">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Ícones da barra de ferramentas</translation>
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6851181413209322061">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. Se a Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google.</translation>
 <translation id="6851497530878285708">Aplicação ativada</translation>
@@ -8374,6 +8383,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7456142309650173560">programador</translation>
 <translation id="7456774706094330779">Pré-carregamento alargado</translation>
 <translation id="7456847797759667638">Abrir localização...</translation>
+<translation id="7457027286267861992">Não existe espaço suficiente em disco. Liberte mais algum espaço em disco e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{um link}other{# links}}</translation>
 <translation id="7458168200501453431">Utiliza o mesmo corretor ortográfico que é utilizado na Pesquisa Google. O texto que introduzir no navegador é enviado à Google.</translation>
 <translation id="7458715171471938198">Quer restaurar as apps?</translation>
@@ -10169,6 +10179,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8787752878731558379">Ajude-nos a melhorar o Chrome ao dizer-nos o motivo pelo qual permitiu os cookies de terceiros</translation>
 <translation id="8791157330927639737">Saber mais sobre as atualizações</translation>
 <translation id="8791534160414513928">Enviar um pedido "Não monitorizar" com o seu tráfego de navegação</translation>
+<translation id="8793390639824829328">Os sites usam esta funcionalidade para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="879413103056696865">Enquanto a zona Wi-Fi estiver ativada, o <ph name="PHONE_NAME" /> irá:</translation>
 <translation id="8795916974678578410">Nova janela</translation>
 <translation id="8796919761992612392">P&amp;ersonalizar o seu Chrome</translation>
@@ -10660,6 +10671,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9150045010208374699">Usar a sua câmara</translation>
 <translation id="9150079578948279438">Não foi possível remover o perfil. Tente novamente ou contacte o operador para obter apoio técnico.</translation>
 <translation id="9150860646299915960">Atualize o seu contentor do Linux</translation>
+<translation id="915112772806845021">Os sites usam esta funcionalidade para entrar automaticamente no modo ecrã no ecrã. Isto permite-lhe continuar a ver um vídeo enquanto liberta o ecrã para outras tarefas.</translation>
 <translation id="9151249085738989067">Alterar automaticamente a voz do ChromeVox com base no idioma</translation>
 <translation id="9151906066336345901">fim</translation>
 <translation id="9153274276370926498">Informações do sistema do Lacros</translation>

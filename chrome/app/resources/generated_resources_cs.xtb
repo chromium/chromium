@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1029317248976101138">Lupa</translation>
 <translation id="1029526375103058355">Kliknutí klepnutím</translation>
+<translation id="1029724557649700742">Nové funkce budou zahrnuty, jakmile budou k dispozici. Funkce se mohou lišit podle zařízení.</translation>
 <translation id="1031362278801463162">Načítání náhledu</translation>
 <translation id="1032605640136438169">Prostudujte si nové smluvní podmínky</translation>
 <translation id="103279545524624934">Chcete-li spouštět aplikace pro Android, uvolněte místo na disku.</translation>
@@ -1560,6 +1561,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2155473371917268529">Aktuální nastavení viditelnosti je Vaše zařízení</translation>
 <translation id="2155772377859296191">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Pracovní proces služby: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Povoleno posouvat a přibližovat sdílené karty</translation>
 <translation id="2156877321344104010">Znovu spustit bezpečnostní kontrolu</translation>
 <translation id="2157474325782140681">Chcete-li získat další funkce, použijte dokovací stanici Dell kompatibilní s tímto Chromebookem.</translation>
 <translation id="215753907730220065">Ukončit režim celé obrazovky</translation>
@@ -1978,6 +1980,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2459706890611560967">Obnovit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Zálohujte si data prohlížeče a používejte je na libovolném zařízení</translation>
 <translation id="2460482211073772897">V jiných složkách</translation>
+<translation id="2461550163693930491">Nepovolovat webům posouvat a přibližovat sdílené karty</translation>
 <translation id="2461593638794842577">Toto nastavení můžete vypnout, aby se hesla ukládala pouze do tohoto zařízení</translation>
 <translation id="2462332841984057083">Steam se již nastavuje. Počkejte na dokončení nastavení.</translation>
 <translation id="2462724976360937186">ID klíče certifikační autority</translation>
@@ -2011,6 +2014,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2482895651873876648">Karta byla přesunuta do skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Vyhledávač nastavte v nastavení prohlížeče Chrome</translation>
 <translation id="2483698983806594329">Byl stažen neověřený soubor</translation>
+<translation id="2484574361686148760">Obnovit informace o klientech WiFi Direct</translation>
 <translation id="2484743711056182585">Odebrat přístup</translation>
 <translation id="2484909293434545162">Pokud web využívá soubory cookie, zobrazí se zde</translation>
 <translation id="2484959914739448251">Chcete-li vymazat údaje o prohlížení ze všech synchronizovaných zařízení i z účtu Google, <ph name="BEGIN_LINK" />zadejte heslovou frázi<ph name="END_LINK" />.</translation>
@@ -2204,6 +2208,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2629227353894235473">Vývoj aplikací pro Android</translation>
 <translation id="2629437048544561682">Vymazat plátno</translation>
 <translation id="2631498379019108537">Zobrazovat na poličce možnosti vstupu</translation>
+<translation id="2632176111713971407">Weby mohou žádat o posouvání a přibližování sdílených karet</translation>
 <translation id="2633212996805280240">Odstranit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101">Aplikace <ph name="PRODUCT_NAME" /> nemůže dokončit svou instalaci, ale bude se i nadále spouštět z bitové kopie disku.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3863,6 +3868,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3900966090527141178">Export hesel</translation>
 <translation id="3902789559055749153">Zvolte, jak chcete vytvořit přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Vestavěná klávesnice</translation>
+<translation id="3903696968689283281">Informace o vlastnících WiFi Direct:</translation>
 <translation id="3904326018476041253">Služby určování polohy</translation>
 <translation id="3905761538810670789">Opravit aplikaci</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
@@ -4516,6 +4522,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4409697491990005945">Okraje</translation>
 <translation id="4409779593816003679">Hesla a &amp;automatické vyplňování</translation>
 <translation id="4410545552906060960">Zařízení budete místo heslem odemykat pomocí kódu PIN. PIN můžete nastavit později v Nastavení.</translation>
+<translation id="4411344321892622527">Zákaz posouvat a přibližovat sdílené karty</translation>
 <translation id="4411578466613447185">Slouží k podepsání kódu</translation>
 <translation id="4411719918614785832">Tyto přístupové klíče jsou uloženy ve službě Windows Hello na tomto počítači. Neukládají se do vašeho účtu Google.</translation>
 <translation id="4412544493002546580">Zkuste to znovu nebo si vyberte z jedné z níže uvedených inspirací.</translation>
@@ -6855,6 +6862,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
 <translation id="62586649943626337">Uspořádejte si karty pomocí skupin karet</translation>
+<translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
 <translation id="6262371516389954471">Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
 <translation id="6263284346895336537">Nekritický</translation>
@@ -7558,6 +7566,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6812349420832218321">Aplikaci <ph name="PRODUCT_NAME" /> nelze spustit jako uživatel root.</translation>
 <translation id="6812841287760418429">Uchovat změny</translation>
 <translation id="6813907279658683733">Celá obrazovka</translation>
+<translation id="6814754908910736855">Informace o klientech WiFi Direct:</translation>
 <translation id="6815376457351236663">Přesto otevřít</translation>
 <translation id="6815787852028615386">Tento soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
 <translation id="6816097980753839617">Modro-žlutý (tritanomálie)</translation>
@@ -8426,6 +8435,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7501957181231305652">nebo</translation>
 <translation id="7502220299952823578">Přidat do seznamu webů, které mají být vždy ponechány aktivní</translation>
 <translation id="7502528909759062987">Pozastavit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Sdílené karty lze posouvat a přibližovat</translation>
 <translation id="7503191893372251637">Certifikát typu Netscape</translation>
 <translation id="7503985202154027481">Na bezpečnostním klíči zůstane záznam o návštěvě tohoto webu.</translation>
 <translation id="7504145862399276792">Zvuk této karty je ztlumen</translation>
@@ -10765,6 +10775,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="949807244219288032">Tato karta je připojena k zařízení HID</translation>
 <translation id="950079950995628542">Z telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Průvodce nastavením</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Nainstaloval administrátor</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="952471655966876828">Když zařízení bude zapnuté a bude používáno, automaticky se připojí</translation>
 <translation id="953434574221655299">Mohou zjistit, kdy aktivně používáte své zařízení</translation>

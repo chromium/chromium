@@ -785,7 +785,6 @@
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Не можевме да помогнеме со тоа. Обидете се повторно.</translation>
 <translation id="2456755709261364512">Батеријата мора да биде полна над <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
-<translation id="2462599289530201834">Пребарајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2462932596748424101">Друштвени мрежи</translation>
 <translation id="2463739503403862330">Пополни</translation>
 <translation id="2465688316154986572">Спојување</translation>
@@ -2971,6 +2970,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференции</translation>
 <translation id="6753269504797312559">Вредност на политика</translation>
+<translation id="6753390234084146956">картички</translation>
 <translation id="6753434778807740853">Избриши го записот <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Штедни сметки</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3681,6 @@
 <translation id="8075588646978457437">Самолеплива хартија</translation>
 <translation id="8075736640322370409">Набрзина создајте нова табела на Google</translation>
 <translation id="8075898834294118863">Управувај со поставките за сајтови</translation>
-<translation id="8076492880354921740">Картички</translation>
 <translation id="8077669823243888800">Плик Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Да се прикачи доверлива датотека?}one{Да се прикачат доверливи датотеки?}other{Да се прикачат доверливи датотеки?}}</translation>
 <translation id="8078141288243656252">Не може да се стави прибелешка кога документот е ротиран</translation>
@@ -3720,7 +3719,6 @@
 <translation id="8150722005171944719">Датотеката на <ph name="URL" /> не може да се прочита. Можно е да е отстранета, преместена или дозволите на датотеката да го спречуваат пристапот.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Правилото на администраторот не препорачува да се презема датотекава во <ph name="DESTINATION_NAME" />}one{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}other{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Опрема за хокеј</translation>
-<translation id="815788908807586564">Разговор со Gemini</translation>
 <translation id="8161095570253161196">Продолжи со прелистување</translation>
 <translation id="8163866351304776260">Четири дупки лево</translation>
 <translation id="8164078261547504572">Дали сакате известувања по е-пошта при намалување на цената?</translation>

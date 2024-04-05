@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Portál valószínűsíthető</translation>
 <translation id="1232610416724362657">vízesés</translation>
 <translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
+<translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1274654146705270731">narancsok</translation>
 <translation id="1275718070701477396">Kijelölve</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnosztika alkalmazás</translation>
 <translation id="175763766237925754">Jó (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Gyors billentyűváltás</translation>
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1776228893584526149">Háttérkép tónusa</translation>
 <translation id="1777913922912475695">híd</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">hatalmas óceán</translation>
 <translation id="2080070583977670716">További beállítások</translation>
+<translation id="2082932131694554252">Hozzárendelt billentyű</translation>
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
 <translation id="2102231663024125441">Szövegszerkesztés</translation>
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="2645380101799517405">Vezérlők</translation>
 <translation id="2652403576514495859">diktálás be- vagy kikapcsolása</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2656001153562991489">Kizárólag Chromebook Plus esetén</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Úgy érheti el a legjobb eredményt ezzel a háttérképpel, ha bekapcsolja ezt a beállítást. Ez a beállítás bármikor kikapcsolható.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="2880569433548999039">Szálló felhők képernyővédő</translation>
+<translation id="2882230315487799269">AI-utasítás személyre szabása</translation>
 <translation id="2888298276507578975">Írjon be egy utasítást, például „írj köszönőüzenetet”.</translation>
 <translation id="2890557891229184386">trópusi sziget</translation>
 <translation id="2895772081848316509">sötét</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="361575905210396100">Köszönjük visszajelzését!</translation>
 <translation id="3621072146987826699">elefántok</translation>
+<translation id="3632040286124154621">Jó javaslat</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
+<translation id="3644695927181369554">Rossz javaslat</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
 <translation id="3661106764436337772">Gyorsabb és magabiztosabb írás</translation>
 <translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3708186454126126312">Korábban csatlakoztatva</translation>
 <translation id="3715651196924935218">Kilépés a lebegő nézetből</translation>
+<translation id="3716250181321371108">Vezérlő létrehozása</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> vélemény)</translation>
 <translation id="3748026146096797577">Nincs kapcsolódva</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
 <translation id="3771294271822695279">Videofájlok</translation>
+<translation id="3780740315729837296">Rendeljen hozzá egy billentyűt</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="3785643128701396311">pixelképek</translation>
 <translation id="3790109258688020991">pointillista</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">képernyőkép készítése</translation>
 <translation id="3923184630988645767">Adathasználat</translation>
 <translation id="3932043219784172185">Nincs csatlakoztatott eszköz</translation>
+<translation id="3934185438132762746">Hozzárendelés nélküli <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
 <translation id="3954678691475912818">Az eszköz típusa ismeretlen.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Kép letöltése</translation>
 <translation id="4063039537646912479">világoskék</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Másik vezérlő létrehozása</translation>
 <translation id="4091002263446255071">romantikus</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Biztonságos Wi-Fi-kapcsolat</translation>
 <translation id="4650608062294027130">Jobb oldali Shift</translation>
 <translation id="4654549501020883054">Minden nap más</translation>
+<translation id="4655868084888499342">Kép beállítva háttérképként</translation>
 <translation id="4661249927038176904">Szürreális</translation>
 <translation id="4664651912255946953">bunda</translation>
 <translation id="4665014895760275686">Gyártó</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Tűzfal valószínűsíthető</translation>
 <translation id="4691278870498629773">Leállt – Hiányzó tálca</translation>
 <translation id="469379815867856270">Jelerősség</translation>
+<translation id="4697260493945012995">Válassza ki a vezérlőtípust</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Létrehozás AI használatával</translation>
 <translation id="6112878310391905610">Ezt a beállítást a rendszergazdák kezelik</translation>
 <translation id="6113701710518389813">Felfelé nyíl</translation>
+<translation id="6116005346231504406">Első vezérlő létrehozása</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> és <ph name="NUMBER" /> további album</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">ChromeOS beviteli módszere szolgáltatás</translation>
@@ -911,6 +926,7 @@
 <translation id="6382182670717268353">Képernyővédő előnézete</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
 <translation id="6394634179843537518">Fájl hozzáadása</translation>
+<translation id="6396719002784938593">szárított árvalányhaj</translation>
 <translation id="639964859328803943">vacsora teával</translation>
 <translation id="6400680457268373900">Szürreális <ph name="DREAMSCAPES_OBJECT" /> <ph name="DREAMSCAPES_MATERIAL" /> anyagból, <ph name="DREAMSCAPES_COLORS" /> színben</translation>
 <translation id="6401427872449207797">keresés böngészőben</translation>
@@ -952,6 +968,7 @@
 <translation id="6575134580692778371">Nincs konfigurálva</translation>
 <translation id="6576005492601044801">bal</translation>
 <translation id="6579509898032828423">E fotó használata</translation>
+<translation id="6587870930887634392">pozsgás növény</translation>
 <translation id="6596816719288285829">IP-cím</translation>
 <translation id="6599673642868607614">Köszönjük visszajelzését. Visszajelzését áttekinti csapatunk, így segíthet a Chromebook által nyújtott élmény javításában. A jelentések nagy száma miatt nem tudunk válaszolni.</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
@@ -1044,6 +1061,7 @@
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">A hozzárendelés módosításához válasszon egy új billentyűt</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7154020516215182599">Írja le visszajelzését vagy problémáját. Ha lehetséges, küldje el a probléma előidézéséhez vezető lépéseket.</translation>
 <translation id="7155037718620478619">További APN-ek felfedezése</translation>
@@ -1089,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; A Keresés és a szóköz billentyűkombináció lenyomásával megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
 <translation id="7344788170842919262">földes</translation>
+<translation id="7346768383111016081">Rendeljen vezérlőket a játékműveletekhez, és használja játékra a billentyűzetet</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />. keresési találat: <ph name="SEARCH_RESULT_TEXT" />. Az Enter billentyűt lenyomva navigálhat a billentyűparancshoz.</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="73631062356239394">Diagnosztikai adatok megosztása</translation>
@@ -1110,6 +1129,7 @@
 <translation id="7497215489070763236">Szerver CA tanúsítványa</translation>
 <translation id="7501957181231305652">vagy</translation>
 <translation id="7502658306369382406">IPv6-cím</translation>
+<translation id="7507061649493508884">Ragyogó <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">alsó</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
@@ -1169,6 +1189,7 @@
 <translation id="7850847810298646851">A háttérképet a Google AI biztosítja</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
+<translation id="7859006200041800233">kaktuszvirág</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Szolgáltató típusa</translation>
@@ -1281,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teaház</translation>
 <translation id="8538236298648811558">A Google AI működteti</translation>
+<translation id="8550364285433943656">Rendeljen vezérlőket a játékműveletekhez, és használja játékra a billentyűzet billentyűit</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>
 <translation id="8576249514688522074">Nincs inicializálva</translation>
@@ -1304,6 +1326,7 @@
 <translation id="8726019395068607495">Leállt – Nyitva van a nyomtató fedele</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
+<translation id="8749478549112817787">Kamera háttere</translation>
 <translation id="8755946156089753497">torony</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>
@@ -1398,6 +1421,7 @@
 <translation id="9189000703457422362">Nem lehet csatlakozni ehhez a hálózathoz automatikusan észlelt APN-ek használatával. A szolgáltatótól kérhet további információt.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nem lehet csatlakozni az átjáróhoz androidos alkalmazásokról</translation>
+<translation id="921080052717160800">Kép beállítva a kamera háttereként</translation>
 <translation id="9211490828691860325">Az összes asztal</translation>
 <translation id="932327136139879170">Főoldal</translation>
 <translation id="939519157834106403">SSID</translation>

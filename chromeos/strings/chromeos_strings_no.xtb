@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Mistanke om portal</translation>
 <translation id="1232610416724362657">foss</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
+<translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1274654146705270731">appelsiner</translation>
 <translation id="1275718070701477396">Valgt</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
 <translation id="175763766237925754">God (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Bytt taster raskt</translation>
 <translation id="1768959921651994223">Autentiseringstype</translation>
 <translation id="1776228893584526149">Bakgrunnstone</translation>
 <translation id="1777913922912475695">bro</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">vidstrakt hav</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
+<translation id="2082932131694554252">Tilordnet tastaturtast</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
 <translation id="2102231663024125441">Tekstbehandling</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Påloggingsbilde</translation>
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
+<translation id="2645380101799517405">Kontroller</translation>
 <translation id="2652403576514495859">slå diktering av eller på</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2656001153562991489">Kun på Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Slå på dette for å få best resultat med denne bakgrunnen. Du kan slå av denne innstillingen når som helst.</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skjermsparer: Skyflyt</translation>
+<translation id="2882230315487799269">Tilpass AI-forespørselen</translation>
 <translation id="2888298276507578975">Skriv inn en forespørsel som «Skriv en takkemelding»</translation>
 <translation id="2890557891229184386">tropisk øy</translation>
 <translation id="2895772081848316509">mørk</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="361575905210396100">Takk for tilbakemeldingen</translation>
 <translation id="3621072146987826699">elefanter</translation>
+<translation id="3632040286124154621">Godt forslag</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
+<translation id="3644695927181369554">Dårlig forslag</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
 <translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
 <translation id="3662461537616691585">burgunderrød og rødbrun</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
 <translation id="3715651196924935218">Avslutt flytende tilstand</translation>
+<translation id="3716250181321371108">Opprett kontroll</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3780740315729837296">Tilordne en tastaturtast</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pikselkunst</translation>
 <translation id="3790109258688020991">pointillisme</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">ta skjermdump</translation>
 <translation id="3923184630988645767">Databruk</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
+<translation id="3934185438132762746">Ikke-tilordnet <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
 <translation id="3942420633017001071">Diagnostikk</translation>
 <translation id="3954678691475912818">Enhetstypen er ukjent.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Laster ned bildet</translation>
 <translation id="4063039537646912479">lyseblå</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Opprett en kontroll til</translation>
 <translation id="4091002263446255071">romantisk</translation>
 <translation id="4093865285251893588">Profilbilde</translation>
 <translation id="409427325554347132">Lagre testdetaljer</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Sikker Wifi-tilkobling</translation>
 <translation id="4650608062294027130">Høyre Shift</translation>
 <translation id="4654549501020883054">Endre daglig</translation>
+<translation id="4655868084888499342">Bildet er angitt som bakgrunn</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
 <translation id="4664651912255946953">pels</translation>
 <translation id="4665014895760275686">Produsent</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Mistanke om brannmur</translation>
 <translation id="4691278870498629773">Stoppet – en skuff mangler</translation>
 <translation id="469379815867856270">Signalstyrke</translation>
+<translation id="4697260493945012995">Velg kontrolltype</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Lag med AI</translation>
 <translation id="6112878310391905610">Denne innstillingen administreres av administratorene dine</translation>
 <translation id="6113701710518389813">Oppoverpil</translation>
+<translation id="6116005346231504406">Opprett den første kontrollen</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> og <ph name="NUMBER" /> album til</translation>
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6122277663991249694">Tjeneste for ChromeOS-inndatametode</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7144954474087165241">pagode</translation>
+<translation id="7147557737960578492">Endre tilordningen ved å velge en ny tast</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7154020516215182599">Del tilbakemeldingen eller beskriv problemet. Ta med en fremgangsmåte for å gjenskape problemet om mulig.</translation>
 <translation id="7155037718620478619">Oppdag flere APN</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7344788170842919262">jordaktig</translation>
+<translation id="7346768383111016081">Plasser kontrollen på spillhandlingen for å spille med tastaturet</translation>
 <translation id="7353413232959255829">Søkeresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Trykk på Enter for å navigere til snarveien.</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="73631062356239394">Del diagnostikkdata</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
 <translation id="8538236298648811558">Basert på AI-løsninger fra Google</translation>
+<translation id="8550364285433943656">Plasser kontroller på spillhandlinger for å spille med tastaturtaster</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Kan ikke koble til dette nettverket med APN-er som registreres automatisk. Kontakt mobiloperatøren din for å få mer informasjon.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan ikke kontakte gatewayen fra Android-apper</translation>
+<translation id="921080052717160800">Bildet er angitt som kamerabakgrunn</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>

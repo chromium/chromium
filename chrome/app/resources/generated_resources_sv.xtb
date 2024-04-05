@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1029317248976101138">Zooma in</translation>
 <translation id="1029526375103058355">Lätt klick på styrplattan</translation>
+<translation id="1029724557649700742">Nya funktioner läggs till när de blir tillgängliga, och funktionerna kan variera beroende på enhet.</translation>
 <translation id="1031362278801463162">Läser in förhandsgranskning</translation>
 <translation id="1032605640136438169">Läs de nya villkoren</translation>
 <translation id="103279545524624934">Frigör diskutrymme om du vill starta Android-appar.</translation>
@@ -1573,6 +1574,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2155473371917268529">Den aktuella synlighetsinställningen är Dina enheter</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Tjänstefunktion: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Får scrolla och zooma på delade flikar</translation>
 <translation id="2156877321344104010">Kontrollera säkerheten igen</translation>
 <translation id="2157474325782140681">Använd en dockningsstation som är gjord för att användas med denna Chromebook om du vill ha tillgång till ytterligare funktioner.</translation>
 <translation id="215753907730220065">Avsluta helskärmsläge</translation>
@@ -1994,6 +1996,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2459706890611560967">Återuppta castingen av fliken till <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Säkerhetskopiera dina saker i webbläsaren och använd dem på vilken enhet som helst</translation>
 <translation id="2460482211073772897">I andra mappar</translation>
+<translation id="2461550163693930491">Tillåt inte att webbplatser scrollar och zoomar på delade flikar</translation>
 <translation id="2461593638794842577">Du kan inaktivera den här inställningen om du endast vill spara lösenord på den här enheten</translation>
 <translation id="2462332841984057083">Steam konfigureras redan. Vänta på att konfigureringen slutförs.</translation>
 <translation id="2462724976360937186">Nyckel-ID för certifikatutfärdare</translation>
@@ -2027,6 +2030,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2482895651873876648">Fliken flyttades till gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Ange sökmotor i webbläsarinställningarna för Chrome</translation>
 <translation id="2483698983806594329">Laddade ned overifierad fil</translation>
+<translation id="2484574361686148760">Uppdatera information om WiFi Direct-klienter</translation>
 <translation id="2484743711056182585">Ta bort bidrag</translation>
 <translation id="2484909293434545162">Om en webbplats använder cookies visas det här</translation>
 <translation id="2484959914739448251"><ph name="BEGIN_LINK" />Ange din lösenfras<ph name="END_LINK" /> om du vill rensa webbinformation från alla synkroniserade enheter och ditt Google-konto.</translation>
@@ -2220,6 +2224,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2629227353894235473">Utveckla Android-appar</translation>
 <translation id="2629437048544561682">Rensa målarduk</translation>
 <translation id="2631498379019108537">Visa inmatningsalternativ på hyllan</translation>
+<translation id="2632176111713971407">Webbplatser får begära åtkomst till att scrolla och zooma på delade flikar</translation>
 <translation id="2633212996805280240">Vill du ta bort <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101">Installationen av <ph name="PRODUCT_NAME" /> kunde inte slutföras, men programmet kommer att fortsätta köras från diskavbildningen.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3880,6 +3885,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="3900966090527141178">Exportera lösenord</translation>
 <translation id="3902789559055749153">Välj hur du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Inbyggt tangentbord</translation>
+<translation id="3903696968689283281">Information om WiFi Direct-ägare:</translation>
 <translation id="3904326018476041253">Platstjänster</translation>
 <translation id="3905761538810670789">Reparera appen</translation>
 <translation id="3908288065506437185">Blockera tredjepartscookies i inkognitoläge</translation>
@@ -4462,7 +4468,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4358643842961018282">Enheten är uppdaterad</translation>
 <translation id="4359408040881008151">Installerades på grund av ett eller flera tillägg som är beroende av detta tillägg.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
-<translation id="4359809482106103048">Snabböversikt över säkerheten</translation>
+<translation id="4359809482106103048">Säkerhetsöversikt</translation>
 <translation id="4361142739114356624">Det här klientcertifikatets privata nyckel saknas eller är tom</translation>
 <translation id="4361745360460842907">Öppna som en flik</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> är standardkontot på din <ph name="DEVICE_TYPE" /></translation>
@@ -4535,6 +4541,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4409697491990005945">Marginaler</translation>
 <translation id="4409779593816003679">Lösenord och autofyll</translation>
 <translation id="4410545552906060960">Lås upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
+<translation id="4411344321892622527">Får inte scrolla och zooma på delade flikar</translation>
 <translation id="4411578466613447185">Kodsigneringscertifikat</translation>
 <translation id="4411719918614785832">De här nycklarna sparas i Windows Hello på den här datorn. De sparas inte i Google-kontot.</translation>
 <translation id="4412544493002546580">Försök igen eller välj bland förslagen nedan.</translation>
@@ -6880,6 +6887,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
 <translation id="625827534921607067">Det här nätverket visas om det finns fler än ett tidigare anslutet eller konfigurerat nätverk.</translation>
 <translation id="62586649943626337">Ordna flikar med flikgrupper</translation>
+<translation id="6259776178973198997">Uppdatera information om WiFi Direct-ägare</translation>
 <translation id="6262371516389954471">Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
 <translation id="6263082573641595914">Microsofts version av certifikatutfärdare</translation>
 <translation id="6263284346895336537">Inte kritiskt</translation>
@@ -7580,6 +7588,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan inte köras av en systemadministratör.</translation>
 <translation id="6812841287760418429">Behåll ändringarna</translation>
 <translation id="6813907279658683733">Helskärm</translation>
+<translation id="6814754908910736855">Information om WiFi Direct-klienter:</translation>
 <translation id="6815376457351236663">Öppna ändå</translation>
 <translation id="6815787852028615386">Den här filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
 <translation id="6816097980753839617">Blågult filter (tritanomali)</translation>
@@ -8451,6 +8460,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502220299952823578">Lägg till i listan Låt alltid dessa webbplatser vara aktiva</translation>
 <translation id="7502528909759062987">Pausa castingen av fliken till <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Det går att scrolla och zooma på delade flikar</translation>
 <translation id="7503191893372251637">Certifieringstyp för Netscape</translation>
 <translation id="7503985202154027481">Ditt besök på webbplatsen sparas i säkerhetsnyckeln.</translation>
 <translation id="7504145862399276792">Ljudet är avstängt på den här fliken</translation>
@@ -10791,6 +10801,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="949807244219288032">Den här fliken är ansluten till en HID-enhet</translation>
 <translation id="950079950995628542">Från <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Konfigureringsguide</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Har installerats av administratören</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="952471655966876828">Enheten ansluts automatiskt när den är aktiverad eller används</translation>
 <translation id="953434574221655299">Har tillåtelse att veta om du använder enheten aktivt</translation>

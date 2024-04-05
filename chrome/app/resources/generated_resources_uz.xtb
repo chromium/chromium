@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1029317248976101138">Masshtab</translation>
 <translation id="1029526375103058355">Teginish yoki bosish</translation>
+<translation id="1029724557649700742">Yangi funksiyalar chiqish tartibi bilan kiritiladi. Mavjud funksiyalar qurilma asosida farqlanadi.</translation>
 <translation id="1031362278801463162">Ma’lumotlar oldindan ko‘rish uchun yuklanmoqda</translation>
 <translation id="1032605640136438169">Yangi shartlar bilan tanishib chiqing</translation>
 <translation id="103279545524624934">Android ilovalarni ishga tushirish uchun diskda joy bo‘shating.</translation>
@@ -1557,6 +1558,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2155473371917268529">Joriy ochiqlik sozlamasi qurilmalaringiz qilib belgilangan</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi</translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Ulashilgan varaqlarda zum va varaqlash ruxsat etilgan</translation>
 <translation id="2156877321344104010">Yana xavfsizlik tekshiruvini ishga tushirish</translation>
 <translation id="2157474325782140681">Qoʻshimcha funksiyalardan foydalanish uchun bu Chromebook bilan sinalgan Dell dok stansiyasini ishlating.</translation>
 <translation id="215753907730220065">To‘liq ekran rejimidan chiqish</translation>
@@ -1978,6 +1980,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2459706890611560967">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini davom ettirish</translation>
 <translation id="2460356425461033301">Brauzer maʼlumotlarini zaxiralang va istalgan qurilmada oching.</translation>
 <translation id="2460482211073772897">Boshqa jildlarda</translation>
+<translation id="2461550163693930491">Saytlarga ulashilgan varaqlarda zum oʻzgartirish va varaqlash taqiqlangan</translation>
 <translation id="2461593638794842577">Parollarni faqat shu qurilmada saqlaydigan mazkur sozlamani faolsizlantirish mumkin</translation>
 <translation id="2462332841984057083">Steam allaqachon sozlanmoqda. Sozlash tugallanishini kuting.</translation>
 <translation id="2462724976360937186">Sertifikat markazi kaliti identifikatori</translation>
@@ -2011,6 +2014,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2482895651873876648">Varaq <ph name="GROUP_NAME" /> guruhiga olindi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome brauzeri sozlamalari orqali qidiruv vositasini sozlash</translation>
 <translation id="2483698983806594329">Tekshirilmagan fayl yuklab olindi</translation>
+<translation id="2484574361686148760">WiFi Direct mijozlari axborotini yangilash</translation>
 <translation id="2484743711056182585">Ruxsatni olib tashlash</translation>
 <translation id="2484909293434545162">Bu yerda cookie fayllaridan foydalanuvchi saytlar chiqadi</translation>
 <translation id="2484959914739448251">Brauzer tarixini Google hisobingizga sinxronlangan barcha qurilmalardan tozalash uchun <ph name="BEGIN_LINK" />kodli iborani kiriting<ph name="END_LINK" />.</translation>
@@ -2204,6 +2208,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2629227353894235473">Android ilovalarni ishlab chiqish</translation>
 <translation id="2629437048544561682">Kanvasni tozalash</translation>
 <translation id="2631498379019108537">Kiritish parametrlari javonda ko‘rsatilsin</translation>
+<translation id="2632176111713971407">Saytlar ulashilgan varaqlarda zum oʻzgartirish va varaqlashga ruxsat soʻrashi mumkin</translation>
 <translation id="2633212996805280240">“<ph name="EXTENSION_NAME" />” o‘chirib tashlansinmi?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> to‘liq o‘rnatilmadi, lekin diskdagi tizim tasviridan ishlashni davom ettirish mumkin.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3863,6 +3868,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="3900966090527141178">Parollarni eksport qilish</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> kodi qanday yaratilishini tanlang</translation>
 <translation id="3903187154317825986">Ichki klaviatura</translation>
+<translation id="3903696968689283281">WiFi Direct egalari axboroti:</translation>
 <translation id="3904326018476041253">Joylashuvni aniqlash xizmatlari</translation>
 <translation id="3905761538810670789">Ilovani ta’mirlash</translation>
 <translation id="3908288065506437185">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
@@ -4517,6 +4523,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4409697491990005945">Maydonlar</translation>
 <translation id="4409779593816003679">Parollar va avtomatik kiritish</translation>
 <translation id="4410545552906060960">Qurilma qulfini parol emas raqamli kod bilan ochish (PIN). PIN kodni Sozlamalar orqali keyinroq sozlash mumkin.</translation>
+<translation id="4411344321892622527">Ulashilgan varaqlarda zum oʻzgartirish va varaqlash taqiqlangan</translation>
 <translation id="4411578466613447185">Sertifikat kodi</translation>
 <translation id="4411719918614785832">Kalitlar shu kompyuterdagi Windows Hello xizmatiga saqlanadi. Ular Google hisobiga saqlanmaydi.</translation>
 <translation id="4412544493002546580">Qayta urining yoki quyidagi asarlardan birini tanlang.</translation>
@@ -6860,6 +6867,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6257602895346497974">Sinxronizatsiyani yoqish...</translation>
 <translation id="625827534921607067">Tanlangan tarmoq avvalgi ulangan yoki sozlangan tarmoqlarga qaraganda iloji boricha koʻproq ishlatiladi</translation>
 <translation id="62586649943626337">Varaqlaringizni varaqlar guruhiga jamlang</translation>
+<translation id="6259776178973198997">WiFi Direct egalari axborotini yangilash</translation>
 <translation id="6262371516389954471">Zaxiralar Google serverlariga yuklanadi va farzandingizning Google hisobingiz paroli bilan shifrlanadi.</translation>
 <translation id="6263082573641595914">Microsoft CA versiyasi</translation>
 <translation id="6263284346895336537">Muhim emas</translation>
@@ -7559,6 +7567,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />‘dan superfoydalanuvchi sifatida foydalanib bo‘lmaydi.</translation>
 <translation id="6812841287760418429">O‘zgarishlarni saqlash</translation>
 <translation id="6813907279658683733">Butun ekran</translation>
+<translation id="6814754908910736855">WiFi Direct mijozlari axboroti:</translation>
 <translation id="6815376457351236663">Baribir ochilsin</translation>
 <translation id="6815787852028615386">Bu fayl aldamchi va qurilmangizga kutilmagan oʻzgarishlarni amalga oshirishi mumkin</translation>
 <translation id="6816097980753839617">Koʻk-sariq (Tritanomaliya)</translation>
@@ -8427,6 +8436,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7501957181231305652">yoki</translation>
 <translation id="7502220299952823578">“quyidagi saytlar doim faol qolsin” roʻyxatiga kiritish</translation>
 <translation id="7502528909759062987">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini pauza qilish</translation>
+<translation id="7502804472671406749">Sayt ulashilgan varaqlarda zum oʻzgartirishi va varaqlashi mumkin</translation>
 <translation id="7503191893372251637">Netscape sertifikati turi</translation>
 <translation id="7503985202154027481">Joriy saytga tashrifingiz haqidagi axborot elektron kalitga saqlanadi.</translation>
 <translation id="7504145862399276792">Bu varaq ovozsiz qilingan</translation>
@@ -10763,6 +10773,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="949807244219288032">Bu varaq HID qurilmaga ulangan</translation>
 <translation id="950079950995628542">“<ph name="PHONE_NAME" />” telefonidan</translation>
 <translation id="950307215746360464">Sozlash qoʻllanmasi</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administrator oʻrnatgan</translation>
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="952471655966876828">Qurilma yoqilganda yoki ishlatilayotganda avtomatik ravishda ulanadi</translation>
 <translation id="953434574221655299">Qurilmangizni faol ishlatayotgan vaqtini bilishga ruxsat berilgan saytlar</translation>

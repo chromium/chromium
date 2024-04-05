@@ -183,6 +183,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="132301787627749051">Leita að mynd á klippiborði</translation>
 <translation id="1323433172918577554">Sýna meira</translation>
 <translation id="132390688737681464">Vista og fylla út heimilisföng</translation>
+<translation id="1325412080783393306">Leita að fleiri kaupvalkostum</translation>
 <translation id="1325749054628832887">Umfjöllunarefni auglýsinga er bara einn af mörgum hlutum sem vefsvæði getur notað til að sérsníða auglýsingar. Jafnvel án umfjöllunarefna auglýsinga geta vefsvæði sýnt þér auglýsingar en þær verða kannski ekki eins áhugaverðar. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Senda skýrslu</translation>
 <translation id="1330449323196174374">Túristabrot vinstra megin</translation>
@@ -785,7 +786,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2452098632681057184">Vistfræði og umhverfi</translation>
 <translation id="2452837234288608067">Ekki tókst að aðstoða þig með þetta. Reyndu aftur.</translation>
 <translation id="2456755709261364512">Hleðsla rafhlöðunnar þarf að vera meiri en <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">Leita að „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="2462932596748424101">Netsamfélög</translation>
 <translation id="2463739503403862330">Fylla út</translation>
 <translation id="2465688316154986572">Hefti</translation>
@@ -1191,6 +1191,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3286372614333682499">skammsnið</translation>
 <translation id="3287510313208355388">Sækja þegar nettenging er til staðar</translation>
 <translation id="3288238092761586174"><ph name="URL" /> þarf hugsanlega að framkvæma viðbótarskref til að staðfesta greiðsluna frá þér</translation>
+<translation id="3289578402369490638">Úr öðrum verslunum á vefnum</translation>
 <translation id="3293642807462928945">Frekari upplýsingar um regluna „<ph name="POLICY_NAME" />“</translation>
 <translation id="3295444047715739395">Skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
 <translation id="3299098170013242198">Kveikt er á Windows Hello fyrir útfyllingu aðgangsorða</translation>
@@ -2971,6 +2972,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Símafundir</translation>
 <translation id="6753269504797312559">Gildi reglu</translation>
+<translation id="6753390234084146956">flipar</translation>
 <translation id="6753434778807740853">Eyða færslu <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sparireikningar</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3681,7 +3683,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8075588646978457437">Sjálflímandi pappír</translation>
 <translation id="8075736640322370409">Búa til nýjan Google töflureikni í skyndi</translation>
 <translation id="8075898834294118863">Stjórna stillingum vefsvæðis</translation>
-<translation id="8076492880354921740">Flipar</translation>
 <translation id="8077669823243888800">Umslag: kínverskt #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Hlaða upp skrá sem inniheldur trúnaðarmál?}one{Hlaða upp skrám sem innihalda trúnaðarmál?}other{Hlaða upp skrám sem innihalda trúnaðarmál?}}</translation>
 <translation id="8078141288243656252">Ekki er hægt að skrifa skýringu þegar skjalinu hefur verið snúið</translation>
@@ -3720,7 +3721,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8150722005171944719">Skráin á <ph name="URL" /> er ekki læsileg. Hún kann að hafa verið fjarlægð, færð eða skrárheimildir gætu hindrað aðgang að henni.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Regla kerfisstjóra mælir ekki með því að hlaða skránni niður í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með því að hlaða skránum niður í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með því að hlaða skránum niður í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hokkíbúnaður</translation>
-<translation id="815788908807586564">Spjall við Gemini</translation>
 <translation id="8161095570253161196">Halda vefskoðun áfram</translation>
 <translation id="8163866351304776260">Fjögur göt vinstra megin</translation>
 <translation id="8164078261547504572">Viltu fá tölvupóst þegar verð lækka?</translation>

@@ -413,7 +413,7 @@
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日係 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">電腦</translation>
-<translation id="1739422091279046802">捲動及縮放</translation>
+<translation id="1739422091279046802">捲動和縮放</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">床墊和寢具</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />Chrome 會在您瀏覽內容時記錄感興趣的主題。系統會預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。您日後瀏覽的網站可要求 Chrome 提供一些主題 (而非您的瀏覽記錄)，以便向您顯示個人化廣告。</translation>
@@ -452,7 +452,7 @@
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育和醫療培訓</translation>
 <translation id="1813414402673211292">清除瀏覽資料</translation>
-<translation id="1816436748874040213">可要求捲動及縮放已分享的分頁</translation>
+<translation id="1816436748874040213">可要求捲動和縮放已分享的分頁</translation>
 <translation id="1818522458013171885">解除封鎖</translation>
 <translation id="1818585559878922121">紀錄片</translation>
 <translation id="182139138257690338">自動下載</translation>
@@ -785,7 +785,6 @@
 <translation id="2452098632681057184">生態學和環境學</translation>
 <translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
 <translation id="2456755709261364512">請務必將電池充電至 <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
-<translation id="2462599289530201834">搜尋「<ph name="KEYWORD_SHORT_NAME" />」</translation>
 <translation id="2462932596748424101">社交網絡</translation>
 <translation id="2463739503403862330">填寫</translation>
 <translation id="2465688316154986572">釘書釘</translation>
@@ -966,7 +965,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 要求使用與你相關的既有資料</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
-<translation id="2843623755398178332">要捲動及縮放已分享的分頁嗎？</translation>
+<translation id="2843623755398178332">要捲動和縮放已分享的分頁嗎？</translation>
 <translation id="2851291081585704741">您已離線</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 毫米</translation>
@@ -1059,7 +1058,7 @@
 <translation id="3023165109041533893">網站建議的廣告有助保護瀏覽記錄和身分，同時可讓網站向您顯示相關廣告。隨著您持續瀏覽，您瀏覽過的網站可根據您的活動建議相關廣告。您可前往「設定」查看這些網站的清單，並封鎖不適合的網站。</translation>
 <translation id="3024663005179499861">政策類型有誤</translation>
 <translation id="3030331669969285614">這些標記用來防止或還原破壞性變更，且只能在限定期間內使用。</translation>
-<translation id="3034526003882782781">允許捲動及縮放</translation>
+<translation id="3034526003882782781">可以捲動同縮放</translation>
 <translation id="3036894576201005614">家居清潔用品</translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -1341,7 +1340,7 @@
 <translation id="3567778190852720481">無法使用企業帳戶註冊 (企業賬戶不符合資格)。</translation>
 <translation id="3567901620846335314">100 x 150 毫米</translation>
 <translation id="3568886473829759308">前往網站查看商家提供的資料、資源或服務。</translation>
-<translation id="3570079787344939099">捲動及縮放</translation>
+<translation id="3570079787344939099">捲動和縮放</translation>
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -2463,7 +2462,7 @@
 <translation id="5765072501007116331">如要查看送貨方式和要求，請選取一個地址</translation>
 <translation id="57689295674415555">未填入虛擬卡號嗎？</translation>
 <translation id="5772086939108830423">在其他裝置上使用密鑰</translation>
-<translation id="5775734789739406956">按一下滑鼠右鍵即可將已儲存的資訊填入任何表單</translation>
+<translation id="5775734789739406956">按一下右鍵即可將已儲存的資料填入任何表格</translation>
 <translation id="5776313857861697733">優先次序</translation>
 <translation id="5776574724412881956">未填入虛擬卡資料嗎？按一下虛擬卡詳情即可複製至剪貼簿。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -2480,7 +2479,7 @@
 <translation id="580241730938216256">開始更新</translation>
 <translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
-<translation id="5806871454498484178">已禁止捲動及縮放</translation>
+<translation id="5806871454498484178">已封鎖捲動和縮放</translation>
 <translation id="5808435672482059465">查看 Chrome 記錄</translation>
 <translation id="5810442152076338065">您與 <ph name="DOMAIN" /> 之間的連線透過過時的加密套件加密處理。</translation>
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
@@ -2970,6 +2969,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">電話會議</translation>
 <translation id="6753269504797312559">政策值</translation>
+<translation id="6753390234084146956">分頁</translation>
 <translation id="6753434778807740853">刪除項目 <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">儲蓄帳戶</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3477,7 +3477,7 @@
 <translation id="7673278391011283842">出紙槽 6</translation>
 <translation id="7675325315208090829">管理付款方法…</translation>
 <translation id="767550629621587224">預先裁切分隔紙</translation>
-<translation id="7675756033024037212">不允許捲動及縮放</translation>
+<translation id="7675756033024037212">唔可以捲動同縮放</translation>
 <translation id="7676643023259824263">搵剪貼簿文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看並管理您的瀏覽記錄</translation>
 <translation id="7679947978757153706">棒球</translation>
@@ -3680,7 +3680,6 @@
 <translation id="8075588646978457437">自黏紙</translation>
 <translation id="8075736640322370409">快速建立新的 Google 試算表</translation>
 <translation id="8075898834294118863">管理網站設定</translation>
-<translation id="8076492880354921740">分頁</translation>
 <translation id="8077669823243888800">Chinese #8 信封</translation>
 <translation id="8078006011486731853">{0,plural, =1{要上載機密檔案嗎？}other{要上載機密檔案嗎？}}</translation>
 <translation id="8078141288243656252">文件旋轉後無法加入註釋</translation>
@@ -3719,7 +3718,6 @@
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球用品</translation>
-<translation id="815788908807586564">與 Gemini 即時通訊</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在降價時收到電郵嗎？</translation>

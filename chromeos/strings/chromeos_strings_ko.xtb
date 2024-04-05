@@ -48,6 +48,7 @@
 <translation id="123124571410524056">포털 의심됨</translation>
 <translation id="1232610416724362657">폭포</translation>
 <translation id="1238612778414822719">HTTPS 지연 시간</translation>
+<translation id="1252766349417594414">조이스틱</translation>
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1274654146705270731">오렌지</translation>
 <translation id="1275718070701477396">선택됨</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">진단 앱</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">빠른 키 전환</translation>
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1776228893584526149">배경화면 색조</translation>
 <translation id="1777913922912475695">다리</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">드넓은 바다</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
+<translation id="2082932131694554252">할당된 키보드 키</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
 <translation id="2102231663024125441">텍스트 수정</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
+<translation id="2645380101799517405">컨트롤</translation>
 <translation id="2652403576514495859">음성기록 사용 설정 또는 전환</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2656001153562991489">Chromebook Plus 전용</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">이 배경화면으로 최상의 결과를 얻으려면 이 기능을 사용 설정하세요. 이 설정은 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="2880569433548999039">구름 흐름 화면 보호기</translation>
+<translation id="2882230315487799269">AI 프롬프트 맞춤설정</translation>
 <translation id="2888298276507578975">'감사 인사 작성하기'와 같은 프롬프트를 입력해 보세요</translation>
 <translation id="2890557891229184386">열대 섬</translation>
 <translation id="2895772081848316509">어두운</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3621072146987826699">코끼리</translation>
+<translation id="3632040286124154621">좋은 제안</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
+<translation id="3644695927181369554">좋지 않은 제안</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3662461537616691585">버건디색 및 적갈색</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="3715651196924935218">플로팅 종료</translation>
+<translation id="3716250181321371108">컨트롤 만들기</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
+<translation id="3780740315729837296">키보드 키 할당</translation>
 <translation id="3784455785234192852">잠금</translation>
 <translation id="3785643128701396311">픽셀 아트</translation>
 <translation id="3790109258688020991">점묘화</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
+<translation id="3934185438132762746">할당되지 않은 <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
 <translation id="3954678691475912818">기기 유형을 알 수 없습니다.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">이미지 다운로드 중</translation>
 <translation id="4063039537646912479">하늘색</translation>
 <translation id="4070799384363688067">애니메이션</translation>
+<translation id="4086271957099059213">다른 컨트롤 만들기</translation>
 <translation id="4091002263446255071">로맨틱한</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="4650608062294027130">오른쪽 시프트</translation>
 <translation id="4654549501020883054">매일 변경</translation>
+<translation id="4655868084888499342">이미지를 배경화면으로 설정</translation>
 <translation id="4661249927038176904">초현실적</translation>
 <translation id="4664651912255946953">모피</translation>
 <translation id="4665014895760275686">제조업체</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">방화벽 의심됨</translation>
 <translation id="4691278870498629773">중지됨 - 배지대 없음</translation>
 <translation id="469379815867856270">신호 강도</translation>
+<translation id="4697260493945012995">컨트롤 유형 선택</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6112878310391905610">관리자가 관리하는 설정입니다.</translation>
 <translation id="6113701710518389813">위쪽 화살표</translation>
+<translation id="6116005346231504406">첫 번째 컨트롤 만들기</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" />개 앨범 더 보기</translation>
 <translation id="6122191549521593678">온라인</translation>
 <translation id="6122277663991249694">ChromeOS 입력 방법 서비스</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7144954474087165241">파고다</translation>
+<translation id="7147557737960578492">새 키를 선택하여 재할당하세요</translation>
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7154020516215182599">의견을 공유하거나 문제를 설명해 주세요. 가능하면 문제를 재현하는 방법도 알려주세요.</translation>
 <translation id="7155037718620478619">더 많은 APN 살펴보기</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7344788170842919262">황톳빛</translation>
+<translation id="7346768383111016081">게임 액션에 컨트롤을 사용하여 키보드로 플레이하세요.</translation>
 <translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">찻집</translation>
 <translation id="8538236298648811558">Google AI 기반</translation>
+<translation id="8550364285433943656">게임 액션에 컨트롤을 사용하여 키보드 키로 플레이하세요.</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">자동으로 감지된 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
+<translation id="921080052717160800">이미지를 카메라 배경으로 설정</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="939519157834106403">SSID</translation>

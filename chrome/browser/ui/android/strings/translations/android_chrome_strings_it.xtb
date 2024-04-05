@@ -292,6 +292,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="260403163289591229">Stai seguendo</translation>
 <translation id="2604446170045642109">Puoi disattivare il tema scuro per i siti nelle impostazioni.</translation>
 <translation id="2612676031748830579">Numero carta</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> ti ha inviato un invito ad accedere a un elemento condiviso.</translation>
 <translation id="2625189173221582860">Password copiata</translation>
 <translation id="2634393460268044753">Invia a Google Navigazione sicura gli URL dei siti che visiti e un piccolo campione di contenuti di pagine, download, attività delle estensioni e informazioni di sistema per controllare se sono dannosi.</translation>
 <translation id="2642087927315268160">Riquadro inferiore di accesso chiuso.</translation>
@@ -398,6 +399,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="3072980200212375806"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
+<translation id="3093004810561729002">Qualcuno</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annunci</translation>

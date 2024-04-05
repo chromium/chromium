@@ -292,6 +292,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="260403163289591229">Seurataan</translation>
 <translation id="2604446170045642109">Voit laittaa sivustojen tumman teeman pois päältä asetuksista.</translation>
 <translation id="2612676031748830579">Kortin numero</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> kutsui sinut käyttämään jaettua kohdetta.</translation>
 <translation id="2625189173221582860">Salasana kopioitu</translation>
 <translation id="2634393460268044753">Lähettää avaamiesi sivustojeni URL-osoitteet ja pienen näytteen sivun sisällöstä, latauksista, laajennustoiminnasta ja järjestelmätiedoista Googlen selaussuojalle tarkistaakseen, ovatko ne haitallisia.</translation>
 <translation id="2642087927315268160">Kirjautumispaneeli on suljettu.</translation>
@@ -398,6 +399,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="3072980200212375806"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />. Myös <ph name="BEGIN_LINK3" />tietosuojakäytäntöä<ph name="END_LINK3" /> sovelletaan.</translation>
 <translation id="3080525922482950719">Voit tallentaa sivuja myöhempää tai offline-tilassa lukemista varten</translation>
 <translation id="3091010850649238832">Näytä leikepöydän sisältö</translation>
+<translation id="3093004810561729002">Joku</translation>
 <translation id="3098745985164956033">Jotkin kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa</translation>
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Ilmoitukset</translation>

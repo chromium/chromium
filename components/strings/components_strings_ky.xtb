@@ -183,6 +183,7 @@
 <translation id="132301787627749051">Алмашуу буфериндеги сүрөттү издөө</translation>
 <translation id="1323433172918577554">Көбүрөөк көрсөтүү</translation>
 <translation id="132390688737681464">Даректерди сактоо жана автоматтык түрдө толтуруу</translation>
+<translation id="1325412080783393306">Көбүрөөк сатып алуу жолдорун издеңиз</translation>
 <translation id="1325749054628832887">Жарнаманын темасы – сайттар жарнамаларды жекелештирүү үчүн колдоно ала турган ыкмалардын бири. Сайттар темасыз да сизге жарнамаларды көрсөтө берет, бирок алар кызыксыз болушу мүмкүн. <ph name="BEGIN_LINK" />Жарнаманын купуялыгын тескөө<ph name="LINK_END" /> тууралуу кеңири маалымат.</translation>
 <translation id="1329916999021038454">Отчёт жөнөтүү</translation>
 <translation id="1330449323196174374">Сол бүктөлүшүн чаптоо</translation>
@@ -785,7 +786,6 @@
 <translation id="2452098632681057184">Экология жана айлана-чөйрөнү коргоо</translation>
 <translation id="2452837234288608067">Ишке ашкан жок. Кайра аракет кылыңыз.</translation>
 <translation id="2456755709261364512">Батареяңыздын кубаты <ph name="REQUIRED_BATTERY_PRECENT" />% жогору болушу керек</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> издеңиз</translation>
 <translation id="2462932596748424101">Социалдык тармактар</translation>
 <translation id="2463739503403862330">Толтуруу</translation>
 <translation id="2465688316154986572">Илмек</translation>
@@ -1191,6 +1191,7 @@
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3287510313208355388">Интернетке туташканда жүктөлүп алынсын</translation>
 <translation id="3288238092761586174">Төлөмүңүздү ырастоо үчүн <ph name="URL" /> кошумча кадамдарды аткарышы керек</translation>
+<translation id="3289578402369490638">Интернеттеги башка дүкөндөрдөн</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты жөнүндө кеңири маалымат</translation>
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
 <translation id="3299098170013242198">Сырсөздөрдү толтуруу үчүн Windows Hello күйгүзүлдү</translation>
@@ -2970,6 +2971,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Саясат мааниси</translation>
+<translation id="6753390234084146956">өтмөктөр</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> өчүрүү</translation>
 <translation id="6754547388777247439">Эсептерди сактоо</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,7 +3682,6 @@
 <translation id="8075588646978457437">Өзүн чаптама кагазы</translation>
 <translation id="8075736640322370409">Жаңы Google таблицасын тез түзүү</translation>
 <translation id="8075898834294118863">Сайттын параметрлерин башкаруу</translation>
-<translation id="8076492880354921740">Өтмөктөр</translation>
 <translation id="8077669823243888800">Конверт Кытайча #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Купуя файлды жүктөп бересизби?}other{Купуя файлдарды жүктөп бересизби?}}</translation>
 <translation id="8078141288243656252">Документ бурулуп турганда, Аннотация режимин колдонууга болбойт</translation>
@@ -3719,7 +3720,6 @@
 <translation id="8150722005171944719"><ph name="URL" /> дарегиндеги файл окулбайт. Ал чыгарылып салынган, жылдырылган же файл уруксаттарынан улам аны окуу мүмкүн эмес.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп алууну сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп алууну сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Хоккей жабдуулары</translation>
-<translation id="815788908807586564">Gemini менен маек</translation>
 <translation id="8161095570253161196">Карай берүү</translation>
 <translation id="8163866351304776260">Сол жагын төрт жолу тешүү</translation>
 <translation id="8164078261547504572">Баалар төмөндөгөндө электрондук каттарды алгыңыз келеби?</translation>

@@ -781,7 +781,6 @@
 <translation id="2452098632681057184">ఎకాలజీ &amp; పర్యావరణం</translation>
 <translation id="2452837234288608067">దానితో సహాయం చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2456755709261364512">మీ బ్యాటరీ తప్పనిసరిగా <ph name="REQUIRED_BATTERY_PRECENT" />% కంటే ఎక్కువ ఛార్జ్ అయి ఉండాలి</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" />‌ను సెర్చ్ చేయండి</translation>
 <translation id="2462932596748424101">సోషల్ నెట్‌వర్క్‌లు</translation>
 <translation id="2463739503403862330">పూరించు</translation>
 <translation id="2465688316154986572">స్టేపుల్</translation>
@@ -2968,6 +2967,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">టెలీకాన్ఫరెన్సింగ్</translation>
 <translation id="6753269504797312559">విధానం విలువ</translation>
+<translation id="6753390234084146956">ట్యాబ్‌లు</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ఎంట్రీని తొలగించండి</translation>
 <translation id="6754547388777247439">పొదుపు ఖాతాలు</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3678,7 +3678,6 @@
 <translation id="8075588646978457437">సెల్ఫ్-యాడ్హెసివ్ పేపర్</translation>
 <translation id="8075736640322370409">కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="8075898834294118863">సైట్ సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
-<translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8077669823243888800">ఎన్వలప్ చైనీస్ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{గోప్యమైన ఫైల్‌ను అప్‌లోడ్ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను అప్‌లోడ్ చేయాలా?}}</translation>
 <translation id="8078141288243656252">తిప్పినప్పుడు అదనపు గమనికలను అందించడం సాధ్యపడదు</translation>
@@ -3717,7 +3716,6 @@
 <translation id="8150722005171944719"><ph name="URL" />లో ఫైల్ చదవగలిగేది కాదు. దీన్ని తీసివేసి ఉండవచ్చు, తరలించి ఉండవచ్చు లేదా ఫైల్ అనుమతులు యాక్సెస్‌ను నిరోధిస్తుండవచ్చు.</translation>
 <translation id="8153865548451212769">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు డౌన్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు డౌన్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="81563721597823545">హాకీ ఎక్విప్‌మెంట్</translation>
-<translation id="815788908807586564">Geminiతో చాట్</translation>
 <translation id="8161095570253161196">బ్రౌజింగ్ కొనసాగించండి</translation>
 <translation id="8163866351304776260">ఎడమవైపు నాలుగు రంధ్రాలు</translation>
 <translation id="8164078261547504572">ధరలు తగ్గినప్పుడు ఈమెయిల్స్ పొందాలనుకుంటున్నారా?</translation>

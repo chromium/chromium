@@ -48,6 +48,7 @@
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
 <translation id="1232610416724362657">آبشار</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
+<translation id="1252766349417594414">دسته کنترل</translation>
 <translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
 <translation id="1274654146705270731">پرتقال</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">برنامه عیب‌یابی</translation>
 <translation id="175763766237925754">خوب (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">کلیدها را به‌سرعت جابه‌جا کنید</translation>
 <translation id="1768959921651994223">نوع اصالت‌سنجی</translation>
 <translation id="1776228893584526149">رنگ‌مایه کاغذدیواری</translation>
 <translation id="1777913922912475695">پل</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">اقیانوس وسیع</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
+<translation id="2082932131694554252">کلید صفحه‌کلید تخصیص‌یافته</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
 <translation id="2102231663024125441">ویرایش نوشتار</translation>
 <translation id="2105810540595158374">دستگاه کنترل بازی است.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
+<translation id="2645380101799517405">کنترل‌ها</translation>
 <translation id="2652403576514495859">فعال کردن یا تغییر وضعیت دیکته</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2656001153562991489">‏ویژه Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">برای دریافت بهترین نتیجه از این کاغذدیواری، این گزینه را روشن کنید. هر زمان خواستید می‌توانید این تنظیم را خاموش کنید.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="2880569433548999039">محافظ صفحه جریان ابر</translation>
+<translation id="2882230315487799269">سفارشی‌سازی پیام‌واره هوش مصنوعی</translation>
 <translation id="2888298276507578975">پیام‌واره‌ای مثل «پیام تشکر بنویس» را وارد کنید</translation>
 <translation id="2890557891229184386">جزیره استوایی</translation>
 <translation id="2895772081848316509">تیره</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="361575905210396100">از بازخوردتان سپاس‌گزاریم</translation>
 <translation id="3621072146987826699">فیل</translation>
+<translation id="3632040286124154621">پیشنهاد خوب</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
+<translation id="3644695927181369554">پیشنهاد بد</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
 <translation id="3661106764436337772">سریع‌تر و با قاطعیت بیشتر بنویسید</translation>
 <translation id="3662461537616691585">شرابی و زرشکی</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
 <translation id="3715651196924935218">خروج از حالت شناور</translation>
+<translation id="3716250181321371108">ایجاد کنترل</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
+<translation id="3780740315729837296">تخصیص کلید صفحه‌کلید</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="3785643128701396311">هنر پیکسلی</translation>
 <translation id="3790109258688020991">نقطه‌چینی</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">گرفتن نماگرفت</translation>
 <translation id="3923184630988645767">مصرف داده</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
+<translation id="3934185438132762746">تخصیص ‫<ph name="CONTROL_TYPE" /> لغو شد</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
 <translation id="3954678691475912818">نوع دستگاه مشخص نیست.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">درحال بارگیری تصویر</translation>
 <translation id="4063039537646912479">آبی روشن</translation>
 <translation id="4070799384363688067">انیمه</translation>
+<translation id="4086271957099059213">ایجاد کنترل دیگر</translation>
 <translation id="4091002263446255071">عاشقانه</translation>
 <translation id="4093865285251893588">تصویر نمایه</translation>
 <translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>
 <translation id="4650608062294027130">کلید تبدیل راست</translation>
 <translation id="4654549501020883054">تغییر روزانه</translation>
+<translation id="4655868084888499342">تصویر به‌عنوان کاغذدیواری تنظیم شد</translation>
 <translation id="4661249927038176904">فراواقعی</translation>
 <translation id="4664651912255946953">خز</translation>
 <translation id="4665014895760275686">سازنده</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">احتمال وجود مشکل در دیوار آتش</translation>
 <translation id="4691278870498629773">متوقف شد - سینی موجود نیست</translation>
 <translation id="469379815867856270">قدرت سیگنال</translation>
+<translation id="4697260493945012995">نوع کنترل را انتخاب کنید</translation>
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">ساخت با هوش مصنوعی</translation>
 <translation id="6112878310391905610">این تنظیم را سرپرستان شما مدیریت می‌کنند</translation>
 <translation id="6113701710518389813">جهت‌نمای بالا</translation>
+<translation id="6116005346231504406">ایجاد اولین کنترل</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> آلبوم دیگر</translation>
 <translation id="6122191549521593678">آنلاین</translation>
 <translation id="6122277663991249694">‏سرویس روش ورودی ChromeOS</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="7144954474087165241">بتخانه</translation>
+<translation id="7147557737960578492">با انتخاب کلید جدید، مجدداً تخصیص دهید</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7154020516215182599">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. درصورت امکان، مراحل لازم برای بازسازی مشکل را اضافه کنید.</translation>
 <translation id="7155037718620478619">‏کاوش APN بیشتر</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ کلیدهای «جستجو» و «فاصله» را فشار دهید تا نتیجه را در «جستجوی Google» ببینید</translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7344788170842919262">ساده</translation>
+<translation id="7346768383111016081">برای بازی با صفحه‌کلید، کنترل را روی کنش بازی قرار دهید</translation>
 <translation id="7353413232959255829">‏نتیجه جستجوی <ph name="LIST_POSITION" /> از <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" /> برای پیمایش به میان‌بر، کلید Enter را فشار دهید.</translation>
 <translation id="7359657277149375382">نوع فایل</translation>
 <translation id="73631062356239394">هم‌رسانی داده‌های عیب‌یابی</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چای‌خانه</translation>
 <translation id="8538236298648811558">‏با بهره‌گیری از هوش مصنوعی Google</translation>
+<translation id="8550364285433943656">برای بازی با کلیدهای صفحه‌کلید، کنترل‌ها را روی کنش‌های بازی قرار دهید</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">‏نمی‌توان بااستفاده از نقطه‌های APN که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">‏نمی‌توان از برنامه‌های Android با دروازه تماس گرفت</translation>
+<translation id="921080052717160800">تصویر به‌عنوان پس‌زمینه دوربین تنظیم شد</translation>
 <translation id="9211490828691860325">همه میزکارها</translation>
 <translation id="932327136139879170">منزل</translation>
 <translation id="939519157834106403">SSID</translation>

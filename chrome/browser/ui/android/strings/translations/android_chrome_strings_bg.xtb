@@ -292,6 +292,7 @@
 <translation id="260403163289591229">Следено</translation>
 <translation id="2604446170045642109">От настройките можете да изключите тъмната тема за сайтовете.</translation>
 <translation id="2612676031748830579">Номер на картата</translation>
+<translation id="2620314865574742210"><ph name="NAME" /> ви покани да осъществите достъп до споделен елемент.</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
 <translation id="2634393460268044753">Изпраща до Google Безопасно сърфиране URL адресите на сайтовете, които посещавате, и малка извадка от съдържанието на страниците, изтеглянията и активността на разширенията, както и системна информация, за да провери за опасности.</translation>
 <translation id="2642087927315268160">Долният лист за вход в профила е затворен.</translation>
@@ -398,6 +399,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Можете да запазвате страници за четене по-късно или офлайн</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
+<translation id="3093004810561729002">Някой</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
