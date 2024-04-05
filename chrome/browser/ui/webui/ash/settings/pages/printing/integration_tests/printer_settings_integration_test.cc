@@ -355,14 +355,7 @@ IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
                     "() => document.body.textContent", kDefaultPpd));
 }
 
-// TODO(crbug.com/332154601): Test is flaky on chromeos-amd64-generic-rel-gtest.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AddAndEditPrinter DISABLED_AddAndEditPrinter
-#else
-#define MAYBE_AddAndEditPrinter AddAndEditPrinter
-#endif
-IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest,
-                       MAYBE_AddAndEditPrinter) {
+IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, AddAndEditPrinter) {
   SetupContextWidget();
 
   login_mixin().Login();
