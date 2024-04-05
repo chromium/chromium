@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -18,8 +17,8 @@ namespace blink {
 
 class ExceptionState;
 class ReadableStream;
-class ReadableStreamReadResult;
 class ReadRequest;
+class ScriptPromiseUntyped;
 class ScriptState;
 
 class CORE_EXPORT ReadableStreamDefaultReader
@@ -43,7 +42,7 @@ class CORE_EXPORT ReadableStreamDefaultReader
   bool IsBYOBReader() const override { return false; }
 
   // https://streams.spec.whatwg.org/#default-reader-read
-  ScriptPromise<ReadableStreamReadResult> read(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped read(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-reader-release-lock
   void releaseLock(ScriptState*, ExceptionState&);

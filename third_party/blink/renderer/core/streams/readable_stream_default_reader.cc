@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
@@ -20,17 +21,20 @@ namespace blink {
 class ReadableStreamDefaultReader::DefaultReaderReadRequest final
     : public ReadRequest {
  public:
-  explicit DefaultReaderReadRequest(
-      ScriptPromiseResolver<ReadableStreamReadResult>* resolver)
+  explicit DefaultReaderReadRequest(StreamPromiseResolver* resolver)
       : resolver_(resolver) {}
 
   void ChunkSteps(ScriptState* script_state,
                   v8::Local<v8::Value> chunk,
                   ExceptionState&) const override {
+    // This is needed so that there is a valid v8::Context when fulfilling the
+    // read request.
+    ScriptState::Scope scope(script_state);
     auto* read_result = ReadableStreamReadResult::Create();
     read_result->setValue(ScriptValue(script_state->GetIsolate(), chunk));
     read_result->setDone(false);
-    resolver_->Resolve(read_result);
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -38,11 +42,13 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
     read_result->setValue(ScriptValue(
         script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
     read_result->setDone(true);
-    resolver_->ResolveOverridingToCurrentContext(read_result);
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result));
   }
 
-  void ErrorSteps(ScriptState*, v8::Local<v8::Value> e) const override {
-    resolver_->Reject(e);
+  void ErrorSteps(ScriptState* script_state,
+                  v8::Local<v8::Value> e) const override {
+    resolver_->Reject(script_state, e);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -51,7 +57,7 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
   }
 
  private:
-  Member<ScriptPromiseResolver<ReadableStreamReadResult>> resolver_;
+  Member<StreamPromiseResolver> resolver_;
 };
 
 ReadableStreamDefaultReader* ReadableStreamDefaultReader::Create(
@@ -79,7 +85,7 @@ ReadableStreamDefaultReader::ReadableStreamDefaultReader(
 
 ReadableStreamDefaultReader::~ReadableStreamDefaultReader() = default;
 
-ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
+ScriptPromiseUntyped ReadableStreamDefaultReader::read(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-read
@@ -89,19 +95,12 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise<ReadableStreamReadResult>();
-  }
-
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowTypeError("Context is detached");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return ScriptPromiseUntyped();
   }
 
   // 2. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ReadableStreamReadResult>>(
-          script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state,
+                                                              exception_state);
 
   // 3. Let readRequest be a new read request with the following items:
   //    chunk steps, given chunk
@@ -110,13 +109,13 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
   //      1. Resolve promise with «[ "value" → undefined, "done" → true ]».
   //    error steps, given e
   //      1. Reject promise with e.
-  auto* read_request = MakeGarbageCollected<DefaultReaderReadRequest>(resolver);
+  auto* read_request = MakeGarbageCollected<DefaultReaderReadRequest>(promise);
 
   // 4. Perform ! ReadableStreamReaderRead(this).
   Read(script_state, this, read_request, exception_state);
 
   // 5. Return promise.
-  return resolver->Promise();
+  return promise->GetScriptPromiseUntyped(script_state);
 }
 
 void ReadableStreamDefaultReader::Read(ScriptState* script_state,
