@@ -371,7 +371,7 @@ void DoParseStandardURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   TrimURL(spec, &begin, &spec_len);
 
   int after_scheme;
-  if (DoExtractScheme(std::basic_string_view<CHAR>(spec, spec_len),
+  if (DoExtractScheme(std::basic_string_view(spec, spec_len),
                       &parsed->scheme)) {
     after_scheme = parsed->scheme.end() + 1;  // Skip past the colon.
   } else {
@@ -483,7 +483,7 @@ void DoParseNonSpecialURL(const CHAR* spec,
   TrimURL(spec, &begin, &spec_len, trim_path_end);
 
   int after_scheme;
-  if (DoExtractScheme(std::basic_string_view<CHAR>(spec, spec_len),
+  if (DoExtractScheme(std::basic_string_view(spec, spec_len),
                       &parsed->scheme)) {
     after_scheme = parsed->scheme.end() + 1;  // Skip past the colon.
   } else {
@@ -524,9 +524,8 @@ void DoParseFileSystemURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   int inner_start = -1;
 
   // Extract the scheme.  We also handle the case where there is no scheme.
-  if (DoExtractScheme(
-          std::basic_string_view<CHAR>(&spec[begin], spec_len - begin),
-          &parsed->scheme)) {
+  if (DoExtractScheme(std::basic_string_view(&spec[begin], spec_len - begin),
+                      &parsed->scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
     parsed->scheme.begin += begin;
 
@@ -544,7 +543,7 @@ void DoParseFileSystemURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   const CHAR* inner_spec = &spec[inner_start];
   int inner_spec_len = spec_len - inner_start;
 
-  if (DoExtractScheme(std::basic_string_view<CHAR>(inner_spec, inner_spec_len),
+  if (DoExtractScheme(std::basic_string_view(inner_spec, inner_spec_len),
                       &inner_scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
     inner_scheme.begin += inner_start;
@@ -675,29 +674,18 @@ void DoParsePathURL(const CHAR* spec,
             &parsed->query, &parsed->ref);
 }
 
-template <typename CHAR>
-void DoParseMailtoURL(const CHAR* spec, int spec_len, Parsed* parsed) {
-  DCHECK(spec_len >= 0);
-
-  // Get the non-path and non-scheme parts of the URL out of the way, we never
-  // use them.
-  parsed->username.reset();
-  parsed->password.reset();
-  parsed->host.reset();
-  parsed->port.reset();
-  parsed->ref.reset();
-  parsed->query.reset();  // May use this; reset for convenience.
-  parsed->has_opaque_path = false;
-
+template <typename CharT>
+Parsed DoParseMailtoURL(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
-  TrimURL(spec, &begin, &spec_len);
+  // TODO(crbug.com/325408566): Transition to size_t and avoid the checked_cast
+  // once Component's members are no longer integers.
+  int url_len = base::checked_cast<int>(url.size());
+  TrimURL(url.data(), &begin, &url_len);
 
   // Handle empty specs or ones that contain only whitespace or control chars.
-  if (begin == spec_len) {
-    parsed->scheme.reset();
-    parsed->path.reset();
-    return;
+  if (begin == url_len) {
+    return {};
   }
 
   int path_begin = -1;
@@ -705,25 +693,26 @@ void DoParseMailtoURL(const CHAR* spec, int spec_len, Parsed* parsed) {
 
   // Extract the scheme, with the path being everything following. We also
   // handle the case where there is no scheme.
-  if (ExtractScheme(&spec[begin], spec_len - begin, &parsed->scheme)) {
+  Parsed parsed;
+  if (ExtractScheme(url.substr(begin, url_len - begin), &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    parsed->scheme.begin += begin;
+    parsed.scheme.begin += begin;
 
-    if (parsed->scheme.end() != spec_len - 1) {
-      path_begin = parsed->scheme.end() + 1;
-      path_end = spec_len;
+    if (parsed.scheme.end() != url_len - 1) {
+      path_begin = parsed.scheme.end() + 1;
+      path_end = url_len;
     }
   } else {
     // No scheme found, just path.
-    parsed->scheme.reset();
+    parsed.scheme.reset();
     path_begin = begin;
-    path_end = spec_len;
+    path_end = url_len;
   }
 
   // Split [path_begin, path_end) into a path + query.
   for (int i = path_begin; i < path_end; ++i) {
-    if (spec[i] == '?') {
-      parsed->query = MakeRange(i + 1, path_end);
+    if (url[i] == '?') {
+      parsed.query = MakeRange(i + 1, path_end);
       path_end = i;
       break;
     }
@@ -732,10 +721,11 @@ void DoParseMailtoURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   // For compatability with the standard URL parser, treat no path as
   // -1, rather than having a length of 0
   if (path_begin == path_end) {
-    parsed->path.reset();
+    parsed.path.reset();
   } else {
-    parsed->path = MakeRange(path_begin, path_end);
+    parsed.path = MakeRange(path_begin, path_end);
   }
+  return parsed;
 }
 
 // Converts a port number in a string to an integer. We'd like to just call
@@ -1136,12 +1126,12 @@ void ParseFileSystemURL(const char16_t* url, int url_len, Parsed* parsed) {
   DoParseFileSystemURL(url, url_len, parsed);
 }
 
-void ParseMailtoURL(const char* url, int url_len, Parsed* parsed) {
-  DoParseMailtoURL(url, url_len, parsed);
+Parsed ParseMailtoURL(std::string_view url) {
+  return DoParseMailtoURL(url);
 }
 
-void ParseMailtoURL(const char16_t* url, int url_len, Parsed* parsed) {
-  DoParseMailtoURL(url, url_len, parsed);
+Parsed ParseMailtoURL(std::u16string_view url) {
+  return DoParseMailtoURL(url);
 }
 
 void ParsePathInternal(const char* spec,

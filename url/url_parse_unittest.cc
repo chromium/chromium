@@ -598,10 +598,9 @@ static MailtoURLParseCase mailto_cases[] = {
 TEST(URLParser, MailtoUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
-  Parsed parsed;
   for (const auto& mailto_case : mailto_cases) {
     const char* url = mailto_case.input;
-    ParseMailtoURL(url, static_cast<int>(strlen(url)), &parsed);
+    Parsed parsed = ParseMailtoURL(url);
     int port = ParsePort(url, parsed.port);
 
     EXPECT_TRUE(ComponentMatches(url, mailto_case.scheme, parsed.scheme));
