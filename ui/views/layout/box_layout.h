@@ -213,6 +213,17 @@ class VIEWS_EXPORT BoxLayout : public LayoutManagerBase {
   void UpdateFlexLayout(const NormalizedSizeBounds& bounds,
                         BoxLayoutData& data) const;
 
+  // Get actual main size and update preferred size if needed.
+  // The actual main size is the original preferred size plus
+  // `current_padding`. Recalculate the preferred size if the
+  // size is shrunk.
+  int GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
+      const NormalizedSizeBounds& bounds,
+      BoxLayoutData& data,
+      size_t index,
+      int current_padding,
+      SizeBound cross_axis_size) const;
+
   // Apply alignment rules to the subview, this will crop the subview when it
   // exceeds the bounds.
   void CalculateChildBounds(const SizeBounds& size_bounds,

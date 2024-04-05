@@ -569,36 +569,15 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
       total_padding += current_padding;
     }
 
-    // Set main axis size.
-    box_child.preferred_size = Normalize(
-        orientation_,
-        GetPreferredSizeForView(
-            child_layout.child_view,
-            NormalizedSizeBounds(
-                std::max<SizeBound>(0, bounds.main() - data.total_size.main()),
-                cross_axis_size)));
-    int child_main_axis_size = box_child.preferred_size.main();
-
     int child_min_size = GetMinimumSizeForView(child_layout.child_view);
     if (child_min_size > 0 && !collapse_margins_spacing_) {
       child_min_size += box_child.margins.main_leading();
     }
 
     box_child.actual_bounds.set_size_main(
-        std::max(child_min_size, child_main_axis_size + current_padding));
-
-    // The cross size could change if its main size is shrunk.
-    if (box_child.actual_bounds.size_main() < box_child.preferred_size.main()) {
-      // TODO(crbug.com/332745403): we could probably remove this recalculation
-      // of preferred_size by providing GetPreferredSizeForView() with the
-      // actually allocated main size earlier.
-      box_child.preferred_size = Normalize(
-          orientation_, GetPreferredSizeForView(
-                            child_layout.child_view,
-                            NormalizedSizeBounds(
-                                SizeBound(box_child.actual_bounds.size_main()),
-                                cross_axis_size)));
-    }
+        std::max(child_min_size,
+                 GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
+                     bounds, data, i, current_padding, cross_axis_size)));
 
     if (box_child.actual_bounds.size_main() > 0 || box_child.flex > 0) {
       data.total_size.set_main(box_child.actual_bounds.max_main());
@@ -689,6 +668,38 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
   // Flex views should have grown/shrunk to consume all free space.
   if (flex_sum && main_free_space.is_bounded()) {
     DCHECK_EQ(total_padding, main_free_space);
+  }
+}
+
+int BoxLayout::GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
+    const NormalizedSizeBounds& bounds,
+    BoxLayoutData& data,
+    size_t index,
+    int current_padding,
+    SizeBound cross_axis_size) const {
+  BoxChildData& box_child = data.child_data[index];
+  ChildLayout& child_layout = data.layout.child_layouts[index];
+
+  SizeBound avaible_main_size =
+      std::max<SizeBound>(0, bounds.main() - data.total_size.main());
+
+  bool need_shrink = current_padding < 0 ||
+                     (box_child.flex > 0 &&
+                      avaible_main_size < box_child.preferred_size.main());
+  if (need_shrink) {
+    avaible_main_size = std::max<SizeBound>(
+        0, avaible_main_size.min_of(box_child.preferred_size.main() +
+                                    current_padding));
+
+    // Calculate the preferred size given the current size.
+    box_child.preferred_size = Normalize(
+        orientation_,
+        GetPreferredSizeForView(
+            child_layout.child_view,
+            NormalizedSizeBounds(avaible_main_size, cross_axis_size)));
+    return avaible_main_size.value();
+  } else {
+    return box_child.preferred_size.main() + current_padding;
   }
 }
 
