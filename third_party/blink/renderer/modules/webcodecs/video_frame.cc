@@ -1213,8 +1213,13 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
   }
 
   if (RuntimeEnabledFeatures::WebCodecsCopyToRGBEnabled() &&
-      dest_layout.Format() != local_frame->format() &&
-      media::IsRGB(dest_layout.Format())) {
+      options->hasFormat()) {
+    if (!media::IsRGB(dest_layout.Format())) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "copyTo() doesn't support explicit copy to non-RGB formats. Remove "
+          "format parameter to use VideoFrame's pixel format.");
+    }
     PredefinedColorSpace target_color_space = PredefinedColorSpace::kSRGB;
     if (options->hasColorSpace()) {
       if (!ValidateAndConvertColorSpace(options->colorSpace(),

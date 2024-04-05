@@ -135,10 +135,6 @@ async function main(arg) {
   }
 
   let frame = await source.getNextFrame();
-  if (['RGBA', 'RGBX', 'BGRA', 'BGRX'].includes(frame.format)) {
-    TEST.skip('RGB to RGB conversion, this feature is under construction');
-    return;
-  }
 
   await test_frame(frame, 'srgb');
   await test_frame(frame, 'display-p3');
