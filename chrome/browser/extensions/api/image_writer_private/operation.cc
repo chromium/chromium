@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
@@ -300,29 +299,29 @@ void Operation::MD5Chunk(
 
   CHECK_LE(bytes_processed, bytes_total);
 
-  size_t read_size = std::min(bytes_total - bytes_processed,
-                              static_cast<int64_t>(kMD5BufferSize));
+  std::unique_ptr<char[]> buffer(new char[kMD5BufferSize]);
+  int read_size = std::min(bytes_total - bytes_processed,
+                           static_cast<int64_t>(kMD5BufferSize));
+
   if (read_size == 0) {
     // Nothing to read, we are done.
     base::MD5Digest digest;
     base::MD5Final(&digest, &md5_context_);
     std::move(callback).Run(base::MD5DigestToBase16(digest));
   } else {
-    auto buffer = base::HeapArray<uint8_t>::WithSize(read_size);
-    std::optional<size_t> len = file.Read(bytes_processed, buffer);
+    int len = file.Read(bytes_processed, buffer.get(), read_size);
 
-    if (len == buffer.size()) {
-      // Process data; the buffer was completely filled.
-      base::MD5Update(&md5_context_, buffer);
+    if (len == read_size) {
+      // Process data.
+      base::MD5Update(&md5_context_, base::StringPiece(buffer.get(), len));
       int percent_curr =
-          ((bytes_processed + len.value()) * progress_scale) / bytes_total +
+          ((bytes_processed + len) * progress_scale) / bytes_total +
           progress_offset;
       SetProgress(percent_curr);
 
-      PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
-                              bytes_processed + len.value(), bytes_total,
-                              progress_offset, progress_scale,
-                              std::move(callback)));
+      PostTask(base::BindOnce(
+          &Operation::MD5Chunk, this, std::move(file), bytes_processed + len,
+          bytes_total, progress_offset, progress_scale, std::move(callback)));
       // Skip closing the file.
       return;
     } else {

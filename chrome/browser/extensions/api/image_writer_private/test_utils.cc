@@ -5,10 +5,8 @@
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 
 #include <string.h>
-
 #include <utility>
 
-#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
@@ -285,23 +283,22 @@ const base::FilePath& ImageWriterTestUtils::GetDevicePath() {
 }
 
 bool ImageWriterTestUtils::ImageWrittenToDevice() {
-  auto image_buffer = base::HeapArray<char>::WithSize(kTestFileSize);
-  auto device_buffer = base::HeapArray<char>::WithSize(kTestFileSize);
+  std::unique_ptr<char[]> image_buffer(new char[kTestFileSize]);
+  std::unique_ptr<char[]> device_buffer(new char[kTestFileSize]);
 
-  std::optional<uint64_t> image_bytes_read =
-      ReadFile(test_image_path_, image_buffer);
-  if (!image_bytes_read) {
+  int image_bytes_read =
+      ReadFile(test_image_path_, image_buffer.get(), kTestFileSize);
+
+  if (image_bytes_read < 0)
     return false;
-  }
 
-  std::optional<uint64_t> device_bytes_read =
-      ReadFile(test_device_path_, device_buffer);
-  if (!device_bytes_read) {
+  int device_bytes_read =
+      ReadFile(test_device_path_, device_buffer.get(), kTestFileSize);
+
+  if (image_bytes_read != device_bytes_read)
     return false;
-  }
 
-  return image_buffer.first(image_bytes_read.value()) ==
-         device_buffer.first(device_bytes_read.value());
+  return memcmp(image_buffer.get(), device_buffer.get(), image_bytes_read) == 0;
 }
 
 bool ImageWriterTestUtils::FillFile(const base::FilePath& file,
