@@ -268,7 +268,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
 
   // ui::EventHandler overrides:

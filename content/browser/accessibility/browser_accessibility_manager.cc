@@ -618,7 +618,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
   if (received_load_complete_event) {
     // Fire a focus event after the document has finished loading, but after all
-    // the platform independent events have already fired, e.g. kLayoutComplete.
+    // the platform independent events have already fired.
     // Some screen readers need a focus event in order to work properly.
     FireFocusEventsIfNeeded();
 

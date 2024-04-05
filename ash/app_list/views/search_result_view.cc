@@ -1507,10 +1507,6 @@ void SearchResultView::OnMouseExited(const ui::MouseEvent& event) {
   actions_view()->UpdateButtonsOnStateChanged();
 }
 
-void SearchResultView::VisibilityChanged(View* starting_from, bool is_visible) {
-  NotifyAccessibilityEvent(ax::mojom::Event::kLayoutComplete, true);
-}
-
 void SearchResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateIconAndBadgeIcon();

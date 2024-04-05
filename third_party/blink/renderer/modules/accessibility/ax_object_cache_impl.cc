@@ -5570,7 +5570,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
         kBucketCount);
   }
 
-  // Add kLayoutComplete if layout has changed.
   if (need_to_send_location_changes_) {
     need_to_send_location_changes_ = false;  // Class member is now clear.
     need_to_send_location_changes = true;    // Reference parameter.
@@ -5933,6 +5932,9 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   }
 }
 
+// TODO(accessiblity): Will be investigated to be removed. Ahmed thinks we can
+// get rid of this method and its callers and just work with the list of
+// pending location updates.
 void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   DCHECK(document);

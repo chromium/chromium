@@ -431,10 +431,8 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
   CHECK(event_router);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
-  event_router->DispatchAccessibilityEvents(
-      update.tree_data.tree_id, {update}, mouse_location,
-      {ui::AXEvent(update.root_id, ax::mojom::Event::kLayoutComplete,
-                   ax::mojom::EventFrom::kNone)});
+  event_router->DispatchAccessibilityEvents(update.tree_data.tree_id, {update},
+                                            mouse_location, {});
 #endif  // defined(USE_AURA)
 }
 
