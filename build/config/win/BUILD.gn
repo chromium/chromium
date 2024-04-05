@@ -410,6 +410,7 @@ config("cfi_linker") {
 # tests with the full browser.
 config("delayloads") {
   ldflags = [
+    "/DELAYLOAD:api-ms-win-core-synch-l1-2-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
