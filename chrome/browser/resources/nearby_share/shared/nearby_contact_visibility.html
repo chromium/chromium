@@ -329,7 +329,7 @@
       on-dom-change="domChangeDownloadFailed_">
     <div id="contactsFailed" class="content">
       <iron-icon id="contactsFailedImage"
-        icon$="[[getContactsFailedIcon_(isJellyEnabled_)]]">
+          icon="nearby-images:contacts-download-failed">
       </iron-icon>
       <div id="contactsFailedMessage"></div>
     </div>
@@ -339,8 +339,7 @@
   <template is="dom-if"
       if="[[showEmptyState_(selectedVisibility, contactsState)]]">
     <div id="noContactsContainer" class="content">
-      <iron-icon id="noContactsImage"
-          icon$="[[getContactsEmptyIcon_(isJellyEnabled_)]]">
+      <iron-icon id="noContactsImage" icon="nearby-images:contacts-empty">
       </iron-icon>
       <div class="cr-title-text">
         $i18n{nearbyShareContactVisibilityNoContactsTitle}

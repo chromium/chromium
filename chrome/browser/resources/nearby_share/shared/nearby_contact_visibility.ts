@@ -52,15 +52,6 @@ const DEVICE_VISIBILITY_LIGHT_ICON =
 const DEVICE_VISIBILITY_DARK_ICON =
     'nearby-images:nearby-device-visibility-dark';
 
-const CONTACTS_EMPTY_ICON = 'nearby-images:contacts-empty';
-
-const CONTACTS_EMPTY_JELLY_ICON = 'nearby-images:contacts-empty-jelly';
-
-const CONTACTS_FAILED_ICON = 'nearby-images:contacts-download-failed';
-
-const CONTACTS_FAILED_JELLY_ICON =
-    'nearby-images:contacts-download-failed-jelly';
-
 export interface NearbyVisibilityContact {
   id: string;
   name: string;
@@ -144,18 +135,6 @@ export class NearbyContactVisibilityElement extends
       },
 
       /**
-       * Return true if the Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
-
-      /**
        * Return true if the Self Share feature flag is enabled.
        */
       isSelfShareEnabled_: {
@@ -206,7 +185,6 @@ export class NearbyContactVisibilityElement extends
       null;
   private downloadTimeoutId_: number|null;
   private isDarkModeActive_: boolean;
-  private isJellyEnabled_: boolean;
   private isAllContactsToggledOn_: boolean;
   private isSelfShareEnabled_: boolean;
   private numUnreachable_: number;
@@ -730,22 +708,6 @@ export class NearbyContactVisibilityElement extends
   private getDeviceVisibilityIcon_(): string {
     return this.isDarkModeActive_ ? DEVICE_VISIBILITY_DARK_ICON :
                                     DEVICE_VISIBILITY_LIGHT_ICON;
-  }
-
-  /**
-   * Returns the contacts empty icon based on Jelly enablement.
-   */
-  private getContactsEmptyIcon_(): string {
-    return this.isJellyEnabled_ ? CONTACTS_EMPTY_JELLY_ICON :
-                                  CONTACTS_EMPTY_ICON;
-  }
-
-  /**
-   * Returns the contacts failed icon based on Jelly enablement.
-   */
-  private getContactsFailedIcon_(): string {
-    return this.isJellyEnabled_ ? CONTACTS_FAILED_JELLY_ICON :
-                                  CONTACTS_FAILED_ICON;
   }
 
   /**
