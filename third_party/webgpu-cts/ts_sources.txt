@@ -1,8 +1,8 @@
 src/external/petamoriken/float16/float16.d.ts
 src/common/framework/test_config.ts
 src/common/internal/stack.ts
-src/common/internal/logging/log_message.ts
 src/common/internal/logging/result.ts
+src/common/internal/logging/log_message.ts
 src/common/internal/logging/test_case_recorder.ts
 src/common/util/types.ts
 src/common/runtime/helper/options.ts
