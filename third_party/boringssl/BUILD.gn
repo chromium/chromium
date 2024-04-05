@@ -28,10 +28,7 @@ config("external_config") {
 config("component_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   configs = [ ":internal_config" ]
-  defines = [
-    "BORINGSSL_IMPLEMENTATION",
-    "_BORINGSSL_LIBPKI_",
-  ]
+  defines = [ "BORINGSSL_IMPLEMENTATION" ]
 }
 
 # This config is used by anything that consumes internal headers. Tests consume
@@ -41,7 +38,6 @@ config("internal_config") {
   defines = [
     "BORINGSSL_ALLOW_CXX_RUNTIME",
     "BORINGSSL_NO_STATIC_INITIALIZER",
-    "_BORINGSSL_LIBPKI_",
     "OPENSSL_SMALL",
   ]
 }
@@ -175,6 +171,25 @@ component("boringssl") {
 if (build_with_chromium) {
   import("//testing/libfuzzer/fuzzer_test.gni")
 
+  source_set("test_support") {
+    # TODO(crbug.com/boringssl/542): When we switch to the new source lists,
+    # we will have separate variables for the sources and headers.
+    sources = filter_exclude(test_support_sources, [ "*.h" ])
+    public = filter_include(test_support_sources, [ "*.h" ])
+    testonly = true
+
+    # Test data in Chromium is complex. Swap out GetTestData with a
+    # Chromium-specific implementation.
+    sources += [ "test_data_chromium.cc" ]
+    defines = [ "BORINGSSL_CUSTOM_GET_TEST_DATA" ]
+
+    deps = [
+      ":boringssl",
+      "//base",
+      "//testing/gtest",
+    ]
+  }
+
   # These targets are named "_tests" rather than "_test" to avoid colliding with
   # a historical "boringssl_ssl_test" target. This works around a bug with the
   # iOS build rules.
@@ -187,11 +202,12 @@ if (build_with_chromium) {
   }
 
   test("boringssl_crypto_tests") {
-    sources = crypto_test_sources + test_support_sources
+    sources = crypto_test_sources
     data = crypto_test_data
     deps = [
       ":boringssl",
       ":boringssl_crypto_tests_bundle_data",
+      ":test_support",
       "//testing/gtest",
     ]
 
@@ -203,10 +219,7 @@ if (build_with_chromium) {
 
     # Chromium infrastructure does not support GTest, only the //base wrapper.
     sources -= [ "src/crypto/test/gtest_main.cc" ]
-    sources += [
-      "gtest_main_chromium.cc",
-      "test_data_chromium.cc",
-    ]
+    sources += [ "gtest_main_chromium.cc" ]
     deps += [ "//base/test:test_support" ]
 
     if (is_fuchsia) {
@@ -216,9 +229,10 @@ if (build_with_chromium) {
   }
 
   test("boringssl_ssl_tests") {
-    sources = ssl_test_sources + test_support_sources
+    sources = ssl_test_sources
     deps = [
       ":boringssl",
+      ":test_support",
       "//testing/gtest",
     ]
 
@@ -235,10 +249,11 @@ if (build_with_chromium) {
   }
 
   test("boringssl_pki_tests") {
-    sources = pki_test_sources + test_support_sources
+    sources = pki_test_sources
     data = pki_test_data
     deps = [
       ":boringssl",
+      ":test_support",
       "//testing/gtest",
     ]
 

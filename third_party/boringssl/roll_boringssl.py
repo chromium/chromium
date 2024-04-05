@@ -165,7 +165,6 @@ def main():
   subprocess.check_call(['python3',
                          os.path.join(BORINGSSL_SRC_PATH, 'util',
                                       'generate_build_files.py'),
-                         '--embed_test_data=false',
                          'gn'],
                         cwd=BORINGSSL_PATH)
 
