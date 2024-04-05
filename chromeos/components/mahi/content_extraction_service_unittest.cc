@@ -151,6 +151,24 @@ const TestCase kTreeExtractionTestCases[] = {
     },
     /* ----------------------- */
     {
+        "simple_page_with_article_hierarchy",
+        R"HTML(
+    ++1 kRootWebArea name="document"
+    ++++2 kMain
+    ++++++3 kArticle
+    ++++++++6 kParagraph
+    ++++++++++9 kStaticText name="article-text"
+    ++++++4 kParagraph
+    ++++++++7 kStaticText name="some-text"
+    ++++++5 kArticle
+    ++++++++8 kParagraph
+    ++++++++++10 kStaticText name="some-other-text"
+  )HTML",
+        u"article-text\n\nsome-text\n\nsome-other-text",
+        7,
+    },
+    /* ----------------------- */
+    {
         "simple_page_unsupported_roles",
         R"HTML(
     ++1 kRootWebArea name="document"

@@ -66,32 +66,29 @@ void AddContentNodesToVector(const ui::AXNode* node,
 }
 
 // Get contents from the a11y tree based on the `content_node_ids`.
-std::u16string GetContents(const ui::AXNode* root,
-                           const std::vector<ui::AXNodeID>& content_node_ids) {
-  std::u16string contents = std::u16string();
+void GetContents(const ui::AXNode* root,
+                 const std::vector<ui::AXNodeID>& content_node_ids,
+                 std::u16string* contents) {
   if (!root || content_node_ids.empty()) {
-    return contents;
+    return;
   }
 
-  std::queue<const ui::AXNode*> queue;
-  queue.push(root);
-  while (!queue.empty()) {
-    const ui::AXNode* node = queue.front();
-    queue.pop();
-    // If a content node is found, add its content to the result and continue.
-    if (base::Contains(content_node_ids, node->id())) {
-      if (!contents.empty()) {
-        contents.append(u"\n\n");
-      }
-      contents.append(node->GetTextContentUTF16());
-      continue;
+  // If a content node is found, add its content to the result and early return.
+  if (base::Contains(content_node_ids, root->id())) {
+    if (!contents->empty()) {
+      contents->append(u"\n\n");
     }
-    for (auto iter = node->UnignoredChildrenBegin();
-         iter != node->UnignoredChildrenEnd(); ++iter) {
-      queue.push(iter.get());
-    }
+    contents->append(root->GetTextContentUTF16());
+    return;
   }
-  return contents;
+  // Use dfs search to ensure the contents is the same order as users see them
+  // in the page.
+  // TODO(chenjih): Revisit this if ax tree can be super deep. But this should 
+  // be quite rare. 
+  for (auto iter = root->UnignoredChildrenBegin();
+       iter != root->UnignoredChildrenEnd(); ++iter) {
+    GetContents(iter.get(), content_node_ids, contents);
+  }
 }
 
 // Get word count from contents.
@@ -231,7 +228,9 @@ void AXTreeExtractor::OnDistilledForContentExtraction(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   mojom::ExtractionResponsePtr extraction_response =
       mojom::ExtractionResponse::New();
-  extraction_response->contents = GetContents(tree->root(), content_node_ids);
+  std::u16string contents;
+  GetContents(tree->root(), content_node_ids, &contents);
+  extraction_response->contents = std::move(contents);
   extraction_response->status = error_status;
 
   std::move(callback).Run(std::move(extraction_response));
@@ -244,7 +243,8 @@ void AXTreeExtractor::OnDistilledForContentSize(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   mojom::ContentSizeResponsePtr content_size_response =
       mojom::ContentSizeResponse::New();
-  std::u16string contents = GetContents(tree->root(), content_node_ids);
+  std::u16string contents;
+  GetContents(tree->root(), content_node_ids, &contents);
   content_size_response->word_count = GetContentsWordCount(contents);
   content_size_response->status = error_status;
 
