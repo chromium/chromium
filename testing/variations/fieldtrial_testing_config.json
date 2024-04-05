@@ -15979,6 +15979,21 @@
             ]
         }
     ],
+    "RevampPageInfoIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RevampPageInfoIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "RunTasksByBatches": [
         {
             "platforms": [
