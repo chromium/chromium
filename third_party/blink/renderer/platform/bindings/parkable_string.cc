@@ -887,6 +887,9 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   // Both of these will make the string young again, and if so we don't
   // discard the compressed representation yet.
   if (CanParkNow() && metadata_->compressed_) {
+    // Prevent `data` from dangling, since it points to the uncompressed data
+    // freed below.
+    params->data = nullptr;
     DiscardUncompressedData();
   } else {
     metadata_->state_ = State::kUnparked;
@@ -962,6 +965,9 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
   DCHECK(metadata_->state_ == State::kUnparked ||
          metadata_->state_ == State::kParked);
   if (metadata_->state_ == State::kParked) {
+    // Prevent `data` from dangling, since it points to the compressed data
+    // freed below.
+    params->data = nullptr;
     DiscardCompressedData();
     DCHECK_EQ(metadata_->state_, State::kOnDisk);
   }
