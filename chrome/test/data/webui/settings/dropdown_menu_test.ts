@@ -60,11 +60,13 @@ suite('SettingsDropdownMenu', function() {
     // Selecting an item updates the pref.
     await simulateChangeEvent('200');
     assertEquals(200, dropdown.pref!.value);
+    assertEquals('200', dropdown.getSelectedValue());
 
     // Updating the pref selects an item.
     dropdown.set('pref.value', 400);
     await waitUntilDropdownUpdated();
     assertEquals('400', selectElement.value);
+    assertEquals('400', dropdown.getSelectedValue());
   });
 
   test('with string options', async function() {
@@ -87,11 +89,13 @@ suite('SettingsDropdownMenu', function() {
     // Selecting an item updates the pref.
     await simulateChangeEvent('a');
     assertEquals('a', dropdown.pref!.value);
+    assertEquals('a', dropdown.getSelectedValue());
 
     // Item remains selected after updating menu items.
     const newMenuOptions = dropdown.menuOptions.slice().reverse();
     dropdown.menuOptions = newMenuOptions;
     await waitUntilDropdownUpdated();
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
     assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
   });
 
@@ -117,10 +121,12 @@ suite('SettingsDropdownMenu', function() {
     dropdown.set('pref.value', 200);
     await waitUntilDropdownUpdated();
     assertEquals('200', selectElement.value);
+    assertEquals('200', dropdown.getSelectedValue());
 
     // Selecting an item does not automatically update the pref with noSetPref.
     await simulateChangeEvent('300');
     assertEquals(200, dropdown.pref!.value);
+    assertEquals('300', dropdown.getSelectedValue());
 
     // Calling |sendPrefChange()| updates the pref.
     dropdown.sendPrefChange();
@@ -148,6 +154,7 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
     // "Custom" initially selected.
     assertEquals(dropdown.notFoundValue, selectElement.value);
+    assertEquals(dropdown.notFoundValue, dropdown.getSelectedValue());
     assertEquals('block', getComputedStyle(customOption).display);
     assertFalse(customOption.disabled);
 

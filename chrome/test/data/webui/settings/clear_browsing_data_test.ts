@@ -384,8 +384,6 @@ suite('ClearBrowsingDataDesktop', function() {
     const dropdownMenu =
         page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
     assertTrue(!!dropdownMenu);
-    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
-    assertTrue(!!selectElement);
 
     const unsupported_pref_value = 100;
 
@@ -396,7 +394,8 @@ suite('ClearBrowsingDataDesktop', function() {
     // Assert unsupported value in Advanced tab is replaced by the Default value
     // (Last hour).
     assertEquals(TimePeriod.LAST_HOUR, element.getPref(prefName).value);
-    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
+    assertEquals(
+        TimePeriod.LAST_HOUR.toString(), dropdownMenu.getSelectedValue());
   }
 
   test('ClearBrowsingData_UnsupportedTimePeriod_Basic', function() {
@@ -437,17 +436,16 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const dropdownMenu =
         page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
     assertTrue(!!dropdownMenu);
-    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
-    assertTrue(!!selectElement);
 
     // Ensure the test starts with a known pref and dropdown value.
     element.setPrefValue(prefName, TimePeriod.LAST_DAY);
     await waitAfterNextRender(dropdownMenu);
-    assertEquals(TimePeriod.LAST_DAY.toString(), selectElement.value);
+    assertEquals(
+        TimePeriod.LAST_DAY.toString(), dropdownMenu.getSelectedValue());
 
     // Changing the dropdown selection does persist its value to the pref.
-    selectElement.value = TimePeriod.LAST_WEEK.toString();
-    selectElement.dispatchEvent(new CustomEvent('change'));
+    dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_WEEK.toString();
+    dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
     await waitAfterNextRender(dropdownMenu);
     assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
 

@@ -135,6 +135,14 @@ export class SettingsDropdownMenuElement extends
   }
 
   /**
+   * Allow access to the selected value without having to go through the shadow
+   * dom.
+   */
+  getSelectedValue() {
+    return this.$.dropdownMenu.value;
+  }
+
+  /**
    * Pass the selection change to the pref value.
    */
   private onChange_() {
