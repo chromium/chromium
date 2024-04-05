@@ -172,7 +172,9 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
                 INTERFACE_PAIR(IPolicyStatus3System),
                 INTERFACE_PAIR(IPolicyStatusValueSystem),
                 INTERFACE_PAIR(IProcessLauncher),
+                INTERFACE_PAIR(IProcessLauncherSystem),
                 INTERFACE_PAIR(IProcessLauncher2),
+                INTERFACE_PAIR(IProcessLauncher2System),
             };
         }
       }(),
@@ -607,6 +609,8 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatus2System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatus3System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IProcessLauncherSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IProcessLauncher2System), kUpdaterLegacySystemIndex},
   };
   const auto index = kTypeLibIndexes.find(iid);
   CHECK(index != kTypeLibIndexes.end()) << base::win::WStringFromGUID(iid);
