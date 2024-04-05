@@ -68,14 +68,14 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (UNLIKELY(select && select->UsesMenuList())) {
-    if (select->IsAppearanceBikeshed()) {
+    if (select->IsAppearanceBaseSelect()) {
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       if (IsA<HTMLOptionElement>(object->GetNode())) {
         // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
         // the UA <datalist>, which will be hidden by default as a popover.
         return false;
       }
-      // For appearance:bikeshed <select>, we want to render all children.
+      // For appearance:base-select <select>, we want to render all children.
       // However, the InnerElement is only used for rendering in
       // appearance:auto, so don't include that one.
       return object->GetNode() != &select->InnerElementForAppearanceAuto();

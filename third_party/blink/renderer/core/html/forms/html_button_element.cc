@@ -165,7 +165,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
     // For native popups, use HTMLSelectElement's codepath. For <datalist>
     // popover popups, use the HTMLFormControlElement popover code path.
-    if (select->IsAppearanceBikeshed()) {
+    if (select->IsAppearanceBaseSelect()) {
       CHECK(!event.DefaultHandled())
           << " We shouldn't run HTMLSelectElement::DefaultEventHandler here if "
              "the default has already been handled. event.type(): "

@@ -1262,7 +1262,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
   const bool apply_fixed_size = StyleRef().ApplyControlFixedSize(&element);
   const auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList() &&
-               !select->IsAppearanceBikeshed())) {
+               !select->IsAppearanceBaseSelect())) {
     return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
                             : kIndefiniteSize;
   }
@@ -1318,7 +1318,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (!select->IsAppearanceBikeshed()) {
+    if (!select->IsAppearanceBaseSelect()) {
       if (select->UsesMenuList()) {
         return MenuListIntrinsicBlockSize(*select, *this);
       }

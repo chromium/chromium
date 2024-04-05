@@ -177,7 +177,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
     case kMediaVolumeSliderThumbPart:
     case kMediaControlPart:
       return part;
-    case kBikeshedPart:
+    case kBaseSelectPart:
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       return part;
 

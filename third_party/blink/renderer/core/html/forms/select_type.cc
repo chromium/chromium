@@ -117,7 +117,7 @@ class MenuListSelectType final : public SelectType {
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
   HTMLDataListElement* DisplayedDatalist() const override;
-  bool IsAppearanceBikeshed() const override;
+  bool IsAppearanceBaseSelect() const override;
   Element& InnerElementForAppearanceAuto() const override;
   void ShowPopup(PopupMenu::ShowEventType type) override;
   void HidePopup() override;
@@ -155,7 +155,7 @@ class MenuListSelectType final : public SelectType {
   bool has_updated_menulist_active_option_ = false;
   bool native_popup_is_visible_ = false;
   bool snav_arrow_key_selection_ = false;
-  bool is_appearance_bikeshed_ = false;
+  bool is_appearance_base_select_ = false;
 };
 
 void MenuListSelectType::Trace(Visitor* visitor) const {
@@ -182,10 +182,10 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
                                WebInputEvent::kControlKey |
                                WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
 
-  if (IsAppearanceBikeshed()) {
+  if (IsAppearanceBaseSelect()) {
     auto* key_event = DynamicTo<KeyboardEvent>(event);
     if (!key_event) {
-      // In appearance:bikeshed mode, all mouse behavior is handled by
+      // In appearance:base-select mode, all mouse behavior is handled by
       // HTMLFormControlElement's popovertarget implementation. The mouse
       // handling later in this method is for appearance:auto mode only.
       return false;
@@ -483,12 +483,12 @@ HTMLDataListElement* MenuListSelectType::DisplayedDatalist() const {
       FlatTreeTraversal::FirstChild(*datalist_slot_));
 }
 
-bool MenuListSelectType::IsAppearanceBikeshed() const {
+bool MenuListSelectType::IsAppearanceBaseSelect() const {
   if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return false;
   }
   if (auto* style = select_->GetComputedStyle()) {
-    return style->EffectiveAppearance() == ControlPart::kBikeshedPart;
+    return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
   }
   return false;
 }
@@ -502,7 +502,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     return;
   }
 
-  if (IsAppearanceBikeshed()) {
+  if (IsAppearanceBaseSelect()) {
     select_->DisplayedDatalist()->showPopover(ASSERT_NO_EXCEPTION);
     return;
   }
@@ -548,7 +548,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 }
 
 void MenuListSelectType::HidePopup() {
-  if (IsAppearanceBikeshed()) {
+  if (IsAppearanceBaseSelect()) {
     DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
     return;
   }
@@ -566,7 +566,7 @@ void MenuListSelectType::PopupDidHide() {
 }
 
 bool MenuListSelectType::PopupIsVisible() const {
-  if (IsAppearanceBikeshed()) {
+  if (IsAppearanceBaseSelect()) {
     return DisplayedDatalist()->popoverOpen();
   } else {
     return native_popup_is_visible_;
@@ -673,19 +673,19 @@ void MenuListSelectType::DidDetachLayoutTree() {
 
 void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
   if (auto* style = select_->GetComputedStyle()) {
-    bool is_appearance_bikeshed =
-        style->EffectiveAppearance() == ControlPart::kBikeshedPart;
-    if (is_appearance_bikeshed_ != is_appearance_bikeshed) {
-      is_appearance_bikeshed_ = is_appearance_bikeshed;
+    bool is_appearance_base_select =
+        style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
+    if (is_appearance_base_select_ != is_appearance_base_select) {
+      is_appearance_base_select_ = is_appearance_base_select;
       // Switching appearance needs layout to be rebuilt because of special
       // logic in LayoutFlexibleBox::IsChildAllowed which ignores children in
       // appearance:auto mode. We also call SetNeedsReattachLayoutTree every
       // time that the size and multiple attributes are changed.
       select_->SetNeedsReattachLayoutTree();
 
-      // In appearance:bikeshed mode, we want the child button to get focus
+      // In appearance:base-select mode, we want the child button to get focus
       // instead of the <select> itself.
-      select_->GetShadowRoot()->SetDelegatesFocus(is_appearance_bikeshed);
+      select_->GetShadowRoot()->SetDelegatesFocus(is_appearance_base_select);
     }
   }
 
@@ -921,7 +921,7 @@ class ListBoxSelectType final : public SelectType {
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
   HTMLDataListElement* DisplayedDatalist() const override;
-  bool IsAppearanceBikeshed() const override;
+  bool IsAppearanceBaseSelect() const override;
 
  private:
   HTMLOptionElement* NextSelectableOptionPageAway(HTMLOptionElement*,
@@ -1590,7 +1590,7 @@ HTMLDataListElement* ListBoxSelectType::DisplayedDatalist() const {
   return nullptr;
 }
 
-bool ListBoxSelectType::IsAppearanceBikeshed() const {
+bool ListBoxSelectType::IsAppearanceBaseSelect() const {
   return false;
 }
 

@@ -56,7 +56,7 @@ enum ControlPart {
   kSliderThumbVerticalPart,
   kSearchFieldCancelButtonPart,
   kSliderVerticalPart,
-  kBikeshedPart,
+  kBaseSelectPart,
 };
 
 }  // namespace blink

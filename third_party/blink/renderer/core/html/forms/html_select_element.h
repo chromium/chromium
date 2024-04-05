@@ -200,7 +200,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   // These should be called only if UsesMenuList().
   // TODO(crbug.com/1511354): Audit usage of InnerElementForAppearanceAuto to
-  // make sure it correctly handles the appearance:bikeshed case.
+  // make sure it correctly handles the appearance:base-select case.
   Element& InnerElementForAppearanceAuto() const;
   AXObject* PopupRootAXObject() const;
 
@@ -231,9 +231,9 @@ class CORE_EXPORT HTMLSelectElement final
   HTMLDataListElement* FirstChildDatalist() const;
   void RecalcFirstChildDatalist();
 
-  // This method returns true if the computed style is appearance:bikeshed and
-  // the SelectType supports alternate rendering based on appearance:bikeshed.
-  bool IsAppearanceBikeshed() const;
+  // This method returns true if the computed style is appearance:base-select and
+  // the SelectType supports alternate rendering based on appearance:base-select.
+  bool IsAppearanceBaseSelect() const;
 
   void SelectedOptionElementInserted(HTMLSelectedOptionElement* selectedoption);
   void SelectedOptionElementRemoved(HTMLSelectedOptionElement* selectedoption);

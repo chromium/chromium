@@ -18,7 +18,7 @@ class HTMLOptionElement;
 // IsDescendantOf check, is slow. Some ideas to speed things up:
 // - Only create a mutation observer if the <selectedoption> isConnected.
 // - Only run checks when the <selectedoption> is included in the flat tree.
-// - Only create a mutation observer if the <select> is in appearance:bikeshed
+// - Only create a mutation observer if the <select> is in appearance:base-select
 //   mode.
 // - Only create one mutation observer for each <selectedoption> in a <select>,
 //   which may happen due to having one in the <select>'s UA shadowroot.

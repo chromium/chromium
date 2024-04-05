@@ -139,7 +139,7 @@ void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
   }
 
   if (auto* select = ParentSelect()) {
-    if (select->IsAppearanceBikeshed()) {
+    if (select->IsAppearanceBaseSelect()) {
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       // MenuListSelectType::ManuallyAssignSlots changes behavior based on
       // whether the popover is opened or closed.
@@ -160,7 +160,7 @@ void HTMLDataListElement::HidePopoverInternal(
   HTMLElement::HidePopoverInternal(focus_behavior, event_firing,
                                    exception_state);
   if (auto* select = ParentSelect()) {
-    if (select->IsAppearanceBikeshed()) {
+    if (select->IsAppearanceBaseSelect()) {
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       // MenuListSelectType::ManuallyAssignSlots changes behavior based on
       // whether the popover is opened or closed.

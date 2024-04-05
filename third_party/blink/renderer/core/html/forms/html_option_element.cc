@@ -134,9 +134,9 @@ bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
   }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
-    if (select->IsAppearanceBikeshed()) {
+    if (select->IsAppearanceBaseSelect()) {
       // In the case that this option is a direct child of an
-      // appearance:bikeshed select,
+      // appearance:base-select select,
       // is_descendant_of_select_list_or_select_datalist_ will be false but we
       // still want the option to be focusable.
       return !IsDisabledFormControl();
@@ -630,8 +630,8 @@ bool HTMLOptionElement::IsDisplayNone() const {
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
   auto* select = OwnerSelectElement();
-  if (select && !select->IsAppearanceBikeshed()) {
-    // We only want to apply mouse/keyboard behavior for appearance:bikeshed
+  if (select && !select->IsAppearanceBaseSelect()) {
+    // We only want to apply mouse/keyboard behavior for appearance:base-select
     // selects.
     select = nullptr;
   }

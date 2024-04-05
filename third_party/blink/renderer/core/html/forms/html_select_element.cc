@@ -1594,8 +1594,8 @@ void HTMLSelectElement::RecalcFirstChildDatalist() {
   }
 }
 
-bool HTMLSelectElement::IsAppearanceBikeshed() const {
-  return select_type_->IsAppearanceBikeshed();
+bool HTMLSelectElement::IsAppearanceBaseSelect() const {
+  return select_type_->IsAppearanceBaseSelect();
 }
 
 void HTMLSelectElement::SelectedOptionElementInserted(
@@ -1609,8 +1609,8 @@ void HTMLSelectElement::SelectedOptionElementRemoved(
 }
 
 bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  if (IsAppearanceBikeshed()) {
-    // In appearance:bikeshed mode, the child button gets focus instead of the
+  if (IsAppearanceBaseSelect()) {
+    // In appearance:base-select mode, the child button gets focus instead of the
     // select via delegatesfocus. We must return false here in order to make the
     // delegatesfocus focusing code find the child button.
     return false;
