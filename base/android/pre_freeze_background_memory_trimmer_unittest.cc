@@ -4,12 +4,16 @@
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 
+#include <optional>
+
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::android {
+
+using TaskType = PreFreezeBackgroundMemoryTrimmer::TaskType;
 
 namespace {
 
@@ -381,6 +385,86 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
   // Expect 0 here because we decremented it. The incrementing task was
   // cancelled when we restarted the experiment.
   EXPECT_EQ(s_counter, 0);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunDirectly) {
+  std::optional<TaskType> called_task_type = std::nullopt;
+  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
+      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindOnce([](std::optional<TaskType>& called_task_type,
+                        TaskType task_type) { called_task_type = task_type; },
+                     std::ref(called_task_type)),
+      base::Seconds(30));
+
+  ASSERT_FALSE(called_task_type.has_value());
+  ASSERT_EQ(pending_task_count(), 1u);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  EXPECT_EQ(called_task_type.value(), TaskType::kNormalTask);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunFromPreFreeze) {
+  std::optional<TaskType> called_task_type = std::nullopt;
+  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
+      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindOnce([](std::optional<TaskType>& called_task_type,
+                        TaskType task_type) { called_task_type = task_type; },
+                     std::ref(called_task_type)),
+      base::Seconds(30));
+
+  ASSERT_FALSE(called_task_type.has_value());
+  ASSERT_EQ(pending_task_count(), 1u);
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  EXPECT_EQ(called_task_type.value(), TaskType::kPreFreezeTask);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunDirectly) {
+  OneShotDelayedBackgroundTimer timer;
+  std::optional<TaskType> called_task_type = std::nullopt;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(
+      FROM_HERE, base::Seconds(30),
+      base::BindOnce([](std::optional<TaskType>& called_task_type,
+                        TaskType task_type) { called_task_type = task_type; },
+                     std::ref(called_task_type)));
+
+  ASSERT_FALSE(called_task_type.has_value());
+  ASSERT_EQ(pending_task_count(), 1u);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  EXPECT_EQ(called_task_type.value(), TaskType::kNormalTask);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunFromPreFreeze) {
+  OneShotDelayedBackgroundTimer timer;
+  std::optional<TaskType> called_task_type = std::nullopt;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(
+      FROM_HERE, base::Seconds(30),
+      base::BindOnce([](std::optional<TaskType>& called_task_type,
+                        TaskType task_type) { called_task_type = task_type; },
+                     std::ref(called_task_type)));
+
+  ASSERT_FALSE(called_task_type.has_value());
+  ASSERT_EQ(pending_task_count(), 1u);
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  EXPECT_EQ(called_task_type.value(), TaskType::kPreFreezeTask);
 }
 
 }  // namespace base::android
