@@ -27,7 +27,8 @@ SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
       db_path_(db_path),
       db_(sql::Database(sql::DatabaseOptions())),
       term_table_(&db_),
-      url_table_(&db_) {}
+      url_table_(&db_),
+      file_info_table_(&db_) {}
 
 SqlStorage::~SqlStorage() {
   db_.reset_error_callback();
@@ -61,12 +62,17 @@ bool SqlStorage::Init() {
 
   // Initialize all tables owned by SqlStorage.
   if (!term_table_.Init()) {
-    LOG(ERROR) << "Failed to initialize term table";
+    LOG(ERROR) << "Failed to initialize term_table";
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
     return false;
   }
   if (!url_table_.Init()) {
-    LOG(ERROR) << "Failed to initialize URL table";
+    LOG(ERROR) << "Failed to initialize url_table";
+    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    return false;
+  }
+  if (!file_info_table_.Init()) {
+    LOG(ERROR) << "Failed to initialize file_info_table";
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
     return false;
   }
@@ -118,6 +124,39 @@ int64_t SqlStorage::GetUrlId(const GURL& url) {
 int64_t SqlStorage::DeleteUrl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_table_.DeleteUrl(url);
+}
+
+int64_t SqlStorage::PutFileInfo(const FileInfo& file_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int64_t url_id = url_table_.GetUrlId(file_info.file_url);
+  if (url_id == -1) {
+    return -1;
+  }
+  return file_info_table_.PutFileInfo(url_id, file_info);
+}
+
+int64_t SqlStorage::GetFileInfo(const GURL& url, FileInfo* file_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int64_t url_id = url_table_.GetUrlId(url);
+  if (url_id == -1) {
+    return -1;
+  }
+  int64_t gotten_url_id = file_info_table_.GetFileInfo(url_id, file_info);
+  if (gotten_url_id == -1) {
+    return -1;
+  }
+  DCHECK(gotten_url_id == url_id);
+  file_info->file_url = url;
+  return url_id;
+}
+
+int64_t SqlStorage::DeleteFileInfo(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int64_t url_id = url_table_.GetUrlId(url);
+  if (url_id == -1) {
+    return -1;
+  }
+  return file_info_table_.DeleteFileInfo(url_id);
 }
 
 }  // namespace file_manager
