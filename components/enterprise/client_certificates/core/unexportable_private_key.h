@@ -19,8 +19,7 @@ namespace client_certificates {
 class UnexportablePrivateKey : public PrivateKey {
  public:
   explicit UnexportablePrivateKey(
-      std::unique_ptr<crypto::UnexportableSigningKey> key,
-      scoped_refptr<net::SSLPrivateKey> ssl_private_key);
+      std::unique_ptr<crypto::UnexportableSigningKey> key);
 
   // PrivateKey:
   std::optional<std::vector<uint8_t>> SignSlowly(

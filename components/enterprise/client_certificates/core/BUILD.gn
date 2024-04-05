@@ -10,6 +10,7 @@ source_set("core") {
   public = [
     "certificate_provisioning_service.h",
     "certificate_store.h",
+    "client_certificates_service.h",
     "client_identity.h",
     "cloud_management_delegate.h",
     "constants.h",
@@ -31,6 +32,7 @@ source_set("core") {
   sources = [
     "certificate_provisioning_service.cc",
     "certificate_store.cc",
+    "client_certificates_service.cc",
     "client_identity.cc",
     "constants.cc",
     "ec_private_key.cc",
@@ -41,6 +43,8 @@ source_set("core") {
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "ssl_client_cert_identity_wrapper.cc",
+    "ssl_client_cert_identity_wrapper.h",
     "ssl_key_converter.cc",
     "ssl_key_converter.h",
     "store_error.cc",
@@ -62,9 +66,13 @@ source_set("core") {
     "//components/policy/proto",
     "//components/prefs",
     "//net",
+    "//third_party/boringssl",
   ]
 
-  friend = [ ":test_support" ]
+  friend = [
+    ":test_support",
+    ":unit_tests",
+  ]
 }
 
 source_set("test_support") {
@@ -107,10 +115,12 @@ source_set("unit_tests") {
   sources = [
     "certificate_provisioning_service_unittest.cc",
     "certificate_store_unittest.cc",
+    "client_certificates_service_unittest.cc",
     "ec_private_key_factory_unittest.cc",
     "ec_private_key_unittest.cc",
     "key_upload_client_unittest.cc",
     "private_key_factory_unittest.cc",
+    "ssl_client_cert_identity_wrapper_unittest.cc",
     "unexportable_private_key_factory_unittest.cc",
     "unexportable_private_key_unittest.cc",
   ]

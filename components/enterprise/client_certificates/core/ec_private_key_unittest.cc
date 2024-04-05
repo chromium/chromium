@@ -13,8 +13,8 @@
 namespace client_certificates {
 
 TEST(ECPrivateKeyTest, KeyWorksAsExpected) {
-  auto ec_private_key = base::MakeRefCounted<ECPrivateKey>(
-      crypto::ECPrivateKey::Create(), nullptr);
+  auto ec_private_key =
+      base::MakeRefCounted<ECPrivateKey>(crypto::ECPrivateKey::Create());
 
   EXPECT_EQ(ec_private_key->GetAlgorithm(),
             crypto::SignatureVerifier::ECDSA_SHA256);

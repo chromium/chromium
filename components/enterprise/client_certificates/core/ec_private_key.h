@@ -18,8 +18,7 @@ namespace client_certificates {
 
 class ECPrivateKey : public PrivateKey {
  public:
-  ECPrivateKey(std::unique_ptr<crypto::ECPrivateKey> key,
-               scoped_refptr<net::SSLPrivateKey> ssl_private_key);
+  explicit ECPrivateKey(std::unique_ptr<crypto::ECPrivateKey> key);
 
   // PrivateKey:
   std::optional<std::vector<uint8_t>> SignSlowly(
