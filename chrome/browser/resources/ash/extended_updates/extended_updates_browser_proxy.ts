@@ -29,8 +29,12 @@ export class ExtendedUpdatesBrowserProxy {
   }
 
   async optInToExtendedUpdates(): Promise<boolean> {
-    const {result} = await this.handler.optInToExtendedUpdates();
-    return result;
+    const {success} = await this.handler.optInToExtendedUpdates();
+    return success;
+  }
+
+  closeDialog(): void {
+    this.handler.closeDialog();
   }
 }
 

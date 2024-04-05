@@ -12,13 +12,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash::extended_updates {
 
-// The WebUIController for chrome://extended-updates-dialog
+// The WebUI for chrome://extended-updates-dialog
 class ExtendedUpdatesUI
-    : public ui::MojoWebUIController,
+    : public ui::MojoWebDialogUI,
       public ash::extended_updates::mojom::PageHandlerFactory {
  public:
   explicit ExtendedUpdatesUI(content::WebUI* web_ui);

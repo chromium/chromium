@@ -7468,4 +7468,30 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     App installed
   </message>
 
+  <!-- Extended Updates Dialog -->
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog" translateable="false">
+    Turn on extended updates
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P1" desc="Dialog description paragraph 1 of the Extended Updates Dialog" translateable="false">
+    Automatic security and software updates have been paused. You can extended automatic updates on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to receive continued security, performance, and stability.
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2" desc="Dialog description paragraph 2 of the Extended Updates Dialog" translateable="false">
+    If you turn on extended updates, this change can't be reversed. Extended updates apply to all users of this device. <ph name="LINK_START">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_CANCEL_BUTTON" desc="Cancel button label of the Extended Updates Dialog" translateable="false">
+    Cancel
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ENABLE_BUTTON" desc="Enable button label of the Extended Updates Dialog" translateable="false">
+    Turn on
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE" desc="Title of the confirmation popup in the Extended Updates Dialog" translateable="false">
+    Turn on extended updates?
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION" desc="Description of the confirmation popup in the Extended Updates Dialog" translateable="false">
+    This change can't be reversed and applies to all users of this device
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON" desc="Confirm button label of the confirmation popup in the Extended Updates Dialog" translateable="false">
+    Confirm &amp; turn on
+  </message>
+
 </grit-part>

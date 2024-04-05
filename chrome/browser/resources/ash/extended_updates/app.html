@@ -3,17 +3,37 @@ Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<div>Extended updates lorem ipsum</div>
+<h1>$i18n{dialogHeading}</h1>
 
-<cr-button
-    class="extended-updates-close-window-button"
-    on-click="onCloseButtonClick_"
->
-    Close
-</cr-button>
-<cr-button
-    class="extended-updates-opt-in-button"
-    on-click="onOptInButtonClick_"
->
-    Opt-in
-</cr-button>
+<div>
+  <p>$i18n{dialogDescriptionP1}</p>
+  <p>
+    <localized-link localized-string="$i18n{dialogDescriptionP2}">
+    </localized-link>
+  </p>
+</div>
+
+<div>
+  <cros-button id="cancel-button" label="$i18n{cancelButton}"
+    button-style="secondary" on-click="onCancelButtonClick_"></cros-button>
+  <cros-button id="enable-button" label="$i18n{enableButton}"
+    button-style="primary" on-click="onEnableButtonClick_"></cros-button>
+</div>
+
+<template is="dom-if" if="[[showPopup_]]" restamp>
+  <!-- TODO(b/332618847): Convert to <cros-dialog> once available. -->
+  <cr-dialog id="popup-dialog" show-on-attach>
+    <div slot="title">$i18n{popupTitle}</div>
+    <div slot="body">
+      $i18n{popupDescription}
+    </div>
+    <div slot="button-container">
+      <cros-button id="popup-cancel-button" label="$i18n{cancelButton}"
+        button-style="secondary" on-click="onPopupCancelButtonClick_">
+      </cros-button>
+      <cros-button id="popup-confirm-button" label="$i18n{popupConfirmButton}"
+        button-style="primary" on-click="onPopupConfirmButtonClick_">
+      </cros-button>
+    </div>
+  </cr-dialog>
+</template>
