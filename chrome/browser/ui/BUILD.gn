@@ -1828,6 +1828,7 @@ static_library("ui") {
       "webui/search_engine_choice/search_engine_choice_ui.h",
       "webui/searchbox/contextual_searchbox_handler.cc",
       "webui/searchbox/contextual_searchbox_handler.h",
+      "webui/searchbox/lens_searchbox_client.h",
       "webui/searchbox/realbox_handler.cc",
       "webui/searchbox/realbox_handler.h",
       "webui/searchbox/searchbox_handler.cc",

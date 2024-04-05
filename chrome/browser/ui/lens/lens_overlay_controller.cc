@@ -415,6 +415,25 @@ void LensOverlayController::OnTabStripModelChanged(
   }
 }
 
+const GURL& LensOverlayController::GetPageURL() const {
+  // TODO(b/332787629): Return the URL of the WebContents in the main tab.
+  return GURL::EmptyGURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+LensOverlayController::GetPageClassification() const {
+  // TODO(b/332787629): Return the approrpaite classification:
+  // CONTEXTUAL_SEARCHBOX
+  // SEARCH_SIDE_PANEL_SEARCHBOX
+  // LENS_SIDE_PANEL_SEARCHBOX
+  return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+}
+
+void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
+  // TODO(b/332787629): Append additional params and navigate to
+  // `destination_url` in the side panel.
+}
+
 void LensOverlayController::TabForegrounded() {}
 
 void LensOverlayController::TabBackgrounded() {

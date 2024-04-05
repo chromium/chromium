@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -66,12 +67,15 @@ namespace {
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
 class RealboxOmniboxClient final : public OmniboxClient {
  public:
-  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
+  RealboxOmniboxClient(Profile* profile,
+                       content::WebContents* web_contents,
+                       LensSearchboxClient* lens_searchbox_client);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
+  const GURL& GetURL() const override;
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
@@ -117,16 +121,20 @@ class RealboxOmniboxClient final : public OmniboxClient {
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<LensSearchboxClient> lens_searchbox_client_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   // This is unused, but needed for `GetVectorIcon()`.
   gfx::VectorIcon vector_icon_{nullptr, 0u, ""};
   base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
-RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
-                                           content::WebContents* web_contents)
+RealboxOmniboxClient::RealboxOmniboxClient(
+    Profile* profile,
+    content::WebContents* web_contents,
+    LensSearchboxClient* lens_searchbox_client)
     : profile_(profile),
       web_contents_(web_contents),
+      lens_searchbox_client_(lens_searchbox_client),
       scheme_classifier_(ChromeAutocompleteSchemeClassifier(profile)) {}
 
 RealboxOmniboxClient::~RealboxOmniboxClient() = default;
@@ -134,6 +142,13 @@ RealboxOmniboxClient::~RealboxOmniboxClient() = default;
 std::unique_ptr<AutocompleteProviderClient>
 RealboxOmniboxClient::CreateAutocompleteProviderClient() {
   return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
+}
+
+const GURL& RealboxOmniboxClient::GetURL() const {
+  if (lens_searchbox_client_) {
+    return lens_searchbox_client_->GetPageURL();
+  }
+  return GURL::EmptyGURL();
 }
 
 bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
@@ -203,6 +218,9 @@ GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
 metrics::OmniboxEventProto::PageClassification
 RealboxOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
                                             bool is_prefetch) {
+  if (lens_searchbox_client_) {
+    return lens_searchbox_client_->GetPageClassification();
+  }
   return metrics::OmniboxEventProto::NTP_REALBOX;
 }
 
@@ -251,6 +269,10 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnSuggestionAccepted(destination_url);
+    return;
+  }
   web_contents_->OpenURL(
       content::OpenURLParams(destination_url, content::Referrer(), disposition,
                              transition, false),
@@ -268,6 +290,7 @@ RealboxHandler::RealboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
+    LensSearchboxClient* lens_searchbox_client,
     OmniboxController* omnibox_controller)
     : SearchboxHandler(std::move(pending_page_handler),
                        profile,
@@ -281,8 +304,8 @@ RealboxHandler::RealboxHandler(
     controller_ = omnibox_controller;
   } else {
     owned_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr,
-        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
+        /*view=*/nullptr, std::make_unique<RealboxOmniboxClient>(
+                              profile_, web_contents_, lens_searchbox_client));
     controller_ = owned_controller_.get();
   }
 

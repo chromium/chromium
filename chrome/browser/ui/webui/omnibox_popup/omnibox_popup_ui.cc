@@ -82,7 +82,8 @@ void OmniboxPopupUI::BindInterface(
 
       handler_ = std::make_unique<RealboxHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents(), &metrics_reporter_, controller);
+          web_ui()->GetWebContents(), &metrics_reporter_,
+          /*lens_searchbox_client=*/nullptr, controller);
     }
   }
 }

@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -45,6 +46,7 @@ class WebUI;
 // This class is not thread safe. It should only be used from the browser
 // thread.
 class LensOverlayController : public TabStripModelObserver,
+                              public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
                               public lens::mojom::LensSidePanelPageHandler {
  public:
@@ -160,6 +162,12 @@ class LensOverlayController : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // Overridden from LensSearchboxClient:
+  const GURL& GetPageURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification()
+      const override;
+  void OnSuggestionAccepted(const GURL& destination_url) override;
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded();

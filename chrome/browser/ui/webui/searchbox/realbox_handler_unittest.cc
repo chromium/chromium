@@ -5,6 +5,7 @@
 #include "realbox_handler.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -85,7 +86,7 @@ class RealboxHandlerTest : public ::testing::Test {
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
-        /*omnibox_controller=*/nullptr);
+        /*lens_searchbox_client=*/nullptr, /*omnibox_controller=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

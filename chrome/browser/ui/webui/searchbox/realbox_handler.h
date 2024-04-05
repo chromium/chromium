@@ -21,6 +21,7 @@
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 class GURL;
+class LensSearchboxClient;
 class MetricsReporter;
 class OmniboxController;
 class OmniboxEditModel;
@@ -47,6 +48,7 @@ class RealboxHandler : public SearchboxHandler {
       Profile* profile,
       content::WebContents* web_contents,
       MetricsReporter* metrics_reporter,
+      LensSearchboxClient* lens_searchbox_client,
       OmniboxController* omnibox_controller);
 
   RealboxHandler(const RealboxHandler&) = delete;
