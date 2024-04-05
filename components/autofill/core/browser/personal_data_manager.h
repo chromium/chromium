@@ -577,8 +577,6 @@ class PersonalDataManager : public KeyedService,
   GetAccountStatusForTesting() const;
 
  protected:
-  friend class PaymentsDataCleaner;
-
   // Responsible for all address-related logic of the PDM.
   // Non-null after `Init()`.
   std::unique_ptr<AddressDataManager> address_data_manager_;
@@ -607,9 +605,6 @@ class PersonalDataManager : public KeyedService,
   // but its preferences can already be queried. Can also be a nullptr
   // if it is disabled by CLI.
   void SetSyncService(syncer::SyncService* sync_service);
-
-  // Returns the database that is used for storing local data.
-  scoped_refptr<AutofillWebDataService> GetLocalDatabase();
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

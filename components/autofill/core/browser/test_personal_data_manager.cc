@@ -18,11 +18,12 @@ namespace autofill {
 
 TestPersonalDataManager::TestPersonalDataManager()
     : PersonalDataManager("en-US", "US") {
-  address_data_manager_ = std::make_unique<TestAddressDataManager>(
-      base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                          base::Unretained(this)));
+  auto notify_observers = base::BindRepeating(
+      &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
+  address_data_manager_ =
+      std::make_unique<TestAddressDataManager>(notify_observers);
   payments_data_manager_ =
-      std::make_unique<TestPaymentsDataManager>(app_locale(), this);
+      std::make_unique<TestPaymentsDataManager>(app_locale(), notify_observers);
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

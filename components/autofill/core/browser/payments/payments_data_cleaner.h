@@ -9,13 +9,13 @@
 
 namespace autofill {
 
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // PaymentsDataCleaner is responsible for applying credit card cleanups once on
 // browser startup.
 class PaymentsDataCleaner {
  public:
-  explicit PaymentsDataCleaner(PersonalDataManager* personal_data_manager);
+  explicit PaymentsDataCleaner(PaymentsDataManager* payments_data_manager);
   ~PaymentsDataCleaner();
   PaymentsDataCleaner(const PaymentsDataCleaner&) = delete;
   PaymentsDataCleaner& operator=(const PaymentsDataCleaner&) = delete;
@@ -33,9 +33,9 @@ class PaymentsDataCleaner {
   // the settings page.
   void ClearCreditCardNonSettingsOrigins();
 
-  // The personal data manager, used to load and update the personal data
+  // The payments data manager, used to load and update the payments data
   // from/to the web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
 }  // namespace autofill

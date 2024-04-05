@@ -1835,14 +1835,14 @@ TEST_F(PaymentsDataManagerTest,
 TEST_F(PaymentsDataManagerTest,
        LogIsCreditCardBenefitsEnabledAtStartup_NullPrefService) {
   base::HistogramTester histogram_tester;
-  PaymentsDataManager payments_data_manager =
-      PaymentsDataManager(/*profile_database=*/nullptr,
-                          /*account_database=*/nullptr,
-                          /*image_fetcher=*/nullptr,
-                          /*shared_storage_handler=*/nullptr,
-                          /*pref_service=*/nullptr,
-                          /*sync_service=*/nullptr,
-                          /*app-locale=*/"en-US", personal_data_.get());
+  PaymentsDataManager payments_data_manager = PaymentsDataManager(
+      /*profile_database=*/nullptr,
+      /*account_database=*/nullptr,
+      /*image_fetcher=*/nullptr,
+      /*shared_storage_handler=*/nullptr,
+      /*pref_service=*/nullptr,
+      /*sync_service=*/nullptr,
+      /*app-locale=*/"en-US", /*notify_pdm_observers=*/base::DoNothing());
 
   histogram_tester.ExpectTotalCount(
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);

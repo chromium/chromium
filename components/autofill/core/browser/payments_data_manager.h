@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -54,7 +55,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       const std::string& app_locale,
-      PersonalDataManager* pdm);
+      base::RepeatingClosure notify_pdm_observers);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
@@ -432,8 +433,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // True if personal data has been loaded from the web database.
   bool is_payments_data_loaded_ = false;
 
-  // TODO(b/322170538): Remove dependency.
-  raw_ptr<PersonalDataManager> pdm_;
+  // TODO(b/322170538): Remove once the PDM observer is split.
+  base::RepeatingClosure notify_pdm_observers_;
 
  private:
   // Returns if there are any pending queries to the web database.

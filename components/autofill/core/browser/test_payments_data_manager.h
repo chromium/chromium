@@ -20,7 +20,7 @@ namespace autofill {
 class TestPaymentsDataManager : public PaymentsDataManager {
  public:
   TestPaymentsDataManager(const std::string& app_locale,
-                          PersonalDataManager* pdm);
+                          base::RepeatingClosure notify_pdm_observers);
 
   TestPaymentsDataManager(const TestPaymentsDataManager&) = delete;
   TestPaymentsDataManager& operator=(const TestPaymentsDataManager&) = delete;

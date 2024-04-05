@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 
 #include "base/uuid.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
-TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale,
-                                                 PersonalDataManager* pdm)
+TestPaymentsDataManager::TestPaymentsDataManager(
+    const std::string& app_locale,
+    base::RepeatingClosure notify_pdm_observers)
     : PaymentsDataManager(/*profile_database=*/nullptr,
                           /*account_database=*/nullptr,
                           /*image_fetcher=*/nullptr,
@@ -18,7 +18,7 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale,
                           /*pref_service=*/nullptr,
                           /*sync_service=*/nullptr,
                           app_locale,
-                          pdm) {}
+                          std::move(notify_pdm_observers)) {}
 
 TestPaymentsDataManager::~TestPaymentsDataManager() = default;
 
@@ -83,12 +83,12 @@ bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
-    pdm_->NotifyPersonalDataObserver();
+    notify_pdm_observers_.Run();
     return true;
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
         base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
-    pdm_->NotifyPersonalDataObserver();
+    notify_pdm_observers_.Run();
     return true;
   }
   return false;
@@ -120,7 +120,7 @@ void TestPaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> local_credit_card =
       std::make_unique<CreditCard>(credit_card);
   local_credit_cards_.push_back(std::move(local_credit_card));
-  pdm_->NotifyPersonalDataObserver();
+  notify_pdm_observers_.Run();
 }
 
 std::string TestPaymentsDataManager::AddAsLocalIban(Iban iban) {
@@ -130,7 +130,7 @@ std::string TestPaymentsDataManager::AddAsLocalIban(Iban iban) {
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
   local_ibans_.push_back(std::move(local_iban));
-  pdm_->NotifyPersonalDataObserver();
+  notify_pdm_observers_.Run();
   return iban.guid();
 }
 
@@ -149,7 +149,7 @@ void TestPaymentsDataManager::DeleteLocalCreditCards(
     // behavior of PersonalDataManager.
     RemoveCardWithoutNotification(card);
   }
-  pdm_->NotifyPersonalDataObserver();
+  notify_pdm_observers_.Run();
 }
 
 void TestPaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {

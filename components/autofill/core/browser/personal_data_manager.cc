@@ -134,15 +134,15 @@ void PersonalDataManager::Init(
   // be called on a TestPDM, since the TestPDM's purpose is to fake the PDM's
   // dependencies, rather than inject them through `Init()`.
   DCHECK(!address_data_manager_) << "Don't call Init() on a TestPDM";
+  auto notify_observers = base::BindRepeating(
+      &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service, strike_database,
-      base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                          base::Unretained(this)),
+      profile_database, pref_service, strike_database, notify_observers,
       app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
-      app_locale_, this);
+      app_locale_, notify_observers);
 
   pref_service_ = pref_service;
 
@@ -856,11 +856,6 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
     std::move(callback).Run();
   }
   change_callbacks_.clear();
-}
-
-scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
-  DCHECK(payments_data_manager_->database_helper_);
-  return payments_data_manager_->GetLocalDatabase();
 }
 
 }  // namespace autofill

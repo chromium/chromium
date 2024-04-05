@@ -30,8 +30,8 @@ class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     ResetPersonalDataManager(
         /*use_sync_transport_mode=*/false, personal_data_.get());
-    payments_data_cleaner_ =
-        std::make_unique<PaymentsDataCleaner>(personal_data_.get());
+    payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
+        &personal_data_->payments_data_manager());
   }
 
   void TearDown() override {

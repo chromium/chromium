@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -267,8 +268,8 @@ PaymentsDataManager::PaymentsDataManager(
     PrefService* pref_service,
     syncer::SyncService* sync_service,
     const std::string& app_locale,
-    PersonalDataManager* pdm)
-    : pdm_(pdm),
+    base::RepeatingClosure notify_pdm_observers)
+    : notify_pdm_observers_(notify_pdm_observers),
       image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
@@ -419,10 +420,10 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
   if (!is_payments_data_loaded_) {
     is_payments_data_loaded_ = true;
     LogStoredPaymentsDataMetrics();
-    PaymentsDataCleaner(pdm_).CleanupPaymentsData();
+    PaymentsDataCleaner(this).CleanupPaymentsData();
   }
 
-  pdm_->NotifyPersonalDataObserver();
+  notify_pdm_observers_.Run();
 }
 
 void PaymentsDataManager::Refresh() {
