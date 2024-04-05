@@ -7,6 +7,7 @@
 #import <OpenDirectory/OpenDirectory.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
@@ -60,9 +61,9 @@ MacDeviceManagementState IsDeviceRegisteredWithManagement() {
     bool mdm_enrollment_user_approved = false;
 
     for (const auto& property_state : property_states) {
-      StringPiece property =
+      std::string_view property =
           TrimString(property_state.first, kWhitespaceASCII, TRIM_ALL);
-      StringPiece state =
+      std::string_view state =
           TrimString(property_state.second, kWhitespaceASCII, TRIM_ALL);
 
       if (property == "Enrolled via DEP") {
