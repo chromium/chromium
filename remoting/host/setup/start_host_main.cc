@@ -53,6 +53,27 @@ namespace remoting {
 
 namespace {
 
+// Flags for registering the host and generating the host config.
+constexpr char kPinSwitchName[] = "pin";
+constexpr char kAuthCodeSwitchName[] = "code";
+constexpr char kRedirectUrlSwitchName[] = "redirect-url";
+// If set, this flag is used to compare against the email address of the user
+// who generated the OAuth authorization code.
+constexpr char kHostOwnerSwitchName[] = "host-owner";
+
+// Specifies the account email to be used when configuring a machine using the
+// Corp or Cloud registration process.
+constexpr char kCorpUserSwitchName[] = "corp-user";
+constexpr char kCloudUserSwitchName[] = "cloud-user";
+
+// TODO: joedow - switch to using `display-name` for consistency. Remove `name`
+// after we no longer need to support start_host for Pre-M125 packages.
+constexpr char kNameSwitchName[] = "name";
+constexpr char kDisplayNameSwitchName[] = "display-name";
+
+// Used to disable crash reporting.
+constexpr char kDisableCrashReportingSwitchName[] = "disable-crash-reporting";
+
 // True if the host was started successfully.
 bool g_started = false;
 
@@ -70,29 +91,29 @@ void PrintDefaultHelpMessage(const char* process_name) {
           "instructions on running this tool and help generating the command "
           "line arguments.\n"
           "\n"
-          "Example usage:\n%s --code=<authCode> --redirect-url=<redirectURL> "
-          "[--name=<host display name>] [--pin=<6+ digit PIN>] "
-          "[--host-owner=<host owner email>]"
-          " \n",
-          process_name);
+          "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
+          "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
+          process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
+          kDisplayNameSwitchName, kPinSwitchName,
+          kDisableCrashReportingSwitchName);
 }
 
 void PrintCorpUserHelpMessage(const char* process_name) {
   fprintf(stdout,
-          "Too many arguments provided.\nSetting up a machine for a corp user "
-          "requires the email address of that user and an optional display "
-          "name.\nExample usage:\n%s --corp-user=<user_email_address> "
-          "[--display-name=corp-machine-name]\n",
-          process_name);
+          "Setting up a machine for a corp user requires the email address of "
+          "that user and an optional display name.\n\nExample usage:\n"
+          "%s --%s=<user_email_address> [--%s=corp-machine-name]\n",
+          process_name, kCorpUserSwitchName, kDisplayNameSwitchName);
 }
 
 void PrintCloudUserHelpMessage(const char* process_name) {
   fprintf(stdout,
-          "Too many arguments provided.\nSetting up a machine for a cloud user "
-          "requires the email address of that user and an optional display "
-          "name.\nExample usage:\n%s --cloud-user=<user_email_address> "
-          "[--display-name=cloud-instance-name]\n",
-          process_name);
+          "Setting up a machine for a cloud user requires the email address of "
+          "that user, a 6+ digit numeric PIN, and an optional display name.\n"
+          "Example usage:\n%s --%s=<user_email_address> --%s=<6+ digit pin> "
+          "[--%s=cloud-instance-name] [--%s]\n",
+          process_name, kCloudUserSwitchName, kPinSwitchName,
+          kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
 }
 
 // Lets us hide the PIN that a user types.
@@ -176,16 +197,26 @@ void OnDone(HostStarter::Result result) {
 bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
                                   const base::CommandLine* command_line) {
   if (command_line->HasSwitch("host-id")) {
+    // This is an undocumented parameter as it was added for a scenario that is
+    // partially supported but infrequently used.
+    // TODO: joedow - Remove this param after switching to the Corp workflow.
     params.id = command_line->GetSwitchValueASCII("host-id");
   }
-  params.name = command_line->GetSwitchValueASCII("name");
-  params.pin = command_line->GetSwitchValueASCII("pin");
-  params.auth_code = command_line->GetSwitchValueASCII("code");
-  params.redirect_url = command_line->GetSwitchValueASCII("redirect-url");
-  params.owner_email =
-      base::ToLowerASCII(command_line->GetSwitchValueASCII("host-owner"));
+  params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
+  if (params.name.empty()) {
+    // Fallback to the 'name' switch if it was provided instead. We want to
+    // support this as some folks have documented the usage of this tool and
+    // refer to the old flag name.
+    params.name = command_line->GetSwitchValueASCII(kNameSwitchName);
+  }
+  params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
+  params.auth_code = command_line->GetSwitchValueASCII(kAuthCodeSwitchName);
+  params.redirect_url =
+      command_line->GetSwitchValueASCII(kRedirectUrlSwitchName);
+  params.owner_email = base::ToLowerASCII(
+      command_line->GetSwitchValueASCII(kHostOwnerSwitchName));
   params.enable_crash_reporting =
-      !command_line->HasSwitch("disable-crash-reporting");
+      !command_line->HasSwitch(kDisableCrashReportingSwitchName);
 
   if (params.auth_code.empty() || params.redirect_url.empty()) {
     return false;
@@ -237,13 +268,13 @@ bool InitializeCorpMachineParams(HostStarter::Params& params,
   // Count the number of args provided so we can show a helpful error message
   // if the user provides an unexpected value.
   size_t corp_arg_count = 1;
-  params.owner_email =
-      base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
+  params.owner_email = base::ToLowerASCII(
+      command_line->GetSwitchValueASCII(kCorpUserSwitchName));
 
   // Allow user to specify a display name.
-  if (command_line->HasSwitch("display-name")) {
+  if (command_line->HasSwitch(kDisplayNameSwitchName)) {
     corp_arg_count++;
-    params.name = command_line->GetSwitchValueASCII("display-name");
+    params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
   }
 
   // Allow debugging switches.
@@ -266,17 +297,26 @@ bool InitializeCloudMachineParams(HostStarter::Params& params,
   // Count the number of args provided so we can show a helpful error message
   // if the user provides an unexpected value.
   size_t cloud_arg_count = 1;
-  params.owner_email =
-      base::ToLowerASCII(command_line->GetSwitchValueASCII("cloud-user"));
+  params.owner_email = base::ToLowerASCII(
+      command_line->GetSwitchValueASCII(kCloudUserSwitchName));
 
   // Allow user to specify a display name.
-  if (command_line->HasSwitch("display-name")) {
+  if (command_line->HasSwitch(kDisplayNameSwitchName)) {
     cloud_arg_count++;
-    params.name = command_line->GetSwitchValueASCII("display-name");
+    params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
   }
 
+  // Require a PIN when setting an instance up for a cloud user since the
+  // session authorization service is not available to them.
+  params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
+  if (!remoting::IsPinValid(params.pin)) {
+    fprintf(stdout, "Please provide a numeric PIN consisting of at least six digits.\n");
+    return false;
+  }
+  cloud_arg_count++;
+
   bool has_disable_crash_reporting_switch =
-      command_line->HasSwitch("disable-crash-reporting");
+      command_line->HasSwitch(kDisableCrashReportingSwitchName);
   params.enable_crash_reporting = !has_disable_crash_reporting_switch;
   if (has_disable_crash_reporting_switch) {
     cloud_arg_count++;
@@ -360,8 +400,8 @@ int StartHostMain(int argc, char** argv) {
   }
 
   HostStarter::Params params;
-  bool use_corp_machine_flow = command_line->HasSwitch("corp-user");
-  bool use_cloud_machine_flow = command_line->HasSwitch("cloud-user");
+  bool use_corp_machine_flow = command_line->HasSwitch(kCorpUserSwitchName);
+  bool use_cloud_machine_flow = command_line->HasSwitch(kCloudUserSwitchName);
   if (use_corp_machine_flow) {
     if (!InitializeCorpMachineParams(params, command_line)) {
       PrintCorpUserHelpMessage(argv[0]);
