@@ -10,7 +10,9 @@
 #include "base/test/test_future.h"
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "crypto/ec_private_key.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +20,7 @@ namespace client_certificates {
 
 TEST(ECPrivateKeyFactoryTest, CreatePrivateKey) {
   base::test::TaskEnvironment task_environment;
+  ScopedSSLKeyConverter scoped_converter;
   ECPrivateKeyFactory factory;
 
   base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
@@ -47,6 +50,7 @@ TEST(ECPrivateKeyFactoryTest, CreatePrivateKey) {
   ASSERT_THAT(
       ec_private_key->GetSubjectPublicKeyInfo(),
       testing::ElementsAreArray(second_private_key->GetSubjectPublicKeyInfo()));
+  ASSERT_TRUE(ec_private_key->GetSSLPrivateKey());
 }
 
 }  // namespace client_certificates

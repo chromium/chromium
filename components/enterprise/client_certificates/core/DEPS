@@ -5,3 +5,9 @@ include_rules = [
   "+components/leveldb_proto",
   "+net",
 ]
+
+specific_include_rules = {
+  "scoped_ssl_key_converter.cc": [
+    "+third_party/boringssl/src/include"
+  ]
+}

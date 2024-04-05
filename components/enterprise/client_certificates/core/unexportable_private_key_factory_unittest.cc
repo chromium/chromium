@@ -8,7 +8,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +17,7 @@ namespace client_certificates {
 
 TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   base::test::TaskEnvironment task_environment;
-  crypto::ScopedMockUnexportableKeyProvider scoped_provider;
+  ScopedSSLKeyConverter scoped_converter;
 
   auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
 
@@ -40,10 +41,12 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   ASSERT_THAT(
       private_key->GetSubjectPublicKeyInfo(),
       testing::ElementsAreArray(second_private_key->GetSubjectPublicKeyInfo()));
+  ASSERT_TRUE(private_key->GetSSLPrivateKey());
+  ASSERT_TRUE(second_private_key->GetSSLPrivateKey());
 }
 
 TEST(UnexportablePrivateKeyFactoryTest, UnsupportedCreateKey) {
-  crypto::ScopedNullUnexportableKeyProvider scoped_provider;
+  ScopedSSLKeyConverter scoped_converter(/*supports_unexportable=*/false);
 
   auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
 

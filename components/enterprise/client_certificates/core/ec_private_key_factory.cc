@@ -14,7 +14,9 @@
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "crypto/ec_private_key.h"
+#include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
 
@@ -26,7 +28,9 @@ scoped_refptr<ECPrivateKey> CreateKey() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  auto ssl_private_key = SSLKeyConverter::Get()->ConvertECKey(*key);
+  return base::MakeRefCounted<ECPrivateKey>(std::move(key),
+                                            std::move(ssl_private_key));
 }
 
 scoped_refptr<ECPrivateKey> LoadKeyFromWrapped(
@@ -36,7 +40,9 @@ scoped_refptr<ECPrivateKey> LoadKeyFromWrapped(
     return nullptr;
   }
 
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  auto ssl_private_key = SSLKeyConverter::Get()->ConvertECKey(*key);
+  return base::MakeRefCounted<ECPrivateKey>(std::move(key),
+                                            std::move(ssl_private_key));
 }
 
 }  // namespace

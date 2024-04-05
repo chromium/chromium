@@ -12,6 +12,7 @@
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {
@@ -28,8 +29,8 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
       provider->GenerateSigningKeySlowly(kAcceptableAlgorithms);
   ASSERT_TRUE(unexportable_key);
 
-  auto private_key =
-      base::MakeRefCounted<UnexportablePrivateKey>(std::move(unexportable_key));
+  auto private_key = base::MakeRefCounted<UnexportablePrivateKey>(
+      std::move(unexportable_key), nullptr);
 
   auto spki_bytes = private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);

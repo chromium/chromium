@@ -41,6 +41,8 @@ source_set("core") {
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "ssl_key_converter.cc",
+    "ssl_key_converter.h",
     "store_error.cc",
     "unexportable_private_key.cc",
     "unexportable_private_key_factory.cc",
@@ -61,6 +63,8 @@ source_set("core") {
     "//components/prefs",
     "//net",
   ]
+
+  friend = [ ":test_support" ]
 }
 
 source_set("test_support") {
@@ -80,14 +84,20 @@ source_set("test_support") {
     "mock_private_key.h",
     "mock_private_key_factory.cc",
     "mock_private_key_factory.h",
+    "scoped_ssl_key_converter.cc",
+    "scoped_ssl_key_converter.h",
   ]
 
   deps = [
     ":core",
     "//components/leveldb_proto",
     "//components/policy/proto",
+    "//crypto",
+    "//crypto:test_support",
     "//net",
+    "//net:test_support",
     "//testing/gmock",
+    "//third_party/boringssl",
   ]
 }
 
@@ -113,14 +123,11 @@ source_set("unit_tests") {
     "//components/enterprise/client_certificates/proto:db_client_certs",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
+    "//crypto",
+    "//crypto:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-
-  deps += [
-    "//crypto",
-    "//crypto:test_support",
   ]
 }

@@ -15,8 +15,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "components/enterprise/client_certificates/core/unexportable_private_key.h"
 #include "crypto/unexportable_key.h"
+#include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
 
@@ -38,7 +40,10 @@ scoped_refptr<UnexportablePrivateKey> CreateKey(
     return nullptr;
   }
 
-  return base::MakeRefCounted<UnexportablePrivateKey>(std::move(key));
+  auto ssl_private_key =
+      SSLKeyConverter::Get()->ConvertUnexportableKeySlowly(*key);
+  return base::MakeRefCounted<UnexportablePrivateKey>(
+      std::move(key), std::move(ssl_private_key));
 }
 
 scoped_refptr<UnexportablePrivateKey> LoadKeyFromWrapped(
@@ -54,7 +59,10 @@ scoped_refptr<UnexportablePrivateKey> LoadKeyFromWrapped(
     return nullptr;
   }
 
-  return base::MakeRefCounted<UnexportablePrivateKey>(std::move(key));
+  auto ssl_private_key =
+      SSLKeyConverter::Get()->ConvertUnexportableKeySlowly(*key);
+  return base::MakeRefCounted<UnexportablePrivateKey>(
+      std::move(key), std::move(ssl_private_key));
 }
 
 }  // namespace

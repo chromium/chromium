@@ -6,7 +6,10 @@
 
 namespace client_certificates {
 
-MockPrivateKey::MockPrivateKey(PrivateKeySource source) : PrivateKey(source) {}
+MockPrivateKey::MockPrivateKey(
+    PrivateKeySource source,
+    scoped_refptr<net::SSLPrivateKey> ssl_private_key)
+    : PrivateKey(source, std::move(ssl_private_key)) {}
 
 MockPrivateKey::~MockPrivateKey() = default;
 
