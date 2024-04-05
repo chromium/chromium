@@ -844,6 +844,20 @@ static_library("headless_shell_lib") {
   ]
 }
 
+action("generate_headless_shell_license_file") {
+  script = "//tools/licenses/licenses.py"
+  _license_path = "$root_out_dir/LICENSE.headless_shell"
+  args = [
+    "license_file",
+    rebase_path(_license_path, root_build_dir),
+    "--gn-target",
+    "//headless:headless_shell",
+    "--gn-out-dir",
+    ".",
+  ]
+  outputs = [ _license_path ]
+}
+
 executable("headless_shell") {
   configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
   configs += [ "//build/config/compiler:thinlto_optimize_max" ]
@@ -852,6 +866,10 @@ executable("headless_shell") {
   defines = []
 
   deps = [ ":headless_shell_lib" ]
+
+  if (proprietary_codecs) {
+    deps += [ ":generate_headless_shell_license_file" ]
+  }
 
   if (!headless_use_embedded_resources) {
     data = [
