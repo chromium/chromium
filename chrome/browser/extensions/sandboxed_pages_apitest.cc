@@ -15,6 +15,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace extensions {
 
@@ -69,6 +70,34 @@ class SandboxedPagesTest
 
  private:
   base::ScopedTempDir temp_dir_;
+};
+
+// A test class to verify operation of metrics to record use of extension API
+// functions in extensions pages that are sandboxed, but not listed as sandboxed
+// in the extension's manifest. This class is parameterized on
+// kIsolateSandboxedIframes so that it tests both in-process and
+// process-isolated sandboxed frames.
+class SandboxAPIMetricsTest : public ExtensionApiTest,
+                              public ::testing::WithParamInterface<bool> {
+ public:
+  SandboxAPIMetricsTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -189,6 +218,153 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV3AllowsWebContent) {
   ASSERT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_EQ(R"("echo hello")", message);
 }
+
+// This test has an API function access inside a frame sandboxed via HTML
+// attributes (rather than the manifest specification); it should trigger a
+// histogram count.
+IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
+                       SandboxedApiAccessTriggersHistogramCounts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test extension",
+           "version": "0.1",
+           "manifest_version": 3
+         })";
+  static constexpr char kPageWithSandboxedFrame[] =
+      R"(<html>
+          <body>
+            <h1>Page with Sandboxed Frame</h1>
+            <iframe sandbox="allow-scripts" src="sandboxed_page.html"></iframe>
+          </body>
+        </html>)";
+  static constexpr char kSandboxedScriptSrc[] =
+      R"((async function hasAccessToExtensionAPIs() {
+            try {
+              let tabs = await chrome.tabs.query({});
+              return tabs && tabs.length && tabs.length != 0;
+            } catch(err) {
+              return false;
+            }
+          })().then(result => domAutomationController.send(result));
+        )";
+  static constexpr char kSandboxedPage[] =
+      R"(<html>
+          <body>
+            <h1>Sandboxed Page</h1>
+            <script src="sandboxed.js"></script>
+          </body>
+        </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("main.html"), kPageWithSandboxedFrame);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sandboxed.js"), kSandboxedScriptSrc);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sandboxed_page.html"), kSandboxedPage);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Prepare histogram.
+  base::HistogramTester histograms;
+  const char* kHistogramName =
+      "Extensions.Functions.DidSandboxedExtensionAPICall";
+
+  // Use message queue to verify that loading of the sandboxed child completed
+  // successfully.
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("main.html"));
+  ASSERT_TRUE(frame_host);
+
+  // Verify the sandboxed frame loaded and has api access.
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("true", message);
+
+  // Verify histogram count captured exactly one API call from the sandboxed
+  // frame.
+  histograms.ExpectBucketCount(kHistogramName, true, 1u);
+}
+
+// This test is nearly identical to ApiAccessTriggersHistogramCounts, except
+// that the API access is in the (non-sandboxed) main frame, and shouldn't
+// trigger a count.
+IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
+                       NonSandboxedApiAccessDoesntTriggerHistogramCounts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test extension",
+           "version": "0.1",
+           "manifest_version": 3
+         })";
+  static constexpr char kMainScriptSrc[] =
+      R"(window.onload = async () => {
+           let hasApiAccess = true;
+           try {
+             let tabs = await chrome.tabs.query({});
+             hasApiAccess = tabs && tabs.length && tabs.length != 0;
+           } catch(err) {
+             hasApiAccess = false;
+           }
+           domAutomationController.send(hasApiAccess);
+         };)";
+  static constexpr char kPageWithSandboxedFrame[] =
+      R"(<html>
+          <head>
+            <script src="main.js"></script>
+          </head>
+          <body>
+            <h1>Page with Sandboxed Frame</h1>
+            <iframe sandbox="allow-scripts" src="sandboxed_page.html"></iframe>
+          </body>
+        </html>)";
+  static constexpr char kSandboxedPage[] =
+      R"(<html>
+          <body>
+            <h1>Sandboxed Page</h1>
+          </body>
+        </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("main.js"), kMainScriptSrc);
+  test_dir.WriteFile(FILE_PATH_LITERAL("main.html"), kPageWithSandboxedFrame);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sandboxed_page.html"), kSandboxedPage);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Prepare histogram.
+  base::HistogramTester histograms;
+  const char* kHistogramName =
+      "Extensions.Functions.DidSandboxedExtensionAPICall";
+
+  // Use message queue to verify that loading of the sandboxed child completed
+  // successfully.
+  content::DOMMessageQueue message_queue;
+  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("main.html"));
+  ASSERT_TRUE(frame_host);
+
+  // Verify the sandboxed frame loaded.
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("true", message);
+
+  // Verify histogram count captured no API calls from the non-sandboxed frame.
+  histograms.ExpectBucketCount(kHistogramName, true, 0u);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SandboxAPIMetricsTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "kIsolateSandboxedIframesEnabled"
+                                      : "kIsolateSandboxedIframesDisabled";
+                         });
 
 // Verify sandbox behavior.
 IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {

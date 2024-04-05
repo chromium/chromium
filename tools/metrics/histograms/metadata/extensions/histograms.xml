@@ -2303,6 +2303,34 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.Functions.DidSandboxedComponentExtensionAPICall"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when a component extension calls an extension API from within a
+    sandboxed frame. Recorded once per function call to track how often API
+    functions are called within sandboxed frames. See
+    Extensions.Functions.ComponentExtensionCalls, for comparison with the total
+    number of calls from a component extension to an extension API.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Functions.DidSandboxedExtensionAPICall"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when a non-component extension calls an extension API from within a
+    sandboxed frame. Recorded once per function call to track how often API
+    functions are called within sandboxed frames. See
+    Extensions.Functions.ExtensionCalls, for comparison with the total number of
+    calls from a non-component extension to an extension API.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Functions.ExtensionCalls" enum="ExtensionFunctions"
     expires_after="never">
 <!-- expires-never: Used for monitoring extension API usage. -->
