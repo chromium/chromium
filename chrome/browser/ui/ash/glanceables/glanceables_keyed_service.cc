@@ -123,13 +123,6 @@ GlanceablesKeyedService::AreGlanceablesEnabled() const {
     return GlanceablesStatus::kDisabled;
   }
 
-  if (features::AreGlanceablesV2EnabledForTrustedTesters()) {
-    if (prefs->IsManagedPreference(prefs::kGlanceablesEnabled) &&
-        prefs->GetBoolean(prefs::kGlanceablesEnabled)) {
-      return GlanceablesStatus::kEnabledForTrustedTesters;
-    }
-  }
-
   return GlanceablesStatus::kDisabled;
 }
 

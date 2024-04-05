@@ -34,7 +34,6 @@ GlanceablesKeyedService* GlanceablesKeyedServiceFactory::GetService(
       GetInstance()->GetServiceForBrowserContext(
           context,
           /*create=*/features::AreGlanceablesV2Enabled() ||
-              features::AreGlanceablesV2EnabledForTrustedTesters() ||
               features::AreAnyGlanceablesTimeManagementViewsEnabled()));
 }
 

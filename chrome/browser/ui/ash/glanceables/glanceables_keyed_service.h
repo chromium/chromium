@@ -58,9 +58,12 @@ class GlanceablesKeyedService : public KeyedService {
  private:
   // Indicates whether, and why time management glanceables are enabled.
   // Used as an enum in histograms, so the assigned values should not change.
+  // Note this should be kept in sync with
+  // `TimeManagementGlanceablesFeatureStatus` enum in
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class GlanceablesStatus {
     kDisabled = 0,
-    kEnabledForTrustedTesters = 1,
+    kDEPRECATED_EnabledForTrustedTesters = 1,
     kEnabledByV2Flag = 2,
     kEnabledByPrefBypass = 3,
     kEnabledForFullLaunch = 4,

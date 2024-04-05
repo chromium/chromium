@@ -1297,11 +1297,6 @@ BASE_FEATURE(kGlanceablesV2,
              "GlanceablesV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables glanceables on time management surface for trusted testers.
-BASE_FEATURE(kGlanceablesV2TrustedTesters,
-             "GlanceablesV2TrustedTesters",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables glanceables on time management surface for classroom teachers.
 BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
              "GlanceablesV2ClassroomTeacherView",
@@ -3639,10 +3634,6 @@ bool IsGrowthCampaignsInDemoModeEnabled() {
 
 bool AreGlanceablesV2Enabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2);
-}
-
-bool AreGlanceablesV2EnabledForTrustedTesters() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2TrustedTesters);
 }
 
 bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
