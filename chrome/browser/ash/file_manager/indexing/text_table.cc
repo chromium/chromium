@@ -41,7 +41,7 @@ bool TextTable::Init() {
 }
 
 int64_t TextTable::DeleteValue(const std::string& value) {
-  int64_t value_id = GetValueId(value);
+  int64_t value_id = GetValueId(value, false);
   if (value_id < 0) {
     return value_id;
   }
@@ -58,7 +58,7 @@ int64_t TextTable::DeleteValue(const std::string& value) {
   return value_id;
 }
 
-int64_t TextTable::GetValueId(const std::string& value) const {
+int64_t TextTable::GetValueId(const std::string& value, bool create) {
   auto get_value_id = MakeGetStatement();
   DCHECK(get_value_id->is_valid()) << "Invalid get value ID statement: \""
                                    << get_value_id->GetSQLStatement() << "\"";
@@ -66,13 +66,8 @@ int64_t TextTable::GetValueId(const std::string& value) const {
   if (get_value_id->Step()) {
     return get_value_id->ColumnInt64(0);
   }
-  return -1;
-}
-
-int64_t TextTable::GetOrCreateValueId(const std::string& value) {
-  int64_t value_id = GetValueId(value);
-  if (value_id != -1) {
-    return value_id;
+  if (!create) {
+    return -1;
   }
   auto insert_value = MakeInsertStatement();
   DCHECK(insert_value->is_valid()) << "Invalid insert term statement: \""

@@ -102,11 +102,7 @@ class InmemoryFileIndex : public FileIndex {
 
   // Returns the ID corresponding to the given FileInfo. If this is the first
   // time we see this file info's URL, a new ID is created and returned.
-  int64_t GetOrCreateUrlId(const GURL& url);
-
-  // Stores FileInfo. For this method to succeed, you must store the URL
-  // ID for this file info first.
-  int64_t PutFileInfo(const FileInfo& file_info);
+  int64_t GetOrCreateUrlId(const FileInfo& info);
 
   // Maps from stringified terms to a unique ID.
   std::map<std::string, int64_t> term_map_;

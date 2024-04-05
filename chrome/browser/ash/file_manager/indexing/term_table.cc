@@ -53,10 +53,7 @@ int64_t TermTable::DeleteTerm(const std::string& term) {
 }
 
 int64_t TermTable::GetTermId(const std::string& term, bool create) {
-  if (create) {
-    return GetOrCreateValueId(term);
-  }
-  return GetValueId(term);
+  return GetValueId(term, create);
 }
 
 std::unique_ptr<sql::Statement> TermTable::MakeGetStatement() const {

@@ -36,7 +36,7 @@ class UrlTable : public TextTable {
   int64_t DeleteUrl(const GURL& url);
 
   // Returns the ID for the given URL, or -1 if this URL has not been seen.
-  int64_t GetUrlId(const GURL& url) const;
+  int64_t GetUrlId(const GURL& url);
 
   // Gets or creates the URL ID for the given URL.
   int64_t GetOrCreateUrlId(const GURL& url);

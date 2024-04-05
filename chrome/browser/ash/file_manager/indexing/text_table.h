@@ -19,7 +19,8 @@ namespace file_manager {
 // table and URL table. This class is not meant to be used by itself.
 class TextTable {
  public:
-  // Initializes the table. Returns true on success, and false on failure.
+  // Initializes the database, if necessary. Returns true on success, and false
+  // on failure.
   bool Init();
 
  protected:
@@ -36,14 +37,10 @@ class TextTable {
   // found. Otherwise, returns the ID that the value was assigned.
   int64_t DeleteValue(const std::string& term);
 
-  // Gets the value ID for the given value. If the value does not exists, this
-  // method returns -1. Otherwise it returns the unique ID assigned to the
-  // value.
-  int64_t GetValueId(const std::string& value) const;
-
-  // Gets or creates an ID for the given value. If the value does not exist,
-  // it is inserted into the table and the unique key assigned to is returned.
-  int64_t GetOrCreateValueId(const std::string& value);
+  // Gets the value ID for the given value. If `create` is false, and the value
+  // does not exists, this method returns -1. Otherwise it either inserts a new
+  // value and returns its ID, or returns the existing value ID.
+  int64_t GetValueId(const std::string& value, bool create);
 
   // To be overridden by the extending classes.
 

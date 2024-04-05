@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include "file_index.h"
 
 namespace file_manager {
 
@@ -46,8 +47,7 @@ OpResults InmemoryFileIndex::AugmentFile(const std::vector<Term>& terms,
     return OpResults::kSuccess;
   }
 
-  int64_t url_id = GetOrCreateUrlId(info.file_url);
-  DCHECK(PutFileInfo(info) == url_id);
+  int64_t url_id = GetOrCreateUrlId(info);
   DCHECK(url_id >= 0);
 
   auto term_ids_by_field = ConvertToTermIds(terms);
@@ -79,9 +79,8 @@ OpResults InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
 
   // Arrange terms by field and remove duplicates and convert to internal IDs.
   auto term_ids_by_field = ConvertToTermIds(terms);
-  int64_t url_id = GetOrCreateUrlId(info.file_url);
+  int64_t url_id = GetOrCreateUrlId(info);
   DCHECK(url_id >= 0);
-  DCHECK(PutFileInfo(info) == url_id);
 
   // If the given url_id already had some terms associated with it, remove terms
   // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}
@@ -225,23 +224,15 @@ int64_t InmemoryFileIndex::GetUrlId(const GURL& url) {
   return (it != url_to_id_.end()) ? it->second : -1;
 }
 
-int64_t InmemoryFileIndex::GetOrCreateUrlId(const GURL& url) {
-  int64_t url_id = GetUrlId(url);
+int64_t InmemoryFileIndex::GetOrCreateUrlId(const FileInfo& info) {
+  int64_t url_id = GetUrlId(info.file_url);
   if (url_id >= 0) {
     return url_id;
   }
   int64_t this_url_id = url_id_++;
-  url_to_id_.emplace(std::make_pair(url, this_url_id));
+  url_to_id_.emplace(std::make_pair(info.file_url, this_url_id));
+  url_id_to_file_info_.emplace(std::make_pair(this_url_id, info));
   return this_url_id;
-}
-
-int64_t InmemoryFileIndex::PutFileInfo(const FileInfo& file_info) {
-  int64_t url_id = GetUrlId(file_info.file_url);
-  if (url_id == -1) {
-    return -1;
-  }
-  url_id_to_file_info_.emplace(std::make_pair(url_id, file_info));
-  return url_id;
 }
 
 // Searches the index for file info matching the specified query.
