@@ -2001,6 +2001,8 @@ void AutofillSuggestionGenerator::SetSuggestionLabelsForCard(
       if (credit_card.IsCardEligibleForBenefits()) {
         labels.push_back({*benefit_label});
       }
+      suggestion.feature_for_iph =
+          feature_engagement::kIPHAutofillCreditCardBenefitFeature.name;
     }
     labels.push_back({Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
