@@ -922,6 +922,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionDuration"
+    units="seconds" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the duration of time that a single Braille display was connected.
+    This starts when a Braille display connects at startup or due to user input,
+    and may stop when the user ends their session by turning off the machine, or
+    when they disconnect or turn off the Braille display.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosStatusArea.{FeatureName}"
     enum="BooleanToggled" expires_after="2025-02-28">
   <owner>anastasi@google.com</owner>

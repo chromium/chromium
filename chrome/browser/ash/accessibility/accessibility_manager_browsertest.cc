@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -534,6 +535,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   ChromeVoxPanel* GetChromeVoxPanel() {
     return AccessibilityManager::Get()->chromevox_panel_;
   }
+
+  base::HistogramTester histogram_tester_;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1919,6 +1922,15 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
     logged_in_user_mixin_->LogInUser();
   }
 
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/true, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/false, 0);
+
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.
   Preferences prefs;
@@ -1939,6 +1951,21 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
   EXPECT_TRUE(IsBrailleImeEnabled());
 
+  // A metric should have been logged for braille display connected but not
+  // disconnect or duration.
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/false, 0);
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionDuration",
+      0);
+
   // Send a braille dots key event and make sure that the braille IME is
   // activated.
   KeyEvent event;
@@ -1954,11 +1981,38 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   EXPECT_FALSE(IsBrailleImeEnabled());
   EXPECT_FALSE(IsBrailleImeCurrent());
 
+  // Check metrics.
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionDuration",
+      1);
+
   // Plugging in a display while spoken feedback is enabled should enable
   // the Braille IME.
   SetBrailleDisplayAvailability(true);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
   EXPECT_TRUE(IsBrailleImeEnabled());
+
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/true, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionChanged",
+      /*sample=*/false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionDuration",
+      1);
 }
 
 class AccessibilityManagerWithAccessibilityServiceTest

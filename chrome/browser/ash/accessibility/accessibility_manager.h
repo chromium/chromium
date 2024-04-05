@@ -618,6 +618,8 @@ class AccessibilityManager
 
   void OnAppTerminating();
 
+  void MaybeLogBrailleDisplayConnectedTime();
+
   // Profile which has the current a11y context.
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -644,6 +646,7 @@ class AccessibilityManager
   std::unique_ptr<AccessibilityServiceClient> accessibility_service_client_;
 
   bool braille_display_connected_ = false;
+  base::Time braille_display_connect_time_;
   base::ScopedObservation<
       extensions::api::braille_display_private::BrailleController,
       extensions::api::braille_display_private::BrailleObserver>

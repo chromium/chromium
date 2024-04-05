@@ -1859,6 +1859,19 @@ void AccessibilityManager::OnAppTerminating() {
   app_terminating_ = true;
 }
 
+void AccessibilityManager::MaybeLogBrailleDisplayConnectedTime() {
+  if (braille_display_connect_time_ == base::Time()) {
+    return;
+  }
+  base::TimeDelta duration = base::Time::Now() - braille_display_connect_time_;
+  base::UmaHistogramCustomCounts(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
+      "ConnectionDuration",
+      /*sample=*/duration.InSeconds(), /*min=*/1,
+      /*exclusive_max=*/base::Days(1) / base::Seconds(1), /*buckets=*/100);
+  braille_display_connect_time_ = base::Time();
+}
+
 void AccessibilityManager::OnShimlessRmaLaunched() {
   SetActiveProfile();
 }
@@ -1908,6 +1921,13 @@ void AccessibilityManager::OnBrailleDisplayStateChanged(
         display_state.available);
   }
   braille_display_connected_ = display_state.available;
+  if (braille_display_connected_ &&
+      braille_display_connect_time_ == base::Time()) {
+    braille_display_connect_time_ = base::Time::Now();
+  }
+  if (!braille_display_connected_) {
+    MaybeLogBrailleDisplayConnectedTime();
+  }
   AccessibilityController::Get()->BrailleDisplayStateChanged(
       braille_display_connected_);
   UpdateBrailleImeState();
@@ -1943,6 +1963,7 @@ void AccessibilityManager::OnExtensionUnloaded(
 }
 
 void AccessibilityManager::OnShutdown(extensions::ExtensionRegistry* registry) {
+  MaybeLogBrailleDisplayConnectedTime();
   extension_registry_observations_.RemoveObservation(registry);
 }
 
