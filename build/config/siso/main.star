@@ -179,6 +179,26 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/ui/gl/gl_unittest_utils/gl_bindings_autogen_mock.o",
         "./obj/ui/gl/gl_unittest_utils/gl_mock.o",
         "./obj/v8/v8_turboshaft/csa-optimize-phase.o",
+        # Fallback happens with following args.gn (build-perf-android-siso)
+        # android_static_analysis = "off"
+        # coverage_instrumentation_input_file = "//.code-coverage/files_to_instrument.txt"
+        # dcheck_always_on = true
+        # debuggable_apks = false
+        # fail_on_android_expectations = true
+        # ffmpeg_branding = "Chrome"
+        # is_component_build = false
+        # is_debug = false
+        # proprietary_codecs = true
+        # skip_secondary_abi_for_cq = true
+        # strip_debug_info = true
+        # symbol_level = 0
+        # system_webview_package_name = "com.google.android.apps.chrome"
+        # target_cpu = "arm64"
+        # target_os = "android"
+        # use_clang_coverage = true
+        # use_remoteexec = false
+        # use_siso = true
+        "./obj/content/test/content_browsertests__library/prerender_browsertest.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
