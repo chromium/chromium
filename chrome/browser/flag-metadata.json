@@ -515,6 +515,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "atomic-move-override",
+    "owners": [ "dom@chromium.org", "nrosenthal@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 123
