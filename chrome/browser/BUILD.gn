@@ -2781,8 +2781,6 @@ static_library("browser") {
       "android/browsing_data/url_filter_bridge.h",
       "android/chrome_backup_agent.cc",
       "android/chrome_backup_agent.h",
-      "android/chrome_backup_watcher.cc",
-      "android/chrome_backup_watcher.h",
       "android/chrome_startup_flags.cc",
       "android/chrome_startup_flags.h",
       "android/compose_bitmaps_helper.cc",

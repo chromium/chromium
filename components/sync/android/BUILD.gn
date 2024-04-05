@@ -24,6 +24,7 @@ android_library("sync_java") {
   ]
   srcjar_deps = [
     ":java_enums",
+    ":java_prefs",
     ":jni_headers",
   ]
   sources = [
@@ -69,4 +70,9 @@ java_cpp_enum("java_enums") {
     "//components/sync/service/sync_service_utils.h",
     "//components/sync/service/sync_user_settings.h",
   ]
+}
+
+java_cpp_strings("java_prefs") {
+  sources = [ "//components/sync/base/pref_names.h" ]
+  template = "java_templates/SyncPrefNames.java.tmpl"
 }

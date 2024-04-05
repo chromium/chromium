@@ -7,11 +7,9 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/chrome_browser_main.h"
-
-namespace android {
-class ChromeBackupWatcher;
-}
 
 namespace crash_reporter {
 class ChildExitObserver;
@@ -39,7 +37,9 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
 
  private:
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
-  std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
+  // Owns the Java ChromeBackupWatcher object and invokes destroy() on
+  // destruction.
+  base::ScopedClosureRunner backup_watcher_runner_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser;
 import android.app.backup.BackupManager;
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -16,10 +14,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.internal.SyncPrefNames;
 
 /**
  * Class for watching for changes to the Android preferences that are backed up using Android
@@ -27,20 +27,21 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
  */
 @JNINamespace("android")
 public class ChromeBackupWatcher {
-    private BackupManager mBackupManager;
-
-    @VisibleForTesting
-    @CalledByNative
-    static ChromeBackupWatcher createChromeBackupWatcher() {
-        return new ChromeBackupWatcher();
-    }
+    private final BackupManager mBackupManager;
+    private final PrefChangeRegistrar mPrefChangeRegistrar;
 
     // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
     // instead.
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
+    @CalledByNative
     private ChromeBackupWatcher() {
         Context context = ContextUtils.getApplicationContext();
-        if (context == null) return;
+        if (context == null) {
+            // Initialize explicitly, otherwise the compiler says final members weren't initialized.
+            mBackupManager = null;
+            mPrefChangeRegistrar = null;
+            return;
+        }
 
         mBackupManager = new BackupManager(context);
         // Watch the Java preferences that are backed up.
@@ -61,6 +62,14 @@ public class ChromeBackupWatcher {
                                 }
                             }
                         });
+
+        mPrefChangeRegistrar = new PrefChangeRegistrar();
+        for (String name : ChromeBackupAgentImpl.BACKUP_NATIVE_BOOL_PREFS) {
+            mPrefChangeRegistrar.addObserver(name, this::onBackupPrefsChanged);
+        }
+        mPrefChangeRegistrar.addObserver(
+                SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT, this::onBackupPrefsChanged);
+
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
@@ -75,7 +84,14 @@ public class ChromeBackupWatcher {
     }
 
     @CalledByNative
+    private void destroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+        }
+    }
+
     private void onBackupPrefsChanged() {
+        assert mBackupManager != null;
         mBackupManager.dataChanged();
     }
 }

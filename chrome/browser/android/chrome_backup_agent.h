@@ -6,34 +6,22 @@
 #define CHROME_BROWSER_ANDROID_CHROME_BACKUP_AGENT_H_
 
 #include <string>
-#include <vector>
 
-#include "base/android/jni_android.h"
+class PrefService;
 
-namespace android {
+namespace chrome_backup_agent {
 
-std::vector<std::string> GetBackupBoolPrefNames();
-std::string GetBackupAccountSettingsPrefName();
+// Underlying implementation of the corresponding JNI_ChromeBackupAgentImpl_*
+// functions, exposed here for testing, because:
+// a) The JNI functions have internal linkage and can't be called from the test.
+// b) This signature avoids the "Java PrefService" -> "Native PrefService" jump,
+//    which apparently cannot be done in a unit test.
+std::string GetSerializedDict(PrefService* pref_service,
+                              const std::string& pref_name);
+void SetDict(PrefService* pref_service,
+             const std::string& pref_name,
+             const std::string& serialized_dict);
 
-// Test interface wrapping the static functions that are only called from Java.
-std::vector<std::string> GetBoolBackupNamesForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller);
-base::android::ScopedJavaLocalRef<jbooleanArray> GetBoolBackupValuesForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller);
-void SetBoolBackupPrefsForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    std::vector<std::string>& pref_names,
-    const base::android::JavaParamRef<jbooleanArray>& values);
-std::string GetAccountSettingsBackupNameForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller);
-std::string GetAccountSettingsBackupValueForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller);
-
-}  //  namespace android
+}  // namespace chrome_backup_agent
 
 #endif  // CHROME_BROWSER_ANDROID_CHROME_BACKUP_AGENT_H_
