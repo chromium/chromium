@@ -237,11 +237,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     PerformHeaderChecks(children[0], expected_title, expected_body);
 
     views::View* account_rows = children[1];
-    ASSERT_EQ(account_rows->children().size(), 1u);
+    ASSERT_EQ(account_rows->children().size(), 3u);
 
     size_t accounts_index = 0;
     CheckHoverableAccountRows(account_rows->children(), {kAccountSuffix},
-                              accounts_index);
+                              accounts_index, /*expect_idp=*/false,
+                              /*is_modal_dialog=*/true);
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
                    supports_add_account, /*expect_back_button=*/false);
   }
@@ -272,7 +273,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         contents->children();
 
     size_t accounts_index = 0;
-    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index);
+    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
+                              /*expect_idp=*/false, /*is_modal_dialog=*/true);
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
                    supports_add_account, /*expect_back_button=*/false);
   }

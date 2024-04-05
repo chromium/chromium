@@ -22,6 +22,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget_observer.h"
 
 using TokenError = content::IdentityCredentialTokenError;
@@ -63,6 +64,10 @@ inline constexpr int kRightMargin = 40;
 // The size of the space between the top boundary of the WebContents and the top
 // boundary of the bubble.
 inline constexpr int kTopMargin = 16;
+// The size of avatars in the modal dialog.
+inline constexpr int kModalAvatarSize = 36;
+// The size of the horizontal padding for most elements in the modal.
+inline constexpr int kModalHorizontalSpacing = 8;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -301,11 +306,12 @@ class AccountSelectionViewBase {
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover,
-      bool should_include_idp);
+      bool should_include_idp,
+      bool is_modal_dialog = false);
 
-  // Returns a view containing a disclosure label. The label links to privacy
-  // policy and terms of service URLs, if available.
-  std::unique_ptr<views::View> CreateDisclosureLabel(
+  // Returns a StyledLabel containing a disclosure label. The label links to
+  // privacy policy and terms of service URLs, if available.
+  std::unique_ptr<views::StyledLabel> CreateDisclosureLabel(
       const IdentityProviderDisplayData& idp_display_data);
 
   // Sets the brand views::ImageView visibility and image. Initiates the

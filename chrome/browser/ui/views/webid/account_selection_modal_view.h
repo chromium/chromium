@@ -101,7 +101,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const IdentityProviderDisplayData& idp_display_data,
       const content::IdentityRequestAccount& account,
       bool should_hover,
-      bool show_disclosure_label);
+      bool show_disclosure_label,
+      bool show_separator);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.

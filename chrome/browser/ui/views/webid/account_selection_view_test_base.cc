@@ -127,12 +127,16 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
     const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
     const std::vector<std::string>& account_suffixes,
     size_t& accounts_index,
-    bool expect_idp) {
+    bool expect_idp,
+    bool is_modal_dialog) {
   EXPECT_GE(accounts.size(), account_suffixes.size());
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
   // `accounts_index` to the first unused index in `accounts`, or to
   // `accounts.size()` if done.
   for (const auto& account_suffix : account_suffixes) {
+    if (std::string(accounts[accounts_index]->GetClassName()) == "Separator") {
+      ++accounts_index;
+    }
     ASSERT_STREQ("HoverButton", accounts[accounts_index]->GetClassName());
     HoverButton* account_row =
         static_cast<HoverButton*>(accounts[accounts_index++]);
@@ -156,8 +160,9 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
       EXPECT_FALSE(GetHoverButtonFooter(account_row));
     }
     EXPECT_EQ(icon_view->size(),
-              expect_idp ? gfx::Size(kLargerAvatarSize, kLargerAvatarSize)
-                         : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+              is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
+              : expect_idp    ? gfx::Size(kLargerAvatarSize, kLargerAvatarSize)
+                           : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
   }
 }
 

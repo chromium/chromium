@@ -17,6 +17,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
@@ -351,9 +352,18 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool should_hover,
-    bool should_include_idp) {
+    bool should_include_idp,
+    bool is_modal_dialog) {
+  int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
+  views::style::TextStyle account_name_style =
+      is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
+                      : views::style::STYLE_PRIMARY;
+  views::style::TextStyle account_email_style =
+      is_modal_dialog ? views::style::STYLE_BODY_5
+                      : views::style::STYLE_SECONDARY;
+
   auto account_image_view = std::make_unique<AccountImageView>();
-  account_image_view->SetImageSize({kDesiredAvatarSize, kDesiredAvatarSize});
+  account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(should_hover || !should_include_idp);
   if (should_hover) {
     if (should_include_idp) {
@@ -377,12 +387,14 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*secondary_view=*/nullptr,
         /*add_vertical_label_spacing=*/true, footer);
     row->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
-    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
-                              views::style::STYLE_SECONDARY);
+        gfx::Insets::VH(/*vertical=*/is_modal_dialog ? kVerticalSpacing : 0,
+                        /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
+                                                       : kLeftRightPadding)));
+    row->SetTitleTextStyle(account_email_style, ui::kColorDialogBackground,
+                           /*color_id=*/std::nullopt);
+    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     if (should_include_idp) {
-      row->SetFooterTextStyle(views::style::CONTEXT_LABEL,
-                              views::style::STYLE_SECONDARY);
+      row->SetFooterTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     }
     return row;
   }
@@ -390,7 +402,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(/*vertical=*/kVerticalSpacing, /*horizontal=*/0),
+      gfx::Insets::VH(
+          /*vertical=*/kVerticalSpacing,
+          /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
       kLeftRightPadding));
   row->AddChildView(std::move(account_image_view));
   views::View* const text_column =
@@ -401,14 +415,15 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   // Add account name.
   views::StyledLabel* const account_name =
       text_column->AddChildView(std::make_unique<views::StyledLabel>());
+  account_name->SetDefaultTextStyle(account_name_style);
   account_name->SetText(base::UTF8ToUTF16(account.name));
   account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Add account email.
-  views::Label* const account_email = text_column->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(account.email),
-                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                     views::style::STYLE_SECONDARY));
+  views::Label* const account_email =
+      text_column->AddChildView(std::make_unique<views::Label>(
+          base::UTF8ToUTF16(account.email),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, account_email_style));
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
@@ -460,7 +475,8 @@ void AccountSelectionViewBase::ConfigureBadgeIdp(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<views::View> AccountSelectionViewBase::CreateDisclosureLabel(
+std::unique_ptr<views::StyledLabel>
+AccountSelectionViewBase::CreateDisclosureLabel(
     const IdentityProviderDisplayData& idp_display_data) {
   // It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.

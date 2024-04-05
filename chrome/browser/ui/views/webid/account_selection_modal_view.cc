@@ -16,6 +16,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -28,15 +29,18 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -50,9 +54,9 @@ constexpr int kBetweenChildSpacing = 4;
 // The size of the vertical padding for most elements in the dialog.
 constexpr int kVerticalPadding = 8;
 // The width of the modal dialog.
-constexpr int kDialogWidth = 500;
+constexpr int kDialogWidth = 448;
 // The margins of the modal dialog.
-constexpr int kDialogMargin = 24;
+constexpr int kDialogMargin = 20;
 // The size of brand icons of the modal dialog.
 constexpr int kModalIconSize = 50;
 // The height of the progress bar on the modal dialog.
@@ -151,17 +155,17 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
   std::unique_ptr<views::View> placeholder_account_icon =
       std::make_unique<views::View>();
   placeholder_account_icon->SetPreferredSize(
-      gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+      gfx::Size(kModalAvatarSize, kModalAvatarSize));
   placeholder_account_icon->SizeToPreferredSize();
-  placeholder_account_icon->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kDesiredAvatarSize));
+  placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
+      gfx::kGoogleGrey200, kModalAvatarSize));
 
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(/*vertical=*/kVerticalSpacing,
-                      /*horizontal=*/kDialogMargin),
-      kLeftRightPadding));
+                      /*horizontal=*/kDialogMargin + kModalHorizontalSpacing),
+      /*between_child_spacing=*/kModalHorizontalSpacing));
   row->AddChildView(std::move(placeholder_account_icon));
 
   constexpr int kPlaceholderVerticalSpacing = 2;
@@ -175,25 +179,25 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
                   gfx::Insets::VH(/*vertical=*/kPlaceholderVerticalSpacing,
                                   /*horizontal=*/0));
 
-  constexpr int kPlaceholderRadius = 2;
+  constexpr int kPlaceholderRadius = 5;
   constexpr int kPlaceholderTextHeight = 10;
-  constexpr int kPlaceholderAccountNameWidth = 80;
-  constexpr int kPlaceholderAccountEmailWidth = 130;
+  constexpr int kPlaceholderAccountNameWidth = 79;
+  constexpr int kPlaceholderAccountEmailWidth = 134;
   views::View* placeholder_account_name =
       text_column->AddChildView(std::make_unique<views::View>());
   placeholder_account_name->SetPreferredSize(
       gfx::Size(kPlaceholderAccountNameWidth, kPlaceholderTextHeight));
   placeholder_account_name->SizeToPreferredSize();
-  placeholder_account_name->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kPlaceholderRadius));
+  placeholder_account_name->SetBackground(views::CreateRoundedRectBackground(
+      gfx::kGoogleGrey200, kPlaceholderRadius));
 
   views::View* placeholder_account_email =
       text_column->AddChildView(std::make_unique<views::View>());
   placeholder_account_email->SetPreferredSize(
       gfx::Size(kPlaceholderAccountEmailWidth, kPlaceholderTextHeight));
   placeholder_account_email->SizeToPreferredSize();
-  placeholder_account_email->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kPlaceholderRadius));
+  placeholder_account_email->SetBackground(views::CreateRoundedRectBackground(
+      gfx::kGoogleGrey200, kPlaceholderRadius));
 
   return row;
 }
@@ -208,6 +212,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
   const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   std::unique_ptr<views::View> button_container =
       std::make_unique<views::View>();
+  constexpr int kButtonRowTopPadding = 24;
   button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
@@ -217,7 +222,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
           gfx::Insets::VH(/*vertical=*/0,
                           /*horizontal=*/layout_provider->GetDistanceMetric(
                               views::DISTANCE_RELATED_BUTTON_HORIZONTAL)))
-      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/0, /*left=*/kDialogMargin,
+      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
+                                           /*left=*/kDialogMargin,
                                            /*bottom=*/kDialogMargin,
                                            /*right=*/kDialogMargin));
 
@@ -292,22 +298,23 @@ AccountSelectionModalView::CreateAccountChooserHeader(
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(/*top=*/kDialogMargin, /*left=*/kDialogMargin,
-                        /*bottom=*/0,
-                        /*right=*/kDialogMargin)));
+                        /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin),
+      /*between_child_spacing=*/kVerticalPadding));
 
   // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
   header->AddChildView(CreateBrandIconImageView(idp_metadata.brand_icon_url));
 
   // Add the title.
-  title_label_ = header->AddChildView(std::make_unique<views::Label>(
-      title_, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  title_label_ = header->AddChildView(
+      std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
+                                     views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
 
   // Add the body.
   views::Label* body_label =
       header->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT));
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
   SetLabelProperties(body_label);
   return header;
 }
@@ -322,13 +329,21 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
       scroll_view->SetContents(std::make_unique<views::View>());
   content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kDialogMargin)));
+      gfx::Insets::VH(/*vertical=*/kVerticalPadding,
+                      /*horizontal=*/kDialogMargin)));
+
+  // Add separator before the account rows.
+  content->AddChildView(std::make_unique<views::Separator>());
+
   size_t num_rows = 0;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       content->AddChildView(CreateAccountRow(account, idp_display_data,
                                              /*should_hover=*/true,
-                                             /*should_include_idp=*/false));
+                                             /*should_include_idp=*/false,
+                                             /*is_modal_dialog=*/true));
+      // Add separator after each account row.
+      content->AddChildView(std::make_unique<views::Separator>());
     }
     num_rows += idp_display_data.accounts.size();
   }
@@ -403,18 +418,38 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     const IdentityProviderDisplayData& idp_display_data,
     const content::IdentityRequestAccount& account,
     bool should_hover,
-    bool show_disclosure_label) {
+    bool show_disclosure_label,
+    bool show_separator) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kDialogMargin),
-      /*between_child_spacing=*/kVerticalPadding));
+      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kDialogMargin)));
+
+  // Add separator before the account row.
+  if (show_separator) {
+    row->AddChildView(std::make_unique<views::Separator>());
+  }
+
+  // Add account row.
   // TODO(crbug.com/1518356): There should be an arrow to the right of the
   // account when the account row is hoverable.
   row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover,
-                                     /*should_include_idp=*/false));
+                                     /*should_include_idp=*/false,
+                                     /*is_modal_dialog=*/true));
+
+  // Add separator after the account row.
+  if (show_separator) {
+    row->AddChildView(std::make_unique<views::Separator>());
+  }
+
+  // Add disclosure label.
   if (show_disclosure_label) {
-    row->AddChildView(CreateDisclosureLabel(idp_display_data));
+    std::unique_ptr<views::StyledLabel> disclosure_label =
+        CreateDisclosureLabel(idp_display_data);
+    disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+    disclosure_label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+    row->AddChildView(std::move(disclosure_label));
   }
   return row;
 }
@@ -432,7 +467,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/true,
-                                              /*show_disclosure_label=*/false));
+                                              /*show_disclosure_label=*/false,
+                                              /*show_separator=*/true));
 
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
@@ -442,9 +478,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
         base::Unretained(observer_), idp_display_data.idp_metadata.config_url,
         idp_display_data.idp_metadata.idp_login_url);
   }
-  AddChildView(CreateButtonRow(
-      /*continue_callback=*/std::nullopt,
-      std::move(use_other_account_callback)));
+  AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
+                               std::move(use_other_account_callback)));
 
   InitDialogWidget();
 
@@ -486,15 +521,16 @@ AccountSelectionModalView::CreateRequestPermissionHeader(
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(/*top=*/kDialogMargin, /*left=*/kDialogMargin,
-                        /*bottom=*/0,
-                        /*right=*/kDialogMargin)));
+                        /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin),
+      /*between_child_spacing=*/kVerticalPadding));
 
   // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
   header->AddChildView(CreateBrandIconImageView(brand_icon_url));
 
   // Add the title.
-  title_label_ = header->AddChildView(std::make_unique<views::Label>(
-      title_, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  title_label_ = header->AddChildView(
+      std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
+                                     views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
 
   return header;
@@ -514,7 +550,8 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,
-                                              /*show_disclosure_label=*/true));
+                                              /*show_disclosure_label=*/true,
+                                              /*show_separator=*/false));
   AddChildView(CreateButtonRow(
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnAccountSelected,

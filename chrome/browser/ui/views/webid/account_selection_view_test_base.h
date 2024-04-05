@@ -55,7 +55,8 @@ class AccountSelectionViewTestBase {
       const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
       const std::vector<std::string>& account_suffixes,
       size_t& accounts_index,
-      bool expect_idp = false);
+      bool expect_idp = false,
+      bool is_modal_dialog = false);
   void CheckDisclosureText(views::View* disclosure_text,
                            bool expect_terms_of_service,
                            bool expect_privacy_policy);
