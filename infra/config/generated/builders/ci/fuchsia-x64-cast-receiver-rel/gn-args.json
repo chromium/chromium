@@ -5,6 +5,7 @@
     "is_component_build": false,
     "is_debug": false,
     "target_os": "fuchsia",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
