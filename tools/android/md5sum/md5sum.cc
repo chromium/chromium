@@ -16,6 +16,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/heap_array.h"
 #include "base/hash/md5.h"
 #include "third_party/zlib/google/compression_utils_portable.h"
 
@@ -35,10 +36,11 @@ bool MD5Sum(const std::string& path, std::string* digest_string) {
   base::MD5Context ctx;
   base::MD5Init(&ctx);
   const size_t kBufferSize = 1 << 16;
-  std::unique_ptr<char[]> buf(new char[kBufferSize]);
+  auto buf = base::HeapArray<char>::Uninit(kBufferSize);
   size_t len;
-  while ((len = fread(buf.get(), 1, kBufferSize, fd)) > 0)
-    base::MD5Update(&ctx, std::string_view(buf.get(), len));
+  while ((len = fread(buf.data(), 1, buf.size(), fd)) > 0) {
+    base::MD5Update(&ctx, std::string_view(buf.data(), len));
+  }
   if (ferror(fd)) {
     fclose(fd);
     std::cerr << "Error reading file " << path << std::endl;
