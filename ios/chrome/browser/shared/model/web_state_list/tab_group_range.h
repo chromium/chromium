@@ -20,9 +20,8 @@ class TabGroupRange {
   // Returns a range that is invalid, which is {-1, 0}.
   static constexpr TabGroupRange InvalidRange() { return TabGroupRange(-1, 0); }
 
-  // Checks if the range is valid through comparison to InvalidRange(). If
-  // this is not valid, you must not call functions on this object.
-  constexpr bool IsValid() const { return *this != InvalidRange(); }
+  // Checks if the range is valid, i.e. is not empty.
+  constexpr bool IsValid() const { return count_ > 0; }
 
   // Getters.
   constexpr int range_begin() const { return start_; }

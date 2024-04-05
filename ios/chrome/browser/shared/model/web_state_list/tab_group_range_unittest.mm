@@ -21,7 +21,7 @@ TEST_F(TabGroupRangeTest, InvalidRange) {
 TEST_F(TabGroupRangeTest, ZeroRange) {
   TabGroupRange range(0, 0);
 
-  EXPECT_TRUE(range.IsValid());
+  EXPECT_FALSE(range.IsValid());
   EXPECT_EQ(0, range.range_begin());
   EXPECT_EQ(0, range.count());
   EXPECT_EQ(0, range.range_end());
