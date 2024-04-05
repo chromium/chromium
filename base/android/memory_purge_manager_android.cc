@@ -15,15 +15,12 @@ static void JNI_MemoryPurgeManager_PostDelayedPurgeTaskOnUiThread(JNIEnv* env,
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::android::PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       task_runner, FROM_HERE,
-      base::BindOnce(
-          [](base::android::PreFreezeBackgroundMemoryTrimmer::TaskType
-                 task_type) {
-            const bool called_from_pre_freeze =
-                task_type == base::android::PreFreezeBackgroundMemoryTrimmer::
-                                 TaskType::kPreFreezeTask;
-            Java_MemoryPurgeManager_doDelayedPurge(
-                jni_zero::AttachCurrentThread(), called_from_pre_freeze);
-          }),
+      base::BindOnce([](base::MemoryReductionTaskContext task_type) {
+        const bool called_from_pre_freeze =
+            task_type == base::MemoryReductionTaskContext::kProactive;
+        Java_MemoryPurgeManager_doDelayedPurge(jni_zero::AttachCurrentThread(),
+                                               called_from_pre_freeze);
+      }),
       base::Milliseconds(static_cast<long>(delay)));
 }
 

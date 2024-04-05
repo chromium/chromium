@@ -13,8 +13,6 @@
 
 namespace base::android {
 
-using TaskType = PreFreezeBackgroundMemoryTrimmer::TaskType;
-
 namespace {
 
 static int s_counter = 0;
@@ -388,12 +386,15 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
 }
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunDirectly) {
-  std::optional<TaskType> called_task_type = std::nullopt;
+  std::optional<MemoryReductionTaskContext> called_task_type = std::nullopt;
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
-      base::BindOnce([](std::optional<TaskType>& called_task_type,
-                        TaskType task_type) { called_task_type = task_type; },
-                     std::ref(called_task_type)),
+      base::BindOnce(
+          [](std::optional<MemoryReductionTaskContext>& called_task_type,
+             MemoryReductionTaskContext task_type) {
+            called_task_type = task_type;
+          },
+          std::ref(called_task_type)),
       base::Seconds(30));
 
   ASSERT_FALSE(called_task_type.has_value());
@@ -402,16 +403,20 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunDirectly) {
   task_environment_.FastForwardBy(base::Seconds(30));
 
   ASSERT_EQ(pending_task_count(), 0u);
-  EXPECT_EQ(called_task_type.value(), TaskType::kNormalTask);
+  EXPECT_EQ(called_task_type.value(),
+            MemoryReductionTaskContext::kDelayExpired);
 }
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunFromPreFreeze) {
-  std::optional<TaskType> called_task_type = std::nullopt;
+  std::optional<MemoryReductionTaskContext> called_task_type = std::nullopt;
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
-      base::BindOnce([](std::optional<TaskType>& called_task_type,
-                        TaskType task_type) { called_task_type = task_type; },
-                     std::ref(called_task_type)),
+      base::BindOnce(
+          [](std::optional<MemoryReductionTaskContext>& called_task_type,
+             MemoryReductionTaskContext task_type) {
+            called_task_type = task_type;
+          },
+          std::ref(called_task_type)),
       base::Seconds(30));
 
   ASSERT_FALSE(called_task_type.has_value());
@@ -420,21 +425,24 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunFromPreFreeze) {
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
   ASSERT_EQ(pending_task_count(), 0u);
-  EXPECT_EQ(called_task_type.value(), TaskType::kPreFreezeTask);
+  EXPECT_EQ(called_task_type.value(), MemoryReductionTaskContext::kProactive);
 }
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunDirectly) {
   OneShotDelayedBackgroundTimer timer;
-  std::optional<TaskType> called_task_type = std::nullopt;
+  std::optional<MemoryReductionTaskContext> called_task_type = std::nullopt;
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
 
   timer.Start(
       FROM_HERE, base::Seconds(30),
-      base::BindOnce([](std::optional<TaskType>& called_task_type,
-                        TaskType task_type) { called_task_type = task_type; },
-                     std::ref(called_task_type)));
+      base::BindOnce(
+          [](std::optional<MemoryReductionTaskContext>& called_task_type,
+             MemoryReductionTaskContext task_type) {
+            called_task_type = task_type;
+          },
+          std::ref(called_task_type)));
 
   ASSERT_FALSE(called_task_type.has_value());
   ASSERT_EQ(pending_task_count(), 1u);
@@ -442,21 +450,25 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunDirectly) {
   task_environment_.FastForwardBy(base::Seconds(30));
 
   ASSERT_EQ(pending_task_count(), 0u);
-  EXPECT_EQ(called_task_type.value(), TaskType::kNormalTask);
+  EXPECT_EQ(called_task_type.value(),
+            MemoryReductionTaskContext::kDelayExpired);
 }
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunFromPreFreeze) {
   OneShotDelayedBackgroundTimer timer;
-  std::optional<TaskType> called_task_type = std::nullopt;
+  std::optional<MemoryReductionTaskContext> called_task_type = std::nullopt;
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
 
   timer.Start(
       FROM_HERE, base::Seconds(30),
-      base::BindOnce([](std::optional<TaskType>& called_task_type,
-                        TaskType task_type) { called_task_type = task_type; },
-                     std::ref(called_task_type)));
+      base::BindOnce(
+          [](std::optional<MemoryReductionTaskContext>& called_task_type,
+             MemoryReductionTaskContext task_type) {
+            called_task_type = task_type;
+          },
+          std::ref(called_task_type)));
 
   ASSERT_FALSE(called_task_type.has_value());
   ASSERT_EQ(pending_task_count(), 1u);
@@ -464,7 +476,7 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunFromPreFreeze) {
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
   ASSERT_EQ(pending_task_count(), 0u);
-  EXPECT_EQ(called_task_type.value(), TaskType::kPreFreezeTask);
+  EXPECT_EQ(called_task_type.value(), MemoryReductionTaskContext::kProactive);
 }
 
 }  // namespace base::android

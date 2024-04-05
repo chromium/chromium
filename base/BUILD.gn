@@ -416,6 +416,8 @@ component("base") {
     "memory/platform_shared_memory_mapper.h",
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
+    "memory/post_delayed_memory_reduction_task.cc",
+    "memory/post_delayed_memory_reduction_task.h",
     "memory/protected_memory.h",
     "memory/ptr_util.h",
     "memory/raw_ptr.h",
