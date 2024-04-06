@@ -1260,7 +1260,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
   for (auto& partition : partitions) {
     for (uint64_t i=partition.attribution_window.epoch_start(); 
             i <= partition.attribution_window.epoch_end(); i++) {
-      auto it = sources_per_epoch.find(i)
+      auto it = sources_per_epoch.find(i);
       if (it != sources_per_epoch.end()) {
         partition.sources_per_epoch[i] = std::move(sources_per_epoch[i]);
       }
