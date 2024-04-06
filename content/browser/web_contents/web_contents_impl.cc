@@ -453,40 +453,47 @@ float GetDeviceScaleAdjustment(int min_width) {
 }
 #endif
 
-// Used to attach the "set of fullscreen contents" to a browser context. Storing
-// sets of WebContents on their browser context is done for two reasons. One,
+// Store a set of fullscreen WebContents and metadata for the browser context.
+// Storing this information on the browser context is done for two reasons. One,
 // related WebContentses must necessarily share a browser context, so this saves
 // lookup time by restricting to one specific browser context. Two, separating
 // by browser context is preemptive paranoia about keeping things separate.
-class FullscreenContentsHolder : public base::SupportsUserData::Data {
+class FullscreenUserData : public base::SupportsUserData::Data {
  public:
-  FullscreenContentsHolder() = default;
-  ~FullscreenContentsHolder() override = default;
+  FullscreenUserData() = default;
+  ~FullscreenUserData() override = default;
 
-  FullscreenContentsHolder(const FullscreenContentsHolder&) = delete;
-  FullscreenContentsHolder& operator=(const FullscreenContentsHolder&) = delete;
+  FullscreenUserData(const FullscreenUserData&) = delete;
+  FullscreenUserData& operator=(const FullscreenUserData&) = delete;
 
   base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>>* set() {
     return &set_;
   }
 
+  std::map<url::Origin, base::TimeTicks>* last_exits() { return &last_exits_; }
+
  private:
   base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>> set_;
+  // Track latest exits by origin to briefly block re-entry without a gesture.
+  std::map<url::Origin, base::TimeTicks> last_exits_;
 };
 
-const char kFullscreenContentsSet[] = "fullscreen-contents";
+const char kFullscreenUserData[] = "fullscreen-user-data";
+
+FullscreenUserData* GetFullscreenUserData(BrowserContext* browser_context) {
+  auto* set_holder = static_cast<FullscreenUserData*>(
+      browser_context->GetUserData(kFullscreenUserData));
+  if (!set_holder) {
+    auto new_holder = std::make_unique<FullscreenUserData>();
+    set_holder = new_holder.get();
+    browser_context->SetUserData(kFullscreenUserData, std::move(new_holder));
+  }
+  return set_holder;
+}
 
 base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>>*
 FullscreenContentsSet(BrowserContext* browser_context) {
-  auto* set_holder = static_cast<FullscreenContentsHolder*>(
-      browser_context->GetUserData(kFullscreenContentsSet));
-  if (!set_holder) {
-    auto new_holder = std::make_unique<FullscreenContentsHolder>();
-    set_holder = new_holder.get();
-    browser_context->SetUserData(kFullscreenContentsSet, std::move(new_holder));
-  }
-
-  return set_holder->set();
+  return GetFullscreenUserData(browser_context)->set();
 }
 
 // Returns true if `host` has the Window Management permission granted.
@@ -3981,8 +3988,10 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
     static_cast<RenderWidgetHostViewBase*>(view)->ExitFullscreenMode();
   }
 
-  // Block automatic fullscreen temporarily, e.g. match kActivationLifespan.
-  block_automatic_fullscreen_until_ = base::TimeTicks::Now() + base::Seconds(5);
+  GetFullscreenUserData(GetBrowserContext())
+      ->last_exits()
+      ->insert_or_assign(GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+                         base::TimeTicks::Now());
 
   if (delegate_) {
     // This may spin the message loop and destroy this object crbug.com/1506535
@@ -10156,12 +10165,13 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  // Require transient activation shortly after any related WebContents exited.
-  for (auto* rfhi : GetActiveTopLevelDocumentsInBrowsingContextGroup(host)) {
-    auto* related = WebContentsImpl::FromRenderFrameHostImpl(rfhi);
-    if (base::TimeTicks::Now() < related->block_automatic_fullscreen_until_) {
-      return true;
-    }
+  // Require transient activation shortly after a same-origin WebContents exit.
+  auto* last_exits = GetFullscreenUserData(GetBrowserContext())->last_exits();
+  auto last_exit = last_exits->find(host->GetLastCommittedOrigin());
+  constexpr base::TimeDelta kCooldown = base::Seconds(5);
+  if (last_exit != last_exits->end() &&
+      base::TimeTicks::Now() < last_exit->second + kCooldown) {
+    return true;
   }
 
   return GetContentClient()

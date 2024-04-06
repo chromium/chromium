@@ -857,8 +857,9 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     return browser->window()->IsFullscreen();
   }
 
-  bool ExitFullscreen() {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  bool ExitFullscreen(WebContents* web_contents = nullptr) {
+    web_contents = web_contents ? web_contents : web_contents_.get();
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
     const std::string script = R"((() => {
       window.lastExit = Date.now();
@@ -866,7 +867,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     })())";
     // A user gesture is not needed and may break subsequent activation checks.
     auto result =
-        EvalJs(web_contents_, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+        EvalJs(web_contents, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
     waiter.Wait();
     return result.error.empty() && !browser->window()->IsFullscreen();
   }
@@ -929,7 +930,9 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, RequestFullscreenNoGesture) {
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterExit) {
   EXPECT_TRUE(RequestFullscreen());
+  const base::TimeTicks exit = base::TimeTicks::Now();
   EXPECT_TRUE(ExitFullscreen());
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
   EXPECT_FALSE(RequestFullscreen());
 }
 
@@ -943,6 +946,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterExit) {
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(ExitFullscreen());
   base::RunLoop run_loop;
+  // TODO(crbug.com/333133285): Avoid waiting this long in wall-clock time.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
   run_loop.Run();
@@ -955,7 +959,9 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, Popup) {
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupImmediatelyAfterExit) {
   EXPECT_TRUE(RequestFullscreen());
+  const base::TimeTicks exit = base::TimeTicks::Now();
   EXPECT_TRUE(ExitFullscreen());
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
   EXPECT_FALSE(OpenPopupAndRequestFullscreenOnLoad());
 }
 
@@ -963,10 +969,37 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(ExitFullscreen());
   base::RunLoop run_loop;
+  // TODO(crbug.com/333133285): Avoid waiting this long in wall-clock time.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
   run_loop.Run();
   EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+  Browser* popup = BrowserList::GetInstance()->GetLastActive();
+  const base::TimeTicks exit = base::TimeTicks::Now();
+  ExitFullscreen(popup->tab_strip_model()->GetActiveWebContents());
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
+  EXPECT_FALSE(RequestFullscreen());
+  popup->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(popup);
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
+  EXPECT_FALSE(RequestFullscreen());
+  EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterPopupExit) {
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+  Browser* popup = BrowserList::GetInstance()->GetLastActive();
+  ExitFullscreen(popup->tab_strip_model()->GetActiveWebContents());
+  base::RunLoop run_loop;
+  // TODO(crbug.com/333133285): Avoid waiting this long in wall-clock time.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
+  run_loop.Run();
+  EXPECT_TRUE(RequestFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
