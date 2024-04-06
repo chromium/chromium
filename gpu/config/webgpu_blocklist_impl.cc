@@ -32,6 +32,11 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  // Blocklist the OpenGLES backend on Android for now.
+  if (properties.backendType == WGPUBackendType_OpenGLES) {
+    return true;
+  }
+
   constexpr uint32_t kARMVendorID = 0x13B5;
   constexpr uint32_t kQualcommVendorID = 0x5143;
 
