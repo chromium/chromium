@@ -393,6 +393,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // Needed when logoff is simulated in testing.
   void ClearPrefChangeObserverForTesting();
 
+  // Overrides `drivefs_delegate_` for testing.
+  void OverrideDriveFsDelegateForTesting(
+      std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate);
+
   void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
 
   void set_allow_shield_for_testing() { allow_shield_for_testing_ = true; }
@@ -412,6 +416,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   raw_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_for_testing() {
     return time_of_day_scheduler_.get();
+  }
+
+  raw_ptr<WallpaperPrefManager> pref_manager_for_testing() {
+    return pref_manager_.get();
   }
 
  private:

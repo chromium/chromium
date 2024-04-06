@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -39,22 +40,19 @@ void TestWallpaperDriveFsDelegate::SaveWallpaper(
 void TestWallpaperDriveFsDelegate::GetWallpaperModificationTime(
     const AccountId& account_id,
     GetWallpaperModificationTimeCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::Time());
+  std::move(callback).Run(base::Time::Now());
 }
 
 void TestWallpaperDriveFsDelegate::WaitForWallpaperChange(
     const AccountId& account_id,
     WaitForWallpaperChangeCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(/*success=*/false);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperDriveFsDelegate::DownloadAndDecodeWallpaper(
     const AccountId& account_id,
     ImageDownloader::DownloadCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(gfx::ImageSkia());
+  std::move(callback).Run(gfx::test::CreateImageSkia(10));
 }
 
 }  // namespace ash

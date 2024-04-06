@@ -38,9 +38,12 @@ class TestWallpaperDriveFsDelegate : public WallpaperDriveFsDelegate {
   void SaveWallpaper(const AccountId& account_id,
                      const base::FilePath& source,
                      base::OnceCallback<void(bool success)> callback) override;
+  // Returns the current time as the modification time as the callback expects
+  // it to be greater than the current wallpaper's set time to proceed.
   void GetWallpaperModificationTime(
       const AccountId& account_id,
       GetWallpaperModificationTimeCallback callback) override;
+  // Returns true to signal the wallpaper file has changed successfully.
   void WaitForWallpaperChange(const AccountId& account_id,
                               WaitForWallpaperChangeCallback callback) override;
   void DownloadAndDecodeWallpaper(

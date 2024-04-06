@@ -167,6 +167,7 @@ std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
   os << "  layout: " << info.layout << std::endl;
   os << "  type: " << static_cast<int>(info.type) << std::endl;
   os << "  date: " << info.date << std::endl;
+  os << "  dedup_key: " << info.dedup_key.value_or("") << std::endl;
   os << "  asset_id: " << info.asset_id.value_or(-1) << std::endl;
   os << "  collection_id: " << info.collection_id << std::endl;
   os << "  unit_id: " << info.unit_id.value_or(-1) << std::endl;
