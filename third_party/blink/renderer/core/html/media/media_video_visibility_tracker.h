@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
+#include "third_party/skia/include/core/SkRect.h"
 
 namespace blink {
 
@@ -77,10 +78,10 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // not. A video element with visibility greater or equal than
   // |visibility_threshold_| is considered to meet the visibility threshold.
   float visibility_threshold_ = 1.0;
-  float accumulated_area_ = 0.0;
-  float video_element_area_ = 0.0;
-  VectorOf<PhysicalRect> occluding_rects_;
+  float occluded_area_ = 0.0;
+  VectorOf<SkIRect> occluding_rects_;
   PhysicalRect intersection_rect_;
+  PhysicalRect video_element_rect_;
   ReportVisibilityCb report_visibility_cb_;
   base::TimeTicks last_hit_test_timestamp_;
   const base::TimeDelta hit_test_interval_;

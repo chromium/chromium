@@ -63,14 +63,14 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
     return tracker_->intersection_rect_;
   }
 
-  const VectorOf<PhysicalRect> OccludingRects() const {
+  const VectorOf<SkIRect> OccludingRects() const {
     DCHECK(tracker_);
     return tracker_->occluding_rects_;
   }
 
-  float AccumulatedArea() const {
+  float OccludedArea() const {
     DCHECK(tracker_);
-    return tracker_->accumulated_area_;
+    return tracker_->occluded_area_;
   }
 
  private:
@@ -168,7 +168,11 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   task_environment().FastForwardUntilNoTasksRemain();
 
   EXPECT_TRUE(IntersectionRect().IsEmpty());
-  EXPECT_TRUE(OccludingRects().empty());
+  EXPECT_FALSE(OccludingRects().empty());
+
+  VectorOf<SkIRect> expected_occludning_rect{
+      SkIRect::MakeXYWH(8, -492, 50, 50)};
+  EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
@@ -208,7 +212,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rect{PhysicalRect(0, 0, 100, 100)};
+  VectorOf<SkIRect> expected_occludning_rect{SkIRect::MakeXYWH(0, 0, 100, 100)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 
@@ -248,8 +252,8 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rects{
-      PhysicalRect(0, 0, 400, 400)};
+  VectorOf<SkIRect> expected_occludning_rects{
+      SkIRect::MakeXYWH(0, 0, 400, 400)};
   EXPECT_EQ(expected_occludning_rects, OccludingRects());
 }
 
@@ -298,12 +302,12 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rects{
-      PhysicalRect(250, 0, 250, 250), PhysicalRect(0, 0, 250, 250)};
+  VectorOf<SkIRect> expected_occludning_rects{
+      SkIRect::MakeXYWH(250, 0, 250, 250), SkIRect::MakeXYWH(0, 0, 250, 250)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
   EXPECT_EQ(visibility_threshold,
-            AccumulatedArea() / ComputeArea(IntersectionRect()));
+            OccludedArea() / ComputeArea(IntersectionRect()));
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
@@ -350,8 +354,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rects{
-      PhysicalRect(230, 0, 270, 270), PhysicalRect(0, 0, 250, 250)};
+  VectorOf<SkIRect> expected_occludning_rects{
+      SkIRect::MakeXYWH(230, 0, 270, 270), SkIRect::MakeXYWH(0, 0, 250, 250)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
 }
@@ -396,7 +400,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  EXPECT_EQ(VectorOf<PhysicalRect>{PhysicalRect(0, 0, 400, 400)},
+  EXPECT_EQ(VectorOf<SkIRect>{SkIRect::MakeXYWH(0, 0, 400, 400)},
             OccludingRects());
 
   // Now set opacity to zero and verify that the video is considered visible.
@@ -501,11 +505,77 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rects{
-      PhysicalRect(0, 0, 500, 50), PhysicalRect(0, 0, 500, 500)};
+  VectorOf<SkIRect> expected_occludning_rects{
+      SkIRect::MakeXYWH(0, 0, 500, 50), SkIRect::MakeXYWH(0, 0, 500, 500)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
-  EXPECT_EQ(1, AccumulatedArea() / ComputeArea(IntersectionRect()));
+  EXPECT_EQ(1, OccludedArea() / ComputeArea(IntersectionRect()));
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest,
+       MultipleIntersectingElementsOccludingBelowThreshold) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 500));
+  LoadMainResource(R"HTML(
+  <style>
+    body {
+      margin: 0;
+    }
+    video {
+      position: relative;
+      width: 500px;
+      height: 500px;
+    }
+    .occluding_div_1 {
+      background-color: blue;
+      width: 500px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .occluding_div_2 {
+      background-color: red;
+      width: 500px;
+      height: 50px;
+      position: absolute;
+      top: 25px;
+      left: 0;
+    }
+    .occluding_div_3 {
+      background-color: yellow;
+      width: 500px;
+      height: 50px;
+      position: absolute;
+      top: 25px;
+      left: 0;
+    }
+    .occluding_div_4 {
+      background-color: green;
+      width: 500px;
+      height: 50px;
+      position: absolute;
+      top: 25px;
+      left: 0;
+    }
+  </style>
+  <video></video>
+  <div class="occluding_div_1"></div>
+  <div class="occluding_div_2"></div>
+  <div class="occluding_div_3"></div>
+  <div class="occluding_div_4"></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  CreateAndAttachVideoVisibilityTracker(0.80);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(IntersectionRect().IsEmpty());
+  EXPECT_FALSE(OccludingRects().empty());
+
+  // Verify that overlapping intersections were not counted multiple times.
+  EXPECT_EQ(37500, OccludedArea());
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
@@ -561,8 +631,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rects{
-      PhysicalRect(0, 255, 500, 125), PhysicalRect(0, 125, 500, 130)};
+  VectorOf<SkIRect> expected_occludning_rects{
+      SkIRect::MakeXYWH(0, 255, 500, 125), SkIRect::MakeXYWH(0, 125, 500, 130)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
 }
@@ -601,7 +671,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   test::RunPendingTasks();
 
   EXPECT_TRUE(IntersectionRect().IsEmpty());
-  EXPECT_TRUE(OccludingRects().empty());
+  EXPECT_FALSE(OccludingRects().empty());
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
@@ -630,7 +700,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   task_environment().FastForwardUntilNoTasksRemain();
 
   EXPECT_TRUE(IntersectionRect().IsEmpty());
-  EXPECT_TRUE(OccludingRects().empty());
+  EXPECT_FALSE(OccludingRects().empty());
 
   // Scroll page and verify that the visibility threshold is not met.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
@@ -681,8 +751,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rect{
-      PhysicalRect(150, 0, 50, 100)};
+  VectorOf<SkIRect> expected_occludning_rect{
+      SkIRect::MakeXYWH(150, 0, 50, 100)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 
@@ -728,7 +798,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rect{PhysicalRect(0, 0, 800, 800)};
+  VectorOf<SkIRect> expected_occludning_rect{SkIRect::MakeXYWH(0, 0, 800, 800)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 
@@ -769,7 +839,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  VectorOf<PhysicalRect> expected_occludning_rect{PhysicalRect(0, 0, 100, 100)};
+  VectorOf<SkIRect> expected_occludning_rect{SkIRect::MakeXYWH(0, 0, 100, 100)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 
   // Update div to a size that would cause the video to not meet the visibility
@@ -788,7 +858,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  expected_occludning_rect = {PhysicalRect(0, 0, 500, 500)};
+  expected_occludning_rect = {SkIRect::MakeXYWH(0, 0, 500, 500)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 

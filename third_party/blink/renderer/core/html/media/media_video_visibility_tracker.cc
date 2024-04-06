@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -44,33 +45,40 @@ float ComputeArea(const PhysicalRect& rect) {
   return static_cast<float>(ToRoundedSize(rect.size).Area64());
 }
 
-bool HasEnoughVisibleAreaRemaining(float accumulated_area,
-                                   const PhysicalRect& intersection_rect,
+bool HasEnoughVisibleAreaRemaining(float occluded_area,
+                                   const PhysicalRect& video_element_rect,
                                    float visibility_threshold) {
-  return accumulated_area / ComputeArea(intersection_rect) <
+  return occluded_area / ComputeArea(video_element_rect) <
          (1 - visibility_threshold);
 }
 
-float ComputeIntersectionArea(const Vector<PhysicalRect>& occluding_rects,
-                              const PhysicalRect& target_rect,
-                              float video_element_area) {
-  float intersection_area = 0.0;
+float ComputeOccludingArea(const Vector<SkIRect>& occluding_rects,
+                           float video_element_area) {
+  float occluding_area = 0.0;
 
-  for (const auto& rect : occluding_rects) {
-    if (!target_rect.Intersects(rect)) {
-      continue;
-    }
+  std::vector<SkIRect> sk_rects;
+  for (const auto rect : occluding_rects) {
+    sk_rects.push_back(rect);
+  }
 
-    PhysicalRect intersecting_rect = target_rect;
-    intersecting_rect.Intersect(rect);
-    intersection_area += ComputeArea(intersecting_rect);
+  SkRegion region;
+  bool compute_area = region.setRects(sk_rects.data(), occluding_rects.size());
 
-    if (intersection_area >= video_element_area) {
+  if (!compute_area) {
+    return occluding_area;
+  }
+
+  for (SkRegion::Iterator it(region); !it.done(); it.next()) {
+    auto occluding_rect = it.rect();
+    occluding_area +=
+        ComputeArea(PhysicalRect(gfx::SkIRectToRect(occluding_rect)));
+
+    if (occluding_area >= video_element_area) {
       return video_element_area;
     }
   }
 
-  return intersection_area;
+  return occluding_area;
 }
 
 }  // anonymous namespace
@@ -162,17 +170,13 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
   PhysicalRect node_rect = node.BoundingBox();
   node_rect.Intersect(intersection_rect_);
 
-  // Accumulate the area covered by the current node.
-  accumulated_area_ += ComputeArea(node_rect);
+  // Add the current occluding node rect to `occluding_rects_` and compute the
+  // total occluded area.
+  occluding_rects_.push_back(gfx::RectToSkIRect(ToPixelSnappedRect(node_rect)));
+  occluded_area_ =
+      ComputeOccludingArea(occluding_rects_, ComputeArea(video_element_rect_));
 
-  // Subtract the area of the |node_rect| intersection with the existing
-  // occluding rects, if any.
-  float intersection_area =
-      ComputeIntersectionArea(occluding_rects_, node_rect, video_element_area_);
-  accumulated_area_ -= intersection_area;
-  occluding_rects_.push_back(node_rect);
-
-  if (HasEnoughVisibleAreaRemaining(accumulated_area_, intersection_rect_,
+  if (HasEnoughVisibleAreaRemaining(occluded_area_, video_element_rect_,
                                     visibility_threshold_)) {
     return kContinueHitTesting;
   }
@@ -193,23 +197,17 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
                            WrapPersistent(this))));
   }
 
-  return HasEnoughVisibleAreaRemaining(accumulated_area_, intersection_rect_,
+  return HasEnoughVisibleAreaRemaining(occluded_area_, video_element_rect_,
                                        visibility_threshold_)
              ? true
              : false;
 }
 
 void MediaVideoVisibilityTracker::OnIntersectionChanged() {
-  // Reset the various member variables used by |ComputeOcclusion()|.
-  accumulated_area_ = 0.0;
-  occluding_rects_.clear();
-  video_element_area_ = 0.0;
-
   LayoutBox* box = To<LayoutBox>(VideoElement().GetLayoutObject());
   PhysicalRect bounds(box->PhysicalBorderBoxRect());
-  video_element_area_ = ComputeArea(bounds);
   auto intersection_ratio =
-      ComputeArea(intersection_rect_) / video_element_area_;
+      ComputeArea(intersection_rect_) / ComputeArea(bounds);
 
   auto* layout = VideoElement().GetLayoutObject();
   // Return early if the area of the video that intersects with the view is
@@ -218,8 +216,6 @@ void MediaVideoVisibilityTracker::OnIntersectionChanged() {
     report_visibility_cb_.Run(false);
     return;
   }
-
-  accumulated_area_ = ComputeArea(bounds) - ComputeArea(intersection_rect_);
 
   if (MeetsVisibilityThreshold(intersection_rect_)) {
     report_visibility_cb_.Run(true);
@@ -237,7 +233,11 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
   }
   last_hit_test_timestamp_ = base::TimeTicks::Now();
 
+  // Reset the various member variables used by `ComputeOcclusion()`.
+  occluded_area_ = 0.0;
+  occluding_rects_.clear();
   intersection_rect_ = PhysicalRect();
+  video_element_rect_ = PhysicalRect();
 
   if (!VideoElement().GetLayoutObject()) {
     return;
@@ -252,6 +252,20 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
       local_frame_view.ConvertFromRootFrame(viewport_in_root_frame));
   intersection_rect_ = PhysicalRect::FastAndLossyFromRectF(
       IntersectRects(absolute_viewport, bounds));
+
+  video_element_rect_ = PhysicalRect::FastAndLossyFromRectF(bounds);
+
+  // Compute the VideoElement area that is occluded by the viewport, if any.
+  SkRegion region;
+  region.setRect(gfx::RectToSkIRect(gfx::ToRoundedRect(bounds)));
+  if (region.op(gfx::RectToSkIRect(gfx::ToRoundedRect(absolute_viewport)),
+                SkRegion::kDifference_Op)) {
+    for (SkRegion::Iterator it(region); !it.done(); it.next()) {
+      auto occluding_rect = it.rect();
+      occluding_rects_.push_back(occluding_rect);
+      it.next();
+    }
+  }
 
   OnIntersectionChanged();
 }
