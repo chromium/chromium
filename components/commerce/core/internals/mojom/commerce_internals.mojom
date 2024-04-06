@@ -41,6 +41,14 @@ struct Subscription {
   array<shopping_service.mojom.BookmarkProductInfo> product_infos;
 };
 
+struct ProductSpecificationsSet {
+  string uuid;
+  string name;
+  string creation_time;
+  string update_time;
+  array<url.mojom.Url> urls;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface CommerceInternalsHandler {
   // Returns whether the user is eligible to use the shopping list feature.
@@ -57,6 +65,9 @@ interface CommerceInternalsHandler {
   // Returns the products the user has subscribed to.
   GetSubscriptionDetails() =>
      (array<Subscription> subscriptions);
+  // Return product specifications the user has synced.
+  GetProductSpecificationsDetails() =>
+     (array<ProductSpecificationsSet> product_specifications_set);
 };
 
 // WebUI-side handler for requests from the browser.

@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -13,6 +14,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/payments/core/currency_formatter.h"
@@ -232,6 +234,30 @@ void CommerceInternalsHandler::GetSubscriptionDetails(
           std::move(callback),
           std::move(shopping_service_->GetBookmarkModelUsedForSync()),
           shopping_service_->locale_on_startup_));
+}
+
+void CommerceInternalsHandler::GetProductSpecificationsDetails(
+    GetProductSpecificationsDetailsCallback callback) {
+  std::vector<commerce::mojom::ProductSpecificationsSetPtr>
+      product_specifications_list;
+
+  for (auto& spec : shopping_service_->GetAllProductSpecificationSets()) {
+    commerce::mojom::ProductSpecificationsSetPtr product_specifications =
+        commerce::mojom::ProductSpecificationsSet::New();
+    product_specifications->uuid = spec.uuid().AsLowercaseString();
+    product_specifications->creation_time = base::UTF16ToUTF8(
+        base::TimeFormatShortDateAndTime(spec.creation_time()));
+    product_specifications->update_time =
+        base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(spec.update_time()));
+    product_specifications->name = spec.name();
+    std::vector<GURL> urls;
+    for (const GURL& url : spec.urls()) {
+      urls.push_back(url);
+    }
+    product_specifications->urls = std::move(urls);
+    product_specifications_list.push_back(std::move(product_specifications));
+  }
+  std::move(callback).Run(std::move(product_specifications_list));
 }
 
 }  // namespace commerce

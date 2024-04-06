@@ -37,6 +37,8 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   void GetProductInfoForUrl(const GURL& url,
                             GetProductInfoForUrlCallback callback) override;
   void GetSubscriptionDetails(GetSubscriptionDetailsCallback callback) override;
+  void GetProductSpecificationsDetails(
+      GetProductSpecificationsDetailsCallback callback) override;
 
  private:
   mojo::Remote<mojom::CommerceInternalsPage> page_;

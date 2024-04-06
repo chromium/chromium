@@ -31,6 +31,7 @@
 #include "components/commerce/core/parcel/parcels_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
@@ -1694,6 +1695,11 @@ void ShoppingService::GetProductIdentifierForUrl(
                                           : std::nullopt)));
           },
           std::move(callback)));
+}
+
+const std::vector<const ProductSpecificationsSet>
+ShoppingService::GetAllProductSpecificationSets() {
+  return product_specifications_service_->GetAllProductSpecifications();
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

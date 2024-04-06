@@ -25,6 +25,7 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -663,6 +664,10 @@ class ShoppingService : public KeyedService,
 
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
+
+  // Return all ProductSpecificationsSets from ProductSpecificationsService.
+  virtual const std::vector<const ProductSpecificationsSet>
+  GetAllProductSpecificationSets();
 
   // Updates the bookmark model used for sync (and shopping) if needed. Invoked
   // when sync state changes.

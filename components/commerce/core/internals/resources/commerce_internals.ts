@@ -10,11 +10,19 @@ import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 
 const SUBSCRIPTION_ROWS =
     ['Cluster ID', 'Domain', 'Price', 'Previous Price', 'Product'];
+const PRODUCT_SPECIFICATIONS_ROWS =
+    ['ID', 'Creation Time', 'Update Time', 'Name', 'URLs'];
 const CLUSTER_ID_COLUMN_IDX = 0;
 const DOMAIN_COLUMN_IDX = 1;
 const CURRENT_PRICE_COLUMN_IDX = 2;
 const PREVIOUS_PRICE_COLUMN_IDX = 3;
 const PRODUCT_COLUMN_IDX = 4;
+
+const UUID_IDX = 0;
+const CREATION_TIME_IDX = 1;
+const UPDATE_TIME_IDX = 2;
+const NAME_IDX = 3;
+const URLS_IDX = 4;
 
 function getProxy(): CommerceInternalsApiProxy {
   return CommerceInternalsApiProxy.getInstance();
@@ -85,6 +93,7 @@ function initialize() {
     updateShoppingListEligibleStatus(eligible);
     if (eligible) {
       renderSubscriptions();
+      renderProductSpecifications();
     }
   });
 }
@@ -164,6 +173,67 @@ function renderSubscriptions() {
       }
     }
   });
+}
+
+function renderProductSpecifications() {
+  getProxy().getProductSpecificationsDetails().then(
+      ({productSpecificationsSet}) => {
+        if (!productSpecificationsSet || productSpecificationsSet.length == 0) {
+          return;
+        }
+
+        const productSpecificationsElement =
+            document.getElementById('product_specifications');
+        if (!productSpecificationsElement) {
+          return;
+        }
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tr = document.createElement('tr');
+
+        for (const colName of PRODUCT_SPECIFICATIONS_ROWS) {
+          const th = document.createElement('th');
+          th.innerText = colName;
+          th.setAttribute('align', 'left');
+          tr.appendChild(th);
+        }
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        for (let i = 0; i < productSpecificationsSet.length; i++) {
+          const row = createProductSpecificationsRow();
+          const columns = row.getElementsByTagName('td');
+          columns[UUID_IDX]!.textContent = productSpecificationsSet[i]!.uuid;
+          columns[CREATION_TIME_IDX]!.textContent =
+              productSpecificationsSet[i]!.creationTime;
+          columns[UPDATE_TIME_IDX]!.textContent =
+              productSpecificationsSet[i]!.updateTime;
+          columns[NAME_IDX]!.textContent = productSpecificationsSet[i]!.name;
+          for (const url of productSpecificationsSet[i]!.urls) {
+            const div = document.createElement('div');
+            div.textContent = url.url;
+            columns[URLS_IDX]!.appendChild(div);
+          }
+          table.appendChild(row);
+        }
+        productSpecificationsElement.appendChild(table);
+      });
+}
+
+function createProductSpecificationsRow() {
+  const uuidCell = document.createElement('td');
+  const creationTimeCell = document.createElement('td');
+  const updateTimeCell = document.createElement('td');
+  const nameCell = document.createElement('td');
+  const urlsCell = document.createElement('td');
+  const row = document.createElement('tr');
+  for (const cell
+           of [uuidCell, creationTimeCell, updateTimeCell, nameCell,
+               urlsCell]) {
+    cell.vAlign = 'top';
+    row.appendChild(cell);
+  }
+  return row;
 }
 
 function createRow() {
