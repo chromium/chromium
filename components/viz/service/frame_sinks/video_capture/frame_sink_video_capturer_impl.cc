@@ -81,8 +81,8 @@ constexpr gfx::Rect kMaxRect = gfx::Rect(0,
                                          std::numeric_limits<int>::max());
 
 // Get the frame pool for the specific format. We need context_provider if the
-// format is NV12 or RGBA (when buffer_format_preference is kNativeTexture).
-// Thus, buffer_format_preference is also needed to tell which mode RGBA use.
+// format is NV12 or ARGB (when buffer_format_preference is kNativeTexture).
+// Thus, buffer_format_preference is also needed to tell which mode ARGB use.
 std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
     media::VideoPixelFormat format,
     int capacity,
@@ -977,7 +977,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                                        frame->stride(VideoFrame::kVPlane));
           break;
         case media::PIXEL_FORMAT_ARGB:
-          strides = base::StringPrintf("strideRGBA:%d",
+          strides = base::StringPrintf("strideARGB:%d",
                                        frame->stride(VideoFrame::kARGBPlane));
           break;
         case media::PIXEL_FORMAT_NV12:
@@ -1057,14 +1057,14 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
       pixel_format_ == media::PIXEL_FORMAT_NV12;
 
-  const bool use_rgba_with_textures =
+  const bool use_argb_with_textures =
       buffer_format_preference_ ==
           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
       pixel_format_ == media::PIXEL_FORMAT_ARGB;
 
   std::optional<BlitRequest> blit_request;
 
-  if (use_rgba_with_textures || use_nv12_with_textures) {
+  if (use_argb_with_textures || use_nv12_with_textures) {
     gpu::MailboxHolder first_mailbox =
         request_properties.frame->mailbox_holder(0);
     gpu::MailboxHolder second_mailbox;
@@ -1137,7 +1137,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   auto request = std::make_unique<CopyOutputRequest>(
       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_,
                                                 use_multiplane_for_nv12),
-      use_nv12_with_textures || use_rgba_with_textures
+      use_nv12_with_textures || use_argb_with_textures
           ? CopyOutputRequest::ResultDestination::kNativeTextures
           : CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
@@ -1225,15 +1225,15 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::kUVPlane));
         break;
       case CopyOutputResult::Format::RGBA:
-        strides = base::StringPrintf("strideRGBA:%d",
+        strides = base::StringPrintf("strideARGB:%d",
                                      frame->stride(VideoFrame::kARGBPlane));
 
         switch (result->destination()) {
           case CopyOutputResult::Destination::kSystemMemory:
-            format = "RGBA_Bitmap";
+            format = "ARGB_Bitmap";
             break;
           case CopyOutputResult::Destination::kNativeTextures:
-            format = "RGBA_Texture";
+            format = "ARGB_Texture";
             break;
         }
         break;
@@ -1286,6 +1286,8 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
     if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
       int stride = frame->stride(VideoFrame::kARGBPlane);
+      // Note: ResultFormat::RGBA CopyOutputResult's format currently is
+      // kN32_SkColorType, which can be RGBA or BGRA depending on the platform.
       uint8_t* const pixels =
           frame->GetWritableVisibleData(VideoFrame::kARGBPlane) +
           content_rect.y() * stride + content_rect.x() * 4;
@@ -1300,7 +1302,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     } else {
       CHECK_EQ(buffer_format_preference_,
                mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
-      // GMB RGBA results are written to the existing pool texture.
+      // GMB ARGB results are written to the existing pool texture.
       if (result->IsEmpty()) {
         frame = nullptr;
       } else {
