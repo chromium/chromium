@@ -578,8 +578,6 @@ def main():
     os.symlink('llvm-objcopy', os.path.join(pdir, 'bin', 'llvm-strip'))
     os.symlink('llvm-objcopy',
                os.path.join(pdir, 'bin', 'llvm-install-name-tool'))
-    os.symlink('llvm-install-name-tool',
-               os.path.join(pdir, 'bin', 'install_name_tool'))
 
     # Make `--target=*-cros-linux-gnu` work with
     # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON.
