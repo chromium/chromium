@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయండి</translation>
 <translation id="3008554597174452548">ప్రోడక్ట్‌ను ట్రాక్ చేయడాన్ని ఆపివేయండి</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> ట్యాబ్ గ్రూప్ రంగు చిహ్నం</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{మీరు <ph name="TABS_COUNT_ONE" /> ఆర్కైవ్ చేసిన ట్యాబ్‌ని కలిగి ఉన్నారు}other{మీరు <ph name="TABS_COUNT_MANY" /> ఆర్కైవ్ చేసిన ట్యాబ్‌లను కలిగి ఉన్నారు}}</translation>
 <translation id="3194464645767632461">రేటింగ్</translation>
 <translation id="3291470810748040983">తెరిచి ఉన్న ట్యాబ్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌ను పొందుతారు</translation>

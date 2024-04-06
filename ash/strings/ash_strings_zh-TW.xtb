@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN 碼：<ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">這項操作會允許「<ph name="APP_NAME" />」、具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
 <translation id="1017556409696559990">如果 Chrome 沒有返回歷史記錄，就將頂層視窗最小化</translation>
+<translation id="101823271612280837">已停止錄製。無法在平板模式下使用遊戲資訊主頁。</translation>
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036073649888683237">如要管理通知，請前往「設定」應用程式</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">開啟「探索」</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">可隨時按 <ph name="LAUNCHER_KEY_NAME" /> + G 鍵</translation>
 <translation id="1306549533752902673">推薦應用程式</translation>
 <translation id="1311294419381837540">你正在投放分頁。你隨時可以暫停或停止投放。</translation>
 <translation id="1312604459020188865">訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
+<translation id="1894024878080591367">設定後即可使用鍵盤玩遊戲</translation>
 <translation id="1904997243703671177">關閉藍牙後，<ph name="DEVICE_COUNT" /> 個外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線，包括：</translation>
 <translation id="1908992311423394684">最新安裝</translation>
 <translation id="1915307458270490472">掛斷</translation>
@@ -326,6 +329,8 @@
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="2368828502825385061">定位</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
+<translation id="2370971919968699910">這種情況可能需要支付數據傳輸費用。
+已連線到 <ph name="DEVICECOUNT" /> 部裝置。</translation>
 <translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取網頁上的所有項目</translation>
 <translation id="2392659840443812875">沒有可用的無線基地台。請確認裝置在附近，而且藍牙已開啟。</translation>
@@ -395,6 +400,7 @@
 <translation id="2624588537172718173">裝置音訊和麥克風</translation>
 <translation id="263399434338050016">「全選」</translation>
 <translation id="2644422758626431000">將視窗固定在左側</translation>
+<translation id="2645380101799517405">控制項</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">擷取視窗畫面</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -407,6 +413,7 @@
 <translation id="2695305337569143674">網路</translation>
 <translation id="2697697418792422688">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" />。</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
+<translation id="2701576323154693023">無線基地台已開啟 (Wi-Fi 已關閉)</translation>
 <translation id="2704781753052663061">加入其他 Wi-Fi 網路</translation>
 <translation id="2705001408393684014">切換麥克風。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
@@ -428,6 +435,7 @@
 <translation id="2785499565474703580">已與 1 部裝置連線</translation>
 <translation id="2791421900609674576">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要按住建議項目即可移除。</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
+<translation id="2798702144670138229">平板模式已開啟，無法使用遊戲資訊主頁。</translation>
 <translation id="2801954693771979815">螢幕大小</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />，已選取</translation>
 <translation id="2805756323405976993">應用程式</translation>
@@ -476,6 +484,7 @@
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="2996462380875591307">停駐放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音訊</translation>
+<translation id="3001391739687111021">編輯螢幕大小</translation>
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="301282384882049174">由系統管理員分享</translation>
@@ -505,6 +514,7 @@
 <translation id="3100274880412651815">關閉擷取模式</translation>
 <translation id="3105917916468784889">擷取螢幕畫面</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
+<translation id="3107155169630537783">歡迎通知已<ph name="STATE" /></translation>
 <translation id="3113492864356515707">醒目顯示檔案櫃中的前一個項目</translation>
 <translation id="311799651966070385">關閉自動提醒</translation>
 <translation id="3120421559657122717">要關機嗎？</translation>
@@ -741,6 +751,7 @@
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3990002060657467458">快速設定內含 Wi-Fi、藍牙和音量等常用控制選項，你也可以透過快速設定拍攝螢幕截圖。</translation>
+<translation id="3991203706072366707">已為「<ph name="GAME_APP_NAME" />」關閉</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="40062176907008878">手寫</translation>
@@ -833,6 +844,7 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322742403972824594">「Ctrl + Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左鍵。</translation>
 <translation id="4324840740119394760">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機</translation>
+<translation id="4327147325944669226">錄製遊戲</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
@@ -868,6 +880,8 @@
 <translation id="4471432286288241507">{0,plural, =0{請立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
+<translation id="4477751544736611934">這種情況可能需要支付數據傳輸費用。
+已連線到 1 部裝置。</translation>
 <translation id="4477892968187500306">這個裝置可能包含尚未經 Google 驗證的應用程式。</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4481530544597605423">解除配對的裝置</translation>
@@ -997,6 +1011,7 @@
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
+<translation id="4950800194215951939">自訂遊戲體驗</translation>
 <translation id="4952936045814352993">停用鬧鐘音效後無法使用尋找手機的功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求你復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
 <translation id="4961318399572185831">投放螢幕</translation>
@@ -1011,6 +1026,8 @@
 <translation id="4981175556418720939">修改時間：<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="4989163558385430922">查看全部</translation>
+<translation id="4995963195354861331">歡迎對話方塊</translation>
+<translation id="4996265698919320288">錄製中</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5004607513195820459">這是受管理的網路</translation>
 <translation id="5009463889040999939">正在重新命名設定檔。請稍候片刻。</translation>
@@ -1102,6 +1119,8 @@
 <translation id="533282197239610265">顯示投放裝置</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="5352250171825660495">深色主題已開啟</translation>
+<translation id="5354804064646502504">這種情況可能需要支付數據傳輸費用。
+未連線到任何裝置。</translation>
 <translation id="5356963482258194581">在深色和淺色主題之間切換。在桌面上按一下滑鼠右鍵，並選取桌布和樣式。</translation>
 <translation id="536019650977002321">管理員不允許擷取音訊，詳情請洽管理員。</translation>
 <translation id="5361524080961918551">已下載部分<ph name="LANGUAGE" />語音檔</translation>
@@ -1201,6 +1220,7 @@
 <translation id="5712132663381964774">你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。</translation>
 <translation id="571295407079589142">行動數據已關閉</translation>
 <translation id="5727460725221669831">如果你忘記密碼，或最近曾變更 Google 帳戶密碼，建議你復原這個使用者密碼。</translation>
+<translation id="5733630091161562207">歡迎通知</translation>
 <translation id="573413375004481890">這部裝置無法支援你的所有螢幕，因此其中一個畫面已中斷連線</translation>
 <translation id="5740328398383587084">鄰近分享</translation>
 <translation id="574392208103952083">中</translation>
@@ -1386,6 +1406,7 @@
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 畫面</translation>
 <translation id="6464094930452079790">圖片</translation>
+<translation id="6467290994038932560">已為「<ph name="GAME_APP_NAME" />」開啟</translation>
 <translation id="6469104339369989396">切換無線基地台</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
@@ -1774,6 +1795,7 @@
 <translation id="7963689218131240420">零打擾模式已關閉。</translation>
 <translation id="7963992254934562106">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
+<translation id="7973756967040444713">關閉工具列</translation>
 <translation id="797512352675305461">開啟或關閉全螢幕放大鏡</translation>
 <translation id="7977927628060636163">正在搜尋行動網路...</translation>
 <translation id="7982789257301363584">網路</translation>
@@ -1926,6 +1948,7 @@
 <translation id="861045123704058818">系統會暫時依類別整理應用程式</translation>
 <translation id="8612216344243590325">請勿將重要檔案放在桌面上，而是要放在「<ph name="HOLDING_SPACE_TITLE" />」(只需將檔案拖曳到「<ph name="HOLDING_SPACE_TITLE" />」即可)。</translation>
 <translation id="8614517853887502247">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
+<translation id="8615778328722901791">開啟工具列</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">調低音量</translation>
 <translation id="8627191004499078455">已連線至<ph name="DEVICE_NAME" /></translation>
@@ -1948,6 +1971,7 @@
 <translation id="8703634754197148428">開始錄製。如要停止已經開始的錄製作業，請按下 Alt + Shift + L 鍵前往檔案櫃，並從中找出停止錄影的按鈕</translation>
 <translation id="8704155109538237473">聚焦在子母畫面視窗</translation>
 <translation id="870917907284186124">開啟/關閉語音輸入功能 (使用語音輸入內容)</translation>
+<translation id="8711169534266271368">遊戲資訊主頁選項</translation>
 <translation id="8714138378966541668">已由供應商鎖定</translation>
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
@@ -1977,6 +2001,7 @@
 <translation id="8815390544836110344">按下螢幕截圖快速鍵：Ctrl + Shift + 總覽模式按鍵</translation>
 <translation id="881757059229893486">輸入法設定</translation>
 <translation id="8819728065740986820">自動調節充電功能已開啟</translation>
+<translation id="8822104519413696986">這是觸控式遊戲</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8832513206237979203">顯示或隱藏書籤列</translation>
 <translation id="8834539327799336565">目前已連線的裝置</translation>
@@ -2087,6 +2112,7 @@
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請釋出空間。</translation>
 <translation id="954520015070501466">30 分鐘</translation>
+<translation id="956452277966142925">遊戲資訊主頁設定</translation>
 <translation id="974545358917229949">目前正顯示 <ph name="RESULT_COUNT" /> 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>

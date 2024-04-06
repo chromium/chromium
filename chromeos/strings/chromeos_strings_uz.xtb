@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Portal muzlatildi</translation>
 <translation id="1232610416724362657">sharshara</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
+<translation id="1252766349417594414">Joystik</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1274654146705270731">apelsinlar</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnostika ilovasi</translation>
 <translation id="175763766237925754">Yaxshi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" />, <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Tezkor kalit tugmalar</translation>
 <translation id="1768959921651994223">Tekshiruv turi</translation>
 <translation id="1776228893584526149">Fon rasmi tusi</translation>
 <translation id="1777913922912475695">koʻprik</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">ulkan okean</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
+<translation id="2082932131694554252">Tayinlangan tugma</translation>
 <translation id="2085089206770112532">Displey yorlinligini pasaytirish</translation>
 <translation id="2102231663024125441">Matn tahrirlash</translation>
 <translation id="2105810540595158374">Qurilma — geympad</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
+<translation id="2645380101799517405">Boshqaruv</translation>
 <translation id="2652403576514495859">ovoz bilan yozishni yoqish yoki almashtirish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2656001153562991489">Chromebook Plus uchun ekskluziv</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Bu fon rasmi uchun eng yaxshi natija olish uchun shu sozlamani yoqing. Istalgan vaqt bu sozlamani faolsizlantirishingiz mumkin.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="2880569433548999039">Bulut manzaralari ekran lavhasi</translation>
+<translation id="2882230315487799269">AI soʻrovini moslash</translation>
 <translation id="2888298276507578975">Soʻrov kiriting: "rahmatnoma qayd yozish" kabi</translation>
 <translation id="2890557891229184386">tropik orol</translation>
 <translation id="2895772081848316509">tungi</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
 <translation id="361575905210396100">Fikr-mulohazangiz uchun rahmat</translation>
 <translation id="3621072146987826699">fillar</translation>
+<translation id="3632040286124154621">Yaxshi taklif</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
+<translation id="3644695927181369554">Noloyiq taklif</translation>
 <translation id="3651050199673793219">Harorat birligini tanlang</translation>
 <translation id="3661106764436337772">Tezroq va dadilroq yozing</translation>
 <translation id="3662461537616691585">bordo va qirmizi</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Yuklanmoqda…</translation>
 <translation id="3708186454126126312">Avval ulangan qurilmalar</translation>
 <translation id="3715651196924935218">Suzuvchi rejimdan chiqish</translation>
+<translation id="3716250181321371108">Boshqaruv elementini yaratish</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
 <translation id="3771294271822695279">Video fayllar</translation>
+<translation id="3780740315729837296">Klaviatura tugmasini tayinlash</translation>
 <translation id="3784455785234192852">Qulflash</translation>
 <translation id="3785643128701396311">piksel grafikasi</translation>
 <translation id="3790109258688020991">puantilizm</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">skrinshot olish</translation>
 <translation id="3923184630988645767">Trafik sarfi</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
+<translation id="3934185438132762746">Tayinlanmagan: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Qurilma — noaniq.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Rasm yuklab olinmoqda</translation>
 <translation id="4063039537646912479">havorang</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Yana yaratish</translation>
 <translation id="4091002263446255071">romantika</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Xavfsiz WiFi aloqasi</translation>
 <translation id="4650608062294027130">Oʻng shift</translation>
 <translation id="4654549501020883054">Kundalik oʻzgarsin</translation>
+<translation id="4655868084888499342">Fon rasmi tanlandi</translation>
 <translation id="4661249927038176904">Syurreal</translation>
 <translation id="4664651912255946953">moʻyna</translation>
 <translation id="4665014895760275686">Ishlab chiqaruvchi</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Himoya devori aniqlandi</translation>
 <translation id="4691278870498629773">Toʻxtatildi - Tarnov joyida emas</translation>
 <translation id="469379815867856270">Signal darajasi</translation>
+<translation id="4697260493945012995">Boshqaruv turini tanlang</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">AI bilan yaratish</translation>
 <translation id="6112878310391905610">Bu sozlama administratorlar tomonidan boshqariladi.</translation>
 <translation id="6113701710518389813">Tepaga strelka</translation>
+<translation id="6116005346231504406">Birinchi boshqaruv elementini yaratish</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> va yana <ph name="NUMBER" /> ta albom</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122277663991249694">ChromeOS matn kiritish xizmati</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">Yangi tugma tanlab, qayta tayinlang</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7154020516215182599">Fikr-mulohazangizni yuboring yoki muammoni tavsiflang. Iloji boʻlsa, muammoni takrorlash uchun qadamlarni kiriting.</translation>
 <translation id="7155037718620478619">Boshqa APN nuqtalari</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7344788170842919262">yersimon</translation>
+<translation id="7346768383111016081">Klaviaturada oʻynash uchun oʻyin amali uchun tugma tanlang</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> ta natija: <ph name="SEARCH_RESULT_TEXT" />. Tezkor tugmani ochish uchun Enter tugmasini bosing.</translation>
 <translation id="7359657277149375382">Fayl turi</translation>
 <translation id="73631062356239394">Diagnostika axborotini ulashish</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">choyxona</translation>
 <translation id="8538236298648811558">Google AI asosida ishlaydi.</translation>
+<translation id="8550364285433943656">Klavuaturada oʻynash uchun amallar tugmalarini tanlang</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Avtomatik topilgan APN orqali bu tarmoqqa ulanish imkonsiz. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
+<translation id="921080052717160800">Kamera uchun fon rasmi tanlandi</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>

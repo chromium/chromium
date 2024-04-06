@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
 <translation id="1232610416724362657">водоспад</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
+<translation id="1252766349417594414">Джойстик</translation>
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1274654146705270731">апельсини</translation>
 <translation id="1275718070701477396">Вибрано</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Додаток Діагностика</translation>
 <translation id="175763766237925754">Добрий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Швидкий перехід між клавішами</translation>
 <translation id="1768959921651994223">Тип автентифікації</translation>
 <translation id="1776228893584526149">Відтінок фонового малюнка</translation>
 <translation id="1777913922912475695">Міст</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">безкраїй океан</translation>
 <translation id="2080070583977670716">Інші налаштування</translation>
+<translation id="2082932131694554252">Призначена клавіша</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
 <translation id="2102231663024125441">Редагування тексту</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Зображення облікового запису</translation>
 <translation id="2640549051766135490">Вибрано альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
+<translation id="2645380101799517405">Елементи керування</translation>
 <translation id="2652403576514495859">увімкнути або вимкнути диктування</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2656001153562991489">Виключно для Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Щоб фоновий малюнок виглядав якнайкраще, увімкніть цю функцію. Ви завжди можете її вимкнути.</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2880569433548999039">Заставка "Плин хмар"</translation>
+<translation id="2882230315487799269">Налаштувати запит для ШІ</translation>
 <translation id="2888298276507578975">Введіть запит, наприклад "напиши лист подяки"</translation>
 <translation id="2890557891229184386">тропічний острів</translation>
 <translation id="2895772081848316509">темних</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="361575905210396100">Дякуємо за відгук</translation>
 <translation id="3621072146987826699">слони</translation>
+<translation id="3632040286124154621">Корисна підказка</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
+<translation id="3644695927181369554">Невдала підказка</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3661106764436337772">Пишіть швидше й впевненіше</translation>
 <translation id="3662461537616691585">бордового й темно-бордового</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
 <translation id="3715651196924935218">Закрити плаваюче вікно</translation>
+<translation id="3716250181321371108">Створити елемент керування</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
 <translation id="3771294271822695279">Відеофайли</translation>
+<translation id="3780740315729837296">Призначте клавішу</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="3785643128701396311">піксельна графіка</translation>
 <translation id="3790109258688020991">пуантилізм</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">зробити знімок екрана</translation>
 <translation id="3923184630988645767">Використання трафіку</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
+<translation id="3934185438132762746">Не призначено: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3942420633017001071">Діагностика</translation>
 <translation id="3954678691475912818">Невідомий тип пристрою.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4063039537646912479">світло-синій</translation>
 <translation id="4070799384363688067">аніме</translation>
+<translation id="4086271957099059213">Створити ще один елемент керування</translation>
 <translation id="4091002263446255071">Романтичне</translation>
 <translation id="4093865285251893588">Зображення профілю</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
 <translation id="4650608062294027130">Права клавіша Shift</translation>
 <translation id="4654549501020883054">Змінювати щодня</translation>
+<translation id="4655868084888499342">Зображення встановлено як фоновий малюнок</translation>
 <translation id="4661249927038176904">Сюрреалістичний</translation>
 <translation id="4664651912255946953">хутра</translation>
 <translation id="4665014895760275686">Виробник</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">можливо, працює брандмауер</translation>
 <translation id="4691278870498629773">Зупинено – немає лотка</translation>
 <translation id="469379815867856270">Потужність сигналу</translation>
+<translation id="4697260493945012995">Виберіть тип керування</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Створити за допомогою ШІ</translation>
 <translation id="6112878310391905610">Цим налаштуванням керують адміністратори</translation>
 <translation id="6113701710518389813">Стрілка вгору</translation>
+<translation id="6116005346231504406">Створити перший елемент керування</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> та інші альбоми (ще <ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Сервіс методів введення в ОС Chrome</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7144954474087165241">Пагода</translation>
+<translation id="7147557737960578492">Виберіть нову клавішу, щоб перепризначити</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7154020516215182599">Залиште відгук або опишіть проблему. За можливості перелічіть дії, після яких виникає ця проблема.</translation>
 <translation id="7155037718620478619">Показати інші точки доступу (APN)</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7344788170842919262">землистих</translation>
+<translation id="7346768383111016081">Виберіть клавішу для дії, щоб грати за допомогою клавіатури</translation>
 <translation id="7353413232959255829">Результат пошуку <ph name="LIST_POSITION" /> з <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Натисніть Enter, щоб перейти до комбінації клавіш.</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="73631062356239394">Поділитися даними діагностики</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">в стилі чайхани</translation>
 <translation id="8538236298648811558">На основі технології ШІ від Google</translation>
+<translation id="8550364285433943656">Виберіть клавіші для дій, щоб грати за допомогою клавіатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Не вдалося підключитися до цієї мережі через автоматично виявлені точки доступу. Щоб отримати додаткову інформацію, зверніться до свого оператора мобільного зв’язку.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Не вдається зв’язатися зі шлюзом із додатків для Android</translation>
+<translation id="921080052717160800">Фонове зображення, вибране для камери</translation>
 <translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="932327136139879170">Домашня сторінка</translation>
 <translation id="939519157834106403">SSID</translation>

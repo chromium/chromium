@@ -48,6 +48,7 @@
 <translation id="123124571410524056">পোর্টাল হতে পারে</translation>
 <translation id="1232610416724362657">ওয়াটারফল</translation>
 <translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
+<translation id="1252766349417594414">জয়স্টিক</translation>
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
 <translation id="1274654146705270731">কমলা</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">ঝটপট একটি 'কী' থেকে আরেকটিতে পাল্টে নিন</translation>
 <translation id="1768959921651994223">যাচাইকরণের প্রকার</translation>
 <translation id="1776228893584526149">ওয়ালপেপারের কালার টোন</translation>
 <translation id="1777913922912475695">ব্রিজ</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">ভাস্ট ওসান</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
+<translation id="2082932131694554252">কীবোর্ডের 'কী' অ্যাসাইন করা হয়েছে</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
 <translation id="2102231663024125441">টেক্সট এডিটিং</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>
 <translation id="2640549051766135490">বেছে নেওয়া অ্যালবাম: <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="2645380101799517405">কন্ট্রোল</translation>
 <translation id="2652403576514495859">ডিকটেশন চালু অথবা টগল করে</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2656001153562991489">Chromebook Plus-এর জন্য এক্সক্লুসিভ</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">সেরা ফলাফল পেতে এই ওয়ালপেপারের সাথে এটি চালু করুন। আপনি যখন খুশি এই সেটিং বন্ধ করতে পারবেন।</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
 <translation id="2880569433548999039">ক্লাউড ফ্লো স্ক্রিন সেভার</translation>
+<translation id="2882230315487799269">AI প্রম্পট কাস্টমাইজ করুন</translation>
 <translation id="2888298276507578975">"ধন্যবাদ দেওয়ার নোট লিখুন"-এর মতো প্রম্পট লিখুন</translation>
 <translation id="2890557891229184386">ট্রপিকাল আইল্যান্ড</translation>
 <translation id="2895772081848316509">ডার্ক</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
 <translation id="361575905210396100">মতামত জানানোর জন্য ধন্যবাদ</translation>
 <translation id="3621072146987826699">হাতি</translation>
+<translation id="3632040286124154621">ভালো সাজেশন</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
+<translation id="3644695927181369554">খারাপ সাজেশন</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
 <translation id="3661106764436337772">আরও দ্রুত ও বেশি আত্মবিশ্বাসের সাথে লিখুন</translation>
 <translation id="3662461537616691585">বার্গান্ডি ও মেরুন</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
 <translation id="3715651196924935218">ফ্লোট স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
+<translation id="3716250181321371108">কন্ট্রোল তৈরি করুন</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
+<translation id="3780740315729837296">কীবোর্ডের 'কী' অ্যাসাইন করুন</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="3785643128701396311">পিক্সেল আর্ট</translation>
 <translation id="3790109258688020991">পয়েন্টিলিস্ট</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">স্ক্রিনশট নিন</translation>
 <translation id="3923184630988645767">ডেটা ব্যবহার</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> অ্যাসাইন করা নেই</translation>
 <translation id="3941014780699102620">হোস্ট নেম যাচাই করা যায়নি</translation>
 <translation id="3942420633017001071">ডায়গনিস্টিক</translation>
 <translation id="3954678691475912818">ডিভাইসের ধরন অজানা।</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">ছবি ডাউনলোড করা হচ্ছে</translation>
 <translation id="4063039537646912479">হালকা নীল</translation>
 <translation id="4070799384363688067">অ্যানিমে</translation>
+<translation id="4086271957099059213">আরেকটি কন্ট্রোল তৈরি করুন</translation>
 <translation id="4091002263446255071">রোম্যান্টিক</translation>
 <translation id="4093865285251893588">প্রোফাইল ছবি</translation>
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">নিরাপদ ওয়াই-ফাই কানেকশন</translation>
 <translation id="4650608062294027130">ডানদিকের shift কী</translation>
 <translation id="4654549501020883054">রোজ পরিবর্তন করুন</translation>
+<translation id="4655868084888499342">ওয়ালপেপার হিসেবে ছবি সেট করা আছে</translation>
 <translation id="4661249927038176904">সুররিয়েল</translation>
 <translation id="4664651912255946953">ফার</translation>
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">ফায়ারওয়াল রয়েছে বলে মনে হচ্ছে</translation>
 <translation id="4691278870498629773">বন্ধ হয়ে গেছে - ট্রে লাগানো নেই</translation>
 <translation id="469379815867856270">সিগন্যালের ক্ষমতা</translation>
+<translation id="4697260493945012995">আপনার কন্ট্রোলের ধরন বেছে নিন</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">AI-এর মাধ্যমে তৈরি করুন</translation>
 <translation id="6112878310391905610">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে</translation>
 <translation id="6113701710518389813">উপরের তীরচিহ্ন</translation>
+<translation id="6116005346231504406">প্রথম কন্ট্রোল তৈরি করুন</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7144954474087165241">প্যাগোডা</translation>
+<translation id="7147557737960578492">নতুন 'কী' বেছে নেওয়ার মাধ্যমে আবার অ্যাসাইন করুন</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7154020516215182599">আপনার মতামত শেয়ার করুন বা সমস্যা বর্ণনা করুন। সম্ভব হলে, আপনার সমস্য়া শুরু থেকে পর্যায়ক্রমে বোঝার জন্য প্রয়োজনীয় ধাপগুলি এখানে লিখুন।</translation>
 <translation id="7155037718620478619">আরও APN ডিসকভার করুন</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7344788170842919262">আর্দি</translation>
+<translation id="7346768383111016081">আপনার কীবোর্ডের মাধ্যমে খেলার জন্য গেমের অ্যাকশন কন্ট্রোল করুন</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />-এর মধ্যে <ph name="LIST_POSITION" /> নম্বর সার্চ ফলাফল: <ph name="SEARCH_RESULT_TEXT" />। শর্টকাটে যেতে Enter প্রেস করুন।</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="73631062356239394">ডায়াগনস্টিকস ডেটা শেয়ার করুন</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">টি হাউস</translation>
 <translation id="8538236298648811558">Google AI দ্বারা পরিচালিত</translation>
+<translation id="8550364285433943656">কীবোর্ডের 'কী'-এর মাধ্যমে খেলার জন্য গেমের অ্যাকশন কন্ট্রোল করুন</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">নেটওয়ার্কে কানেক্ট করার জন্য আপনার পরিষেবা প্রদানকারীর এই বিকল্পের প্রয়োজন হতে পারে। বিশদ বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">অটোমেটিক শনাক্ত করা APN ব্যবহার করে এই নেটওয়ার্কের সাথে কানেক্ট করা যাচ্ছে না। আরও তথ্যের জন্য আপনার মোবাইল পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android অ্যাপ থেকে গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
+<translation id="921080052717160800">ক্যামেরা ব্যাকগ্রাউন্ড হিসেবে ছবি সেট করা আছে</translation>
 <translation id="9211490828691860325">সব ডেক্স</translation>
 <translation id="932327136139879170">হোম</translation>
 <translation id="939519157834106403">SSID</translation>

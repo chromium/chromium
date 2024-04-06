@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում: Մուտքագրեք սարքում հետևյալ PIN կոդը` <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Այս կարգավորումը թույլ է տալիս ChromeOS-ին, <ph name="APP_NAME" /> հավելվածին և բոլոր հավելվածներին ու կայքերին, որոնք ունեն տեղորոշման թույլտվություն, օգտագործել Wi-Fi-ի և բջջային ցանցերի տեղադրության մասին տվյալները։</translation>
 <translation id="1017556409696559990">Փոքրացնել վերևի պատուհանը, երբ Chrome-ում փոփոխությունների պատմություն չկա</translation>
+<translation id="101823271612280837">Տեսագրումը կանգնեցվել է։ Խաղային վահանակը հնարավոր չէ օգտագործել պլանշետի ռեժիմում։</translation>
 <translation id="1024364763893396229">Պահեք ձեր «<ph name="NAME" />» սարքը</translation>
 <translation id="1032891413405719768">Ստիլուսի մարտկոցի լիցքը սպառվում է</translation>
 <translation id="1036073649888683237">Ծանուցումները կառավարելու համար անցեք կարգավորումներ</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Բացել «Հնարավորություններ» հավելվածը</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Ցանկացած ժամանակ սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
 <translation id="1311294419381837540">Դուք ներդիր եք հեռարձակում։ Ցանկացած պահի կարող եք դադարեցնել կամ ավարտել հեռարձակումը։</translation>
 <translation id="1312604459020188865">Ազդանշանի հզորությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
 <translation id="1885785240814121742">Ապակողպում մատնահետքով</translation>
+<translation id="1894024878080591367">Փոխեք կարգավորումները՝ ստեղնաշարի միջոցով խաղալու համար</translation>
 <translation id="1904997243703671177">Եթե անջատեք Bluetooth-ը, <ph name="DEVICE_TYPE" /> արտաքին սարք կանջատվի ձեր <ph name="DEVICE_COUNT" />-ից, այդ թվում՝</translation>
 <translation id="1908992311423394684">Նոր տեղադրում</translation>
 <translation id="1915307458270490472">Փակել</translation>
@@ -326,6 +329,8 @@
 <translation id="2367972762794486313">Ցույց տալ հավելվածները</translation>
 <translation id="2368828502825385061">Տեղորոշել</translation>
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
+<translation id="2370971919968699910">Տվյալների փոխանցման համար կարող է գումար գանձվել։
+Միացած է <ph name="DEVICECOUNT" /> սարք։</translation>
 <translation id="2382875860893882175">Հեռարձակումն այս պահին դադարեցված է։ Ցանկացած պահի կարող եք վերսկսել կամ ավարտել հեռարձակումը։</translation>
 <translation id="2386292613071805067">Ընտրել էջի ամբողջ բովանդակությունը</translation>
 <translation id="2392659840443812875">Հասանելի թեժ կետ չկա։ Համոզվեք, որ ձեր սարքը մոտակայքում է, և որ Bluetooth-ը միացված է։</translation>
@@ -395,6 +400,7 @@
 <translation id="2624588537172718173">Սարքի բարձրախոսը և խոսափողը</translation>
 <translation id="263399434338050016">«Select all» (ընտրել բոլորը)</translation>
 <translation id="2644422758626431000">Ամրացնել պատուհանը ձախ կողմում</translation>
+<translation id="2645380101799517405">Կարգավորումներ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Պատուհանի տեսագրում</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
@@ -407,6 +413,7 @@
 <translation id="2695305337569143674">ցանց</translation>
 <translation id="2697697418792422688">Ցուցադրել ստեղնաշարի կարգավորումները։ Ընտրված է՝ <ph name="KEYBOARD_NAME" />։</translation>
 <translation id="2700493154570097719">Ընտրեք ստեղնաշարը</translation>
+<translation id="2701576323154693023">Թեժ կետը միացված է (Wi-Fi-ն անջատված է)</translation>
 <translation id="2704781753052663061">Միացեք այլ Wi-Fi ցանցերի</translation>
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
@@ -428,6 +435,7 @@
 <translation id="2785499565474703580">Միացած է 1 սարք</translation>
 <translation id="2791421900609674576">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար հպեք և պահեք։</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2798702144670138229">Պլանշետի ռեժիմը միացված է։ Խաղային վահանակն անհասանելի է։</translation>
 <translation id="2801954693771979815">Էկրանի չափը</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, ընտրված է</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
@@ -476,6 +484,7 @@
 <translation id="2992327365391326550">Սարքի խոսափողի կոճակն անջատված է։</translation>
 <translation id="2996462380875591307">Ամրացված խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+D:</translation>
 <translation id="3000461861112256445">Մոնո</translation>
+<translation id="3001391739687111021">Փոփոխել էկրանի չափսը</translation>
 <translation id="3009178788565917040">Ելք</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="301282384882049174">Ուղարկել է ձեր ադմինիստրատորը</translation>
@@ -505,6 +514,7 @@
 <translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Ողջույնի ծանուցումը <ph name="STATE" /> է</translation>
 <translation id="3113492864356515707">Առանձնացնել նախորդ տարրը դարակում</translation>
 <translation id="311799651966070385">Փակել հիշեցումը</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
@@ -743,6 +753,7 @@
 <translation id="3984536049089846927">Հաջորդ էջ</translation>
 <translation id="3986082989454912832">Պատասխանել</translation>
 <translation id="3990002060657467458">Հաճախ օգտագործվող պարամետրերը, ինչպիսիք են Wi-Fi-ը, Bluetooth-ը և ձայնի ուժգնությունը, գտնվում են Արագ կարգավորումներում։ Այստեղ կա նաև սքրինշոթներ անելու գործառույթ։</translation>
+<translation id="3991203706072366707">Անջատված է <ph name="GAME_APP_NAME" /> խաղի համար</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="40062176907008878">Ձեռագիր</translation>
@@ -836,6 +847,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">«Ctrl + Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Home ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ձախ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4324840740119394760">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
+<translation id="4327147325944669226">Տեսագրել խաղը</translation>
 <translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
@@ -871,6 +883,8 @@
 <translation id="4471432286288241507">{0,plural, =0{Թարմացրեք սարքը հիմա}=1{Թարմացրեք սարքը 1 վայրկյանի ընթացքում}one{Թարմացրեք սարքը # վայրկյանի ընթացքում}other{Թարմացրեք սարքը # վայրկյանի ընթացքում}}</translation>
 <translation id="4472575034687746823">Սկսել</translation>
 <translation id="4477350412780666475">Հաջորդ կատարումը</translation>
+<translation id="4477751544736611934">Տվյալների փոխանցման համար կարող է գումար գանձվել։
+Միացած է 1 սարք։</translation>
 <translation id="4477892968187500306">Այս սարքում կարող են լինել հավելվածներ, որոնք չեն ստուգվել Google-ի կողմից։</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
@@ -1000,6 +1014,7 @@
 <translation id="4945196315133970626">Անջատել ծանուցումները</translation>
 <translation id="4946376291507881335">Լուսանկարել</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
+<translation id="4950800194215951939">Հարմարեցրեք խաղային ընթացքը</translation>
 <translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
 <translation id="4960324571663582548">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ վերադառնաք <ph name="DEVICE_TYPE" /> սարքի օպերացիոն համակարգի նախորդ տարբերակին։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
@@ -1014,9 +1029,12 @@
 <translation id="4981175556418720939">Փոփոխվել է <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Աշխատասեղան 16</translation>
 <translation id="4989163558385430922">Տեսնել բոլորը</translation>
+<translation id="4995963195354861331">Ողջույնի երկխոսության պատուհան</translation>
+<translation id="4996265698919320288">Տեսագրում</translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5004607513195820459">Ցանցը կառավարվում է ադմինիստրատորի կողմից</translation>
 <translation id="5009463889040999939">Պրոֆիլը վերանվանվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
+<translation id="5013847959275396160">Թաքցնել գործիքագոտին</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Որոնեք ըստ կատեգորիաների</translation>
 <translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
@@ -1104,6 +1122,8 @@
 <translation id="533282197239610265">Ցուցադրել հեռարձակման սարքերը</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
+<translation id="5354804064646502504">Տվյալների փոխանցման համար կարող է գումար գանձվել։
+Միացած սարքեր չկան։</translation>
 <translation id="5356963482258194581">Անցեք մուգ թեմայից բաց թեմային և հակառակը։ Սեղմեք մկնիկի աջ կոճակը աշխատասեղանի վրա և ընտրեք «Պաստառ և ոճ»։</translation>
 <translation id="536019650977002321">Ձեր ադմինիստրատորը թույլ չի տալիս ձայնագրություններ կատարել։ Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> լեզվով խոսքի ֆայլերը մասամբ ներբեռնվել են</translation>
@@ -1203,6 +1223,7 @@
 <translation id="5712132663381964774">Ձեր <ph name="PRODUCT_NAME" />-ի հավելվածներով կարող եք կատարել մի շարք առաջադրանքներ։ Անհրաժեշտ հավելվածը գտնելու համար բացեք Գործարկիչը։</translation>
 <translation id="571295407079589142">Բջջային ինտերնետն անջատված է</translation>
 <translation id="5727460725221669831">Եթե մոռացել եք ձեր գաղտնաբառը կամ վերջերս փոխել եք Google հաշվի գաղտնաբառը, փորձեք վերականգնել այս օգտատիրոջը։</translation>
+<translation id="5733630091161562207">Ողջույնի ծանուցում</translation>
 <translation id="573413375004481890">Այս սարքը չի կարող աջակցել բոլոր էկրանները, այդ պատճառով դրանցից մեկն անջատվել է:</translation>
 <translation id="5740328398383587084">Փոխանակում մոտակա սարքերի հետ</translation>
 <translation id="574392208103952083">Միջին</translation>
@@ -1388,6 +1409,7 @@
 <translation id="6453179446719226835">Լեզուն փոխվել է</translation>
 <translation id="6459472438155181876">Էկրանի ընդլայնում մինչև <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">պատկերներ</translation>
+<translation id="6467290994038932560">Միացված է <ph name="GAME_APP_NAME" /> խաղի համար</translation>
 <translation id="6469104339369989396">Միացնել/անջատել թեժ կետը</translation>
 <translation id="6477681113376365978">Չհաջողվեց ներբեռնել ֆայլը</translation>
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
@@ -1777,6 +1799,7 @@
 <translation id="7963689218131240420">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
+<translation id="7973756967040444713">Փակել գործիքագոտին</translation>
 <translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
@@ -1900,6 +1923,7 @@
 <translation id="847056008324733326">Էկրանի մասշտաբի կարգավորումներ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>
 <translation id="8477270416194247200">Չեղարկելու համար սեղմեք Alt+Search կամ Shift:</translation>
+<translation id="8480418399907765580">Ցույց տալ գործիքագոտին</translation>
 <translation id="8487699605742506766">Թեժ կետ</translation>
 <translation id="8491237443345908933">Բացել հղումը նոր ներդիրում</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։ Հպեք «Հաստատել»՝ փոփոխությունները պահպանելու համար։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> հետո։</translation>
@@ -1928,6 +1952,7 @@
 <translation id="861045123704058818">Հավելվածները ժամանակավորապես դասավորված են ըստ կատեգորիայի</translation>
 <translation id="8612216344243590325">Կարևոր ֆայլերը պահեք «<ph name="HOLDING_SPACE_TITLE" />» պանակում՝ աշխատասեղանի փոխարեն։ Ֆայլերը պարզապես քաշեք և գցեք «<ph name="HOLDING_SPACE_TITLE" />» պանակի մեջ։</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> և <ph name="APP_2_TITLE" /> հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
+<translation id="8615778328722901791">Բացել գործիքագոտին</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Իջեցնել ձայնը</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>
@@ -1950,6 +1975,7 @@
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="8704155109538237473">Անցնել «նկար նկարի մեջ» պատուհանին</translation>
 <translation id="870917907284186124">Միացնել/անջատել թելադրումը (ձայնային մուտքագրում)</translation>
+<translation id="8711169534266271368">Խաղային վահանակի ընտրանքներ</translation>
 <translation id="8714138378966541668">Կողպված է օպերատորի կողմից</translation>
 <translation id="8717459106217102612">Ընտրել նախորդ բառը կամ տառը</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
@@ -1980,6 +2006,7 @@
 <translation id="8815390544836110344">Սեղմեք սքրինշոթի դյուրանցումը՝ Ctrl + Shift + Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="881757059229893486">Ներածման մեթոդների կարգավորումներ</translation>
 <translation id="8819728065740986820">Հարմարվող լիցքավորումը միացված է</translation>
+<translation id="8822104519413696986">Սա սենսորային կառավարմամբ խաղ է</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>
 <translation id="8832513206237979203">Ցուցադրել կամ թաքցնել էջանիշների գոտին</translation>
 <translation id="8834539327799336565">Միացված է</translation>
@@ -2090,6 +2117,7 @@
 <translation id="953431725143473984">Անջատե՞լ սարքը</translation>
 <translation id="954052413789300507">Բավարար տարածք չկա <ph name="FILENAME" /> ֆայլը ներբեռնելու համար։ Ազատեք տարածք։</translation>
 <translation id="954520015070501466">30 րոպե</translation>
+<translation id="956452277966142925">Խաղային վահանակի կարգավորումներ</translation>
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="981011780479609956">Առանց վերջնաժամկետի</translation>
 <translation id="98120814841227350">Անցնել փաստաթղթի վերջ</translation>

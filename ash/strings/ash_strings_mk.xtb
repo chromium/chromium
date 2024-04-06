@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Внесете го овој PIN-код на тој уред: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Ова овозможува <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволата за локација и ChromeOS да користат локација на Wi-Fi и мобилни мрежи.</translation>
 <translation id="1017556409696559990">Минимизирајте го прозорецот најгоре кога нема задна историја во Chrome</translation>
+<translation id="101823271612280837">Снимањето е сопрено. „Контролната табла за игри“ не може да се користи во „Режим на таблет“.</translation>
 <translation id="1024364763893396229">Зачувајте: <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батеријата на пенкалото е слаба</translation>
 <translation id="1036073649888683237">За да управувате со известувањата, одете во „Поставки“</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Отвори Explore</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Притиснете <ph name="LAUNCHER_KEY_NAME" /> + G кога сакате</translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
 <translation id="1311294419381837540">Емитувате картичка. Емитувањето може да го паузирате или сопрете во секое време.</translation>
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Отклучи со отпечаток</translation>
+<translation id="1894024878080591367">Поставете за да играте со тастатурата</translation>
 <translation id="1904997243703671177">Кога ќе го исклучите Bluetooth, ќе се прекине врската меѓу <ph name="DEVICE_COUNT" /> надворешни уреди и вашиот <ph name="DEVICE_TYPE" />:</translation>
 <translation id="1908992311423394684">Нова инсталација</translation>
 <translation id="1915307458270490472">Спушти</translation>
@@ -326,6 +329,8 @@
 <translation id="2367972762794486313">Покажи апликации</translation>
 <translation id="2368828502825385061">Лоцирање</translation>
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
+<translation id="2370971919968699910">Може да ви се наплати за мобилен интернет.
+Поврзани се <ph name="DEVICECOUNT" /> уреди.</translation>
 <translation id="2382875860893882175">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да го сопрете во секое време.</translation>
 <translation id="2386292613071805067">Избира сѐ на страницата</translation>
 <translation id="2392659840443812875">Не е достапна точка на пристап. Погрижете се телефонот да биде во близина и да има вклучено Bluetooth.</translation>
@@ -395,6 +400,7 @@
 <translation id="2624588537172718173">Аудио од уредот и микрофонот</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
 <translation id="2644422758626431000">Закачете прозорец на левата страна</translation>
+<translation id="2645380101799517405">Контроли</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Снимање прозорец</translation>
 <translation id="2653659639078652383">Испрати</translation>
@@ -407,6 +413,7 @@
 <translation id="2695305337569143674">веб</translation>
 <translation id="2697697418792422688">Прикажете ги поставките за тастатура. Избрано е <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Поставете ја вашата тастатура</translation>
+<translation id="2701576323154693023">Точката на пристап е вклучена (Wi-Fi е исклучена)</translation>
 <translation id="2704781753052663061">Поврзете се на други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Вклучете/исклучете го микрофонот. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
@@ -428,6 +435,7 @@
 <translation id="2785499565474703580">Поврзан е 1 уред</translation>
 <translation id="2791421900609674576">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да допрете и задржите за да ги отстраните препораките.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2798702144670138229">Вклучен е „Режим на таблет“. „Контролната табла за игри“ е недостапна.</translation>
 <translation id="2801954693771979815">Големина на екранот</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, избрано</translation>
 <translation id="2805756323405976993">Апликации</translation>
@@ -476,6 +484,7 @@
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
+<translation id="3001391739687111021">Изменете ја големината на екранот</translation>
 <translation id="3009178788565917040">Излез</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="301282384882049174">Споделено од вашиот администратор</translation>
@@ -505,6 +514,7 @@
 <translation id="3100274880412651815">Отфрли го режимот на снимање</translation>
 <translation id="3105917916468784889">Сними слика од екранот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Известувањето за добредојде е <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Нагласете ја претходната ставка на полицата</translation>
 <translation id="311799651966070385">Затвори го потсетувањето</translation>
 <translation id="3120421559657122717">Да се исклучи уредот?</translation>
@@ -744,6 +754,7 @@
 <translation id="3984536049089846927">Следна страница</translation>
 <translation id="3986082989454912832">Одговори</translation>
 <translation id="3990002060657467458">Често користените контроли како Wi-Fi, Bluetooth и јачина на звук се во „Брзи поставки“. Тука може да дојдете и за да направите слики од екранот.</translation>
+<translation id="3991203706072366707">Исклучено за <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="40062176907008878">Ракописно</translation>
@@ -837,6 +848,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Кратенката од тастатура Ctrl + Alt + Стрелка нагоре се промени. За да го користите копчето Home, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка налево.</translation>
 <translation id="4324840740119394760">Ова дозволува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
+<translation id="4327147325944669226">Снимање игра</translation>
 <translation id="4333628967105022692">Lacros не е поддржан кога се најавени повеќе корисници.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
@@ -872,6 +884,8 @@
 <translation id="4471432286288241507">{0,plural, =0{Ажурирајте го уредот веднаш}=1{Ажурирајте го уредот во рок од 1 секунда}one{Ажурирајте го уредот во рок од # секунда}other{Ажурирајте го уредот во рок од # секунди}}</translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4477350412780666475">Следна песна</translation>
+<translation id="4477751544736611934">Може да ви се наплати за мобилен интернет.
+Поврзан е 1 уред.</translation>
 <translation id="4477892968187500306">Уредов може да содржи апликации што не се потврдени од Google.</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4481530544597605423">Неспарени уреди</translation>
@@ -1001,6 +1015,7 @@
 <translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
+<translation id="4950800194215951939">Приспособете го вашето доживување при играње игри</translation>
 <translation id="4952936045814352993">„Лоцирај го телефонот“ не е достапна кога се оневозможени звуците на алармите</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> бара да го вратите вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
@@ -1015,9 +1030,12 @@
 <translation id="4981175556418720939">Изменето: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Работна површина 16</translation>
 <translation id="4989163558385430922">Прикажи ги сите</translation>
+<translation id="4995963195354861331">Прозорец за добредојде</translation>
+<translation id="4996265698919320288">Се снима</translation>
 <translation id="5003993274120026347">Следна реченица</translation>
 <translation id="5004607513195820459">Со мрежата се управува</translation>
 <translation id="5009463889040999939">Се преименува профилот. Може да потрае неколку минути.</translation>
+<translation id="5013847959275396160">Скријте го алатникот</translation>
 <translation id="5016558321564993266">Вклучете/исклучете го означувачот. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Категории пребарувања</translation>
 <translation id="5030659775136592441">Го прикажува управникот со обележувачи</translation>
@@ -1105,6 +1123,8 @@
 <translation id="533282197239610265">Прикажете ги уредите со Cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
+<translation id="5354804064646502504">Може да ви се наплати за мобилен интернет.
+Нема поврзани уреди.</translation>
 <translation id="5356963482258194581">Сменете на темна и светла тема. Кликнете со десното копче на работната површина и изберете „Тапети и стил“.</translation>
 <translation id="536019650977002321">Вашиот администратор не дозволува снимање аудио. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5361524080961918551">Говорните датотеки на <ph name="LANGUAGE" /> јазик се делумно преземени</translation>
@@ -1204,6 +1224,7 @@
 <translation id="5712132663381964774">Користете апликации за да правите сѐ што е потребно на вашиот уред <ph name="PRODUCT_NAME" />. Вашите апликации може да ги најдете во „Стартерот“.</translation>
 <translation id="571295407079589142">Мобилниот интернет е исклучен</translation>
 <translation id="5727460725221669831">Ако сте ја заборавиле лозинката или неодамна сте ја промениле лозинката за сметката на Google, обидете се да го вратите корисников.</translation>
+<translation id="5733630091161562207">Известување за добредојде</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
 <translation id="5740328398383587084">Споделување во близина</translation>
 <translation id="574392208103952083">Медиум</translation>
@@ -1389,6 +1410,7 @@
 <translation id="6453179446719226835">Јазикот е променет</translation>
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">слики</translation>
+<translation id="6467290994038932560">Вклучено за <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Вклучување/Исклучување на точката на пристап</translation>
 <translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
@@ -1778,6 +1800,7 @@
 <translation id="7963689218131240420">„Не вознемирувај“ е исклучено.</translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
+<translation id="7973756967040444713">Затворете го алатникот</translation>
 <translation id="797512352675305461">Вклучете/исклучете ја лупата на цел екран</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1901,6 +1924,7 @@
 <translation id="847056008324733326">Приказ на поставките за скала</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>
+<translation id="8480418399907765580">Прикажете го алатникот</translation>
 <translation id="8487699605742506766">Точка на пристап</translation>
 <translation id="8491237443345908933">Отвора линк во нова картичка</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата се смени во <ph name="FALLBACK_RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1929,6 +1953,7 @@
 <translation id="861045123704058818">Апликациите се привремено организирани во категории</translation>
 <translation id="8612216344243590325">Важните датотеки чувајте ги во <ph name="HOLDING_SPACE_TITLE" /> наместо на работната површина. Само повлечете датотеки во <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Известувањата од <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> се скриени бидејќи има вклучено заштита од прикажување</translation>
+<translation id="8615778328722901791">Отворете го алатникот</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Намалување на јачината на звукот</translation>
 <translation id="8627191004499078455">Поврзан со <ph name="DEVICE_NAME" /></translation>
@@ -1951,6 +1976,7 @@
 <translation id="8703634754197148428">Започни со снимање. Откако ќе започне снимањето, користете Alt + Shift + L за да одите на полицата и најдете го копчето за сопирање на снимањето</translation>
 <translation id="8704155109538237473">Фокусирајте се на прозорецот „Слика во слика“</translation>
 <translation id="870917907284186124">Вклучете/исклучете го диктирањето (пишувајте со гласот)</translation>
+<translation id="8711169534266271368">Опции за „Контролна табла за игри“</translation>
 <translation id="8714138378966541668">Заклучено од операторот</translation>
 <translation id="8717459106217102612">Изберете претходен збор или буква</translation>
 <translation id="8721053961083920564">Вклучување/исклучување звук. <ph name="STATE_TEXT" /></translation>
@@ -1981,6 +2007,7 @@
 <translation id="8815390544836110344">Притиснете ја кратенката за слика од екранот, Ctrl плус Shift плус копчето за „Режим на преглед“</translation>
 <translation id="881757059229893486">Поставки за методите за внесување</translation>
 <translation id="8819728065740986820">„Адаптивното полнење“ е вклучено</translation>
+<translation id="8822104519413696986">Ова е игра со допир</translation>
 <translation id="8825863694328519386">Повлечете одлево за да се вратите назад</translation>
 <translation id="8832513206237979203">Ја прикажува или ја сокрива лентата со обележувачи</translation>
 <translation id="8834539327799336565">Моментално поврзани</translation>
@@ -2091,6 +2118,7 @@
 <translation id="953431725143473984">Дали да се исклучи уредот?</translation>
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="954520015070501466">30 мин.</translation>
+<translation id="956452277966142925">Поставки за „Контролна табла за игри“</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Без рок</translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>

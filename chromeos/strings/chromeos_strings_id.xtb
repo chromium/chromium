@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1232610416724362657">air terjun</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
+<translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1274654146705270731">jeruk</translation>
 <translation id="1275718070701477396">Dipilih</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Aplikasi Diagnostik</translation>
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Beralih tombol dengan cepat</translation>
 <translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1776228893584526149">Warna wallpaper</translation>
 <translation id="1777913922912475695">jembatan</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">samudra luas</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
+<translation id="2082932131694554252">Tombol keyboard yang ditetapkan</translation>
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
 <translation id="2102231663024125441">Pengeditan teks</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Gambar login</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
+<translation id="2645380101799517405">Kontrol</translation>
 <translation id="2652403576514495859">aktifkan atau alihkan dikte</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2656001153562991489">Eksklusif untuk Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Aktifkan setelan ini untuk mendapatkan hasil terbaik dengan wallpaper ini. Anda dapat menonaktifkan setelan ini kapan saja.</translation>
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="2880569433548999039">Screensaver Aliran awan</translation>
+<translation id="2882230315487799269">Sesuaikan perintah AI</translation>
 <translation id="2888298276507578975">Masukkan perintah seperti "tulis ucapan terima kasih"</translation>
 <translation id="2890557891229184386">pulau tropis</translation>
 <translation id="2895772081848316509">gelap</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3621072146987826699">gajah</translation>
+<translation id="3632040286124154621">Saran bagus</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
+<translation id="3644695927181369554">Saran buruk</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
 <translation id="3661106764436337772">Tulis lebih cepat dan lebih percaya diri</translation>
 <translation id="3662461537616691585">burgundi dan marun</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="3715651196924935218">Keluar dari status mengambang</translation>
+<translation id="3716250181321371108">Buat kontrol</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
 <translation id="3771294271822695279">File Video</translation>
+<translation id="3780740315729837296">Tetapkan tombol keyboard</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="3785643128701396311">seni piksel</translation>
 <translation id="3790109258688020991">pointilis</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">ambil screenshot</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> yang tidak ditetapkan</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
 <translation id="3954678691475912818">Jenis perangkat tidak diketahui.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4063039537646912479">biru muda</translation>
 <translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Buat kontrol lain</translation>
 <translation id="4091002263446255071">romantis</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
 <translation id="4650608062294027130">Shift kanan</translation>
 <translation id="4654549501020883054">Ubah Tiap Hari</translation>
+<translation id="4655868084888499342">Gambar disetel sebagai wallpaper</translation>
 <translation id="4661249927038176904">Surealis</translation>
 <translation id="4664651912255946953">bulu</translation>
 <translation id="4665014895760275686">Produsen</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Firewall dicurigai</translation>
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
+<translation id="4697260493945012995">Pilih jenis kontrol</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Buat dengan AI</translation>
 <translation id="6112878310391905610">Setelan ini dikelola oleh administrator Anda</translation>
 <translation id="6113701710518389813">Panah atas</translation>
+<translation id="6116005346231504406">Buat kontrol pertama</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + <ph name="NUMBER" /> album lainnya</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Layanan Metode Input ChromeOS</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">Tetapkan ulang dengan memilih tombol baru</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
 <translation id="7154020516215182599">Sampaikan masukan atau jelaskan masalah Anda. Jika memungkinkan, sertakan langkah-langkah untuk merekonstruksi masalah.</translation>
 <translation id="7155037718620478619">Temukan APN lainnya</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7344788170842919262">natural</translation>
+<translation id="7346768383111016081">Tetapkan kontrol tindakan game untuk bermain dengan keyboard</translation>
 <translation id="7353413232959255829">Hasil penelusuran <ph name="LIST_POSITION" /> dari <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk membuka pintasan.</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="73631062356239394">Bagikan data diagnostik</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">kedai teh</translation>
 <translation id="8538236298648811558">Didukung teknologi AI Google</translation>
+<translation id="8550364285433943656">Tetapkan kontrol tindakan game untuk bermain dengan tombol keyboard</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">Tidak dapat terhubung ke jaringan ini menggunakan APN yang terdeteksi secara otomatis. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
+<translation id="921080052717160800">Gambar disetel sebagai latar belakang kamera</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
 <translation id="932327136139879170">Beranda</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
 <translation id="1014722676793506285">Cela permet à <ph name="APP_NAME" /> ainsi qu'à toutes les applis et à tous les sites Web autorisés d'accéder à votre position, et à ChromeOS d'utiliser la position des réseaux mobiles et Wi-Fi.</translation>
 <translation id="1017556409696559990">Réduire la fenêtre supérieure en l'absence d'historique dans Chrome</translation>
+<translation id="101823271612280837">Enregistrement interrompu. Impossible d'utiliser le tableau de bord Jeux en mode Tablette.</translation>
 <translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
@@ -95,6 +96,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1293699935367580298">Échap</translation>
 <translation id="1294046132466831888">Ouvrir "Explorer"</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Appuyez sur <ph name="LAUNCHER_KEY_NAME" /> + G à tout moment.</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
 <translation id="1311294419381837540">Vous castez un onglet. Vous pouvez suspendre ou arrêter la diffusion à tout moment.</translation>
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
+<translation id="1894024878080591367">Configurez-le pour jouer avec votre clavier</translation>
 <translation id="1904997243703671177">Les <ph name="DEVICE_COUNT" /> appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
@@ -326,6 +329,8 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2367972762794486313">Afficher les applications</translation>
 <translation id="2368828502825385061">Localiser</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
+<translation id="2370971919968699910">La consommation de données peut entraîner des frais.
+<ph name="DEVICECOUNT" /> appareils connectés.</translation>
 <translation id="2382875860893882175">La diffusion est actuellement suspendue. Vous pouvez la reprendre ou l'arrêter à tout moment.</translation>
 <translation id="2386292613071805067">Sélectionner toute la page</translation>
 <translation id="2392659840443812875">Aucun point d'accès disponible. Vérifiez que votre appareil est à proximité et que le Bluetooth est activé.</translation>
@@ -395,6 +400,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2624588537172718173">Audio de l'appareil et micro</translation>
 <translation id="263399434338050016">"Tout sélectionner"</translation>
 <translation id="2644422758626431000">Épingler la fenêtre à gauche</translation>
+<translation id="2645380101799517405">Commandes</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Capture de fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
@@ -407,6 +413,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> sélectionné.</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
+<translation id="2701576323154693023">Point d'accès activé (Wi-Fi désactivé)</translation>
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
@@ -428,6 +435,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2785499565474703580">1 appareil connecté</translation>
 <translation id="2791421900609674576">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez appuyer dessus de manière prolongée pour les supprimer.</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
+<translation id="2798702144670138229">Le mode Tablette est activé. Le tableau de bord Jeux n'est pas disponible.</translation>
 <translation id="2801954693771979815">Taille de l'écran</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, sélectionné</translation>
 <translation id="2805756323405976993">Applications</translation>
@@ -476,6 +484,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
+<translation id="3001391739687111021">Modifier la taille de l'écran</translation>
 <translation id="3009178788565917040">Sortie</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="301282384882049174">Partagé par votre administrateur</translation>
@@ -505,6 +514,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3100274880412651815">Ignorer le mode de capture</translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">La notification de bienvenue est <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Mettre en surbrillance l'élément précédent sur l'étagère</translation>
 <translation id="311799651966070385">Fermer le rappel automatique</translation>
 <translation id="3120421559657122717">Éteindre l'appareil ?</translation>
@@ -743,6 +753,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3990002060657467458">Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
+<translation id="3991203706072366707">Désactivées pour <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
@@ -836,6 +847,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Le raccourci clavier Ctrl+Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Accueil, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche.</translation>
 <translation id="4324840740119394760">L'accès à l'appareil photo est accordé à <ph name="APP_NAME" /> ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
+<translation id="4327147325944669226">Enregistrer le jeu</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
@@ -871,6 +883,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4471432286288241507">{0,plural, =0{Mettre à jour l'appareil maintenant}=1{Mettre à jour l'appareil d'ici 1 seconde}one{Mettre à jour l'appareil d'ici # seconde}other{Mettre à jour l'appareil d'ici # secondes}}</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
+<translation id="4477751544736611934">La consommation de données peut entraîner des frais.
+1 appareil connecté.</translation>
 <translation id="4477892968187500306">Cet appareil peut contenir des applications qui n'ont pas été validées par Google.</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
@@ -1000,6 +1014,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
+<translation id="4950800194215951939">Personnalisez votre expérience de jeu</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
@@ -1014,6 +1029,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4981175556418720939">Modifié le <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
+<translation id="4995963195354861331">Boîte de dialogue de bienvenue</translation>
+<translation id="4996265698919320288">Enregistrement</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
 <translation id="5004607513195820459">Le réseau est géré</translation>
 <translation id="5009463889040999939">Changement de nom du profil… Cela peut prendre quelques minutes.</translation>
@@ -1105,6 +1122,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="533282197239610265">Afficher les appareils Cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droit)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
+<translation id="5354804064646502504">La consommation de données peut entraîner des frais.
+Aucun appareil connecté.</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Effectuez un clic droit sur le bureau et sélectionnez "Fond d'écran et style".</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Contactez-le pour en savoir plus.</translation>
 <translation id="5361524080961918551">Fichiers vocaux partiellement téléchargés : <ph name="LANGUAGE" /></translation>
@@ -1204,6 +1223,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5712132663381964774">Utilisez des applis pour tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applis dans le Lanceur d'applications.</translation>
 <translation id="571295407079589142">Les données mobiles sont désactivées</translation>
 <translation id="5727460725221669831">Si vous avez oublié votre mot de passe ou si vous avez récemment modifié le mot de passe de votre compte Google, essayez de récupérer ce compte utilisateur.</translation>
+<translation id="5733630091161562207">Notification de bienvenue</translation>
 <translation id="573413375004481890">Cet appareil ne peut pas prendre en charge tous vos écrans. L'un d'eux a été déconnecté</translation>
 <translation id="5740328398383587084">Partage à proximité</translation>
 <translation id="574392208103952083">Moyen</translation>
@@ -1389,6 +1409,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6453179446719226835">La langue a été modifiée</translation>
 <translation id="6459472438155181876">Extension de l'écran pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">images</translation>
+<translation id="6467290994038932560">Activées pour <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Activer/Désactiver le point d'accès</translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
 <translation id="6482559668224714696">Loupe plein écran</translation>
@@ -1779,6 +1800,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7963689218131240420">Ne pas déranger désactivé.</translation>
 <translation id="7963992254934562106">À partir du <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
+<translation id="7973756967040444713">Fermer la barre d'outils</translation>
 <translation id="797512352675305461">Activer ou désactiver la loupe plein écran</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles…</translation>
 <translation id="7982789257301363584">Réseau</translation>
@@ -1931,6 +1953,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="861045123704058818">Les applis sont temporairement organisées par catégorie</translation>
 <translation id="8612216344243590325">Conservez les fichiers importants dans <ph name="HOLDING_SPACE_TITLE" /> plutôt que sur le bureau. Il vous suffit de les faire glisser vers <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Les notifications <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection anti-regard est activée</translation>
+<translation id="8615778328722901791">Ouvrir la barre d'outils</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Réduire le volume</translation>
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>
@@ -1953,6 +1976,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
 <translation id="8704155109538237473">Sélectionner la fenêtre Picture-in-picture</translation>
 <translation id="870917907284186124">Activer/Désactiver la dictée (saisie vocale)</translation>
+<translation id="8711169534266271368">Options du tableau de bord Jeux</translation>
 <translation id="8714138378966541668">Verrouillé par le fournisseur</translation>
 <translation id="8717459106217102612">Sélectionner la lettre ou le mot précédents</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8815390544836110344">Appuyez sur le raccourci de capture d'écran, Ctrl+Maj+Touche du mode aperçu</translation>
 <translation id="881757059229893486">Paramètres des modes de saisie</translation>
 <translation id="8819728065740986820">La recharge adaptative est activée</translation>
+<translation id="8822104519413696986">Il s'agit d'un jeu tactile</translation>
 <translation id="8825863694328519386">Faites glisser votre doigt de gauche à droite pour revenir en arrière</translation>
 <translation id="8832513206237979203">Afficher ou masquer la barre de favoris</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
@@ -2092,6 +2117,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="953431725143473984">Éteindre l'appareil ?</translation>
 <translation id="954052413789300507">Espace insuffisant pour <ph name="FILENAME" />. Libérez de l'espace.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="956452277966142925">Paramètres du tableau de bord Jeux</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Aucune date limite</translation>
 <translation id="98120814841227350">Accéder à la fin du document</translation>

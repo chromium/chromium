@@ -112,6 +112,7 @@
 <translation id="160633243685262989">ఇమేజ్ ప్రివ్యూను చూడండి</translation>
 <translation id="1611649489706141841">ముందుకు</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
+<translation id="1618566998877964907">ఒక థీమ్‌ను ఉపయోగించండి</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1622402072367425417">మెరుస్తున్న బబుల్స్</translation>
 <translation id="1626590945318984973">షార్ట్‌కట్ అందుబాటులో లేదు. ఫంక్షన్, <ph name="META_KEY" /> కీలను ఉపయోగించకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
@@ -1275,6 +1276,7 @@
 <translation id="8372667721254470022">ఆలివ్ రంగు</translation>
 <translation id="8373046809163484087">మీ వాల్‌పేపర్‌కు మ్యాచ్ అయ్యే రంగు సెట్‌లను ఉపయోగించండి</translation>
 <translation id="8380114448424469341">స్క్రీన్ యొక్క <ph name="DIRECTION" /> వైపున సగంలో విండోను డాక్ చేయండి</translation>
+<translation id="8391349326751432483">మెమరీ టెస్ట్‌ను రన్ చేయడానికి మీ దగ్గర కనీసం 500 MB ఖాళీగా ఉండాలి. మెమరీని ఖాళీ చేయడానికి, ట్యాబ్‌లను, యాప్‌లను మూసివేయండి.</translation>
 <translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> స్టయిల్‌లో <ph name="ART_FEATURE" /> పెయింటింగ్</translation>

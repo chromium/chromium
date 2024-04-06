@@ -48,6 +48,7 @@
 <translation id="123124571410524056">ද්වාරය සැක කරන ලදි</translation>
 <translation id="1232610416724362657">දිය ඇල්ල</translation>
 <translation id="1238612778414822719">HTTPS පමාව</translation>
+<translation id="1252766349417594414">ජෝයිස්ටික්</translation>
 <translation id="1270369111467284986">පිවිසුම් දොරටුව සැක කරන ලදි</translation>
 <translation id="1274654146705270731">දොඩම්</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnostics යෙදුම</translation>
 <translation id="175763766237925754">හොඳයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">ඉක්මනින් යතුරු මාරු කරන්න</translation>
 <translation id="1768959921651994223">සත්‍යාපන වර්ගය</translation>
 <translation id="1776228893584526149">වෝල්පේපරයේ ස්වභාවය</translation>
 <translation id="1777913922912475695">පාලම</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">විශාල සාගරය</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
+<translation id="2082932131694554252">පවරා ඇති යතුරු පුවරු යතුර</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
 <translation id="2102231663024125441">පෙළ සංස්කරණය</translation>
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="2638662041295312666">පුරන රූපය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
+<translation id="2645380101799517405">පාලන</translation>
 <translation id="2652403576514495859">අනුලේඛනය සබල කරන්න හෝ ටොගල් කරන්න</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2656001153562991489">Chromebook Plus සඳහා සුවිශේෂී</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">මෙම බිතුපත සමග හොඳම ප්‍රතිඵල සඳහා මෙය ක්‍රියාත්මක කරන්න. ඔබට ඕනෑම වේලාවක දී මෙම සැකසීම ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
 <translation id="2880569433548999039">වලාකුළු ප්‍රවාහ තිර සුරැකුම</translation>
+<translation id="2882230315487799269">AI විමසුම අභිරුචිකරණය කරන්න</translation>
 <translation id="2888298276507578975">"ස්තුති සටහනක් ලියන්න" වැනි විමසුමක් ඇතුළු කරන්න</translation>
 <translation id="2890557891229184386">නිවර්තන දූපත</translation>
 <translation id="2895772081848316509">අඳුරු</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">HTTPS වෙබ් අඩවිවලට ඉහළ පමාව</translation>
 <translation id="361575905210396100">ඔබගේ ප්‍රතිපෝෂණයට ස්තුතියි</translation>
 <translation id="3621072146987826699">අලි</translation>
+<translation id="3632040286124154621">හොඳ යෝජනාවක්</translation>
 <translation id="3632579075709132555">පෞද්ගලිකත්ව තිරය ටොගල කිරීම</translation>
+<translation id="3644695927181369554">අයහපත් යෝජනාවක්</translation>
 <translation id="3651050199673793219">උෂ්ණත්ව ඒකකයක් තෝරන්න</translation>
 <translation id="3661106764436337772">වේගයෙන් සහ වැඩි විශ්වාසයකින් ලියන්න</translation>
 <translation id="3662461537616691585">බර්ගණ්ඩි රතු සහ මැරූන්</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">පූරණය වේ...</translation>
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="3715651196924935218">පාවීමෙන් පිටවීම</translation>
+<translation id="3716250181321371108">පාලනය තනන්න</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
 <translation id="3771294271822695279">වීඩියෝ ගොනු</translation>
+<translation id="3780740315729837296">යතුරුපුවරු යතුරක් පවරන්න</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>
 <translation id="3785643128701396311">පික්සල් කලාව</translation>
 <translation id="3790109258688020991">පොයින්ටිලිස්ට්</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">තිර රූ ගන්න</translation>
 <translation id="3923184630988645767">දත්ත භාවිතය</translation>
 <translation id="3932043219784172185">උපාංගයක් සම්බන්ධ නැත</translation>
+<translation id="3934185438132762746">නොපවරන ලද <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="3942420633017001071">දෝෂ විනිශ්චය</translation>
 <translation id="3954678691475912818">උපාංග වර්ගය නොදනී.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">රූපය බාගනිමින්</translation>
 <translation id="4063039537646912479">ලා නිල්</translation>
 <translation id="4070799384363688067">සජීවන</translation>
+<translation id="4086271957099059213">වෙනත් පාලනයක් තනන්න</translation>
 <translation id="4091002263446255071">ප්‍රේමණීය</translation>
 <translation id="4093865285251893588">පැතිකඩ රූපය</translation>
 <translation id="409427325554347132">පරීක්ෂණ විස්තර පෙන්වන්න</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">ආරක්ෂිත WiFi සබැඳුම</translation>
 <translation id="4650608062294027130">දකුණු Shift යතුර</translation>
 <translation id="4654549501020883054">දිනපතා වෙනස් කරන්න</translation>
+<translation id="4655868084888499342">රූපය බිතුපතක් ලෙස සකසා ඇත</translation>
 <translation id="4661249927038176904">අධි යථාර්ථවාදී</translation>
 <translation id="4664651912255946953">ලෝම</translation>
 <translation id="4665014895760275686">නිෂ්පාදකයා</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">ෆයර්වෝලය සැක කරන ලදි</translation>
 <translation id="4691278870498629773">නැවතිණි - තැටිය අස්ථානගතව ඇත</translation>
 <translation id="469379815867856270">සංඥා ප්‍රබලතාව</translation>
+<translation id="4697260493945012995">ඔබේ පාලන වර්ගය තෝරන්න</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">AI සමග නිර්මාණය කරන්න</translation>
 <translation id="6112878310391905610">මෙම සැකසීම ඔබගේ පරිපාලකයන් විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="6113701710518389813">ඉහළ ඊතලය</translation>
+<translation id="6116005346231504406">පළමු පාලනය තනන්න</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, තව ඇල්බම +<ph name="NUMBER" /></translation>
 <translation id="6122191549521593678">සබැඳි</translation>
 <translation id="6122277663991249694">ChromeOS ආදාන ක්‍රම සේවය</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
 <translation id="7144878232160441200">නැවත උත්සහ කරන්න</translation>
 <translation id="7144954474087165241">දාගැබ</translation>
+<translation id="7147557737960578492">නව යතුරක් තේරීමෙන් නැවත පැවරීම</translation>
 <translation id="714876143603641390">LAN සබැඳුම් හැකියාව</translation>
 <translation id="7154020516215182599">ඔබගේ ප්‍රතිපෝෂණය බෙදා ගන්න හෝ ඔබගේ ගැටලුව විස්තර කරන්න. හැකි නම්, ඔබගේ ගැටලුව ප්‍රතිනිෂ්පාදනය කිරීමට පියවර ඇතුළත් කරන්න.</translation>
 <translation id="7155037718620478619">තවත් APNs සොයා ගන්න</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google සෙවීම තුළ ප්‍රතිඵලය බැලීමට සෙවීම සහ ඉඩ යතුර ඔබන්න.</translation>
 <translation id="7343649194310845056">ජාල උපාංග</translation>
 <translation id="7344788170842919262">පෘථිවිමය</translation>
+<translation id="7346768383111016081">ඔබේ යතුරු පුවරුව සමග ක්‍රීඩා කිරීමට ක්‍රීඩා ක්‍රියාව මත පාලනය තබන්න</translation>
 <translation id="7353413232959255829">සෙවීම් ප්‍රතිඵලය <ph name="LIST_SIZE" />න් <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. කෙටිමඟ වෙත සංචාලනය කිරීමට Enter ඔබන්න.</translation>
 <translation id="7359657277149375382">ගොනු වර්ගය</translation>
 <translation id="73631062356239394">දෝෂ නිර්ණ දත්ත බෙදා ගන්න</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">තේ නිවස</translation>
 <translation id="8538236298648811558">Google AI මඟින් බලගන්වයි</translation>
+<translation id="8550364285433943656">යතුරු පුවරු යතුරු සමග ක්‍රීඩා කිරීමට ක්‍රීඩා ක්‍රියාවන් පාලනය කරන්න</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ඔබගේ වාහකයට ඔවුන්ගේ ජාලයට සම්බන්ධ වීමට මෙම විකල්පය අවශ්‍ය විය හැකිය. විස්තර සඳහා ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="8576249514688522074">දියත් නොකළ</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">ස්වයංක්‍රීයව අනාවරණය කරගත් APNs භාවිතයෙන් මෙම ජාලයට සම්බන්ධ විය නොහැක. වැඩිදුර තොරතුරු සඳහා ඔබේ ජංගම වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android යෙදුම් වෙතින් වාහල සම්බන්ධ කර ගත නොහැකිය</translation>
+<translation id="921080052717160800">රූප කැමරා පසුබිම ලෙස සකසා ඇත</translation>
 <translation id="9211490828691860325">සියලු වැඩතල</translation>
 <translation id="932327136139879170">මුල් පිටුව</translation>
 <translation id="939519157834106403">SSID</translation>

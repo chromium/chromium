@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți acest cod PIN pe dispozitivul respectiv: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Astfel, <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
 <translation id="1017556409696559990">Minimizează fereastra de sus când nu există istoric în Chrome</translation>
+<translation id="101823271612280837">S-a oprit înregistrarea. Nu poți folosi Tabloul de bord al jocului în modul tabletă.</translation>
 <translation id="1024364763893396229">Salvează <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
 <translation id="1036073649888683237">Pentru a gestiona notificările, accesează Setările</translation>
@@ -95,6 +96,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Deschide Explorare</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Apasă oricând pe <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">APLICAȚII RECOMANDATE</translation>
 <translation id="1311294419381837540">Proiectezi o filă. Poți să întrerupi sau să oprești proiectarea oricând.</translation>
 <translation id="1312604459020188865">Puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
+<translation id="1894024878080591367">Configurează pentru a juca cu tastatura</translation>
 <translation id="1904997243703671177">Când dezactivezi Bluetooth, <ph name="DEVICE_COUNT" /> dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />, inclusiv:</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
@@ -326,6 +329,8 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2367972762794486313">Afișați aplicații</translation>
 <translation id="2368828502825385061">Localizează</translation>
 <translation id="2369165858548251131">„Bună” în chineză</translation>
+<translation id="2370971919968699910">Această opțiune poate genera costuri pentru date.
+<ph name="DEVICECOUNT" /> dispozitive conectate.</translation>
 <translation id="2382875860893882175">Proiectarea este întreruptă. Poți relua oricând proiectarea sau o poți opri.</translation>
 <translation id="2386292613071805067">Selectează tot conținutul paginii</translation>
 <translation id="2392659840443812875">Niciun hotspot disponibil. Asigură-te că dispozitivul este în apropiere și că funcția Bluetooth este activată.</translation>
@@ -395,6 +400,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2624588537172718173">Conținutul audio de la dispozitiv și microfon</translation>
 <translation id="263399434338050016">Selectează tot.</translation>
 <translation id="2644422758626431000">Fixează fereastra la stânga</translation>
+<translation id="2645380101799517405">Comenzi</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Capturarea ferestrei</translation>
 <translation id="2653659639078652383">Trimite</translation>
@@ -407,6 +413,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afișează setările pentru tastatură. S-a selectat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Setează tastatura</translation>
+<translation id="2701576323154693023">Hotspotul este activat (funcția Wi-Fi este dezactivată)</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">În sus</translation>
@@ -428,6 +435,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2785499565474703580">Un dispozitiv conectat</translation>
 <translation id="2791421900609674576">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți să atingi lung ca să elimini recomandările.</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
+<translation id="2798702144670138229">Modul tabletă este activat. Tabloul de bord al jocului nu este disponibil.</translation>
 <translation id="2801954693771979815">Dimensiunea ecranului</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selectat</translation>
 <translation id="2805756323405976993">Aplicații</translation>
@@ -476,6 +484,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
+<translation id="3001391739687111021">Editează dimensiunea ecranului</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="301282384882049174">Distribuit de administrator</translation>
@@ -505,6 +514,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3100274880412651815">Închide modul de capturare</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Notificarea de bun venit este <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Evidențiază elementul anterior de pe raft</translation>
 <translation id="311799651966070385">Închide reafișarea</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
@@ -743,6 +753,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3984536049089846927">Pagina următoare</translation>
 <translation id="3986082989454912832">Răspunde</translation>
 <translation id="3990002060657467458">Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setări rapide. Aici poți și să faci capturi de ecran.</translation>
+<translation id="3991203706072366707">Opțiune dezactivată pentru <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">Dispozitiv USB-C (portul din dreapta spate)</translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="40062176907008878">Scriere de mână</translation>
@@ -836,6 +847,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în sus s-a schimbat. Pentru a folosi tasta Home, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre stânga.</translation>
 <translation id="4324840740119394760">Astfel, accesul la cameră este permis pentru <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
+<translation id="4327147325944669226">Înregistrează jocul</translation>
 <translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
 <translation id="4351244548802238354">Închide caseta de dialog</translation>
@@ -871,6 +883,8 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Actualizează dispozitivul acum}=1{Actualizează dispozitivul într-o secundă}few{Actualizează dispozitivul în # secunde}other{Actualizează dispozitivul în # de secunde}}</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
+<translation id="4477751544736611934">Această opțiune poate genera costuri pentru date.
+Un dispozitiv conectat.</translation>
 <translation id="4477892968187500306">Dispozitivul poate conține aplicații care nu au fost verificate de Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispozitive neasociate</translation>
@@ -1000,6 +1014,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
+<translation id="4950800194215951939">Personalizează-ți experiența de joc</translation>
 <translation id="4952936045814352993">Funcția de găsire a telefonului nu este disponibilă atunci când sunetul alarmei este dezactivat</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> solicită să revii la starea anterioară a dispozitivului <ph name="DEVICE_TYPE" />. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
@@ -1014,6 +1029,8 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4981175556418720939">Ultima modificare: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Biroul 16</translation>
 <translation id="4989163558385430922">Afișează-le pe toate</translation>
+<translation id="4995963195354861331">Dialog de întâmpinare</translation>
+<translation id="4996265698919320288">Se înregistrează</translation>
 <translation id="5003993274120026347">Propoziția următoare</translation>
 <translation id="5004607513195820459">Rețeaua este gestionată</translation>
 <translation id="5009463889040999939">Se redenumește profilul. Poate dura câteva minute.</translation>
@@ -1105,6 +1122,8 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="533282197239610265">Afișează dispozitivele de proiecție</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dreapta)</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
+<translation id="5354804064646502504">Această opțiune poate genera costuri pentru date.
+Niciun dispozitiv conectat.</translation>
 <translation id="5356963482258194581">Comută între tema luminoasă și cea întunecată Dă clic dreapta pe desktop și selectează Stil și imagine de fundal.</translation>
 <translation id="536019650977002321">Administratorul nu permite înregistrarea audio. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5361524080961918551">S-au descărcat parțial <ph name="LANGUAGE" /> fișiere vocale</translation>
@@ -1204,6 +1223,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5712132663381964774">Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator.</translation>
 <translation id="571295407079589142">Datele mobile sunt dezactivate</translation>
 <translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
+<translation id="5733630091161562207">Notificare de bun venit</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
 <translation id="5740328398383587084">Trimitere în apropiere</translation>
 <translation id="574392208103952083">Mediu</translation>
@@ -1389,6 +1409,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6453179446719226835">Limba a fost schimbată</translation>
 <translation id="6459472438155181876">Se extinde ecranul pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">Imagini</translation>
+<translation id="6467290994038932560">Opțiune activată pentru <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Comută hotspotul</translation>
 <translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
@@ -1778,6 +1799,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7963689218131240420">Funcția Nu deranja este dezactivată.</translation>
 <translation id="7963992254934562106">De la <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
+<translation id="7973756967040444713">Închide bara de instrumente</translation>
 <translation id="797512352675305461">Activează sau dezactivează lupa de ecran complet</translation>
 <translation id="7977927628060636163">Se caută rețele mobile…</translation>
 <translation id="7982789257301363584">Rețea</translation>
@@ -1930,6 +1952,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="861045123704058818">Aplicațiile sunt organizate temporar după categorie</translation>
 <translation id="8612216344243590325">Păstrează fișierele importante în <ph name="HOLDING_SPACE_TITLE" /> în loc să le păstrezi pe desktop. Trage fișierele în <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notificările pentru <ph name="APP_1_TITLE" /> și <ph name="APP_2_TITLE" /> sunt ascunse deoarece este activată protecția la afișare</translation>
+<translation id="8615778328722901791">Deschide bara de instrumente</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Redu volumul</translation>
 <translation id="8627191004499078455">Conectat la <ph name="DEVICE_NAME" /></translation>
@@ -1952,6 +1975,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8704155109538237473">Focalizează fereastra picture-in-picture</translation>
 <translation id="870917907284186124">Activează / dezactivează dictarea (introdu text folosind vocea)</translation>
+<translation id="8711169534266271368">Opțiuni pentru tabloul de bord al jocului</translation>
 <translation id="8714138378966541668">Blocată de furnizor</translation>
 <translation id="8717459106217102612">Selectează cuvântul anterior sau litera anterioară</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8815390544836110344">Apasă pe comanda rapidă pentru capturi de ecran, Ctrl + Shift + tasta modului Prezentare generală</translation>
 <translation id="881757059229893486">Setări pentru metode de introducere a textului</translation>
 <translation id="8819728065740986820">S-a activat încărcarea adaptativă</translation>
+<translation id="8822104519413696986">Acesta este un joc tactil</translation>
 <translation id="8825863694328519386">Glisează dinspre stânga pentru a reveni</translation>
 <translation id="8832513206237979203">Afișează sau ascunde bara de marcaje</translation>
 <translation id="8834539327799336565">Conectat</translation>
@@ -2092,6 +2117,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="953431725143473984">Închizi dispozitivul?</translation>
 <translation id="954052413789300507">Nu există suficient spațiu pentru <ph name="FILENAME" />. Eliberează spațiu.</translation>
 <translation id="954520015070501466">30 min.</translation>
+<translation id="956452277966142925">Setările Tabloului de bord al jocului</translation>
 <translation id="974545358917229949">Se afișează <ph name="RESULT_COUNT" /> rezultate pentru <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nu există termen limită</translation>
 <translation id="98120814841227350">Accesează sfârșitul documentului</translation>

@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Zadejte prosím v zařízení tento kód PIN: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Aplikace <ph name="APP_NAME" />, všechny aplikace a weby s oprávněním pro přístup k poloze a systém Chrome OS budou moci používat polohu Wi-Fi a mobilních sítí.</translation>
 <translation id="1017556409696559990">Minimalizovat horní okno, když v Chromu není žádná zpětná historie</translation>
+<translation id="101823271612280837">Nahrávání bylo zastaveno. Herní panel nelze používat v režimu tabletu.</translation>
 <translation id="1024364763893396229">Uložení zařízení <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterie dotykového pera je slabá</translation>
 <translation id="1036073649888683237">Oznámení můžete spravovat v sekci Nastavení</translation>
@@ -95,6 +96,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1293699935367580298">Klávesa Esc</translation>
 <translation id="1294046132466831888">Otevřít aplikaci Explore</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Kdykoli stiskněte <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">DOPORUČENÉ APLIKACE</translation>
 <translation id="1311294419381837540">Jednu z karet odesíláte. Odesílání můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="1312604459020188865">Síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1882814835921407042">Žádná mobilní síť</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odemknutí otiskem prstu</translation>
+<translation id="1894024878080591367">Po nastavení ji budete moct hrát na klávesnici</translation>
 <translation id="1904997243703671177">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tento počet externích zařízení: <ph name="DEVICE_COUNT" />.</translation>
 <translation id="1908992311423394684">Nová instalace</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
@@ -326,6 +329,8 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2367972762794486313">Zobrazit aplikace</translation>
 <translation id="2368828502825385061">Najít</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
+<translation id="2370971919968699910">To může znamenat náklady na data.
+Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2382875860893882175">Odesílání je momentálně pozastaveno. Můžete ho kdykoliv obnovit nebo ukončit.</translation>
 <translation id="2386292613071805067">Vybrat vše na stránce</translation>
 <translation id="2392659840443812875">Žádný dostupný hotspot. Zařízení musí být poblíž a musí být zapnutý Bluetooth.</translation>
@@ -395,6 +400,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2624588537172718173">Zvuk zařízení a mikrofon</translation>
 <translation id="263399434338050016">„Vybrat vše“</translation>
 <translation id="2644422758626431000">Připnout okno doleva</translation>
+<translation id="2645380101799517405">Ovládání</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Záznam okna</translation>
 <translation id="2653659639078652383">Odeslat</translation>
@@ -407,6 +413,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Zobrazit nastavení klávesnice. Je vybrán řádek <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Nastavit klávesnici</translation>
+<translation id="2701576323154693023">Hotspot je zapnutý (Wi-Fi je vypnutá)</translation>
 <translation id="2704781753052663061">Připojit se k dalším sítím Wi-Fi</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nahoru</translation>
@@ -428,6 +435,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2785499565474703580">Připojené zařízení: 1</translation>
 <translation id="2791421900609674576">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit podržením.</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
+<translation id="2798702144670138229">Je zapnutý režim tabletu. Herní panel není k dispozici.</translation>
 <translation id="2801954693771979815">Velikost obrazovky</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, vybráno</translation>
 <translation id="2805756323405976993">Aplikace</translation>
@@ -476,6 +484,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2992327365391326550">Mikrofon zařízení je vypnutý.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
+<translation id="3001391739687111021">Upravit velikost obrazovky</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="301282384882049174">Sdíleno vaším administrátorem</translation>
@@ -505,6 +514,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3100274880412651815">Zavřít režim nahrávání</translation>
 <translation id="3105917916468784889">Pořídit snímek obrazovky</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Uvítací oznámení je: <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Zvýraznit předchozí položku na poličce</translation>
 <translation id="311799651966070385">Zavřít šťouchnutí</translation>
 <translation id="3120421559657122717">Vypnout zařízení?</translation>
@@ -743,6 +753,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3984536049089846927">Další stránka</translation>
 <translation id="3986082989454912832">Přijmout</translation>
 <translation id="3990002060657467458">Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky.</translation>
+<translation id="3991203706072366707">Pro hru <ph name="GAME_APP_NAME" /> vypnuto</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="40062176907008878">Psaní rukou</translation>
@@ -836,6 +847,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Klávesová zkratka Ctrl + Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Home, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vlevo.</translation>
 <translation id="4324840740119394760">Umožňuje přístup k fotoaparátu aplikaci <ph name="APP_NAME" />, a všem aplikacím a webům s příslušným oprávněním</translation>
+<translation id="4327147325944669226">Zaznamenat hru</translation>
 <translation id="4333628967105022692">Lacros není podporován, když je přihlášeno více uživatelů.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
@@ -871,6 +883,8 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4471432286288241507">{0,plural, =0{Ihned zařízení aktualizujte}=1{Do jedné sekundy zařízení aktualizujte}few{Do # sekund zařízení aktualizujte}many{Do # sekundy zařízení aktualizujte}other{Do # sekund zařízení aktualizujte}}</translation>
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4477350412780666475">Další skladba</translation>
+<translation id="4477751544736611934">To může znamenat náklady na data.
+Je připojeno 1 zařízení.</translation>
 <translation id="4477892968187500306">Toto zařízení může obsahovat aplikace, které nebyly ověřeny Googlem.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
@@ -1000,6 +1014,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
+<translation id="4950800194215951939">Přizpůsobte si herní prostředí</translation>
 <translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
 <translation id="4960324571663582548">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> převedli na starší verzi. Zařízení se resetuje a všechna data se vymažou.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
@@ -1014,6 +1029,8 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4981175556418720939">Upraveno: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Plocha 16</translation>
 <translation id="4989163558385430922">Zobrazit vše</translation>
+<translation id="4995963195354861331">Uvítací dialogové okno</translation>
+<translation id="4996265698919320288">Nahrávání</translation>
 <translation id="5003993274120026347">Další věta</translation>
 <translation id="5004607513195820459">Síť je spravována</translation>
 <translation id="5009463889040999939">Probíhá přejmenování profilu. Může to trvat několik minut.</translation>
@@ -1105,6 +1122,8 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="533282197239610265">Zobrazit zařízení pro streamování obsahu</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
 <translation id="5352250171825660495">Tmavý motiv je zapnutý</translation>
+<translation id="5354804064646502504">To může znamenat náklady na data.
+Nejsou připojena žádná zařízení.</translation>
 <translation id="5356963482258194581">Přepínejte mezi tmavým a světlým motivem. Klikněte pravým tlačítkem na plochu a vyberte Tapeta a styl.</translation>
 <translation id="536019650977002321">Váš administrátor záznam zvuku nepovoluje. O další informace požádejte administrátora.</translation>
 <translation id="5361524080961918551">Řečové soubory jazyka <ph name="LANGUAGE" /> byly částečně staženy</translation>
@@ -1204,6 +1223,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5712132663381964774">Pomocí aplikací můžete na zařízení <ph name="PRODUCT_NAME" /> dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči.</translation>
 <translation id="571295407079589142">Mobilní data jsou vypnuta</translation>
 <translation id="5727460725221669831">Pokud jste heslo zapomněli nebo jste nedávno změnili heslo účtu Google, zkuste tohoto uživatele obnovit.</translation>
+<translation id="5733630091161562207">Uvítací oznámení</translation>
 <translation id="573413375004481890">Toto zařízení nemohlo podporovat všechny vaše obrazovky, jedna proto byla odpojena</translation>
 <translation id="5740328398383587084">Sdílení nablízko</translation>
 <translation id="574392208103952083">Střední</translation>
@@ -1389,6 +1409,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6453179446719226835">Jazyk se změnil</translation>
 <translation id="6459472438155181876">Rozšíření obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">obrázky</translation>
+<translation id="6467290994038932560">Zapnuto: <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Přepnout hotspot</translation>
 <translation id="6477681113376365978">Soubor nelze stáhnout</translation>
 <translation id="6482559668224714696">Lupa celé obrazovky</translation>
@@ -1777,6 +1798,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7963689218131240420">Režim Nerušit je vypnutý.</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrat složku…</translation>
+<translation id="7973756967040444713">Zavřít panel nástrojů</translation>
 <translation id="797512352675305461">Zapnout nebo vypnout lupu celé obrazovky</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>
 <translation id="7982789257301363584">Síť</translation>
@@ -1929,6 +1951,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="861045123704058818">Aplikace jsou dočasně uspořádány podle kategorií</translation>
 <translation id="8612216344243590325">Namísto plochy si důležité soubory ukládejte do prostoru <ph name="HOLDING_SPACE_TITLE" />. Stačí je přetáhnout do prostoru <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Oznámení aplikací <ph name="APP_1_TITLE" /> a <ph name="APP_2_TITLE" /> jsou skryta, protože je zapnutá ochrana před špehováním</translation>
+<translation id="8615778328722901791">Otevřít panel nástrojů</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Snížit hlasitost</translation>
 <translation id="8627191004499078455">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
@@ -1951,6 +1974,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8704155109538237473">Vybrat okno obrazu v obraze</translation>
 <translation id="870917907284186124">Zapnout/vypnout diktování (psaní hlasem)</translation>
+<translation id="8711169534266271368">Možnosti herního panelu</translation>
 <translation id="8714138378966541668">Uzamknuto poskytovatelem</translation>
 <translation id="8717459106217102612">Vybrat předchozí slovo nebo písmeno.</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>
@@ -1980,6 +2004,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8815390544836110344">Stiskněte zkratku k pořízení snímku obrazovky, Ctrl plus Shift plus klávesa režimu Přehled</translation>
 <translation id="881757059229893486">Nastavení metody zadávání</translation>
 <translation id="8819728065740986820">Je zapnuté adaptivní nabíjení</translation>
+<translation id="8822104519413696986">Tohle je dotyková hra</translation>
 <translation id="8825863694328519386">Chcete-li se vrátit, přejeďte prstem zleva</translation>
 <translation id="8832513206237979203">Zobrazit nebo skrýt lištu záložek</translation>
 <translation id="8834539327799336565">Momentálně připojeno</translation>
@@ -2090,6 +2115,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="953431725143473984">Vypnout zařízení?</translation>
 <translation id="954052413789300507">Pro soubor <ph name="FILENAME" /> není k dispozici dostatek volného místa. Uvolněte místo.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="956452277966142925">Nastavení herního panelu</translation>
 <translation id="974545358917229949">Zobrazuje se tento počet výsledků pro dotaz <ph name="QUERY" />: <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Bez termínu</translation>
 <translation id="98120814841227350">Přejít na konec dokumentu</translation>

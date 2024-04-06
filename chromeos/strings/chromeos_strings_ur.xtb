@@ -48,6 +48,7 @@
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
 <translation id="1232610416724362657">آبشار</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
+<translation id="1252766349417594414">جوائے اسٹک</translation>
 <translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1274654146705270731">سنترے</translation>
 <translation id="1275718070701477396">منتخب</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">تشخیصات کی ایپ</translation>
 <translation id="175763766237925754">اچھا (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">فوری طور پر کلیدوں کو سوئچ کریں</translation>
 <translation id="1768959921651994223">تصدیق کی قسم</translation>
 <translation id="1776228893584526149">وال پیپر ٹون</translation>
 <translation id="1777913922912475695">پُل</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">وسیع سمندر</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
+<translation id="2082932131694554252">کی بورڈ کلید تفویض کی گئی</translation>
 <translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
 <translation id="2102231663024125441">ٹیکسٹ میں ترمیم کرنا</translation>
 <translation id="2105810540595158374">آلہ ایک گیم کنٹرولر ہے۔</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2638662041295312666">سائن ان کی تصویر</translation>
 <translation id="2640549051766135490">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کیا گیا</translation>
+<translation id="2645380101799517405">کنٹرولز</translation>
 <translation id="2652403576514495859">ڈکٹیشن کو فعال یا ٹوگل کریں</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2656001153562991489">‏Chromebook Plus کے لیے مخصوص</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">اس وال پیپر کے ساتھ بہترین نتائج کے لیے اسے آن کریں۔ آپ اس ترتیب کو کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> ڈسچارج ہوئی۔</translation>
 <translation id="2880569433548999039">کلاؤڈ فلو اسکرین سیور</translation>
+<translation id="2882230315487799269">‏AI پرامپٹ کو حسب ضرورت بنائیں</translation>
 <translation id="2888298276507578975">"شکریہ نوٹ لکھیں" جیسا ایک پرامپٹ درج کریں</translation>
 <translation id="2890557891229184386">ٹروپیکل جزیرہ</translation>
 <translation id="2895772081848316509">گہرا</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
 <translation id="361575905210396100">آپ کے تاثرات کا شکریہ</translation>
 <translation id="3621072146987826699">ہاتھی</translation>
+<translation id="3632040286124154621">اچھی تجویز</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
+<translation id="3644695927181369554">بری تجویز</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
 <translation id="3661106764436337772">تیزی سے اور زیادہ اعتماد کے ساتھ لکھیں</translation>
 <translation id="3662461537616691585">برگنڈی اور میرون</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
 <translation id="3715651196924935218">فلوٹ سے باہر نکلیں</translation>
+<translation id="3716250181321371108">کنٹرول تخلیق کریں</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
 <translation id="3771294271822695279">ویڈیو فائلیں</translation>
+<translation id="3780740315729837296">کی بورڈ کلید تفویض کریں</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
 <translation id="3785643128701396311">پکسل آرٹ</translation>
 <translation id="3790109258688020991">پوائنٹ لسٹ</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">اسکرین شاٹ لیں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
+<translation id="3934185438132762746">غیر تفویض کردہ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
 <translation id="3942420633017001071">تشخیصات</translation>
 <translation id="3954678691475912818">ڈیوائس کی قسم نامعلوم ہے۔</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">تصویرڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4063039537646912479">ہلکا نیلا</translation>
 <translation id="4070799384363688067">اینیمے</translation>
+<translation id="4086271957099059213">کوئی اور کنٹرول تخلیق کریں</translation>
 <translation id="4091002263446255071">رومانی</translation>
 <translation id="4093865285251893588">پروفائل تصویر</translation>
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
 <translation id="4650608062294027130">دائیں شفٹ</translation>
 <translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
+<translation id="4655868084888499342">تصویر کو وال پیپر کے طور پر سیٹ کیا گیا</translation>
 <translation id="4661249927038176904">ورائے حقیقت</translation>
 <translation id="4664651912255946953">پوستین</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">فائروال مشکوک ہے</translation>
 <translation id="4691278870498629773">رک گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="469379815867856270">سگنل کی مضبوطی</translation>
+<translation id="4697260493945012995">اپنے کنٹرول کی قسم منتخب کریں</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">‏AI کے ذریعے تخلیق کریں</translation>
 <translation id="6112878310391905610">یہ ترتیب آپ کے منتظمین کے زیر انتظام ہے</translation>
 <translation id="6113701710518389813">اوپر تیر کا نشان</translation>
+<translation id="6116005346231504406">پہلا کنٹرول تخلیق کریں</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> مزید البمز</translation>
 <translation id="6122191549521593678">آن لائن</translation>
 <translation id="6122277663991249694">‏ChromeOS اندراج کے طریقہ کی سروس</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7144954474087165241">پگوڈا</translation>
+<translation id="7147557737960578492">نئی کلید منتخب کرکے دوبارہ تفویض کریں</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7154020516215182599">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلہ کی وضاحت کریں۔ اگر ممکن ہو تو اپنے مسئلے کو دوبارہ پیش کرنے کے لیے اقدامات شامل کریں۔</translation>
 <translation id="7155037718620478619">‏مزید APNs دریافت کریں</translation>
@@ -1091,6 +1107,7 @@
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7344788170842919262">زمینی رنگ</translation>
+<translation id="7346768383111016081">اپنے کی بورڈ کے ساتھ کھیلنے کے لیے گیم ایکشن پر کنٹرول رکھیں</translation>
 <translation id="7353413232959255829">‏<ph name="LIST_SIZE" /> میں سے <ph name="LIST_POSITION" /> تلاش کا نتیجہ: <ph name="SEARCH_RESULT_TEXT" />۔ شارٹ کٹ پر نیویگیٹ کرنے کے لیے Enter دبائیں۔</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
 <translation id="73631062356239394">تشخیصی ڈیٹا کا اشتراک کریں</translation>
@@ -1285,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چائے خانہ</translation>
 <translation id="8538236298648811558">‏Google AI کی جانب سے تقویت یافتہ</translation>
+<translation id="8550364285433943656">کی بورڈ کلیدوں کے ساتھ کھیلنے کے لیے گیم ایکشنز پر کنٹرول رکھیں</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
@@ -1403,6 +1421,7 @@
 <translation id="9189000703457422362">‏خودکار طور پر پتہ چلنے والے APNs کا استعمال کر کے اس نیٹ ورک سے منسلک نہیں کر سکتے۔ مزید معلومات کے لیے اپنے موبائل کیریئر سے رابطہ کریں۔</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">‏Android ایپس سے گیٹ وے رابطے کو منسلک نہیں کیا جا سکتا</translation>
+<translation id="921080052717160800">تصویر کو کیمرے کے پس منظر کے طور پر سیٹ کیا گیا ہے</translation>
 <translation id="9211490828691860325">تمام ڈیسکس</translation>
 <translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>

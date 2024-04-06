@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 అంగుళాలు</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1181381397492575884">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
+<translation id="1185343831726846924">వర్చువల్ కార్డ్‌ను ఆన్ చేయడం సాధ్యపడదని నిర్ధారించడం</translation>
 <translation id="1186201132766001848">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="1187430513518041110">ఆటోమేటిక్ వాహనాలు &amp; వాహనాలు</translation>
 <translation id="1190491977647722791">పేపర్ (హెవీవెయిట్)</translation>
@@ -320,6 +321,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> అంగుళాలు</translation>
 <translation id="1574714699824202614">పేమెంట్ ఆప్షన్‌ను వెరిఫై చేస్తోంది</translation>
 <translation id="1576277203042721907">షాపింగ్ గణాంకాలు</translation>
+<translation id="1579189948231786790">ఈ సైట్‌ను మీ సంస్థ బ్లాక్ చేసింది</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">గడువు ముగియదు</translation>
 <translation id="1583429793053364125">ఈ వెబ్ పేజీని ప్రదర్శిస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</translation>
@@ -1478,6 +1480,7 @@
 <translation id="3807366285948165054">చిత్రాన్ని X అక్షంలో జరపు</translation>
 <translation id="3807709094043295184">క్లాసిక్ రాక్ &amp; పాత పాటలు</translation>
 <translation id="3807873520724684969">హానికర కంటెంట్ బ్లాక్ చేయబడింది.</translation>
+<translation id="380865868633614173">కార్డ్ సమాచారం సేవ్ అవుతోంది</translation>
 <translation id="3810770279996899697">Password Managerకి MacOS కీచెయిన్ యాక్సెస్ అవసరం</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
 <translation id="3812398568375898177">ఇది ChromeOSలో Android యాప్‌ల పనితీరును మెరుగుపరిచే ముఖ్యమైన అప్‌డేట్.</translation>
@@ -2186,6 +2189,7 @@
 <translation id="5217759126664161410">చెల్లని ప్రోటోకాల్ ఫార్మాట్.</translation>
 <translation id="5222812217790122047">ఈమెయిల్‌ అవ‌స‌రం</translation>
 <translation id="5228269245420405804">దూర విద్య</translation>
+<translation id="5230428804606340145">ఇతర ఆర్థికపరమైన ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="5230733896359313003">డెలివరీ అడ్రస్‌</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 అదనం</translation>
@@ -2193,6 +2197,7 @@
 <translation id="5238301240406177137">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="5239119062986868403">సాధారణ ధర</translation>
 <translation id="5239623327352565343">లొకేషన్ అనుమతించబడింది</translation>
+<translation id="5241048084654737238">కార్డ్ సమాచారాన్ని సేవ్ చేయడం సాధ్యం కాదని నిర్ధారించడం</translation>
 <translation id="5242610955375133957">డ్రై ఫిల్మ్</translation>
 <translation id="5244521145258281926">'Google ఖాతాను మేనేజ్ చేయండి' బటన్, మీ Google ఖాతాలో మీ సమాచారాన్ని, గోప్యతను, ఇంకా సెక్యూరిటీని మేనేజ్ చేయడం కోసం దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="5244732203286792411">లోడ్ అవుతోంది...
@@ -2208,6 +2213,7 @@
 <translation id="5266128565379329178">ఎగువ భాగంలో బైండ్</translation>
 <translation id="5269225904387178860">దిగువ భాగంలో నాలుగు రంధ్రాలు</translation>
 <translation id="5269999699920406580">సిస్టమ్ వ్యాప్తంగా వర్తింపజేయబడే ఫీచర్‌లు యజమాని ద్వారా మాత్రమే సెట్ చేయబడతాయి: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" విషయంలో, "<ph name="DATA_CONTROLS_ATTRIBUTE" />" కండిషన్‌కు సపోర్ట్ లేదు</translation>
 <translation id="5273658854610202413">హెచ్చరిక: ఈ విధానం విలీనం చేయగల నిఘంటువు విధానాలలో భాగం కానందున, PolicyDictionaryMultipleSourceMergeList విధానంలో పేర్కొన్నట్లుగా ఇది విలీనం చేయబడలేదు.</translation>
 <translation id="5279286380302340275">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3184,6 +3190,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" />‌ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్‌ను (<ph name="DISK_SPACE_SIZE" />) ఖాళీ చేయండి}other{<ph name="FEATURE_NAME" />‌ను ఉపయోగించి ఈ ఫైల్స్‌ను పంపడానికి, మీ పరికరంలో స్పేస్‌ను (<ph name="DISK_SPACE_SIZE" />) ఖాళీ చేయండి}}</translation>
 <translation id="7160999678034985039">దయచేసి మీరు చేసిన పనిని సేవ్ చేసుకొని, సిద్ధంగా ఉన్నప్పుడు అప్‌డేట్ చేయడాన్ని ప్రారంభించండి.</translation>
 <translation id="7163295244162773898">{0,plural, =1{గోప్యమైన ఫైల్‌ను కాపీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను కాపీ చేయాలా?}}</translation>
+<translation id="7168625890036931112">ఈ ప్లాట్‌ఫామ్‌లో "<ph name="DATA_CONTROLS_RESTRICTION" />" పరిమితికి సపోర్ట్ లేదు</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175097078723125014">అడ్రస్‌ను ఎడిట్ చేసే ఆప్షన్‌ను ఎంచుకున్నారు</translation>
@@ -3257,6 +3264,7 @@
 <translation id="7310392214323165548">పరికరం త్వరలోనే రీస్టార్ట్ అవుతుంది</translation>
 <translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="7311837626618954149">Chromium థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.</translation>
+<translation id="7313107491291103073">ఈ సైట్ ఒక పాలసీని ఉల్లంఘించే అవకాశం ఉందని మీ సంస్థ దాన్ని ఫ్లాగ్ చేసింది.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
@@ -3582,6 +3590,7 @@
 <translation id="7888575728750733395">ప్రింట్ రెండరింగ్ ఇంటెంట్</translation>
 <translation id="7894280532028510793">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 అంగుళాల ఎన్వలప్</translation>
+<translation id="7908648876066812348">వర్చువల్ కార్డ్ ఆన్ అవుతోంది</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tabను నొక్కి, తర్వాత Enterను నొక్కి సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="791551905239004656">డ్రాయింగ్ &amp; కలరింగ్</translation>
 <translation id="7916162853251942238">ఫ్లెక్సో బేస్</translation>
@@ -4092,6 +4101,7 @@
 <translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
 <translation id="8874824191258364635">చెల్లుబాటు అయ్యే కార్డ్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="8877780815363510165">చేపలు పట్టడం</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />"ను "<ph name="DATA_CONTROLS_LEVEL" />"కు సెట్ చేయడానికి వీలు పడదు</translation>
 <translation id="8884537526797090108">గోప్యమైన కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8888187300091017436">పరుపులు</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" />‌ను కంట్రోల్ చేసి, దానికి యాక్సెస్ చేయగల స్మార్ట్ కార్డ్‌‌కు యాక్సెస్ పొందండి.</translation>

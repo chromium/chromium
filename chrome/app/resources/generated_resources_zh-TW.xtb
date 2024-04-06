@@ -1066,6 +1066,7 @@
 <translation id="1795214765651529549">使用傳統版</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
+<translation id="1798335429200675510">在文字方塊中按一下滑鼠右鍵，即可運用 Google AI 技術建立草稿或修正現有作品。這項功能目前僅供部分使用者使用。</translation>
 <translation id="180203835522132923">搜尋鍵 + O 鍵，然後按下 W 鍵</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
@@ -1460,6 +1461,7 @@
 <translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
 <translation id="2088564884469682888">內建 TrackPoint</translation>
 <translation id="208928984520943006">隨時從底部向上滑動即可返回主畫面。</translation>
+<translation id="2089550919269323883">根據企業政策，你無法安裝「<ph name="VM_NAME" />」。如需支援服務，請與系統管理員聯絡。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="2089925163047119068">或</translation>
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
@@ -1503,6 +1505,7 @@
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2113479184312716848">開啟檔案(&amp;F)...</translation>
 <translation id="2113921862428609753">授權單位資訊存取</translation>
+<translation id="2114145607116268663">無法安裝，必須重新啟動。請重新啟動電腦，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新載入頁框(&amp;F)</translation>
 <translation id="2114413269775311385">透過這個帳戶使用 Android 應用程式。你也可以前往「<ph name="LINK_BEGIN" />應用程式設定<ph name="LINK_END" />」控管 Android 應用程式的權限。</translation>
 <translation id="2114820389966440614">在此查看「近照精選」和其他回憶集錦</translation>
@@ -2668,6 +2671,7 @@
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2979893796619951531">排除網站</translation>
+<translation id="2981033191524548279">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼為 <ph name="ERROR" />。只要重新開機後再試一次，即可修正這項錯誤。</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
 <translation id="2983373101216420412">充電盒電量為 <ph name="PERCENTAGE" />%。</translation>
@@ -4338,6 +4342,7 @@
 <translation id="4275397969489577657">啟用活動訊息串記錄功能</translation>
 <translation id="4275788652681621337">關閉側邊面板</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
+<translation id="4276856098224910511">無法安裝，因為有 OS 更新待處理。請套用所有待處理的 OS 更新，重新開機後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="4278390842282768270">允許</translation>
@@ -4547,6 +4552,7 @@
 <translation id="4426490308207168518">提供意見或回報問題</translation>
 <translation id="4426508677408162512">所有書籤</translation>
 <translation id="4426513927906544654">取得內容建議</translation>
+<translation id="4426857487270413362">無法下載安裝程式檔案。請檢查網際網路連線，並確定有足夠的可用磁碟空間，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
@@ -5148,6 +5154,7 @@
 <translation id="4899696330053002588">含廣告內容</translation>
 <translation id="490031510406860025">不允許在這個網站執行</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
+<translation id="490056871160016482">網站會使用這項功能提供沉浸式的全螢幕體驗，無論使用者的手勢為何</translation>
 <translation id="4900652253009739885">這是唯一指派為代表「選取」的外接切換裝置，因此無法移除。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
@@ -7163,6 +7170,7 @@
 <translation id="6517227424170598783">要移除「<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />」捷徑嗎？</translation>
 <translation id="6517382055541687102">所選裝置已變更為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6517420300299531857">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。你目前的可用空間為 <ph name="FREE_SPACE_AVAILABLE" />。</translation>
+<translation id="651753338596587143">抱歉，安裝 DLC 依附元件時發生錯誤。請嘗試重新開機。如果問題仍未解決，請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="6517709704288360414">裝置可能無法再正常運作，你可能會遇到安全性和效能問題。關閉更新可能也會影響你在遇到問題時，提出法律請求的權利。</translation>
 <translation id="6518014396551869914">複製圖片(&amp;Y)</translation>
 <translation id="6518133107902771759">驗證</translation>
@@ -7610,6 +7618,7 @@
 <translation id="6847125920277401289">釋出空間以便繼續操作</translation>
 <translation id="6848388270925200958">目前你有一些卡片只能在這部裝置上使用</translation>
 <translation id="6848716236260083778">如要設定指紋，請讓孩子輕觸指紋感應器。孩子的指紋資料會安全儲存在這部 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
+<translation id="6849623577495734856">工具列圖示</translation>
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6851181413209322061">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="6851497530878285708">應用程式已啟用</translation>
@@ -8367,6 +8376,7 @@
 <translation id="7456142309650173560">開發人員版</translation>
 <translation id="7456774706094330779">延伸預先載入模式</translation>
 <translation id="7456847797759667638">開啟位置...</translation>
+<translation id="7457027286267861992">磁碟空間不足。請釋出更多磁碟空間，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="7458168200501453431">系統會使用與 Google 搜尋相同的拼字檢查技術，將你在瀏覽器中輸入的文字傳送給 Google。</translation>
 <translation id="7458715171471938198">要還原應用程式嗎？</translation>
@@ -10162,6 +10172,7 @@
 <translation id="8787752878731558379">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome</translation>
 <translation id="8791157330927639737">進一步瞭解如何更新</translation>
 <translation id="8791534160414513928">將「Do Not Track」要求與瀏覽流量一併送出</translation>
+<translation id="8793390639824829328">網站會使用這項功能捲動及縮放已分享的分頁</translation>
 <translation id="879413103056696865">無線基地台開啟時，你的「<ph name="PHONE_NAME" />」會：</translation>
 <translation id="8795916974678578410">開新視窗</translation>
 <translation id="8796919761992612392">自訂 Chrome(&amp;U)</translation>
@@ -10653,6 +10664,7 @@
 <translation id="9150045010208374699">使用你的相機</translation>
 <translation id="9150079578948279438">無法移除設定檔。請再試一次，或是向電信業者尋求技術支援。</translation>
 <translation id="9150860646299915960">升級 Linux 容器</translation>
+<translation id="915112772806845021">網站會使用這項功能自動進入子母畫面。你可以繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="9151249085738989067">根據語言自動切換 ChromeVox 語音</translation>
 <translation id="9151906066336345901">end 鍵</translation>
 <translation id="9153274276370926498">Lacros 系統資訊</translation>

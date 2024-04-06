@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Магчыма, выяўлены партал</translation>
 <translation id="1232610416724362657">вадаспад</translation>
 <translation id="1238612778414822719">Затрымка HTTPS</translation>
+<translation id="1252766349417594414">Джойсцік</translation>
 <translation id="1270369111467284986">Магчыма, партал узаемадзеяння</translation>
 <translation id="1274654146705270731">апельсіны</translation>
 <translation id="1275718070701477396">Выбрана</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Праграма для дыягностыкі</translation>
 <translation id="175763766237925754">Добры (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Хуткая замена клавіш</translation>
 <translation id="1768959921651994223">Тып аўтэнтыфікацыі</translation>
 <translation id="1776228893584526149">Колер шпалер</translation>
 <translation id="1777913922912475695">мост</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">неабсяжны акіян</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
+<translation id="2082932131694554252">Прызначаная клавіша клавіятуры</translation>
 <translation id="2085089206770112532">Паменшыць яркасць дысплэя</translation>
 <translation id="2102231663024125441">Рэдагаванне тэксту</translation>
 <translation id="2105810540595158374">Гэта гульнявы кантролер.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
 <translation id="2640549051766135490">Выбраны альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
+<translation id="2645380101799517405">Элементы кіравання</translation>
 <translation id="2652403576514495859">уключыць або выключыць галасавы ўвод</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2656001153562991489">Эксклюзіўна для Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">Уключыце гэты рэжым, калі вы хочаце, каб дадзеныя шпалеры выглядалі лепш. Гэту наладу можна выключыць у любы час.</translation>
 <translation id="2878387241690264070">Разраджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2880569433548999039">Застаўка "Рух аблокаў"</translation>
+<translation id="2882230315487799269">Наладзіць запыт для штучнага інтэлекту</translation>
 <translation id="2888298276507578975">Увядзіце запыт, напрыклад "напішы падзяку"</translation>
 <translation id="2890557891229184386">трапічны востраў</translation>
 <translation id="2895772081848316509">цёмны</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">Высокая затрымка на вэб-сайтах HTTPS</translation>
 <translation id="361575905210396100">Дзякуй за водгук</translation>
 <translation id="3621072146987826699">сланы</translation>
+<translation id="3632040286124154621">Удалая прапанова</translation>
 <translation id="3632579075709132555">Пераключэнне экрана прыватнасці</translation>
+<translation id="3644695927181369554">Няўдалая прапанова</translation>
 <translation id="3651050199673793219">Выберыце адзінку вымярэння тэмпературы</translation>
 <translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3662461537616691585">бардовы і цёмна-бардовы</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">Загрузка…</translation>
 <translation id="3708186454126126312">Падключаныя раней прылады</translation>
 <translation id="3715651196924935218">Выйсці з плаваючага рэжыму</translation>
+<translation id="3716250181321371108">Стварыць элемент кіравання</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
 <translation id="3771294271822695279">Відэафайлы</translation>
+<translation id="3780740315729837296">Прызначце клавішу клавіятуры</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
 <translation id="3785643128701396311">піксельная графіка</translation>
 <translation id="3790109258688020991">пуантылізм</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">зрабіць здымак экрана</translation>
 <translation id="3923184630988645767">Выкарыстанне трафіка</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
+<translation id="3934185438132762746">Не прызначана: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="3954678691475912818">Гэта прылада невядомага тыпу.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">Спампоўваецца відарыс</translation>
 <translation id="4063039537646912479">светла-сіні</translation>
 <translation id="4070799384363688067">анімэ</translation>
+<translation id="4086271957099059213">Стварыць яшчэ адзін элемент кіравання</translation>
 <translation id="4091002263446255071">рамантычны</translation>
 <translation id="4093865285251893588">Відарыс профілю</translation>
 <translation id="409427325554347132">Захаваць даныя тэста</translation>
@@ -611,6 +623,7 @@
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
 <translation id="4650608062294027130">Shift справа</translation>
 <translation id="4654549501020883054">Змяняць штодня</translation>
+<translation id="4655868084888499342">Відарыс зададзены ў якасці шпалер</translation>
 <translation id="4661249927038176904">Сюррэалістычны відарыс</translation>
 <translation id="4664651912255946953">поўсць</translation>
 <translation id="4665014895760275686">Вытворца</translation>
@@ -618,6 +631,7 @@
 <translation id="467715984478005772">Магчыма, уключаны брандмаўар</translation>
 <translation id="4691278870498629773">Спынена: няма латка</translation>
 <translation id="469379815867856270">Магутнасць сігналу</translation>
+<translation id="4697260493945012995">Выберыце тып кіравання</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
@@ -858,6 +872,7 @@
 <translation id="6108952804512516814">Стварыць з дапамогай AI</translation>
 <translation id="6112878310391905610">Гэта налада знаходзіцца пад кіраваннем адміністратараў</translation>
 <translation id="6113701710518389813">Стрэлка ўверх</translation>
+<translation id="6116005346231504406">Стварыць першы элемент кіравання</translation>
 <translation id="6117895505466548728">"<ph name="TITLE" />" і <ph name="NUMBER" /> іншыя альбомы</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
 <translation id="6122277663991249694">Сэрвіс спосабаў уводу Chrome OS</translation>
@@ -1046,6 +1061,7 @@
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7144954474087165241">пагада</translation>
+<translation id="7147557737960578492">Перапрызначце клавішу (выберыце новую)</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7154020516215182599">Напішыце водгук або апішыце праблему. Па магчымасці ўкажыце, якія дзеянні да яе прыводзяць.</translation>
 <translation id="7155037718620478619">Паглядзець іншыя APN</translation>
@@ -1089,6 +1105,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Каб пабачыць вынік у Google Пошуку, націсніце "Пошук" і клавішу прабелу.</translation>
 <translation id="7343649194310845056">Сеткавыя прылады</translation>
 <translation id="7344788170842919262">насычаны</translation>
+<translation id="7346768383111016081">Выберыце элемент кіравання для дзеяння, каб гуляць з дапамогай клавіятуры</translation>
 <translation id="7353413232959255829">Вынік пошуку <ph name="LIST_POSITION" /> з <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Каб перайсці да ярлыка, націсніце Enter.</translation>
 <translation id="7359657277149375382">Тып файла</translation>
 <translation id="73631062356239394">Абагуліць даныя дыягностыкі</translation>
@@ -1283,6 +1300,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8538236298648811558">На аснове штучнага інтэлекту ад Google</translation>
+<translation id="8550364285433943656">Выберыце элементы кіравання для дзеянняў, каб гуляць з дапамогай клавіш клавіятуры</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
 <translation id="8576249514688522074">Неініцыялізаваная</translation>
@@ -1401,6 +1419,7 @@
 <translation id="9189000703457422362">Не ўдалося падключыцца да гэтай сеткі з выкарыстаннем аўтаматычна распазнаных APN. Па дадатковую інфармацыю звяртайцеся да аператара мабільнай сувязі.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Не ўдалося звязацца са шлюзам з праграм для Android</translation>
+<translation id="921080052717160800">Відарыс зададзены ў якасці фону для камеры</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
