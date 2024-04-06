@@ -29,7 +29,7 @@ CampaignsManager* g_instance = nullptr;
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
 inline constexpr char kEventKey[] = "event_to_be_cleared";
-inline constexpr char kAppOpenedEventTemplate[] =
+inline constexpr char kEventTemplate[] =
     "name:%s;comparator:any;window:365;storage:365";
 
 std::optional<base::Value::Dict> ReadCampaignsFile(
@@ -211,8 +211,8 @@ void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
   std::map<std::string, std::string> conditions_params;
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] = base::StringPrintf(
-      kAppOpenedEventTemplate, GetEventName(event, id).c_str());
+  conditions_params[kEventKey] =
+      base::StringPrintf(kEventTemplate, GetEventName(event, id).c_str());
   client_->ClearConfig(conditions_params);
 }
 

@@ -27,7 +27,7 @@ namespace {
 inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
 inline constexpr char kEventUsedKey[] = "event_used";
 inline constexpr char kEventTriggerKey[] = "event_trigger";
-inline constexpr char kEvent1Key[] = "event_1";
+inline constexpr char kEventKey[] = "event_to_be_checked";
 inline constexpr char kEventUsedParam[] =
     "name:ChromeOSAshGrowthCampaigns_EventUsed;comparator:any;window:1;storage:"
     "1";
@@ -35,8 +35,6 @@ inline constexpr char kEventTriggerParam[] =
     "name:ChromeOSAshGrowthCampaigns_EventTrigger;comparator:any;window:1;"
     "storage:1";
 
-inline constexpr char kEventImpressionKey[] = "event_impression";
-inline constexpr char kEventDismissalKey[] = "event_dismissal";
 inline constexpr char kEventImpressionParam[] =
     "name:ChromeOSAshGrowthCampaigns_Campaign%d_Impression;comparator:<%d;"
     "window:365;storage:365";
@@ -342,7 +340,7 @@ bool CampaignsMatcher::MatchOpenedApp(
 bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                                    int campaign_id) const {
   if (!config) {
-    // Campaign matched if there is no events targeting.
+    // Campaign is matched if there is no events targeting.
     return true;
   }
 
@@ -354,18 +352,32 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
 
   // Check impression cap and dismissal cap.
   int impression_cap = config->GetImpressionCap();
-  conditions_params[kEventImpressionKey] =
+
+  // Event can be put in any key starting with `event_`.
+  // Please see `components/feature_engagement/README.md#featureconfig`.
+  conditions_params[kEventKey] =
       base::StringPrintf(kEventImpressionParam, campaign_id, impression_cap);
+  if (!client_->WouldTriggerHelpUI(conditions_params)) {
+    // Campaign is not matched if the impression cap condition is not met.
+    return false;
+  }
 
   int dismissal_cap = config->GetDismissalCap();
-  conditions_params[kEventDismissalKey] =
+  conditions_params[kEventKey] =
       base::StringPrintf(kEventDismissalParam, campaign_id, dismissal_cap);
+  if (!client_->WouldTriggerHelpUI(conditions_params)) {
+    // Campaign is not matched if the dismissal cap condition is not met.
+    return false;
+  }
 
-  // TODO: b/332059520 - Check the impress and dismissal caps separately to
-  // improve the efficiency.
   // Here is to handle custom events targeting conditions.
   // The outer loop is AND logic and the inner loop is OR logic.
   const base::Value::List* conditions = config->GetEventsConditions();
+  if (!conditions) {
+    // Campaign is matched if there is no custom events targeting conditions.
+    return true;
+  }
+
   for (const auto& condition : *conditions) {
     if (!condition.is_list()) {
       // TODO: b/332405607 - Add metrics to track wrong configurations.
@@ -382,9 +394,7 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
       }
 
       std::string param_str = param.GetString();
-
-      // Put param in any `event_` config.
-      conditions_params[kEvent1Key] = param_str;
+      conditions_params[kEventKey] = param_str;
       if (client_->WouldTriggerHelpUI(conditions_params)) {
         any_event_matched = true;
         // Can break the loop if any condition is met.
