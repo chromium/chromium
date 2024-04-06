@@ -62,6 +62,8 @@
       <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_LIGHT_ANIMATION" file="unscaled_resources/equalizer_light.json" compress="gzip" />
       <!-- Birch -->
       <structure type="lottie" name="IDR_BIRCH_RELEASE_NOTES_ICON" file="unscaled_resources/birch_release_notes_icon.json" compress="gzip" />
+      <!-- Mahi -->
+      <structure type="lottie" name="IDR_MAHI_GENERAL_ERROR_STATUS_IMAGE" file="unscaled_resources/mahi_general_error_status_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>

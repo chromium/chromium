@@ -8,12 +8,16 @@
 #include <string>
 #include <variant>
 
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -39,35 +43,12 @@ constexpr auto kImagePaddings = gfx::Insets::TLBR(/*top=*/0,
                                                   /*bottom=*/16,
                                                   /*right=*/56);
 
-constexpr gfx::Size kImagePreferredSize(/*width=*/200, /*height=*/73);
+constexpr gfx::Size kImagePreferredSize(/*width=*/200, /*height=*/100);
 
 constexpr int kLabelMaximumWidth = 264;
 
 constexpr auto kLabelPaddings =
     gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/24);
-
-// Helpers ---------------------------------------------------------------------
-
-// Returns the label text for `error`. NOTE: `kLowQuota` triggers a warning that
-// is not presented in `MahiErrorStatusView`.
-// TODO(http://b/319731862): Add UI strings.
-std::u16string GetErrorLabelText(chromeos::MahiResponseStatus error) {
-  switch (error) {
-    case chromeos::MahiResponseStatus::kCantFindOutputData:
-    case chromeos::MahiResponseStatus::kContentExtractionError:
-    case chromeos::MahiResponseStatus::kInappropriate:
-    case chromeos::MahiResponseStatus::kUnknownError:
-      return u"Something went wrong";
-    case chromeos::MahiResponseStatus::kQuotaLimitHit:
-      return u"Due to high request volume, your access is temporary limited. "
-             u"Try again tomorrow.";
-    case chromeos::MahiResponseStatus::kResourceExhausted:
-      return u"Can't use right now. Try again later";
-    case chromeos::MahiResponseStatus::kLowQuota:
-    case chromeos::MahiResponseStatus::kSuccess:
-      NOTREACHED_NORETURN();
-  }
-}
 
 // ErrorContentsView -----------------------------------------------------------
 
@@ -85,6 +66,9 @@ class ErrorContentsView : public views::FlexLayoutView,
         .AddChildren(
             views::Builder<views::ImageView>()
                 .SetBorder(views::CreateEmptyBorder(kImagePaddings))
+                .SetImage(ui::ResourceBundle::GetSharedInstance()
+                              .GetThemedLottieImageNamed(
+                                  IDR_MAHI_GENERAL_ERROR_STATUS_IMAGE))
                 .SetPreferredSize(kImagePreferredSize),
             views::Builder<views::Label>()
                 .AfterBuild(base::BindOnce([](views::Label* self) {
@@ -97,7 +81,7 @@ class ErrorContentsView : public views::FlexLayoutView,
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
                 .SetID(mahi_constants::ViewId::kErrorStatusLabel)
                 .SetMultiLine(true)
-                .SizeToFit(kLabelMaximumWidth))
+                .SetMaximumWidth(kLabelMaximumWidth))
         .BuildChildren();
   }
 
@@ -111,8 +95,9 @@ class ErrorContentsView : public views::FlexLayoutView,
                       const std::optional<PayloadType>& payload) override {
     switch (new_state) {
       case MahiUiController::State::kError:
-        error_status_text_->SetText(GetErrorLabelText(
-            std::get<chromeos::MahiResponseStatus>(*payload)));
+        error_status_text_->SetText(
+            l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(
+                std::get<chromeos::MahiResponseStatus>(*payload))));
         return;
       case MahiUiController::State::kQuestionAndAnswer:
       case MahiUiController::State::kSummaryAndOutlines:

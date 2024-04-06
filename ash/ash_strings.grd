@@ -5172,6 +5172,15 @@ No devices connected.
       <message name="IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT" translateable="false" desc="Text of the service response that suggests the previous Mahi request is inappropriate">
         This may violate Google's policy. Try another request.
       </message>
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL" translateable="false" desc="Text that indicates a general error incurred by a Mahi request">
+        Something went wrong
+      </message>
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_QUOTA_LIMIT_HIT" translateable="false" desc="Text that indicates service request limit reached">
+        Due to high request volume, your access is temporary limited. Try again tomorrow.
+      </message>
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_RESOURCE_EXHAUSTED" translateable="false" desc="Text indicates that the service resource has been exhausted">
+        Can't use right now. Try again later.
+      </message>
 
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">

@@ -16,6 +16,7 @@
 #include "ash/style/system_textfield.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
@@ -837,8 +838,10 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
 
-    // TODO(http://b/319731862): Check the label contents.
-    EXPECT_FALSE(error_status_label->GetText().empty());
+    // Check the contents of `error_status_label`.
+    EXPECT_EQ(
+        error_status_label->GetText(),
+        l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
 
     CreatePanelWidget();
   }
@@ -893,8 +896,10 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
 
-    // TODO(http://b/319731862): Check the label contents.
-    EXPECT_FALSE(error_status_label->GetText().empty());
+    // Check the contents of `error_status_label`.
+    EXPECT_EQ(
+        error_status_label->GetText(),
+        l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
   }
 }
 
@@ -947,8 +952,10 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
 
-    // TODO(http://b/319731862): Check the label contents.
-    EXPECT_FALSE(error_status_label->GetText().empty());
+    // Check the contents of `error_status_label`.
+    EXPECT_EQ(
+        error_status_label->GetText(),
+        l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
   }
 }
 

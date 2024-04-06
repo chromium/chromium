@@ -50,9 +50,9 @@ constexpr auto kErrorBubbleInteriorMargin = gfx::Insets::TLBR(/*top=*/4,
                                                               /*bottom=*/0,
                                                               /*right=*/8);
 constexpr int kErrorIconSize = 16;
-constexpr int kErrorLabelPreferredWidth = 276;
 constexpr auto kErrorLabelInteriorMargin =
     gfx::Insets::TLBR(/*top=*/0, /*left=*/8, /*bottom=*/0, /*right=*/0);
+constexpr int kErrorLabelMaximumWidth = 276;
 
 // MahiQuestionAnswerView
 constexpr auto kInteriorMargin = gfx::Insets(/*all=*/8);
@@ -84,7 +84,7 @@ class ErrorBubble : public views::FlexLayoutView {
                     TypographyToken::kCrosAnnotation1))
                 .SetID(mahi_constants::ViewId::kQuestionAnswerErrorLabel)
                 .SetMultiLine(true)
-                .SetMaximumWidth(kErrorLabelPreferredWidth)
+                .SetMaximumWidth(kErrorLabelMaximumWidth)
                 .SetText(l10n_util::GetStringUTF16(
                     IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT)))
         .BuildChildren();
