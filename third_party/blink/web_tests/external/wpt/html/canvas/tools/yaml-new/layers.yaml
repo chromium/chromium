@@ -600,9 +600,7 @@
     ctx.fillRect(80, 40, 75, 50);
 
 - name: 2d.layer.malformed-operations
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_names[0] }} is called while layers are open.
   size: [200, 200]
   test_type: sync
   code: |
@@ -615,6 +613,7 @@
     ctx.beginLayer();
     assert_throws_dom("InvalidStateError",
                       () => {{ operation }});
+  variants_layout: [single_file]
   variants:
   - createPattern:
       operation: ctx.createPattern(canvas, 'repeat')
@@ -641,9 +640,7 @@
       operation: canvas.transferToImageBitmap()
 
 - name: 2d.layer.malformed-operations-with-promises
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_names[0] }} is called while layers are open.
   size: [200, 200]
   test_type: promise
   code: |
@@ -653,7 +650,9 @@
     await {{ operation }};
     // Calling again inside a layer should throw.
     ctx.beginLayer();
-    await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
+    await promise_rejects_dom(t, 'InvalidStateError',
+                              {{ operation }});
+  variants_layout: [single_file]
   variants:
   - convertToBlob:
       canvas_types: ['OffscreenCanvas', 'Worker']
