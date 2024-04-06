@@ -53,8 +53,8 @@ void MojoStableVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void MojoStableVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/327268445): finish implementing Decode().
-  NOTIMPLEMENTED();
+  CHECK(!!oop_video_decoder_);
+  oop_video_decoder_->Decode(std::move(buffer), std::move(decode_cb));
 }
 
 void MojoStableVideoDecoder::Reset(base::OnceClosure closure) {

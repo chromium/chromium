@@ -14,6 +14,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
+#include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -148,6 +149,10 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
   MOCK_METHOD1(Reset, void(ResetCallback callback));
 
   MOCK_METHOD1(DoConstruct, void(const gfx::ColorSpace& target_color_space));
+
+  MojoDecoderBufferReader* mojo_decoder_buffer_reader() const {
+    return mojo_decoder_buffer_reader_.get();
+  }
 
  private:
   mojo::Receiver<stable::mojom::StableVideoDecoder> receiver_;
@@ -457,6 +462,68 @@ TEST_F(MojoStableVideoDecoderTest,
       .Run(kDecoderStatusToReplyWith, kNeedsBitstreamConversionToReplyWith,
            kMaxDecodeRequestsToReplyWith, kDecoderTypeToReplyWith,
            kNeedsTranscryptionToReplyWith);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(MojoStableVideoDecoderTest, Decode) {
+  const VideoDecoderConfig config = CreateValidSupportedVideoDecoderConfig();
+  std::unique_ptr<TestEndpoints> endpoints =
+      CreateAndInitializeMojoStableVideoDecoder(config);
+  ASSERT_TRUE(endpoints);
+
+  constexpr uint8_t kEncodedData[] = {1, 2, 3};
+  scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
+      DecoderBuffer::CopyFrom(kEncodedData, std::size(kEncodedData));
+  ASSERT_TRUE(decoder_buffer_to_send);
+  decoder_buffer_to_send->WritableSideData().secure_handle = 42;
+
+  // First, we'll call MojoStableVideoDecoder::Decode() and store both the
+  // DecoderBuffer (without the encoded data) and the Decode() reply callback as
+  // seen by the service.
+  mojom::DecoderBufferPtr received_mojo_decoder_buffer;
+  StrictMock<base::MockOnceCallback<void(DecoderStatus)>> decode_cb_to_send;
+  stable::mojom::StableVideoDecoder::DecodeCallback received_decode_cb;
+  EXPECT_CALL(*endpoints->service(), Decode(_, _))
+      .WillOnce(
+          [&](const scoped_refptr<DecoderBuffer>& buffer,
+              stable::mojom::StableVideoDecoder::DecodeCallback callback) {
+            ASSERT_TRUE(buffer);
+            received_mojo_decoder_buffer = mojom::DecoderBuffer::From(*buffer);
+            ASSERT_TRUE(received_mojo_decoder_buffer);
+            received_decode_cb = std::move(callback);
+          });
+  media_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MojoStableVideoDecoder::Decode,
+                     base::Unretained(endpoints->client()),
+                     decoder_buffer_to_send, decode_cb_to_send.Get()));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->service()));
+
+  // Next, we'll retrieve the encoded data and ensure it matches what we sent.
+  scoped_refptr<DecoderBuffer> received_decoder_buffer_with_data;
+  endpoints->service()->mojo_decoder_buffer_reader()->ReadDecoderBuffer(
+      std::move(received_mojo_decoder_buffer),
+      base::BindOnce(
+          [](scoped_refptr<DecoderBuffer>* dst_buffer,
+             scoped_refptr<DecoderBuffer> buffer) {
+            *dst_buffer = std::move(buffer);
+          },
+          &received_decoder_buffer_with_data));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(received_decoder_buffer_with_data);
+  EXPECT_TRUE(received_decoder_buffer_with_data->MatchesForTesting(
+      *decoder_buffer_to_send));
+
+  // Finally, we'll pretend that the service replies to the Decode() request.
+  // This reply should be received as a call to the callback passed to
+  // MojoStableVideoDecoder::Decode().
+  const DecoderStatus kDecoderStatusToReplyWith = DecoderStatus::Codes::kOk;
+  EXPECT_CALL(decode_cb_to_send, Run(kDecoderStatusToReplyWith))
+      .WillOnce([&]() {
+        EXPECT_TRUE(media_task_runner_->RunsTasksInCurrentSequence());
+      });
+  std::move(received_decode_cb).Run(kDecoderStatusToReplyWith);
   task_environment_.RunUntilIdle();
 }
 
