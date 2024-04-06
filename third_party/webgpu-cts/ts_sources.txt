@@ -742,6 +742,7 @@ src/webgpu/shader/validation/expression/call/builtin/cross.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/degrees.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/derivatives.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/determinant.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/distance.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/dot4I8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/dot4U8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
@@ -778,6 +779,8 @@ src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/step.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureGather.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureGatherCompare.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureLoad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleBaseClampToEdge.spec.ts
