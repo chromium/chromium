@@ -42,6 +42,16 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
   }
 }
 
+void SidePanelResizeHandle::UpdateVisibility(bool visible) {
+  if (visible) {
+    const SkColor resize_handle_color =
+        GetColorProvider()->GetColor(kColorSidePanelResizeAreaHandle);
+    SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
+  } else {
+    SetBackground(nullptr);
+  }
+}
+
 void SidePanelResizeHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSlider;
   node_data->SetNameChecked(
@@ -59,13 +69,7 @@ void SidePanelResizeHandle::RemovedFromWidget() {
 void SidePanelResizeHandle::OnWillChangeFocus(views::View* before,
                                               views::View* now) {
   if (lens::features::IsLensOverlayEnabled()) {
-    if (now == this) {
-      const SkColor resize_handle_color =
-          GetColorProvider()->GetColor(kColorSidePanelResizeAreaHandle);
-      SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
-    } else {
-      SetBackground(nullptr);
-    }
+    UpdateVisibility(now == this);
   }
 }
 
@@ -108,6 +112,18 @@ bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
   return false;
+}
+
+void SidePanelResizeArea::OnMouseMoved(const ui::MouseEvent& event) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    resize_handle_->UpdateVisibility(true);
+  }
+}
+
+void SidePanelResizeArea::OnMouseExited(const ui::MouseEvent& event) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    resize_handle_->UpdateVisibility(false);
+  }
 }
 
 void SidePanelResizeArea::Layout(PassKey) {
