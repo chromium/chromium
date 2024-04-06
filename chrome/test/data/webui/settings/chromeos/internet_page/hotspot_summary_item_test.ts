@@ -10,6 +10,7 @@ import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHots
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<hotspot-summary-item>', () => {
@@ -51,12 +52,6 @@ suite('<hotspot-summary-item>', () => {
     setHotspotConfigForTesting(hotspotConfig);
   });
 
-  function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
-
   setup(async () => {
     hotspotSummaryItem = document.createElement('hotspot-summary-item');
     document.body.appendChild(hotspotSummaryItem);
@@ -80,7 +75,7 @@ suite('<hotspot-summary-item>', () => {
       ],
       config: null,
     });
-    await flushAsync();
+    await flushTasks();
   });
 
   teardown(() => {
@@ -138,7 +133,7 @@ suite('<hotspot-summary-item>', () => {
 
   test('UI state when hotspot is allowed and state is on', async () => {
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
-    await flushAsync();
+    await flushTasks();
 
     const hotspotStateSublabel = queryHotspotStateSublabel();
     assertTrue(!!hotspotStateSublabel);
@@ -168,7 +163,7 @@ suite('<hotspot-summary-item>', () => {
 
   test('Hotspot sublabel in various hotspot states', async () => {
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
-    await flushAsync();
+    await flushTasks();
     const hotspotStateSublabel = queryHotspotStateSublabel();
     assertTrue(!!hotspotStateSublabel);
     assertEquals(
@@ -176,19 +171,19 @@ suite('<hotspot-summary-item>', () => {
         hotspotStateSublabel.textContent!.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
-    await flushAsync();
+    await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
         hotspotStateSublabel.textContent!.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
-    await flushAsync();
+    await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateTurningOff'),
         hotspotStateSublabel.textContent!.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
-    await flushAsync();
+    await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotStateSublabel.textContent!.trim());
@@ -197,7 +192,7 @@ suite('<hotspot-summary-item>', () => {
   test('UI state when disallowed by policy', async () => {
     hotspotConfig.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedByPolicy);
-    await flushAsync();
+    await flushTasks();
 
     const hotspotStateSublabel = queryHotspotStateSublabel();
     assertTrue(!!hotspotStateSublabel);
@@ -228,7 +223,7 @@ suite('<hotspot-summary-item>', () => {
     // Verify toggle is able to turn on/off by CrosHotspotConfig even when it is
     // disabled by policy.
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
-    await flushAsync();
+    await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
         hotspotStateSublabel.textContent!.trim());
@@ -237,7 +232,7 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(icon.classList.contains('hotspot-on'));
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
-    await flushAsync();
+    await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotStateSublabel.textContent!.trim());
@@ -249,7 +244,7 @@ suite('<hotspot-summary-item>', () => {
   test('UI state when mobile data plan doesn\'t support hotspot', async () => {
     hotspotConfig.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedReadinessCheckFail);
-    await flushAsync();
+    await flushTasks();
 
     const hotspotStateSublabel = queryHotspotStateSublabel();
     assertTrue(!!hotspotStateSublabel);
@@ -283,7 +278,7 @@ suite('<hotspot-summary-item>', () => {
   test('UI state when no mobile data connection', async () => {
     hotspotConfig.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedNoMobileData);
-    await flushAsync();
+    await flushTasks();
 
     const hotspotStateSublabel = queryHotspotStateSublabel();
     assertTrue(!!hotspotStateSublabel);
@@ -317,7 +312,7 @@ suite('<hotspot-summary-item>', () => {
     hotspotConfig.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedNoMobileData);
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
-    await flushAsync();
+    await flushTasks();
 
     const subpageArrow = queryHotspotSummaryItemRowArrowIcon();
     const enableToggle = queryEnableHotspotToggle();
@@ -342,7 +337,7 @@ suite('<hotspot-summary-item>', () => {
     hotspotConfig.setFakeEnableHotspotResult(
         HotspotControlResult.kNetworkSetupFailure);
     enableHotspotToggle.click();
-    await flushAsync();
+    await flushTasks();
     // Toggle should be off.
     assertFalse(enableHotspotToggle.checked);
     assertFalse(enableHotspotToggle.disabled);
@@ -352,7 +347,7 @@ suite('<hotspot-summary-item>', () => {
         eventToPromise('cr-a11y-announcer-messages-sent', document.body);
     hotspotConfig.setFakeEnableHotspotResult(HotspotControlResult.kSuccess);
     enableHotspotToggle.click();
-    await flushAsync();
+    await flushTasks();
     // Toggle should be on this time.
     assertTrue(enableHotspotToggle.checked);
     assertFalse(enableHotspotToggle.disabled);
@@ -365,7 +360,7 @@ suite('<hotspot-summary-item>', () => {
         eventToPromise('cr-a11y-announcer-messages-sent', document.body);
     hotspotConfig.setFakeDisableHotspotResult(HotspotControlResult.kSuccess);
     enableHotspotToggle.click();
-    await flushAsync();
+    await flushTasks();
     // Toggle should be off
     assertFalse(enableHotspotToggle.checked);
     assertFalse(enableHotspotToggle.disabled);
@@ -375,7 +370,7 @@ suite('<hotspot-summary-item>', () => {
 
     // Simulate state becoming kEnabling.
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
-    await flushAsync();
+    await flushTasks();
     // Toggle should be enabled to support abort operation.
     assertFalse(enableHotspotToggle.disabled);
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
@@ -383,7 +378,7 @@ suite('<hotspot-summary-item>', () => {
     // Simulate AllowStatus becoming kDisallowedByPolicy.
     hotspotConfig.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedByPolicy);
-    await flushAsync();
+    await flushTasks();
     // Toggle should be disabled.
     assertTrue(enableHotspotToggle.disabled);
   });

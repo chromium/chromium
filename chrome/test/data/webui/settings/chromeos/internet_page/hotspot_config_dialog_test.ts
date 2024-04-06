@@ -11,8 +11,8 @@ import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hots
 import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
 import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
 import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<hotspot-config-dialog>', () => {
   let hotspotConfigDialog: HotspotConfigDialogElement;
@@ -28,12 +28,6 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfigDialog.remove();
     Router.getInstance().resetRouteForTesting();
   });
-
-  function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
 
   async function init() {
     const hotspotInfo = {
@@ -60,7 +54,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfigDialog.hotspotInfo = response.hotspotInfo;
     document.body.appendChild(hotspotConfigDialog);
     Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
-    await flushAsync();
+    await flushTasks();
   }
 
   test('Name validation and update hotspot SSID', async () => {
@@ -107,7 +101,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kSuccess);
     saveBtn.click();
-    await flushAsync();
+    await flushTasks();
 
     const response = await hotspotConfig.getHotspotInfo();
     assertTrue(!!response.hotspotInfo.config);
@@ -158,7 +152,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kSuccess);
     saveBtn.click();
-    await flushAsync();
+    await flushTasks();
 
     const response = await hotspotConfig.getHotspotInfo();
     assertTrue(!!response.hotspotInfo.config);
@@ -195,7 +189,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kSuccess);
     saveBtn.click();
-    await flushAsync();
+    await flushTasks();
 
     const response = await hotspotConfig.getHotspotInfo();
     assertTrue(!!response.hotspotInfo.config);
@@ -233,7 +227,7 @@ suite('<hotspot-config-dialog>', () => {
         hotspotConfig.setFakeSetHotspotConfigResult(
             SetHotspotConfigResult.kSuccess);
         saveBtn.click();
-        await flushAsync();
+        await flushTasks();
 
         const response = await hotspotConfig.getHotspotInfo();
         assertTrue(!!response.hotspotInfo.config);
@@ -271,7 +265,7 @@ suite('<hotspot-config-dialog>', () => {
         hotspotConfig.setFakeSetHotspotConfigResult(
             SetHotspotConfigResult.kSuccess);
         saveBtn.click();
-        await flushAsync();
+        await flushTasks();
 
         const response = await hotspotConfig.getHotspotInfo();
         assertTrue(!!response.hotspotInfo.config);
@@ -305,7 +299,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kFailedInvalidConfiguration);
     saveBtn.click();
-    await flushAsync();
+    await flushTasks();
     errorMessageElement =
         hotspotConfigDialog.shadowRoot!.querySelector('#errorMessage');
     assertTrue(!!errorMessageElement, 'Hotspot error message doesn\'t show');
@@ -317,7 +311,7 @@ suite('<hotspot-config-dialog>', () => {
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kFailedNotLogin);
     saveBtn.click();
-    await flushAsync();
+    await flushTasks();
     errorMessageElement =
         hotspotConfigDialog.shadowRoot!.querySelector('#errorMessage');
     assertTrue(!!errorMessageElement, 'Hotspot error message doesn\'t show');
@@ -326,7 +320,7 @@ suite('<hotspot-config-dialog>', () => {
         errorMessageElement.textContent!.trim());
 
     cancelBtn.click();
-    await flushAsync();
+    await flushTasks();
 
     const response = await hotspotConfig.getHotspotInfo();
     assertTrue(!!response.hotspotInfo.config);
