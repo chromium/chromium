@@ -579,6 +579,9 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // updateFilteredTabs_ function.
     const expanded = e.detail.value;
     const titleItem = e.model.item;
+    if (titleItem.expanded === expanded) {
+      return;
+    }
     titleItem.expanded = expanded;
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
 

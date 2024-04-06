@@ -700,7 +700,6 @@ suite('TabSearchAppTest', () => {
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
     }));
-    assertEquals(1, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     assertEquals(3, queryRows().length);
 
     const recentlyClosedTitleItem = queryListTitle()[1];
@@ -711,18 +710,17 @@ suite('TabSearchAppTest', () => {
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Collapse the `Recently Closed` section and assert item count.
-    testProxy.resetResolver('saveRecentlyClosedExpandedPref');
     recentlyClosedTitleExpandButton.click();
-    let [expanded] =
+    const [expanded] =
         await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
     assertFalse(expanded);
     assertEquals(1, queryRows().length);
 
     // Expand the `Recently Closed` section and assert item count.
-    testProxy.resetResolver('saveRecentlyClosedExpandedPref');
     recentlyClosedTitleExpandButton.click();
-    [expanded] = await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
-    assertTrue(expanded);
+
+    await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
+    assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     assertEquals(3, queryRows().length);
   });
 
