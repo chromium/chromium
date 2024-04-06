@@ -24,7 +24,7 @@ class SpanWriter {
 
  public:
   // Construct SpanWriter that writes to `buf`.
-  explicit SpanWriter(span<T> buf) : buf_(buf) {}
+  explicit SpanWriter(span<T> buf) : buf_(buf), original_size_(buf_.size()) {}
 
   // Returns true and writes the span `data` into the front of the inner span,
   // if there is enough room left. Otherwise, it returns false and does
@@ -39,14 +39,28 @@ class SpanWriter {
     return true;
   }
 
-  // Returns true and skips over the next `n` objects, if there are enough
-  // objects left. Otherwise, it returns false and does nothing.
-  bool Skip(StrictNumeric<size_t> n) {
+  // Skips over the next `n` objects, and returns a span that points to the
+  // skipped objects, if there are enough objects left. Otherwise, it returns
+  // nullopt and does nothing.
+  std::optional<span<T>> Skip(StrictNumeric<size_t> n) {
     if (n > remaining()) {
-      return false;
+      return std::nullopt;
     }
-    buf_ = buf_.subspan(n);
-    return true;
+    auto [lhs, rhs] = buf_.split_at(n);
+    buf_ = rhs;
+    return lhs;
+  }
+  // Skips over the next `N` objects, and returns a fixed-size span that points
+  // to the skipped objects, if there are enough objects left. Otherwise, it
+  // returns nullopt and does nothing.
+  template <size_t N>
+  std::optional<span<T, N>> Skip() {
+    if (N > remaining()) {
+      return std::nullopt;
+    }
+    auto [lhs, rhs] = buf_.template split_at<N>();
+    buf_ = rhs;
+    return lhs;
   }
 
   // For a SpanWriter over bytes, we can write integer values directly to those
@@ -132,12 +146,15 @@ class SpanWriter {
 
   // Returns the number of objects remaining to be written to the original span.
   size_t remaining() const { return buf_.size(); }
-
   // Returns the objects that have not yet been written to, as a span.
   span<T> remaining_span() const { return buf_; }
 
+  // Returns the number of objects written (or skipped) in the original span.
+  size_t num_written() const { return original_size_ - buf_.size(); }
+
  private:
   raw_span<T> buf_;
+  size_t original_size_;
 };
 
 template <class T, size_t N>

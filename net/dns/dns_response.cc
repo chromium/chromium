@@ -15,6 +15,7 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -336,7 +337,7 @@ DnsResponse::DnsResponse(
                       response_size, do_accumulation);
 
   auto io_buffer = base::MakeRefCounted<IOBufferWithSize>(response_size);
-  base::BigEndianWriter writer(io_buffer->data(), response_size);
+  auto writer = base::SpanWriter(base::as_writable_bytes(io_buffer->span()));
   success &= WriteHeader(&writer, header);
   DCHECK(success);
   if (has_query) {
@@ -367,8 +368,8 @@ DnsResponse::DnsResponse(
   io_buffer_ = io_buffer;
   io_buffer_size_ = response_size;
   // Ensure we don't have any remaining uninitialized bytes in the buffer.
-  DCHECK(!writer.remaining());
-  memset(writer.ptr(), 0, writer.remaining());
+  DCHECK_EQ(writer.remaining(), 0u);
+  std::ranges::fill(writer.remaining_span(), uint8_t{0});
   if (has_query)
     InitParse(io_buffer_size_, query.value());
   else
@@ -561,20 +562,22 @@ const dns_protocol::Header* DnsResponse::header() const {
   return reinterpret_cast<const dns_protocol::Header*>(io_buffer_->data());
 }
 
-bool DnsResponse::WriteHeader(base::BigEndianWriter* writer,
+bool DnsResponse::WriteHeader(base::SpanWriter<uint8_t>* writer,
                               const dns_protocol::Header& header) {
-  return writer->WriteU16(header.id) && writer->WriteU16(header.flags) &&
-         writer->WriteU16(header.qdcount) && writer->WriteU16(header.ancount) &&
-         writer->WriteU16(header.nscount) && writer->WriteU16(header.arcount);
+  return writer->WriteU16BigEndian(header.id) &&
+         writer->WriteU16BigEndian(header.flags) &&
+         writer->WriteU16BigEndian(header.qdcount) &&
+         writer->WriteU16BigEndian(header.ancount) &&
+         writer->WriteU16BigEndian(header.nscount) &&
+         writer->WriteU16BigEndian(header.arcount);
 }
 
-bool DnsResponse::WriteQuestion(base::BigEndianWriter* writer,
+bool DnsResponse::WriteQuestion(base::SpanWriter<uint8_t>* writer,
                                 const DnsQuery& query) {
-  std::string_view question = query.question();
-  return writer->WriteBytes(question.data(), question.size());
+  return writer->Write(base::as_byte_span(query.question()));
 }
 
-bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
+bool DnsResponse::WriteRecord(base::SpanWriter<uint8_t>* writer,
                               const DnsResourceRecord& record,
                               bool validate_record,
                               bool validate_name_as_internet_hostname) {
@@ -599,17 +602,16 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
     return false;
   }
 
-  return writer->WriteBytes(domain_name.value().data(),
-                            domain_name.value().size()) &&
-         writer->WriteU16(record.type) && writer->WriteU16(record.klass) &&
-         writer->WriteU32(record.ttl) &&
-         writer->WriteU16(record.owned_rdata.size()) &&
+  return writer->Write(domain_name.value()) &&
+         writer->WriteU16BigEndian(record.type) &&
+         writer->WriteU16BigEndian(record.klass) &&
+         writer->WriteU32BigEndian(record.ttl) &&
+         writer->WriteU16BigEndian(record.owned_rdata.size()) &&
          // Use the owned RDATA in the record to construct the response.
-         writer->WriteBytes(record.owned_rdata.data(),
-                            record.owned_rdata.size());
+         writer->Write(base::as_byte_span(record.owned_rdata));
 }
 
-bool DnsResponse::WriteAnswer(base::BigEndianWriter* writer,
+bool DnsResponse::WriteAnswer(base::SpanWriter<uint8_t>* writer,
                               const DnsResourceRecord& answer,
                               const std::optional<DnsQuery>& query,
                               bool validate_record,

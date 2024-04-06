@@ -9,9 +9,10 @@
 
 #include <ostream>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -131,8 +132,7 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
     return ERR_INVALID_ARGUMENT;
   }
 
-  base::BigEndianWriter writer(buffer);
-  const size_t original_remaining = writer.remaining();
+  base::SpanWriter writer(buffer);
 
   uint8_t first_byte = 0u;
   first_byte |= header.final ? kFinalBit : 0u;
@@ -140,7 +140,7 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
   first_byte |= header.reserved2 ? kReserved2Bit : 0u;
   first_byte |= header.reserved3 ? kReserved3Bit : 0u;
   first_byte |= header.opcode & kOpCodeMask;
-  writer.WriteU8(first_byte);
+  writer.WriteU8BigEndian(first_byte);
 
   int extended_length_size = 0;
   uint8_t second_byte = 0u;
@@ -154,25 +154,25 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
     second_byte |= kPayloadLengthWithEightByteExtendedLengthField;
     extended_length_size = 8;
   }
-  writer.WriteU8(second_byte);
+  writer.WriteU8BigEndian(second_byte);
 
   // Writes "extended payload length" field.
   if (extended_length_size == 2) {
-    writer.WriteU16(static_cast<uint16_t>(header.payload_length));
+    writer.WriteU16BigEndian(static_cast<uint16_t>(header.payload_length));
   } else if (extended_length_size == 8) {
-    writer.WriteU64(header.payload_length);
+    writer.WriteU64BigEndian(header.payload_length);
   }
 
   // Writes "masking key" field, if needed.
   if (header.masked) {
     DCHECK(masking_key);
-    writer.WriteSpan(masking_key->key);
+    writer.Write(masking_key->key);
   } else {
     DCHECK(!masking_key);
   }
 
   // Verify we wrote the expected number of bytes.
-  DCHECK_EQ(header_size, original_remaining - writer.remaining());
+  DCHECK_EQ(header_size, writer.num_written());
   return header_size;
 }
 

@@ -51,15 +51,23 @@ concept CompatibleRange =
     LegalDataConversion<std::ranges::range_reference_t<R>, T> &&
     (std::ranges::borrowed_range<R> || std::is_const_v<T>);
 
+template <typename T>
+concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
+
+template <typename R>
+concept LegacyRange = requires(R& r) {
+  { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
+  { std::ranges::size(r) } -> std::convertible_to<size_t>;
+};
+
 // NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
 // code that was written prior to C++20 being standardized and assumes providing
 // .data() and .size() is sufficient.
 // TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
 // callsites.
 template <typename T, typename R>
-concept LegacyCompatibleRange = requires(R& r) {
+concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
   { *std::ranges::data(r) } -> LegalDataConversion<T>;
-  std::ranges::size(r);
 };
 
 template <size_t I>
@@ -1043,6 +1051,14 @@ template <
 span(R&&)
     -> span<std::conditional_t<std::ranges::borrowed_range<R>, T, const T>,
             internal::ExtentV<R>>;
+
+// This guide prefers to let the contiguous_range guide match, since it can
+// produce a fixed-size span. Whereas, LegacyRange only produces a dynamic-sized
+// span.
+template <typename R>
+  requires(!std::ranges::contiguous_range<R> && internal::LegacyRange<R>)
+span(R&& r) noexcept
+    -> span<std::remove_reference_t<decltype(*std::ranges::data(r))>>;
 
 template <typename T, size_t N>
 span(const T (&)[N]) -> span<const T, N>;

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/cast/common/encoded_frame.h"
@@ -146,11 +146,9 @@ void RtpSender::ResendFrameForKickstart(FrameId frame_id,
 }
 
 void RtpSender::UpdateSequenceNumber(Packet* packet) {
-  constexpr int kByteOffsetToSequenceNumber = 2;
-  base::BigEndianWriter big_endian_writer(
-      reinterpret_cast<char*>((&packet->front()) + kByteOffsetToSequenceNumber),
-      sizeof(uint16_t));
-  big_endian_writer.WriteU16(packetizer_->NextSequenceNumber());
+  constexpr size_t kByteOffsetToSequenceNumber = 2u;
+  base::span(*packet).subspan<kByteOffsetToSequenceNumber, 2u>().copy_from(
+      base::U16ToBigEndian(packetizer_->NextSequenceNumber()));
 }
 
 int64_t RtpSender::GetLastByteSentForFrame(FrameId frame_id) {

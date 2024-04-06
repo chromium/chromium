@@ -8,6 +8,7 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -133,24 +134,27 @@ std::vector<uint8_t> DecoderBufferToByteArray(
   ConvertDecoderBufferToProto(decoder_buffer, &decoder_buffer_message);
 
   size_t decoder_buffer_size =
-      decoder_buffer.end_of_stream() ? 0 : decoder_buffer.data_size();
+      decoder_buffer.end_of_stream() ? 0 : decoder_buffer.size();
   size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
                 decoder_buffer_message.ByteSize() + kDataBufferHeaderSize +
                 decoder_buffer_size;
+  auto message_cached_size =
+      // GetCachedSize() is only valid after ByteSize() is called above.
+      base::checked_cast<uint16_t>(decoder_buffer_message.GetCachedSize());
   std::vector<uint8_t> buffer(size);
-  base::BigEndianWriter writer(reinterpret_cast<char*>(buffer.data()),
-                               buffer.size());
-  if (writer.WriteU8(0) &&
-      writer.WriteU16(
-          static_cast<uint16_t>(decoder_buffer_message.GetCachedSize())) &&
-      decoder_buffer_message.SerializeToArray(
-          writer.ptr(), decoder_buffer_message.GetCachedSize()) &&
-      writer.Skip(decoder_buffer_message.GetCachedSize()) &&
-      writer.WriteU32(decoder_buffer_size)) {
+  auto writer = base::SpanWriter(base::span(buffer));
+  if (writer.WriteU8BigEndian(0) &&
+      writer.WriteU16BigEndian(message_cached_size) &&
+      [&] {
+        std::optional<base::span<uint8_t>> span =
+            writer.Skip(message_cached_size);
+        return span.has_value() && decoder_buffer_message.SerializeToArray(
+                                       span->data(), span->size());
+      }() &&
+      writer.WriteU32BigEndian(decoder_buffer_size)) {
     if (decoder_buffer_size) {
       // DecoderBuffer frame data.
-      writer.WriteBytes(reinterpret_cast<const void*>(decoder_buffer.data()),
-                        decoder_buffer.data_size());
+      writer.Write(base::span(decoder_buffer));
     }
     return buffer;
   }

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <concepts>
 #include <iterator>
 #include <memory>
 #include <span>
@@ -548,6 +549,38 @@ TEST(SpanTest, ConstructFromContainer) {
 
   for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
+}
+
+TEST(SpanTest, ConstructFromRange) {
+  struct Range {
+    using iterator = base::span<const int>::iterator;
+    iterator begin() const { return base::span(arr_).begin(); }
+    iterator end() const { return base::span(arr_).end(); }
+
+    std::array<const int, 3u> arr_ = {1, 2, 3};
+  };
+  static_assert(std::ranges::contiguous_range<Range>);
+  {
+    Range r;
+    auto s = base::span(r);
+    static_assert(std::same_as<decltype(s), base::span<const int>>);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
+  }
+
+  struct LegacyRange {
+    const int* data() const { return arr_.data(); }
+    size_t size() const { return arr_.size(); }
+
+    std::array<const int, 3u> arr_ = {1, 2, 3};
+  };
+  static_assert(!std::ranges::contiguous_range<LegacyRange>);
+  static_assert(base::internal::LegacyRange<LegacyRange>);
+  {
+    LegacyRange r;
+    auto s = base::span(r);
+    static_assert(std::same_as<decltype(s), base::span<const int>>);
+    EXPECT_EQ(s, base::span({1, 2, 3}));
   }
 }
 

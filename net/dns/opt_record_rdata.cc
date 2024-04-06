@@ -13,6 +13,8 @@
 #include "base/big_endian.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -24,9 +26,10 @@ namespace {
 std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
   std::string buf(2 + extra_text.size(), '\0');
 
-  base::BigEndianWriter writer(buf.data(), buf.size());
-  CHECK(writer.WriteU16(info_code));
-  CHECK(writer.WriteBytes(extra_text.data(), extra_text.size()));
+  auto writer = base::SpanWriter(base::as_writable_byte_span(buf));
+  CHECK(writer.WriteU16BigEndian(info_code));
+  CHECK(writer.Write(base::as_byte_span(extra_text)));
+  CHECK_EQ(writer.remaining(), 0u);
   return buf;
 }
 }  // namespace
@@ -258,11 +261,11 @@ void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
   buf_.resize(orig_rdata_size + Opt::kHeaderSize + opt_data.size());
 
   // Start writing from the end of the existing rdata.
-  base::BigEndianWriter writer(buf_.data(), buf_.size());
+  auto writer = base::SpanWriter(base::as_writable_byte_span(buf_));
   CHECK(writer.Skip(orig_rdata_size));
-  bool success = writer.WriteU16(opt->GetCode()) &&
-                 writer.WriteU16(opt_data.size()) &&
-                 writer.WriteBytes(opt_data.data(), opt_data.size());
+  bool success = writer.WriteU16BigEndian(opt->GetCode()) &&
+                 writer.WriteU16BigEndian(opt_data.size()) &&
+                 writer.Write(base::as_byte_span(opt_data));
   DCHECK(success);
 
   opts_.emplace(opt->GetCode(), std::move(opt));

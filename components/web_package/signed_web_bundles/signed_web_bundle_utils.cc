@@ -6,9 +6,9 @@
 
 #include <cstdint>
 
-#include "base/big_endian.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 
 namespace web_package {
 
@@ -19,8 +19,8 @@ void AddItemToPayload(std::vector<uint8_t>& payload,
   // Each item that is part of the payload is prefixed with its length encoded
   // as a 64 bit unsigned integer.
   std::array<uint8_t, sizeof(uint64_t)> length;
-  base::BigEndianWriter writer(length);
-  CHECK(writer.WriteU64(item.size()));
+  auto writer = base::SpanWriter(base::span(length));
+  CHECK(writer.WriteU64BigEndian(item.size()));
 
   base::Extend(payload, base::span(length));
   base::Extend(payload, item);

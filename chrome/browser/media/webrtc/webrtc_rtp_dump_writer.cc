@@ -6,8 +6,9 @@
 
 #include <string.h>
 
-#include "base/big_endian.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -20,7 +21,7 @@ namespace {
 
 static const size_t kMinimumGzipOutputBufferSize = 256;  // In bytes.
 
-const unsigned char kRtpDumpFileHeaderFirstLine[] = "#!rtpplay1.0 0.0.0.0/0\n";
+const char kRtpDumpFileHeaderFirstLine[] = "#!rtpplay1.0 0.0.0.0/0\n";
 static const size_t kRtpDumpFileHeaderSize = 16;  // In bytes.
 
 // A helper for writing the header of the dump file.
@@ -29,25 +30,25 @@ void WriteRtpDumpFileHeaderBigEndian(base::TimeTicks start,
   size_t buffer_start_pos = output->size();
   output->resize(output->size() + kRtpDumpFileHeaderSize);
 
-  base::BigEndianWriter writer(
+  base::SpanWriter writer(
       base::span<uint8_t>(*output).subspan(buffer_start_pos));
 
   base::TimeDelta delta = start - base::TimeTicks();
   uint32_t start_sec = delta.InSeconds();
-  writer.WriteU32(start_sec);
+  writer.WriteU32BigEndian(start_sec);
 
   uint32_t start_usec =
       delta.InMilliseconds() * base::Time::kMicrosecondsPerMillisecond;
-  writer.WriteU32(start_usec);
+  writer.WriteU32BigEndian(start_usec);
 
   // Network source, always 0.
-  writer.WriteU32(uint32_t{0});
+  writer.WriteU32BigEndian(uint32_t{0});
   // UDP port, always 0.
-  writer.WriteU16(uint16_t{0});
+  writer.WriteU16BigEndian(uint16_t{0});
   // 2 bytes padding.
-  writer.WriteU16(uint16_t{0});
+  writer.WriteU16BigEndian(uint16_t{0});
 
-  CHECK(writer.remaining_bytes().empty());
+  CHECK_EQ(writer.remaining(), 0u);
 }
 
 // The header size for each packet dump.
@@ -65,22 +66,13 @@ void WritePacketDumpHeaderBigEndian(const base::TimeTicks& start,
   output->resize(output->size() + kPacketDumpHeaderSize);
 
   auto buffer = base::span(*output).subspan(buffer_start_pos);
-  base::BigEndianWriter writer(buffer);
-  writer.WriteU16(dump_length);
-  writer.WriteU16(packet_length);
+  base::SpanWriter writer(buffer);
+  writer.WriteU16BigEndian(dump_length);
+  writer.WriteU16BigEndian(packet_length);
   uint32_t elapsed =
       static_cast<uint32_t>((base::TimeTicks::Now() - start).InMilliseconds());
-  writer.WriteU32(elapsed);
-  CHECK(writer.remaining_bytes().empty());
-}
-
-// Append |src_len| bytes from |src| to |dest|.
-void AppendToBuffer(const uint8_t* src,
-                    size_t src_len,
-                    std::vector<uint8_t>* dest) {
-  size_t old_dest_size = dest->size();
-  dest->resize(old_dest_size + src_len);
-  memcpy(&(*dest)[old_dest_size], src, src_len);
+  writer.WriteU32BigEndian(elapsed);
+  CHECK_EQ(writer.remaining(), 0u);
 }
 
 }  // namespace
@@ -280,8 +272,9 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
     start_time_ = base::TimeTicks::Now();
 
     // Writes the dump file header.
-    AppendToBuffer(kRtpDumpFileHeaderFirstLine,
-                   std::size(kRtpDumpFileHeaderFirstLine) - 1, dest_buffer);
+    base::Extend(
+        *dest_buffer,
+        base::as_bytes(base::span_from_cstring(kRtpDumpFileHeaderFirstLine)));
     WriteRtpDumpFileHeaderBigEndian(start_time_, dest_buffer);
   }
 
@@ -295,7 +288,10 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
       start_time_, packet_dump_length, packet_length, dest_buffer);
 
   // Writes the actual RTP packet header.
-  AppendToBuffer(packet_header, header_length, dest_buffer);
+  base::Extend(*dest_buffer,
+               // TODO(crbug.com/40284755): WriteRtpPacket should receive a
+               // span, not a pointer+length pair.
+               UNSAFE_BUFFERS(base::span(packet_header, header_length)));
 }
 
 void WebRtcRtpDumpWriter::EndDump(RtpDumpType type,

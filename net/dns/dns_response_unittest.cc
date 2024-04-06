@@ -11,9 +11,9 @@
 #include <string_view>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -1378,17 +1378,17 @@ TEST(DnsResponseWriteTest,
       2 /* qclass */ +
       10 /* extra bytes that inflate the internal buffer of a query */;
   auto buf = base::MakeRefCounted<IOBufferWithSize>(buf_size);
-  memset(buf->data(), 0, buf->size());
-  base::BigEndianWriter writer(buf->data(), buf_size);
-  writer.WriteU16(0x1234);                              // id
-  writer.WriteU16(0);                                   // flags, is query
-  writer.WriteU16(1);                                   // qdcount
-  writer.WriteU16(0);                                   // ancount
-  writer.WriteU16(0);                                   // nscount
-  writer.WriteU16(0);                                   // arcount
-  writer.WriteBytes(dns_name.value().data(), dns_name.value().size());  // qname
-  writer.WriteU16(dns_protocol::kTypeA);                // qtype
-  writer.WriteU16(dns_protocol::kClassIN);              // qclass
+  std::ranges::fill(buf->span(), char{0});
+  auto writer = base::SpanWriter(base::as_writable_bytes(buf->span()));
+  writer.WriteU16BigEndian(0x1234);                  // id
+  writer.WriteU16BigEndian(0);                       // flags, is query
+  writer.WriteU16BigEndian(1);                       // qdcount
+  writer.WriteU16BigEndian(0);                       // ancount
+  writer.WriteU16BigEndian(0);                       // nscount
+  writer.WriteU16BigEndian(0);                       // arcount
+  writer.Write(dns_name.value());                    // qname
+  writer.WriteU16BigEndian(dns_protocol::kTypeA);    // qtype
+  writer.WriteU16BigEndian(dns_protocol::kClassIN);  // qclass
   // buf contains 10 extra zero bytes.
   std::optional<DnsQuery> query;
   query.emplace(buf);

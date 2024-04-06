@@ -10,8 +10,8 @@
 #include <limits>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -191,12 +191,12 @@ size_t SmallMessageSocket::SizeDataBytes(size_t message_size) {
 // static
 size_t SmallMessageSocket::WriteSizeData(base::span<uint8_t> buf,
                                          size_t message_size) {
-  base::BigEndianWriter writer(buf);
+  base::SpanWriter writer(buf);
   if (message_size < kMax2ByteSize) {
-    writer.WriteU16(static_cast<uint16_t>(message_size));
+    writer.WriteU16BigEndian(static_cast<uint16_t>(message_size));
   } else {
-    writer.WriteU16(base::checked_cast<uint16_t>(kMax2ByteSize));
-    writer.WriteU32(
+    writer.WriteU16BigEndian(base::checked_cast<uint16_t>(kMax2ByteSize));
+    writer.WriteU32BigEndian(
         // NOTE: This may truncate the message_size.
         static_cast<uint32_t>(message_size));
   }

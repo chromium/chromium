@@ -4,10 +4,13 @@
 
 #include "base/containers/span_writer.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace {
+
+using testing::Optional;
 
 TEST(SpanWriterTest, Construct) {
   std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
@@ -23,25 +26,31 @@ TEST(SpanWriterTest, Write) {
   {
     std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
     auto r = SpanWriter(base::span(kArray));
+    EXPECT_EQ(r.num_written(), 0u);
 
     EXPECT_TRUE(r.Write(base::span({9, 8}).subspan(0u)));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_TRUE(r.Write(base::span<int>()));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_FALSE(r.Write(base::span({7, 6, -1, -1}).subspan(0u)));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_TRUE(r.Write(base::span({7, 6, -1}).subspan(0u)));
     EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(r.num_written(), 5u);
     EXPECT_EQ(kArray, base::span({9, 8, 7, 6, -1}));
 
     EXPECT_TRUE(r.Write(base::span<int>()));
     EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(r.num_written(), 5u);
     EXPECT_EQ(kArray, base::span({9, 8, 7, 6, -1}));
   }
 
@@ -49,25 +58,31 @@ TEST(SpanWriterTest, Write) {
   {
     std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
     auto r = SpanWriter(base::span(kArray));
+    EXPECT_EQ(r.num_written(), 0u);
 
     EXPECT_TRUE(r.Write(base::span({9, 8})));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_TRUE(r.Write(base::span<int, 0u>()));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_FALSE(r.Write(base::span({7, 6, -1, -1})));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
 
     EXPECT_TRUE(r.Write(base::span({7, 6, -1})));
     EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(r.num_written(), 5u);
     EXPECT_EQ(kArray, base::span({9, 8, 7, 6, -1}));
 
     EXPECT_TRUE(r.Write(base::span<int, 0u>()));
     EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(r.num_written(), 5u);
     EXPECT_EQ(kArray, base::span({9, 8, 7, 6, -1}));
   }
 
@@ -75,10 +90,12 @@ TEST(SpanWriterTest, Write) {
   {
     std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
     auto r = SpanWriter(base::span(kArray));
+    EXPECT_EQ(r.num_written(), 0u);
 
     std::array<const int, 2u> kConstArray = {9, 8};
     EXPECT_TRUE(r.Write(base::span(kConstArray)));
     EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
   }
 }
@@ -87,11 +104,28 @@ TEST(SpanWriterTest, Skip) {
   std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
 
   auto r = SpanWriter(base::span(kArray));
-  EXPECT_TRUE(r.Skip(2u));
+  auto s = r.Skip(2u);
+  static_assert(std::same_as<decltype(s), std::optional<base::span<int>>>);
+  EXPECT_THAT(s, Optional(base::span(kArray).first<2u>()));
   EXPECT_EQ(r.remaining(), 3u);
   EXPECT_EQ(r.remaining_span(), base::span({3, 4, 5}));
 
   EXPECT_FALSE(r.Skip(12u));
+  EXPECT_EQ(r.remaining(), 3u);
+  EXPECT_EQ(r.remaining_span(), base::span({3, 4, 5}));
+}
+
+TEST(SpanWriterTest, SkipFixed) {
+  std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
+
+  auto r = SpanWriter(base::span(kArray));
+  auto s = r.Skip<2u>();
+  static_assert(std::same_as<decltype(s), std::optional<base::span<int, 2>>>);
+  EXPECT_THAT(s, Optional(base::span(kArray).first<2u>()));
+  EXPECT_EQ(r.remaining(), 3u);
+  EXPECT_EQ(r.remaining_span(), base::span({3, 4, 5}));
+
+  EXPECT_FALSE(r.Skip<12u>());
   EXPECT_EQ(r.remaining(), 3u);
   EXPECT_EQ(r.remaining_span(), base::span({3, 4, 5}));
 }

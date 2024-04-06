@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/big_endian.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -45,9 +46,9 @@ static std::vector<uint8_t> CreateFakeRtpPacketHeader(
   // Set extension length.
   size_t offset = kMinimumRtpHeaderLength +
                   (csrc_count & 0xf) * sizeof(uint32_t) + sizeof(uint16_t);
-  base::BigEndianWriter writer(packet_header);
+  auto writer = base::SpanWriter(base::span(packet_header));
   writer.Skip(offset);
-  writer.WriteU16(static_cast<uint16_t>(extension_header_count));
+  writer.WriteU16BigEndian(static_cast<uint16_t>(extension_header_count));
 
   return packet_header;
 }

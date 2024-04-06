@@ -12,6 +12,8 @@
 #include "base/base64url.h"
 #include "base/big_endian.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -224,13 +226,13 @@ std::string WireMessage::Serialize() const {
       (use_v3_encoding ? kV3NumBytesInHeaderSize : kV4NumBytesInHeaderSize);
 
   std::string header_string(kHeaderSize, 0);
-  base::BigEndianWriter writer(&header_string[0], kHeaderSize);
+  base::SpanWriter writer(base::as_writable_byte_span(header_string));
   if (use_v3_encoding) {
-    writer.WriteU8(kV3HeaderVersion);
-    writer.WriteU16(static_cast<uint16_t>(body_size));
+    writer.WriteU8BigEndian(kV3HeaderVersion);
+    writer.WriteU16BigEndian(static_cast<uint16_t>(body_size));
   } else {
-    writer.WriteU8(kV4HeaderVersion);
-    writer.WriteU32(static_cast<uint32_t>(body_size));
+    writer.WriteU8BigEndian(kV4HeaderVersion);
+    writer.WriteU32BigEndian(static_cast<uint32_t>(body_size));
   }
 
   return header_string + json_body;

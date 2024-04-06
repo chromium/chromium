@@ -41,7 +41,7 @@ struct NeedsScopedRefptrButGetsRawPtr {
   // std::reference_wrapper here too.
   static constexpr bool value =
       (base::IsRawRef<T>::value && IsRefCountedType<base::RemoveRawRefT<T>>) ||
-      (base::IsPointer<T>::value && IsRefCountedType<base::RemovePointerT<T>>);
+      (base::IsRawPointer<T> && IsRefCountedType<base::RemoveRawPointerT<T>>);
 };
 
 }  // namespace base::internal

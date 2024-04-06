@@ -8,8 +8,8 @@
 #include <limits>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -209,17 +209,17 @@ bool AudioSocket::SendProto(int type,
                                                            total_size);
     }
 
-    base::BigEndianWriter writer(base::as_writable_bytes(buffer->span()));
-    writer.WriteU16(static_cast<uint16_t>(total_size));
+    base::SpanWriter writer(base::as_writable_bytes(buffer->span()));
+    writer.WriteU16BigEndian(static_cast<uint16_t>(total_size));
     // Move `send_buf` from pointing into `socket_` to pointing into `buffer`.
-    send_buf = writer.remaining_bytes();
+    send_buf = writer.remaining_span();
   }
 
   {
-    base::BigEndianWriter writer(send_buf);
-    writer.WriteU16(packet_type);
-    writer.WriteU32(padding_bytes);
-    send_buf = writer.remaining_bytes();
+    base::SpanWriter writer(send_buf);
+    writer.WriteU16BigEndian(packet_type);
+    writer.WriteU32BigEndian(padding_bytes);
+    send_buf = writer.remaining_span();
   }
 
   auto [message_buf, rem1] = send_buf.split_at(message_size);

@@ -158,6 +158,8 @@ class MEDIA_EXPORT DecoderBuffer
     time_info_.duration = duration;
   }
 
+  // The pointer to the start of the buffer. Prefer to construct a span around
+  // the buffer, such as `base::span(decoder_buffer)`.
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
     if (read_only_mapping_.IsValid())
@@ -169,6 +171,12 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.get();
   }
 
+  // The number of bytes in the buffer.
+  size_t size() const {
+    DCHECK(!end_of_stream());
+    return size_;
+  }
+
   // TODO(sandersd): Remove writable_data(). https://crbug.com/834088
   uint8_t* writable_data() const {
     DCHECK(!end_of_stream());
@@ -178,10 +186,8 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.get();
   }
 
-  size_t data_size() const {
-    DCHECK(!end_of_stream());
-    return size_;
-  }
+  // Deprecated, use size().
+  size_t data_size() const { return size(); }
 
   const DiscardPadding& discard_padding() const {
     DCHECK(!end_of_stream());

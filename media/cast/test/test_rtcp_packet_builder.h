@@ -8,10 +8,15 @@
 #define MEDIA_CAST_TEST_TEST_RTCP_PACKET_BUILDER_H_
 
 #include <stdint.h>
+
+#include <array>
+#include <optional>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 
@@ -55,6 +60,7 @@ static const uint8_t kFeedbackSeq = 1;
 class TestRtcpPacketBuilder {
  public:
   TestRtcpPacketBuilder();
+  ~TestRtcpPacketBuilder();
 
   TestRtcpPacketBuilder(const TestRtcpPacketBuilder&) = delete;
   TestRtcpPacketBuilder& operator=(const TestRtcpPacketBuilder&) = delete;
@@ -94,7 +100,7 @@ class TestRtcpPacketBuilder {
 
   std::unique_ptr<Packet> GetPacket();
   const uint8_t* Data();
-  int Length() { return kMaxIpPacketSize - big_endian_writer_.remaining(); }
+  int Length() { return base::checked_cast<int>(writer_.num_written()); }
   base::BigEndianReader* Reader();
 
  private:
@@ -103,9 +109,11 @@ class TestRtcpPacketBuilder {
 
   // Where the length field of the current packet is.
   // Note: 0 is not a legal value, it is used for "uninitialized".
-  uint8_t buffer_[kMaxIpPacketSize];
-  raw_ptr<char, AllowPtrArithmetic> ptr_of_length_;
-  base::BigEndianWriter big_endian_writer_;
+  std::array<uint8_t, kMaxIpPacketSize> buffer_ = {};
+  // Points and writes into `buffer_`.
+  base::SpanWriter<uint8_t> writer_;
+  // Position in `buffer_`where the packet length will be written.
+  std::optional<size_t> pos_of_length_;
   base::BigEndianReader big_endian_reader_;
 };
 

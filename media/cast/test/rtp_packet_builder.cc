@@ -4,8 +4,9 @@
 
 #include "media/cast/test/rtp_packet_builder.h"
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 
 namespace media {
 namespace cast {
@@ -65,33 +66,39 @@ void RtpPacketBuilder::BuildHeader(uint8_t* data, uint32_t data_length) {
   BuildCastHeader(data + kRtpHeaderLength, data_length - kRtpHeaderLength);
 }
 
-void RtpPacketBuilder::BuildCastHeader(uint8_t* data, uint32_t data_length) {
-  // Build header.
-  DCHECK_LE(kCastHeaderLength, data_length);
-  // Set the first 7 bytes to 0.
-  memset(data, 0, kCastHeaderLength);
-  base::BigEndianWriter big_endian_writer(reinterpret_cast<char*>(data), 56);
+void RtpPacketBuilder::BuildCastHeader(uint8_t* data_ptr,
+                                       uint32_t data_length) {
+  // TODO(crbug.com/40284755): This function should receive a span, not a
+  // pointer.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_length));
+  auto writer = base::SpanWriter(data.first<kCastHeaderLength>());
   const bool includes_specific_frame_reference =
       (is_key_ && (reference_frame_id_ != frame_id_)) ||
       (!is_key_ && (reference_frame_id_ != (frame_id_ - 1)));
-  big_endian_writer.WriteU8((is_key_ ? 0x80 : 0) |
-                            (includes_specific_frame_reference ? 0x40 : 0));
-  big_endian_writer.WriteU8(frame_id_);
-  big_endian_writer.WriteU16(packet_id_);
-  big_endian_writer.WriteU16(max_packet_id_);
+  writer.WriteU8BigEndian((is_key_ ? 0x80 : 0) |
+                          (includes_specific_frame_reference ? 0x40 : 0));
+  writer.WriteU8BigEndian(frame_id_);
+  writer.WriteU16BigEndian(packet_id_);
+  writer.WriteU16BigEndian(max_packet_id_);
   if (includes_specific_frame_reference) {
-    big_endian_writer.WriteU8(reference_frame_id_);
+    writer.WriteU8BigEndian(reference_frame_id_);
+  } else {
+    writer.WriteU8BigEndian(0u);
   }
+  CHECK_EQ(writer.remaining(), 0u);
 }
 
-void RtpPacketBuilder::BuildCommonHeader(uint8_t* data, uint32_t data_length) {
-  DCHECK_LE(kRtpHeaderLength, data_length);
-  base::BigEndianWriter big_endian_writer(reinterpret_cast<char*>(data), 96);
-  big_endian_writer.WriteU8(0x80);
-  big_endian_writer.WriteU8(payload_type_ | (marker_ ? kRtpMarkerBitMask : 0));
-  big_endian_writer.WriteU16(sequence_number_);
-  big_endian_writer.WriteU32(timestamp_);
-  big_endian_writer.WriteU32(ssrc_);
+void RtpPacketBuilder::BuildCommonHeader(uint8_t* data_ptr,
+                                         uint32_t data_length) {
+  // TODO(crbug.com/40284755): This function should receive a span, not a
+  // pointer.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_length));
+  auto writer = base::SpanWriter(data.first<12u>());
+  writer.WriteU8BigEndian(0x80);
+  writer.WriteU8BigEndian(payload_type_ | (marker_ ? kRtpMarkerBitMask : 0));
+  writer.WriteU16BigEndian(sequence_number_);
+  writer.WriteU32BigEndian(timestamp_);
+  writer.WriteU32BigEndian(ssrc_);
 }
 
 }  // namespace cast

@@ -9,7 +9,10 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 
@@ -115,20 +118,20 @@ class NackStringBuilder {
 }  // namespace
 
 RtcpBuilder::RtcpBuilder(uint32_t sending_ssrc)
-    : local_ssrc_(sending_ssrc), ptr_of_length_(nullptr), writer_(nullptr, 0) {}
+    : local_ssrc_(sending_ssrc), writer_(base::span<uint8_t>()) {}
 
 RtcpBuilder::~RtcpBuilder() = default;
 
 void RtcpBuilder::PatchLengthField() {
-  if (ptr_of_length_) {
+  if (pos_of_packet_length_.has_value()) {
     // Back-patch the packet length. The client must have taken
     // care of proper padding to 32-bit words.
-    int this_packet_length = (writer_.ptr() - ptr_of_length_ - 2);
-    DCHECK_EQ(0, this_packet_length % 4)
-        << "Packets must be a multiple of 32 bits long";
-    *ptr_of_length_ = this_packet_length >> 10;
-    *(ptr_of_length_ + 1) = (this_packet_length >> 2) & 0xFF;
-    ptr_of_length_ = nullptr;
+    size_t length = writer_.num_written() - *pos_of_packet_length_ - 2u;
+    CHECK_EQ(0u, length % 4u) << "Packets must be a multiple of 32 bits long";
+    auto length_bytes =
+        base::span(packet_->data).subspan(*pos_of_packet_length_).first<2u>();
+    length_bytes.copy_from(base::U16ToBigEndian(length / 4u));
+    pos_of_packet_length_ = std::nullopt;
   }
 }
 
@@ -137,25 +140,32 @@ void RtcpBuilder::PatchLengthField() {
 // and make provision for back-patching it.
 void RtcpBuilder::AddRtcpHeader(RtcpPacketFields payload, int format_or_count) {
   PatchLengthField();
-  writer_.WriteU8(0x80 | (format_or_count & 0x1F));
-  writer_.WriteU8(payload);
-  ptr_of_length_ = writer_.ptr();
+  writer_.WriteU8BigEndian(0x80 | (format_or_count & 0x1F));
+  writer_.WriteU8BigEndian(payload);
 
+  // Remember where the packet's length will be written later.
+  pos_of_packet_length_ = writer_.num_written();
   // Initialize length to "clearly illegal".
-  writer_.WriteU16(0xDEAD);
+  writer_.WriteU16BigEndian(0xDEAD);
 }
 
 void RtcpBuilder::Start() {
   packet_ = new base::RefCountedData<Packet>;
   packet_->data.resize(kMaxIpPacketSize);
-  writer_ = base::BigEndianWriter(
-      reinterpret_cast<char*>(&(packet_->data[0])), kMaxIpPacketSize);
+  writer_ = base::SpanWriter(base::span(packet_->data));
 }
 
 PacketRef RtcpBuilder::Finish() {
   PatchLengthField();
-  packet_->data.resize(kMaxIpPacketSize - writer_.remaining());
-  writer_ = base::BigEndianWriter(nullptr, 0);
+
+  const size_t bytes_written = writer_.num_written();
+
+  // Remove pointers into the current `packet_` before invalidating it with
+  // `resize`.
+  writer_ = base::SpanWriter(base::span<uint8_t>());
+  pos_of_packet_length_ = std::nullopt;
+
+  packet_->data.resize(bytes_written);
   PacketRef ret = packet_;
   packet_.reset();
   return ret;
@@ -169,63 +179,62 @@ PacketRef RtcpBuilder::BuildRtcpFromSender(const RtcpSenderInfo& sender_info) {
 
 void RtcpBuilder::AddRR(const RtcpReportBlock* report_block) {
   AddRtcpHeader(kPacketTypeReceiverReport, report_block ? 1 : 0);
-  writer_.WriteU32(local_ssrc_);
+  writer_.WriteU32BigEndian(local_ssrc_);
   if (report_block) {
     AddReportBlocks(*report_block);  // Adds 24 bytes.
   }
 }
 
 void RtcpBuilder::AddReportBlocks(const RtcpReportBlock& report_block) {
-  writer_.WriteU32(report_block.media_ssrc);
-  writer_.WriteU8(report_block.fraction_lost);
-  writer_.WriteU8(report_block.cumulative_lost >> 16);
-  writer_.WriteU8(report_block.cumulative_lost >> 8);
-  writer_.WriteU8(report_block.cumulative_lost);
+  writer_.WriteU32BigEndian(report_block.media_ssrc);
+  writer_.WriteU8BigEndian(report_block.fraction_lost);
+  writer_.WriteU8BigEndian(report_block.cumulative_lost >> 16);
+  writer_.WriteU8BigEndian(report_block.cumulative_lost >> 8);
+  writer_.WriteU8BigEndian(report_block.cumulative_lost);
 
   // Extended highest seq_no, contain the highest sequence number received.
-  writer_.WriteU32(report_block.extended_high_sequence_number);
-  writer_.WriteU32(report_block.jitter);
+  writer_.WriteU32BigEndian(report_block.extended_high_sequence_number);
+  writer_.WriteU32BigEndian(report_block.jitter);
 
   // Last SR timestamp; our NTP time when we received the last report.
   // This is the value that we read from the send report packet not when we
   // received it.
-  writer_.WriteU32(report_block.last_sr);
+  writer_.WriteU32BigEndian(report_block.last_sr);
 
   // Delay since last received report, time since we received the report.
-  writer_.WriteU32(report_block.delay_since_last_sr);
+  writer_.WriteU32BigEndian(report_block.delay_since_last_sr);
 }
 
 void RtcpBuilder::AddRrtr(const RtcpReceiverReferenceTimeReport& rrtr) {
   AddRtcpHeader(kPacketTypeXr, 0);
-  writer_.WriteU32(local_ssrc_);  // Add our own SSRC.
-  writer_.WriteU8(4);       // Add block type.
-  writer_.WriteU8(0);       // Add reserved.
-  writer_.WriteU16(2);      // Block length.
+  writer_.WriteU32BigEndian(local_ssrc_);  // Add our own SSRC.
+  writer_.WriteU8BigEndian(4);             // Add block type.
+  writer_.WriteU8BigEndian(0);             // Add reserved.
+  writer_.WriteU16BigEndian(2);            // Block length.
 
   // Add the media (received RTP) SSRC.
-  writer_.WriteU32(rrtr.ntp_seconds);
-  writer_.WriteU32(rrtr.ntp_fraction);
+  writer_.WriteU32BigEndian(rrtr.ntp_seconds);
+  writer_.WriteU32BigEndian(rrtr.ntp_fraction);
 }
 
 void RtcpBuilder::AddPli(const RtcpPliMessage& pli_message) {
   AddRtcpHeader(kPacketTypePayloadSpecific, 1);
-  writer_.WriteU32(local_ssrc_);
-  writer_.WriteU32(pli_message.remote_ssrc);
+  writer_.WriteU32BigEndian(local_ssrc_);
+  writer_.WriteU32BigEndian(pli_message.remote_ssrc);
 }
 
 void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
                           base::TimeDelta target_delay) {
   // See RTC 4585 Section 6.4 for application specific feedback messages.
   AddRtcpHeader(kPacketTypePayloadSpecific, 15);
-  writer_.WriteU32(local_ssrc_);      // Add our own SSRC.
-  writer_.WriteU32(cast.remote_ssrc);  // Remote SSRC.
-  writer_.WriteU32(kCast);
-  writer_.WriteU8(cast.ack_frame_id.lower_8_bits());
-  uint8_t* cast_loss_field_pos = reinterpret_cast<uint8_t*>(writer_.ptr());
-  writer_.WriteU8(0);  // Overwritten with number_of_loss_fields.
+  writer_.WriteU32BigEndian(local_ssrc_);       // Add our own SSRC.
+  writer_.WriteU32BigEndian(cast.remote_ssrc);  // Remote SSRC.
+  writer_.WriteU32BigEndian(kCast);
+  writer_.WriteU8BigEndian(cast.ack_frame_id.lower_8_bits());
+  base::span<uint8_t, 1u> cast_loss_field = *writer_.Skip<1u>();
   DCHECK_LE(target_delay.InMilliseconds(),
             std::numeric_limits<uint16_t>::max());
-  writer_.WriteU16(target_delay.InMilliseconds());
+  writer_.WriteU16BigEndian(target_delay.InMilliseconds());
 
   size_t number_of_loss_fields = 0;
   size_t max_number_of_loss_fields = std::min<size_t>(
@@ -241,9 +250,9 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
     // Iterate through all frames with missing packets.
     if (frame_it->second.empty()) {
       // Special case all packets in a frame is missing.
-      writer_.WriteU8(frame_it->first.lower_8_bits());
-      writer_.WriteU16(kRtcpCastAllPacketsLost);
-      writer_.WriteU8(0);
+      writer_.WriteU8BigEndian(frame_it->first.lower_8_bits());
+      writer_.WriteU16BigEndian(kRtcpCastAllPacketsLost);
+      writer_.WriteU8BigEndian(0);
       nack_string_builder.PushPacket(kRtcpCastAllPacketsLost);
       ++number_of_loss_fields;
     } else {
@@ -251,8 +260,8 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
       while (packet_it != frame_it->second.end()) {
         uint16_t packet_id = *packet_it;
         // Write frame and packet id to buffer before calculating bitmask.
-        writer_.WriteU8(frame_it->first.lower_8_bits());
-        writer_.WriteU16(packet_id);
+        writer_.WriteU8BigEndian(frame_it->first.lower_8_bits());
+        writer_.WriteU16BigEndian(packet_id);
         nack_string_builder.PushPacket(packet_id);
 
         uint8_t bitmask = 0;
@@ -267,7 +276,7 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
             break;
           }
         }
-        writer_.WriteU8(bitmask);
+        writer_.WriteU8BigEndian(bitmask);
         ++number_of_loss_fields;
       }
     }
@@ -276,17 +285,19 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
       << "SSRC: " << cast.remote_ssrc << ", ACK: " << cast.ack_frame_id
       << ", NACK: " << nack_string_builder.GetString();
   DCHECK_LE(number_of_loss_fields, kRtcpMaxCastLossFields);
-  *cast_loss_field_pos = static_cast<uint8_t>(number_of_loss_fields);
+  cast_loss_field.copy_from(
+      base::U8ToBigEndian(static_cast<uint8_t>(number_of_loss_fields)));
 }
 
 void RtcpBuilder::AddSR(const RtcpSenderInfo& sender_info) {
   AddRtcpHeader(kPacketTypeSenderReport, 0);
-  writer_.WriteU32(local_ssrc_);
-  writer_.WriteU32(sender_info.ntp_seconds);
-  writer_.WriteU32(sender_info.ntp_fraction);
-  writer_.WriteU32(sender_info.rtp_timestamp.lower_32_bits());
-  writer_.WriteU32(sender_info.send_packet_count);
-  writer_.WriteU32(static_cast<uint32_t>(sender_info.send_octet_count));
+  writer_.WriteU32BigEndian(local_ssrc_);
+  writer_.WriteU32BigEndian(sender_info.ntp_seconds);
+  writer_.WriteU32BigEndian(sender_info.ntp_fraction);
+  writer_.WriteU32BigEndian(sender_info.rtp_timestamp.lower_32_bits());
+  writer_.WriteU32BigEndian(sender_info.send_packet_count);
+  writer_.WriteU32BigEndian(
+      static_cast<uint32_t>(sender_info.send_octet_count));
 }
 
 /*
@@ -308,13 +319,13 @@ void RtcpBuilder::AddSR(const RtcpSenderInfo& sender_info) {
 */
 void RtcpBuilder::AddDlrrRb(const RtcpDlrrReportBlock& dlrr) {
   AddRtcpHeader(kPacketTypeXr, 0);
-  writer_.WriteU32(local_ssrc_);  // Add our own SSRC.
-  writer_.WriteU8(5);  // Add block type.
-  writer_.WriteU8(0);  // Add reserved.
-  writer_.WriteU16(3);  // Block length.
-  writer_.WriteU32(local_ssrc_);  // Add the media (received RTP) SSRC.
-  writer_.WriteU32(dlrr.last_rr);
-  writer_.WriteU32(dlrr.delay_since_last_rr);
+  writer_.WriteU32BigEndian(local_ssrc_);  // Add our own SSRC.
+  writer_.WriteU8BigEndian(5);             // Add block type.
+  writer_.WriteU8BigEndian(0);             // Add reserved.
+  writer_.WriteU16BigEndian(3);            // Block length.
+  writer_.WriteU32BigEndian(local_ssrc_);  // Add the media (received RTP) SSRC.
+  writer_.WriteU32BigEndian(dlrr.last_rr);
+  writer_.WriteU32BigEndian(dlrr.delay_since_last_rr);
 }
 
 void RtcpBuilder::AddReceiverLog(
@@ -329,8 +340,8 @@ void RtcpBuilder::AddReceiverLog(
   }
 
   AddRtcpHeader(kPacketTypeApplicationDefined, kReceiverLogSubtype);
-  writer_.WriteU32(local_ssrc_);  // Add our own SSRC.
-  writer_.WriteU32(kCast);
+  writer_.WriteU32BigEndian(local_ssrc_);  // Add our own SSRC.
+  writer_.WriteU32BigEndian(kCast);
 
   while (!receiver_log_message.empty() &&
          total_number_of_messages_to_send > 0) {
@@ -338,7 +349,8 @@ void RtcpBuilder::AddReceiverLog(
         receiver_log_message.front());
 
     // Add our frame header.
-    writer_.WriteU32(frame_log_messages.rtp_timestamp_.lower_32_bits());
+    writer_.WriteU32BigEndian(
+        frame_log_messages.rtp_timestamp_.lower_32_bits());
     size_t messages_in_frame = frame_log_messages.event_log_messages_.size();
     if (messages_in_frame > total_number_of_messages_to_send) {
       // We are running out of space.
@@ -348,15 +360,15 @@ void RtcpBuilder::AddReceiverLog(
     total_number_of_messages_to_send -= messages_in_frame;
 
     // On the wire format is number of messages - 1.
-    writer_.WriteU8(static_cast<uint8_t>(messages_in_frame - 1));
+    writer_.WriteU8BigEndian(static_cast<uint8_t>(messages_in_frame - 1));
 
     base::TimeTicks event_timestamp_base =
         frame_log_messages.event_log_messages_.front().event_timestamp;
     uint32_t base_timestamp_ms =
         (event_timestamp_base - base::TimeTicks()).InMilliseconds();
-    writer_.WriteU8(static_cast<uint8_t>(base_timestamp_ms >> 16));
-    writer_.WriteU8(static_cast<uint8_t>(base_timestamp_ms >> 8));
-    writer_.WriteU8(static_cast<uint8_t>(base_timestamp_ms));
+    writer_.WriteU8BigEndian(static_cast<uint8_t>(base_timestamp_ms >> 16));
+    writer_.WriteU8BigEndian(static_cast<uint8_t>(base_timestamp_ms >> 8));
+    writer_.WriteU8BigEndian(static_cast<uint8_t>(base_timestamp_ms));
 
     while (!frame_log_messages.event_log_messages_.empty() &&
            messages_in_frame > 0) {
@@ -370,13 +382,13 @@ void RtcpBuilder::AddReceiverLog(
         case FRAME_ACK_SENT:
         case FRAME_PLAYOUT:
         case FRAME_DECODED:
-          writer_.WriteU16(static_cast<uint16_t>(
+          writer_.WriteU16BigEndian(static_cast<uint16_t>(
               event_message.delay_delta.InMilliseconds()));
-          writer_.WriteU16(event_type_and_timestamp_delta);
+          writer_.WriteU16BigEndian(event_type_and_timestamp_delta);
           break;
         case PACKET_RECEIVED:
-          writer_.WriteU16(event_message.packet_id);
-          writer_.WriteU16(event_type_and_timestamp_delta);
+          writer_.WriteU16BigEndian(event_message.packet_id);
+          writer_.WriteU16BigEndian(event_type_and_timestamp_delta);
           break;
         default:
           NOTREACHED();
@@ -396,7 +408,7 @@ bool RtcpBuilder::GetRtcpReceiverLogMessage(
     const ReceiverRtcpEventSubscriber::RtcpEvents& rtcp_events,
     RtcpReceiverLogMessage* receiver_log_message,
     size_t* total_number_of_messages_to_send) {
-  size_t number_of_frames = 0;
+  size_t number_of_frames = 0u;
   size_t remaining_space = writer_.remaining();
   if (remaining_space < kRtcpCastLogHeaderSize + kRtcpReceiverFrameLogSize +
                             kRtcpReceiverEventLogSize) {

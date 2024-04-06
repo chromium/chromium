@@ -8,8 +8,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -847,53 +848,52 @@ bool AVCDecoderConfigurationRecord::Serialize(
 
   output.clear();
   output.resize(expected_size);
-  base::BigEndianWriter writer(reinterpret_cast<char*>(output.data()),
-                               output.size());
+  auto writer = base::SpanWriter(base::span(output));
   bool result = true;
 
   // configurationVersion
-  result &= writer.WriteU8(version);
+  result &= writer.WriteU8BigEndian(version);
   // AVCProfileIndication
-  result &= writer.WriteU8(profile_indication);
+  result &= writer.WriteU8BigEndian(profile_indication);
   // profile_compatibility
-  result &= writer.WriteU8(profile_compatibility);
+  result &= writer.WriteU8BigEndian(profile_compatibility);
   // AVCLevelIndication
-  result &= writer.WriteU8(avc_level);
+  result &= writer.WriteU8BigEndian(avc_level);
   // lengthSizeMinusOne
   uint8_t length_size_minus_one = (length_size - 1) | 0xfc;
-  result &= writer.WriteU8(length_size_minus_one);
+  result &= writer.WriteU8BigEndian(length_size_minus_one);
   // numOfSequenceParameterSets
   uint8_t sps_size = sps_list.size() | 0xe0;
-  result &= writer.WriteU8(sps_size);
+  result &= writer.WriteU8BigEndian(sps_size);
   // sequenceParameterSetNALUnits
   for (auto& sps : sps_list) {
-    result &= writer.WriteU16(sps.size());
-    result &= writer.WriteBytes(sps.data(), sps.size());
+    result &= writer.WriteU16BigEndian(sps.size());
+    result &= writer.Write(sps);
   }
   // numOfPictureParameterSets
   uint8_t pps_size = pps_list.size();
-  result &= writer.WriteU8(pps_size);
+  result &= writer.WriteU8BigEndian(pps_size);
   // pictureParameterSetNALUnit
   for (auto& pps : pps_list) {
-    result &= writer.WriteU16(pps.size());
-    result &= writer.WriteBytes(pps.data(), pps.size());
+    result &= writer.WriteU16BigEndian(pps.size());
+    result &= writer.Write(pps);
   }
 
   if (profile_indication == 100 || profile_indication == 110 ||
       profile_indication == 122 || profile_indication == 144) {
     // chroma_format
-    result &= writer.WriteU8(chroma_format | 0xfc);
+    result &= writer.WriteU8BigEndian(chroma_format | 0xfc);
     // bit_depth_luma_minus8
-    result &= writer.WriteU8(bit_depth_luma_minus8 | 0xf8);
+    result &= writer.WriteU8BigEndian(bit_depth_luma_minus8 | 0xf8);
     // bit_depth_chroma_minus8
-    result &= writer.WriteU8(bit_depth_chroma_minus8 | 0xf8);
+    result &= writer.WriteU8BigEndian(bit_depth_chroma_minus8 | 0xf8);
     // numOfSequenceParameterSetExt
     uint8_t sps_ext_size = sps_ext_list.size();
-    result &= writer.WriteU8(sps_ext_size);
+    result &= writer.WriteU8BigEndian(sps_ext_size);
     // sequenceParameterSetExtNALUnit
     for (auto& sps_ext : sps_ext_list) {
-      result &= writer.WriteU16(sps_ext.size());
-      result &= writer.WriteBytes(sps_ext.data(), sps_ext.size());
+      result &= writer.WriteU16BigEndian(sps_ext.size());
+      result &= writer.Write(sps_ext);
     }
   }
 

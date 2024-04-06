@@ -1011,34 +1011,34 @@ inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, Traits>> =
 
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
-struct IsPointer : std::false_type {};
+struct IsRawPointerHelper : std::false_type {};
 
 template <typename T>
-struct IsPointer<T*> : std::true_type {};
+struct IsRawPointerHelper<T*> : std::true_type {};
 
 template <typename T, RawPtrTraits Traits>
-struct IsPointer<raw_ptr<T, Traits>> : std::true_type {};
+struct IsRawPointerHelper<raw_ptr<T, Traits>> : std::true_type {};
 
 template <typename T>
-inline constexpr bool IsPointerV = IsPointer<T>::value;
+inline constexpr bool IsRawPointer = IsRawPointerHelper<T>::value;
 
 template <typename T>
-struct RemovePointer {
+struct RemoveRawPointer {
   using type = T;
 };
 
 template <typename T>
-struct RemovePointer<T*> {
+struct RemoveRawPointer<T*> {
   using type = T;
 };
 
 template <typename T, RawPtrTraits Traits>
-struct RemovePointer<raw_ptr<T, Traits>> {
+struct RemoveRawPointer<raw_ptr<T, Traits>> {
   using type = T;
 };
 
 template <typename T>
-using RemovePointerT = typename RemovePointer<T>::type;
+using RemoveRawPointerT = typename RemoveRawPointer<T>::type;
 
 }  // namespace base
 

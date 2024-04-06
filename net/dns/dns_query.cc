@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
@@ -129,31 +131,30 @@ DnsQuery::DnsQuery(uint16_t id,
   header->qdcount = base::HostToNet16(1);
 
   // Write question section after the header.
-  base::BigEndianWriter writer(
+  auto writer = base::SpanWriter(
       base::as_writable_bytes(io_buffer_->span()).subspan(kHeaderSize));
-  writer.WriteBytes(qname.data(), qname.size());
-  writer.WriteU16(qtype);
-  writer.WriteU16(dns_protocol::kClassIN);
+  writer.Write(qname);
+  writer.WriteU16BigEndian(qtype);
+  writer.WriteU16BigEndian(dns_protocol::kClassIN);
 
   if (merged_opt_rdata) {
     DCHECK_NE(merged_opt_rdata->OptCount(), 0u);
 
     header->arcount = base::HostToNet16(1);
     // Write OPT pseudo-resource record.
-    writer.WriteU8(0);                       // empty domain name (root domain)
-    writer.WriteU16(OptRecordRdata::kType);  // type
-    writer.WriteU16(kMaxUdpPayloadSize);     // class
+    writer.WriteU8BigEndian(0);  // empty domain name (root domain)
+    writer.WriteU16BigEndian(OptRecordRdata::kType);  // type
+    writer.WriteU16BigEndian(kMaxUdpPayloadSize);     // class
     // ttl (next 3 fields)
-    writer.WriteU8(0);  // rcode does not apply to requests
-    writer.WriteU8(0);  // version
+    writer.WriteU8BigEndian(0);  // rcode does not apply to requests
+    writer.WriteU8BigEndian(0);  // version
     // TODO(robpercival): Set "DNSSEC OK" flag if/when DNSSEC is supported:
     // https://tools.ietf.org/html/rfc3225#section-3
-    writer.WriteU16(0);  // flags
+    writer.WriteU16BigEndian(0);  // flags
 
     // rdata
-    writer.WriteU16(merged_opt_rdata->buf().size());  // rdata length
-    writer.WriteBytes(merged_opt_rdata->buf().data(),
-                      merged_opt_rdata->buf().size());
+    writer.WriteU16BigEndian(merged_opt_rdata->buf().size());  // rdata length
+    writer.Write(base::as_byte_span(merged_opt_rdata->buf()));
   }
 }
 

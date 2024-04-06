@@ -9,8 +9,8 @@
 #include <string_view>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/containers/queue.h"
+#include "base/containers/span_writer.h"
 #include "base/containers/stack.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
@@ -90,7 +90,7 @@ class MEDIA_EXPORT BoxByteStream {
 
   size_t position_ = 0;
   std::vector<uint8_t> buffer_;
-  std::optional<base::BigEndianWriter> writer_;
+  std::optional<base::SpanWriter<uint8_t>> writer_;
 };
 
 }  // namespace media

@@ -330,8 +330,8 @@ class UnretainedRefWrapperReceiver {
 // invocation mechanism.
 template <typename T>
 struct MethodReceiverStorage {
-  using Type =
-      std::conditional_t<IsPointerV<T>, scoped_refptr<RemovePointerT<T>>, T>;
+  using Type = std::
+      conditional_t<IsRawPointer<T>, scoped_refptr<RemoveRawPointerT<T>>, T>;
 };
 
 template <typename T, typename UnretainedTrait, RawPtrTraits PtrTraits>
@@ -1079,8 +1079,8 @@ void VerifyMethodReceiver(Unused&&...) {}
 template <typename Receiver, typename... Unused>
 void VerifyMethodReceiver(Receiver&& receiver, Unused&&...) {
   // Asserts that a callback is not the first owner of a ref-counted receiver.
-  if constexpr (IsPointerV<std::decay_t<Receiver>> &&
-                IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>) {
+  if constexpr (IsRawPointer<std::decay_t<Receiver>> &&
+                IsRefCountedType<RemoveRawPointerT<std::decay_t<Receiver>>>) {
     DCHECK(receiver);
 
     // It's error prone to make the implicit first reference to ref-counted
@@ -1294,8 +1294,8 @@ struct ValidateBindStateType<true,
     }();
   };
 
-  template <bool v = !IsPointerV<DecayedReceiver> ||
-                     IsRefCountedType<RemovePointerT<DecayedReceiver>>>
+  template <bool v = !IsRawPointer<DecayedReceiver> ||
+                     IsRefCountedType<RemoveRawPointerT<DecayedReceiver>>>
   struct ReceiverIsNotRawPtr {
     static constexpr bool value = [] {
       static_assert(v,

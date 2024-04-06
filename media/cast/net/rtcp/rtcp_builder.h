@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/big_endian.h"
-#include "base/memory/raw_ptr.h"
+#include <optional>
+
+#include "base/containers/span_writer.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
@@ -53,9 +54,13 @@ class RtcpBuilder {
       size_t* total_number_of_messages_to_send);
 
   const uint32_t local_ssrc_;
-  raw_ptr<char, AllowPtrArithmetic> ptr_of_length_;
   PacketRef packet_;
-  base::BigEndianWriter writer_;
+  // This writer points into and writes into the vector in `packet_`.
+  base::SpanWriter<uint8_t> writer_;
+  // The offset into `packet_` where length of the packet will be written. It
+  // can't be written until the payload of the packet is written, so we need to
+  // hold a pointer to its position.
+  std::optional<size_t> pos_of_packet_length_;
 };
 
 }  // namespace cast

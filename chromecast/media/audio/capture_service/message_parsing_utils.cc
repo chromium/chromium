@@ -9,9 +9,9 @@
 #include <cstring>
 #include <limits>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -273,10 +273,10 @@ scoped_refptr<net::IOBufferWithSize> MakeSerializedMessage(
   auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       sizeof(message_size) + message_size);
 
-  base::BigEndianWriter writer(base::as_writable_bytes(io_buffer->span()));
-  writer.WriteU16(message_size);
-  writer.WriteU8(message_type_uint8);
-  writer.WriteSpan(data);
+  base::SpanWriter writer(base::as_writable_bytes(io_buffer->span()));
+  writer.WriteU16BigEndian(message_size);
+  writer.WriteU8BigEndian(message_type_uint8);
+  writer.Write(data);
   return io_buffer;
 }
 

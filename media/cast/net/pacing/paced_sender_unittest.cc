@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/net/pacing/paced_sender.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,9 +12,10 @@
 
 #include "base/big_endian.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
-#include "media/cast/net/pacing/paced_sender.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
@@ -126,15 +129,14 @@ class PacedSenderTest : public ::testing::Test {
       packet->data.resize(packet_size, kValue);
       // Fill-in packet header fields to test the header parsing (for populating
       // the logging events).
-      base::BigEndianWriter writer(reinterpret_cast<char*>(&packet->data[0]),
-                                   packet_size);
-      bool success = writer.Skip(4);
-      success &= writer.WriteU32(audio ? kAudioFrameRtpTimestamp
-                                       : kVideoFrameRtpTimestamp);
-      success &= writer.WriteU32(audio ? kAudioSsrc : kVideoSsrc);
-      success &= writer.Skip(2);
-      success &= writer.WriteU16(i);
-      success &= writer.WriteU16(num_of_packets_in_frame - 1);
+      auto writer = base::SpanWriter(base::span(packet->data));
+      bool success = !!writer.Skip(4u);
+      success &= writer.WriteU32BigEndian(audio ? kAudioFrameRtpTimestamp
+                                                : kVideoFrameRtpTimestamp);
+      success &= writer.WriteU32BigEndian(audio ? kAudioSsrc : kVideoSsrc);
+      success &= !!writer.Skip(2u);
+      success &= writer.WriteU16BigEndian(i);
+      success &= writer.WriteU16BigEndian(num_of_packets_in_frame - 1);
       CHECK(success);
       packets.push_back(std::make_pair(key, packet));
     }

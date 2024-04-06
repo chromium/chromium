@@ -6,8 +6,9 @@
 
 #include <string>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/pacing/paced_sender.h"
@@ -114,14 +115,12 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
 
     packet->data.push_back(byte0);
     packet->data.push_back(frame.frame_id.lower_8_bits());
-    size_t start_size = packet->data.size();
-    packet->data.resize(start_size + 4);
+    packet->data.resize(packet->data.size() + 4u);
     {
-      base::BigEndianWriter big_endian_writer(
-          reinterpret_cast<char*>(&(packet->data[start_size])), 4);
-      big_endian_writer.WriteU16(packet_id);
-      big_endian_writer.WriteU16(static_cast<uint16_t>(num_packets - 1));
-      // `big_endian_writer` will be invalid when `packet->data` is resized.
+      base::SpanWriter writer(base::span(packet->data).last<4u>());
+      writer.WriteU16BigEndian(packet_id);
+      writer.WriteU16BigEndian(static_cast<uint16_t>(num_packets - 1));
+      // `writer` will be invalid when `packet->data` is resized.
     }
     packet->data.push_back(frame.referenced_frame_id.lower_8_bits());
 
@@ -167,13 +166,11 @@ void RtpPacketizer::BuildCommonRtpHeader(Packet* packet,
   packet->push_back(0x80);
   packet->push_back(static_cast<uint8_t>(config_.payload_type) |
                     (marker_bit ? kRtpMarkerBitMask : 0));
-  const size_t start_size = packet->size();
-  packet->resize(start_size + 10);
-  base::BigEndianWriter big_endian_writer(
-      reinterpret_cast<char*>(&((*packet)[start_size])), 10);
-  big_endian_writer.WriteU16(sequence_number_);
-  big_endian_writer.WriteU32(rtp_timestamp.lower_32_bits());
-  big_endian_writer.WriteU32(config_.ssrc);
+  packet->resize(packet->size() + 10u);
+  base::SpanWriter writer(base::span(*packet).last<10u>());
+  writer.WriteU16BigEndian(sequence_number_);
+  writer.WriteU32BigEndian(rtp_timestamp.lower_32_bits());
+  writer.WriteU32BigEndian(config_.ssrc);
   ++sequence_number_;
 }
 

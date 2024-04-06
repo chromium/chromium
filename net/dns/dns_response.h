@@ -15,14 +15,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/public/dns_protocol.h"
-
-namespace base {
-class BigEndianWriter;
-}  // namespace base
 
 namespace net {
 
@@ -227,14 +224,14 @@ class NET_EXPORT_PRIVATE DnsResponse {
   DnsRecordParser Parser() const;
 
  private:
-  bool WriteHeader(base::BigEndianWriter* writer,
+  bool WriteHeader(base::SpanWriter<uint8_t>* writer,
                    const dns_protocol::Header& header);
-  bool WriteQuestion(base::BigEndianWriter* writer, const DnsQuery& query);
-  bool WriteRecord(base::BigEndianWriter* writer,
+  bool WriteQuestion(base::SpanWriter<uint8_t>* writer, const DnsQuery& query);
+  bool WriteRecord(base::SpanWriter<uint8_t>* writer,
                    const DnsResourceRecord& record,
                    bool validate_record,
                    bool validate_name_as_internet_hostname);
-  bool WriteAnswer(base::BigEndianWriter* writer,
+  bool WriteAnswer(base::SpanWriter<uint8_t>* writer,
                    const DnsResourceRecord& answer,
                    const std::optional<DnsQuery>& query,
                    bool validate_record,
