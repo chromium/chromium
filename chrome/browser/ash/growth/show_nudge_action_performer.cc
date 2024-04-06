@@ -299,8 +299,9 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       kGrowthNudgeId, ash::NudgeCatalogName::kGrowthCampaignNudge, nudge_body,
       /*anchor_view=*/anchor_view.value());
 
-  auto app_window_anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
-  if (IsCaptionButtonContainer(app_window_anchor_type) && anchor_view.value()) {
+  if (!ash::features::IsGrowthCampaignsShowNudgeInDefaultParentEnabled() &&
+      anchor_view.value() &&
+      IsCaptionButtonContainer(GetActiveAppWindowAnchorType(nudge_payload))) {
     nudge_data.set_anchor_view_as_parent = true;
   }
 

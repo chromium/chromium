@@ -1379,6 +1379,12 @@ BASE_FEATURE(kGrowthCampaignsCrOSEvents,
              "GrowthCampaignsCrOSEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns experiment tag targeting is enabled. The
+// flag also used by finch to tag the session with finch params.
+BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
+             "GrowthCampaignsExperimentTagTargeting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables consumer session customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInConsumerSession,
              "GrowthCampaignsInConsumerSession",
@@ -1389,10 +1395,9 @@ BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether growth campaigns experiment tag targeting is enabled. The
-// flag also used by finch to tag the session with finch params.
-BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
-             "GrowthCampaignsExperimentTagTargeting",
+// Parent the nudge widget to the default container.
+BASE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent,
+             "GrowthCampaignsShowNudgeInDefaultParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether growth campaigns triggering by app open event is enabled.
@@ -3621,10 +3626,6 @@ bool IsGrowthCampaignsExperimentTagTargetingEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsExperimentTagTargeting);
 }
 
-bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
-  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
-}
-
 bool IsGrowthCampaignsInConsumerSessionEnabled() {
   return IsGrowthFrameworkEnabled() &&
          base::FeatureList::IsEnabled(kGrowthCampaignsInConsumerSession);
@@ -3633,6 +3634,14 @@ bool IsGrowthCampaignsInConsumerSessionEnabled() {
 bool IsGrowthCampaignsInDemoModeEnabled() {
   return IsGrowthFrameworkEnabled() &&
          base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
+}
+
+bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsShowNudgeInDefaultParent);
+}
+
+bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
 }
 
 bool AreGlanceablesV2Enabled() {
