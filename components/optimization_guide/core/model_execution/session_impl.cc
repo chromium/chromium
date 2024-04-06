@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
@@ -18,14 +19,17 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
+#include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
 namespace {
 
+using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
@@ -54,6 +58,28 @@ void InvokeStreamingCallbackWithRemoteResult(
     streaming_result.response = base::unexpected(result.error());
   }
   callback.Run(std::move(streaming_result));
+}
+
+bool HasUnsafeScores(
+    const RepeatedPtrField<proto::SafetyCategoryThreshold>& thresholds,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) {
+  CHECK(safety_info);
+  CHECK(!safety_info->class_scores.empty());
+  for (const auto& threshold : thresholds) {
+    size_t output_index = static_cast<size_t>(threshold.output_index());
+    if (static_cast<size_t>(output_index) >= safety_info->class_scores.size()) {
+      // Needed to evaluate a score, but output was invalid. Mark it as unsafe.
+      return true;
+    }
+
+    if (safety_info->class_scores.at(output_index) >= threshold.threshold()) {
+      // Output score exceeded threshold.
+      return true;
+    }
+  }
+
+  // If it gets here, everything has passed.
+  return false;
 }
 
 }  // namespace
@@ -140,6 +166,7 @@ class SessionImpl::ContextProcessor
 
 SessionImpl::SessionImpl(
     StartSessionFn start_session_fn,
+    ClassifyTextSafetyFn classify_text_safety_fn,
     ModelBasedCapabilityKey feature,
     std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
@@ -154,6 +181,7 @@ SessionImpl::SessionImpl(
       feature_(feature),
       on_device_model_versions_(on_device_model_versions),
       safety_config_(safety_config),
+      classify_text_safety_fn_(std::move(classify_text_safety_fn)),
       execute_remote_fn_(std::move(execute_remote_fn)),
       optimization_guide_logger_(optimization_guide_logger),
       model_quality_uploader_service_(model_quality_uploader_service),
@@ -381,6 +409,55 @@ void SessionImpl::ExecuteModel(
     options->safety_interval =
         features::GetOnDeviceModelTextSafetyTokenInterval();
   }
+
+  RunNextRequestSafetyCheckOrBeginExecution(std::move(options), 0);
+}
+
+void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
+    on_device_model::mojom::InputOptionsPtr options,
+    int request_check_idx) {
+  if (!safety_config_ ||
+      safety_config_->request_check_size() <= request_check_idx) {
+    // All check have passed.
+    BeginRequestExecution(std::move(options));
+    return;
+  }
+  auto check_input = CreateSubstitutions(
+      *last_message_,
+      safety_config_->request_check(request_check_idx).input_template());
+  if (!check_input) {
+    // This is mostly likely means a malformed safety config.
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kFailedConstructingMessage);
+    return;
+  }
+  classify_text_safety_fn_.Run(
+      check_input->input_string,
+      base::BindOnce(&SessionImpl::OnRequestSafetyResult,
+                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(options), request_check_idx));
+}
+
+void SessionImpl::OnRequestSafetyResult(
+    on_device_model::mojom::InputOptionsPtr options,
+    int request_check_idx,
+    on_device_model::mojom::SafetyInfoPtr safety_info) {
+  const auto& check = safety_config_->request_check(request_check_idx);
+  const auto& thresholds = check.safety_category_thresholds().empty()
+                               ? safety_config_->safety_category_thresholds()
+                               : check.safety_category_thresholds();
+  if (HasUnsafeScores(thresholds, safety_info)) {
+    // TODO: crbug.com/332358363 - Add logging for this.
+    CancelPendingResponse(ExecuteModelResult::kRequestUnsafe,
+                          ModelExecutionError::kFiltered);
+    return;
+  }
+  RunNextRequestSafetyCheckOrBeginExecution(std::move(options),
+                                            request_check_idx + 1);
+}
+
+void SessionImpl::BeginRequestExecution(
+    on_device_model::mojom::InputOptionsPtr options) {
   GetOrCreateSession().Execute(
       std::move(options),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
@@ -820,23 +897,8 @@ bool SessionImpl::IsUnsafeText(
     return false;
   }
 
-  CHECK(safety_info);
-  CHECK(!safety_info->class_scores.empty());
-  for (const auto& threshold : safety_config_->safety_category_thresholds()) {
-    size_t output_index = static_cast<size_t>(threshold.output_index());
-    if (static_cast<size_t>(output_index) >= safety_info->class_scores.size()) {
-      // Needed to evaluate a score, but output was invalid. Mark it as unsafe.
-      return true;
-    }
-
-    if (safety_info->class_scores.at(output_index) >= threshold.threshold()) {
-      // Output score exceeded threshold.
-      return true;
-    }
-  }
-
-  // If it gets here, everything has passed.
-  return false;
+  return HasUnsafeScores(safety_config_->safety_category_thresholds(),
+                         safety_info);
 }
 
 SessionImpl::OnDeviceState::OnDeviceState(StartSessionFn start_session_fn,

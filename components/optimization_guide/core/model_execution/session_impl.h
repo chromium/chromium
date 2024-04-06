@@ -40,11 +40,14 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
  public:
   using StartSessionFn = base::RepeatingCallback<void(
       mojo::PendingReceiver<on_device_model::mojom::Session>)>;
+  using ClassifyTextSafetyFn = base::RepeatingCallback<void(
+      const std::string&,
+      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback)>;
 
   // Possible outcomes of AddContext(). Maps to histogram enum
   // "OptimizationGuideOnDeviceAddContextResult".
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
   enum class AddContextResult {
     kUsingServer = 0,
     kUsingOnDevice = 1,
@@ -94,15 +97,17 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // On-device was used and completed successfully, but the text safety remote
     // request failed for some reason.
     kTextSafetyRemoteRequestFailed = 15,
+    // On-device was used, but the request was considered unsafe.
+    kRequestUnsafe = 16,
 
     // Please update OptimizationGuideOnDeviceExecuteModelResult in
     // optimization/enums.xml.
-
-    kMaxValue = kTextSafetyRemoteRequestFailed,
+    kMaxValue = kRequestUnsafe,
   };
 
   SessionImpl(
       StartSessionFn start_session_fn,
+      ClassifyTextSafetyFn classify_text_safety_fn,
       ModelBasedCapabilityKey feature,
       std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
       scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
@@ -235,6 +240,19 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void RunTextSafetyRemoteFallbackAndCompletionCallback(
       proto::Any success_response_metadata);
 
+  // Runs the next request safety check, or begins request execution.
+  void RunNextRequestSafetyCheckOrBeginExecution(
+      on_device_model::mojom::InputOptionsPtr options,
+      int request_check_idx);
+
+  // Callback invoked with RequestSafetyCheck result.
+  void OnRequestSafetyResult(on_device_model::mojom::InputOptionsPtr options,
+                             int request_check_idx,
+                             on_device_model::mojom::SafetyInfoPtr safety_info);
+
+  // Begins request execution (leads to OnResponse/OnComplete).
+  void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);
+
   // Callback invoked when the text safety remote fallback response comes back.
   // Will invoke the session's completion callback and destroy state.
   void OnTextSafetyRemoteResponse(
@@ -271,6 +289,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config_;
 
+  ClassifyTextSafetyFn classify_text_safety_fn_;
   ExecuteRemoteFn execute_remote_fn_;
 
   std::unique_ptr<google::protobuf::MessageLite> context_;

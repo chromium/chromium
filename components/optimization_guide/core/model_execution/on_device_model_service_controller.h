@@ -164,10 +164,20 @@ class OnDeviceModelServiceController
                     const std::string& component_version);
   void ClearModelPath();
 
+  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
+      on_device_model::ModelAssetPaths model_paths);
+
   // Makes sure the service is running and starts a mojo session.
   void StartMojoSession(
       on_device_model::ModelAssetPaths model_paths,
       mojo::PendingReceiver<on_device_model::mojom::Session> session);
+
+  // Invoke ClassifyTextSafety on the service.
+  void ClassifyTextSafety(
+      on_device_model::ModelAssetPaths model_paths,
+      const std::string& text,
+      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
+          callback);
 
   // Invoked at the end of model load, to continue with model execution.
   void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);

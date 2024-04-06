@@ -31,6 +31,8 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/substitution.pb.h"
+#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -186,7 +188,11 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
 
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override {
-    std::move(callback).Run(nullptr);
+    // Text is unsafe if it contains "unsafe".
+    bool has_unsafe = text.find("unsafe") != std::string::npos;
+    auto safety_info = on_device_model::mojom::SafetyInfo::New();
+    safety_info->class_scores.emplace_back(has_unsafe ? 0.8 : 0.2);
+    std::move(callback).Run(std::move(safety_info));
   }
 
   void LoadAdaptation(
@@ -381,6 +387,35 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
             last_remote_ts_callback_ = std::move(c);
           }
         });
+  }
+
+  void SetFeatureTextSafetyConfiguration(
+      std::unique_ptr<proto::FeatureTextSafetyConfiguration> feature_config) {
+    feature_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.mutable_feature_text_safety_configurations()->AddAllocated(
+        feature_config.release());
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+  }
+
+  // Add a substitution for ComposeRequest::page_metadata.page_url
+  void AddPageUrlSubstitution(proto::SubstitutedString* substitution) {
+    auto* proto_field2 = substitution->add_substitutions()
+                             ->add_candidates()
+                             ->mutable_proto_field();
+    proto_field2->add_proto_descriptors()->set_tag_number(3);
+    proto_field2->add_proto_descriptors()->set_tag_number(1);
   }
 
   void PopulateConfigForFeature(
@@ -1231,6 +1266,108 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
               ElementsAre(0.7, 0.3));
   EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
+  Initialize();
+
+  {
+    // Configure a request safety check on the PageUrl.
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    auto* threshold1 = check->add_safety_category_thresholds();
+    threshold1->set_output_index(0);
+    threshold1->set_threshold(0.5);
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "safe_url");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
+  Initialize();
+
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    auto* threshold1 = check->add_safety_category_thresholds();
+    threshold1->set_output_index(0);
+    threshold1->set_threshold(0.5);
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "unsafe_url");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(response_error_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       RequestCheckFailsWithSafeUrlWithFallbackThreshold) {
+  Initialize();
+
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    // Omitted check thresholds, should fallback to default.
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "safe_url");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(response_error_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {

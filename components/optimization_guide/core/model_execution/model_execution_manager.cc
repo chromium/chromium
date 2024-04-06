@@ -267,7 +267,8 @@ ModelExecutionManager::StartSession(
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
   return std::make_unique<SessionImpl>(
-      base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
+      base::DoNothing(), base::DoNothing(), feature, std::nullopt, nullptr,
+      nullptr,
       /*safety_config=*/std::nullopt, std::move(execute_fn),
       optimization_guide_logger_->GetWeakPtr(), model_quality_uploader_service_,
       config_params);

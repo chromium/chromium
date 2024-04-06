@@ -315,6 +315,9 @@ chromium-metrics-reviews@google.com.
     Used on-device and got output, but the remote text safety request failed to
     evaluate safety of the response.
   </int>
+  <int value="16" label="Used on-device, but a request safety check failed">
+    Used on-device, but a request safety check failed.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">

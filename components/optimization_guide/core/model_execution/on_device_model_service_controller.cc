@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -230,6 +231,8 @@ OnDeviceModelServiceController::CreateSession(
   return std::make_unique<SessionImpl>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr(), model_paths),
+      base::BindRepeating(&OnDeviceModelServiceController::ClassifyTextSafety,
+                          weak_ptr_factory_.GetWeakPtr(), model_paths),
       feature, model_versions_, std::move(adapter),
       weak_ptr_factory_.GetWeakPtr(), safety_config,
       std::move(execute_remote_fn), optimization_guide_logger,
@@ -248,9 +251,9 @@ void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
                                                   std::nullopt)));
 }
 
-void OnDeviceModelServiceController::StartMojoSession(
-    on_device_model::ModelAssetPaths model_paths,
-    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
+mojo::Remote<on_device_model::mojom::OnDeviceModel>&
+OnDeviceModelServiceController::GetOrCreateModelRemote(
+    on_device_model::ModelAssetPaths model_paths) {
   if (!model_remote_) {
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -267,7 +270,22 @@ void OnDeviceModelServiceController::StartMojoSession(
         base::BindRepeating(&OnDeviceModelServiceController::OnRemoteIdle,
                             base::Unretained(this)));
   }
-  model_remote_->StartSession(std::move(session));
+  return model_remote_;
+}
+
+void OnDeviceModelServiceController::StartMojoSession(
+    on_device_model::ModelAssetPaths model_paths,
+    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
+  GetOrCreateModelRemote(model_paths)->StartSession(std::move(session));
+}
+
+void OnDeviceModelServiceController::ClassifyTextSafety(
+    on_device_model::ModelAssetPaths model_paths,
+    const std::string& text,
+    on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
+        callback) {
+  GetOrCreateModelRemote(model_paths)
+      ->ClassifyTextSafety(text, std::move(callback));
 }
 
 void OnDeviceModelServiceController::OnModelAssetsLoaded(
