@@ -638,8 +638,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
-  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.RegistrationStatus",
-                        success);
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.RegistrationStatus", success);
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
     UMA_HISTOGRAM_BOOLEAN(
@@ -651,6 +651,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   }
 
   if (!success) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+        status_code);
     std::string msg = base::StringPrintf(
         "Service worker registration failed. Status code: %d",
         static_cast<int>(status_code));
@@ -917,7 +920,7 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
     content::ServiceWorkerCapability capability) {
   const bool is_registered =
       capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER;
-  UMA_HISTOGRAM_BOOLEAN(
+  base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.RegistrationWhenExpected",
       is_registered);
 
@@ -937,7 +940,7 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
       extension->location());
 

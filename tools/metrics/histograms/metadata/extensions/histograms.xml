@@ -4358,35 +4358,56 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
+    enum="ServiceWorkerStatusCode" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks when a background service worker fails to register what is the
+    ServiceWorkerStatusCode that occurred. Logged each time a service worker
+    fails to register.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchLocation"
-    enum="ExtensionLocation" expires_after="2023-04-01">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="ExtensionLocation" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    Recorded when Service Worker registration wasn't found when expected. This
-    also records the manifest location of the extension.
+    Recorded when Service Worker registration wasn't found when attempting to
+    verify that persisted-to-prefs (disk) worker registration. This also records
+    the manifest location of the extension.
+
+    Note: this histogram expired between 2023-04 and 2024-04, it will be missing
+    data between those dates.
   </summary>
 </histogram>
 
 <histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated"
-    enum="Boolean" expires_after="2023-08-08">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Whether the attempt to re-register an extension Service Worker to mitigate
     missing registration issue succeeded. The attempt is performed during
     extension load.
+
+    Note: this histogram expired between 2023-08 and 2024-04, it will be missing
+    data between those dates.
   </summary>
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationStatus"
-    enum="Boolean" expires_after="2023-06-18">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks whether background service worker registration succeeded or not.
+
+    Note: this histogram expired between 2023-06 and 2024-04, it will be missing
+    data between those dates.
   </summary>
 </histogram>
 
