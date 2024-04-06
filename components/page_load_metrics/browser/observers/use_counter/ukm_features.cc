@@ -401,6 +401,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kServiceWorkerStaticRouter_AddRoutes,
           WebFeature::kServiceWorkerStaticRouter_Evaluate,
           WebFeature::kNavigatorCookieEnabledThirdParty,
+          WebFeature::kSimplifyLoadingTransparentPlaceholderImage,
       }));
   return *opt_in_features;
 }
