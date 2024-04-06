@@ -47,6 +47,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -467,6 +468,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/333128685")
     public void testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown() {
         runOnUiThreadBlocking(
                 () -> {
