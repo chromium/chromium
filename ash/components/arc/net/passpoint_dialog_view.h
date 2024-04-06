@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -61,14 +60,11 @@ class PasspointDialogView : public views::BoxLayoutView {
                    PasspointDialogCallback callback);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
 
  private:
-  // Get width to be used by label. This is calculated by getting the dialog's
-  // width and subtracting it with it's inside margin.
-  int GetLabelWidth();
-
   std::unique_ptr<views::View> MakeBaseLabelView(bool is_expiring);
   std::unique_ptr<views::View> MakeSubscriptionLabelView(
       std::string_view friendly_name);
