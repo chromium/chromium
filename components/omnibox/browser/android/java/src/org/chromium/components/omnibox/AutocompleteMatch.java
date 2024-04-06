@@ -321,7 +321,7 @@ public class AutocompleteMatch {
         return mTransition;
     }
 
-    public String getDisplayText() {
+    public @NonNull String getDisplayText() {
         return mDisplayText;
     }
 

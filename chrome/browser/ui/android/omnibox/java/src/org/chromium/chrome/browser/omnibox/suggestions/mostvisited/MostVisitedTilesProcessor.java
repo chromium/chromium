@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -80,7 +79,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
         switch (match.getType()) {
-            case OmniboxSuggestionType.TILE_NAVSUGGEST:
             case OmniboxSuggestionType.TILE_MOST_VISITED_SITE:
             case OmniboxSuggestionType.TILE_REPEATABLE_QUERY:
                 return true;
@@ -125,16 +123,10 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
         super.populateModel(match, model, matchIndex);
 
-        if (match.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
-            updateModelFromTileNavsuggest(match, model, matchIndex);
-        } else {
-            updateModelFromDedicatedMatch(match, model, matchIndex);
-        }
-    }
-
-    private void updateModelFromDedicatedMatch(
-            AutocompleteMatch match, PropertyModel model, int matchIndex) {
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
+
+        @SuppressWarnings("null")
+        @NonNull
         String title =
                 TextUtils.isEmpty(match.getDisplayText())
                         ? match.getUrl().getHost()
@@ -160,41 +152,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
     }
 
-    private void updateModelFromTileNavsuggest(
-            AutocompleteMatch match, PropertyModel model, int matchIndex) {
-        List<AutocompleteMatch.SuggestTile> tiles = match.getSuggestTiles();
-        int tilesCount = tiles.size();
-        List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
-
-        for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
-            SuggestTile tile = tiles.get(elementIndex);
-            int index = elementIndex;
-            // Use website host text when the website title is empty (for example: gmail.com).
-            String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
-
-            PropertyModel tileModel =
-                    createTile(
-                            title,
-                            tile.url,
-                            tile.isSearch,
-                            v -> {
-                                OmniboxMetrics.recordSuggestTileTypeUsed(index, tile.isSearch);
-                                mSuggestionHost.onSuggestionClicked(match, matchIndex, tile.url);
-                            },
-                            v -> {
-                                mSuggestionHost.onDeleteMatchElement(match, title, index);
-                                return true;
-                            });
-
-            tileList.add(
-                    new ListItem(
-                            BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
-        }
-    }
-
     private PropertyModel createTile(
-            String title,
-            GURL url,
+            @NonNull String title,
+            @NonNull GURL url,
             boolean isSearch,
             View.OnClickListener onClick,
             View.OnLongClickListener onLongClick) {
@@ -254,12 +214,15 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                                         if (fallback == null) return;
                                         model.set(
                                                 TileViewProperties.ICON,
-                                                new BitmapDrawable(fallback));
+                                                new BitmapDrawable(
+                                                        mContext.getResources(), fallback));
                                         model.set(TileViewProperties.ICON_TINT, null);
                                     });
                             return;
                         }
-                        model.set(TileViewProperties.ICON, new BitmapDrawable(icon));
+                        model.set(
+                                TileViewProperties.ICON,
+                                new BitmapDrawable(mContext.getResources(), icon));
                         model.set(TileViewProperties.ICON_TINT, null);
                     });
         }

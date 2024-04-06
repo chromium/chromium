@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_MOST_VISITED;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -53,7 +54,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
@@ -65,8 +65,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-
-import java.util.Arrays;
 
 /**
  * Tests of the Most Visited Tiles. TODO(ender): add keyboard navigation for MV tiles once we can
@@ -104,10 +102,9 @@ public class MostVisitedTilesTest {
     private String mStartUrl;
     private OmniboxTestUtils mOmnibox;
 
-    private SuggestTile mTile1;
-    private SuggestTile mTile2;
-    private SuggestTile mTile3;
-    private AutocompleteMatch mMatch;
+    private AutocompleteMatch mMatch1;
+    private AutocompleteMatch mMatch2;
+    private AutocompleteMatch mMatch3;
 
     @Before
     public void setUp() throws Exception {
@@ -141,13 +138,6 @@ public class MostVisitedTilesTest {
     private void setUpSuggestionsToShow() {
         // Set up basic AutocompleteResult hosting a MostVisitedTiles suggestion.
         mTestServer = mActivityTestRule.getTestServer();
-        mTile1 = new SuggestTile("About", new GURL(mTestServer.getURL("/echo/tile1.html")), false);
-        mTile2 =
-                new SuggestTile(
-                        "Happy Server", new GURL(mTestServer.getURL("/echo/tile2.html")), false);
-        mTile3 =
-                new SuggestTile(
-                        "Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")), false);
 
         AutocompleteResult autocompleteResult =
                 spy(
@@ -155,6 +145,7 @@ public class MostVisitedTilesTest {
                                 null,
                                 GroupsInfo.newBuilder()
                                         .putGroupConfigs(1, SECTION_2_WITH_HEADER)
+                                        .putGroupConfigs(2, SECTION_MOST_VISITED)
                                         .build()));
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
@@ -165,13 +156,29 @@ public class MostVisitedTilesTest {
         autocompleteResult.getSuggestionsList().add(builder.build());
         builder.reset();
 
-        // Second suggestion is the MV Tiles.
-        builder.setType(OmniboxSuggestionType.TILE_NAVSUGGEST);
-        builder.setSuggestTiles(Arrays.asList(new SuggestTile[] {mTile1, mTile2, mTile3}));
-        builder.setDeletable(true);
-        mMatch = builder.build();
-        mMatch.updateNativeObjectRef(MV_TILE_NATIVE_HANDLE);
-        autocompleteResult.getSuggestionsList().add(mMatch);
+        // Next, 3 MV Tiles.
+        builder.setType(OmniboxSuggestionType.TILE_MOST_VISITED_SITE)
+                .setIsSearch(false)
+                .setGroupId(2)
+                .setUrl(new GURL(mTestServer.getURL("/echo/tile1.html")))
+                .setDisplayText("Tile#1")
+                .setDeletable(true);
+        mMatch1 = builder.build();
+        mMatch1.updateNativeObjectRef(MV_TILE_NATIVE_HANDLE);
+        autocompleteResult.getSuggestionsList().add(mMatch1);
+
+        builder.setUrl(new GURL(mTestServer.getURL("/echo/tile2.html"))).setDisplayText("Tile#2");
+
+        mMatch2 = builder.build();
+        mMatch2.updateNativeObjectRef(MV_TILE_NATIVE_HANDLE);
+        autocompleteResult.getSuggestionsList().add(mMatch2);
+
+        builder.setUrl(new GURL(mTestServer.getURL("/echo/tile3.html"))).setDisplayText("Tile#3");
+
+        mMatch3 = builder.build();
+        mMatch3.updateNativeObjectRef(MV_TILE_NATIVE_HANDLE);
+        autocompleteResult.getSuggestionsList().add(mMatch3);
+
         builder.reset();
 
         // Third suggestion - search query with a header.
@@ -223,17 +230,17 @@ public class MostVisitedTilesTest {
         // Skip past the 'what-you-typed' suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile2.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile3.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
 
         // Note: the carousel does not wrap around.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile3.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
     }
 
     @Test
@@ -243,17 +250,17 @@ public class MostVisitedTilesTest {
         // Skip past the 'what-you-typed' suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile2.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
         // Note: the carousel does not wrap around.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
     }
 
     @Test
@@ -263,13 +270,13 @@ public class MostVisitedTilesTest {
         // Skip past the 'what-you-typed' suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile2.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        mOmnibox.checkText(equalTo(mTile3.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
 
         // Move to the search suggestion skipping the header.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
@@ -277,36 +284,35 @@ public class MostVisitedTilesTest {
 
         // Move back to the MV Tiles. Observe that the first element is again highlighted.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_UP);
-        mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
+        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
     }
 
     @Test
     @MediumTest
     public void touchNavigation_clickOnFirstMVTile() throws Exception {
         clickTileAtPosition(0);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mTile1.url.getSpec());
+        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch1.getUrl().getSpec());
     }
 
     @Test
     @MediumTest
     public void touchNavigation_clickOnMiddleMVTile() throws Exception {
         clickTileAtPosition(1);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mTile2.url.getSpec());
+        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch2.getUrl().getSpec());
     }
 
     @Test
     @MediumTest
     public void touchNavigation_clickOnLastMVTile() throws Exception {
         clickTileAtPosition(2);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mTile3.url.getSpec());
+        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch3.getUrl().getSpec());
     }
 
     @Test
     @MediumTest
     public void touchNavigation_deleteMostVisitedTile() throws Exception {
-        final int tileToDelete = 2;
         ModalDialogManager manager = mAutocomplete.getModalDialogManagerForTest();
-        longClickTileAtPosition(tileToDelete);
+        longClickTileAtPosition(2);
         verify(mController, times(1)).stop(/* clear?=*/ eq(false));
 
         // Wait for the delete dialog to come up...
@@ -326,7 +332,7 @@ public class MostVisitedTilesTest {
                     return manager.getCurrentDialogForTest() == null;
                 });
 
-        verify(mController, times(1)).deleteMatchElement(eq(mMatch), eq(tileToDelete));
+        verify(mController, times(1)).deleteMatch(eq(mMatch3));
     }
 
     @Test
