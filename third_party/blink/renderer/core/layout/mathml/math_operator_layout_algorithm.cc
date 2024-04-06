@@ -64,6 +64,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
       }
     } else {
       // "Otherwise, the stretch axis of the operator is block."
+      LayoutUnit axis = MathAxisHeight(Style());
       if (auto target_stretch_block_sizes =
               GetConstraintSpace().TargetStretchBlockSizes()) {
         target_stretch_ascent = target_stretch_block_sizes->ascent;
@@ -75,45 +76,52 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
           // AxisHeight
           // Sdescent = max( Uascent − AxisHeight, Udescent + AxisHeight ) −
           // AxisHeight"
-          LayoutUnit axis = MathAxisHeight(Style());
           LayoutUnit half_target_stretch_size = std::max(
               target_stretch_ascent - axis, target_stretch_descent + axis);
           target_stretch_ascent = half_target_stretch_size + axis;
           target_stretch_descent = half_target_stretch_size - axis;
         }
         operator_target_size = target_stretch_ascent + target_stretch_descent;
+
+        LayoutUnit unstretched_size;
+        const SimpleFontData* font_data = Style().GetFont().PrimaryFont();
+        if (auto base_glyph =
+                font_data->GlyphForCharacter(GetBaseCodePoint())) {
+          gfx::RectF bounds = font_data->BoundsForGlyph(base_glyph);
+          unstretched_size = LayoutUnit(bounds.height());
+        }
+
         // "If minsize < 0 then set minsize to 0."
         LayoutUnit min_size =
             (Style().GetMathMinSize().GetType() == Length::kAuto
-                 ? LayoutUnit(Style().FontSize())
-                 : ValueForLength(Style().GetMathMinSize(),
-                                  operator_target_size))
+                 ? unstretched_size
+                 : ValueForLength(Style().GetMathMinSize(), unstretched_size))
                 .ClampNegativeToZero();
         // "If maxsize < minsize then set maxsize to minsize."
         LayoutUnit max_size = std::max<LayoutUnit>(
             (Style().GetMathMaxSize().GetType() == Length::kAuto
                  ? LayoutUnit(kIntMaxForLayoutUnit)
-                 : ValueForLength(Style().GetMathMaxSize(),
-                                  operator_target_size)),
+                 : ValueForLength(Style().GetMathMaxSize(), unstretched_size)),
             min_size);
         // "Then 0 ≤ minsize ≤ maxsize:"
         DCHECK(LayoutUnit() <= min_size && min_size <= max_size);
         if (operator_target_size <= LayoutUnit()) {
-          // "If T ≤ 0 then set Tascent to minsize/2 and then set Tdescent to
-          // minsize - Tascent."
-          target_stretch_ascent = min_size / 2;
+          // If T ≤ 0
+          target_stretch_ascent = min_size / 2 + axis;
           target_stretch_descent = min_size - target_stretch_ascent;
         } else if (operator_target_size < min_size) {
-          // "Otherwise, if 0 < T < minsize then first multiply Tascent by
-          // minsize / T and then set Tdescent to minsize - Tascent."
-          target_stretch_ascent =
-              target_stretch_ascent.MulDiv(min_size, operator_target_size);
+          // Otherwise, if 0 < T < minsize
+          target_stretch_ascent = (target_stretch_ascent - axis)
+                                      .ClampNegativeToZero()
+                                      .MulDiv(min_size, operator_target_size) +
+                                  axis;
           target_stretch_descent = min_size - target_stretch_ascent;
         } else if (max_size < operator_target_size) {
-          // "Otherwise, if maxsize < T then first multiply Tascent by maxsize
-          // / T and then set Tdescent to maxsize − Tascent."
-          target_stretch_ascent =
-              target_stretch_descent.MulDiv(max_size, operator_target_size);
+          // "Otherwise, if maxsize < T
+          target_stretch_ascent = (target_stretch_ascent - axis)
+                                      .ClampNegativeToZero()
+                                      .MulDiv(max_size, operator_target_size) +
+                                  axis;
           target_stretch_descent = max_size - target_stretch_ascent;
         }
         operator_target_size = target_stretch_ascent + target_stretch_descent;
