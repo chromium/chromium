@@ -135,11 +135,11 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
           features::kRegisterAppBoundEncryptionProvider)) {
     // These histograms are recorded on a background worker thread, so the test
     // needs to wait until this task completes and the histograms are recorded.
-    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode2");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode");
     histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundProvider.Encrypt.ResultCode2", S_OK, 1);
+        "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
 
-    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time2");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time");
   } else {
     WaitForHistogram(
         "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode2");
@@ -158,11 +158,11 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
           features::kRegisterAppBoundEncryptionProvider)) {
     // These histograms are recorded on a background worker thread, so the test
     // needs to wait until this task completes and the histograms are recorded.
-    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode2");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode");
     histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundProvider.Decrypt.ResultCode2", S_OK, 1);
+        "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
 
-    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time2");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time");
   } else {
     WaitForHistogram(
         "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode2");
