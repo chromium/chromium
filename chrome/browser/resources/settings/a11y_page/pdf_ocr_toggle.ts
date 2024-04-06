@@ -70,7 +70,6 @@ export class SettingsPdfOcrToggleElement extends
   private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
-  private hasPdfOcrDownloadingStatusEverBeenSet_: boolean = false;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
 
@@ -81,9 +80,6 @@ export class SettingsPdfOcrToggleElement extends
 
     const updatePdfOcrState = (pdfOcrState: ScreenAiInstallStatus) => {
       this.pdfOcrStatus_ = pdfOcrState;
-      if (pdfOcrState === ScreenAiInstallStatus.DOWNLOADING) {
-        this.hasPdfOcrDownloadingStatusEverBeenSet_ = true;
-      }
     };
     this.browserProxy_.getScreenAiInstallState().then(updatePdfOcrState);
     this.addWebUiListener('pdf-ocr-state-changed', updatePdfOcrState);
@@ -102,12 +98,7 @@ export class SettingsPdfOcrToggleElement extends
       case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
-        // Show the default subtitle if the downloaded status was set without
-        // the downloading status being set; it means that the ScreenAI was
-        // already installed and available on the device.
-        return this.hasPdfOcrDownloadingStatusEverBeenSet_ ?
-            this.i18n('pdfOcrDownloadCompleteLabel') :
-            this.i18n('pdfOcrSubtitle');
+        return this.i18n('pdfOcrDownloadCompleteLabel');
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update, so show a generic subtitle describing PDF OCR.
         return this.i18n('pdfOcrSubtitle');

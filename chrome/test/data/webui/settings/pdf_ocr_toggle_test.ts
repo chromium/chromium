@@ -37,9 +37,8 @@ suite('SettingsPdfOcrToggleTest', () => {
 
   test('test pdf ocr toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // PDF OCR toggle visibiilty depends on the screen reader state, but is
-    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
-    // reader in this test.
+    // Simulate enabling a screen reader to show the PDF OCR toggle.
+    webUIListenerCallback('screen-reader-state-changed', true);
 
     const toggle = testElement.$.toggle;
     await flushTasks();
@@ -60,9 +59,8 @@ suite('SettingsPdfOcrToggleTest', () => {
 
   test('test pdf ocr toggle subtitle', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // PDF OCR toggle visibiilty depends on the screen reader state, but is
-    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
-    // reader in this test.
+    // Simulate enabling a screen reader to show the PDF OCR toggle.
+    webUIListenerCallback('screen-reader-state-changed', true);
 
     const toggle = testElement.$.toggle;
     await flushTasks();
@@ -83,24 +81,6 @@ suite('SettingsPdfOcrToggleTest', () => {
     assertEquals(
         testElement.i18n('pdfOcrDownloadProgressLabel', 50), toggle.subLabel);
 
-    webUIListenerCallback(
-        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
-    assertEquals(
-        testElement.i18n('pdfOcrDownloadCompleteLabel'), toggle.subLabel);
-  });
-
-  test('test pdf ocr toggle default subtitle', async () => {
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // PDF OCR toggle visibiilty depends on the screen reader state, but is
-    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
-    // reader in this test.
-
-    const toggle = testElement.$.toggle;
-    await flushTasks();
-
-    // If `DOWNLOADED` is set without `DOWNLOADING` being set, it means that
-    // the screen-ai library is already installed and ready on the device. In
-    // this case, the default subtitle should be shown.
     webUIListenerCallback(
         'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
     assertEquals(

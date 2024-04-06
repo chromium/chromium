@@ -20,11 +20,10 @@ import type {AccessibilityBrowserProxy, LanguageHelper, SettingsA11yPageElement}
 import {AccessibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
