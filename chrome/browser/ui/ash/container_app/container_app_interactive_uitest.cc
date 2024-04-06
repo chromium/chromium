@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -60,6 +62,7 @@ using ::testing::Property;
 
 // Identifiers.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContainerAppWebContentsElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsAppWebContentsElementId);
 
 // Names.
 inline char kAppsGridViewElementName[] = "AppsGridView";
@@ -68,15 +71,15 @@ inline char kChromeAppElementName[] = "ChromeApp";
 inline char kContainerAppElementName[] = "ContainerApp";
 inline char kFilesAppElementName[] = "FilesApp";
 inline char kGmailAppElementName[] = "GmailApp";
+inline char kShowAppInfoMenuItemElementName[] = "ShowAppInfoMenuItem";
 
 // Helpers ---------------------------------------------------------------------
 
 // Returns all `descendants` of the specified `parent` matching the given class.
 template <typename ViewClass>
-void FindDescendantsOfClass(
-    const views::View* parent,
-    std::vector<raw_ptr<const ViewClass>>& descendants) {
-  for (const views::View* child : parent->children()) {
+void FindDescendantsOfClass(views::View* parent,
+                            std::vector<raw_ptr<ViewClass>>& descendants) {
+  for (views::View* child : parent->children()) {
     if (views::IsViewClass<ViewClass>(child)) {
       descendants.emplace_back(views::AsViewClass<ViewClass>(child));
     }
@@ -94,15 +97,23 @@ std::optional<size_t> FindIndex(const Range& range, const Value* value) {
 }
 
 // Returns the `views::MenuItemView`s for the currently showing menu.
-std::vector<raw_ptr<const views::MenuItemView>> FindMenuItemViews() {
+std::vector<raw_ptr<views::MenuItemView>> FindMenuItemViews() {
   if (auto* menu_controller = views::MenuController::GetActiveInstance()) {
     if (auto* menu_item_view = menu_controller->GetSelectedMenuItem()) {
-      std::vector<raw_ptr<const views::MenuItemView>> items;
+      std::vector<raw_ptr<views::MenuItemView>> items;
       FindDescendantsOfClass(menu_item_view->parent(), items);
       return items;
     }
   }
   return {};
+}
+
+// Returns the `views::MenuItemView` for the currently showing menu associated
+// with the specified command `id`.
+views::MenuItemView* FindMenuItemViewForCommand(int id) {
+  std::vector<raw_ptr<views::MenuItemView>> views = FindMenuItemViews();
+  auto it = base::ranges::find(views, id, &views::MenuItemView::GetCommand);
+  return it != views.end() ? *it : nullptr;
 }
 
 // Returns the `ash::ShelfItem` for the given web app `id`.
@@ -156,6 +167,11 @@ class ContainerAppInteractiveUiTest : public InteractiveBrowserTest {
     // Do not launch the browser. The only browser expected to launch will be
     // that associated with the container app.
     set_launch_browser_for_testing(nullptr);
+
+    // Since we suppressed the browser from launching, we also need to prevent
+    // premature shutdown that would otherwise occur due to the lack of a
+    // browser. If we did not do so, system web apps would fail to launch.
+    set_exit_when_last_browser_closes(false);
 
     // Use a consistent context for element tracking. Otherwise each widget has
     // its own context, greatly increasing the complexity of tracking
@@ -307,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromAppList) {
 
       // Check container app position.
       Check([&]() {
-        std::vector<raw_ptr<const ash::AppListItemView>> apps;
+        std::vector<raw_ptr<ash::AppListItemView>> apps;
         FindDescendantsOfClass(apps_grid_view, apps);
         const auto container_app_index = FindIndex(apps, container_app.get());
         const auto files_app_index = FindIndex(apps, files_app.get());
@@ -380,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
 
       // Check container app position.
       Check([&]() {
-        std::vector<raw_ptr<const ash::ShelfAppButton>> apps;
+        std::vector<raw_ptr<ash::ShelfAppButton>> apps;
         FindDescendantsOfClass(shelf, apps);
         const auto chrome_app_index = FindIndex(apps, chrome_app.get());
         const auto container_app_index = FindIndex(apps, container_app.get());
@@ -441,6 +457,89 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromAppList) {
                                               Eq(ash::UNINSTALL))))))));
 }
 
+// Verifies that the container app cannot be uninstalled from the Settings app.
+IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromSettings) {
+  // Views.
+  raw_ptr<ash::ShelfView> shelf = nullptr;
+
+  // Queries.
+  auto get_settings_app_subpage_query = [](std::string_view query,
+                                           bool shadow_dom = false) {
+    constexpr char kOsSettingsAppsPage[] = "os-settings-apps-page";
+    constexpr char kOsSettingsMain[] = "os-settings-main";
+    constexpr char kOsSettingsMainPageContainer[] = "#mainPageContainer";
+    constexpr char kOsSettingsSubpage[] = "os-settings-subpage";
+    constexpr char kOsSettingsUi[] = "os-settings-ui";
+
+    const DeepQuery deep_query({kOsSettingsUi, kOsSettingsMain,
+                                kOsSettingsMainPageContainer,
+                                kOsSettingsAppsPage});
+
+    return shadow_dom
+               ? (deep_query + kOsSettingsSubpage) + std::string(query)
+               : (deep_query + base::StrCat({kOsSettingsSubpage, " ", query}));
+  };
+
+  // Test.
+  RunTestSequence(
+      // Cache shelf.
+      AssignView(ash::kShelfViewElementId, std::ref(shelf)),
+
+      // Find container app.
+      NameDescendantView(
+          ash::kShelfViewElementId, kContainerAppElementName,
+          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
+                              web_app::kContainerAppId)),
+
+      // Open menu.
+      MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
+      Check(&IsMenuShowing),
+
+      // Activate menu.
+      PressAndReleaseKey(ui::VKEY_DOWN),
+
+      // Find menu item.
+      NameView(kShowAppInfoMenuItemElementName,
+               base::BindOnce(FindMenuItemViewForCommand, ash::SHOW_APP_INFO)
+                   .Then(base::BindOnce<views::View*(views::View*)>(
+                       views::AsViewClass<views::View>))),
+
+      // Launch Settings app.
+      InstrumentNextTab(kSettingsAppWebContentsElementId, AnyBrowser()),
+      DoDefaultAction(kShowAppInfoMenuItemElementName),
+
+      // Check Settings app browser.
+      CheckElement(kSettingsAppWebContentsElementId,
+                   base::BindOnce(&AsInstrumentedWebContents)
+                       .Then(base::BindOnce(
+                           &WebContentsInteractionTestUtil::web_contents))
+                       .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+                       .Then(base::BindOnce(&IsBrowserForWebApp,
+                                            web_app::kOsSettingsAppId))),
+
+      // Check Settings app launch URL.
+      WaitForWebContentsReady(
+          kSettingsAppWebContentsElementId,
+          chrome::GetOSSettingsUrl(
+              base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
+                            "?id=", web_app::kContainerAppId}))),
+
+      // Check container app title.
+      CheckJsResultAt(
+          kSettingsAppWebContentsElementId,
+          get_settings_app_subpage_query("#subpageTitle", /*shadow_dom=*/true),
+          base::StrCat({"subpageTitle => subpageTitle.innerText === '",
+                        base::UTF16ToUTF8(GetContainerAppTitle()), "'"})),
+
+      // Check container app cannot be uninstalled.
+      CheckJsResultAt(
+          kSettingsAppWebContentsElementId,
+          get_settings_app_subpage_query("app-management-uninstall-button"),
+          "appManagementUninstallButton => "
+          "!appManagementUninstallButton.shadowRoot.querySelector('*[role="
+          "button]')"));
+}
+
 // Verifies that the container app cannot be uninstalled from the shelf.
 IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromShelf) {
   // Views.
@@ -474,4 +573,3 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromShelf) {
 
 // TODO(http://b/331668699): Test container app position for existing users.
 // TODO(http://b/331668699): Test container app preinstall ineligibility.
-// TODO(http://b/331668699): Test container app uninstallability from Settings.
