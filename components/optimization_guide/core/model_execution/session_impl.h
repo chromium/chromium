@@ -246,9 +246,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       int request_check_idx);
 
   // Callback invoked with RequestSafetyCheck result.
-  void OnRequestSafetyResult(on_device_model::mojom::InputOptionsPtr options,
-                             int request_check_idx,
-                             on_device_model::mojom::SafetyInfoPtr safety_info);
+  void OnRequestSafetyResult(
+      on_device_model::mojom::InputOptionsPtr options,
+      int request_check_idx,
+      proto::InternalOnDeviceModelExecutionInfo check_log,
+      on_device_model::mojom::SafetyInfoPtr safety_info);
 
   // Begins request execution (leads to OnResponse/OnComplete).
   void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);

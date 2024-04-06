@@ -1301,6 +1301,21 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
   EXPECT_FALSE(response_error_);
+
+  // Make sure check was logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto& logged_execution_infos =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info()
+          .execution_infos();
+  ASSERT_GE(logged_execution_infos.size(), 2);
+  const auto& check_log = logged_execution_infos[1];
+  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
+            "url: safe_url");
+  const auto& response_log = check_log.response().text_safety_model_response();
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_FALSE(response_log.is_unsafe());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
@@ -1335,6 +1350,21 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(response_received_);
   EXPECT_TRUE(response_error_);
+
+  // Make sure check was logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto& logged_execution_infos =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info()
+          .execution_infos();
+  ASSERT_EQ(logged_execution_infos.size(), 2);
+  const auto& check_log = logged_execution_infos[1];
+  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
+            "url: unsafe_url");
+  const auto& response_log = check_log.response().text_safety_model_response();
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.8));
+  EXPECT_TRUE(response_log.is_unsafe());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1368,6 +1398,21 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(response_received_);
   EXPECT_TRUE(response_error_);
+
+  // Make sure check was logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto& logged_execution_infos =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info()
+          .execution_infos();
+  ASSERT_EQ(logged_execution_infos.size(), 2);
+  const auto& check_log = logged_execution_infos[1];
+  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
+            "url: safe_url");
+  const auto& response_log = check_log.response().text_safety_model_response();
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_TRUE(response_log.is_unsafe());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
