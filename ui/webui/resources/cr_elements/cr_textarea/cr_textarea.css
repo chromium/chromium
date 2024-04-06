@@ -15,6 +15,10 @@
 textarea {
   display: block;
   resize: none;
+
+  /* Ensures content sits above the hover layer. */
+  position: relative;
+  z-index: 1;
 }
 
 #input-container {
@@ -31,7 +35,7 @@ textarea {
   border-color: var(--cr-input-error-color);
 }
 
-:host-context([chrome-refresh-2023]) #input {
+#input {
   padding-bottom: var(--cr-input-padding-bottom);
   padding-inline-end: var(--cr-input-padding-end);
   padding-inline-start: var(--cr-input-padding-start);
@@ -59,6 +63,10 @@ textarea {
 
 #mirror {
   display: none;
+
+  /* Must match textarea. */
+  font-size: 12px;
+  line-height: 16px;
 }
 
 :host([autogrow]) #mirror {
@@ -92,20 +100,4 @@ textarea {
 :host([autogrow][has-max-height]) textarea {
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-:host-context([chrome-refresh-2023]) textarea {
-  /* Ensures content sits above the hover layer. */
-  position: relative;
-  z-index: 1;
-}
-
-:host-context([chrome-refresh-2023]):host([autogrow]) textarea {
-  position: absolute;
-}
-
-/* Must match textarea. */
-:host-context([chrome-refresh-2023]) #mirror {
-  font-size: 12px;
-  line-height: 16px;
 }
