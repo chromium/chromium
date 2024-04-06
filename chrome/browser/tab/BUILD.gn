@@ -37,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/ArchivePersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorage.java",
@@ -136,7 +137,10 @@ generate_jni("jni_headers") {
 
 proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
-  sources = [ "$proto_path/shopping_persisted_tab_data.proto" ]
+  sources = [
+    "$proto_path/archive_persisted_tab_data.proto",
+    "$proto_path/shopping_persisted_tab_data.proto",
+  ]
 }
 
 robolectric_library("junit") {
