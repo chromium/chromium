@@ -7368,6 +7368,16 @@ const char kSysUiDownloadIntegrationV2Name[] =
 const char kSysUiDownloadIntegrationV2Description[] =
     "Downloads paradigm between Chrome Browser and ChromeOS on Lacros.";
 
+const char kSysUiShouldHoldbackGifRecordingName[] =
+    "Holdback for GIF recording on ChromeOS";
+const char kSysUiShouldHoldbackGifRecordingDescription[] =
+    "Enables holdback for GIF recording.";
+
+const char kSysUiShouldHoldbackTaskManagementName[] =
+    "Holdback for Task Management on ChromeOS";
+const char kSysUiShouldHoldbackTaskManagementDescription[] =
+    "Enables holdback for Task Management.";
+
 const char kTetheringExperimentalFunctionalityName[] =
     "Tethering Allow Experimental Functionality";
 const char kTetheringExperimentalFunctionalityDescription[] =

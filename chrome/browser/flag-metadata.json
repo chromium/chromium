@@ -7789,6 +7789,16 @@
     "expiry_milestone": 130
   },
   {
+    "name": "sys-ui-holdback-gif-recording",
+    "owners": ["newcomer@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "sys-ui-holdback-task-management",
+    "owners": ["newcomer@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "system-color-chooser",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 126

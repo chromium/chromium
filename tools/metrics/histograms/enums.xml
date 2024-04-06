@@ -16813,6 +16813,7 @@ from previous Chrome versions.
   <int value="-1892758622" label="SendTabToSelfV2:disabled"/>
   <int value="-1892555086" label="disable-compositor-animation-timelines"/>
   <int value="-1892000374" label="SeccompSandboxAndroid:enabled"/>
+  <int value="-1891391298" label="SysUiShouldHoldbackTaskManagement:enabled"/>
   <int value="-1890374564" label="OobeRecommendAppsScreen:disabled"/>
   <int value="-1889151011" label="Cardboard:disabled"/>
   <int value="-1888578524" label="DisplayIdentification:enabled"/>
@@ -19618,6 +19619,7 @@ from previous Chrome versions.
   <int value="-624652131"
       label="FedCmIdentityCredentialAutoSelectedFlag:disabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
+  <int value="-623859488" label="SysUiShouldHoldbackGifRecording:disabled"/>
   <int value="-623611759" label="TabSelectionEditorV2:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
@@ -23182,6 +23184,7 @@ from previous Chrome versions.
   <int value="976809924"
       label="ConsolidateMetricsServiceInitialLogLogic:disabled"/>
   <int value="977140835" label="OmniboxMostVisitedTiles:disabled"/>
+  <int value="977728359" label="SysUiShouldHoldbackGifRecording:enabled"/>
   <int value="977968353" label="WebUITabStrip:disabled"/>
   <int value="978712907" label="PrintServerUi:disabled"/>
   <int value="979397813" label="WheelEventRegions:disabled"/>
@@ -23397,6 +23400,7 @@ from previous Chrome versions.
   <int value="1077910471" label="RestoreTabsOnFRE:disabled"/>
   <int value="1079017005" label="LayoutExtraction:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
+  <int value="1079035925" label="SysUiShouldHoldbackTaskManagement:disabled"/>
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
   <int value="1080108820" label="OneGroupPerRenderer:enabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>

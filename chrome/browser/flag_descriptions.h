@@ -4268,6 +4268,12 @@ extern const char kSmdsSupportDescription[];
 extern const char kSysUiDownloadIntegrationV2Name[];
 extern const char kSysUiDownloadIntegrationV2Description[];
 
+extern const char kSysUiShouldHoldbackGifRecordingName[];
+extern const char kSysUiShouldHoldbackGifRecordingDescription[];
+
+extern const char kSysUiShouldHoldbackTaskManagementName[];
+extern const char kSysUiShouldHoldbackTaskManagementDescription[];
+
 extern const char kTetheringExperimentalFunctionalityName[];
 extern const char kTetheringExperimentalFunctionalityDescription[];
 

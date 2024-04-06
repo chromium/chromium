@@ -4833,6 +4833,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationsIgnoreRequireInteractionDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNotificationsIgnoreRequireInteraction)},
+    {"sys-ui-holdback-gif-recording",
+     flag_descriptions::kSysUiShouldHoldbackGifRecordingName,
+     flag_descriptions::kSysUiShouldHoldbackGifRecordingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackGifRecording)},
+    {"sys-ui-holdback-task-management",
+     flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
+     flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackTaskManagement)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
