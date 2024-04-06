@@ -23,7 +23,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) ChapterItemView
 
  public:
   ChapterItemView(const media_session::ChapterInformation& chapter,
-                  const media_message_center::MediaColorTheme& theme);
+                  const media_message_center::MediaColorTheme& theme,
+                  base::RepeatingCallback<void(const base::TimeDelta time)>
+                      on_chapter_pressed);
   ChapterItemView(const ChapterItemView& other) = delete;
   ChapterItemView& operator=(const ChapterItemView& other) = delete;
   ~ChapterItemView() override;
@@ -49,6 +51,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) ChapterItemView
 
   // The color theme for all the colors in this view.
   const media_message_center::MediaColorTheme theme_;
+
+  // Runs when this view is pressed.
+  base::RepeatingCallback<void(const base::TimeDelta)>
+      on_chapter_pressed_callback_;
 
   // The `ImageView` of this chapter.
   raw_ptr<views::ImageView> artwork_view_;

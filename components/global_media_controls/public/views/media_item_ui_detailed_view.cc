@@ -423,8 +423,12 @@ void MediaItemUIDetailedView::UpdateWithMediaMetadata(
 
   for (int index = 0; index < static_cast<int>(metadata.chapters.size());
        index++) {
-    chapters_[index] = chapter_list_view_->AddChildView(
-        std::make_unique<ChapterItemView>(metadata.chapters[index], theme_));
+    chapters_[index] =
+        chapter_list_view_->AddChildView(std::make_unique<ChapterItemView>(
+            metadata.chapters[index], theme_,
+            /*on_chapter_pressed=*/
+            base::BindRepeating(&MediaItemUIDetailedView::SeekToTimestamp,
+                                weak_factory_.GetWeakPtr())));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -611,6 +615,11 @@ void MediaItemUIDetailedView::OnProgressDragging(bool pause) {
 
 void MediaItemUIDetailedView::SeekTo(double seek_progress) {
   const auto time = seek_progress * position_.duration();
+  SeekToTimestamp(time);
+}
+
+void MediaItemUIDetailedView::SeekToTimestamp(
+    const base::TimeDelta time) const {
   if (item_) {
     item_->SeekTo(time);
   } else {

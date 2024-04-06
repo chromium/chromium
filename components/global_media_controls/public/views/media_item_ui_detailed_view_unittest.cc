@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
@@ -498,6 +499,20 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
                 ->second->get_start_time_for_testing()
                 .InSeconds(),
             20);
+
+  // Clicking on a chapter item should seek to the start time of that chapter.
+  EXPECT_CALL(item(), SeekTo(base::Seconds(10)));
+  views::test::ButtonTestApi(view()->GetChaptersForTesting().find(0)->second)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(item(), SeekTo(base::Seconds(20)));
+  views::test::ButtonTestApi(view()->GetChaptersForTesting().find(1)->second)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
+
 #endif
 }
 

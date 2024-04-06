@@ -54,8 +54,13 @@ class RoundedCornerHighlightPathGenerator
 // TODO(b/327508008): Polish paddings, a11y, color and etc.
 ChapterItemView::ChapterItemView(
     const media_session::ChapterInformation& chapter,
-    const media_message_center::MediaColorTheme& theme)
-    : title_(chapter.title()), start_time_(chapter.startTime()), theme_(theme) {
+    const media_message_center::MediaColorTheme& theme,
+    base::RepeatingCallback<void(const base::TimeDelta time)>
+        on_chapter_pressed)
+    : title_(chapter.title()),
+      start_time_(chapter.startTime()),
+      theme_(theme),
+      on_chapter_pressed_callback_(std::move(on_chapter_pressed)) {
   SetCallback(base::BindRepeating(&ChapterItemView::PerformAction,
                                   base::Unretained(this)));
 
@@ -109,7 +114,7 @@ void ChapterItemView::UpdateArtwork(const gfx::ImageSkia& image) {
 }
 
 void ChapterItemView::PerformAction(const ui::Event& event) {
-  // TODO(b/327508008): Jump to the start time of the video
+  on_chapter_pressed_callback_.Run(start_time_);
 }
 
 void ChapterItemView::SetUpFocusHighlight(
