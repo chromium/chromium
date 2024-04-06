@@ -749,7 +749,7 @@ public class NewTabPageTest {
                 () -> {
                     ChromeTabbedActivity activity =
                             (ChromeTabbedActivity) mActivityTestRule.getActivity();
-                    activity.handleBackPressed();
+                    activity.getOnBackPressedDispatcher().onBackPressed();
                     verify(mFeedReliabilityLogger).onNavigateBack();
                 });
     }

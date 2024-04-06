@@ -1002,6 +1002,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testFeedReliabilityLoggerBackPressed() {
         StartSurfaceMediator mediator = createStartSurfaceMediator();
         showHomepageAndVerify(mediator);
@@ -1010,6 +1011,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -1019,13 +1021,8 @@ public class StartSurfaceMediatorUnitTest {
 
         showHomepageAndVerify(mediator);
 
-        doReturn(true).when(mSingleTabSwitcherModuleController).isDialogVisible();
         mediator.onBackPressed();
-        verify(mSingleTabSwitcherModuleController, times(1)).onBackPressed();
-
-        doReturn(false).when(mSingleTabSwitcherModuleController).isDialogVisible();
-        mediator.onBackPressed();
-        verify(mSingleTabSwitcherModuleController, times(2)).onBackPressed();
+        verify(mSingleTabSwitcherModuleController).onBackPressed();
     }
 
     /** Tests the logic of recording time spend in start surface. */

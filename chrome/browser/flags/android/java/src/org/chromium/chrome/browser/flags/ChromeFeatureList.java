@@ -532,7 +532,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBackGestureMoveToBackDuringStartup =
             newCachedFlag(BACK_GESTURE_MOVE_TO_BACK_DURING_STARTUP, true);
     public static final CachedFlag sBackGestureRefactorAndroid =
-            newCachedFlag(BACK_GESTURE_REFACTOR, false);
+            newCachedFlag(BACK_GESTURE_REFACTOR, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
