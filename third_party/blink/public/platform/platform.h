@@ -207,14 +207,10 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual base::TimeDelta GetHungRendererDelay() { return base::TimeDelta(); }
 
   // Creates an audio output device platform interface for Web Audio API.
-  // If `sample_rate` is not provided, the default sample rate of the sink will
-  // be used. If the provided `sample_rate` is not supported, the method will
-  // return nullptr.
   virtual std::unique_ptr<WebAudioDevice> CreateAudioDevice(
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      std::optional<float> sample_rate,
       media::AudioRendererSink::RenderCallback*) {
     return nullptr;
   }
