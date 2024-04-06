@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
@@ -749,6 +751,28 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
 
   ASSERT_TRUE(RunExtensionTest("file_browser/search_files", {},
                                {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetPdfThumbnail) {
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  base::FilePath downloads;
+  ASSERT_TRUE(
+      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
+          file_manager::util::GetDownloadsMountPointName(browser()->profile()),
+          &downloads));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::FilePath source = base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+                                .AppendASCII("pdf")
+                                .AppendASCII("test.pdf");
+    base::FilePath destination = downloads.AppendASCII("test.pdf");
+    ASSERT_TRUE(base::CopyFile(source, destination));
+  }
+
+  EXPECT_TRUE(RunExtensionTest("image_loader_private/get_pdf_thumbnail",
+                               /*run_options=*/{},
+                               /*load_options=*/{.load_as_component = true}));
 }
 
 class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
