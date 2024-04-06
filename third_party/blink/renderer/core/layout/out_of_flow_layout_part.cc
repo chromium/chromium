@@ -285,13 +285,21 @@ class OOFCandidateStyleIterator {
   std::optional<wtf_size_t> try_option_index_;
 };
 
-const Element* GetPositionAnchorElement(const BlockNode& node) {
-  const ComputedStyle& style = node.Style();
-  const LayoutObject* anchor_object =
-      style.PositionAnchor()
-          ? node.GetLayoutBox()->FindTargetAnchor(*style.PositionAnchor())
-          : node.GetLayoutBox()->AcceptableImplicitAnchor();
-  return anchor_object ? DynamicTo<Element>(anchor_object->GetNode()) : nullptr;
+const Element* GetPositionAnchorElement(
+    const BlockNode& node,
+    const LogicalAnchorQuery& anchor_query) {
+  if (const ScopedCSSName* specifier = node.Style().PositionAnchor()) {
+    if (const LogicalAnchorReference* reference =
+            anchor_query.AnchorReference(*node.GetLayoutBox(), specifier);
+        reference && reference->layout_object) {
+      return DynamicTo<Element>(reference->layout_object->GetNode());
+    }
+    return nullptr;
+  }
+  if (auto* element = DynamicTo<Element>(node.GetDOMNode())) {
+    return element->ImplicitAnchorElement();
+  }
+  return nullptr;
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
@@ -302,8 +310,12 @@ const Element* GetPositionAnchorElement(const BlockNode& node) {
 // updated later during the post-layout intersection observer step.
 void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
-    const BlockNode& node) {
+    const BlockNode& node,
+    const LogicalAnchorQuery* anchor_query) {
   if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    return;
+  }
+  if (!anchor_query) {
     return;
   }
 
@@ -335,8 +347,9 @@ void UpdatePositionVisibilityAfterLayout(
   Element* anchored = DynamicTo<Element>(node.GetDOMNode());
   // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
   // The spec is still in-flux about whether we should use multiple anchors
-  // (from `anchor()` and `anchor-size()`), or just the default/implicit anchor.
-  const Element* anchor = anchored ? GetPositionAnchorElement(node) : nullptr;
+  // (from `anchor()` and `anchor-size()`), or just the default anchor.
+  const Element* anchor =
+      anchored ? GetPositionAnchorElement(node, *anchor_query) : nullptr;
   if (is_anchor_positioned && has_anchors_visible_visibility && anchor) {
     anchored->EnsureAnchorPositionScrollData()
         .EnsureAnchorPositionVisibilityObserver()
@@ -2298,7 +2311,8 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
       offset_info.non_overflowing_scroll_ranges);
 
   UpdatePositionVisibilityAfterLayout(offset_info,
-                                      oof_node_to_layout.node_info.node);
+                                      oof_node_to_layout.node_info.node,
+                                      container_builder_->AnchorQuery());
 
   return layout_result;
 }
