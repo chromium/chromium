@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/epoch_topics.h"
@@ -52,8 +53,13 @@ class BrowsingTopicsCalculator {
     kFailureApiUsageContextQueryError = 2,
     kFailureAnnotationExecutionError = 3,
     kFailureTaxonomyVersionNotSupportedInBinary = 4,
+    kHangingAfterApiUsageRequested = 5,
+    kHangingAfterHistoryRequested = 6,
+    kHangingAfterModelRequested = 7,
+    kHangingAfterAnnotationRequested = 8,
+    kTerminated = 9,
 
-    kMaxValue = kFailureTaxonomyVersionNotSupportedInBinary,
+    kMaxValue = kTerminated,
   };
 
   using CalculateCompletedCallback = base::OnceCallback<void(EpochTopics)>;
@@ -65,6 +71,7 @@ class BrowsingTopicsCalculator {
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      base::Time session_start_time,
       CalculateCompletedCallback callback);
 
   BrowsingTopicsCalculator(const BrowsingTopicsCalculator&) = delete;
@@ -82,6 +89,15 @@ class BrowsingTopicsCalculator {
   virtual void CheckCanCalculate();
 
  private:
+  enum class Progress {
+    kStarted,
+    kApiUsageRequested,
+    kHistoryRequested,
+    kModelRequested,
+    kAnnotationRequested,
+    kCompleted,
+  };
+
   // Get the top `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics. If there
   // aren't enough topics, pad with random ones. Return the result topics, and
   // the starting index of the padded topics (or
@@ -106,6 +122,8 @@ class BrowsingTopicsCalculator {
   void OnCalculateCompleted(CalculatorResultStatus status,
                             EpochTopics epoch_topics);
 
+  void RecordHangingMetrics();
+
   // Those pointers are safe to hold and use throughout the lifetime of
   // `BrowsingTopicsService`, which owns this object.
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
@@ -120,6 +138,10 @@ class BrowsingTopicsCalculator {
 
   base::Time history_data_start_time_;
   base::Time api_usage_context_data_start_time_;
+
+  base::OneShotTimer hanging_metrics_recorder_timer_;
+
+  Progress progress_ = Progress::kStarted;
 
   // The history hosts over
   // `kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering` epochs,
@@ -136,6 +158,8 @@ class BrowsingTopicsCalculator {
   // Whether this calculator was generated via the topics-internals page rather
   // than via a scheduled task.
   bool is_manually_triggered_;
+
+  base::Time session_start_time_;
 
   base::WeakPtrFactory<BrowsingTopicsCalculator> weak_ptr_factory_{this};
 };

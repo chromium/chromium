@@ -364,7 +364,8 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
               &BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded,
               base::Unretained(this))),
       annotator_(std::move(annotator)),
-      topic_accessed_callback_(std::move(topic_accessed_callback)) {
+      topic_accessed_callback_(std::move(topic_accessed_callback)),
+      session_start_time_(base::Time::Now()) {
   DCHECK(topic_accessed_callback_);
   privacy_sandbox_settings_observation_.Observe(privacy_sandbox_settings);
   history_service_observation_.Observe(history_service);
@@ -639,10 +640,11 @@ BrowsingTopicsServiceImpl::CreateCalculator(
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     bool is_manually_triggered,
+    base::Time session_start_time,
     BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
   return std::make_unique<BrowsingTopicsCalculator>(
       privacy_sandbox_settings, history_service, site_data_manager, annotator,
-      epochs, is_manually_triggered, std::move(callback));
+      epochs, is_manually_triggered, session_start_time, std::move(callback));
 }
 
 const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
@@ -672,6 +674,7 @@ void BrowsingTopicsServiceImpl::CalculateBrowsingTopics(
   topics_calculator_ = CreateCalculator(
       privacy_sandbox_settings_, history_service_, site_data_manager_,
       annotator_.get(), browsing_topics_state_.epochs(), is_manually_triggered,
+      session_start_time_,
       base::BindOnce(
           &BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted,
           base::Unretained(this)));

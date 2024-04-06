@@ -42,6 +42,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failure: annotation execution error"/>
   <int value="4"
       label="Failure: taxonomy version not supported in the Chrome binary"/>
+  <int value="5" label="Hanging: after api usage requested"/>
+  <int value="6" label="Hanging: after history requested"/>
+  <int value="7" label="Hanging: after model requested"/>
+  <int value="8" label="Hanging: after annotation requested"/>
+  <int value="9"
+      label="Terminated: explicitly canceled, or due to browser shutdown"/>
 </enum>
 
 <enum name="BrowsingTopicsFetchRequestOrRedirectResult">

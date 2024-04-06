@@ -338,7 +338,7 @@ class HistoryService : public KeyedService,
   // Queries all history with the given options (see QueryOptions in
   // history_types.h).  If empty, all results matching the given options
   // will be returned.
-  base::CancelableTaskTracker::TaskId QueryHistory(
+  virtual base::CancelableTaskTracker::TaskId QueryHistory(
       const std::u16string& text_query,
       const QueryOptions& options,
       QueryHistoryCallback callback,

@@ -43,13 +43,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus"
+<histogram name="BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus2"
     enum="BrowsingTopicsCalculatorResultStatus" expires_after="2024-09-29">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Records the browsing topics calculation result status (i.e. success, or the
-    failure reason). Recored at the end of each (weekly) topics calculation.
+    failure reason). Topics calculations can typically occur weekly, but can
+    also be manually triggered from the topics-internals page. Recored when a
+    topics calculation completes, or when it's detected to be hanging, or when
+    it's canceled due to data races or browser shutdown.
   </summary>
 </histogram>
 
@@ -63,6 +66,30 @@ chromium-metrics-reviews@google.com.
     calculation. Recorded during each (weekly) topics calculation after the
     observation domains are derived. In case of a calculation failure (e.g.
     permission denied, etc.), this metric won't be recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart"
+    units="days" expires_after="2024-10-03">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the duration in days between the profile session start and the topic
+    calculation start. Recorded when a topic calculation is detected to be
+    hanging (i.e. not finished within 30 seconds after started).
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.Hanging.SecondsSinceSessionStart"
+    units="seconds" expires_after="2024-10-03">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the duration in seconds between the profile session start and the
+    topic calculation start. Recorded when a topic calculation is detected to be
+    hanging (i.e. not finished within 30 seconds after started).
   </summary>
 </histogram>
 
@@ -91,6 +118,17 @@ chromium-metrics-reviews@google.com.
     after the observation domains are derived. In case of a calculation failure
     (e.g. permission denied; candidate topic was blocked; etc.), this metric
     won't be recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart"
+    units="days" expires_after="2024-10-03">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the duration in days between the profile session start and the topic
+    calculation start. Recorded when a topic calculation starts.
   </summary>
 </histogram>
 

@@ -44,6 +44,8 @@ class BrowsingTopicsInternalsPageHandler
                      browsing_topics::mojom::PageHandler::ClassifyHostsCallback
                          callback) override;
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
  private:
   void OnGetModelInfoCompleted(
       browsing_topics::mojom::PageHandler::GetModelInfoCallback callback);

@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/semantic_tree.h"
 #include "components/history/core/browser/history_service.h"
@@ -68,9 +68,29 @@ base::Time DeriveApiUsageContextDataStartTime(
 
 void RecordCalculatorResultMetrics(
     const BrowsingTopicsCalculator::CalculatorResultStatus& status,
-    const EpochTopics& epoch_topics) {
+    const EpochTopics& epoch_topics,
+    base::TimeDelta calculation_start_time_since_session_start) {
   base::UmaHistogramEnumeration(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus", status);
+      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus2", status);
+
+  if (status == BrowsingTopicsCalculator::CalculatorResultStatus::
+                    kHangingAfterApiUsageRequested ||
+      status == BrowsingTopicsCalculator::CalculatorResultStatus::
+                    kHangingAfterHistoryRequested ||
+      status == BrowsingTopicsCalculator::CalculatorResultStatus::
+                    kHangingAfterModelRequested ||
+      status == BrowsingTopicsCalculator::CalculatorResultStatus::
+                    kHangingAfterAnnotationRequested) {
+    base::UmaHistogramExactLinear(
+        "BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart",
+        calculation_start_time_since_session_start.InDays(),
+        /*exclusive_max=*/30);
+    base::UmaHistogramExactLinear(
+        "BrowsingTopics.EpochTopicsCalculation.Hanging."
+        "SecondsSinceSessionStart",
+        calculation_start_time_since_session_start.InSeconds(),
+        /*exclusive_max=*/60);
+  }
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_EpochTopicsCalculationResult builder(
@@ -185,6 +205,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     bool is_manually_triggered,
+    base::Time session_start_time,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
@@ -192,7 +213,13 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       annotator_(annotator),
       calculate_completed_callback_(std::move(callback)),
       calculation_time_(base::Time::Now()),
-      is_manually_triggered_(is_manually_triggered) {
+      is_manually_triggered_(is_manually_triggered),
+      session_start_time_(session_start_time) {
+  base::UmaHistogramExactLinear(
+      "BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart",
+      (calculation_time_ - session_start_time_).InDays(),
+      /*exclusive_max=*/30);
+
   history_data_start_time_ = DeriveHistoryDataStartTime(
       calculation_time_, epochs,
       privacy_sandbox_settings_->TopicsDataAccessibleSince());
@@ -202,12 +229,29 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
 
   // Continue asynchronously so that `calculate_completed_callback_` isn't
   // called synchronously while `this` is being constructed.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BrowsingTopicsCalculator::CheckCanCalculate,
                                 weak_ptr_factory_.GetWeakPtr()));
+
+  hanging_metrics_recorder_timer_.Start(
+      FROM_HERE, base::Seconds(30),
+      base::BindOnce(&BrowsingTopicsCalculator::RecordHangingMetrics,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-BrowsingTopicsCalculator::~BrowsingTopicsCalculator() = default;
+BrowsingTopicsCalculator::~BrowsingTopicsCalculator() {
+  // If the calculation completed, and/or if the hanging metrics were already
+  // recorded at the hanging detection timeout, then don't record the metrics
+  // about termination.
+  if (!hanging_metrics_recorder_timer_.IsRunning() ||
+      progress_ == Progress::kCompleted) {
+    return;
+  }
+
+  RecordCalculatorResultMetrics(CalculatorResultStatus::kTerminated,
+                                EpochTopics(calculation_time_),
+                                calculation_time_ - session_start_time_);
+}
 
 uint64_t BrowsingTopicsCalculator::GenerateRandUint64() {
   return base::RandUint64();
@@ -292,11 +336,15 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 }
 
 void BrowsingTopicsCalculator::CheckCanCalculate() {
+  CHECK_EQ(progress_, Progress::kStarted);
+
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
     OnCalculateCompleted(CalculatorResultStatus::kFailurePermissionDenied,
                          EpochTopics(calculation_time_));
     return;
   }
+
+  progress_ = Progress::kApiUsageRequested;
 
   // Get the the api usages context map (from the calling context domain to a
   // set of history hosts) so that we can figure out which topics the APIs were
@@ -311,6 +359,8 @@ void BrowsingTopicsCalculator::CheckCanCalculate() {
 
 void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
     browsing_topics::ApiUsageContextQueryResult result) {
+  CHECK_EQ(progress_, Progress::kApiUsageRequested);
+
   DCHECK(host_context_domains_map_.empty());
 
   if (!result.success) {
@@ -335,6 +385,8 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
   options.end_time = calculation_time_;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
+  progress_ = Progress::kHistoryRequested;
+
   history_service_->QueryHistory(
       std::u16string(), options,
       base::BindOnce(
@@ -345,6 +397,8 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
 
 void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
     history::QueryResults results) {
+  CHECK_EQ(progress_, Progress::kHistoryRequested);
+
   DCHECK(history_hosts_count_.empty());
 
   std::set<std::string> raw_hosts;
@@ -368,6 +422,8 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
       "BrowsingTopics.EpochTopicsCalculation.EligibleDistinctHistoryHostsCount",
       history_hosts_count_.size());
 
+  progress_ = Progress::kModelRequested;
+
   // When the input is empty, we still want to wait for the model availability
   // status to be known, before querying the model version. Thus we simply
   // always call `NotifyWhenModelAvailable()` first. If the model
@@ -381,10 +437,14 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
 
 void BrowsingTopicsCalculator::OnRequestModelCompleted(
     std::vector<std::string> raw_hosts) {
+  CHECK_EQ(progress_, Progress::kModelRequested);
+
   if (raw_hosts.empty()) {
     OnGetTopicsForHostsCompleted(/*results=*/{});
     return;
   }
+
+  progress_ = Progress::kAnnotationRequested;
 
   annotator_->BatchAnnotate(
       base::BindOnce(&BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted,
@@ -394,6 +454,12 @@ void BrowsingTopicsCalculator::OnRequestModelCompleted(
 
 void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     const std::vector<Annotation>& results) {
+  if (results.empty()) {
+    CHECK_EQ(progress_, Progress::kModelRequested);
+  } else {
+    CHECK_EQ(progress_, Progress::kAnnotationRequested);
+  }
+
   std::optional<optimization_guide::ModelInfo> model_info =
       annotator_->GetBrowsingTopicsModelInfo();
 
@@ -483,13 +549,55 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 void BrowsingTopicsCalculator::OnCalculateCompleted(
     CalculatorResultStatus status,
     EpochTopics epoch_topics) {
+  progress_ = Progress::kCompleted;
+
   DCHECK(status != CalculatorResultStatus::kSuccess || !epoch_topics.empty());
 
-  RecordCalculatorResultMetrics(status, epoch_topics);
+  // We allow the calculation to complete normally if the completion occurs
+  // after the hanging detection timeout. But in that case, we only record the
+  // hanging metrics and skip the regular success/failure metrics.
+  if (hanging_metrics_recorder_timer_.IsRunning()) {
+    RecordCalculatorResultMetrics(status, epoch_topics,
+                                  calculation_time_ - session_start_time_);
+  }
 
   std::move(calculate_completed_callback_).Run(std::move(epoch_topics));
 
   // Do not add code after this. BrowsingTopicsCalculator has been destroyed.
+}
+
+void BrowsingTopicsCalculator::RecordHangingMetrics() {
+  // Because `RecordHangingMetrics` was posted later and given a higher delay,
+  // it must occur after `CheckCanCalculate`. And because `CheckCanCalculate`
+  // updates `progress_` from `kStarted` to `kApiUsageRequested`, by the time
+  // `RecordHangingMetrics` runs, `progress_` should never be `kStarted`.
+  CHECK_NE(progress_, Progress::kStarted);
+
+  // When the calculation completes, it updates `progress_` to `kCompleted` and
+  // triggers the destruction of `this`. Thus, by the time
+  // `RecordHangingMetrics` runs, `progress_` should never be `kCompleted`.
+  CHECK_NE(progress_, Progress::kCompleted);
+
+  CalculatorResultStatus status;
+  switch (progress_) {
+    case Progress::kApiUsageRequested:
+      status = CalculatorResultStatus::kHangingAfterApiUsageRequested;
+      break;
+    case Progress::kHistoryRequested:
+      status = CalculatorResultStatus::kHangingAfterHistoryRequested;
+      break;
+    case Progress::kModelRequested:
+      status = CalculatorResultStatus::kHangingAfterModelRequested;
+      break;
+    case Progress::kAnnotationRequested:
+      status = CalculatorResultStatus::kHangingAfterAnnotationRequested;
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  RecordCalculatorResultMetrics(status, EpochTopics(calculation_time_),
+                                calculation_time_ - session_start_time_);
 }
 
 }  // namespace browsing_topics

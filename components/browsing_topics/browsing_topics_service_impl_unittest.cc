@@ -128,6 +128,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      base::Time session_start_time,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback) override {
     DCHECK(!mock_calculator_results_.empty());
 
@@ -138,7 +139,8 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
 
     return std::make_unique<TesterBrowsingTopicsCalculator>(
         privacy_sandbox_settings, history_service, site_data_manager, annotator,
-        std::move(callback), std::move(next_epoch), calculator_finish_delay_);
+        session_start_time, std::move(callback), std::move(next_epoch),
+        calculator_finish_delay_);
   }
 
   const BrowsingTopicsState& browsing_topics_state() override {

@@ -10,6 +10,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_page_handler.h"
+#include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -100,6 +102,17 @@ class BrowsingTopicsInternalsBrowserTestBase : public InProcessBrowserTest {
  public:
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void FlushForTesting() {
+    BrowsingTopicsInternalsUI* internals_ui =
+        static_cast<BrowsingTopicsInternalsUI*>(
+            web_contents()->GetWebUI()->GetController());
+
+    BrowsingTopicsInternalsPageHandler* page_handler =
+        internals_ui->page_handler();
+
+    page_handler->FlushForTesting();
   }
 
   // Executing javascript in the WebUI requires using an isolated world in which
@@ -719,6 +732,8 @@ Model file path: /test_path/test_model.tflite
                      classify_hosts_script,
                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                      /*world_id=*/1));
+
+  FlushForTesting();
 
   EXPECT_EQ(GetHostsClassificationResultTableContent(),
             R"(foo1.com|1. Arts & Entertainment;2. Acting & Theater;|

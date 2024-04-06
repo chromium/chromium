@@ -79,6 +79,7 @@ class BrowsingTopicsServiceImpl
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      base::Time session_start_time,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback);
 
   // Allow tests to access `browsing_topics_state_`.
@@ -189,6 +190,8 @@ class BrowsingTopicsServiceImpl
   base::OneShotTimer schedule_calculate_timer_;
 
   TopicAccessedCallback topic_accessed_callback_;
+
+  base::Time session_start_time_;
 
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>

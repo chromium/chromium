@@ -40,6 +40,10 @@ class BrowsingTopicsInternalsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<browsing_topics::mojom::PageHandler> receiver);
 
+  BrowsingTopicsInternalsPageHandler* page_handler() {
+    return page_handler_.get();
+  }
+
  private:
   std::unique_ptr<BrowsingTopicsInternalsPageHandler> page_handler_;
 
