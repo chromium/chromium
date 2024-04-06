@@ -28,7 +28,7 @@ EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 
 MAX_DISCOVERY_RETRIES = 3
 MAX_REQUEST_RETRIES = 5
-
+MAX_PAGE_SIZE = 500
 
 class Status(enum.Enum):
     NEW = enum.auto()
@@ -161,6 +161,24 @@ class BuganizerClient:
         except Exception as e:
             logging.error('[BuganizerClient] Failed to GetIssue '
                           'error: %s', str(e))
+            return {'error': str(e)}
+
+    def GetIssueList(self, query_string, limit: int = MAX_PAGE_SIZE):
+        """Makes a request to the issue tracker to get list of issues by query"""
+        # TODO(crbug.com/333112144) : Use nextPageToken in response to support
+        # more than 500 issues
+        request = self._service.issues().list(query=query_string,
+                                              pageSize=min(
+                                                  MAX_PAGE_SIZE, limit),
+                                              view='FULL')
+        try:
+            response = self._ExecuteRequest(request)
+            issues = response.get('issues', []) if response else []
+            return issues
+        except Exception as e:
+            logging.error(
+                '[BuganizerClient] Failed to GetIssueList '
+                'error: %s', str(e))
             return {'error': str(e)}
 
     def GetIssueComments(self, issue_id: IssueID):
