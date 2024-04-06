@@ -1695,13 +1695,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bauhaus.jpg',
             },
             {
-              value: SeaPenTemplateOption.kArtMovementClassicist,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementClassicist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/classicist.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kArtMovementWatercolor,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementWatercolor'),
@@ -1714,13 +1707,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionArtMovementAbstract'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementGraphicDesign,
-              translation: loadTimeData.getString(
-                  'seaPenOptionArtMovementGraphicDesign'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/graphic.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementModernArt,
@@ -2697,13 +2683,6 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
                   'seaPenOptionVcBackgroundDreamscapesObjectTower'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tower.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectChair,
-              translation: loadTimeData.getString(
-                  'seaPenOptionVcBackgroundDreamscapesObjectChair'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/chair.jpg',
             },
           ],
         ],
