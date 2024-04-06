@@ -8186,14 +8186,7 @@
         {}
        ]
       ]
-     },
-     "detached-context-crash.html": [
-      "56271f12c3ae76bfd0d11e3abc8d09f15167c906",
-      [
-       null,
-       {}
-      ]
-     ]
+     }
     },
     "readable-streams": {
      "crashtests": {
@@ -71122,6 +71115,19 @@
        {}
       ]
      ],
+     "position-visibility-anchors-visible-position-fixed.tentative.html": [
+      "25665ae4668433b8d800a8a023de047b60571e07",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-anchors-visible-position-fixed-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-visibility-anchors-visible-stacked-child.tentative.html": [
       "7c0d5dc6aadd36fc9a894dbf0add608f5c0e31c4",
       [
@@ -93403,6 +93409,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "clip-opacity-out-of-flow.html": [
+      "2ad019380642acb4e002bc4bce1a86d547e84ea3",
+      [
+       null,
+       [
+        [
+         "/css/css-color/clip-opacity-out-of-flow-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            60000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "color-001.html": [
@@ -158679,6 +158714,136 @@
        [
         [
          "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-001.tentative.html": [
+      "79667f23fbdc3d941484c343b2cf0a04ec34363f",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-002.tentative.html": [
+      "cecb9d52bc63ec161dd96dfadcef166edd9334ed",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-003.tentative.html": [
+      "e4bd1de222e2b75455ae50d4c8bfa5c62b0c47c2",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-004.tentative.html": [
+      "483e6d1da6dc739599e25f3172b0ad248ac23c1b",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-005.tentative.html": [
+      "3dc77831a06ffd28df3a5a4dca6045cba30fe1dd",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-006.tentative.html": [
+      "f18fed6c2daea0ab6e1ab715c1257407067fa97b",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-007.tentative.html": [
+      "f0a1f58c8d304aead5490db007f763d437e9c5ad",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-008.tentative.html": [
+      "9c62e44f3897b5868dde26a6d6c203c7ddea4b8a",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-009.tentative.html": [
+      "dce04d720cfc83d82e2228204b7f6d41e244aabf",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-with-abspos-010.tentative.html": [
+      "325278b3a0b44f480ea020c575b9427b33f2ec4e",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-with-abspos-010-ref.html",
          "=="
         ]
        ],
@@ -271779,7 +271944,7 @@
        ],
        "stylable-select": {
         "select-appearance-custom-button-no-datalist.tentative.html": [
-         "4e984de2740fe1d0bd844a02c21a512f8a59ef84",
+         "94d7fd53b340100bf67e47a5c79ab7cf6c073916",
          [
           null,
           [
@@ -271792,7 +271957,7 @@
          ]
         ],
         "select-appearance-no-button-custom-datalist.tentative.html": [
-         "9182395e9e6e64ce18a3eb9a9b5b3eef93a43d06",
+         "87425cf7a321168e9b83172cf160b3c393fffb3d",
          [
           null,
           [
@@ -271805,7 +271970,7 @@
          ]
         ],
         "select-appearance-no-button-no-datalist.tentative.html": [
-         "b3e028097b324441a9be97f742197426be5307b7",
+         "b2a6b5a6d394ba70b67591f4c5705a2955fe7a60",
          [
           null,
           [
@@ -271818,7 +271983,7 @@
          ]
         ],
         "select-child-button-and-datalist-invalidation.tentative.html": [
-         "6d3419808bd02bb9010a92d268275f092b93a36f",
+         "b6d85ac90af35c02b0805d0ace8d049e6404949d",
          [
           null,
           [
@@ -271831,7 +271996,7 @@
          ]
         ],
         "select-child-button-and-datalist.tentative.html": [
-         "aeb4cd75ac43bda478500b3c4524f82fc9376b1d",
+         "610861aad8ad9c4689abc99eb7a8e39eb1e0f238",
          [
           null,
           [
@@ -273224,7 +273389,7 @@
      },
      "permission-element": {
       "bounded-css-properties-reference.tentative.html": [
-       "85bf3071f83cddad502d1a2191de8fa9cdb20e1f",
+       "b8337ab87d84125a9fc0a50aa7cecce8cb23824a",
        [
         null,
         [
@@ -301439,6 +301604,16 @@
       "5cd863500a7729a8acf0eaab5883ca58cfcfb935",
       []
      ],
+     "parsing": {
+      "position-visibility-computed.tentative-expected.txt": [
+       "2b2ffbee543224feba89d6f53a9ef6f9158d62db",
+       []
+      ],
+      "position-visibility-parsing.tentative-expected.txt": [
+       "0c547ba7b6af1ed370b00c95cb6425d708d94300",
+       []
+      ]
+     },
      "position-anchor-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
       []
@@ -301469,6 +301644,10 @@
      ],
      "position-visibility-anchors-visible-non-intervening-container-ref.html": [
       "3b6532e27b02a21037926adda9c4204c3ac6c017",
+      []
+     ],
+     "position-visibility-anchors-visible-position-fixed-ref.html": [
+      "e24992fd5ea44d66f01c275049436d15349f7a2b",
       []
      ],
      "position-visibility-anchors-visible-ref.html": [
@@ -305061,6 +305240,10 @@
      ],
      "border-color-ref.xht": [
       "28f67840548fbd1a3c2c97dfccbf97575f7e9728",
+      []
+     ],
+     "clip-opacity-out-of-flow-ref.html": [
+      "7610a6f1911aecb33cedf7fad16c48977a5d14ba",
       []
      ],
      "color-mix-basic-001-ref.html": [
@@ -310625,11 +310808,19 @@
       "c10f0c1dd0356e3bc4fbcbd759091e6105512bbe",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "5e69c923abf5bfb8d62b862e956b2a14c0b031c4",
+      []
+     ],
      "alternates-order-ref.html": [
       "fdb477fe168c17d21f5eecaf4d6a7aa6de4581ae",
       []
      ],
      "animations": {
+      "WEB_FEATURES.yml": [
+       "f99e4bb4e0fbd4f5818c3615f1d20dc5a0230ec1",
+       []
+      ],
       "font-size-adjust-composition-expected.txt": [
        "0c3e5140a29523ccbfbc0236da6c412f1ba0f26f",
        []
@@ -311588,6 +311779,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "6a24d269b48134bf8e4e99f8e805a53fae91d1e4",
+       []
+      ],
       "ahem-ex-500.otf": [
        "9966da1929c09a29a7f69148b988764ad1a44795",
        []
@@ -317944,6 +318139,10 @@
        "53487a6d85ecaafdc33738292312120ffed4bb6a",
        []
       ],
+      "WEB_FEATURES.yml": [
+       "c035a0ee11b73d739a0870d7edc1afba8ae43563",
+       []
+      ],
       "at-font-face-descriptors-expected.txt": [
        "e8f7512b9b234fbcbbe0cd4363cdfb2ca94cc90f",
        []
@@ -324007,10 +324206,6 @@
       "8038f369cde2b496106223551ab9441a79d2621e",
       []
      ],
-     "serialize-group-rules-with-decls-expected.txt": [
-      "65505052af3c6364bbd9e5845b1d270907402a54",
-      []
-     ],
      "supports-is-consistent-ref.html": [
       "0eb8cd16a1688183fa52bc6bc9f2b4243123513d",
       []
@@ -324290,6 +324485,30 @@
       ],
       "line-clamp-015-ref.html": [
        "1af45c1225c2df9ed258eb69c687f11c4be9a965",
+       []
+      ],
+      "line-clamp-with-abspos-001-ref.html": [
+       "d756162dde0c54bd52646597b01bbff8a80f5fd8",
+       []
+      ],
+      "line-clamp-with-abspos-005-ref.html": [
+       "3b1f9218e887a7e50745f0c5e540c099475a59df",
+       []
+      ],
+      "line-clamp-with-abspos-006-ref.html": [
+       "4b55c37a033ea4d4a9d97b5fdf8035a60aace4bd",
+       []
+      ],
+      "line-clamp-with-abspos-007-ref.html": [
+       "e3dcc696e39684b47e1785968f29ec9adf8f9c0b",
+       []
+      ],
+      "line-clamp-with-abspos-008-ref.html": [
+       "373b2755c1d617e1716afe8060c28b246d52c33e",
+       []
+      ],
+      "line-clamp-with-abspos-010-ref.html": [
+       "ecc2fcee1b5219b310ef15b28f0684b07d84baf6",
        []
       ],
       "overflow-body-no-propagation-ref.html": [
@@ -350658,7 +350877,7 @@
       []
      ],
      "utils.js": [
-      "462bda37fc67afe4d4a48eefd1f171a814d4878d",
+      "49148025187b1b57e714661e34801b8be1259461",
       []
      ],
      "web-bluetooth-inner.html": [
@@ -354578,7 +354797,7 @@
       []
      ],
      "FileSystemWritableFileStream-write.js": [
-      "0b12def74c965d689908b7aa689e209e02ee38fa",
+      "b0485035b9174ef2097f0a0a491aef501fc13a49",
       []
      ],
      "FileSystemWritableFileStream.js": [
@@ -359837,7 +360056,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "117a301e776adfbab150c3f771602ea3de63a534",
+       "57077f60572addede47cd2775d3881b7dfece6a9",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -359870,15 +360089,15 @@
         []
        ],
        "testharness_element.html": [
-        "641fe19961d666e0db876c2c06abdda72cc0f70a",
+        "c8de772ea64183c11d4e91949064937f05d15235",
         []
        ],
        "testharness_offscreen.html": [
-        "89f2eeed5e4b50466ce9884a4bf83bc3e0c81de8",
+        "68147680e13318a2c3e646eb330863547280573b",
         []
        ],
        "testharness_worker.js": [
-        "1dd44cab89d125f36fc1e886c07246a9a8003109",
+        "570d479a0a6d6231885b2353c851b2b709b6054a",
         []
        ]
       },
@@ -359930,7 +360149,7 @@
         []
        ],
        "fill-and-stroke-styles.yaml": [
-        "10d7295035e57c09b5f9cfcafa845f8a0de415b4",
+        "72d027a634e71aa84e24b34a6d483d91f594b6de",
         []
        ],
        "filters.yaml": [
@@ -359938,7 +360157,7 @@
         []
        ],
        "layers.yaml": [
-        "85816cf75c27f2d6fe679e9e79ac4dc3b71acdbf",
+        "634a0ac22b286dadee610cb26bf1dcd6f9a351d5",
         []
        ],
        "line-styles.yaml": [
@@ -368770,7 +368989,7 @@
      "invokers": {
       "resources": {
        "invoker-utils.js": [
-        "8420f24b6f738a33511b63d78c89978736f188c8",
+        "4261f9c0d32fa2911a3a8ce252246e55a655655f",
         []
        ]
       }
@@ -368883,7 +369102,7 @@
      },
      "permission-element": {
       "bounded-css-properties-reference-expected.html": [
-       "248f4969f448e80acb1cb7f406e507a2ff4c038b",
+       "c62ff5b24d66b2cc8499f7dfe891f307c7a186f3",
        []
       ],
       "display-css-property-reference-expected.html": [
@@ -391879,7 +392098,7 @@
      []
     ],
     "OWNERS": [
-     "633a0b129157e398557cd806be96ca6cdcd3f0ab",
+     "4cac6ef3f56f2b204c2cabaf9d4d914e73cd1b48",
      []
     ],
     "compile_worker.js": [
@@ -396320,6 +396539,14 @@
    "webrtc-encoded-transform": {
     "META.yml": [
      "8947732b6fbf4a1799b6d3a73e69d5e29e2f7daa",
+     []
+    ],
+    "RTCRtpScriptTransform-bad-chunk-worker.js": [
+     "cc9dee42ac98211bee90b51bd9dc129122d549fd",
+     []
+    ],
+    "RTCRtpScriptTransform-bad-chunk.https-expected.txt": [
+     "7833a53a9f093790f9afe18f5e489541358baa4b",
      []
     ],
     "helper.js": [
@@ -439960,6 +440187,34 @@
        {}
       ]
      ],
+     "anchor-transition-attr.html": [
+      "50f1154532e63b0cb527e4499c701b584eb04dda",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-default.html": [
+      "1bee0cbbe4cd469ec28f77eb18ee0b9b4c6dcc43",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-eval.html": [
+      "cf65742b2dc4e762118b51a5a07592c0cf912c73",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-name.html": [
+      "ea7b403e6120ee31796e5f6e1c8e1cc3f9cb9514",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-typed-om.html": [
       "d4fec49dd3d9e1169ab198106cff3211b1198b51",
       [
@@ -440258,6 +440513,20 @@
      ],
      "position-try-pseudo-element.html": [
       "5895f2a4077b697b4d59dec4e0cb2dbace4aefd6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-transition-basic.html": [
+      "3bb982f073a6c4559f5778207b96ae4fd5a095d0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-transition-flip.html": [
+      "6adacadfd42e4405297e76d7819201c58dd36184",
       [
        null,
        {}
@@ -464547,6 +464816,13 @@
       ],
       "line-breaking-028.html": [
        "c82d4762a59765084a6081ec08759a1619d6b1d4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "line-breaking-029.html": [
+       "c390d2272d743a790543ef6d21b3a867b4af4895",
        [
         null,
         {}
@@ -502917,8 +503193,85 @@
       {}
      ]
     ],
+    "fence-report-event-cross-origin-content-initiated.https.html": [
+     "9c1d47d050869b47bc75879128bd83581eb7a738",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-nested-urn-iframe.https.html": [
+     "7d0544a5ad109d2a267b2387ddc95c77eb17ba35",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-nested.https.html": [
+     "4d1262f4b13ee7efad92bec70682ea1768a2e232",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-no-embedder-opt-in.https.html": [
+     "d8fa5133cd10735b3ad249069370f6e9a392e02d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-no-subframe-opt-in.https.html": [
+     "2b054c1837c2892ca36291fc076669fabafbb51d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-urn-iframe-content-initiated.https.html": [
+     "21c9ea1a4316be8c4fdfb7cfe5da6305b7ee42da",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-urn-iframe-no-embedder-opt-in.https.html": [
+     "5d368fe7f1e8872ecb9285ce145e078d07a0c87c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-urn-iframe-no-subframe-opt-in.https.html": [
+     "df22749a9eaac67cba844175681e482b4112d8ea",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin-urn-iframe.https.html": [
+     "b37fec812d9bbe14e7598646e3404a48f0044d85",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-cross-origin.https.html": [
+     "df7ae776ab03995cd3bc77cfe5567a97fd7e168c",
+     [
+      null,
+      {}
+     ]
+    ],
     "fence-report-event-destination-url.https.html": [
      "6c0bdd82dcd0c74e5d455f1a7c3443bdd0ac0b7b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fence-report-event-sub-fencedframe.https.html": [
+     "0b3231ca9248dab73d260d33790ca01594add825",
      [
       null,
       {}
@@ -518496,7 +518849,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "c64b363249e9fcdd9859dd2abb15a6894c87efd4",
+      "5fa4fa252fde97d02795bf1013ce0df7afdc70e1",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -518551,7 +518904,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518611,7 +518972,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518671,7 +519040,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518731,7 +519108,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518791,7 +519176,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518851,14 +519244,22 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/auction-config.https.window.html?36-last",
+       "fledge/tentative/auction-config.https.window.html?36-40",
        {
         "script_metadata": [
          [
@@ -518911,7 +519312,151 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config.https.window.html?40-45",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config.https.window.html?46-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -518971,7 +519516,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -541660,70 +542213,70 @@
       },
       "layers": {
        "2d.layer.beginLayer-options.html": [
-        "658d7e0991702211b5b7ca344609c9f374530f16",
+        "573d3000557258cb823df0737673f35cacbb1e91",
         [
          null,
          {}
         ]
        ],
        "2d.layer.ctm.getTransform.html": [
-        "7a69c595272195e9c87e563704183b083c719d19",
+        "d669b3c522c7a3cb9827d57f95ebead4fbd550fa",
         [
          null,
          {}
         ]
        ],
        "2d.layer.exceptions-are-no-op.html": [
-        "7ab2080fca382babacd8908b1b5ebbddb9f2c2ad",
+        "facffd74e9cf095b3650df1d80b9747cafdf8c82",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-reset-endLayer.html": [
-        "74e05e1e48e7901aa0e2383eb66af0a7e14def3e",
+        "1544bbcb82d1ef21d991064249289889971456a7",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-restore.html": [
-        "1979cb6c73a1097d4351ca80331d68f9ce853cfd",
+        "3d33fbf7fb6880985bddf159af7e6a7f64b08501",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-save-endLayer.html": [
-        "c635ac75b99d8de628fa5d4fad4e04e286b99479",
+        "e48f806f320f4a173f5b30c130dac40765052810",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.endLayer.html": [
-        "c39a352d65fa5f5d41d550f199a8d859aec6cdb8",
+        "2950de37bc06bc0ee63896552da841f46e4cba14",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-beginLayer-restore.html": [
-        "e2d4d5658904ccf8650309b7e9c27a57f1512cf7",
+        "ff21610074fb4f79e39aba84bbac61d0c9832ec6",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-endLayer.html": [
-        "f4308e1191dddebd530f12b759b72c84c27ebabf",
+        "5c6da4b5bcc17db30dfa2fa8bc260c94bfd7ca60",
         [
          null,
          {}
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.html": [
-        "9283fd39b7d265860c0e1eafffcefc46783c4a87",
+        "5d755cfc498552a4543a6e3b843fd9929cdd74d6",
         [
          null,
          {}
@@ -541744,35 +542297,35 @@
         ]
        ],
        "2d.layer.malformed-operations.createPattern.html": [
-        "f927b96524d55fd430014b48256eff2c22ba6bb4",
+        "63686dc259f86e6df6ff29290f90759408bcba39",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.drawImage.html": [
-        "8bcc89d38e5b154d1954686d6453b1a1c7dd7a16",
+        "2d247796b8d4f614cbea258099e864a1af0ba048",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.getImageData.html": [
-        "5dc3fcc017c3f0f03b343ac7b59d8657d3c5af0b",
+        "8af171c02bf58d84bb8f4a63e2b5858a5dab2c08",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.putImageData.html": [
-        "fd4fc262c205cc43c4bb42200499b5b2e77abc7d",
+        "ae9a6b285a401292e470a2bd57fe4613d7f864da",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.toDataURL.html": [
-        "c9bb4f38750ac521f823f7556356117e8f007118",
+        "0e36accc64580c361a19ca9bf71866f26e62d3e1",
         [
          null,
          {}
@@ -552162,140 +552715,140 @@
       },
       "layers": {
        "2d.layer.beginLayer-options.html": [
-        "4fb042a1d89b82685629ca83a81b7f2d2a3ce4ed",
+        "354a03a134d31abf575e5eb03d3d62ce59468152",
         [
          null,
          {}
         ]
        ],
        "2d.layer.beginLayer-options.worker.js": [
-        "cafbc83f3e2fd74826f5d734c1a99f1423f11944",
+        "492ac3fcea187bdca39a26caaa7bd5d1ae0df1b9",
         [
          "html/canvas/offscreen/layers/2d.layer.beginLayer-options.worker.html",
          {}
         ]
        ],
        "2d.layer.ctm.getTransform.html": [
-        "b2306d95acb15dfa39a35e2082e0dd1b8fa616f8",
+        "919de40d2e579de25a6357e3874f01e5de15f026",
         [
          null,
          {}
         ]
        ],
        "2d.layer.ctm.getTransform.worker.js": [
-        "54b1fee5d0958de27d9e8f4520ebb43a8c6e0662",
+        "2d6e6ef8a2a45610082695d60972951df5b3735c",
         [
          "html/canvas/offscreen/layers/2d.layer.ctm.getTransform.worker.html",
          {}
         ]
        ],
        "2d.layer.exceptions-are-no-op.html": [
-        "a047c539cfbda487598412027f441f0794c44c07",
+        "29b316b256472ffc5c8338fd95a438868d0327a1",
         [
          null,
          {}
         ]
        ],
        "2d.layer.exceptions-are-no-op.worker.js": [
-        "bd1e3760847d1577cd76faf39e4d177195c3af63",
+        "6e253b26d55284e0fa2f16ad4ab0ca9a91cc1a92",
         [
          "html/canvas/offscreen/layers/2d.layer.exceptions-are-no-op.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-reset-endLayer.html": [
-        "c0b11aa6115b1526ebac823caace5bd489481223",
+        "e588e48b5f651a0abba2da77e48e7994afc91874",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.js": [
-        "1c147d6f349b0c6dbbd01322129ce8055899619f",
+        "cab1b9d92d8b8ce60ce6082a1f661fd1b875cfea",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-restore.html": [
-        "022532b329d4d657fb6c5eb56584989df1b077fe",
+        "30a981f75ac382835a6343372fdd6d3f1e3254ea",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-restore.worker.js": [
-        "1aa86635e65cdecdc27766f5e4f60125bf938cf5",
+        "287f8eb004f9d1df9bb9d3e0810edddc457409db",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-save-endLayer.html": [
-        "26dd0eee4bcfe01501b351248eed170f83e082a3",
+        "04992b115ec315fb5a48bdd2f89f2309f88b6cb2",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.beginLayer-save-endLayer.worker.js": [
-        "613921c67c2c0304ddf150b195a298e756b199ff",
+        "402bf5e0fd7532077e8d29c1b12049218d737d9d",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.endLayer.html": [
-        "440249980ad890359a9b857d3fb9408410d9cde5",
+        "5b7f8a851e11a84daf8ad0b6e5ad3ad434460d8b",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.endLayer.worker.js": [
-        "b2ba231b9c7d13788029242d9c2a52cd72679cc4",
+        "2229aa9628e005f0ff9b636dce8d7dac42cb6271",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-beginLayer-restore.html": [
-        "c2b09961acfa44a59f9f47559fd2566a4b12d585",
+        "2a6c9b1ccbf60c6e99f54905818fd31d3ee035aa",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-beginLayer-restore.worker.js": [
-        "d155379fcb38acfa06d1cd09011343e9960d89b4",
+        "711280a6de4b806a25a2f98c59d1570a08bc26e2",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.worker.html",
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-endLayer.html": [
-        "01b62d1e859d9f0bf1b98239f29ce88a21f60702",
+        "32ca1346636fa198b1807fa1f44600fc1db2c7e0",
         [
          null,
          {}
         ]
        ],
        "2d.layer.invalid-calls.save-endLayer.worker.js": [
-        "353c1b00cdc61bcdf3977a4f029eed1c2860edd4",
+        "af3667e50a2f1e1e147676d756f5e108bee8df4a",
         [
          "html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.worker.html",
          {}
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.html": [
-        "867553b45e0f4587eb1f3395c5a0b8236ae71615",
+        "cebdfd5f27ee86f59a55d6f2092641c9d275a89f",
         [
          null,
          {}
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.worker.js": [
-        "5c2bb73e8f8423aa0a3971ec6a1b8bfe60fdf2ba",
+        "a566cccf14bc89eaae903df97ab69b46c4806197",
         [
          "html/canvas/offscreen/layers/2d.layer.layer-rendering-state-reset-in-layer.worker.html",
          {}
@@ -552330,70 +552883,70 @@
         ]
        ],
        "2d.layer.malformed-operations.createPattern.html": [
-        "a206e64ceba18df1e711de83bb7ce6629c3d5c73",
+        "1b7a05c4d49f34fd34ca0005e83222b762051a59",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.createPattern.worker.js": [
-        "bcb42cba87ef4a3eaaf14692ddd19d134dc644c8",
+        "327776927bad460acd3cfe165b8d873d31888c6a",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations.createPattern.worker.html",
          {}
         ]
        ],
        "2d.layer.malformed-operations.drawImage.html": [
-        "e6a98721000483a7a6b4f0ba1ead58de03182a4f",
+        "63a1f816960519f57dc605a24af1a188a83ac344",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.drawImage.worker.js": [
-        "b66cdee62e7d4635989de3cdee8df3b4a0016203",
+        "73f441f179fd4fa3c1a4246b2e73b4984b7f0c5c",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations.drawImage.worker.html",
          {}
         ]
        ],
        "2d.layer.malformed-operations.getImageData.html": [
-        "87bc8c6ede5e958a3b032719c29c0ff988198bcc",
+        "365957be073a81e84f23c904829a88a3ddd98e87",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.getImageData.worker.js": [
-        "6a1a16fccb17963692fc1c87e36c60ec995ae69e",
+        "7ab2779651b762abd8837abf1c769386adab37c3",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations.getImageData.worker.html",
          {}
         ]
        ],
        "2d.layer.malformed-operations.putImageData.html": [
-        "e8059076bb0a068d5e85f3d4732966be6c5e024a",
+        "c9a2b32464e101a46850b641a1202d9a6b2eae5c",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.putImageData.worker.js": [
-        "8810c3a73cd362a8a8233e5b02ceeca7f11fdf8f",
+        "589c52d658c6b614a2bb57fdc4f504c7f6c4827c",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations.putImageData.worker.html",
          {}
         ]
        ],
        "2d.layer.malformed-operations.transferToImageBitmap.html": [
-        "79c216421f608e97ce02b3c1611be6b46367b370",
+        "c176b75f36dfe5a58396a0211190360f23143f92",
         [
          null,
          {}
         ]
        ],
        "2d.layer.malformed-operations.transferToImageBitmap.worker.js": [
-        "be0b43665a59224cc1558d6941192ae6e2be5b27",
+        "843bbec04e8ec024e56b16b67510af10599567db",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations.transferToImageBitmap.worker.html",
          {}
@@ -576613,7 +577166,7 @@
          ]
         ],
         "select-keyboard-behavior.tentative.html": [
-         "c53440b8c604cde4931435807005106d832b9f18",
+         "2fb11ba68b06dd5518cd7b9137902c8d99b64e5e",
          [
           null,
           {
@@ -576622,7 +577175,7 @@
          ]
         ],
         "select-mouse-behavior.tentative.html": [
-         "b9161874b787bc849cbe64f94dd17e4998fc86d7",
+         "aff976d1ad5c704e4ece24fe524244b119bee106",
          [
           null,
           {
@@ -576638,7 +577191,7 @@
          ]
         ],
         "selectedoption.tentative.html": [
-         "41ed34a9a2a444abb3fa67b58fed38aa08062a7b",
+         "16d711515c931cf2163f3d9ac372ce816a6b7d6c",
          [
           null,
           {
@@ -577722,10 +578275,46 @@
        ]
       ],
       "interestelement-interface.tentative.html": [
-       "dc119de83380b55597e4720078fcf086fe77dfa4",
+       "8b1e37569559a4c0ce11b2c925ec24c0364a5b1f",
        [
         null,
         {}
+       ]
+      ],
+      "interestevent-dispatch-shadow.tentative.html": [
+       "d96907ec84a439334f601d5002264a1f828a4160",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "interestevent-interface.tentative.html": [
+       "ed7d82f1fb7df87ad802d3571ab13819e080be6d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "interesttarget-button-event-dispatch.tentative.html": [
+       "7fdfdfaa70710515c939e01190e730d145d13b4a",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "interesttarget-on-popover-behavior.tentative.html": [
+       "b930fc645dd413e40ab6c6f8e0288527ee27e749",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "invokeelement-interface.tentative.html": [
@@ -577830,6 +578419,15 @@
         {
          "testdriver": true,
          "timeout": "long"
+        }
+       ]
+      ],
+      "invoketarget-on-input-number.tentative.html": [
+       "b06053b9f1f5a9868036f1a6ceaf5e8281da5556",
+       [
+        null,
+        {
+         "testdriver": true
         }
        ]
       ],
@@ -578083,7 +578681,7 @@
      },
      "permission-element": {
       "bounded-css-properties.tentative.html": [
-       "1cd3f735945afbd1627c19e2cbc27782c934f0ee",
+       "c0f0fe34542f4b6e7742a99f725985e14aa1e876",
        [
         null,
         {}
@@ -592557,6 +593155,13 @@
       {}
      ]
     ],
+    "transparent-text.html": [
+     "9eb978ab5cd8316cc1ae4f116a96a2271a2e9c96",
+     [
+      null,
+      {}
+     ]
+    ],
     "update-on-style-change.tentative.html": [
      "dd34e61b0f6ffb9072608060a62f693e982cd5c1",
      [
@@ -594173,7 +594778,7 @@
       ]
      ],
      "loaf-stream-source-location.html": [
-      "5776ff5255243609132aa046e1ede5a3f8de1720",
+      "0fd30859d738dec410b9b8d20c0c9ba8c2f61294",
       [
        null,
        {
@@ -594182,7 +594787,7 @@
       ]
      ],
      "loaf-stream.html": [
-      "424f2cd0d1e629ab89df5c29a206b49b2d2fff51",
+      "e35bc2f9aa7d7de7a6ac224b9befde30d128e85c",
       [
        null,
        {
@@ -631424,10 +632029,12 @@
       ]
      ],
      "gethtml.html": [
-      "c03749c815c5ed2771e766875f5fe1730e87da4e",
+      "d950ca7734ea1fb2648d25dfbc05da72c552f795",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "getinnerhtml.tentative.html": [
@@ -676783,6 +677390,13 @@
     ]
    },
    "webrtc-encoded-transform": {
+    "RTCRtpScriptTransform-bad-chunk.https.html": [
+     "a837f627f25edf709115407fcc7bce70dcd4f078",
+     [
+      null,
+      {}
+     ]
+    ],
     "idlharness.https.window.js": [
      "2c6ef19ca82a56c799b97b5eb9af3edb900a40b5",
      [
@@ -691001,6 +691615,101 @@
       }
      ]
     ],
+    "datagram-bad-chunk.https.any.js": [
+     "92601dec9a5a52eb5b0f33d5a430b20de3a72c0b",
+     [
+      "webtransport/datagram-bad-chunk.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/datagram-bad-chunk.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/datagram-bad-chunk.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/datagram-bad-chunk.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "datagram-cancel-crash.https.window.js": [
      "fae613e2138cc6cf1437024a9f32d155fd053793",
      [
@@ -691325,6 +692034,101 @@
      ],
      [
       "webtransport/sendorder.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "sendstream-bad-chunk.https.any.js": [
+     "013390879bd35ee637e58e6157265c4738b72aa8",
+     [
+      "webtransport/sendstream-bad-chunk.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendstream-bad-chunk.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendstream-bad-chunk.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendstream-bad-chunk.https.any.worker.html",
       {
        "script_metadata": [
         [
