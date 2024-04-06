@@ -590,6 +590,11 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
 
   CHECK(!has_error_);
 
+  if (max_decode_requests <= 0) {
+    Stop();
+    return;
+  }
+
   const VideoDecoderType expected_decoder_type =
       OOPVideoDecoderSupportedConfigsManager::Instance().GetDecoderType();
 
@@ -599,6 +604,9 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
     Stop();
     return;
   }
+
+  needs_bitstream_conversion_ = needs_bitstream_conversion;
+  max_decode_requests_ = max_decode_requests;
   remote_decoder_type_ = decoder_type;
 
   if (OOPVideoDecoderSupportedConfigsManager::Instance()
@@ -878,7 +886,10 @@ void OOPVideoDecoder::ApplyResolutionChange() {
 }
 
 bool OOPVideoDecoder::NeedsBitstreamConversion() const {
-  NOTREACHED_NORETURN();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
+  CHECK_NE(remote_decoder_type_, VideoDecoderType::kUnknown);
+  return needs_bitstream_conversion_;
 }
 
 bool OOPVideoDecoder::CanReadWithoutStalling() const {
@@ -901,7 +912,10 @@ bool OOPVideoDecoder::CanReadWithoutStalling() const {
 }
 
 int OOPVideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
+  CHECK_NE(remote_decoder_type_, VideoDecoderType::kUnknown);
+  return base::strict_cast<int>(max_decode_requests_);
 }
 
 VideoDecoderType OOPVideoDecoder::GetDecoderType() const {

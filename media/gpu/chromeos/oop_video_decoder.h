@@ -200,6 +200,11 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
   bool initialized_for_protected_content_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  bool needs_bitstream_conversion_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  int32_t max_decode_requests_ GUARDED_BY_CONTEXT(sequence_checker_) = 8u;
+
   VideoDecoderType remote_decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;
 

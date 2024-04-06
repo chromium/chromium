@@ -361,13 +361,25 @@ class MojoStableVideoDecoderTest : public testing::Test {
     constexpr bool kNeedsBitstreamConversionToReplyWith = true;
     constexpr int32_t kMaxDecodeRequestsToReplyWith = 123;
     constexpr bool kNeedsTranscryptionToReplyWith = false;
-    EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith));
+    EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith)).WillOnce([&] {
+      EXPECT_EQ(endpoints->client()->NeedsBitstreamConversion(),
+                kNeedsBitstreamConversionToReplyWith);
+      EXPECT_EQ(endpoints->client()->GetMaxDecodeRequests(),
+                kMaxDecodeRequestsToReplyWith);
+    });
     std::move(received_initialize_cb)
         .Run(kDecoderStatusToReplyWith, kNeedsBitstreamConversionToReplyWith,
              kMaxDecodeRequestsToReplyWith, kDecoderTypeToReplyWith,
              kNeedsTranscryptionToReplyWith);
     task_environment_.RunUntilIdle();
+    if (!Mock::VerifyAndClearExpectations(&init_cb)) {
+      return nullptr;
+    }
 
+    // Return non-nullptr only if all initialization expectations were met.
+    if (HasFailure()) {
+      return nullptr;
+    }
     return endpoints;
   }
 
@@ -435,7 +447,12 @@ TEST_F(MojoStableVideoDecoderTest,
   constexpr int32_t kMaxDecodeRequestsToReplyWith = 456;
   constexpr VideoDecoderType kDecoderTypeToReplyWith = VideoDecoderType::kVaapi;
   constexpr bool kNeedsTranscryptionToReplyWith = false;
-  EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith));
+  EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith)).WillOnce([&] {
+    EXPECT_EQ(endpoints->client()->NeedsBitstreamConversion(),
+              kNeedsBitstreamConversionToReplyWith);
+    EXPECT_EQ(endpoints->client()->GetMaxDecodeRequests(),
+              kMaxDecodeRequestsToReplyWith);
+  });
   std::move(received_initialize_cb)
       .Run(kDecoderStatusToReplyWith, kNeedsBitstreamConversionToReplyWith,
            kMaxDecodeRequestsToReplyWith, kDecoderTypeToReplyWith,

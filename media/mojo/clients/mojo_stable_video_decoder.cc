@@ -65,9 +65,8 @@ void MojoStableVideoDecoder::Reset(base::OnceClosure closure) {
 
 bool MojoStableVideoDecoder::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/327268445): finish implementing NeedsBitstreamConversion().
-  NOTIMPLEMENTED();
-  return false;
+  CHECK(!!oop_video_decoder_);
+  return oop_video_decoder_->NeedsBitstreamConversion();
 }
 
 bool MojoStableVideoDecoder::CanReadWithoutStalling() const {
@@ -79,9 +78,8 @@ bool MojoStableVideoDecoder::CanReadWithoutStalling() const {
 
 int MojoStableVideoDecoder::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/327268445): finish implementing GetMaxDecodeRequests().
-  NOTIMPLEMENTED();
-  return 8;
+  CHECK(!!oop_video_decoder_);
+  return oop_video_decoder_->GetMaxDecodeRequests();
 }
 
 VideoDecoderType MojoStableVideoDecoder::GetDecoderType() const {
