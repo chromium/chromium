@@ -2352,7 +2352,7 @@
 <translation id="5578606540385219379">Ծառայություններ մատուցողներ</translation>
 <translation id="557886905979275351">Ածելիներ և սափրիչներ</translation>
 <translation id="5580958916614886209">Ստուգեք սպառման ամիսը և նորից փորձեք</translation>
-<translation id="558420943003240152">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
+<translation id="558420943003240152">Կառավարել գաղտնաբառերն ու մուտքի բանալիները…</translation>
 <translation id="5586446728396275693">Պահված հասցեներ չկան</translation>
 <translation id="5586831831248371458">Որոնեք <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Հարթակի օգտատեր</translation>
@@ -4225,7 +4225,7 @@
 <translation id="937885410143139026">Տվյալներն ուղարկվեցին ադմինիստրատորի վահանակին</translation>
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="940053046584497293">Ճանապարհորդություն և տրանսպորտ</translation>
-<translation id="944540589955480312">Օգտագործել Google հաշվում պահված գաղտնաբառերն ու անցաբառերը</translation>
+<translation id="944540589955480312">Օգտագործել Google հաշվում պահված գաղտնաբառերն ու մուտքի բանալիները</translation>
 <translation id="945646848072568856">Chrome-ն արգելափակում է՝ ձեր գործողությունները դիտարկիչում հետագծելու նպատակով կայքերի կողմից երրորդ կողմի քուքիների օգտագործումը։</translation>
 <translation id="945855313015696284">Ստուգեք ստորև ներկայացված տեղեկությունները և ջնջեք անվավեր քարտերը</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Կայքերում արագ կայք ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -4236,7 +4236,7 @@
 <translation id="961930410699694996">Տրվել է տեղադրության տվյալներն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="962484866189421427">Այս բովանդակությունը կարող է փորձել կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Բոլոր օգտատերերը</translation>
-<translation id="964050462028070434">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
+<translation id="964050462028070434">Կառավարել գաղտնաբառերն ու մուտքի բանալիները…</translation>
 <translation id="96680173638229310">Ավտոմեքենաներ և տրանսպորտային միջոցներ</translation>
 <translation id="969892804517981540">Պաշտոնական տարբերակ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ոչինչ չկա}=1{1 տարր}one{# տարր}other{# տարր}}</translation>
