@@ -140,6 +140,7 @@ per-file third_party/harfbuzz-ng/src=*
 per-file third_party/highway/src=*
 per-file third_party/hunspell_dictionaries=*
 per-file third_party/icu=*
+per-file third_party/instrumented_libs=*
 per-file third_party/javalang/src=*
 per-file third_party/jsoncpp/source=*
 per-file third_party/junit/src=*
