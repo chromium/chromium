@@ -1859,11 +1859,9 @@
 
     // position-visibility
     // always
-    // TODO(crbug.com/332933527): Support anchors-valid.
-    // "anchors-valid",
+    "anchors-valid",
     "anchors-visible",
-    // TODO(crbug.com/332933527): Support no-overflow.
-    // "no-overflow",
+    "no-overflow",
 
     // reading-order-items
     // normal

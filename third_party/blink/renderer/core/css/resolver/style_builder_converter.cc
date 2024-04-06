@@ -1956,8 +1956,19 @@ ScopedCSSName* StyleBuilderConverter::ConvertPositionAnchor(
 PositionVisibility StyleBuilderConverter::ConvertPositionVisibility(
     StyleResolverState& state,
     const CSSValue& value) {
-  // TODO(crbug.com/332933527): Support anchors-valid and no-overflow.
-  return To<CSSIdentifierValue>(value).ConvertTo<PositionVisibility>();
+  PositionVisibility flags = PositionVisibility::kAlways;
+
+  auto process = [&flags](const CSSValue& identifier) {
+    flags |= To<CSSIdentifierValue>(identifier).ConvertTo<PositionVisibility>();
+  };
+  if (auto* value_list = DynamicTo<CSSValueList>(value)) {
+    for (auto& entry : *value_list) {
+      process(*entry);
+    }
+  } else {
+    process(value);
+  }
+  return flags;
 }
 
 ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(

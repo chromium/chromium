@@ -2289,9 +2289,14 @@ inline CSSIdentifierValue::CSSIdentifierValue(PositionVisibility visibility)
     case PositionVisibility::kAlways:
       value_id_ = CSSValueID::kAlways;
       break;
-    // TODO(crbug.com/332933527): Support kAnchorsValid and kNoOverflow.
+    case PositionVisibility::kAnchorsValid:
+      value_id_ = CSSValueID::kAnchorsValid;
+      break;
     case PositionVisibility::kAnchorsVisible:
       value_id_ = CSSValueID::kAnchorsVisible;
+      break;
+    case PositionVisibility::kNoOverflow:
+      value_id_ = CSSValueID::kNoOverflow;
       break;
   }
 }
@@ -2301,9 +2306,12 @@ inline PositionVisibility CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kAlways:
       return PositionVisibility::kAlways;
-    // TODO(crbug.com/332933527): Support kAnchorsValid and kNoOverflow.
+    case CSSValueID::kAnchorsValid:
+      return PositionVisibility::kAnchorsValid;
     case CSSValueID::kAnchorsVisible:
       return PositionVisibility::kAnchorsVisible;
+    case CSSValueID::kNoOverflow:
+      return PositionVisibility::kNoOverflow;
     default:
       NOTREACHED();
       return PositionVisibility::kAlways;
