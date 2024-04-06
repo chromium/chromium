@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -521,12 +522,15 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     provider_->SetWidgetForTesting(widget_.get());
     keyboard_brightness_control_delegate_ =
         std::make_unique<FakeKeyboardBrightnessControlDelegate>();
+    power_manager_client_ =
+        std::make_unique<chromeos::FakePowerManagerClient>();
   }
 
   void TearDown() override {
     provider_.reset();
     controller_.reset();
     keyboard_brightness_control_delegate_.reset();
+    power_manager_client_.reset();
     scoped_resetter_.reset();
     widget_.reset();
     views::ViewsTestBase::TearDown();
@@ -538,6 +542,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
   std::unique_ptr<InputDeviceSettingsProvider> provider_;
   std::unique_ptr<FakeKeyboardBrightnessControlDelegate>
       keyboard_brightness_control_delegate_;
+  std::unique_ptr<chromeos::FakePowerManagerClient> power_manager_client_;
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
@@ -1133,6 +1138,19 @@ TEST_F(InputDeviceSettingsProviderTest, HasLauncherButton) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(future.Get<0>());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, HasKeyboardBacklight) {
+  base::test::TestFuture<bool> future;
+
+  power_manager_client_->set_has_keyboard_backlight(true);
+  provider_->HasKeyboardBacklight(future.GetCallback());
+  EXPECT_TRUE(future.Get<0>());
+
+  future.Clear();
+  power_manager_client_->set_has_keyboard_backlight(false);
+  provider_->HasKeyboardBacklight(future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
 }
 
 }  // namespace ash::settings

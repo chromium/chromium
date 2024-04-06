@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void set_has_ambient_light_sensor(bool has_ambient_light_sensor) {
     has_ambient_light_sensor_ = has_ambient_light_sensor;
   }
+  void set_has_keyboard_backlight(bool has_keyboard_backlight) {
+    has_keyboard_backlight_ = has_keyboard_backlight;
+  }
   bool is_projecting() const { return is_projecting_; }
   bool have_video_activity_report() const {
     return !video_activity_reports_.empty();
@@ -116,6 +119,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
   void SetAmbientLightSensorEnabled(bool enabled) override;
   void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override;
+  void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override;
   void DecreaseKeyboardBrightness() override;
   void IncreaseKeyboardBrightness() override;
   void GetKeyboardBrightnessPercent(
@@ -309,6 +313,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Display and keyboard backlights (if present) forced off state set in
   // SetBacklightsForcedOff().
   bool backlights_forced_off_ = false;
+
+  // True if the device has a keyboard backlight.
+  bool has_keyboard_backlight_ = false;
 
   // Last battery saver mode state set in SetBatterySaverModeState().
   bool battery_saver_mode_enabled_ = false;

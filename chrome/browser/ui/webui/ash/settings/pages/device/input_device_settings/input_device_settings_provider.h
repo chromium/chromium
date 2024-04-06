@@ -127,6 +127,7 @@ class InputDeviceSettingsProvider
 
   void SetWidgetForTesting(views::Widget* widget);
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
+  void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
 
  private:
@@ -137,6 +138,9 @@ class InputDeviceSettingsProvider
   void NotifyGraphicsTabletUpdated();
 
   void HandleObserving();
+
+  void OnReceiveHasKeyboardBacklight(HasKeyboardBacklightCallback callback,
+                                     std::optional<bool> has_backlight);
 
   // Denotes whether button observing should be paused due to the settings app
   // being out of focus or minimized. Default to true to require a valid widget
@@ -159,6 +163,8 @@ class InputDeviceSettingsProvider
   raw_ptr<views::Widget> widget_ = nullptr;
 
   mojo::Receiver<mojom::InputDeviceSettingsProvider> receiver_{this};
+
+  base::WeakPtrFactory<InputDeviceSettingsProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::settings

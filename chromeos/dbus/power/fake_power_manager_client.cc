@@ -157,6 +157,12 @@ void FakePowerManagerClient::HasAmbientLightSensor(
       base::BindOnce(std::move(callback), has_ambient_light_sensor_));
 }
 
+void FakePowerManagerClient::HasKeyboardBacklight(
+    DBusMethodCallback<bool> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), has_keyboard_backlight_));
+}
+
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
 
 void FakePowerManagerClient::IncreaseKeyboardBrightness() {

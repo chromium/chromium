@@ -146,6 +146,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: Boolean,
         value: false,
       },
+
+      hasKeyboardBacklight: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -195,6 +200,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private keyboardIndex: number;
   private isLastDevice: boolean;
   private isRgbKeyboardSupported: boolean;
+  private hasKeyboardBacklight: boolean;
   private isKeyboardBacklightControlInSettingsEnabled: boolean;
 
   override async connectedCallback(): Promise<void> {
@@ -210,6 +216,9 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
           ?.isRgbKeyboardSupported;
+      this.hasKeyboardBacklight =
+          (await this.inputDeviceSettingsProvider.hasKeyboardBacklight())
+              ?.hasKeyboardBacklight;
     }
   }
 

@@ -155,6 +155,9 @@ interface InputDeviceSettingsProvider {
   // key and we display the search icon in settings.
   HasLauncherButton() => (bool has_launcher_button);
 
+  // Returns whether the internal keyboard has a backlight.
+  HasKeyboardBacklight() => (bool has_keyboard_backlight);
+
   // Returns whether the internal keyboard support RGB lighting.
   IsRgbKeyboardSupported() => (bool is_rgb_keyboard_supported);
 };

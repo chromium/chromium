@@ -286,6 +286,15 @@ class PowerManagerClientImpl : public PowerManagerClient {
         power_manager::kIncreaseScreenBrightnessMethod);
   }
 
+  void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kHasKeyboardBacklightMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetHasKeyboardBacklight,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void DecreaseKeyboardBrightness() override {
     SimpleMethodCallToPowerManager(
         power_manager::kDecreaseKeyboardBrightnessMethod);
@@ -992,6 +1001,25 @@ class PowerManagerClientImpl : public PowerManagerClient {
       return;
     }
     std::move(callback).Run(percent);
+  }
+
+  void OnGetHasKeyboardBacklight(DBusMethodCallback<bool> callback,
+                                 dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kHasKeyboardBacklightMethod;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool state = false;
+    if (!reader.PopBool(&state)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(state);
   }
 
   void OnGetBacklightsForcedOff(DBusMethodCallback<bool> callback,

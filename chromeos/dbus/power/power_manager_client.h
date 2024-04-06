@@ -250,6 +250,9 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // nullopt.
   virtual void HasAmbientLightSensor(DBusMethodCallback<bool> callback) = 0;
 
+  // Check if the keyboard has a backlight.
+  virtual void HasKeyboardBacklight(DBusMethodCallback<bool> callback) = 0;
+
   // Decreases the keyboard brightness.
   virtual void DecreaseKeyboardBrightness() = 0;
 

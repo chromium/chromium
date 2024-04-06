@@ -26,19 +26,21 @@
   </template>
   <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
     <template is="dom-if" if="[[isKeyboardBacklightControlInSettingsEnabled]]">
-      <settings-toggle-button id="keyboardAutoBrightnessToggle"
-        pref="{{keyboardAutoBrightnessPref}}"
-        label="$i18n{keyboardEnableAutoBrightnessLabel}"
-        sub-label="$i18n{keyboardEnableAutoBrightnessSubLabel}">
-      </settings-toggle-button>
-      <div class="settings-box">
-        <div class="start" id="keyboardBrightnessPercentLabel">
-          $i18n{keyboardBrightnessLabel}
+      <div id="keyboardBrightnessSection" hidden="[[!hasKeyboardBacklight]]">
+        <settings-toggle-button id="keyboardAutoBrightnessToggle"
+            pref="{{keyboardAutoBrightnessPref}}"
+            label="$i18n{keyboardEnableAutoBrightnessLabel}"
+            sub-label="$i18n{keyboardEnableAutoBrightnessSubLabel}">
+        </settings-toggle-button>
+        <div class="settings-box">
+          <div class="start" id="keyboardBrightnessPercentLabel">
+            $i18n{keyboardBrightnessLabel}
+          </div>
+          <settings-slider id="keyboardBrightnessSlider"
+              pref="{{keyboardBrightnessPercentPref}}"
+              on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
+          </settings-slider>
         </div>
-        <settings-slider id="keyboardBrightnessSlider"
-            pref="{{keyboardBrightnessPercentPref}}"
-            on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
-        </settings-slider>
       </div>
       <cr-link-row id="rgbKeyboardControlLink" label="$i18n{keyboardColors}"
         hidden="[[!isRgbKeyboardSupported]]" on-click="openPersonalizationHub"

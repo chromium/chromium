@@ -633,6 +633,20 @@ void InputDeviceSettingsProvider::HasLauncherButton(
   std::move(callback).Run(/*has_launcher_button=*/false);
 }
 
+void InputDeviceSettingsProvider::OnReceiveHasKeyboardBacklight(
+    HasKeyboardBacklightCallback callback,
+    std::optional<bool> has_keyboard_backlight) {
+  std::move(callback).Run(has_keyboard_backlight.value_or(false));
+}
+
+void InputDeviceSettingsProvider::HasKeyboardBacklight(
+    HasKeyboardBacklightCallback callback) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  chromeos::PowerManagerClient::Get()->HasKeyboardBacklight(base::BindOnce(
+      &InputDeviceSettingsProvider::OnReceiveHasKeyboardBacklight,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void InputDeviceSettingsProvider::IsRgbKeyboardSupported(
     IsRgbKeyboardSupportedCallback callback) {
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
