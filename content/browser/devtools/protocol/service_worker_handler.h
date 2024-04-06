@@ -82,7 +82,7 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
   bool enabled_;
   scoped_refptr<ServiceWorkerContextWatcher> context_watcher_;
   raw_ptr<BrowserContext> browser_context_;
-  StoragePartitionImpl* storage_partition_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 
   base::WeakPtrFactory<ServiceWorkerHandler> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
@@ -122,7 +123,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
 
   const net::NetworkTrafficAnnotationTag tag_;
 
-  TracingAgent* tracing_agent_ = nullptr;
+  raw_ptr<TracingAgent> tracing_agent_ = nullptr;
 
   // Invoked when the server doesn't have any live connection.
   mutable base::OnceClosure on_session_ended_;

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
@@ -51,7 +52,7 @@ class AuctionWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
 
-  DebuggableAuctionWorklet* worklet_ = nullptr;
+  raw_ptr<DebuggableAuctionWorklet> worklet_ = nullptr;
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
 };
 

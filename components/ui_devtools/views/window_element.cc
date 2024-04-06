@@ -47,7 +47,7 @@ WindowElement::~WindowElement() {
 // Handles removing window_.
 void WindowElement::OnWindowHierarchyChanging(
     const aura::WindowObserver::HierarchyChangeParams& params) {
-  if (params.target == window_) {
+  if (params.target == window_.get()) {
     parent()->RemoveChild(this);
     delete this;
   }
@@ -56,7 +56,8 @@ void WindowElement::OnWindowHierarchyChanging(
 // Handles adding window_.
 void WindowElement::OnWindowHierarchyChanged(
     const aura::WindowObserver::HierarchyChangeParams& params) {
-  if (window_ == params.new_parent && params.receiver == params.new_parent) {
+  if (window_.get() == params.new_parent &&
+      params.receiver == params.new_parent) {
     AddChild(new WindowElement(params.target, delegate(), this));
   }
 }

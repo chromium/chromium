@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_FRONTEND_HOST_IMPL_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_FRONTEND_HOST_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -47,7 +48,7 @@ class DevToolsFrontendHostImpl : public DevToolsFrontendHost,
   // blink::mojom::DevToolsFrontendHost implementation.
   void DispatchEmbedderMessage(base::Value::Dict message) override;
 
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
   HandleMessageCallback handle_message_callback_;
   mojo::AssociatedReceiver<blink::mojom::DevToolsFrontendHost> receiver_{this};
 };

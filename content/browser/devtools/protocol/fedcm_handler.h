@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/fed_cm.h"
@@ -75,7 +76,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
       FederatedAuthRequestImpl* auth_request);
   FederatedIdentityApiPermissionContextDelegate* GetApiPermissionContext();
 
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<FedCm::Frontend> frontend_;
   std::string dialog_id_;
   bool enabled_ = false;

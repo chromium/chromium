@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
@@ -485,8 +486,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void MaybeShowSharedProcessInfobar();
 
   FrontendType frontend_type_;
-  Profile* profile_;
-  content::WebContents* main_web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> main_web_contents_;
 
   // DevToolsWindow is informed of the creation of the |toolbox_web_contents_|
   // in WebContentsCreated right before ownership is passed to to DevToolsWindow
@@ -495,11 +496,11 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // |toolbox_web_contents_|, and then update ownership immediately afterwards.
   // TODO(erikchen): If we updated AddNewContents() to also pass back the
   // target url, then we wouldn't need to listen to WebContentsCreated at all.
-  content::WebContents* toolbox_web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> toolbox_web_contents_;
   std::unique_ptr<content::WebContents> owned_toolbox_web_contents_;
 
-  DevToolsUIBindings* bindings_;
-  Browser* browser_;
+  raw_ptr<DevToolsUIBindings> bindings_;
+  raw_ptr<Browser> browser_;
 
   // When DevToolsWindow is docked, it owns main_web_contents_. When it isn't
   // docked, the tab strip model owns the main_web_contents_.
@@ -529,9 +530,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   const base::UnguessableToken session_id_for_logging_;
 
   class Throttle;
-  Throttle* throttle_ = nullptr;
+  raw_ptr<Throttle> throttle_ = nullptr;
   bool open_new_window_for_popups_ = false;
-  infobars::InfoBar* sharing_infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar> sharing_infobar_ = nullptr;
   int checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
   base::OnceCallback<void()> reattach_complete_callback_;

@@ -108,7 +108,7 @@ void DevToolsWindowTesting::WaitForDevToolsWindowLoad(DevToolsWindow* window) {
   if (!window) {
     return;
   }
-  auto* main_web_contents = window->main_web_contents_;
+  auto* main_web_contents = window->main_web_contents_.get();
   if (!window->ready_for_test_) {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;

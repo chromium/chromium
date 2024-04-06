@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -67,7 +68,7 @@ class AidaClientTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  signin::IdentityTestEnvironment* identity_test_env_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };

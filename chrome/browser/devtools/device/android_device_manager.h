@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
@@ -108,7 +109,7 @@ class AndroidDeviceManager {
 
     scoped_refptr<Device> device_;
     std::unique_ptr<WebSocketImpl, base::OnTaskRunnerDeleter> socket_impl_;
-    Delegate* delegate_;
+    raw_ptr<Delegate> delegate_;
     base::WeakPtrFactory<AndroidWebSocket> weak_factory_{this};
   };
 
@@ -239,7 +240,7 @@ class AndroidDeviceManager {
 
     HandlerThread();
     ~HandlerThread();
-    base::Thread* thread_;
+    raw_ptr<base::Thread> thread_;
   };
 
   AndroidDeviceManager();

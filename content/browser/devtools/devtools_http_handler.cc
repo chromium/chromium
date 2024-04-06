@@ -21,6 +21,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
@@ -384,7 +385,7 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
 
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  ServerWrapper* const server_wrapper_;
+  const raw_ptr<ServerWrapper> server_wrapper_;
   const int connection_id_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
 };

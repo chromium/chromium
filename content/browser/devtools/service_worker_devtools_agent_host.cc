@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
@@ -119,7 +120,7 @@ class ServiceWorkerAutoAttacher
   }
 
   bool have_observer_ = false;
-  ServiceWorkerDevToolsAgentHost* host_;
+  raw_ptr<ServiceWorkerDevToolsAgentHost> host_;
 };
 
 }  // namespace

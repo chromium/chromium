@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
@@ -239,8 +240,8 @@ class StorageHandler
                                             bool enable);
 
   std::unique_ptr<Storage::Frontend> frontend_;
-  StoragePartition* storage_partition_{nullptr};
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  raw_ptr<StoragePartition> storage_partition_{nullptr};
+  raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
   std::unique_ptr<SharedStorageObserver> shared_storage_observer_;

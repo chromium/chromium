@@ -64,7 +64,7 @@ class DevToolsWindowTesting {
   static void WindowClosed(DevToolsWindow* window);
   static DevToolsWindowTesting* Find(DevToolsWindow* window);
 
-  DevToolsWindow* devtools_window_;
+  raw_ptr<DevToolsWindow> devtools_window_;
   base::OnceClosure close_callback_;
 };
 

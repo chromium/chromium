@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,8 +43,8 @@ class PortForwardingController {
 
   void UpdateConnections();
 
-  Profile* profile_;
-  PrefService* pref_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   Registry registry_;
 

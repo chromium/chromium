@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/security.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -66,7 +67,7 @@ class SecurityHandler : public DevToolsDomainHandler,
 
   std::unique_ptr<Security::Frontend> frontend_;
   bool enabled_;
-  RenderFrameHostImpl* host_;
+  raw_ptr<RenderFrameHostImpl> host_;
   int last_cert_error_id_ = 0;
   CertErrorCallbackMap cert_error_callbacks_;
   enum class CertErrorOverrideMode { kDisabled, kHandleEvents, kIgnoreAll };

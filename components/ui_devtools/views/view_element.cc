@@ -84,7 +84,7 @@ ViewElement::ViewElement(views::View* view,
                          UIElement* parent)
     : UIElementWithMetaData(UIElementType::VIEW, ui_element_delegate, parent),
       view_(view) {
-  observer_.Observe(view_);
+  observer_.Observe(view_.get());
 }
 
 ViewElement::~ViewElement() = default;

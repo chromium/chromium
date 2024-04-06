@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/protocol/protocol.h"
@@ -211,8 +212,8 @@ class DevToolsSession : public protocol::FrontendChannel,
   }
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
 
-  DevToolsAgentHostClient* const client_;
-  DevToolsSession* const root_session_ = nullptr;
+  const raw_ptr<DevToolsAgentHostClient> client_;
+  const raw_ptr<DevToolsSession> root_session_ = nullptr;
   const std::string session_id_;  // empty if this is the root session.
   const Mode mode_;
 
@@ -220,7 +221,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   mojo::AssociatedRemote<blink::mojom::DevToolsSession> session_;
   mojo::Remote<blink::mojom::DevToolsSession> io_session_;
   bool use_io_session_{false};
-  DevToolsAgentHostImpl* agent_host_ = nullptr;
+  raw_ptr<DevToolsAgentHostImpl> agent_host_ = nullptr;
   bool browser_only_ = false;
   HandlersMap handlers_;
   std::unique_ptr<protocol::UberDispatcher> dispatcher_{
@@ -241,7 +242,7 @@ class DevToolsSession : public protocol::FrontendChannel,
 
   base::flat_map<std::string, DevToolsSession*> child_sessions_;
   base::OnceClosure runtime_resume_;
-  DevToolsExternalAgentProxyDelegate* proxy_delegate_ = nullptr;
+  raw_ptr<DevToolsExternalAgentProxyDelegate> proxy_delegate_ = nullptr;
   base::ObserverList<ChildObserver, true, false> child_observers_;
 
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};

@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -3039,8 +3040,8 @@ class DownloadCreateObserver : DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
-  download::DownloadItem* item_;
+  raw_ptr<DownloadManager> manager_;
+  raw_ptr<download::DownloadItem> item_;
   bool received_item_response_;
   base::OnceClosure completion_closure_;
 };

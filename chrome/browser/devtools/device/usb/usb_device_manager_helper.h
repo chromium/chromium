@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +22,7 @@ struct AndroidInterfaceInfo {
       const device::mojom::UsbAlternateInterfaceInfo* alternate);
 
   uint8_t interface_number;
-  const device::mojom::UsbAlternateInterfaceInfo* alternate;
+  raw_ptr<const device::mojom::UsbAlternateInterfaceInfo> alternate;
 };
 
 struct AndroidDeviceInfo {

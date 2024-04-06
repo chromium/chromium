@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -182,7 +183,7 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   int GetDockStateForLogging() override { return 0; }
   int GetOpenedByForLogging() override { return 0; }
   int GetClosedByForLogging() override { return 0; }
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 void DefaultBindingsDelegate::ActivateWindow() {
@@ -581,7 +582,7 @@ class DevToolsUIBindings::NetworkResourceLoader
   void OnRetry(base::OnceClosure start_retry) override { NOTREACHED(); }
 
   const int stream_id_;
-  DevToolsUIBindings* const bindings_;
+  const raw_ptr<DevToolsUIBindings> bindings_;
   const network::ResourceRequest resource_request_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
@@ -614,7 +615,7 @@ class DevToolsUIBindings::FrontendWebContentsObserver
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  DevToolsUIBindings* devtools_bindings_;
+  raw_ptr<DevToolsUIBindings> devtools_bindings_;
 };
 
 DevToolsUIBindings::FrontendWebContentsObserver::FrontendWebContentsObserver(

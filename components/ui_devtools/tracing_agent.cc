@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/timer/timer.h"
@@ -274,7 +275,7 @@ class TracingAgent::PerfettoTracingSession
   mojo::Remote<tracing::mojom::TracingSessionHost> tracing_session_host_;
 
   mojo::Remote<tracing::mojom::ConsumerHost> consumer_host_;
-  ConnectorDelegate* connector_;
+  raw_ptr<ConnectorDelegate> connector_;
 
   std::string agent_label_;
   base::OnceClosure on_recording_enabled_callback_;

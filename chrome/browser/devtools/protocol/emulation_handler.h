@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/emulation.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -29,8 +30,8 @@ class EmulationHandler : public protocol::Emulation::Backend,
  private:
   infobars::ContentInfoBarManager* GetContentInfoBarManager();
 
-  content::DevToolsAgentHost* agent_host_;
-  infobars::InfoBar* automation_info_bar_ = nullptr;
+  raw_ptr<content::DevToolsAgentHost> agent_host_;
+  raw_ptr<infobars::InfoBar> automation_info_bar_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_

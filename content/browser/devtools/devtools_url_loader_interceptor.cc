@@ -11,6 +11,8 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -305,9 +307,9 @@ class HeadersOverride {
   }
 
   static void Revert(std::unique_ptr<HeadersOverride> instance) {
-    instance->request_.headers = std::move(instance->original_headers_);
-    instance->request_.referrer = instance->original_referrer_;
-    instance->request_.referrer_policy = instance->original_referrer_policy_;
+    instance->request_->headers = std::move(instance->original_headers_);
+    instance->request_->referrer = instance->original_referrer_;
+    instance->request_->referrer_policy = instance->original_referrer_policy_;
   }
 
   void RemoveUnsafeOriginalHeadersOnRedirect() {
@@ -345,7 +347,7 @@ class HeadersOverride {
         original_referrer_(request.referrer),
         original_referrer_policy_(request.referrer_policy) {}
 
-  network::ResourceRequest& request_;
+  const raw_ref<network::ResourceRequest> request_;
   net::HttpRequestHeaders original_headers_;
   GURL original_referrer_;
   net::ReferrerPolicy original_referrer_policy_;
@@ -487,7 +489,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   const base::UnguessableToken frame_token_;
   const bool report_upload_;
 
-  DevToolsURLLoaderInterceptor* interceptor_;
+  raw_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   DevToolsURLLoaderInterceptor::InterceptionStages stages_;
 
   std::unique_ptr<CreateLoaderParameters> create_loader_params_;

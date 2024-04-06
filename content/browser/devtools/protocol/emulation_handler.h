@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/emulation.h"
 #include "content/browser/devtools/protocol/protocol.h"
@@ -170,7 +171,7 @@ class EmulationHandler : public DevToolsDomainHandler,
   // True when SetDevicePostureOverride() has been called.
   bool device_posture_emulation_enabled_ = false;
 
-  RenderFrameHostImpl* host_;
+  raw_ptr<RenderFrameHostImpl> host_;
 
   base::ScopedClosureRunner capture_handle_;
 };

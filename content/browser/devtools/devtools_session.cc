@@ -153,7 +153,7 @@ void DevToolsSession::Dispose() {
 }
 
 DevToolsSession* DevToolsSession::GetRootSession() {
-  return root_session_ ? root_session_ : this;
+  return root_session_ ? root_session_.get() : this;
 }
 
 void DevToolsSession::AddHandler(

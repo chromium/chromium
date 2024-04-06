@@ -364,14 +364,14 @@ class NetworkHandler : public DevToolsDomainHandler,
   const std::string host_id_;
 
   const base::UnguessableToken devtools_token_;
-  DevToolsIOContext* const io_context_;
+  const raw_ptr<DevToolsIOContext> io_context_;
   const bool allow_file_access_;
   const bool client_is_trusted_;
 
   std::unique_ptr<Network::Frontend> frontend_;
   raw_ptr<BrowserContext> browser_context_;
-  StoragePartition* storage_partition_;
-  RenderFrameHostImpl* host_;
+  raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<RenderFrameHostImpl> host_;
   bool enabled_;
 #if BUILDFLAG(ENABLE_REPORTING)
   mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -293,7 +294,7 @@ class DevToolsEventForwarder {
   static bool KeyWhitelistingAllowed(int key_code, int modifiers);
   static int CombineKeyCodeAndModifiers(int key_code, int modifiers);
 
-  DevToolsWindow* devtools_window_;
+  raw_ptr<DevToolsWindow> devtools_window_;
   std::set<int> whitelisted_keys_;
 };
 
@@ -406,7 +407,7 @@ class DevToolsWindow::Throttle : public content::NavigationThrottle {
   }
 
  private:
-  DevToolsWindow* devtools_window_;
+  raw_ptr<DevToolsWindow> devtools_window_;
 };
 
 // Helper class that holds the owned main WebContents for the docked
@@ -561,8 +562,8 @@ content::WebContents* DevToolsWindow::GetInTabWebContents(
   if (out_strategy)
     out_strategy->CopyFrom(window->contents_resizing_strategy_);
 
-  return window->is_docked_ ? window->main_web_contents_ :
-      window->toolbox_web_contents_;
+  return window->is_docked_ ? window->main_web_contents_.get()
+                            : window->toolbox_web_contents_.get();
 }
 
 // static
@@ -1832,7 +1833,7 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
   CHECK(cert);
 
   WebContents* inspected_contents =
-      is_docked_ ? GetInspectedWebContents() : main_web_contents_;
+      is_docked_ ? GetInspectedWebContents() : main_web_contents_.get();
   Browser* browser = nullptr;
   int tab = 0;
   if (!FindInspectedBrowserAndTabIndex(inspected_contents, &browser, &tab))

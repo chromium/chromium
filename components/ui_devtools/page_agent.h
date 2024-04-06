@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/dom_agent.h"
 #include "components/ui_devtools/page.h"
 
@@ -27,7 +28,7 @@ class UI_DEVTOOLS_EXPORT PageAgent
   protocol::Response reload(protocol::Maybe<bool> bypass_cache) override;
 
  protected:
-  DOMAgent* const dom_agent_;
+  const raw_ptr<DOMAgent, DanglingUntriaged> dom_agent_;
 };
 
 }  // namespace ui_devtools

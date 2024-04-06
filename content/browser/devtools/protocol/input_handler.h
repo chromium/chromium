@@ -13,6 +13,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/input.h"
@@ -261,7 +263,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
         base::WeakPtr<RenderWidgetHostViewBase> view,
         std::optional<gfx::PointF> maybe_point);
 
-    InputHandler& handler_;
+    const raw_ref<InputHandler> handler_;
 
     // These get used for starting a drag.
     std::unique_ptr<InitialState> initial_state_;
@@ -346,9 +348,9 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
   float ScaleFactor();
 
-  RenderFrameHostImpl* host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> host_ = nullptr;
   // WebContents associated with the |host_|.
-  WebContentsImpl* web_contents_ = nullptr;
+  raw_ptr<WebContentsImpl> web_contents_ = nullptr;
   std::unique_ptr<Input::Frontend> frontend_;
   base::flat_set<std::unique_ptr<InputInjector>, base::UniquePtrComparator>
       injectors_;

@@ -6,6 +6,7 @@
 #define UI_WEBUI_EXAMPLES_BROWSER_DEVTOOLS_DEVTOOLS_MANAGER_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "url/gurl.h"
 
@@ -37,7 +38,7 @@ class DevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   bool HasBundledFrontendResources() override;
 
  private:
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   CreateContentWindowFunc create_content_window_func_;
 };
 

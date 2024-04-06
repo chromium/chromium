@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/browser/media_sinks_observer.h"
@@ -99,9 +100,11 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<CastHandler> handler_;
-  media_router::MockMediaRouter* router_ = nullptr;
-  media_router::MediaSinksObserver* desktop_sinks_observer_ = nullptr;
-  media_router::MediaSinksObserver* sinks_observer_ = nullptr;
+  raw_ptr<media_router::MockMediaRouter, DanglingUntriaged> router_ = nullptr;
+  raw_ptr<media_router::MediaSinksObserver, DanglingUntriaged>
+      desktop_sinks_observer_ = nullptr;
+  raw_ptr<media_router::MediaSinksObserver, DanglingUntriaged> sinks_observer_ =
+      nullptr;
 };
 
 TEST_F(CastHandlerTest, SetSinkToUse) {

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -793,7 +794,7 @@ class InputHandler::InputInjector
     owner_->injectors_.erase(this);
   }
 
-  InputHandler* const owner_;
+  const raw_ptr<InputHandler> owner_;
   base::WeakPtr<RenderWidgetHostImpl> widget_host_;
   // Callbacks for calls to Input.dispatchKey/MouseEvent that have been sent to
   // the renderer, but that we haven't yet received an ack for.
@@ -934,7 +935,7 @@ void InputHandler::DragController::StartDragging(
 
 void InputHandler::DragController::CancelDragging(base::OnceClosure callback) {
   if (!drag_state_ || !drag_state_->host) {
-    if (auto* view = handler_.GetRootView()) {
+    if (auto* view = handler_->GetRootView()) {
       view->GetRenderWidgetHost()->DragSourceSystemDragEnded();
     }
     std::move(callback).Run();
@@ -972,7 +973,7 @@ void InputHandler::DragController::DragUpdated(
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
-    handler_.HandleMouseEvent(std::move(event), callback->release());
+    handler_->HandleMouseEvent(std::move(event), callback->release());
     return;
   }
   drag_state_->data.operation = operation;
@@ -1014,9 +1015,9 @@ void InputHandler::DragController::EndDragging(
         drag_state_->pos);
     return;
   }
-  handler_.web_contents_->GetInputEventRouter()
+  handler_->web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
-          handler_.GetRootView(), drag_state_->pos,
+          handler_->GetRootView(), drag_state_->pos,
           base::BindOnce(&InputHandler::DragController::
                              EndDraggingWithRenderWidgetHostAtPoint,
                          weak_factory_.GetWeakPtr(), std::move(event),
@@ -1037,8 +1038,8 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
-    handler_.OnWidgetForDispatchMouseEvent(callback->release(),
-                                           std::move(event), view, maybe_point);
+    handler_->OnWidgetForDispatchMouseEvent(
+        callback->release(), std::move(event), view, maybe_point);
     return;
   }
   auto* host = RenderWidgetHostImpl::From(view->GetRenderWidgetHost());

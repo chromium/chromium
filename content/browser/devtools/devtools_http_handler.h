@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -120,7 +121,7 @@ class DevToolsHttpHandler {
   using ConnectionToClientMap =
       std::map<int, std::unique_ptr<DevToolsAgentHostClientImpl>>;
   ConnectionToClientMap connection_to_client_;
-  DevToolsManagerDelegate* delegate_;
+  raw_ptr<DevToolsManagerDelegate> delegate_;
   std::unique_ptr<DevToolsSocketFactory> socket_factory_;
   base::WeakPtrFactory<DevToolsHttpHandler> weak_factory_{this};
 };

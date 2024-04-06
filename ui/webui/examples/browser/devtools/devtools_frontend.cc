@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -213,8 +214,8 @@ class DevToolsFrontend::AgentHostClient
                        base::Value(request_id), std::move(arg));
   }
 
-  content::WebContents* const devtools_contents_;
-  content::WebContents* const inspected_contents_;
+  const raw_ptr<content::WebContents> devtools_contents_;
+  const raw_ptr<content::WebContents> inspected_contents_;
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<content::DevToolsFrontendHost> frontend_host_;

@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1126,7 +1127,7 @@ class BackgroundSyncRestorer {
   }
 
   std::string host_id_;
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
   int64_t offline_sw_registration_id_ =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
 };
@@ -1568,7 +1569,7 @@ class DevtoolsClearCacheObserver
   }
 
  private:
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
   std::unique_ptr<NetworkHandler::ClearBrowserCacheCallback> callback_;
 };
 

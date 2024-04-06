@@ -169,7 +169,7 @@ class DevToolsAndroidBridge : public KeyedService {
       return weak_factory_.GetWeakPtr();
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<AndroidDeviceManager> device_manager_;
 
   using DeviceMap =

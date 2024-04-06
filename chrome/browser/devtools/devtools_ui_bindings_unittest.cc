@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -130,7 +132,7 @@ class DevToolsUIBindingsSyncInfoTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 
   TestingProfile profile_;
-  syncer::TestSyncService* sync_service_;
+  raw_ptr<syncer::TestSyncService> sync_service_;
 };
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {

@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/overlay.h"
 
@@ -37,7 +38,7 @@ class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
  private:
   void UpdateCaptureInputEvents();
 
-  RenderFrameHostImpl* host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> host_ = nullptr;
   std::string inspect_mode_;
   std::string paused_message_;
 };

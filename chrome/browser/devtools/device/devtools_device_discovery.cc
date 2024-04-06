@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -145,7 +146,7 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   bool socket_opened_;
   std::vector<std::string> pending_messages_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
-  content::DevToolsExternalAgentProxy* proxy_;
+  raw_ptr<content::DevToolsExternalAgentProxy> proxy_;
 };
 
 class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
@@ -199,7 +200,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
   std::string description_;
   GURL url_;
   GURL favicon_url_;
-  content::DevToolsAgentHost* agent_host_;
+  raw_ptr<content::DevToolsAgentHost> agent_host_;
   std::map<content::DevToolsExternalAgentProxy*,
            std::unique_ptr<WebSocketProxy>>
       proxies_;

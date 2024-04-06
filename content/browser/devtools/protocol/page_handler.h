@@ -258,9 +258,9 @@ class PageHandler : public DevToolsDomainHandler,
   // to be requested. This changes due to window resizing.
   gfx::Size last_surface_size_;
 
-  RenderFrameHostImpl* host_;
-  EmulationHandler* emulation_handler_;
-  BrowserHandler* browser_handler_;
+  raw_ptr<RenderFrameHostImpl> host_;
+  raw_ptr<EmulationHandler> emulation_handler_;
+  raw_ptr<BrowserHandler> browser_handler_;
 
   std::unique_ptr<Page::Frontend> frontend_;
 

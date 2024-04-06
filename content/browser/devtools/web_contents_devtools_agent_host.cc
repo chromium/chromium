@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
@@ -131,7 +132,7 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn));
   }
 
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 // static

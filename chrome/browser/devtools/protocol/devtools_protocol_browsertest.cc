@@ -955,9 +955,9 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   }
 
  private:
-  extensions::ExtensionService* extension_service_;
-  extensions::ExtensionRegistry* extension_registry_;
-  content::WebContents* background_web_contents_;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
+  raw_ptr<content::WebContents, DanglingUntriaged> background_web_contents_;
 #if BUILDFLAG(IS_WIN)
   // This is needed to stop ExtensionProtocolTestsfrom creating a
   // shortcut in the Windows start menu. The override needs to last until the

@@ -102,7 +102,7 @@ class RendererAutoAttacherBase : public TargetAutoAttacher {
                           bool waiting_for_debugger);
 
  private:
-  DevToolsRendererChannel* const renderer_channel_;
+  const raw_ptr<DevToolsRendererChannel> renderer_channel_;
 };
 
 }  // namespace protocol

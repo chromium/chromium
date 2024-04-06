@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -492,7 +493,7 @@ class DevToolsAndroidBridgeWarmUp
 
  private:
   base::OnceClosure closure_;
-  DevToolsAndroidBridge* adb_bridge_;
+  raw_ptr<DevToolsAndroidBridge> adb_bridge_;
 };
 
 class AndroidUsbDiscoveryTest : public InProcessBrowserTest {
@@ -536,7 +537,7 @@ class AndroidUsbDiscoveryTest : public InProcessBrowserTest {
 
   scoped_refptr<content::MessageLoopRunner> runner_;
   std::unique_ptr<FakeUsbDeviceManager> usb_manager_;
-  DevToolsAndroidBridge* adb_bridge_;
+  raw_ptr<DevToolsAndroidBridge, DanglingUntriaged> adb_bridge_;
   int scheduler_invoked_ = 0;
 };
 
@@ -609,7 +610,7 @@ class MockListListener : public DevToolsAndroidBridge::DeviceListListener {
     }
   }
 
-  DevToolsAndroidBridge* adb_bridge_;
+  raw_ptr<DevToolsAndroidBridge> adb_bridge_;
   base::OnceClosure callback_;
 };
 
@@ -628,7 +629,7 @@ class MockCountListener : public DevToolsAndroidBridge::DeviceCountListener {
 
   void Shutdown() { std::move(callback_).Run(); }
 
-  DevToolsAndroidBridge* adb_bridge_;
+  raw_ptr<DevToolsAndroidBridge> adb_bridge_;
   base::OnceClosure callback_;
   int invoked_ = 0;
 };

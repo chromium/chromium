@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/cast.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
@@ -99,8 +100,8 @@ class CastHandler : public protocol::Cast::Backend,
       const media_router::RouteRequestResult& result);
   void OnIssue(const std::string& issue);
 
-  content::WebContents* web_contents_;
-  media_router::MediaRouter* router_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<media_router::MediaRouter> router_;
 
   std::unique_ptr<media_router::QueryResultManager> query_result_manager_;
   std::unique_ptr<MediaRoutesObserver> routes_observer_;

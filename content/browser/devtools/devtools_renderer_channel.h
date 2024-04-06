@@ -90,14 +90,14 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
                            bool force_using_io);
   void ReportChildTargetsCallback();
 
-  DevToolsAgentHostImpl* owner_;
+  raw_ptr<DevToolsAgentHostImpl> owner_;
   mojo::Receiver<blink::mojom::DevToolsAgentHost> receiver_{this};
   mojo::AssociatedReceiver<blink::mojom::DevToolsAgentHost>
       associated_receiver_{this};
   mojo::Remote<blink::mojom::DevToolsAgent> agent_remote_;
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
   int process_id_;
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   base::flat_set<raw_ptr<WorkerOrWorkletDevToolsAgentHost, CtnExperimental>>
       child_targets_;
   ChildTargetCreatedCallback child_target_created_callback_;

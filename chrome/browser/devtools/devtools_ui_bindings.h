@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
@@ -306,9 +307,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   class FrontendWebContentsObserver;
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
-  Profile* profile_;
-  DevToolsAndroidBridge* android_bridge_;
-  content::WebContents* web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<DevToolsAndroidBridge> android_bridge_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Delegate> delegate_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<content::DevToolsFrontendHost> frontend_host_;

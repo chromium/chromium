@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/root_element.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
@@ -81,7 +82,7 @@ class WidgetElementTest : public views::ViewsTestBase {
   }
 
  private:
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
   std::unique_ptr<WidgetElement> element_;
   std::unique_ptr<MockWidgetElementDelegate> delegate_;
 };

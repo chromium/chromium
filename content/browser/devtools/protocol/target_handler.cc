@@ -180,7 +180,7 @@ class BrowserToPageConnector {
     }
 
    private:
-    BrowserToPageConnector* connector_;
+    raw_ptr<BrowserToPageConnector> connector_;
   };
 
   BrowserToPageConnector(const std::string& binding_name,
@@ -340,7 +340,7 @@ class TargetHandler::Throttle : public content::NavigationThrottle {
 
  private:
   void CleanupPointers();
-  TargetAutoAttacher* auto_attacher_;
+  raw_ptr<TargetAutoAttacher> auto_attacher_;
 };
 
 class TargetHandler::ResponseThrottle : public TargetHandler::Throttle {
@@ -578,12 +578,12 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     return handler_->root_session_->GetClient();
   }
 
-  TargetHandler* handler_;
+  raw_ptr<TargetHandler> handler_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   std::string id_;
   bool flatten_protocol_;
-  DevToolsSession* devtools_session_ = nullptr;
-  Throttle* throttle_ = nullptr;
+  raw_ptr<DevToolsSession, DanglingUntriaged> devtools_session_ = nullptr;
+  raw_ptr<Throttle> throttle_ = nullptr;
   scoped_refptr<DevToolsThrottleHandle> worker_throttle_;
   // This is needed to identify sessions associated with given
   // AutoAttacher to properly support SetAttachedTargetsOfType()

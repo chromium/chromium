@@ -386,7 +386,7 @@ class DevToolsTest : public InProcessBrowserTest {
     return DevToolsWindowTesting::Get(window_)->toolbox_web_contents();
   }
 
-  DevToolsWindow* window_;
+  raw_ptr<DevToolsWindow, DanglingUntriaged> window_;
 };
 
 class SitePerProcessDevToolsTest : public DevToolsTest {
@@ -782,9 +782,11 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
     DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
   }
 
-  DevToolsWindow* window_ = nullptr;
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<DevToolsWindow, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
+      extension_registry_ = nullptr;
 };
 
 // TODO(crbug/1503023): Fix the memory leak and enable the test.
@@ -847,7 +849,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
     }
 
     std::string path_;
-    scoped_refptr<DevToolsAgentHost>* out_host_;
+    raw_ptr<scoped_refptr<DevToolsAgentHost>> out_host_;
     base::OnceClosure quit_;
   };
 
@@ -876,7 +878,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
     DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
   }
 
-  DevToolsWindow* window_;
+  raw_ptr<DevToolsWindow, DanglingUntriaged> window_;
 };
 
 // Tests that BeforeUnload event gets called on docked devtools if

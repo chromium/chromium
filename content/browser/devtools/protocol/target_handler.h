@@ -188,8 +188,8 @@ class TargetHandler : public DevToolsDomainHandler,
   const AccessMode access_mode_;
   const std::string owner_target_id_;
   const DevToolsSession::Mode session_mode_;
-  DevToolsSession* const root_session_;
-  TargetAutoAttacher* const auto_attacher_;
+  const raw_ptr<DevToolsSession> root_session_;
+  const raw_ptr<TargetAutoAttacher> auto_attacher_;
   std::unique_ptr<Target::Frontend> frontend_;
 
   bool flatten_auto_attach_ = false;
