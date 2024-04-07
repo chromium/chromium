@@ -499,12 +499,12 @@ enum class TryTactic : uint8_t {
   kFlipStart,
 };
 
-static const size_t kPositionVisibilityBits = 3;
+// TODO(crbug.com/332933527): Support anchors-valid.
+static const size_t kPositionVisibilityBits = 2;
 enum class PositionVisibility : uint8_t {
   kAlways = 0x0,
-  kAnchorsValid = 0x1,
-  kAnchorsVisible = 0x2,
-  kNoOverflow = 0x4,
+  kAnchorsVisible = 0x1,
+  kNoOverflow = 0x2,
 };
 inline PositionVisibility operator|(PositionVisibility a,
                                     PositionVisibility b) {

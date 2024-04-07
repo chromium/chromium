@@ -2289,9 +2289,7 @@ inline CSSIdentifierValue::CSSIdentifierValue(PositionVisibility visibility)
     case PositionVisibility::kAlways:
       value_id_ = CSSValueID::kAlways;
       break;
-    case PositionVisibility::kAnchorsValid:
-      value_id_ = CSSValueID::kAnchorsValid;
-      break;
+    // TODO(crbug.com/332933527): Support kAnchorsValid.
     case PositionVisibility::kAnchorsVisible:
       value_id_ = CSSValueID::kAnchorsVisible;
       break;
@@ -2306,8 +2304,7 @@ inline PositionVisibility CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kAlways:
       return PositionVisibility::kAlways;
-    case CSSValueID::kAnchorsValid:
-      return PositionVisibility::kAnchorsValid;
+    // TODO(crbug.com/332933527): Support kAnchorsValid.
     case CSSValueID::kAnchorsVisible:
       return PositionVisibility::kAnchorsVisible;
     case CSSValueID::kNoOverflow:

@@ -1859,7 +1859,8 @@
 
     // position-visibility
     // always
-    "anchors-valid",
+    // TODO(crbug.com/332933527): Support anchors-valid.
+    // "anchors-valid",
     "anchors-visible",
     "no-overflow",
 

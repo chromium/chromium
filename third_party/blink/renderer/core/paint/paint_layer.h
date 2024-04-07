@@ -90,15 +90,16 @@ enum PaintLayerIteration {
       kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren
 };
 
+// TODO(crbug.com/332933527): Support anchors-valid.
+// If the size of this enum changes, make sure to update the bits needed for
+// `invisible_for_position_visibility_`.
 enum class LayerPositionVisibility : uint8_t {
-  // anchors-valid.
-  kAnchorsValid = 1,
   // anchors-visible, anchor intersection.
-  kAnchorsIntersectionVisible = 1 << 1,
+  kAnchorsIntersectionVisible = 1,
   // anchors-visible, anchor CSS visibility.
-  kAnchorsCssVisible = 1 << 2,
+  kAnchorsCssVisible = 1 << 1,
   // no-overflow.
-  kNoOverflow = 1 << 3,
+  kNoOverflow = 1 << 2,
 };
 
 // PaintLayer is an old object that handles lots of unrelated operations.
@@ -750,7 +751,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
 
-  unsigned invisible_for_position_visibility_ : 4 = 0;
+  unsigned invisible_for_position_visibility_ : 3 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;
 
 #if DCHECK_IS_ON()

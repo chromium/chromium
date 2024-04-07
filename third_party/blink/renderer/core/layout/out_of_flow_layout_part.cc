@@ -319,6 +319,8 @@ void UpdatePositionVisibilityAfterLayout(
     return;
   }
 
+  // TODO(crbug.com/332933527): Support anchors-valid.
+
   PaintLayer* layer = node.GetLayoutBox()->Layer();
   CHECK(layer);
   bool has_no_overflow_visibility =
@@ -327,21 +329,11 @@ void UpdatePositionVisibilityAfterLayout(
       LayerPositionVisibility::kNoOverflow,
       has_no_overflow_visibility && offset_info.overflows_containing_block);
 
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
-  // For now we hide the anchored element if it's not anchor positioned. We need
-  // to revisit based on the final decision for the spec of
-  // `position-visibility: anchors-valid`.
-  bool has_anchors_valid_visibility =
-      node.Style().HasPositionVisibility(PositionVisibility::kAnchorsValid);
   // TODO(wangxianzhu): We may be anchored in cases where we do not need scroll
   // adjustment, such as when the anchor and anchored have the same containing
   // block. For now though, these flags are true in this case.
   bool is_anchor_positioned = offset_info.needs_scroll_adjustment_in_x ||
                               offset_info.needs_scroll_adjustment_in_y;
-  layer->SetInvisibleForPositionVisibility(
-      LayerPositionVisibility::kAnchorsValid,
-      has_anchors_valid_visibility && !is_anchor_positioned);
-
   bool has_anchors_visible_visibility =
       node.Style().HasPositionVisibility(PositionVisibility::kAnchorsVisible);
   Element* anchored = DynamicTo<Element>(node.GetDOMNode());
