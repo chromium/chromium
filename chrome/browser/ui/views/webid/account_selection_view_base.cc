@@ -404,7 +404,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         gfx::Insets::VH(/*vertical=*/is_modal_dialog ? kVerticalSpacing : 0,
                         /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
                                                        : kLeftRightPadding)));
-    row->SetTitleTextStyle(account_email_style, ui::kColorDialogBackground,
+    row->SetTitleTextStyle(account_name_style, ui::kColorDialogBackground,
                            /*color_id=*/std::nullopt);
     row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     if (should_include_idp) {
