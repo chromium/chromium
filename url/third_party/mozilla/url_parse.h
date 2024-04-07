@@ -318,10 +318,8 @@ COMPONENT_EXPORT(URL)
 void ParseFileURL(const char16_t* url, int url_len, Parsed* parsed);
 
 // Filesystem URLs are structured differently than other URLs.
-COMPONENT_EXPORT(URL)
-void ParseFileSystemURL(const char* url, int url_len, Parsed* parsed);
-COMPONENT_EXPORT(URL)
-void ParseFileSystemURL(const char16_t* url, int url_len, Parsed* parsed);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::u16string_view url);
 
 // MailtoURL is for mailto: urls. They are made up scheme,path,query
 COMPONENT_EXPORT(URL) Parsed ParseMailtoURL(std::string_view url);

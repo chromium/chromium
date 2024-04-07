@@ -483,7 +483,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
   if (scheme == url::kFileSystemScheme) {
     // Have the GURL parser do the heavy lifting for us.
-    url::ParseFileSystemURL(text->data(), text_length, parts);
+    *parts = url::ParseFileSystemURL(*text);
     return scheme;
   }
 

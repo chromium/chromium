@@ -2103,9 +2103,7 @@ TEST(URLCanonTest, ReplaceFileSystemURL) {
 
   for (const auto& replace_case : replace_cases) {
     const ReplaceCase& cur = replace_case;
-    int base_len = static_cast<int>(strlen(cur.base));
-    Parsed parsed;
-    ParseFileSystemURL(cur.base, base_len, &parsed);
+    Parsed parsed = ParseFileSystemURL(cur.base);
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
@@ -2367,9 +2365,7 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
   };
 
   for (const auto& i : cases) {
-    int url_len = static_cast<int>(strlen(i.input));
-    Parsed parsed;
-    ParseFileSystemURL(i.input, url_len, &parsed);
+    Parsed parsed = ParseFileSystemURL(i.input);
 
     Parsed out_parsed;
     std::string out_str;
