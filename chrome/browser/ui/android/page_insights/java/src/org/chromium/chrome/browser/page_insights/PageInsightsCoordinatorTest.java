@@ -252,7 +252,7 @@ public class PageInsightsCoordinatorTest {
                                         mAppInsetSupplier,
                                         PageInsightsIntentParams.getDefaultInstance(),
                                         mIsPageInsightsHubEnabled,
-                                        (navigationHandle, navigationEntry) ->
+                                        (request) ->
                                                 PageInsightsConfig.newBuilder()
                                                         .setIsInitialPage(true)
                                                         .setShouldAutoTrigger(true)

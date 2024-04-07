@@ -215,7 +215,7 @@ public class PageInsightsMediatorTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mBottomSheetController.getBottomSheetBackPressHandler()).thenReturn(mBackPressHandler);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(null);
-        when(mPageInsightsConfigProvider.get(any(), any()))
+        when(mPageInsightsConfigProvider.get(any()))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setShouldAutoTrigger(true)
@@ -341,7 +341,9 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_shouldNotAutoTrigger_doesNotTrigger() {
-        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
+        when(mPageInsightsConfigProvider.get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, true)))
                 .thenReturn(PageInsightsConfig.newBuilder().setShouldAutoTrigger(false).build());
         createMediator(SHORT_TRIGGER_DELAY_MS);
         View feedView = new View(ContextUtils.getApplicationContext());
@@ -508,7 +510,9 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_sendsCorrectMetadata() {
-        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
+        when(mPageInsightsConfigProvider.get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, true)))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setShouldAutoTrigger(true)
@@ -553,6 +557,43 @@ public class PageInsightsMediatorTest {
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
                         any(),
                         eq(expectedMetadata.toByteArray()));
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_hadPageLoad_sendsCorrectConfigRequest() {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
+
+        verify(mPageInsightsConfigProvider)
+                .get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_hadNoPageLoad_sendsCorrectConfigRequest() {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
+
+        verify(mPageInsightsConfigProvider)
+                .get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, false));
     }
 
     @Test
@@ -689,7 +730,9 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testLaunch_sendsCorrectMetadata() throws Exception {
-        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
+        when(mPageInsightsConfigProvider.get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, false)))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setServerShouldNotLogOrPersonalize(true)
@@ -796,7 +839,9 @@ public class PageInsightsMediatorTest {
     @MediumTest
     public void testLaunch_signedIn_shouldNotXSurfaceLog_doesNotCallOnSurfaceCreated()
             throws Exception {
-        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
+        when(mPageInsightsConfigProvider.get(
+                        new PageInsightsConfigRequest(
+                                mNavigationHandle, mLastCommittedNavigationEntry, false)))
                 .thenReturn(PageInsightsConfig.newBuilder().setShouldXsurfaceLog(false).build());
         createMediator();
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);

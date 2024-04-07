@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
@@ -86,8 +87,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.NavigationEntry;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -442,15 +441,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 .getPageInsightsIntentParams(mIntentDataProvider.get());
     }
 
-    private PageInsightsConfig getPageInsightsConfig(
-            @Nullable NavigationHandle navigationHandle,
-            @Nullable NavigationEntry navigationEntry) {
+    private PageInsightsConfig getPageInsightsConfig(PageInsightsConfigRequest request) {
         return CustomTabsConnection.getInstance()
-                .getPageInsightsConfig(
-                        mIntentDataProvider.get(),
-                        navigationHandle,
-                        navigationEntry,
-                        mProfileSupplier);
+                .getPageInsightsConfig(request, mIntentDataProvider.get(), mProfileSupplier);
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {

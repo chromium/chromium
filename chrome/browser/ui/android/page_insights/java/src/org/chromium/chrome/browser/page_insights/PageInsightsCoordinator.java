@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.content_public.browser.NavigationEntry;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.function.BooleanSupplier;
@@ -36,9 +34,7 @@ import java.util.function.BooleanSupplier;
 public class PageInsightsCoordinator {
 
     public static interface ConfigProvider {
-        PageInsightsConfig get(
-                @Nullable NavigationHandle navigationHandle,
-                @Nullable NavigationEntry navigationEntry);
+        PageInsightsConfig get(PageInsightsConfigRequest request);
     }
 
     private final Context mContext;
