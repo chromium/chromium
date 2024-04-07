@@ -270,12 +270,7 @@ gfx::Size StyledLabel::CalculatePreferredSize() const {
 gfx::Size StyledLabel::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   int width = 0;
-  if (fixed_width_ && !use_legacy_preferred_size_) {
-    // TODO(322715559): Remove the legacy path. We would like the preferred size
-    // to be independent of the current layout (e.g. width).
-    // Investigate why in the new behavior, SizeToFit() with a large width leads
-    // to an unexpectedly small height in the bug, causing layout issues not
-    // seen with legacy behavior where preferred size is width-dependent.
+  if (fixed_width_) {
     width = fixed_width_;
   } else if (available_size.width().is_bounded()) {
     width = available_size.width().value();
