@@ -54,19 +54,34 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             putJobScheduledTimeInExtras(extras);
 
             // Use a different task ID for notification unsubscribe actions to ensure it is not
-            // overridden by the task handling the dismiss intent.
+            // overridden by the task handling the dismiss intent; plus use a higher priority to
+            // avoid scheduling delays up to several minutes as indicated by telemetry.
             int taskId = TaskIds.NOTIFICATION_SERVICE_JOB_ID;
+            boolean isExpedited = false;
             if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
                 taskId = TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID;
+                isExpedited = true;
             }
 
-            JobInfo job =
+            JobInfo.Builder jobBuilder =
                     new JobInfo.Builder(
-                                    taskId,
-                                    new ComponentName(context, NotificationJobService.class))
-                            .setExtras(extras)
-                            .setOverrideDeadline(0)
-                            .build();
+                            taskId, new ComponentName(context, NotificationJobService.class));
+            jobBuilder.setExtras(extras);
+
+            // The `setExpedited` option must not be used together with `setDeadlineOverride`, while
+            // `setImportantWhileForeground` must be used together with at least one constraint.
+            if (isExpedited) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    jobBuilder.setExpedited(true);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    jobBuilder.setImportantWhileForeground(true);
+                    jobBuilder.setOverrideDeadline(0);
+                } else {
+                    assert false; // Not reached, PRE_UNSUBSCRIBE is not supported before Pie.
+                }
+            } else {
+                jobBuilder.setOverrideDeadline(0);
+            }
 
             recordJobIsAlreadyPendingHistogram(scheduler, taskId, intent);
             NotificationUmaTracker.getInstance()
@@ -74,6 +89,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                             NotificationUmaTracker.IntentHandlerJobStage.SCHEDULE_JOB,
                             intent.getAction());
 
+            JobInfo job = jobBuilder.build();
             int result = scheduler.schedule(job);
 
             if (result != JobScheduler.RESULT_SUCCESS) {
