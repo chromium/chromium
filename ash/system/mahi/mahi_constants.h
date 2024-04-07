@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 #define ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash::mahi_constants {
@@ -48,6 +49,7 @@ inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 
 inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
+inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
 
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 

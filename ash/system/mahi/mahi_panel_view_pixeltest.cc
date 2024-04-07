@@ -123,7 +123,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_basic", /*revision_number=*/1,
+      "question_answer_view_basic", /*revision_number=*/2,
       question_answer_view));
 }
 
@@ -136,7 +136,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   const std::u16string answer =
-      base::StrCat(std::vector<std::u16string>(15, u"Long Answer "));
+      base::StrCat(std::vector<std::u16string>(25, u"Long Answer "));
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillByDefault(
           [&answer](
@@ -148,7 +148,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
 
   // Set a valid text in the question textfield.
   const std::u16string question =
-      base::StrCat(std::vector<std::u16string>(15, u"Long Question "));
+      base::StrCat(std::vector<std::u16string>(25, u"Long Question "));
   question_textfield->SetText(question);
 
   // Pressing the send button should create a question and answer text bubble.
@@ -157,7 +157,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/1,
+      "question_answer_view_long_text", /*revision_number=*/2,
       question_answer_view));
 }
 

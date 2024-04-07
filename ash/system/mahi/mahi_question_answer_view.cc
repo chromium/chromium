@@ -55,12 +55,17 @@ constexpr auto kErrorLabelInteriorMargin =
 constexpr int kErrorLabelMaximumWidth = 276;
 
 // MahiQuestionAnswerView
-constexpr auto kInteriorMargin = gfx::Insets(/*all=*/8);
+constexpr gfx::Insets kQuestionAnswerInteriorMargin(/*all=*/8);
 constexpr auto kTextBubbleInteriorMargin =
     gfx::Insets::VH(/*vertical=*/8, /*horizontal=*/12);
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
-constexpr int kTextBubbleDefaultMaixmumWidth = 300;
+
+// TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth` when
+// the panel is resizable.
+constexpr int kTextBubbleLabelDefaultMaximumWidth =
+    mahi_constants::kPanelDefaultWidth - mahi_constants::kPanelPadding.width() -
+    kQuestionAnswerInteriorMargin.width() - kTextBubbleInteriorMargin.width();
 
 // ErrorBubble -----------------------------------------------------------------
 
@@ -135,7 +140,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
                 // passed down from the views tree in the first round of layout,
                 // so we impose a maximum width constraint so that the first
                 // layout handle the width and height constraint correctly.
-                label->SetMaximumWidth(kTextBubbleDefaultMaixmumWidth);
+                label->SetMaximumWidth(kTextBubbleLabelDefaultMaximumWidth);
               }))
               .SetText(text)
               .SetTooltipText(text)
@@ -194,7 +199,7 @@ namespace ash {
 MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
     : MahiUiController::Observer(ui_controller) {
   SetOrientation(views::LayoutOrientation::kVertical);
-  SetInteriorMargin(kInteriorMargin);
+  SetInteriorMargin(kQuestionAnswerInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
   SetCollapseMargins(true);
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kBetweenChildSpacing, 0));

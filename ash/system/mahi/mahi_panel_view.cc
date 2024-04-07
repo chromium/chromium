@@ -73,7 +73,6 @@ namespace ash {
 namespace {
 
 constexpr SkScalar kContentScrollViewCornerRadius = 16;
-constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
@@ -360,7 +359,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
 
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  SetInteriorMargin(kPanelPadding);
+  SetInteriorMargin(mahi_constants::kPanelPadding);
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kPanelChildSpacing, 0));
   SetIgnoreDefaultMainAxisMargins(true);
   SetCollapseMargins(true);

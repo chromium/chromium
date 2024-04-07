@@ -45,6 +45,7 @@ constexpr auto kImagePaddings = gfx::Insets::TLBR(/*top=*/0,
 
 constexpr gfx::Size kImagePreferredSize(/*width=*/200, /*height=*/100);
 
+// TODO(b/319731776): Use panel bounds instead when the panel is resizable.
 constexpr int kLabelMaximumWidth = 264;
 
 constexpr auto kLabelPaddings =

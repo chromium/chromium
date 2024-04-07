@@ -33,12 +33,17 @@ gfx::Rect CalculateWidgetBounds(aura::Window* root_window,
   auto display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
   auto bottom_right = display.work_area().bottom_right();
+
+  // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultHeight`
+  // when the panel is resizable.
   int height = refresh_banner_shown ? kPanelHeightWithRefreshBanner
                                     : mahi_constants::kPanelDefaultHeight;
 
   // The panel is positioned at the bottom right corner of the screen.
   // TODO(b/319476980): Make sure Mahi main panel bounds work when shelf
   // alignment changes.
+  // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth`
+  // when the panel is resizable.
   return gfx::Rect(bottom_right.x() - mahi_constants::kPanelDefaultWidth -
                        kPanelBoundsPadding,
                    bottom_right.y() - height - kPanelBoundsPadding,
