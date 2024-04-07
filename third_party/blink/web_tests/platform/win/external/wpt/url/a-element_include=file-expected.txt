@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <file:/example.com/> against <http://example.org/foo/bar>
   assert_equals: href expected "file:///example.com/" but got "file://example.com/"
 [FAIL] Parsing: <file:c:\\foo\\bar.html> against <file:///tmp/mock/path>
@@ -20,6 +20,10 @@ Found 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "file:///" but got "file://../"
 [FAIL] Parsing: <file:a> against <http://www.example.com/test>
   assert_equals: href expected "file:///a" but got "file://a/"
+[FAIL] Parsing: <file:.> against <about:blank>
+  assert_equals: href expected "file:///" but got "file://./"
+[FAIL] Parsing: <file:.> against <http://www.example.com/test>
+  assert_equals: href expected "file:///" but got "file://./"
 [FAIL] Parsing: <//d:> against <file:///C:/a/b>
   assert_equals: href expected "file:///d:" but got "file:///D:"
 [FAIL] Parsing: <//d:/..> against <file:///C:/a/b>
