@@ -133,20 +133,9 @@ suite('ProfileCustomizationTest', function() {
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
   });
 
-  test('ThemeSelector', async function() {
-    // cr-customize-themes should not be visible and cr-theme-color-picker
-    // should be visible when ChromeWebuiRefresh2023 is disabled.
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+  test('ThemeColorPicker', async function() {
     await initializeApp();
     assertTrue(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
-    assertFalse(!!app.shadowRoot!.querySelector('#themeSelector'));
-
-    // cr-customize-themes should be visible and cr-theme-color-picker should
-    // not be visible when ChromeWebuiRefresh2023 is disabled.
-    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
-    await initializeApp();
-    assertFalse(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
-    assertTrue(!!app.shadowRoot!.querySelector('#themeSelector'));
   });
 
   // Checks that there is no Delete Profile button in the default Profile

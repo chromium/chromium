@@ -127,11 +127,6 @@
     margin: 4px auto 26px auto;
   }
 
-  #themeSelector {
-    --cr-customize-themes-grid-gap: 7px;
-    --cr-customize-themes-icon-size: 36px;
-  }
-
   cr-theme-color-picker {
     --cr-theme-color-padding: 6px;
     --cr-theme-color-picker-column-width: 50px;
@@ -270,13 +265,7 @@
       </cr-input>
 
       <div id="pickThemeContainer">
-        <template is="dom-if" if="[[isChromeRefresh2023_]]">
-          <cr-theme-color-picker columns="6"></cr-theme-color-picker>
-        </template>
-        <template is="dom-if" if="[[!isChromeRefresh2023_]]">
-          <cr-customize-themes id="themeSelector">
-          </cr-customize-themes>
-        </template>
+        <cr-theme-color-picker columns="6"></cr-theme-color-picker>
       </div>
 
       <div class="action-container">
