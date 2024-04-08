@@ -1151,6 +1151,7 @@ if (use_blink) {
 
   test("components_perftests") {
     sources = [
+      "attribution_reporting/aggregatable_utils_perftest.cc",
       "attribution_reporting/privacy_math_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
