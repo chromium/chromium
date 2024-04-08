@@ -355,15 +355,13 @@ void MockOptGuideDecider::SetDefaultShoppingPage(bool default_shopping_page) {
 }
 
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
-                               bool is_off_the_record)
-    : MockWebWrapper(last_committed_url, is_off_the_record, nullptr) {}
-
-MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
                                bool is_off_the_record,
-                               base::Value* result)
+                               base::Value* result,
+                               std::u16string title)
     : last_committed_url_(last_committed_url),
       is_off_the_record_(is_off_the_record),
-      mock_js_result_(result) {}
+      mock_js_result_(result),
+      title_(title) {}
 
 MockWebWrapper::~MockWebWrapper() = default;
 
@@ -372,7 +370,7 @@ const GURL& MockWebWrapper::GetLastCommittedURL() {
 }
 
 const std::u16string& MockWebWrapper::GetTitle() {
-  return base::EmptyString16();
+  return title_;
 }
 
 bool MockWebWrapper::IsFirstLoadForNavigationFinished() {

@@ -176,6 +176,20 @@ struct ParcelTrackingStatus {
   base::Time estimated_delivery_time;
 };
 
+// Details about a particular URL.
+struct UrlInfo {
+  UrlInfo();
+  UrlInfo(const UrlInfo&);
+  UrlInfo& operator=(const UrlInfo&);
+  bool operator==(const UrlInfo& other) const {
+    return url == other.url && title == other.title;
+  }
+  ~UrlInfo();
+
+  GURL url;
+  std::u16string title;
+};
+
 // Callbacks and typedefs for various accessors in the shopping service.
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;

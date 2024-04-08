@@ -89,6 +89,12 @@ void MockShoppingService::SetResponseForGetPriceInsightsInfoForUrl(
           });
 }
 
+void MockShoppingService::SetResponseForGetUrlInfosForActiveWebWrappers(
+    std::vector<commerce::UrlInfo> url_infos) {
+  ON_CALL(*this, GetUrlInfosForActiveWebWrappers)
+      .WillByDefault(testing::Return(url_infos));
+}
+
 void MockShoppingService::SetResponsesForGetUpdatedProductInfoForBookmarks(
     std::map<int64_t, ProductInfo> bookmark_updates) {
   ON_CALL(*this, GetUpdatedProductInfoForBookmarks)

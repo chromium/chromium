@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/shopping_service.h"
+
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -362,38 +365,56 @@ TEST_P(ShoppingServiceTest, TestWebWrapperSet) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   std::string url1 = "http://example.com/foo";
-  MockWebWrapper web1(GURL(url1), false);
-  std::string url2 = "http://example.com/bar";
-  MockWebWrapper web2(GURL(url2), false);
-  std::string url3 = "http://example.com/baz";
-  MockWebWrapper web3(GURL(url3), false);
+  std::u16string title1 = u"example1";
+  MockWebWrapper web1(GURL(url1), false, nullptr, title1);
 
-  ASSERT_TRUE(shopping_service_->GetUrlsForActiveWebWrappers().empty());
+  UrlInfo url_info1;
+  url_info1.url = GURL(url1);
+  url_info1.title = title1;
+
+  std::string url2 = "http://example.com/bar";
+  std::u16string title2 = u"example2";
+  MockWebWrapper web2(GURL(url2), false, nullptr, title2);
+
+  UrlInfo url_info2;
+  url_info2.url = GURL(url2);
+  url_info2.title = title2;
+
+  std::string url3 = "http://example.com/baz";
+  std::u16string title3 = u"example3";
+  MockWebWrapper web3(GURL(url3), false, nullptr, title3);
+
+  UrlInfo url_info3;
+  url_info3.url = GURL(url3);
+  url_info3.title = title3;
+
+  ASSERT_TRUE(shopping_service_->GetUrlInfosForActiveWebWrappers().empty());
 
   WebWrapperCreated(&web1);
   WebWrapperCreated(&web2);
   WebWrapperCreated(&web3);
 
-  std::vector<GURL> open_urls =
-      shopping_service_->GetUrlsForActiveWebWrappers();
+  std::vector<UrlInfo> open_urls =
+      shopping_service_->GetUrlInfosForActiveWebWrappers();
+
   ASSERT_EQ(3u, open_urls.size());
-  ASSERT_TRUE(base::Contains(open_urls, GURL(url1)));
-  ASSERT_TRUE(base::Contains(open_urls, GURL(url2)));
-  ASSERT_TRUE(base::Contains(open_urls, GURL(url3)));
+  ASSERT_TRUE(base::Contains(open_urls, url_info1));
+  ASSERT_TRUE(base::Contains(open_urls, url_info2));
+  ASSERT_TRUE(base::Contains(open_urls, url_info3));
 
   // Close one of the tabs
   WebWrapperDestroyed(&web1);
 
-  open_urls = shopping_service_->GetUrlsForActiveWebWrappers();
+  open_urls = shopping_service_->GetUrlInfosForActiveWebWrappers();
   ASSERT_EQ(2u, open_urls.size());
-  ASSERT_FALSE(base::Contains(open_urls, GURL(url1)));
-  ASSERT_TRUE(base::Contains(open_urls, GURL(url2)));
-  ASSERT_TRUE(base::Contains(open_urls, GURL(url3)));
+  ASSERT_FALSE(base::Contains(open_urls, url_info1));
+  ASSERT_TRUE(base::Contains(open_urls, url_info2));
+  ASSERT_TRUE(base::Contains(open_urls, url_info3));
 
   WebWrapperDestroyed(&web2);
   WebWrapperDestroyed(&web3);
 
-  ASSERT_TRUE(shopping_service_->GetUrlsForActiveWebWrappers().empty());
+  ASSERT_TRUE(shopping_service_->GetUrlInfosForActiveWebWrappers().empty());
 }
 
 // Test that product info is inserted into the cache without a client

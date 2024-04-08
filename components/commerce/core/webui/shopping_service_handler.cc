@@ -83,6 +83,19 @@ shopping_service::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
   return bookmark_info;
 }
 
+std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
+    const std::vector<UrlInfo>& url_infos) {
+  std::vector<shopping_service::mojom::UrlInfoPtr> url_info_ptr_list;
+
+  for (const UrlInfo& url_info : url_infos) {
+    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+    url_info_ptr->url = url_info.url;
+    url_info_ptr->title = url_info.title;
+    url_info_ptr_list.push_back(std::move(url_info_ptr));
+  }
+  return url_info_ptr_list;
+}
+
 shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
     const std::optional<PriceInsightsInfo>& info,
     const std::string& locale) {
@@ -608,9 +621,10 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingServiceHandler::GetUrlsOpenInTabs(
-    GetUrlsOpenInTabsCallback callback) {
-  std::move(callback).Run(shopping_service_->GetUrlsForActiveWebWrappers());
+void ShoppingServiceHandler::GetUrlInfosForOpenTabs(
+    GetUrlInfosForOpenTabsCallback callback) {
+  std::move(callback).Run(
+      UrlInfoToMojo(shopping_service_->GetUrlInfosForActiveWebWrappers()));
 }
 
 void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(

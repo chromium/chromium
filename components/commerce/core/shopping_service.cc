@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "commerce_types.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -815,10 +816,13 @@ bool ShoppingService::IsDiscountInfoApiEnabled() {
                                       kEnableDiscountInfoApiRegionLaunched);
 }
 
-std::vector<GURL> ShoppingService::GetUrlsForActiveWebWrappers() {
-  std::vector<GURL> urls;
+const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
+  std::vector<UrlInfo> urls;
   for (auto web : open_web_wrappers_) {
-    urls.push_back(web->GetLastCommittedURL());
+    UrlInfo url;
+    url.url = web->GetLastCommittedURL();
+    url.title = web->GetTitle();
+    urls.push_back(url);
   }
   return urls;
 }

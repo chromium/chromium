@@ -5,7 +5,7 @@
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications} from './shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, UrlInfo} from './shopping_service.mojom-webui.js';
 import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
@@ -21,7 +21,7 @@ export interface BrowserProxy {
   getPriceInsightsInfoForCurrentUrl():
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   showInsightsSidePanelUi(): void;
-  getUrlsOpenInTabs(): Promise<{urls: Url[]}>;
+  getUrlInfosForOpenTabs(): Promise<{urlInfos: UrlInfo[]}>;
   isShoppingListEligible(): Promise<{eligible: boolean}>;
   getShoppingCollectionBookmarkFolderId(): Promise<{collectionId: bigint}>;
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
@@ -83,8 +83,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     return this.handler.getProductSpecificationsForUrls(urls);
   }
 
-  getUrlsOpenInTabs() {
-    return this.handler.getUrlsOpenInTabs();
+  getUrlInfosForOpenTabs() {
+    return this.handler.getUrlInfosForOpenTabs();
   }
 
   showInsightsSidePanelUi() {

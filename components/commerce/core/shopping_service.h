@@ -437,7 +437,7 @@ class ShoppingService : public KeyedService,
   // Returns a list of URLs corresponding to active WebWrappers the shopping
   // service is keeping track of. This does not map to open tabs across all
   // platforms.
-  virtual std::vector<GURL> GetUrlsForActiveWebWrappers();
+  virtual const std::vector<UrlInfo> GetUrlInfosForActiveWebWrappers();
 
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(

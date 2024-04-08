@@ -112,6 +112,14 @@ struct ProductSpecifications {
   array<ProductSpecificationsProduct> products;
 };
 
+struct UrlInfo {
+  // Title of the page represented by the URL.
+  mojo_base.mojom.String16 title;
+
+  // Url.
+  url.mojom.Url url;
+};
+
 // Used by the price tracking section in side panel to bootstrap
 // bidirectional communication.
 interface ShoppingServiceHandlerFactory {
@@ -150,8 +158,8 @@ interface ShoppingServiceHandler {
   GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
       => (ProductSpecifications productSpecs);
 
-  // Returns a list of URLs that are open in the user's tabs.
-  GetUrlsOpenInTabs() => (array<url.mojom.Url> urls);
+  // Returns a list of URL infos for each tab open in the user's tabs.
+  GetUrlInfosForOpenTabs() => (array<UrlInfo> url_infos);
 
   // Notify the backend that the UI is ready to be shown.
   ShowInsightsSidePanelUI();

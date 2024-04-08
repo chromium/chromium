@@ -39,6 +39,11 @@ DiscountInfo::DiscountInfo(const DiscountInfo&) = default;
 DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
 DiscountInfo::~DiscountInfo() = default;
 
+UrlInfo::UrlInfo() = default;
+UrlInfo::UrlInfo(const UrlInfo&) = default;
+UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
+UrlInfo::~UrlInfo() = default;
+
 ParcelTrackingStatus::ParcelTrackingStatus() = default;
 ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
     default;
