@@ -14,6 +14,7 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
@@ -30,7 +31,7 @@ struct CONTENT_EXPORT BiddingAndAuctionData {
 };
 
 // Serializes Bidding and Auction requests
-class BiddingAndAuctionSerializer {
+class CONTENT_EXPORT BiddingAndAuctionSerializer {
  public:
   BiddingAndAuctionSerializer();
   BiddingAndAuctionSerializer(BiddingAndAuctionSerializer&& other);
@@ -40,6 +41,9 @@ class BiddingAndAuctionSerializer {
   void SetGenerationId(base::Uuid generation_id) {
     generation_id_ = generation_id;
   }
+  void SetConfig(blink::mojom::AuctionDataConfigPtr config) {
+    config_ = std::move(config);
+  }
   void AddGroups(const url::Origin& owner,
                  scoped_refptr<StorageInterestGroups> groups);
   BiddingAndAuctionData Build();
@@ -48,6 +52,7 @@ class BiddingAndAuctionSerializer {
   base::Uuid generation_id_;
   base::Time start_time_;
   std::string publisher_;
+  blink::mojom::AuctionDataConfigPtr config_;
   std::vector<std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>
       accumulated_groups_;
 };

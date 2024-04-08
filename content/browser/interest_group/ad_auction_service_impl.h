@@ -87,6 +87,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void GetInterestGroupAdAuctionData(
       const url::Origin& seller,
       const std::optional<url::Origin>& coordinator,
+      blink::mojom::AuctionDataConfigPtr config,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
@@ -127,6 +128,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     base::Uuid request_id;
     url::Origin seller;
     std::optional<url::Origin> coordinator;
+    blink::mojom::AuctionDataConfigPtr config;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 

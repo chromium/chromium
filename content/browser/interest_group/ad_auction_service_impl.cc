@@ -568,6 +568,7 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
 void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     const std::optional<url::Origin>& coordinator,
+    blink::mojom::AuctionDataConfigPtr config,
     GetInterestGroupAdAuctionDataCallback callback) {
   if (seller.scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis("Invalid Seller");
@@ -578,8 +579,18 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     return;
   }
 
-  base::trace_event::EmitNamedTrigger(
-      "fledge-get-interest-group-ad-auction-data");
+  if (!config->per_buyer_configs.empty() && !config->request_size) {
+    ReportBadMessageAndDeleteThis(
+        "Invalid AuctionDataConfig: Missing request_size");
+    return;
+  }
+
+  for (const auto& per_buyer_config : config->per_buyer_configs) {
+    if (per_buyer_config.first.scheme() != url::kHttpsScheme) {
+      ReportBadMessageAndDeleteThis("Invalid Buyer");
+      return;
+    }
+  }
 
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
@@ -595,10 +606,14 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     return;
   }
 
+  base::trace_event::EmitNamedTrigger(
+      "fledge-get-interest-group-ad-auction-data");
+
   BiddingAndAuctionDataConstructionState state;
   state.callback = std::move(callback);
   state.seller = seller;
   state.coordinator = coordinator;
+  state.config = std::move(config);
 
   ba_data_callbacks_.push(std::move(state));
   // Only start this request if there isn't another request pending.
@@ -1030,6 +1045,7 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
       /* generation_id=*/base::Uuid::GenerateRandomV4(),
+      std::move(state.config),
       base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
                      weak_ptr_factory_.GetWeakPtr(), state.request_id));
 

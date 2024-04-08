@@ -5,10 +5,16 @@
 // Information about a Bidding and Auction server style auction.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
 
+dictionary AdAuctionDataBuyerConfig {
+  unsigned long targetSize;
+};
+
 dictionary AdAuctionDataConfig {
   required USVString seller;
-  // TODO(1473331): Make `coordinator` required.
+  // TODO(crbug.com/40278958): Make `coordinator` required.
   USVString coordinatorOrigin;
+  unsigned long requestSize;
+  record<USVString, AdAuctionDataBuyerConfig> perBuyerConfig;
 };
 
 dictionary AdAuctionData {

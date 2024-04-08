@@ -432,6 +432,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetInterestGroupAdAuctionData(
       url::Origin top_level_origin,
       base::Uuid generation_id,
+      blink::mojom::AuctionDataConfigPtr config,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
   // Get the public key to use for the auction data. The `loader` pointer must
@@ -588,6 +589,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Clears `report_requests_`.  Does not abort currently pending requests.
   void TimeoutReports();
+
+  // Shuffles the owners then calls `LoadNextInterestGroupAdAuctionData()`.
+  // We need the shuffle so that interest group owners are not included in the
+  // auction data in the same order every time. Our serialization only solves
+  // an approximation of the "knapsack" problem, so the amount of interest
+  // groups we can fit for each owner may depend on the order in which
+  // they are processed. Shuffling helps guarantee fairness.
+  void ShuffleOwnersThenLoadInterestGroupAdAuctionData(
+      AdAuctionDataLoaderState state,
+      std::vector<url::Origin> owners);
 
   // Loads the next owner's interest group data. If there are no more owners
   // whose interest groups need to be loaded, calls OnAdAuctionDataLoadComplete.

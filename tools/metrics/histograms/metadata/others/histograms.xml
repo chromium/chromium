@@ -1574,6 +1574,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.Request.NumIterations"
+    units="count" expires_after="M126">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Measures the the number of iterations needed to fit the interest groups for
+    an owner in the size specified in the config for a request constructed using
+    the Bidding and Auction Services API. The compression ratio isn't known
+    ahead of time so we iteratively try successively smaller requests. Recorded
+    for each interest group owner added to a request. Only recorded if a
+    request_size is set in the config.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize"
     units="%" expires_after="M126">

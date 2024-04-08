@@ -267,7 +267,8 @@ interface AdAuctionService {
   // auction server. Upon success the request will contain the encrypted ad
   // auction data and `error_message` will be empty.
   GetInterestGroupAdAuctionData(url.mojom.Origin seller,
-                                url.mojom.Origin? coordinator)
+                                url.mojom.Origin? coordinator,
+                                AuctionDataConfig config)
       => (mojo_base.mojom.BigBuffer request,
           mojo_base.mojom.Uuid? request_id,
           string error_message);

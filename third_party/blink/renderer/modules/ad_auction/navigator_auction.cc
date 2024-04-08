@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data_buyer_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
@@ -4314,12 +4315,59 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
     }
   }
 
+  mojom::blink::AuctionDataConfigPtr config_ptr =
+      mojom::blink::AuctionDataConfig::New();
+
+  if (config->hasRequestSize()) {
+    config_ptr->request_size = config->requestSize();
+  }
+
+  size_t default_request_size = 0;
+  if (config->hasPerBuyerConfig()) {
+    bool all_have_target_size = true;
+    for (const auto& per_buyer_config : config->perBuyerConfig()) {
+      scoped_refptr<const SecurityOrigin> buyer =
+          ParseOrigin(per_buyer_config.first);
+      if (!buyer) {
+        exception_state.ThrowTypeError(String::Format(
+            "buyer origin '%s' for AdAuctionDataConfig must be a valid "
+            "https origin.",
+            per_buyer_config.first.Utf8().c_str()));
+        return ScriptPromise<AdAuctionData>();
+      }
+
+      mojom::blink::AuctionDataBuyerConfigPtr per_buyer_config_ptr =
+          mojom::blink::AuctionDataBuyerConfig::New();
+      if (per_buyer_config.second->hasTargetSize()) {
+        per_buyer_config_ptr->target_size =
+            per_buyer_config.second->targetSize();
+        default_request_size += per_buyer_config.second->targetSize();
+      } else {
+        all_have_target_size = false;
+      }
+      config_ptr->per_buyer_configs.insert(std::move(buyer),
+                                           std::move(per_buyer_config_ptr));
+    }
+
+    // If there is no request size specified, use the sum of all target sizes
+    // as the request size.
+    if (!config->hasRequestSize()) {
+      if (!all_have_target_size) {
+        exception_state.ThrowTypeError(
+            "All per-buyer configs must have a target size when request size "
+            "is not specified.");
+        return ScriptPromise<AdAuctionData>();
+      }
+      config_ptr->request_size = default_request_size;
+    }
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AdAuctionData>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   ad_auction_service_->GetInterestGroupAdAuctionData(
-      seller, coordinator,
+      seller, coordinator, std::move(config_ptr),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
           WrapPersistent(this), std::move(start_time))));

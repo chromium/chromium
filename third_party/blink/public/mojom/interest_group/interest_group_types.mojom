@@ -574,3 +574,19 @@ struct AuctionAdConfig {
   // requests.
   url.mojom.Origin? aggregation_coordinator_origin;
 };
+
+// Per-buyer config for GetInterestGroupAdAuctionData().
+struct AuctionDataBuyerConfig {
+  // Target size (in bytes) to allocate to this buyer.
+  uint32? target_size;
+};
+
+// Configuration to pass to GetInterestGroupAdAuctionData().
+struct AuctionDataConfig {
+  // A specific list of buyers to include in the encrypted request and any
+  // specific options for them.
+  map<url.mojom.Origin, AuctionDataBuyerConfig> per_buyer_configs;
+
+  // Maximum size to make the returned encrypted request.
+  uint32? request_size;
+};
