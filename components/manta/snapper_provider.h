@@ -33,26 +33,31 @@ class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
   SnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_demo_mode);
+      bool is_demo_mode,
+      const std::string& chrome_version);
 
   SnapperProvider(const SnapperProvider&) = delete;
   SnapperProvider& operator=(const SnapperProvider&) = delete;
 
   ~SnapperProvider() override;
 
-  // Calls the google service endpoint with the provided request as the http
-  // POST `request` and the specified `traffic_annotation`.
-  // The fetched response is returned to the caller via `done_callback.
-  // `done_callback` will be called with nullptr if `IdentityManager` is no
-  // longer valid.
-  virtual void Call(const manta::proto::Request& request,
+  // Adds some additional metadata to the mutable request and calls the google
+  // service endpoint with it as the http POST `request` and the specified
+  // `traffic_annotation`. The fetched response is returned to the caller via
+  // `done_callback. `done_callback` will be called with nullptr if
+  // `IdentityManager` is no longer valid.
+  virtual void Call(manta::proto::Request& request,
                     net::NetworkTrafficAnnotationTag traffic_annotation,
                     MantaProtoResponseCallback done_callback);
+
+ protected:
+  SnapperProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
 
  private:
   friend class FakeSnapperProvider;
 
-  const bool is_demo_mode_;
   base::WeakPtrFactory<SnapperProvider> weak_ptr_factory_{this};
 };
 

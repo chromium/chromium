@@ -51,7 +51,8 @@ std::optional<Tone> GetTone(const std::string& tone) {
 }
 
 std::optional<proto::Request> ComposeRequest(
-    const std::map<std::string, std::string>& input) {
+    const std::map<std::string, std::string>& input,
+    const std::string& chrome_version) {
   const auto& tone_iter = input.find("tone");
   if (tone_iter == input.end()) {
     DVLOG(1) << "Tone not found in the parameters";
@@ -68,6 +69,10 @@ std::optional<proto::Request> ComposeRequest(
   request.set_feature_name(proto::FeatureName::TEXT_TEST);
   auto& request_config = *request.mutable_request_config();
   request_config.set_tone(tone.value());
+
+  auto& client_info = *request.mutable_client_info();
+  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
+  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version);
 
   for (const auto& kv : input) {
     auto* input_data = request.add_input_data();
@@ -114,9 +119,12 @@ void OnServerResponseOrErrorReceived(
 OrcaProvider::OrcaProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode)
-    : BaseProvider(url_loader_factory, identity_manager),
-      is_demo_mode_(is_demo_mode) {}
+    bool is_demo_mode,
+    const std::string& chrome_version)
+    : BaseProvider(url_loader_factory,
+                   identity_manager,
+                   is_demo_mode,
+                   chrome_version) {}
 
 OrcaProvider::~OrcaProvider() = default;
 
@@ -128,7 +136,8 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
     return;
   }
 
-  std::optional<proto::Request> request = ComposeRequest(input);
+  std::optional<proto::Request> request =
+      ComposeRequest(input, chrome_version_);
   if (request == std::nullopt) {
     std::move(done_callback)
         .Run(base::Value::Dict(),

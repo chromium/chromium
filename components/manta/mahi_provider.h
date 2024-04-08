@@ -34,7 +34,9 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
   // arguments.
   MahiProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_demo_mode,
+      const std::string& chrome_version);
 
   MahiProvider(const MahiProvider&) = delete;
   MahiProvider& operator=(const MahiProvider&) = delete;
@@ -56,6 +58,11 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
                          const std::vector<MahiQAPair> QAHistory,
                          const std::string& question,
                          MantaGenericCallback done_callback);
+
+ protected:
+  MahiProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
 
  private:
   friend class FakeMahiProvider;

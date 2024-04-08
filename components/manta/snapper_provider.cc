@@ -31,13 +31,24 @@ constexpr char kOauthConsumerName[] = "manta_snapper";
 SnapperProvider::SnapperProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode)
-    : BaseProvider(url_loader_factory, identity_manager),
-      is_demo_mode_(is_demo_mode) {}
+    bool is_demo_mode,
+    const std::string& chrome_version)
+    : BaseProvider(url_loader_factory,
+                   identity_manager,
+                   is_demo_mode,
+                   chrome_version) {}
+
+SnapperProvider::SnapperProvider(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : SnapperProvider(url_loader_factory,
+                      identity_manager,
+                      false,
+                      std::string()) {}
 
 SnapperProvider::~SnapperProvider() = default;
 
-void SnapperProvider::Call(const manta::proto::Request& request,
+void SnapperProvider::Call(manta::proto::Request& request,
                            net::NetworkTrafficAnnotationTag traffic_annotation,
                            MantaProtoResponseCallback done_callback) {
   if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
@@ -45,6 +56,11 @@ void SnapperProvider::Call(const manta::proto::Request& request,
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
     return;
   }
+  auto* client_info = request.mutable_client_info();
+  client_info->set_client_type(manta::proto::ClientInfo::CHROME);
+  client_info->mutable_chrome_client_info()->set_chrome_version(
+      chrome_version_);
+
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 

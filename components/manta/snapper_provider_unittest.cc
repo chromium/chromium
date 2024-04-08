@@ -35,10 +35,14 @@ class FakeSnapperProvider : public SnapperProvider, public FakeBaseProvider {
   FakeSnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : BaseProvider(test_url_loader_factory, identity_manager),
+      : BaseProvider(test_url_loader_factory,
+                     identity_manager,
+                     /*is_demo_mode=*/false,
+                     /*chrome_version=*/std::string()),
         SnapperProvider(test_url_loader_factory,
                         identity_manager,
-                        /*is_demo_mode=*/false),
+                        /*is_demo_mode=*/false,
+                        /*chrome_version=*/std::string()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 
@@ -74,8 +78,9 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
       CreateSnapperProvider();
   auto quit_closure = task_environment_.QuitClosure();
 
+  manta::proto::Request request;
   snapper_provider->Call(
-      manta::proto::Request(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      request, TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [&quit_closure](std::unique_ptr<manta::proto::Response> response,
                           MantaStatus manta_status) {
@@ -98,8 +103,9 @@ TEST_F(SnapperProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
 
   identity_test_env_.reset();
 
+  manta::proto::Request request;
   snapper_provider->Call(
-      manta::proto::Request(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      request, TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
               std::unique_ptr<manta::proto::Response> response,

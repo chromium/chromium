@@ -19,11 +19,16 @@ constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 std::string GetProviderEndpoint(bool use_prod) {
   return use_prod ? kProdEndpointUrl : kAutopushEndpointUrl;
 }
-BaseProvider::BaseProvider() = default;
+// BaseProvider::BaseProvider() : is_demo_mode_(false), chrome_version_("") {}
+BaseProvider::BaseProvider() : is_demo_mode_(false) {}
 BaseProvider::BaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
-    : url_loader_factory_(url_loader_factory) {
+    signin::IdentityManager* identity_manager,
+    bool is_demo_mode,
+    const std::string& chrome_version)
+    : url_loader_factory_(url_loader_factory),
+      is_demo_mode_(is_demo_mode),
+      chrome_version_(chrome_version) {
   // Guest mode and demo mode also have valid identity_manager instance, so it's
   // OK to CHECK here.
   CHECK(identity_manager);

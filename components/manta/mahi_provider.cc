@@ -67,8 +67,19 @@ void OnServerResponseOrErrorReceived(
 
 MahiProvider::MahiProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager,
+    bool is_demo_mode,
+    const std::string& chrome_version)
+    : BaseProvider(url_loader_factory,
+                   identity_manager,
+                   is_demo_mode,
+                   chrome_version) {}
+
+MahiProvider::MahiProvider(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : BaseProvider(url_loader_factory, identity_manager) {}
+    : MahiProvider(url_loader_factory, identity_manager, false, std::string()) {
+}
 
 MahiProvider::~MahiProvider() = default;
 
@@ -76,6 +87,10 @@ void MahiProvider::Summarize(const std::string& input,
                              MantaGenericCallback done_callback) {
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
+
+  auto& client_info = *request.mutable_client_info();
+  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
+  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version_);
 
   auto* input_data = request.add_input_data();
   input_data->set_tag("model_input");
@@ -95,9 +110,12 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
                                      const std::vector<MahiQAPair> QAHistory,
                                      const std::string& question,
                                      MantaGenericCallback done_callback) {
-  // TODO(b:318566801): format of the request and response protos are TBD.
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
+
+  auto& client_info = *request.mutable_client_info();
+  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
+  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version_);
 
   auto* input_data = request.add_input_data();
   input_data->set_tag("original_content");

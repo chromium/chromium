@@ -262,10 +262,11 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
         base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsTimeout,
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr()));
 
-    snapper_provider_->Call(
+    manta::proto::Request request =
         CreateMantaRequest(query, std::nullopt, kNumThumbnailsRequested,
-                           kDesiredThumbnailSize, feature_name),
-        TrafficAnnotationForFeature(feature_name),
+                           kDesiredThumbnailSize, feature_name);
+    snapper_provider_->Call(
+        request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
                        base::TimeTicks::Now(), query.Clone()));
@@ -302,10 +303,11 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperTimeout,
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr()));
 
-    snapper_provider_->Call(
+    manta::proto::Request request =
         CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
-                           GetLargestDisplaySizeLandscape(), feature_name),
-        TrafficAnnotationForFeature(feature_name),
+                           GetLargestDisplaySizeLandscape(), feature_name);
+    snapper_provider_->Call(
+        request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
                        fetch_wallpaper_weak_ptr_factory_.GetWeakPtr(),
                        base::TimeTicks::Now()));

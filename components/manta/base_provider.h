@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MANTA_BASE_PROVIDER_H_
 #define COMPONENTS_MANTA_BASE_PROVIDER_H_
 
+#include <string>
+
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -23,7 +25,9 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   BaseProvider();
   BaseProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_demo_mode,
+      const std::string& chrome_version);
 
   BaseProvider(const BaseProvider&) = delete;
   BaseProvider& operator=(const BaseProvider&) = delete;
@@ -59,6 +63,10 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // Useful client info for particular providers.
+  const bool is_demo_mode_;
+  const std::string chrome_version_;
 };
 
 }  // namespace manta

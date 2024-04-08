@@ -80,7 +80,7 @@ testing::Matcher<ash::SeaPenImage> MatchesSeaPenImage(
 
 class MockSnapperProvider : virtual public manta::SnapperProvider {
  public:
-  MockSnapperProvider() : manta::SnapperProvider(nullptr, nullptr, false) {}
+  MockSnapperProvider() : manta::SnapperProvider(nullptr, nullptr) {}
 
   MockSnapperProvider(const MockSnapperProvider&) = delete;
   MockSnapperProvider& operator=(const MockSnapperProvider&) = delete;
@@ -89,7 +89,7 @@ class MockSnapperProvider : virtual public manta::SnapperProvider {
 
   MOCK_METHOD(void,
               Call,
-              (const manta::proto::Request& request,
+              (manta::proto::Request& request,
                net::NetworkTrafficAnnotationTag traffic_annotation,
                manta::MantaProtoResponseCallback done_callback),
               (override));

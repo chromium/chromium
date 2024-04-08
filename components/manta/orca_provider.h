@@ -35,7 +35,8 @@ class COMPONENT_EXPORT(MANTA) OrcaProvider : virtual public BaseProvider {
   OrcaProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_demo_mode);
+      bool is_demo_mode,
+      const std::string& chrome_version);
 
   OrcaProvider(const OrcaProvider&) = delete;
   OrcaProvider& operator=(const OrcaProvider&) = delete;
@@ -55,7 +56,6 @@ class COMPONENT_EXPORT(MANTA) OrcaProvider : virtual public BaseProvider {
  private:
   friend class FakeOrcaProvider;
 
-  const bool is_demo_mode_;
   base::WeakPtrFactory<OrcaProvider> weak_ptr_factory_{this};
 };
 

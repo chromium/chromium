@@ -62,8 +62,8 @@ void SealService::GetImages(const std::string& query,
     return;
   }
   // TODO(b:330263928): Add real traffic annotation.
-  snapper_provider_->Call(CreateSnapperRequest(query),
-                          MISSING_TRAFFIC_ANNOTATION,
+  manta::proto::Request request = CreateSnapperRequest(query);
+  snapper_provider_->Call(request, MISSING_TRAFFIC_ANNOTATION,
                           base::BindOnce(&SealService::HandleSnapperResponse,
                                          weak_ptr_factory_.GetWeakPtr(), query,
                                          std::move(callback)));

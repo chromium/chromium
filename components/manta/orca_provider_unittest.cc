@@ -37,10 +37,14 @@ class FakeOrcaProvider : public OrcaProvider, public FakeBaseProvider {
   FakeOrcaProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : BaseProvider(test_url_loader_factory, identity_manager),
+      : BaseProvider(test_url_loader_factory,
+                     identity_manager,
+                     /*is_demo_mode=*/false,
+                     /*chrome_version=*/std::string()),
         OrcaProvider(test_url_loader_factory,
                      identity_manager,
-                     /*is_demo_mode=*/false),
+                     /*is_demo_mode=*/false,
+                     /*chrome_version=*/std::string()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 

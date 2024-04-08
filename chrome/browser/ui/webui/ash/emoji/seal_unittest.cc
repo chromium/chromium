@@ -30,13 +30,11 @@ class FakeSnapperProvider : public manta::SnapperProvider {
       signin::IdentityManager* identity_manager,
       manta::MantaStatus fake_status,
       manta::proto::Response fake_response)
-      : SnapperProvider(std::move(test_url_loader_factory),
-                        identity_manager,
-                        /*is_demo_mode=*/false),
+      : SnapperProvider(std::move(test_url_loader_factory), identity_manager),
         fake_status_(fake_status),
         fake_response_(fake_response) {}
 
-  void Call(const manta::proto::Request& request,
+  void Call(manta::proto::Request& request,
             net::NetworkTrafficAnnotationTag traffic_annotation,
             manta::MantaProtoResponseCallback done_callback) override {
     std::move(done_callback)

@@ -6,9 +6,8 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
-
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/manta/mahi_provider.h"
@@ -40,10 +39,12 @@ FeatureSupportStatus ConvertToMantaFeatureSupportStatus(signin::Tribool value) {
 MantaService::MantaService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode)
+    bool is_demo_mode,
+    const std::string& chrome_version)
     : shared_url_loader_factory_(shared_url_loader_factory),
       identity_manager_(identity_manager),
-      is_demo_mode_(is_demo_mode) {}
+      is_demo_mode_(is_demo_mode),
+      chrome_version_(chrome_version) {}
 
 MantaService::~MantaService() = default;
 
@@ -80,7 +81,8 @@ std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
     return nullptr;
   }
   return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
-                                        identity_manager_, is_demo_mode_);
+                                        identity_manager_, is_demo_mode_,
+                                        chrome_version_);
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
@@ -88,7 +90,8 @@ std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
     return nullptr;
   }
   return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
-                                           identity_manager_, is_demo_mode_);
+                                           identity_manager_, is_demo_mode_,
+                                           chrome_version_);
 }
 
 std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
@@ -96,7 +99,8 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
     return nullptr;
   }
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
-                                        identity_manager_);
+                                        identity_manager_, is_demo_mode_,
+                                        chrome_version_);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

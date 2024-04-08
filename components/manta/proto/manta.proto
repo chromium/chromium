@@ -19,6 +19,21 @@ enum FeatureName {
   reserved 304 to 311;
 }
 
+message ClientInfo {
+  enum ClientType {
+    reserved 0, 1;
+    CHROME = 2;
+  }
+
+  optional ClientType client_type = 1;
+  optional ChromeClientInfo chrome_client_info = 4;
+  reserved 2, 3;
+}
+
+message ChromeClientInfo {
+  optional string chrome_version = 1;
+}
+
 enum ImageResolution {
   reserved 0, 4, 5, 6, 7, 8, 9, 10, 11;
 
@@ -73,9 +88,8 @@ message InputData {
 }
 
 message Request {
-  reserved 2;
-
   optional FeatureName feature_name = 1;
+  optional ClientInfo client_info = 2;
   optional RequestConfig request_config = 3;
   repeated InputData input_data = 4;
 }
