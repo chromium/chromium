@@ -139,7 +139,7 @@ LockScreenStartReauthDialog* LockScreenStartReauthDialog::GetInstance() {
 
 void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
   if (!profile) {
-    // TODO(mohammedabdon): Create some generic way to show an error on
+    // TODO(b/333278160): Create some generic way to show an error on
     // the lock screen.
     LOG(ERROR) << "Failed to load lockscreen profile";
     return;
