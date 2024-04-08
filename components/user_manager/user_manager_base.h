@@ -240,12 +240,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void NotifyUserAddedToSession(const User* added_user,
                                         bool user_switch_pending);
 
-  // Performs any additional actions after UserLoggedIn() execution has been
-  // completed.
-  // |browser_restart| is true when reloading Chrome after crash to distinguish
-  // from normal sign in flow.
-  virtual void PerformPostUserLoggedInActions(bool browser_restart) = 0;
-
   // Implementation for RemoveUser method. It is synchronous. It is called from
   // RemoveUserInternal after owner check.
   // Pass |account_id| by value here to avoid use-after-free. Original

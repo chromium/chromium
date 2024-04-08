@@ -256,7 +256,6 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       active_user_->HasGaiaAccount() ? account_id.GetUserEmail() : "");
 
   NotifyOnLogin();
-  PerformPostUserLoggedInActions(browser_restart);
 }
 
 void UserManagerBase::SwitchActiveUser(const AccountId& account_id) {

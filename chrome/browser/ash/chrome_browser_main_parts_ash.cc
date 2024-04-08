@@ -1594,6 +1594,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->platform_part());
 
+  g_browser_process->platform_part()->session_manager()->Shutdown();
+
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
   // has no URLRequest pending (see http://crbug.com/276659).

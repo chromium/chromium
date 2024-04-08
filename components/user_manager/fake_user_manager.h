@@ -129,7 +129,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsEnterpriseManaged() const override;
   void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) override {}
-  void PerformPostUserLoggedInActions(bool browser_restart) override {}
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void SetUserAffiliation(

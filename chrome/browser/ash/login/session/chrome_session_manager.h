@@ -22,6 +22,8 @@ class Profile;
 
 namespace ash {
 
+class SessionLengthLimiter;
+
 class ChromeSessionManager : public session_manager::SessionManager,
                              public user_manager::UserManager::Observer {
  public:
@@ -31,6 +33,9 @@ class ChromeSessionManager : public session_manager::SessionManager,
   ChromeSessionManager& operator=(const ChromeSessionManager&) = delete;
 
   ~ChromeSessionManager() override;
+
+  // Registers session manager preferences.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Currently, UserManager is created after SessionManager.
   // TODO(b/332481586): Move this to the constructor by fixing initialization
@@ -47,6 +52,9 @@ class ChromeSessionManager : public session_manager::SessionManager,
                   Profile* profile,
                   bool is_running_test);
 
+  // Shuts down the session manager.
+  void Shutdown();
+
   // session_manager::SessionManager:
   void SessionStarted() override;
   void NotifyUserLoggedIn(const AccountId& user_account_id,
@@ -57,11 +65,16 @@ class ChromeSessionManager : public session_manager::SessionManager,
   // user_manager::UserManager::Observer:
   void OnUsersSignInConstraintsChanged() override;
 
+  SessionLengthLimiter* GetSessionLengthLimiterForTesting() {
+    return session_length_limiter_.get();
+  }
+
  private:
   raw_ptr<user_manager::UserManager> user_manager_ = nullptr;
 
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
+  std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

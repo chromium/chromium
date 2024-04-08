@@ -41,7 +41,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
@@ -56,7 +55,6 @@
 #include "chrome/browser/ash/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -262,9 +260,6 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
   MultiUserSignInPolicyController::RegisterPrefs(registry);
-
-  SessionLengthLimiter::RegisterPrefs(registry);
-  enterprise_user_session_metrics::RegisterPrefs(registry);
 }
 
 // static
@@ -379,11 +374,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::PreconfiguredDeskTemplatesExternalDataHandler>(
           cros_settings_, device_local_account_policy_service));
-
-  // Record the stored session length for enrolled device.
-  if (IsEnterpriseManaged()) {
-    enterprise_user_session_metrics::RecordStoredSessionLength();
-  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -413,20 +403,6 @@ void ChromeUserManagerImpl::Shutdown() {
 
   ephemeral_users_enabled_subscription_ = {};
   local_accounts_subscription_ = {};
-
-  if (session_length_limiter_ && IsEnterpriseManaged()) {
-    // Store session length before tearing down `session_length_limiter_` for
-    // enrolled devices so that it can be reported on the next run.
-    const base::TimeDelta session_length =
-        session_length_limiter_->GetSessionDuration();
-    if (!session_length.is_zero()) {
-      enterprise_user_session_metrics::StoreSessionLength(
-          GetActiveUser()->GetType(), session_length);
-    }
-  }
-
-  // Stop the session length limiter.
-  session_length_limiter_.reset();
 
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->RemoveObserver(this);
@@ -613,14 +589,6 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     user_storage_.push_back(CreateUserFromDeviceLocalAccount(account_id, type));
     users_.push_back(user_storage_.back().get());
   }
-}
-
-void ChromeUserManagerImpl::PerformPostUserLoggedInActions(
-    bool browser_restart) {
-  // Initialize the session length limiter and start it only if
-  // session limit is defined by the policy.
-  session_length_limiter_ =
-      base::WrapUnique(new SessionLengthLimiter(nullptr, browser_restart));
 }
 
 bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(

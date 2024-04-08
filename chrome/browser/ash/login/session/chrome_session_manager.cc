@@ -31,12 +31,14 @@
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
+#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -353,10 +355,21 @@ ChromeSessionManager::~ChromeSessionManager() {
   RemoveObserver(user_session_initializer_.get());
 }
 
+// static
+void ChromeSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  SessionLengthLimiter::RegisterPrefs(registry);
+  enterprise_user_session_metrics::RegisterPrefs(registry);
+}
+
 void ChromeSessionManager::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
   user_manager_ = user_manager;
   user_manager_observation_.Observe(user_manager_);
+
+  // Record the stored session length for enrolled device.
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    enterprise_user_session_metrics::RecordStoredSessionLength();
+  }
 }
 
 void ChromeSessionManager::Initialize(
@@ -446,6 +459,21 @@ void ChromeSessionManager::Initialize(
   }
 }
 
+void ChromeSessionManager::Shutdown() {
+  if (session_length_limiter_ &&
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    // Store session length before tearing down `session_length_limiter_` for
+    // enrolled devices so that it can be reported on the next run.
+    const base::TimeDelta session_length =
+        session_length_limiter_->GetSessionDuration();
+    if (!session_length.is_zero()) {
+      enterprise_user_session_metrics::StoreSessionLength(
+          user_manager_->GetActiveUser()->GetType(), session_length);
+    }
+  }
+  session_length_limiter_.reset();
+}
+
 void ChromeSessionManager::SessionStarted() {
   session_manager::SessionManager::SessionStarted();
   SetSessionState(session_manager::SessionState::ACTIVE);
@@ -466,6 +494,11 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   if (user_manager_->GetLoggedInUsers().size() == 1) {
     InitFeaturesSessionType(user_manager_->GetPrimaryUser());
   }
+
+  // Initialize the session length limiter and start it only if
+  // session limit is defined by the policy.
+  session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
+      /*delegate=*/nullptr, browser_restart);
 
   btl->AddLoginTimeMarker("UserLoggedIn-End", false);
 }

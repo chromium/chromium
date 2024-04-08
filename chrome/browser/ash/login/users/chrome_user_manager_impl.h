@@ -43,8 +43,6 @@ class PrefRegistrySyncable;
 
 namespace ash {
 
-class SessionLengthLimiter;
-
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
     : public user_manager::UserManagerBase,
@@ -100,9 +98,6 @@ class ChromeUserManagerImpl
   void OnDeviceLocalAccountsChanged() override;
 
   void StopPolicyObserverForTesting();
-  SessionLengthLimiter* GetSessionLengthLimiterForTesting() {
-    return session_length_limiter_.get();
-  }
   void SetUsingSamlForTesting(const AccountId& account_id, bool using_saml);
 
   // policy::MinimumVersionPolicyHandler::Observer:
@@ -121,7 +116,6 @@ class ChromeUserManagerImpl
   void NotifyOnLogin() override;
   void NotifyUserAddedToSession(const user_manager::User* added_user,
                                 bool user_switch_pending) override;
-  void PerformPostUserLoggedInActions(bool browser_restart) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
                           user_manager::UserRemovalReason reason) override;
@@ -190,9 +184,6 @@ class ChromeUserManagerImpl
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
-
-  // Session length limiter.
-  std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
 
   // Cros settings change subscriptions.
   base::CallbackListSubscription allow_guest_subscription_;
