@@ -13,14 +13,69 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/sync/android:java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/settings/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/prefs/android:java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
   ]
   resources_package = "org.chromium.chrome.browser.safety_hub"
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.safety_hub"
+  sources = [ "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/sync/android:java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
+    "//components/prefs/android:java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "prefs.cc",
+    "prefs.h",
+  ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
 }
 
 android_resources("java_resources") {

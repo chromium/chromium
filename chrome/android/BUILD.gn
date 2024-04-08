@@ -1101,6 +1101,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/safety_check/android:java",
       "//chrome/browser/safety_check/android:junit",
       "//chrome/browser/safety_hub/android:java",
+      "//chrome/browser/safety_hub/android:junit",
       "//chrome/browser/screenshot_monitor:java",
       "//chrome/browser/search_engines/android:java",
       "//chrome/browser/search_engines/android:junit",

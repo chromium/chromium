@@ -8,21 +8,27 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
 
 /** Manages the scheduling of Safety Hub fetch jobs. */
 public class SafetyHubFetchService implements BackgroundTask {
     private static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
-    private static final int SAFETY_HUB_JOB_FLEX_IN_MINUTES = 15;
-
-    /** Used only by {@link BackgroundTaskScheduler}. */
-    public SafetyHubFetchService() {}
 
     /** See {@link ChromeActivitySessionTracker#onForegroundSessionStart()}. */
     public static void onForegroundSessionStart() {
@@ -38,7 +44,6 @@ public class SafetyHubFetchService implements BackgroundTask {
         TaskInfo.TimingInfo periodicTimingInfo =
                 TaskInfo.PeriodicInfo.create()
                         .setIntervalMs(TimeUnit.DAYS.toMillis(SAFETY_HUB_JOB_INTERVAL_IN_DAYS))
-                        .setFlexMs(TimeUnit.MINUTES.toMillis(SAFETY_HUB_JOB_FLEX_IN_MINUTES))
                         .build();
 
         TaskInfo taskInfo =
@@ -65,11 +70,36 @@ public class SafetyHubFetchService implements BackgroundTask {
 
     @Override
     public boolean onStopTask(Context context, TaskParameters taskParameters) {
-        return true;
+        // GMSCore has no mechanism to abort dispatched tasks.
+        return false;
     }
 
     private void fetchBreachedCredentialsCount(final TaskFinishedCallback callback) {
-        // TODO(crbug.com/324562205): Implement the fetch calls to GMSCore.
-        callback.taskFinished(false);
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        PrefService prefService = UserPrefs.get(profile);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        String accountEmail =
+                (syncService != null)
+                        ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
+                        : null;
+
+        if (!PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                || !passwordManagerHelper.canUseUpm()
+                || accountEmail == null) {
+            callback.taskFinished(/* needsReschedule= */ true);
+            return;
+        }
+
+        passwordManagerHelper.getBreachedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                accountEmail,
+                count -> {
+                    prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
+                    callback.taskFinished(/* needsReschedule= */ false);
+                },
+                error -> {
+                    callback.taskFinished(/* needsReschedule= */ true);
+                });
     }
 }

@@ -4090,6 +4090,13 @@ inline constexpr char kCustomProfileLabel[] = "profile.label.custom_value";
 // IntegerValue of the custom label preset of a managed profile.
 inline constexpr char kProfileLabelPreset[] = "profile.label.preset";
 
+#if BUILDFLAG(IS_ANDROID)
+// An integer count of how many account-level breached credentials were detected
+// by GMSCore.
+inline constexpr char kBreachedCredentialsCount[] =
+    "profile.safety_hub_breached_credentials_count";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
