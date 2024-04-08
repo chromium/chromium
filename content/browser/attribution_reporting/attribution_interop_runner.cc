@@ -403,15 +403,18 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
 
   const base::Time time_origin = base::Time::Now();
 
-  ASSIGN_OR_RETURN(
-      AttributionSimulationEvents events,
-      ParseAttributionInteropInput(std::move(*input).TakeDict(), time_origin));
+  ASSIGN_OR_RETURN(AttributionSimulationEvents events,
+                   ParseAttributionInteropInput(std::move(*input).TakeDict()));
   if (events.empty()) {
     return AttributionInteropOutput();
   }
 
   DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
                                  &AttributionSimulationEvent::time));
+
+  for (auto& event : events) {
+    event.time = time_origin + (event.time - base::Time::UnixEpoch());
+  }
 
   const base::Time min_event_time = events.front().time;
 

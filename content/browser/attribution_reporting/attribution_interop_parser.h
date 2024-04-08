@@ -90,7 +90,7 @@ using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 // schema.
 
 base::expected<AttributionSimulationEvents, std::string>
-ParseAttributionInteropInput(base::Value::Dict input, base::Time offset_time);
+ParseAttributionInteropInput(base::Value::Dict input);
 
 struct AttributionInteropConfig {
   AttributionConfig attribution_config;

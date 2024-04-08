@@ -48,9 +48,6 @@ using ::testing::VariantWith;
 
 using ::attribution_reporting::SuitableOrigin;
 
-// Pick an arbitrary offset time to test correct handling.
-constexpr base::Time kOffsetTime = base::Time::UnixEpoch() + base::Days(5);
-
 TEST(AttributionInteropParserTest, EmptyInputParses) {
   const char* const kTestCases[] = {
       R"json({})json",
@@ -59,7 +56,7 @@ TEST(AttributionInteropParserTest, EmptyInputParses) {
 
   for (const char* json : kTestCases) {
     base::Value::Dict value = base::test::ParseJsonDict(json);
-    EXPECT_THAT(ParseAttributionInteropInput(std::move(value), kOffsetTime),
+    EXPECT_THAT(ParseAttributionInteropInput(std::move(value)),
                 base::test::ValueIs(IsEmpty()))
         << json;
   }
@@ -141,12 +138,15 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kJson);
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
+  ASSERT_OK_AND_ASSIGN(auto result,
+                       ParseAttributionInteropInput(std::move(value)));
 
-  const base::Time kExpectedTime1 = kOffsetTime + base::Milliseconds(100);
-  const base::Time kExpectedTime2 = kOffsetTime + base::Milliseconds(101);
-  const base::Time kExpectedTime3 = kOffsetTime + base::Milliseconds(102);
+  const base::Time kExpectedTime1 =
+      base::Time::UnixEpoch() + base::Milliseconds(100);
+  const base::Time kExpectedTime2 =
+      base::Time::UnixEpoch() + base::Milliseconds(101);
+  const base::Time kExpectedTime3 =
+      base::Time::UnixEpoch() + base::Milliseconds(102);
 
   const int64_t kExpectedRequestId1 = 0;
   const int64_t kExpectedRequestId2 = 1;
@@ -211,7 +211,7 @@ TEST_P(AttributionInteropParserInputErrorTest, InvalidInputFails) {
   const ParseErrorTestCase& test_case = GetParam();
 
   base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
-  auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
+  auto result = ParseAttributionInteropInput(std::move(value));
   EXPECT_THAT(result, ErrorIs(HasSubstr(test_case.expected_failure_substr)));
 }
 

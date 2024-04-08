@@ -120,9 +120,7 @@ class ErrorWriter {
 
 class AttributionInteropParser {
  public:
-  explicit AttributionInteropParser(
-      base::Time offset_time = base::Time::UnixEpoch())
-      : offset_time_(offset_time) {}
+  AttributionInteropParser() = default;
 
   ~AttributionInteropParser() = default;
 
@@ -267,8 +265,6 @@ class AttributionInteropParser {
   }
 
  private:
-  const base::Time offset_time_;
-
   std::ostringstream error_stream_;
 
   ContextPath context_path_;
@@ -490,7 +486,7 @@ class AttributionInteropParser {
 
     if (const std::string* v = dict.FindString(key)) {
       if (int64_t milliseconds; base::StringToInt64(*v, &milliseconds)) {
-        time = offset_time_ + base::Milliseconds(milliseconds);
+        time = base::Time::UnixEpoch() + base::Milliseconds(milliseconds);
       }
     } else if (if_absent.has_value()) {
       time = *if_absent;
@@ -798,9 +794,8 @@ AttributionSimulationEvent::Response&
 AttributionSimulationEvent::Response::operator=(Response&&) = default;
 
 base::expected<AttributionSimulationEvents, std::string>
-ParseAttributionInteropInput(base::Value::Dict input,
-                             const base::Time offset_time) {
-  return AttributionInteropParser(offset_time).ParseInput(std::move(input));
+ParseAttributionInteropInput(base::Value::Dict input) {
+  return AttributionInteropParser().ParseInput(std::move(input));
 }
 
 base::expected<AttributionInteropConfig, std::string>
