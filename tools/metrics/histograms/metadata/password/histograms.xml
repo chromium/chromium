@@ -2550,14 +2550,17 @@ chromium-metrics-reviews@google.com.
   <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
 
-<histogram name="PasswordManager.PasswordSettingsMigrationSucceeded"
-    enum="BooleanYesNo" expires_after="2024-07-30">
+<histogram name="PasswordManager.PasswordSettingsMigrationSucceeded2"
+    enum="BooleanYesNo" expires_after="2024-09-29">
   <owner>sygiet@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The number of succesful password settings migration from Chrome to GMS.
     Recorded for the local users on Android when migration finished because of a
-    success or failure along the way.
+    success or failure along the way. Replaces
+    &quot;PasswordManager.PasswordSettingsMigrationSucceeded&quot; which was
+    overly recorded when the settings migration was being marked as done for
+    clients with default settings which weren't eligible for settings migration.
   </summary>
 </histogram>
 
