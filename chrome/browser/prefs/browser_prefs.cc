@@ -1029,6 +1029,10 @@ constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
 constexpr char kPreferencesMigratedToBasic[] =
     "browser.clear_data.preferences_migrated_to_basic";
 
+// Deprecated 04/2024.
+inline constexpr char kOmniboxInstantKeywordUsed[] =
+    "omnibox.instant_keyword_used";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1462,6 +1466,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
+
+  // Deprecated 04/2024.
+  registry->RegisterBooleanPref(kOmniboxInstantKeywordUsed, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2755,6 +2762,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2024
   profile_prefs->ClearPref(kPreferencesMigratedToBasic);
+
+  // Added 04/2024.
+  profile_prefs->ClearPref(kOmniboxInstantKeywordUsed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
