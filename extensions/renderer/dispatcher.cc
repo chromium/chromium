@@ -123,11 +123,15 @@ static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
 void LogOnException(const std::string& from, const v8::TryCatch& try_catch) {
+  // Try to grab the v8 error message. In some cases, this may be empty.
   // This is called synchronously from a script evaluation failing, so the
   // current isolate is correct.
-  LOG(ERROR) << "Unexpected error in \"" << from << "\": "
-             << gin::V8ToString(v8::Isolate::GetCurrent(),
-                                try_catch.Message()->Get());
+  std::string v8_error_message =
+      try_catch.Message().IsEmpty()
+          ? "<unknown error>"
+          : gin::V8ToString(v8::Isolate::GetCurrent(),
+                            try_catch.Message()->Get());
+  LOG(ERROR) << "Unexpected error in \"" << from << "\": " << v8_error_message;
 }
 
 // Calls a method |method_name| in a module |module_name| belonging to the
