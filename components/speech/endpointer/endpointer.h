@@ -1,19 +1,18 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SPEECH_ENDPOINTER_ENDPOINTER_H_
-#define CONTENT_BROWSER_SPEECH_ENDPOINTER_ENDPOINTER_H_
+#ifndef COMPONENTS_SPEECH_ENDPOINTER_ENDPOINTER_H_
+#define COMPONENTS_SPEECH_ENDPOINTER_ENDPOINTER_H_
 
 #include <stdint.h>
 
-#include "content/browser/speech/endpointer/energy_endpointer.h"
-#include "content/common/content_export.h"
+#include "components/speech/endpointer/energy_endpointer.h"
 
 class EpStatus;
 class AudioChunk;
 
-namespace content {
+namespace speech {
 
 // A simple interface to the underlying energy-endpointer implementation, this
 // class lets callers provide audio as being recorded and let them poll to find
@@ -43,7 +42,7 @@ namespace content {
 // The timeout length is speech_input_complete_silence_length until
 // long_speech_length, when it changes to
 // long_speech_input_complete_silence_length.
-class CONTENT_EXPORT Endpointer {
+class Endpointer {
  public:
   explicit Endpointer(int sample_rate);
 
@@ -70,9 +69,7 @@ class CONTENT_EXPORT Endpointer {
 
   // Returns true if the endpointer detected reasonable audio levels above
   // background noise which could be user speech, false if not.
-  bool DidStartReceivingSpeech() const {
-    return speech_previously_detected_;
-  }
+  bool DidStartReceivingSpeech() const { return speech_previously_detected_; }
 
   bool IsEstimatingEnvironment() const {
     return energy_endpointer_.estimating_environment();
@@ -94,9 +91,7 @@ class CONTENT_EXPORT Endpointer {
     long_speech_length_us_ = time_us;
   }
 
-  bool speech_input_complete() const {
-    return speech_input_complete_;
-  }
+  bool speech_input_complete() const { return speech_input_complete_; }
 
   // RMS background noise level in dB.
   float NoiseLevelDb() const { return energy_endpointer_.GetNoiseLevelDb(); }
@@ -148,6 +143,6 @@ class CONTENT_EXPORT Endpointer {
   int32_t frame_size_;
 };
 
-}  // namespace content
+}  // namespace speech
 
-#endif  // CONTENT_BROWSER_SPEECH_ENDPOINTER_ENDPOINTER_H_
+#endif  // COMPONENTS_SPEECH_ENDPOINTER_ENDPOINTER_H_

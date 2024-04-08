@@ -18,6 +18,17 @@ source_set("speech") {
     "upstream_loader_client.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "endpointer/endpointer.cc",
+      "endpointer/endpointer.h",
+      "endpointer/energy_endpointer.cc",
+      "endpointer/energy_endpointer.h",
+      "endpointer/energy_endpointer_params.cc",
+      "endpointer/energy_endpointer_params.h",
+    ]
+  }
+
   public_deps = [ "//base" ]
   deps = [
     "//mojo/public/cpp/bindings",
@@ -31,7 +42,16 @@ source_set("speech") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chunked_byte_buffer_unittest.cc" ]
+  sources = [
+    "chunked_byte_buffer_unittest.cc",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "endpointer/endpointer_unittest.cc",
+    ]
+  }
+
   deps = [
     ":speech",
     "//testing/gtest",
