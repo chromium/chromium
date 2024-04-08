@@ -20,6 +20,7 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker/service_worker_task_queue_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
+#include "extensions/browser/user_script_world_configuration_manager.h"
 
 namespace extensions {
 
@@ -39,6 +40,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ServiceWorkerKeepalive::EnsureShutdownNotifierFactoryBuilt();
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
+  UserScriptWorldConfigurationManager::GetFactory();
   WebRequestEventRouterFactory::GetInstance();
 }
 

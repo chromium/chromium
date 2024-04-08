@@ -571,6 +571,8 @@ source_set("browser_sources") {
     "user_script_loader.h",
     "user_script_manager.cc",
     "user_script_manager.h",
+    "user_script_world_configuration_manager.cc",
+    "user_script_world_configuration_manager.h",
     "verified_contents.cc",
     "verified_contents.h",
     "view_type_utils.cc",

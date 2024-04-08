@@ -34,6 +34,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
@@ -214,7 +215,8 @@ void RendererStartupHelper::InitializeProcess(
 
     // Each extension needs to know its user script world configurations.
     std::vector<mojom::UserScriptWorldInfoPtr> worlds_info =
-        util::GetAllUserScriptWorlds(ext->id(), browser_context_);
+        UserScriptWorldConfigurationManager::Get(browser_context_)
+            ->GetAllUserScriptWorlds(ext->id());
     renderer->UpdateUserScriptWorlds(std::move(worlds_info));
   }
 

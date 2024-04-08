@@ -17,8 +17,8 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/api/user_scripts.h"
@@ -564,8 +564,8 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   // TODO(https://crbug.com/331680187): Add some reasonable limit to the number
   // of worlds an extension may create and configure.
 
-  util::SetUserScriptWorldInfo(*extension(), browser_context(), world_id, csp,
-                               enable_messaging);
+  UserScriptWorldConfigurationManager::Get(browser_context())
+      ->SetUserScriptWorldInfo(*extension(), world_id, csp, enable_messaging);
 
   return RespondNow(NoArguments());
 }
