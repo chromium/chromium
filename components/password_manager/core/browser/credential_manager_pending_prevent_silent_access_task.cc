@@ -42,6 +42,9 @@ void CredentialManagerPendingPreventSilentAccessTask::
         PasswordStoreInterface* store,
         std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
+    if (form->match_type == PasswordForm::MatchType::kGrouped) {
+      continue;
+    }
     if (!form->skip_zero_click) {
       form->skip_zero_click = true;
       store->UpdateLogin(*form);
