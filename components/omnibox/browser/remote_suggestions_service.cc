@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
@@ -67,6 +68,19 @@ GURL RemoteSuggestionsService::EndpointUrl(
     case metrics::OmniboxEventProto::CHROMEOS_APP_LIST: {
       // Append `sclient=cros-launcher` for CrOS app_list launcher entry point.
       url = net::AppendOrReplaceQueryParameter(url, "sclient", "cros-launcher");
+      break;
+    }
+    case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX: {
+      // Append `iil=` for the multimodal searchbox entry point, if available.
+      // TODO(b/328763711): Replace this with a TemplateURL substitution.
+      if (search_terms_args.lens_overlay_interaction_response.has_value() &&
+          search_terms_args.lens_overlay_interaction_response
+              ->has_encoded_response()) {
+        url = net::AppendOrReplaceQueryParameter(
+            url, "iil",
+            search_terms_args.lens_overlay_interaction_response
+                ->encoded_response());
+      }
       break;
     }
     default:

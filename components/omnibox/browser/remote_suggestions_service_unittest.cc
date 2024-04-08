@@ -252,7 +252,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   ASSERT_EQ(observer.response_body(), kResponseBody);
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureOverridenOrAppendedQueryParams) {
+TEST_F(RemoteSuggestionsServiceTest, EnsureCrOSOverridenOrAppendedQueryParams) {
   // Set up a non-Google search provider.
   TemplateURLData template_url_data;
   template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");
@@ -293,4 +293,52 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureOverridenOrAppendedQueryParams) {
       &google_template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/suggest?q=query&sclient=cros-launcher");
+}
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureLensOverridenOrAppendedQueryParams) {
+  // Set up a non-Google search provider.
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  template_url_data.suggestions_url =
+      "https://www.example.com/suggest?q={searchTerms}";
+  TemplateURL template_url(template_url_data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  lens::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_encoded_response("xyz");
+  search_terms_args.lens_overlay_interaction_response =
+      lens_overlay_interaction_response;
+
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::NTP_REALBOX;
+
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+
+  // No additional query params is appended for the realbox entry point.
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the multimodal searchbox entry
+  // point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // Set up a Google search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
+
+  // `iil=` is appended for the for the multimodal searchbox entry point for
+  // Google template URL.
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&iil=xyz");
 }

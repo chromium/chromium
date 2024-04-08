@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -213,9 +215,13 @@ class TemplateURLRef {
     // the request was issued.  Set to std::u16string::npos if not used.
     size_t cursor_position = std::u16string::npos;
 
-    // The URL of the current webpage to be used for experimental zero-prefix
-    // suggestions.
+    // The URL of the current webpage.
     std::string current_page_url;
+
+    // The lens overlay interaction response to be sent as a query parameter in
+    // the suggest requests.
+    std::optional<lens::LensOverlayInteractionResponse>
+        lens_overlay_interaction_response;
 
     // Which omnibox the user used to type the prefix.
     metrics::OmniboxEventProto::PageClassification page_classification =

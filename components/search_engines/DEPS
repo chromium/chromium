@@ -31,6 +31,7 @@ include_rules = [
   "+ui/resources",
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
+  "+third_party/lens_server_proto",
   "+ui/base",
   "+ui/gfx",
 ]

@@ -117,6 +117,10 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpsScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithURL);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithoutURL);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
+                           SendRequestWithLensInteractionResponse);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
+                           SendRequestWithoutLensInteractionResponse);
 
   // Manages the providers (TemplateURLs) used by SearchProvider. Two providers
   // may be used:

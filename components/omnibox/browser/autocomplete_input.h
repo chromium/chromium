@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -265,6 +266,17 @@ class AutocompleteInput {
     return terms_prefixed_by_http_or_https_;
   }
 
+  const std::optional<lens::LensOverlayInteractionResponse>&
+  lens_overlay_interaction_response() const {
+    return lens_overlay_interaction_response_;
+  }
+
+  void set_lens_overlay_interaction_response(
+      const lens::LensOverlayInteractionResponse&
+          lens_overlay_interaction_response) {
+    lens_overlay_interaction_response_ = lens_overlay_interaction_response;
+  }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -324,6 +336,10 @@ class AutocompleteInput {
   metrics::OmniboxFocusType focus_type_ =
       metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
+  // The lens overlay interaction response to be sent as a query parameter in
+  // the suggest requests.
+  std::optional<lens::LensOverlayInteractionResponse>
+      lens_overlay_interaction_response_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
