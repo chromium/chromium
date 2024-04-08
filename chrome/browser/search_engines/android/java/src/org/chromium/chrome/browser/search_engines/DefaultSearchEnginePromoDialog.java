@@ -76,7 +76,7 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
     protected DialogParams getDialogParams() {
         PromoDialog.DialogParams params = new PromoDialog.DialogParams();
         params.headerStringResource = R.string.search_engine_dialog_title;
-        params.footerStringResource = R.string.search_engine_dialog_footer;
+        params.footerStringResource = R.string.search_engine_dialog_footer_legacy;
         params.primaryButtonStringResource = R.string.ok;
         return params;
     }
