@@ -148,6 +148,10 @@ std::string SecondsFromEpochToBaseTime(int64_t t) {
                        base::NumberToString(t), ")"});
 }
 
+std::string VersionFromString(std::string_view version_str) {
+  return base::StrCat({"\"", version_str, "\""});
+}
+
 // Returns true if file was correctly written, false otherwise.
 bool WriteRootCppFile(const RootStore& root_store,
                       const base::FilePath cpp_path) {
@@ -178,10 +182,10 @@ bool WriteRootCppFile(const RootStore& root_store,
     string_to_write += "};\n";
 
     if (anchor.constraints_size() > 0) {
-      base::StringAppendF(
-          &string_to_write,
-          "constexpr ChromeRootCertConstraints kChromeRootConstraints%d[] = {",
-          i);
+      base::StringAppendF(&string_to_write,
+                          "constexpr StaticChromeRootCertConstraints "
+                          "kChromeRootConstraints%d[] = {",
+                          i);
 
       std::vector<std::string> constraint_strings;
       for (const auto& constraint : anchor.constraints()) {
@@ -195,6 +199,16 @@ bool WriteRootCppFile(const RootStore& root_store,
         constraint_params.push_back(
             constraint.has_sct_all_after_sec()
                 ? SecondsFromEpochToBaseTime(constraint.sct_all_after_sec())
+                : kNulloptString);
+
+        constraint_params.push_back(
+            constraint.has_min_version()
+                ? VersionFromString(constraint.min_version())
+                : kNulloptString);
+
+        constraint_params.push_back(
+            constraint.has_max_version_exclusive()
+                ? VersionFromString(constraint.max_version_exclusive())
                 : kNulloptString);
 
         constraint_strings.push_back(

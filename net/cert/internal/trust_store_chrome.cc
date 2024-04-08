@@ -22,6 +22,38 @@ namespace {
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
 }  // namespace
 
+ChromeRootCertConstraints::ChromeRootCertConstraints(
+    std::optional<base::Time> sct_not_after,
+    std::optional<base::Time> sct_all_after,
+    std::optional<base::Version> min_version,
+    std::optional<base::Version> max_version_exclusive)
+    : sct_not_after(sct_not_after),
+      sct_all_after(sct_all_after),
+      min_version(std::move(min_version)),
+      max_version_exclusive(std::move(max_version_exclusive)) {}
+ChromeRootCertConstraints::ChromeRootCertConstraints(
+    const StaticChromeRootCertConstraints& constraints)
+    : sct_not_after(constraints.sct_not_after),
+      sct_all_after(constraints.sct_all_after),
+      min_version(constraints.min_version),
+      max_version_exclusive(constraints.max_version_exclusive) {
+  if (min_version) {
+    CHECK(min_version->IsValid());
+  }
+  if (max_version_exclusive) {
+    CHECK(max_version_exclusive->IsValid());
+  }
+}
+ChromeRootCertConstraints::~ChromeRootCertConstraints() = default;
+ChromeRootCertConstraints::ChromeRootCertConstraints(
+    const ChromeRootCertConstraints& other) = default;
+ChromeRootCertConstraints::ChromeRootCertConstraints(
+    ChromeRootCertConstraints&& other) = default;
+ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
+    const ChromeRootCertConstraints& other) = default;
+ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
+    ChromeRootCertConstraints&& other) = default;
+
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints)
@@ -68,19 +100,35 @@ ChromeRootStoreData::CreateChromeRootStoreData(
 
     std::vector<ChromeRootCertConstraints> constraints;
     for (const auto& constraint : anchor.constraints()) {
-      constraints.push_back(
-          {.sct_not_after =
-               constraint.has_sct_not_after_sec()
-                   ? std::optional(
-                         base::Time::UnixEpoch() +
-                         base::Seconds(constraint.sct_not_after_sec()))
-                   : std::nullopt,
-           .sct_all_after =
-               constraint.has_sct_all_after_sec()
-                   ? std::optional(
-                         base::Time::UnixEpoch() +
-                         base::Seconds(constraint.sct_all_after_sec()))
-                   : std::nullopt});
+      std::optional<base::Version> min_version;
+      if (constraint.has_min_version()) {
+        min_version = base::Version(constraint.min_version());
+        if (!min_version->IsValid()) {
+          LOG(ERROR) << "Error parsing version";
+          return std::nullopt;
+        }
+      }
+
+      std::optional<base::Version> max_version_exclusive;
+      if (constraint.has_max_version_exclusive()) {
+        max_version_exclusive =
+            base::Version(constraint.max_version_exclusive());
+        if (!max_version_exclusive->IsValid()) {
+          LOG(ERROR) << "Error parsing version";
+          return std::nullopt;
+        }
+      }
+
+      constraints.emplace_back(
+          constraint.has_sct_not_after_sec()
+              ? std::optional(base::Time::UnixEpoch() +
+                              base::Seconds(constraint.sct_not_after_sec()))
+              : std::nullopt,
+          constraint.has_sct_all_after_sec()
+              ? std::optional(base::Time::UnixEpoch() +
+                              base::Seconds(constraint.sct_all_after_sec()))
+              : std::nullopt,
+          min_version, max_version_exclusive);
     }
     root_store_data.anchors_.emplace_back(std::move(parsed),
                                           std::move(constraints));
@@ -128,9 +176,12 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     // Root Store static data compiled in.
     CHECK(parsed);
     if (!cert_info.constraints.empty()) {
+      std::vector<ChromeRootCertConstraints> cert_constraints;
+      for (const auto& constraint : cert_info.constraints) {
+        cert_constraints.emplace_back(constraint);
+      }
       constraints.emplace_back(parsed->der_cert().AsStringView(),
-                               std::vector(cert_info.constraints.begin(),
-                                           cert_info.constraints.end()));
+                               std::move(cert_constraints));
     }
     trust_store_.AddTrustAnchor(std::move(parsed));
   }

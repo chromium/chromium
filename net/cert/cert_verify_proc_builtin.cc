@@ -49,6 +49,7 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "base/version_info/version_info.h"  // nogncheck
 #include "net/cert/internal/trust_store_chrome.h"
 #endif
 
@@ -464,6 +465,17 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
           }
         }
       }
+    }
+
+    if (constraint.min_version.has_value() &&
+        version_info::GetVersion() < constraint.min_version.value()) {
+      return false;
+    }
+
+    if (constraint.max_version_exclusive.has_value() &&
+        version_info::GetVersion() >=
+            constraint.max_version_exclusive.value()) {
+      return false;
     }
 
     return true;

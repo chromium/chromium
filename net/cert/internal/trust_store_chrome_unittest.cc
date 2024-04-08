@@ -114,6 +114,10 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       constraints[0].sct_not_after.value().InMillisecondsSinceUnixEpoch() /
           1000,
       0x5af);
+  EXPECT_FALSE(constraints[0].min_version.has_value());
+  ASSERT_TRUE(constraints[0].max_version_exclusive.has_value());
+  EXPECT_EQ(constraints[0].max_version_exclusive.value().components(),
+            std::vector<uint32_t>({125, 0, 6368, 2}));
 
   EXPECT_FALSE(constraints[1].sct_not_after.has_value());
   ASSERT_TRUE(constraints[1].sct_all_after.has_value());
@@ -121,6 +125,10 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       constraints[1].sct_all_after.value().InMillisecondsSinceUnixEpoch() /
           1000,
       0x2579);
+  ASSERT_TRUE(constraints[1].min_version.has_value());
+  EXPECT_FALSE(constraints[1].max_version_exclusive.has_value());
+  EXPECT_EQ(constraints[1].min_version.value().components(),
+            std::vector<uint32_t>({128}));
 
   // Other certificates should return nullptr if they are queried for CRS
   // constraints. Which test cert used here isn't important as long as it isn't

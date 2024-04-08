@@ -1367,6 +1367,7 @@ component("net") {
       "cert/internal/trust_store_chrome.h",
     ]
     deps += [
+      "//base/version_info",
       "//net/cert:root_store_proto_lite",
       "//net/data/ssl/chrome_root_store:gen_root_store_inc",
     ]
@@ -3193,7 +3194,10 @@ test("net_unittests") {
 
   if (chrome_root_store_supported) {
     sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
-    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
+    deps += [
+      "//base/version_info",
+      "//net/data/ssl/chrome_root_store:gen_root_store_test_inc",
+    ]
 
     if (is_win) {
       sources += [ "cert/internal/trust_store_win_unittest.cc" ]

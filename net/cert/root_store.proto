@@ -21,6 +21,17 @@ message ConstraintSet {
   // valid SCT timestamps must be after the specified value, specified in
   // seconds since the unix epoch.
   optional int64 sct_all_after_sec = 2;
+
+  // The browser version must be equal to or greater than the specified version.
+  // Specified as a dotted version string, for example, "121.0.6167.160". A
+  // partial version is also allowed, for example min_version="121" will match
+  // any M-121 version or later.
+  optional string min_version = 3;
+
+  // The browser version must be less than the specified version.
+  // For example, max_version_exclusive="122" will match any M-121 or earlier
+  // version, and will not match any M-122 version.
+  optional string max_version_exclusive = 4;
 }
 
 message TrustAnchor {

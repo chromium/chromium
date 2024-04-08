@@ -50,6 +50,10 @@
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "base/version_info/version_info.h"  // nogncheck
+#endif
+
 using net::test::IsError;
 using net::test::IsOk;
 
@@ -146,8 +150,11 @@ class MockSystemTrustStore : public SystemTrustStore {
   }
 
   void SetMockChromeRootConstraints(
-      std::vector<ChromeRootCertConstraints> chrome_root_constraints) {
-    mock_chrome_root_constraints_ = std::move(chrome_root_constraints);
+      std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
+    mock_chrome_root_constraints_.clear();
+    for (const auto& constraint : chrome_root_constraints) {
+      mock_chrome_root_constraints_.emplace_back(constraint);
+    }
   }
 #endif
 
@@ -324,7 +331,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void SetMockChromeRootConstraints(
-      std::vector<ChromeRootCertConstraints> chrome_root_constraints) {
+      std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
     mock_system_trust_store_->SetMockChromeRootConstraints(
         std::move(chrome_root_constraints));
   }
@@ -1480,6 +1487,154 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctAllAfter) {
     int error = callback.WaitForResult();
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     ASSERT_EQ(verify_result.scts.size(), 2u);
+  }
+}
+
+std::string CurVersionString() {
+  return version_info::GetVersion().GetString();
+}
+std::string NextVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  return base::Version(
+             {components[0], components[1], components[2], components[3] + 1})
+      .GetString();
+}
+std::string PrevVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  if (components[3] > 0) {
+    return base::Version(
+               {components[0], components[1], components[2], components[3] - 1})
+        .GetString();
+  } else {
+    return base::Version(
+               {components[0], components[1], components[2] - 1, UINT32_MAX})
+        .GetString();
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.min_version = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  SetMockChromeRootConstraints({{.min_version = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMaxVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.max_version_exclusive = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  SetMockChromeRootConstraints(
+      {{.max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinAndMaxVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  // min_version satisfied, max_version_exclusive not satisfied = not trusted.
+  SetMockChromeRootConstraints({{.min_version = PrevVersionString(),
+                                 .max_version_exclusive = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // min_version not satisfied, max_version_exclusive satisfied = not trusted.
+  SetMockChromeRootConstraints(
+      {{.min_version = NextVersionString(),
+        .max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // min_version satisfied, max_version_exclusive satisfied = trusted.
+  SetMockChromeRootConstraints(
+      {{.min_version = CurVersionString(),
+        .max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "net/base/net_export.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -18,14 +19,42 @@
 
 namespace net {
 
-struct ChromeRootCertConstraints {
+// Represents a ConstraintSet for compiled-in version of the root store.
+// This is a separate struct from ChromeRootCertConstraints since the in-memory
+// representation parses the version constraints into a base::Version.
+// (base::Version can't be used in the compiled-in version since it isn't
+// constexpr.)
+struct StaticChromeRootCertConstraints {
   std::optional<base::Time> sct_not_after;
   std::optional<base::Time> sct_all_after;
+
+  std::optional<std::string_view> min_version;
+  std::optional<std::string_view> max_version_exclusive;
 };
 
 struct ChromeRootCertInfo {
   base::span<const uint8_t> root_cert_der;
-  base::span<const ChromeRootCertConstraints> constraints;
+  base::span<const StaticChromeRootCertConstraints> constraints;
+};
+
+struct NET_EXPORT ChromeRootCertConstraints {
+  ChromeRootCertConstraints(std::optional<base::Time> sct_not_after,
+                            std::optional<base::Time> sct_all_after,
+                            std::optional<base::Version> min_version,
+                            std::optional<base::Version> max_version_exclusive);
+  explicit ChromeRootCertConstraints(
+      const StaticChromeRootCertConstraints& constraints);
+  ~ChromeRootCertConstraints();
+  ChromeRootCertConstraints(const ChromeRootCertConstraints& other);
+  ChromeRootCertConstraints(ChromeRootCertConstraints&& other);
+  ChromeRootCertConstraints& operator=(const ChromeRootCertConstraints& other);
+  ChromeRootCertConstraints& operator=(ChromeRootCertConstraints&& other);
+
+  std::optional<base::Time> sct_not_after;
+  std::optional<base::Time> sct_all_after;
+
+  std::optional<base::Version> min_version;
+  std::optional<base::Version> max_version_exclusive;
 };
 
 // ChromeRootStoreData is a container class that stores all of the Chrome Root
