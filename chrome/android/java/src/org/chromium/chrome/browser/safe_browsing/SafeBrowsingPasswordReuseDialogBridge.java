@@ -54,7 +54,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
             @JniType("std::u16string") String secondaryButtonText) {
         if (mWindowAndroid.getActivity().get() == null) return;
 
-        boolean hasSecondaryButtonText = secondaryButtonText.isEmpty();
+        boolean hasSecondaryButtonText = !secondaryButtonText.isEmpty();
         PasswordManagerDialogContents contents =
                 createDialogContents(
                         dialogTitle,
