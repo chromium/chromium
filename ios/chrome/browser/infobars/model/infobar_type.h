@@ -31,6 +31,8 @@ enum class InfobarType {
   kInfobarTypeTabPickup = 10,
   // Message Infobar for Parcel Tracking.
   kInfobarTypeParcelTracking = 11,
+  // Message Infobar for Enhanced Safe Browsing.
+  kInfobarTypeEnhancedSafeBrowsing = 12
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

@@ -147,6 +147,16 @@ const char kInfobarParcelTrackingModalEventHistogram[] =
 const char kInfobarParcelTrackingBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeParcelTracking";
 
+// Histogram names for the Enhanced Safe Browsing banner.
+const char kInfobarEnhancedSafeBrowsingBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeEnhancedSafeBrowsing";
+const char kInfobarEnhancedSafeBrowsingBannerDismissTypeHistgram[] =
+    "Mobile.messages.Banner.Dismiss.InfobarTypeEnhancedSafeBrowsing";
+const char kInfobarEnhancedSafeBrowsingModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeEnhancedSafeBrowsing";
+const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeEnhancedSafeBrowsing";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -207,6 +217,10 @@ const char kInfobarParcelTrackingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBannerEventHistogram,
                                 event);
       break;
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarEnhancedSafeBrowsingBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -257,6 +271,10 @@ const char kInfobarParcelTrackingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarParcelTrackingBannerDismissTypeHistogram, dismissType);
       break;
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarEnhancedSafeBrowsingBannerDismissTypeHistgram, dismissType);
+      break;
   }
 }
 
@@ -304,6 +322,10 @@ const char kInfobarParcelTrackingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingModalEventHistogram,
                                 event);
       break;
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarEnhancedSafeBrowsingModalEventHistogram,
+                                event);
+      break;
   }
 }
 
@@ -347,6 +369,10 @@ const char kInfobarParcelTrackingBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeParcelTracking:
       UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBadgeTappedHistogram,
                                 state);
+      break;
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarEnhancedSafeBrowsingBadgeTappedHistogram, state);
       break;
   }
 }

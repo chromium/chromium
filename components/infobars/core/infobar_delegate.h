@@ -185,6 +185,7 @@ class InfoBarDelegate {
     TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE = 118,
     ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE = 119,
     DEV_TOOLS_SHARED_PROCESS_DELEGATE = 120,
+    ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE = 121,
   };
 
   // Describes navigation events, used to decide whether infobars should be
