@@ -284,6 +284,17 @@ class DropdownItemViewInfoListBuilder {
             AutocompleteMatch match = groupMatches.get(indexInList);
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
+
+            if (indexInList == 0) {
+                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
+            }
+
+            if (indexInList == numGroupMatches - 1) {
+                model.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
+            } else {
+                model.set(DropdownCommonProperties.SHOW_DIVIDER, true);
+            }
+
             processor.populateModel(match, model, indexOnList);
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));
         }

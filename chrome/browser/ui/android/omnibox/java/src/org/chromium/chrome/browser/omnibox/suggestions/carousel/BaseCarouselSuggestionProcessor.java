@@ -48,9 +48,4 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
                 BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE,
                 isTablet && !OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
     }
-
-    @Override
-    public boolean allowBackgroundRounding() {
-        return false;
-    }
 }

@@ -38,9 +38,4 @@ public interface DropdownItemProcessor {
 
     /** Signals that the dropdown list is about to be populated with new content. */
     default void onSuggestionsReceived() {}
-
-    /** Return if the suggestion view can have background rounding. */
-    default boolean allowBackgroundRounding() {
-        return false;
-    }
 }

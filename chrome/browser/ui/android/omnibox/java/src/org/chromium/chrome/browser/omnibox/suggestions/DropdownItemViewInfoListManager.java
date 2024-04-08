@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.omnibox.GroupsProto.GroupSection;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -90,8 +89,6 @@ class DropdownItemViewInfoListManager {
                         ? SuggestionCommonProperties.FormFactor.TABLET
                         : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo previousItem = null;
-        GroupSection previousSection = null;
-        GroupSection currentSection;
 
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
@@ -99,22 +96,6 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.LAYOUT_DIRECTION, mLayoutDirection);
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
-
-            if (item.processor.allowBackgroundRounding()) {
-                currentSection = item.groupConfig.getSection();
-                var applyRounding = currentSection != previousSection;
-
-                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
-
-                if (previousItem != null) {
-                    previousItem.model.set(
-                            DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, applyRounding);
-                    previousItem.model.set(DropdownCommonProperties.SHOW_DIVIDER, !applyRounding);
-                }
-
-                previousItem = item;
-                previousSection = currentSection;
-            }
 
             suggestionsList.add(item);
         }

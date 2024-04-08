@@ -30,7 +30,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
-    private static final int ITEM_VIEW_WIDTH = 12345;
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     private Context mContext;
@@ -115,10 +114,5 @@ public class BaseCarouselSuggestionProcessorUnitTest {
 
         BaseCarouselSuggestionProcessorTestClass.sReportedItemViewHeight = 100;
         Assert.assertEquals(100 + baseHeight, mProcessor.getMinimumViewHeight());
-    }
-
-    @Test
-    public void allowBackgroundRounding_disallowedAsCarouselHandlesThisInternally() {
-        Assert.assertFalse(mProcessor.allowBackgroundRounding());
     }
 }
