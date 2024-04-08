@@ -9,6 +9,7 @@
 #include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
@@ -159,7 +160,10 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
     InSequence s;
 
     EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
-    EXPECT_CALL(callback_, OnRenderError).Times(1);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kWebAudioHandleOnRenderError)) {
+      EXPECT_CALL(callback_, OnRenderError).Times(1);
+    }
     EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
   }
 

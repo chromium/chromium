@@ -256,13 +256,16 @@ void RealtimeAudioDestinationHandler::Render(
 }
 
 void RealtimeAudioDestinationHandler::OnRenderError() {
-  if (task_runner_->BelongsToCurrentThread()) {
-    RealtimeAudioDestinationHandler::NotifyAudioContext();
-  } else {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &RealtimeAudioDestinationHandler::NotifyAudioContext, AsWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kWebAudioHandleOnRenderError)) {
+    if (task_runner_->BelongsToCurrentThread()) {
+      RealtimeAudioDestinationHandler::NotifyAudioContext();
+    } else {
+      PostCrossThreadTask(
+          *task_runner_, FROM_HERE,
+          CrossThreadBindOnce(
+              &RealtimeAudioDestinationHandler::NotifyAudioContext,
+              AsWeakPtr()));
+    }
   }
 }
 
