@@ -801,7 +801,7 @@ deps = {
   },
 
   'src/chrome/test/data/password/captured_sites/artifacts': {
-    'url': Var('chrome_git') + '/chrome/test/captured_sites/password.git' + '@' + '7993857b766c486a562b4368f6ec1f803b0ed299',
+    'url': Var('chrome_git') + '/chrome/test/captured_sites/password.git' + '@' + 'd8bb2ef5c0ebff18c66f02e534a3f20bef7d55f5',
     'condition': 'checkout_chromium_password_manager_test_dependencies',
   },
 
