@@ -88,7 +88,10 @@ void SetRefreshTokenForPrimaryAccount(
 // Sets a special invalid refresh token for the primary account (which must
 // already be set). Blocks until the refresh token is set.
 // NOTE: See disclaimer at top of file re: direct usage.
-void SetInvalidRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
+void SetInvalidRefreshTokenForPrimaryAccount(
+    IdentityManager* identity_manager,
+    signin_metrics::SourceForRefreshTokenOperation source =
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
 // Removes any refresh token for the primary account, if present. Blocks until
 // the refresh token is removed.
@@ -270,8 +273,11 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
 // Sets a special invalid refresh token for the given account (which must
 // already be available). Blocks until the refresh token is set.
 // NOTE: See disclaimer at top of file re: direct usage.
-void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
-                                      const CoreAccountId& account_id);
+void SetInvalidRefreshTokenForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    signin_metrics::SourceForRefreshTokenOperation source =
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
 // Removes any refresh token that is present for the given account. Blocks until
 // the refresh token is removed. Is a no-op if no refresh token is present for

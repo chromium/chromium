@@ -46,6 +46,7 @@ class AvatarToolbarButton : public ToolbarButton {
     // Helper functions for testing.
     virtual void OnShowNameClearedForTesting() {}
     virtual void OnShowManagementTransientTextClearedForTesting() {}
+    virtual void OnShowSigninPausedDelayEnded() {}
 
     ~Observer() override = default;
   };
@@ -112,6 +113,7 @@ class AvatarToolbarButton : public ToolbarButton {
   // Used by the delegate when showing text timed events ended - for testing.
   void NotifyShowNameClearedForTesting() const;
   void NotifyManagementTransientTextClearedForTesting() const;
+  void NotifyShowSigninPausedDelayEnded() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,

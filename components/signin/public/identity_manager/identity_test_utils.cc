@@ -72,7 +72,9 @@ void UpdateRefreshTokenForAccount(
     AccountTrackerService* account_tracker_service,
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
-    const std::string& new_token) {
+    const std::string& new_token,
+    signin_metrics::SourceForRefreshTokenOperation source =
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown) {
   DCHECK_EQ(account_tracker_service->GetAccountInfo(account_id).account_id,
             account_id)
       << "To set the refresh token for an unknown account, use "
@@ -103,7 +105,7 @@ void UpdateRefreshTokenForAccount(
   } else
 #endif  // BUILDFLAG(IS_CHROMEOS)
   {
-    token_service->UpdateCredentials(account_id, new_token);
+    token_service->UpdateCredentials(account_id, new_token, source);
   }
 
   run_loop.Run();
@@ -282,12 +284,13 @@ void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
 }
 
 void SetInvalidRefreshTokenForPrimaryAccount(
-    IdentityManager* identity_manager) {
+    IdentityManager* identity_manager,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
 
-  SetInvalidRefreshTokenForAccount(identity_manager, account_id);
+  SetInvalidRefreshTokenForAccount(identity_manager, account_id, source);
 }
 
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
@@ -462,12 +465,14 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
           : token_value);
 }
 
-void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
-                                      const CoreAccountId& account_id) {
+void SetInvalidRefreshTokenForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   UpdateRefreshTokenForAccount(identity_manager->GetTokenService(),
                                identity_manager->GetAccountTrackerService(),
                                identity_manager, account_id,
-                               GaiaConstants::kInvalidRefreshToken);
+                               GaiaConstants::kInvalidRefreshToken, source);
 }
 
 void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,

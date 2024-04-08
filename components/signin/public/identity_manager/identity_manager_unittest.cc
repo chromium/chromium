@@ -1574,7 +1574,7 @@ TEST_F(IdentityManagerTest,
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnPrimaryAccountRefreshTokenUpdateWithInvalidToken) {
-  SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
 
   CoreAccountInfo account_info =
       identity_manager_observer()->AccountFromRefreshTokenUpdatedCallback();

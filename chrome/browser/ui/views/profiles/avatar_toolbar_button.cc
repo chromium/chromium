@@ -451,5 +451,11 @@ void AvatarToolbarButton::NotifyManagementTransientTextClearedForTesting()
   }
 }
 
+void AvatarToolbarButton::NotifyShowSigninPausedDelayEnded() const {
+  for (auto& observer : observer_list_) {
+    observer.OnShowSigninPausedDelayEnded();  // IN-TEST
+  }
+}
+
 BEGIN_METADATA(AvatarToolbarButton)
 END_METADATA

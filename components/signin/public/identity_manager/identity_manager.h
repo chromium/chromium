@@ -497,7 +497,8 @@ class IdentityManager : public KeyedService,
                                         const std::string& token_value);
   friend void SetInvalidRefreshTokenForAccount(
       IdentityManager* identity_manager,
-      const CoreAccountId& account_id);
+      const CoreAccountId& account_id,
+      signin_metrics::SourceForRefreshTokenOperation source);
   friend void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
                                            const CoreAccountId& account_id);
   friend void UpdateAccountInfoForAccount(IdentityManager* identity_manager,

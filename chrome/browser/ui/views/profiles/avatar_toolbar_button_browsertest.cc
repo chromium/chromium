@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -45,6 +46,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -112,7 +114,21 @@ class AvatarToolbarButtonTestObserver : public AvatarToolbarButton::Observer {
     show_enterprise_text_run_loop_.Run();
   }
 
+  void WaitForShowSigninPausedDelayEnded() {
+    if (show_signin_paused_delay_ended_) {
+      return;
+    }
+
+    CHECK(!show_signin_paused_delay_run_loop_.running());
+    show_signin_paused_delay_run_loop_.Run();
+  }
+
+  bool IsShowSigninPausedDelayEnded() {
+    return show_signin_paused_delay_ended_;
+  }
+
  private:
+  // AvatarToolbarButton::Observer:
   void OnShowNameClearedForTesting() override {
     show_name_ended_ = true;
     show_name_run_loop_.Quit();
@@ -123,14 +139,48 @@ class AvatarToolbarButtonTestObserver : public AvatarToolbarButton::Observer {
     show_enterprise_text_run_loop_.Quit();
   }
 
+  void OnShowSigninPausedDelayEnded() override {
+    show_signin_paused_delay_ended_ = true;
+    show_signin_paused_delay_run_loop_.Quit();
+  }
+
   base::RunLoop show_name_run_loop_;
   bool show_name_ended_ = false;
 
   base::RunLoop show_enterprise_text_run_loop_;
   bool show_enterprise_text_ended_ = false;
 
+  base::RunLoop show_signin_paused_delay_run_loop_;
+  bool show_signin_paused_delay_ended_ = false;
+
   base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
       scoped_avatar_observation_{this};
+};
+
+class ProfileLoader {
+ public:
+  Profile* LoadFirstAndOnlyProfile() {
+    auto* profile_manager = g_browser_process->profile_manager();
+    auto& storage = profile_manager->GetProfileAttributesStorage();
+    EXPECT_EQ(1U, storage.GetNumberOfProfiles());
+
+    profile_manager->LoadProfileByPath(
+        storage.GetAllProfilesAttributes()[0]->GetPath(), /*incognito=*/false,
+        base::BindRepeating(&ProfileLoader::OnProfileLoaded,
+                            base::Unretained(this)));
+
+    profile_loading_run_loop_.Run();
+    return profile_;
+  }
+
+ private:
+  void OnProfileLoaded(Profile* profile) {
+    profile_ = profile;
+    profile_loading_run_loop_.Quit();
+  }
+
+  raw_ptr<Profile> profile_ = nullptr;
+  base::RunLoop profile_loading_run_loop_;
 };
 
 }  // namespace
@@ -272,11 +322,17 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 #endif
 
-  void SimulateSigninError() {
+  void SimulateSigninError(bool web_sign_out) {
     ASSERT_TRUE(
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-    signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source =
+        web_sign_out ? signin_metrics::SourceForRefreshTokenOperation::
+                           kDiceResponseHandler_Signout
+                     : signin_metrics::SourceForRefreshTokenOperation::kUnknown;
+
+    signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager(),
+                                                    token_operation_source);
   }
 
   void ClearSigninError() {
@@ -355,12 +411,11 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
-  // Waits for 2 * kTestingDuration.
-  void WaitTwiceShowTextDuration() {
+  // Waits for `time`.
+  void WaitForTime(base::TimeDelta time) {
     base::RunLoop waiting_run_loop;
     base::OneShotTimer timer;
-    timer.Start(FROM_HERE, 2 * kTestingDuration,
-                waiting_run_loop.QuitClosure());
+    timer.Start(FROM_HERE, time, waiting_run_loop.QuitClosure());
     waiting_run_loop.Run();
   }
 
@@ -497,6 +552,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 #endif
 
 // TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowNameOnSignin_ThenSync DISABLED_ShowNameOnSignin_ThenSync
 #else
@@ -529,6 +585,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 }
 
 // TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowNameOnSync DISABLED_ShowNameOnSync
 #else
@@ -698,6 +755,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignInOutIconEffect) {
 }
 
 // TODO(crbug/330202396): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SignedInChangeIcon DISABLED_SignedInChangeIcon
 #else
@@ -1048,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   // Simulate waiting for some time, twice the expected duration of showing the
   // badge in normal in transient mode.
-  WaitTwiceShowTextDuration();
+  WaitForTime(2 * kTestingDuration);
   // Work label is still expected as it should be permanent.
   EXPECT_EQ(avatar_button->GetText(), work_label);
 }
@@ -1131,6 +1189,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 // Sync Pause/Error has priority over WorkBadge.
 // TODO(crbug/330202396): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_WorkBadgeTransientModeAndSyncPause \
   DISABLED_WorkBadgeTransientModeAndSyncPause
@@ -1179,8 +1238,11 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
       browser()->profile(), false);
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
-#endif
 
+// TODO(b/331746545): The delay enforced in tests seems not to be enough for
+// windows bots causing falkiness in tests running on Windows. Investigate how
+// to fix this, or if it is feasible not to test on windows.
+#if !BUILDFLAG(IS_WIN)
 class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  private:
@@ -1189,18 +1251,179 @@ class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPaused) {
+                       SigninPausedFromExternalError) {
   SigninAndWait(u"test@gmail.com");
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
-  SimulateSigninError();
+  // Browser opened before the error.
+  Browser* opened_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* opened_browser_avatar_button =
+      GetAvatarToolbarButton(opened_browser);
+  ASSERT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
 
+  SimulateSigninError(/*web_sign_out=*/false);
   EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+  EXPECT_EQ(opened_browser_avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  // New browser opened after the error -- error should be shown directly.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* new_browser_avatar_button =
+      GetAvatarToolbarButton(new_browser);
+  EXPECT_EQ(new_browser_avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 
   ClearSigninError();
-
   EXPECT_EQ(avatar->GetText(), std::u16string());
+  EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 }
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       DISABLED_SigninPausedFromWebSignout) {
+  SigninAndWait(u"test@gmail.com");
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  AvatarToolbarButtonTestObserver observer(avatar);
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  // Browser opened before the error.
+  Browser* opened_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* opened_browser_avatar_button =
+      GetAvatarToolbarButton(opened_browser);
+  ASSERT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
+
+  // Increase the delay to accommodate for a new browser creation in the test.
+  AvatarToolbarButton::SetTextDurationForTesting(base::Milliseconds(300));
+  SimulateSigninError(/*web_sign_out=*/true);
+  // Text does not appear directly after a web sign out, a timer is started.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+  EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
+
+  // New browser opened after the error and before timer ends -- error is not
+  // shown directly.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* new_browser_avatar_button =
+      GetAvatarToolbarButton(new_browser);
+  EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
+
+  ASSERT_FALSE(observer.IsShowSigninPausedDelayEnded());
+
+  // On time delay end, the error should be displayed on all browsers.
+  observer.WaitForShowSigninPausedDelayEnded();
+  // Add a small delay to make sure that all buttons are notified.
+  WaitForTime(base::Milliseconds(10));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+  EXPECT_EQ(opened_browser_avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+  EXPECT_EQ(new_browser_avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  ClearSigninError();
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+  EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
+}
+
+// The purpose of this test is to make sure that when a user first signs out of
+// the web, and then signs back in prior to the signin paused error text being
+// shown, doing a second web sign out will trigger a new error delay and not
+// rely on the first triggered that potentially reached after the second sign
+// out.
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+    DISABLED_SigninPausedFromWebSignout_ThenSigninAndSignoutAgain) {
+  SigninAndWait(u"test@gmail.com");
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  base::Time first_error_time = base::Time::Now();
+  base::TimeDelta test_error_delay = base::Milliseconds(100);
+  AvatarToolbarButton::SetTextDurationForTesting(test_error_delay);
+  SimulateSigninError(/*web_sign_out=*/true);
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  ClearSigninError();
+  // Error should not be shown since the error is fixed.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  // Wait for some time to create a forced delay between the two sign outs.
+  WaitForTime(base::Milliseconds(10));
+
+  base::Time second_error_time = base::Time::Now();
+  // Simulate second error within the first error time delay.
+  AvatarToolbarButtonTestObserver second_observer(avatar);
+  SimulateSigninError(/*web_sign_out=*/true);
+  // Error should still not be shown after a second error yet.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  base::TimeDelta first_elapsed_time = base::Time::Now() - first_error_time;
+  ASSERT_LT(first_elapsed_time, test_error_delay);
+
+  // Wait for slightly more than the expected first error time out to make it
+  // did not affect (error text still not shown), but less than the second timer
+  // timeout (that should trigger the text error to be displayed).
+  WaitForTime(test_error_delay - first_elapsed_time + base::Milliseconds(2));
+  // Assert that the first time error time out has reached.
+  ASSERT_GT(base::Time::Now() - first_error_time, test_error_delay);
+  // Make sure first timer timing out (+ buffer time) does not trigger error
+  // text yet.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+  base::TimeDelta second_elapsed_time = base::Time::Now() - second_error_time;
+  // Make sure that the elapsed time is less than the time for the second error
+  // timer to reach so that the above test on the avatar text is accurate.
+  ASSERT_LT(second_elapsed_time, test_error_delay);
+
+  // We should finally see the text after the second error delayed passed.
+  second_observer.WaitForShowSigninPausedDelayEnded();
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       DISABLED_SigninPausedFromWebSignoutThenRestartChrome) {
+  // Needed because the current profile will be destroyed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                             KeepAliveRestartOption::DISABLED);
+
+  SigninAndWait(u"test@gmail.com");
+
+  // `max_time` is used as the delay for the error text to show. In order for
+  // this test to be successful and meaningful, the test should finish before
+  // this time to make sure the error text does not appear because of the timer
+  // finishing, which is not the purpose of the test.
+  base::TimeDelta max_time = base::Seconds(5);
+  base::Time time_of_error = base::Time::Now();
+  // We can set a relativley high testing time since we do not expect to reach
+  // it. If we do, the test would probably fail.
+  AvatarToolbarButton::SetTextDurationForTesting(max_time);
+
+  SimulateSigninError(/*web_sign_out=*/true);
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  ProfileDestructionWaiter destruction_waiter(browser()->profile());
+  // Closing the browser will destroy profile from the memory.
+  CloseAllBrowsers();
+  destruction_waiter.Wait();
+
+  // Load the profile again to open a new browser and check the butto state.
+  Profile* loaded_profile = ProfileLoader().LoadFirstAndOnlyProfile();
+  Browser* new_browser = CreateBrowser(loaded_profile);
+  AvatarToolbarButton* new_avatar = GetAvatarToolbarButton(new_browser);
+  // The error text is expected to be shown even if the error delay has not
+  // reached yet.
+  EXPECT_EQ(new_avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+  // Make sure the elapsted time is less than `max_time` to make sure the test
+  // is meaningful.
+  ASSERT_LT(base::Time::Now() - time_of_error, max_time);
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

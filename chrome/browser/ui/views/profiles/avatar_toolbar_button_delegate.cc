@@ -13,7 +13,9 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -45,9 +47,11 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -55,7 +59,9 @@ namespace {
 
 static std::optional<base::TimeDelta> kTestingDuration;
 
-constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
+constexpr base::TimeDelta kShowNameDuration = base::Seconds(3);
+
+constexpr base::TimeDelta kShowSigninPausedTextDelay = base::Minutes(50);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
@@ -376,7 +382,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
         base::BindOnce(
             &ShowIdentityNameStateProvider::OnIdentityAnimationTimeout,
             weak_ptr_factory_.GetWeakPtr()),
-        kTestingDuration.value_or(kIdentityAnimationDuration));
+        kTestingDuration.value_or(kShowNameDuration));
   }
 
   void OnIdentityAnimationTimeout() {
@@ -475,18 +481,48 @@ class SyncErrorStateProvider : public StateProvider,
       sync_service_observation_{this};
 };
 
+const void* const kSigninPausedTimestampStartKey =
+    &kSigninPausedTimestampStartKey;
+
+// Helper struct to store a `base::TimeTicks` as a Profile user data.
+struct TimeStampData : public base::SupportsUserData::Data {
+  explicit TimeStampData(base::Time time) : time_(time) {}
+  base::Time time_;
+};
+
 class SigninPausedStateProvider : public StateProvider,
                                   public signin::IdentityManager::Observer {
  public:
-  explicit SigninPausedStateProvider(StateObserver& state_observer,
-                                     Profile* profile)
+  explicit SigninPausedStateProvider(
+      StateObserver& state_observer,
+      Profile& profile,
+      const AvatarToolbarButton& avatar_toolbar_button)
       : StateProvider(state_observer),
-        identity_manager_(*IdentityManagerFactory::GetForProfile(profile)) {
+        profile_(profile),
+        identity_manager_(*IdentityManagerFactory::GetForProfile(&profile)),
+        avatar_toolbar_button_(avatar_toolbar_button) {
     identity_manager_observation_.Observe(&identity_manager_.get());
+
+    TimeStampData* signed_in_paused_delay_start = static_cast<TimeStampData*>(
+        profile.GetUserData(kSigninPausedTimestampStartKey));
+    // If a delay to show the activate the paused state was already started by
+    // another browser, start one with the remaining time.
+    if (signed_in_paused_delay_start) {
+      base::TimeDelta elapsed_delay_time =
+          base::Time::Now() - signed_in_paused_delay_start->time_;
+      CHECK_GT(kTestingDuration.value_or(kShowSigninPausedTextDelay),
+               elapsed_delay_time);
+      StartTimerDelay(kTestingDuration.value_or(kShowSigninPausedTextDelay) -
+                      elapsed_delay_time);
+    }
   }
 
   // StateProvider:
   bool IsActive() const override {
+    if (display_delay_timer_.IsRunning()) {
+      return false;
+    }
+
     CoreAccountId primary_account_id =
         identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     if (primary_account_id.empty()) {
@@ -509,6 +545,25 @@ class SigninPausedStateProvider : public StateProvider,
       return;
     }
 
+    if (!error.IsPersistentError() && display_delay_timer_.IsRunning()) {
+      // Clear timer and make it reaches the end. Next update should make the
+      // state inactive.
+      display_delay_timer_.Reset();
+      OnTimerDelayReached();
+      return;
+    }
+
+    if (error.state() ==
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
+        token_operation_source ==
+            signin_metrics::SourceForRefreshTokenOperation::
+                kDiceResponseHandler_Signout) {
+      profile_->SetUserData(kSigninPausedTimestampStartKey,
+                            std::make_unique<TimeStampData>(base::Time::Now()));
+      StartTimerDelay(kTestingDuration.value_or(kShowSigninPausedTextDelay));
+      return;
+    }
+
     RequestUpdate(ElementToUpdate::kAll);
   }
 
@@ -516,11 +571,30 @@ class SigninPausedStateProvider : public StateProvider,
     identity_manager_observation_.Reset();
   }
 
+  void StartTimerDelay(base::TimeDelta delay) {
+    display_delay_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&SigninPausedStateProvider::OnTimerDelayReached,
+                       // Unretained is fine here since the object owns the
+                       // timer which will not fire if destroyed.
+                       base::Unretained(this)));
+  }
+
+  void OnTimerDelayReached() {
+    profile_->RemoveUserData(kSigninPausedTimestampStartKey);
+    RequestUpdate(ElementToUpdate::kAll);
+    avatar_toolbar_button_->NotifyShowSigninPausedDelayEnded();  // IN-TEST
+  }
+
+  raw_ref<Profile> profile_;
   raw_ref<signin::IdentityManager> identity_manager_;
+  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::OneShotTimer display_delay_timer_;
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -685,14 +759,14 @@ class StateManager : public StateObserver,
             std::make_unique<ManagementStateProvider>(
                 /*state_observer=*/*this, *profile, avatar_toolbar_button);
       }
-#endif
 
       if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
               switches::ExplicitBrowserSigninPhase::kFull)) {
         states_[ButtonState::kSigninPaused] =
             std::make_unique<SigninPausedStateProvider>(
-                /*state_observer=*/*this, profile);
+                /*state_observer=*/*this, *profile, avatar_toolbar_button);
       }
+#endif
 
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
