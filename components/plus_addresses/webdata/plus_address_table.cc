@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/model_type.h"
@@ -130,12 +129,8 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
           .c_str()));
   std::vector<PlusProfile> result;
   while (query.Step()) {
-    int64_t profile_id;
-    // TODO(b/322147254): Failure is not handled. Once `PlusProfile::profile_id`
-    // is a string, no conversion will be necessary anymore.
-    base::StringToInt64(query.ColumnString(0), &profile_id);
     result.push_back({
-        .profile_id = profile_id,
+        .profile_id = query.ColumnString(0),
         .facet = query.ColumnString(1),
         .plus_address = query.ColumnString(2),
         .is_confirmed = true,
@@ -151,7 +146,7 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
           "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
           kPlusAddressTable, kProfileId, kFacet, kPlusAddress)
           .c_str()));
-  query.BindString(0, base::NumberToString(profile.profile_id));
+  query.BindString(0, profile.profile_id);
   query.BindString(1, profile.facet);
   query.BindString(2, profile.plus_address);
   return query.Run();

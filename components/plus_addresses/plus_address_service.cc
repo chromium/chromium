@@ -325,10 +325,8 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   for (const auto& [facet, address] : map) {
     // `UpdatePlusAddressMap()` is only called when sync support is disabled.
     // In this case, profile_ids don't matter.
-    plus_profiles_.insert({.profile_id = 0,
-                           .facet = facet,
-                           .plus_address = address,
-                           .is_confirmed = true});
+    plus_profiles_.insert(
+        {.facet = facet, .plus_address = address, .is_confirmed = true});
     plus_addresses_.insert(address);
   }
   for (Observer& o : observers_) {

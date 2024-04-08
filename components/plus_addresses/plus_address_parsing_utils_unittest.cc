@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +23,7 @@ TEST(PlusAddressParsing, NotValidJson) {
 }
 
 TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
-  const int64_t kProfileId = 123;
+  const std::string kProfileId = "123";
   const std::string kFacet = "apple.com";
   const std::string kPlusAddress = "fubar@plus.com";
 
@@ -45,7 +44,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       "unwanted": "abc"
     }
     )",
-          {base::NumberToString(kProfileId), kFacet, kPlusAddress},
+          {kProfileId, kFacet, kPlusAddress},
           /*offsets=*/nullptr));
 
   ASSERT_TRUE(valid_mode.has_value());
@@ -76,7 +75,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       "unwanted": "abc"
     }
     )",
-          {base::NumberToString(kProfileId), kFacet, kPlusAddress},
+          {kProfileId, kFacet, kPlusAddress},
           /*offsets=*/nullptr));
   ASSERT_TRUE(invalid_mode.has_value());
   data_decoder::DataDecoder::ValueOrError decoded =

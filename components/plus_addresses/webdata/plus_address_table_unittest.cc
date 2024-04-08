@@ -5,7 +5,6 @@
 #include "components/plus_addresses/webdata/plus_address_table.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/model_type.h"
@@ -73,13 +72,11 @@ TEST_F(PlusAddressTableTest, RemovePlusProfile) {
   const PlusProfile profile2 = test::CreatePlusProfile2();
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
-  EXPECT_TRUE(
-      table_.RemovePlusProfile(base::NumberToString(profile1.profile_id)));
+  EXPECT_TRUE(table_.RemovePlusProfile(profile1.profile_id));
   EXPECT_THAT(table_.GetPlusProfiles(),
               testing::UnorderedElementsAre(profile2));
   // Removing a non-existing `profile_id` shouldn't be considered a failure.
-  EXPECT_TRUE(
-      table_.RemovePlusProfile(base::NumberToString(profile1.profile_id)));
+  EXPECT_TRUE(table_.RemovePlusProfile(profile1.profile_id));
 }
 
 TEST_F(PlusAddressTableTest, ClearPlusProfiles) {

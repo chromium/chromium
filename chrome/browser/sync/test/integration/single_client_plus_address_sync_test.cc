@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -179,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                                  testing::UnorderedElementsAre(plus_profile))
                   .Wait());
   // Simulate removing the `plus_profile` on the server.
-  InjectTombstoneToServer(base::NumberToString(plus_profile.profile_id));
+  InjectTombstoneToServer(plus_profile.profile_id);
   EXPECT_TRUE(
       PlusProfileChecker(GetPlusAddressService(), testing::IsEmpty()).Wait());
 }

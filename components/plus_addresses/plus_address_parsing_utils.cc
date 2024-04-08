@@ -27,17 +27,14 @@ namespace {
 // }
 // Returns nullopt if none of the values are parsed.
 std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
-  std::optional<int64_t> profile_id;
+  std::string profile_id;
   std::string facet;
   std::string plus_address;
   std::optional<bool> is_confirmed;
   for (std::pair<const std::string&, base::Value&> entry : dict) {
     auto [key, val] = entry;
     if (base::MatchPattern(key, "*ProfileId") && val.is_string()) {
-      int64_t converted_int;
-      if (base::StringToInt64(val.GetString(), &converted_int)) {
-        profile_id = converted_int;
-      }
+      profile_id = std::move(val.GetString());
       continue;
     }
     if (base::MatchPattern(key, "facet") && val.is_string()) {
@@ -61,11 +58,11 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       }
     }
   }
-  if (!profile_id.has_value() || facet.empty() || plus_address.empty() ||
+  if (profile_id.empty() || facet.empty() || plus_address.empty() ||
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
-  return PlusProfile{.profile_id = *profile_id,
+  return PlusProfile{.profile_id = std::move(profile_id),
                      .facet = std::move(facet),
                      .plus_address = std::move(plus_address),
                      .is_confirmed = *is_confirmed};
