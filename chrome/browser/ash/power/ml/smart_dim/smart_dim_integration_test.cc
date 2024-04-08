@@ -4,14 +4,14 @@
 
 #include "base/cpu.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -69,49 +69,6 @@ class LacrosWindowWaiter : public aura::EnvObserver,
 
   raw_ptr<aura::Window> lacros_window_ = nullptr;
   base::RunLoop run_loop_;
-};
-
-// Waits for a Lacros instance to be registered such that it can be queried
-// for web page info.
-class LacrosInstanceWaiter : public crosapi::WebPageInfoFactoryAsh::Observer {
- public:
-  LacrosInstanceWaiter() {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->web_page_info_factory_ash()
-        ->AddObserver(this);
-  }
-
-  ~LacrosInstanceWaiter() override {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->web_page_info_factory_ash()
-        ->RemoveObserver(this);
-  }
-
-  void Wait() {
-    if (lacros_instance_registered_) {
-      // Already registered, nothing to wait for.
-      return;
-    }
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  // crosapi::WebPageInfoFactoryAsh::Observer:
-  void OnLacrosInstanceRegistered(
-      const mojo::RemoteSetElementId& remote_id) override {
-    lacros_instance_registered_ = true;
-    if (run_loop_) {
-      run_loop_->Quit();
-      run_loop_ = nullptr;
-    }
-  }
-  void OnLacrosInstanceDisconnected(
-      const mojo::RemoteSetElementId& remote_id) override {}
-
-  bool lacros_instance_registered_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace
@@ -256,10 +213,6 @@ IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
   ASSERT_TRUE(crosapi::CrosapiManager::Get());
   ASSERT_TRUE(crosapi::CrosapiManager::Get()->crosapi_ash());
 
-  // The Lacros instance might be registered while the window is opened below,
-  // so start observing here.
-  LacrosInstanceWaiter instance_waiter;
-
   // Request a Lacros window to open and wait for it to become visible.
   LacrosWindowWaiter window_waiter;
   crosapi::BrowserManager::Get()->NewWindow(
@@ -267,10 +220,13 @@ IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
   window_waiter.Wait();
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
-  // Speculative fix for test flake. Wait for Lacros to register itself as an
-  // instance for web page info. If it does not register, WebPageInfoSource
-  // returns 0 because Lacros does not provide info about the current page.
-  instance_waiter.Wait();
+  // Speculative fix for test flake. Sometimes WebPageInfoSource returns 0
+  // because Lacros does not provide info about the current page. Give Lacros
+  // time to stabilize. See b/332806059
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(500));
+  loop.Run();
 
   base::HistogramTester histograms;
 
