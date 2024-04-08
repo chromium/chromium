@@ -80,6 +80,11 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
 
   DCHECK(provider);
 
+  if (!provider->hasConfigURL()) {
+    resolver->RejectWithTypeError("Missing the provider's configURL.");
+    return promise;
+  }
+
   KURL provider_url(provider->configURL());
   String client_id = provider->clientId();
 
