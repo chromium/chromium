@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -1557,7 +1558,15 @@ IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
 
 // Verifies that the app list sort discovery duration after the education nudge
 // shows is recorded as expected.
-IN_PROC_BROWSER_TEST_P(AppListSortLoginTest, VerifySortAfterNudgeShowMetric) {
+// TODO(crbug.com/328928228): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_VerifySortAfterNudgeShowMetric \
+  DISABLED_VerifySortAfterNudgeShowMetric
+#else
+#define MAYBE_VerifySortAfterNudgeShowMetric VerifySortAfterNudgeShowMetric
+#endif
+IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
+                       MAYBE_VerifySortAfterNudgeShowMetric) {
   LoginUser(account_id1_);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
