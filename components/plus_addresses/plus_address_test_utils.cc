@@ -54,10 +54,6 @@ std::string MakeListResponse(const std::vector<PlusProfile>& profiles) {
 std::string MakePlusProfile(const PlusProfile& profile) {
   // Note: the below must be kept in-line with the PlusAddressParser behavior.
   std::string mode = profile.is_confirmed ? "anyMode" : "UNSPECIFIED";
-  // TODO(b/322147254): A lot of tests don't specify profile ids, which makes
-  // the parser reject the response. Rewrite those tests.
-  std::string profile_id =
-      profile.profile_id.empty() ? "123" : profile.profile_id;
   std::string json = base::ReplaceStringPlaceholders(
       R"(
           {
@@ -69,7 +65,7 @@ std::string MakePlusProfile(const PlusProfile& profile) {
             }
           }
         )",
-      {profile_id, profile.facet, profile.plus_address, mode}, nullptr);
+      {profile.profile_id, profile.facet, profile.plus_address, mode}, nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }

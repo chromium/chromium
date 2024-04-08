@@ -71,6 +71,10 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
                                       Suggestion::Icon::kPlusAddress));
 }
 
+url::Origin OriginFromFacet(const std::string& facet) {
+  return url::Origin::Create(GURL("https://" + facet));
+}
+
 }  // namespace
 
 namespace plus_addresses {
@@ -255,39 +259,38 @@ class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
 };
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
+  PlusProfile profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
-  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
+                               future.GetCallback());
 
   // Check that the future callback is still blocked, and unblock it.
+  profile.is_confirmed = false;
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
-      kReservePlusAddressEndpoint,
-      test::MakeCreationResponse(PlusProfile({.facet = kSite,
-                                              .plus_address = kPlusAddress,
-                                              .is_confirmed = false})));
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
   ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get()->plus_address, kPlusAddress);
+  EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 
   // The service should not save plus_address if it hasn't been confirmed yet.
-  EXPECT_FALSE(service().IsPlusAddress(kPlusAddress));
+  EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
+  PlusProfile profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
-  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
+                               future.GetCallback());
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
-      kReservePlusAddressEndpoint,
-      test::MakeCreationResponse(PlusProfile({.facet = kSite,
-                                              .plus_address = kPlusAddress,
-                                              .is_confirmed = true})));
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
   ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get()->plus_address, kPlusAddress);
+  EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 
   // The service should save kPlusAddress if it has already been confirmed.
-  EXPECT_TRUE(service().IsPlusAddress(kPlusAddress));
+  EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
@@ -303,28 +306,27 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
+  const PlusProfile& profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
-                               future.GetCallback());
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address, future.GetCallback());
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
-      kCreatePlusAddressEndpoint,
-      test::MakeCreationResponse(PlusProfile({.facet = kSite,
-                                              .plus_address = kPlusAddress,
-                                              .is_confirmed = true})));
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
   ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get()->plus_address, kPlusAddress);
+  EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
   // Verify that the kPlusAddress is saved when confirmation is successful.
-  EXPECT_TRUE(service().IsPlusAddress(kPlusAddress));
+  EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 
   // Assert that ensuing calls to the same facet do not make a network request.
   base::test::TestFuture<const PlusProfileOrError&> second_future;
-  service().ConfirmPlusAddress(kSubdomainOrigin, kPlusAddress,
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address,
                                second_future.GetCallback());
   ASSERT_TRUE(second_future.IsReady());
-  EXPECT_EQ(second_future.Get()->plus_address, kPlusAddress);
+  EXPECT_EQ(second_future.Get()->plus_address, profile.plus_address);
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
@@ -353,9 +355,12 @@ TEST_F(PlusAddressServiceRequestsTest,
   identity_env().ClearPrimaryAccount();
 
   // Verify that Plus Address creation doesn't occur.
-  service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+  PlusProfile profile = test::CreatePlusProfile();
+  profile.is_confirmed = false;
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                base::DoNothing());
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address, base::DoNothing());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by signing in again.
@@ -364,23 +369,21 @@ TEST_F(PlusAddressServiceRequestsTest,
 
   // Verify that Plus Address creation occurs and makes a network request.
   base::test::TestFuture<const PlusProfileOrError&> reserve;
-  service().ReservePlusAddress(kNoSubdomainOrigin, reserve.GetCallback());
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
+                               reserve.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   url_loader_factory().SimulateResponseForPendingRequest(
-      kReservePlusAddressEndpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = kSite, .plus_address = kPlusAddress})));
-  EXPECT_EQ(reserve.Get()->plus_address, kPlusAddress);
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  EXPECT_EQ(reserve.Get()->plus_address, profile.plus_address);
 
   base::test::TestFuture<const PlusProfileOrError&> confirm;
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
-                               confirm.GetCallback());
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address, confirm.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  profile.is_confirmed = true;
   url_loader_factory().SimulateResponseForPendingRequest(
-      kCreatePlusAddressEndpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = kSite, .plus_address = kPlusAddress})));
-  EXPECT_EQ(confirm.Get()->plus_address, kPlusAddress);
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  EXPECT_EQ(confirm.Get()->plus_address, profile.plus_address);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -395,9 +398,11 @@ TEST_F(PlusAddressServiceRequestsTest,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Verify that Plus Address creation doesn't occur.
-  service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+  PlusProfile profile = test::CreatePlusProfile();
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                base::DoNothing());
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address, base::DoNothing());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by removing the error.
@@ -407,23 +412,22 @@ TEST_F(PlusAddressServiceRequestsTest,
 
   // Verify that Plus Address creation occurs and makes a network request.
   base::test::TestFuture<const PlusProfileOrError&> reserve;
-  service().ReservePlusAddress(kNoSubdomainOrigin, reserve.GetCallback());
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
+                               reserve.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  profile.is_confirmed = false;
   url_loader_factory().SimulateResponseForPendingRequest(
-      kReservePlusAddressEndpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = kSite, .plus_address = kPlusAddress})));
-  EXPECT_EQ(reserve.Get()->plus_address, kPlusAddress);
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  EXPECT_EQ(reserve.Get()->plus_address, profile.plus_address);
 
   base::test::TestFuture<const PlusProfileOrError&> confirm;
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
-                               confirm.GetCallback());
+  service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
+                               profile.plus_address, confirm.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  profile.is_confirmed = true;
   url_loader_factory().SimulateResponseForPendingRequest(
-      kCreatePlusAddressEndpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = kSite, .plus_address = kPlusAddress})));
-  EXPECT_EQ(confirm.Get()->plus_address, kPlusAddress);
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  EXPECT_EQ(confirm.Get()->plus_address, profile.plus_address);
 }
 
 // Tests that ongoing network requests are cancelled on signout.
@@ -533,35 +537,30 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, OtherErrorsHaveNoEffect) {
 // Tests a single successful response prevents later `HTTP_FORBIDDEN` responses
 // from disabling the service.
 TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
-  const std::string kPlusAddress = "plus+remote@plus.plus";
-  const std::string kOtherPlusAddress = "plusplus+remote@plus.plus";
-  ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
-  const url::Origin kOtherOrigin =
-      url::Origin::Create(GURL("https://test.example.com"));
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  ASSERT_FALSE(service().IsPlusAddress(profile1.plus_address));
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
-                               base::DoNothing());
+  service().ConfirmPlusAddress(OriginFromFacet(profile1.facet),
+                               profile1.plus_address, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 
   // After a single successful call ...
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
-                               base::DoNothing());
+  service().ConfirmPlusAddress(OriginFromFacet(profile1.facet),
+                               profile1.plus_address, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
-      kCreatePlusAddressEndpoint,
-      test::MakeCreationResponse(PlusProfile({.facet = "test.example",
-                                              .plus_address = kPlusAddress,
-                                              .is_confirmed = true}))));
-  EXPECT_TRUE(service().IsPlusAddress(kPlusAddress));
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile1)));
+  EXPECT_TRUE(service().IsPlusAddress(profile1.plus_address));
 
   // ... even repeated `HTTP_FORBIDDEN` responses do not disable the service.
+  const PlusProfile profile2 = test::CreatePlusProfile2();
   for (int i = 0; i < 5; ++i) {
     SCOPED_TRACE(::testing::Message() << "Iteration #" << 1);
     // But a second `HTTP_FORBIDDEN` does.
-    service().ConfirmPlusAddress(kOtherOrigin, kOtherPlusAddress,
-                                 base::DoNothing());
+    service().ConfirmPlusAddress(OriginFromFacet(profile2.facet),
+                                 profile2.plus_address, base::DoNothing());
     ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
         kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
     EXPECT_TRUE(service().is_enabled());
@@ -590,30 +589,24 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, test::MakeListResponse({}));
 
-  EXPECT_FALSE(service().IsPlusAddress("plus+foo@plus.plus"));
-  EXPECT_FALSE(service().IsPlusAddress("plus+bar@plus.plus"));
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
+  EXPECT_FALSE(service().IsPlusAddress(profile1.plus_address));
+  EXPECT_FALSE(service().IsPlusAddress(profile2.plus_address));
 
   task_environment().FastForwardBy(
       features::kEnterprisePlusAddressTimerDelay.Get() + base::Seconds(1));
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint,
-      test::MakeListResponse(
-          {PlusProfile{.facet = "foo.com",
-                       .plus_address = "plus+foo@plus.plus"},
-           PlusProfile{.facet = "bar.com",
-                       .plus_address = "plus+bar@plus.plus"}}));
+      kPlusProfilesEndpoint, test::MakeListResponse({profile1, profile2}));
 
   // The service's mapping should be updated now.
-  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-  ASSERT_TRUE(service().GetPlusAddress(foo_origin).has_value());
-  EXPECT_EQ(service().GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
-  EXPECT_TRUE(service().IsPlusAddress("plus+foo@plus.plus"));
-
-  url::Origin bar_origin = url::Origin::Create(GURL("https://bar.com"));
-  ASSERT_TRUE(service().GetPlusAddress(bar_origin).has_value());
-  EXPECT_EQ(service().GetPlusAddress(bar_origin).value(), "plus+bar@plus.plus");
-  EXPECT_TRUE(service().IsPlusAddress("plus+bar@plus.plus"));
+  for (const PlusProfile& profile : {profile1, profile2}) {
+    SCOPED_TRACE(testing::Message() << profile.facet);
+    url::Origin origin = OriginFromFacet(profile.facet);
+    EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
+    EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
+  }
 }
 
 TEST_F(PlusAddressServicePolling,
@@ -685,14 +678,12 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
   // Toggle polling back on by signing into a primary account.
   identity_env().MakePrimaryAccountAvailable("plus2@plus.plus",
                                              signin::ConsentLevel::kSignin);
+  const PlusProfile profile = test::CreatePlusProfile();
   url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint,
-      test::MakeListResponse({PlusProfile{
-          .facet = "foo.com", .plus_address = "plus+foo@plus.plus"}}));
-  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-  ASSERT_TRUE(service().GetPlusAddress(foo_origin).has_value());
-  EXPECT_EQ(service().GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
-  EXPECT_TRUE(service().IsPlusAddress("plus+foo@plus.plus"));
+      kPlusProfilesEndpoint, test::MakeListResponse({profile}));
+  url::Origin origin = OriginFromFacet(profile.facet);
+  EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
+  EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -718,13 +709,11 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   task_environment().RunUntilIdle();
 
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  const PlusProfile profile = test::CreatePlusProfile();
   url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint,
-      test::MakeListResponse({PlusProfile{
-          .facet = "foo.com", .plus_address = "plus+foo@plus.plus"}}));
-  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-  ASSERT_TRUE(service().GetPlusAddress(foo_origin).has_value());
-  EXPECT_EQ(service().GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
+      kPlusProfilesEndpoint, test::MakeListResponse({profile}));
+  url::Origin origin = OriginFromFacet(profile.facet);
+  EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
   EXPECT_TRUE(service().IsPlusAddress("plus+foo@plus.plus"));
 }
 

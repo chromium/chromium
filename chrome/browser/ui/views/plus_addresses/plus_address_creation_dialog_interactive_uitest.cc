@@ -158,7 +158,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
  protected:
   std::string PlusAddressResponseContent(bool confirmed) {
     return plus_addresses::test::MakeCreationResponse(
-        PlusProfile{.facet = facet.Serialize(),
+        PlusProfile{.profile_id = "123",
+                    .facet = facet.Serialize(),
                     .plus_address = fake_plus_address,
                     .is_confirmed = confirmed});
   }
