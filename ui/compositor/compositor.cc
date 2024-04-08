@@ -486,6 +486,10 @@ void Compositor::SetDisplayColorSpaces(
     const gfx::DisplayColorSpaces& display_color_spaces) {
   if (display_color_spaces_ == display_color_spaces)
     return;
+
+  bool only_hdr_headroom_changed =
+      gfx::DisplayColorSpaces::EqualExceptForHdrHeadroom(display_color_spaces_,
+                                                         display_color_spaces);
   display_color_spaces_ = display_color_spaces;
 
   host_->SetDisplayColorSpaces(display_color_spaces_);
@@ -494,7 +498,12 @@ void Compositor::SetDisplayColorSpaces(
   // tracking bugs result in black flashes.
   // https://crbug.com/804430
   // TODO(ccameron): Remove this when the above bug is fixed.
-  host_->SetNeedsDisplayOnAllLayers();
+  // b/329479347: This severely impacts performance when HDR capability is
+  // ramped in and out. Restrict this to changes that would result in backbuffer
+  // reallocation.
+  if (!only_hdr_headroom_changed) {
+    host_->SetNeedsDisplayOnAllLayers();
+  }
 
   // Color space is reset when the output surface is lost, so this must also be
   // updated then.

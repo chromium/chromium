@@ -1508,7 +1508,7 @@ void LayerTreeHost::SetDisplayColorSpaces(
     const gfx::DisplayColorSpaces& display_color_spaces) {
   if (pending_commit_state()->display_color_spaces == display_color_spaces)
     return;
-  bool only_hdr_changed = gfx::DisplayColorSpaces::EqualExceptForHdrParameters(
+  bool only_hdr_changed = gfx::DisplayColorSpaces::EqualExceptForHdrHeadroom(
       pending_commit_state()->display_color_spaces, display_color_spaces);
   pending_commit_state()->display_color_spaces = display_color_spaces;
 

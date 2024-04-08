@@ -392,6 +392,48 @@ TEST_F(TextureLayerWithResourceTest, ReplaceMailboxOnMainThreadBeforeCommit) {
                                       test_data_.release_callback1_);
 }
 
+TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
+  scoped_refptr<TextureLayer> test_layer =
+      TextureLayer::CreateForMailbox(nullptr);
+  ASSERT_TRUE(test_layer.get());
+  EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AnyNumber());
+  layer_tree_host_->SetRootLayer(test_layer);
+  Mock::VerifyAndClearExpectations(layer_tree_host_.get());
+  EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
+
+  // sRGB is unaffected by HDR parameters.
+  test_data_.resource1_.color_space = gfx::ColorSpace::CreateSRGB();
+  test_layer->SetTransferableResource(test_data_.resource1_,
+                                      test_data_.release_callback1_);
+  Mock::VerifyAndClearExpectations(layer_tree_host_.get());
+  EXPECT_FALSE(test_layer->RequiresSetNeedsDisplayOnHdrHeadroomChange());
+  EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
+  EXPECT_CALL(
+      test_data_.mock_callback_,
+      Release(test_data_.mailbox_name1_, test_data_.sync_token1_, false))
+      .Times(1);
+
+  // HDR10 is affected by HDR parameters.
+  test_data_.resource2_.color_space = gfx::ColorSpace::CreateHDR10();
+  test_layer->SetTransferableResource(test_data_.resource2_,
+                                      test_data_.release_callback2_);
+  Mock::VerifyAndClearExpectations(layer_tree_host_.get());
+  Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
+  EXPECT_TRUE(test_layer->RequiresSetNeedsDisplayOnHdrHeadroomChange());
+  EXPECT_CALL(
+      test_data_.mock_callback_,
+      Release(test_data_.mailbox_name2_, test_data_.sync_token2_, false))
+      .Times(1);
+  EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
+
+  // sRGB with extended range is affected by HDR parameters.
+  test_data_.resource1_.hdr_metadata.extended_range.emplace(5.f, 5.f);
+  test_layer->SetTransferableResource(test_data_.resource1_,
+                                      test_data_.release_callback1_);
+  Mock::VerifyAndClearExpectations(layer_tree_host_.get());
+  EXPECT_TRUE(test_layer->RequiresSetNeedsDisplayOnHdrHeadroomChange());
+}
+
 class TextureLayerMailboxHolderTest : public TextureLayerTest {
  public:
   TextureLayerMailboxHolderTest() : main_thread_("MAIN") {

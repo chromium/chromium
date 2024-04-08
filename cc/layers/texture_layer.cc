@@ -169,9 +169,24 @@ bool TextureLayer::HasDrawableContent() const {
 }
 
 bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
-  // TODO(https://crbug.com/1450807): Only return true if the contents of the
-  // video are HDR.
-  return true;
+  if (!resource_holder_.Read(*this)) {
+    return false;
+  }
+
+  // If the HDR headroom is changed, then tonemapped resources will need to
+  // re-draw.
+  const auto& resource = resource_holder_.Read(*this)->resource();
+  if (resource.color_space.IsToneMappedByDefault()) {
+    return true;
+  }
+
+  // Extended range content also needs to be re-composited to limit itself to
+  // the new headroom.
+  if (resource.hdr_metadata.extended_range.has_value()) {
+    return true;
+  }
+
+  return false;
 }
 
 bool TextureLayer::Update() {
