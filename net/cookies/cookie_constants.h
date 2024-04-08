@@ -370,6 +370,8 @@ enum class CookiesAllowedForUrlsUsage {
 };
 
 // Possible values for the 'source_type' column.
+//
+// Do not reorder or renumber. Used for metrics.
 enum class CookieSourceType {
   // 'unknown' is used for tests or cookies set before this field was added.
   kUnknown = 0,
@@ -380,6 +382,8 @@ enum class CookieSourceType {
   // 'other' is used for cookies set via browser login, iOS, WebView APIs,
   // Extension APIs, or DevTools.
   kOther = 3,
+
+  kMaxValue = kOther,  // Keep as the last value.
 };
 
 }  // namespace net

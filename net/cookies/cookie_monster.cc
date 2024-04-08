@@ -119,6 +119,19 @@ static const int kMinutesInTenYears = kDaysInTenYears * 24 * 60;
 
 namespace {
 
+// This enum is used to generate a histogramed bitmask measureing the types
+// of stored cookies. Please do not reorder the list when adding new entries.
+// New items MUST be added at the end of the list, just before
+// COOKIE_TYPE_LAST_ENTRY;
+// There will be 2^COOKIE_TYPE_LAST_ENTRY buckets in the linear histogram.
+enum CookieType {
+  COOKIE_TYPE_SAME_SITE = 0,
+  COOKIE_TYPE_HTTPONLY,
+  COOKIE_TYPE_SECURE,
+  COOKIE_TYPE_PERSISTENT,
+  COOKIE_TYPE_LAST_ENTRY
+};
+
 void MaybeRunDeleteCallback(base::WeakPtr<net::CookieMonster> cookie_monster,
                             base::OnceClosure callback) {
   if (cookie_monster && callback)
@@ -174,6 +187,23 @@ size_t NumBytesInCookieItVector(
     result += NameValueSizeBytes(*it->second);
   }
   return result;
+}
+
+void LogStoredCookieToUMA(const net::CanonicalCookie& cc,
+                          const net::CookieAccessResult& access_result) {
+  // Cookie.Type2 collects a bitvector of important cookie attributes.
+  int32_t type_sample =
+      !cc.IsEffectivelySameSiteNone(access_result.access_semantics)
+          ? 1 << COOKIE_TYPE_SAME_SITE
+          : 0;
+  type_sample |= cc.IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
+  type_sample |= cc.SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
+  type_sample |= cc.IsPersistent() ? 1 << COOKIE_TYPE_PERSISTENT : 0;
+  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type2", type_sample,
+                             (1 << COOKIE_TYPE_LAST_ENTRY));
+
+  // Cookie.SourceType collects the CookieSourceType of the stored cookie.
+  UMA_HISTOGRAM_ENUMERATION("Cookie.SourceType", cc.SourceType());
 }
 
 }  // namespace
@@ -1562,7 +1592,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
 
   auto inserted = cookies_.insert(CookieMap::value_type(key, std::move(cc)));
 
-  LogCookieTypeToUMA(cc_ptr, access_result);
+  LogStoredCookieToUMA(*cc_ptr, access_result);
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
@@ -1590,20 +1620,6 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
 
 bool CookieMonster::ShouldUpdatePersistentStore(CanonicalCookie* cc) {
   return (cc->IsPersistent() || persist_session_cookies_) && store_.get();
-}
-
-void CookieMonster::LogCookieTypeToUMA(
-    CanonicalCookie* cc,
-    const CookieAccessResult& access_result) {
-  int32_t type_sample =
-      !cc->IsEffectivelySameSiteNone(access_result.access_semantics)
-          ? 1 << COOKIE_TYPE_SAME_SITE
-          : 0;
-  type_sample |= cc->IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
-  type_sample |= cc->SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
-  type_sample |= cc->IsPersistent() ? 1 << COOKIE_TYPE_PERSISTENT : 0;
-  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type2", type_sample,
-                             (1 << COOKIE_TYPE_LAST_ENTRY));
 }
 
 CookieMonster::PartitionedCookieMapIterators
@@ -1652,7 +1668,7 @@ CookieMonster::InternalInsertPartitionedCookie(
   }
   CHECK_GE(num_partitioned_cookies_, num_nonced_partitioned_cookies_);
 
-  LogCookieTypeToUMA(cc_ptr, access_result);
+  LogStoredCookieToUMA(*cc_ptr, access_result);
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {

@@ -1068,6 +1068,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SourceType" enum="CookieSourceType"
+    expires_after="2025-04-08">
+  <owner>arichiv@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    For each cookie added to the store, record the source that wrote it. This
+    helps understand the balance of cookies written by HTTP Headers, JavaScript,
+    etc.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2024-09-22">
   <owner>nharper@chromium.org</owner>

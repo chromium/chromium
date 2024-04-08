@@ -329,19 +329,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
     DELETE_COOKIE_LAST_ENTRY = 14,
   };
 
-  // This enum is used to generate a histogramed bitmask measureing the types
-  // of stored cookies. Please do not reorder the list when adding new entries.
-  // New items MUST be added at the end of the list, just before
-  // COOKIE_TYPE_LAST_ENTRY;
-  // There will be 2^COOKIE_TYPE_LAST_ENTRY buckets in the linear histogram.
-  enum CookieType {
-    COOKIE_TYPE_SAME_SITE = 0,
-    COOKIE_TYPE_HTTPONLY,
-    COOKIE_TYPE_SECURE,
-    COOKIE_TYPE_PERSISTENT,
-    COOKIE_TYPE_LAST_ENTRY
-  };
-
   // Used to populate a histogram containing information about the
   // sources of Secure and non-Secure cookies: that is, whether such
   // cookies are set by origins with cryptographic or non-cryptographic
@@ -554,9 +541,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Returns true if the cookie should be (or is already) synced to the store.
   // Used for cookies during insertion and deletion into the in-memory store.
   bool ShouldUpdatePersistentStore(CanonicalCookie* cc);
-
-  void LogCookieTypeToUMA(CanonicalCookie* cc,
-                          const CookieAccessResult& access_result);
 
   // Inserts `cc` into partitioned_cookies_. Should only be used when
   // cc->IsPartitioned() is true.

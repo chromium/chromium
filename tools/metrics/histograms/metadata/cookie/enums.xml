@@ -145,6 +145,16 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Chrome Extension Scheme"/>
 </enum>
 
+<enum name="CookieSourceType">
+  <summary>
+    The source type of a cookie when its added to the cookie store.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="HTTP"/>
+  <int value="2" label="Script"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <enum name="CookieType">
   <summary>The type of a cookie when its added to the cookie store.</summary>
   <int value="0" label="Default"/>
