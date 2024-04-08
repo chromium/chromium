@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/blink/renderer/modules/ml/webnn/features.gni")
 
 config("cpuinfo_include") {
@@ -41,11 +40,6 @@ config("cpuinfo_config") {
     "CPUINFO_LOG_LEVEL=0",  # CPUINFO_LOG_NONE=0
     "CPUINFO_PRIVATE=",
   ]
-  if (is_msan) {
-    # TODO(crbug.com/331926164): cpuinfo is broken in MSan builds. Mock it out
-    # until we find a fix.
-    defines += [ "CPUINFO_MOCK=1" ]
-  }
 }
 
 if (build_cpuinfo_shared_library) {
@@ -92,11 +86,6 @@ source_set("os_specific") {
       "src/src/linux/processors.c",
       "src/src/linux/smallfile.c",
     ]
-    if (is_msan) {
-      # TODO(crbug.com/331926164): cpuinfo is broken in MSan builds. Mock it out
-      # until we find a fix.
-      sources += [ "src/src/linux/mockfile.c" ]
-    }
   }
 
   if (is_mac || is_ios) {
@@ -125,12 +114,6 @@ source_set("cpu_specific") {
       "src/src/x86/uarch.c",
       "src/src/x86/vendor.c",
     ]
-
-    if (is_msan) {
-      # TODO(crbug.com/331926164): cpuinfo is broken in MSan builds. Mock it out
-      # until we find a fix.
-      sources += [ "src/src/x86/mockcpuid.c" ]
-    }
   }
 
   if (current_cpu == "arm" || current_cpu == "arm64") {
