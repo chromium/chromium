@@ -202,7 +202,9 @@ class ProtectedMemory {
  public:
   // T must be trivially destructible. Otherwise it indicates that T holds data
   // which would not be covered by this write protection, i.e. data allocated on
-  // heap.
+  // heap. This check complements the verification in the constructor since
+  // `ProtectedMemory` with `ConstructLazily` set to `true` is always trivially
+  // destructible.
   static_assert(std::is_trivially_destructible_v<T>);
 
   // For lazily constructed data we enable this constructor only if there are
