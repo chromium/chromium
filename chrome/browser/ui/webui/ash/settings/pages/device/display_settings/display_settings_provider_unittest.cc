@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -157,6 +158,9 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
   double brightness_percent() const { return brightness_percent_; }
   bool is_ambient_light_sensor_enabled() const {
     return is_ambient_light_sensor_enabled_;
+  }
+  void set_has_ambient_light_sensor(bool has_ambient_light_sensor) {
+    has_ambient_light_sensor_ = has_ambient_light_sensor;
   }
 
  private:
@@ -672,6 +676,30 @@ TEST_F(DisplaySettingsProviderTest,
       expected_sensor_enabled2);
   EXPECT_EQ(expected_sensor_enabled2,
             brightness_control_delegate_->is_ambient_light_sensor_enabled());
+}
+
+// Test the behavior when setting the internal display screen brightness (when
+// the feature flag is enabled).
+TEST_F(DisplaySettingsProviderTest, HasAmbientLightSensor) {
+  // Configure the BrightnessControlDelegate to return that the device does have
+  // at least one ambient light sensor.
+  brightness_control_delegate_->set_has_ambient_light_sensor(true);
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
+
+  provider_->HasAmbientLightSensor(
+      base::BindOnce([](bool has_ambient_light_sensor) {
+        EXPECT_TRUE(has_ambient_light_sensor);
+      }));
+
+  // Configure the BrightnessControlDelegate to return that the device does not
+  // have an ambient light sensor.
+  brightness_control_delegate_->set_has_ambient_light_sensor(false);
+
+  provider_->HasAmbientLightSensor(
+      base::BindOnce([](bool has_ambient_light_sensor) {
+        EXPECT_FALSE(has_ambient_light_sensor);
+      }));
 }
 
 }  // namespace ash::settings

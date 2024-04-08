@@ -131,4 +131,8 @@ interface DisplaySettingsProvider {
   // Sets whether the internal display should use the device's ambient light
   // sensor to automatically set the display brightness.
   SetInternalDisplayAmbientLightSensorEnabled(bool enabled);
+
+  // Returns whether the device has at least one ambient light sensor.
+  // In case of error, |callback| will be run with |false|.
+  HasAmbientLightSensor() => (bool has_ambient_light_sensor);
 };

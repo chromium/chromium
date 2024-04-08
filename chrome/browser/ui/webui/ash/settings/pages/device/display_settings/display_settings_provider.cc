@@ -334,4 +334,24 @@ void DisplaySettingsProvider::SetInternalDisplayAmbientLightSensorEnabled(
   brightness_control_delegate_->SetAmbientLightSensorEnabled(enabled);
 }
 
+void DisplaySettingsProvider::HasAmbientLightSensor(
+    HasAmbientLightSensorCallback callback) {
+  brightness_control_delegate_->HasAmbientLightSensor(
+      base::BindOnce(&DisplaySettingsProvider::OnGetHasAmbientLightSensor,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DisplaySettingsProvider::OnGetHasAmbientLightSensor(
+    HasAmbientLightSensorCallback callback,
+    std::optional<bool> has_ambient_light_sensor) {
+  if (!has_ambient_light_sensor.has_value()) {
+    LOG(ERROR) << "HasAmbientLightSensor returned nullopt.";
+    // In the rare case that HasAmbientLightSensor returns a nullopt, assume
+    // that the device does not have an ambient light sensor.
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(has_ambient_light_sensor.value());
+}
+
 }  // namespace ash::settings

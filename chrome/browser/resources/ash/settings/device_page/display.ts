@@ -216,6 +216,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       currentInternalScreenBrightness_: {type: Number, value: 0},
 
+      hasAmbientLightSensor_: {
+        type: Boolean,
+        value: false,
+      },
+
       brightnessSliderMin_: {
         type: Number,
         value: 5,
@@ -306,6 +311,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displayModeList_: DropdownMenuOptionList;
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
+  private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
   private isDisplayPerformanceEnabled_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
@@ -389,6 +395,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
             new DisplayBrightnessSettingsObserverReceiver(this)
                 .$.bindNewPipeAndPassRemote());
     this.currentInternalScreenBrightness_ = brightnessPercent;
+
+    const {hasAmbientLightSensor} =
+        await this.displaySettingsProvider.hasAmbientLightSensor();
+    this.hasAmbientLightSensor_ = hasAmbientLightSensor;
 
     this.displaySettingsProvider.observeDisplayConfiguration(
         new DisplayConfigurationObserverReceiver(this)
@@ -929,9 +939,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if the auto-brightness toggle should be shown.
    */
   private showAutoBrightnessToggle_(): boolean {
-    // TODO(cambickel): Update this logic to check whether the device has an
-    // ambient light sensor.
-    return isDisplayBrightnessControlInSettingsEnabled();
+    return isDisplayBrightnessControlInSettingsEnabled() &&
+        this.hasAmbientLightSensor_;
   }
 
   /**

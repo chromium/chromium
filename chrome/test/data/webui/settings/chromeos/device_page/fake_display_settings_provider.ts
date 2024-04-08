@@ -36,6 +36,7 @@ export class FakeDisplaySettingsProvider implements
   private brightnessPercent: number = 0;
   // Enabled by default to match system behavior.
   private isAmbientLightSensorEnabled: boolean = true;
+  private hasAmbientLightSensor_: boolean = true;
   private performanceSettingEnabled: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
@@ -126,6 +127,17 @@ export class FakeDisplaySettingsProvider implements
 
   getInternalDisplayAmbientLightSensorEnabled(): boolean {
     return this.isAmbientLightSensorEnabled;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  hasAmbientLightSensor(): Promise<{hasAmbientLightSensor: boolean}> {
+    return new Promise(
+        resolve =>
+            resolve({hasAmbientLightSensor: this.hasAmbientLightSensor_}));
+  }
+
+  setHasAmbientLightSensor(hasAmbientLightSensor: boolean): void {
+    this.hasAmbientLightSensor_ = hasAmbientLightSensor;
   }
 
   // Implement DisplaySettingsProviderInterface.

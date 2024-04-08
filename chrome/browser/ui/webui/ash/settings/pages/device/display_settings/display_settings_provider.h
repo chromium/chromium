@@ -100,6 +100,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
   void SetInternalDisplayAmbientLightSensorEnabled(bool enabled) override;
 
+  void HasAmbientLightSensor(HasAmbientLightSensorCallback callback) override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 
@@ -125,6 +127,9 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
  private:
   void OnGetInitialBrightness(ObserveDisplayBrightnessSettingsCallback callback,
                               std::optional<double> percent);
+
+  void OnGetHasAmbientLightSensor(HasAmbientLightSensorCallback callback,
+                                  std::optional<bool> has_ambient_light_sensor);
 
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};

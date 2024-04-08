@@ -178,7 +178,7 @@
   <template is="dom-if" restamp
       if="[[showBrightnessControls_(selectedDisplay)]]">
     <template is="dom-if" restamp
-        if="[[showAutoBrightnessToggle_()]]">
+        if="[[showAutoBrightnessToggle_(hasAmbientLightSensor_)]]">
       <!-- TODO(cambickel): Update this toggle to read from the auto-brightness
         pref. -->
       <!-- Note: Until a pref is added, this will show an error saying "pref not
