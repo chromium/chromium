@@ -10,6 +10,24 @@
   <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
     Pix
   </message>
+  <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">
+    Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> •• <ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_CHECKING" desc="A checking bank account is for users to transact their regular expenses. This is the string to describe a checking bank account." formatter_data="android_java">
+    Checking
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_SAVINGS" desc="A savings bank account is for users to store their money and earn an interest on them. This is the string to describe a savings bank account." formatter_data="android_java">
+    Savings
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_CURRENT" desc="A current bank account is used for frequent transactions and comes with features like no limits on deposits and withdrawls. It is suitable for business purposes. This is the string to describe a current bank account." formatter_data="android_java">
+    Current
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_SALARY" desc="A salary bank account is used to receive payroll. This is the string used to describe a salary bank account." formatter_data="android_java">
+    Salary
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_TRANSACTING" desc="A transacting account is a basic account used for regular expenses. It often has limits on the withdrawal amount. Text to describe a transacting bank account." formatter_data="android_java">
+    Transacting account
+  </message>
 </if>
 
 </grit-part>

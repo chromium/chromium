@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -67,6 +68,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_ADD_IBAN = "add_iban";
     static final String PREF_IBAN = "iban";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
+
+    @VisibleForTesting
+    static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
@@ -222,6 +226,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     getOtherFinancialAccountsPrefSummary(personalDataManager);
             if (!otherFinancialAccountsPrefSummaryString.isEmpty()) {
                 Preference otherFinancialAccountsPref = new Preference(getStyledContext());
+                otherFinancialAccountsPref.setKey(PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
                 otherFinancialAccountsPref.setSingleLineTitle(false);
                 otherFinancialAccountsPref.setTitle(
                         R.string.settings_manage_other_financial_accounts);
@@ -229,7 +234,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         R.layout.payment_methods_other_financial_accounts_navigate_next_icon);
                 otherFinancialAccountsPref.setSummary(otherFinancialAccountsPrefSummaryString);
                 getPreferenceScreen().addPreference(otherFinancialAccountsPref);
-                // TODO(b/302383443): Set the fragment for the preference.
+                otherFinancialAccountsPref.setOnPreferenceClickListener(
+                        preference -> showOtherFinancialAccountsFragment());
             }
         }
 
@@ -589,6 +595,14 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         return personalDataManager.getMaskedBankAccounts().length == 0
                 ? ""
                 : getResources().getString(R.string.settings_manage_other_financial_accounts_pix);
+    }
+
+    /** Show the page for managing other finiancial accounts. */
+    private boolean showOtherFinancialAccountsFragment() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(
+                getActivity(), FinancialAccountsManagementFragment.class);
+        return true;
     }
 
     @Override

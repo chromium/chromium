@@ -43,6 +43,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
         AutofillProfilesFragment.setObserverForTest(AutofillTestRule.this);
         AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
         AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);
+        FinancialAccountsManagementFragment.setObserverForTest(AutofillTestRule.this);
     }
 
     protected void setTextInEditorAndWait(final String[] values) throws TimeoutException {

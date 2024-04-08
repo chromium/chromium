@@ -1,0 +1,131 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.autofill.settings;
+
+import static com.google.common.truth.Truth.assertThat;
+
+import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
+import androidx.test.filters.MediumTest;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.payments.AccountType;
+import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.PaymentInstrument;
+import org.chromium.components.autofill.payments.PaymentRail;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+
+import java.util.concurrent.TimeoutException;
+
+/** Instrumentation tests for FinancialAccountsManagementFragment. */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+public class FinancialAccountsManagementFragmentTest {
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public final AutofillTestRule rule = new AutofillTestRule();
+
+    @Rule
+    public final SettingsActivityTestRule<FinancialAccountsManagementFragment>
+            mSettingsActivityTestRule =
+                    new SettingsActivityTestRule<>(FinancialAccountsManagementFragment.class);
+
+    private static final BankAccount PIX_BANK_ACCOUNT =
+            new BankAccount.Builder()
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100L)
+                                    .setNickname("nickname")
+                                    .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
+                                    .build())
+                    .setBankName("bank_name")
+                    .setAccountNumberSuffix("account_number_suffix")
+                    .setAccountType(AccountType.CHECKING)
+                    .build();
+
+    private AutofillTestHelper mAutofillTestHelper;
+
+    @Before
+    public void setUp() {
+        mAutofillTestHelper = new AutofillTestHelper();
+    }
+
+    @After
+    public void tearDown() throws TimeoutException {
+        mAutofillTestHelper.clearAllDataForTesting();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountAvailable_PixPrefShown() throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the switch preference for Pix is displayed.
+        ChromeSwitchPreference pixSwitch =
+                (ChromeSwitchPreference)
+                        getPreferenceScreen(activity)
+                                .findPreference(
+                                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+        assertThat(pixSwitch).isNotNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountNotAvailable_PixPrefNotShown() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the switch preference for Pix is not displayed.
+        ChromeSwitchPreference pixSwitch =
+                (ChromeSwitchPreference)
+                        getPreferenceScreen(activity)
+                                .findPreference(
+                                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+        assertThat(pixSwitch).isNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountShown() {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        String bankAccountPrefKey =
+                String.format(
+                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX_BANK_ACCOUNT,
+                        PIX_BANK_ACCOUNT.getInstrumentId());
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        String expectedPrefSummary =
+                String.format(
+                        "Pix  •  %s •• %s",
+                        activity.getString(R.string.bank_account_type_checking),
+                        PIX_BANK_ACCOUNT.getAccountNumberSuffix());
+        Preference bankAccountPref =
+                getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
+        assertThat(bankAccountPref.getTitle()).isEqualTo(PIX_BANK_ACCOUNT.getBankName());
+        assertThat(bankAccountPref.getSummary()).isEqualTo(expectedPrefSummary);
+    }
+
+    private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
+        return ((FinancialAccountsManagementFragment) activity.getMainFragment())
+                .getPreferenceScreen();
+    }
+}
