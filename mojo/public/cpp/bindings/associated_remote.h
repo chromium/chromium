@@ -78,6 +78,9 @@ class AssociatedRemote {
   // Exposes access to callable Interface methods directed at this
   // AssociatedRemote's receiver. Must only be called on a bound
   // AssociatedRemote.
+  //
+  // Please also see comments of |is_bound()| about when it is safe to make
+  // calls using the returned pointer.
   typename Interface::Proxy_* get() const {
     DCHECK(is_bound())
         << "Cannot issue Interface method calls on an unbound AssociatedRemote";
@@ -88,15 +91,25 @@ class AssociatedRemote {
   typename Interface::Proxy_* operator->() const { return get(); }
   typename Interface::Proxy_& operator*() const { return *get(); }
 
-  // Indicates whether this AssociatedRemote is bound and thus can issue
-  // Interface method calls via the above accessors.
+  // Indicates whether this AssociatedRemote is bound.
   //
-  // NOTE: The state of being "bound" should not be confused with the state of
+  // NOTE:
+  // 1) The state of being "bound" should not be confused with the state of
   // being "connected" (see |is_connected()| below). An AssociatedRemote is
   // NEVER passively unbound and the only way for it to become unbound is to
   // explicitly call |reset()| or |Unbind()|. As such, unless you make explicit
   // calls to those methods, it is always safe to assume that an
-  // AssociatedRemote you've bound will remain bound and callable.
+  // AssociatedRemote you've bound will remain bound.
+  //
+  // 2) The state of being "bound" is a necessary but not sufficient condition
+  // for Interface methods to be callable. For them to be callable, the
+  // AssociatedRemote must also be "associated", which means either one of
+  // the following cases:
+  //   2-1) Either itself or its entangled AssociatedReceiver must be sent over
+  //   a Remote/Receiver pair or an already-established
+  //   AssociatedRemote/AssociatedReceiver pair.
+  //   2-2) It is bound with a dedicated message pipe. Please see comments of
+  //   BindNewEndpointAndPassDedicatedReceiver().
   bool is_bound() const { return internal_state_.is_bound(); }
   explicit operator bool() const { return is_bound(); }
 
