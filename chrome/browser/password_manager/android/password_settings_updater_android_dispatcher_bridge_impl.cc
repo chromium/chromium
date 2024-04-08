@@ -66,21 +66,25 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::Init(
 
 void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     GetPasswordSettingValue(std::optional<SyncingAccount> account,
-                            PasswordManagerSetting setting) {
+                            PasswordManagerSetting setting,
+                            bool is_part_of_migration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_getSettingValue(
       base::android::AttachCurrentThread(), java_object_,
-      GetJavaStringFromAccount(account), static_cast<int>(setting));
+      GetJavaStringFromAccount(account), static_cast<int>(setting),
+      is_part_of_migration);
 }
 
 void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     SetPasswordSettingValue(std::optional<SyncingAccount> account,
                             PasswordManagerSetting setting,
-                            bool value) {
+                            bool value,
+                            bool is_part_of_migration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_setSettingValue(
       base::android::AttachCurrentThread(), java_object_,
-      GetJavaStringFromAccount(account), static_cast<int>(setting), value);
+      GetJavaStringFromAccount(account), static_cast<int>(setting), value,
+      is_part_of_migration);
 }
 
 }  // namespace password_manager

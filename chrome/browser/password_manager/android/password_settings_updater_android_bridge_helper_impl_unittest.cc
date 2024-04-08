@@ -71,12 +71,13 @@ class MockPasswordSettingsUpdaterAndroidDispatcherBridge
               (override));
   MOCK_METHOD(void,
               GetPasswordSettingValue,
-              (std::optional<SyncingAccount>, PasswordManagerSetting),
-              (override));
-  MOCK_METHOD(void,
-              SetPasswordSettingValue,
               (std::optional<SyncingAccount>, PasswordManagerSetting, bool),
               (override));
+  MOCK_METHOD(
+      void,
+      SetPasswordSettingValue,
+      (std::optional<SyncingAccount>, PasswordManagerSetting, bool, bool),
+      (override));
 };
 
 }  // namespace
@@ -152,11 +153,13 @@ TEST_F(PasswordSettingsUpdaterAndroidBridgeHelperImplTest,
        GetPasswordSettingValueCallsBridge) {
   helper()->GetPasswordSettingValue(
       SyncingAccount(kTestAccount),
-      PasswordManagerSetting::kOfferToSavePasswords);
-  EXPECT_CALL(*dispatcher_bridge(),
-              GetPasswordSettingValue(
-                  Eq(SyncingAccount(kTestAccount)),
-                  Eq(PasswordManagerSetting::kOfferToSavePasswords)));
+      PasswordManagerSetting::kOfferToSavePasswords,
+      /*is_part_of_migration=*/false);
+  EXPECT_CALL(
+      *dispatcher_bridge(),
+      GetPasswordSettingValue(Eq(SyncingAccount(kTestAccount)),
+                              Eq(PasswordManagerSetting::kOfferToSavePasswords),
+                              /*is_part_of_migration=*/false));
   RunUntilIdle();
 }
 
@@ -164,11 +167,13 @@ TEST_F(PasswordSettingsUpdaterAndroidBridgeHelperImplTest,
        SetPasswordSettingValueCallsBridge) {
   helper()->SetPasswordSettingValue(
       SyncingAccount(kTestAccount),
-      PasswordManagerSetting::kOfferToSavePasswords, true);
-  EXPECT_CALL(*dispatcher_bridge(),
-              SetPasswordSettingValue(
-                  Eq(SyncingAccount(kTestAccount)),
-                  Eq(PasswordManagerSetting::kOfferToSavePasswords), Eq(true)));
+      PasswordManagerSetting::kOfferToSavePasswords, /*value=*/true,
+      /*is_part_of_migration=*/false);
+  EXPECT_CALL(
+      *dispatcher_bridge(),
+      SetPasswordSettingValue(Eq(SyncingAccount(kTestAccount)),
+                              Eq(PasswordManagerSetting::kOfferToSavePasswords),
+                              /*value=*/true, /*is_part_of_migration=*/false));
   RunUntilIdle();
 }
 

@@ -33,24 +33,27 @@ public class PasswordSettingsUpdaterReceiverBridge {
     void onSettingValueFetched(
             @PasswordManagerSetting int setting,
             Optional<Boolean> settingValue,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
+            boolean isPartOfMigration) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
         if (settingValue.isPresent()) {
             PasswordSettingsUpdaterReceiverBridgeJni.get()
-                    .onSettingValueFetched(mNativeReceiverBridge, setting, settingValue.get());
+                    .onSettingValueFetched(
+                            mNativeReceiverBridge, setting, settingValue.get(), isPartOfMigration);
             return;
         }
         PasswordSettingsUpdaterReceiverBridgeJni.get()
-                .onSettingValueAbsent(mNativeReceiverBridge, setting);
+                .onSettingValueAbsent(mNativeReceiverBridge, setting, isPartOfMigration);
     }
 
     void handleFetchingException(
             @PasswordManagerSetting int setting,
             Exception exception,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
+            boolean isPartOfMigration) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
         if (mNativeReceiverBridge == 0) return;
@@ -60,24 +63,27 @@ public class PasswordSettingsUpdaterReceiverBridge {
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
         PasswordSettingsUpdaterReceiverBridgeJni.get()
-                .onSettingFetchingError(mNativeReceiverBridge, setting, error, apiErrorCode);
+                .onSettingFetchingError(
+                        mNativeReceiverBridge, setting, error, apiErrorCode, isPartOfMigration);
     }
 
     void onSettingValueSet(
             @PasswordManagerSetting int setting,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
+            boolean isPartOfMigration) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
         PasswordSettingsUpdaterReceiverBridgeJni.get()
-                .onSuccessfulSettingChange(mNativeReceiverBridge, setting);
+                .onSuccessfulSettingChange(mNativeReceiverBridge, setting, isPartOfMigration);
     }
 
     void handleSettingException(
             @PasswordManagerSetting int setting,
             Exception exception,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
+            boolean isPartOfMigration) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
         if (mNativeReceiverBridge == 0) return;
@@ -87,7 +93,8 @@ public class PasswordSettingsUpdaterReceiverBridge {
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
         PasswordSettingsUpdaterReceiverBridgeJni.get()
-                .onFailedSettingChange(mNativeReceiverBridge, setting, error, apiErrorCode);
+                .onFailedSettingChange(
+                        mNativeReceiverBridge, setting, error, apiErrorCode, isPartOfMigration);
     }
 
     void destroyForTesting() {
@@ -105,24 +112,31 @@ public class PasswordSettingsUpdaterReceiverBridge {
         void onSettingValueFetched(
                 long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
                 int setting,
-                boolean offerToSavePasswordsEnabled);
+                boolean offerToSavePasswordsEnabled,
+                boolean isPartOfMigration);
 
         void onSettingValueAbsent(
-                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl, int setting);
+                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
+                int setting,
+                boolean isPartOfMigration);
 
         void onSettingFetchingError(
                 long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
                 int setting,
                 int error,
-                int apiErrorCode);
+                int apiErrorCode,
+                boolean isPartOfMigration);
 
         void onSuccessfulSettingChange(
-                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl, int setting);
+                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
+                int setting,
+                boolean isPartOfMigration);
 
         void onFailedSettingChange(
                 long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
                 int setting,
                 int error,
-                int apiErrorCode);
+                int apiErrorCode,
+                boolean isPartOfMigration);
     }
 }

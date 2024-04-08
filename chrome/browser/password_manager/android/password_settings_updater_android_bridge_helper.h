@@ -42,6 +42,14 @@ class PasswordSettingsUpdaterAndroidBridgeHelper {
   // Password settings accessor bridge operations. Each operation is executed
   // asynchronously, the result is reported via consumer callback.
   virtual void GetPasswordSettingValue(std::optional<SyncingAccount> account,
+                                       PasswordManagerSetting setting,
+                                       bool is_part_of_migration) = 0;
+
+  virtual void SetPasswordSettingValue(std::optional<SyncingAccount> account,
+                                       PasswordManagerSetting setting,
+                                       bool value,
+                                       bool is_part_of_migration) = 0;
+  virtual void GetPasswordSettingValue(std::optional<SyncingAccount> account,
                                        PasswordManagerSetting setting) = 0;
 
   virtual void SetPasswordSettingValue(std::optional<SyncingAccount> account,
