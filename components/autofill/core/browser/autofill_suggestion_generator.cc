@@ -723,25 +723,32 @@ PopupItemId GetProfileSuggestionPopupItemId(
 // filling behaviour. Returns an empty string when no granular filling label
 // needs to be applied for a profile.
 std::u16string GetGranularFillingLabels(
-    std::optional<FieldTypeSet> last_targeted_fields) {
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type) {
   FillingMethod filling_method = GetFillingMethodFromTargetedFields(
       last_targeted_fields.value_or(kAllFieldTypes));
   if (!kGroupFillingMethods.contains(filling_method)) {
     return u"";
   }
 
-  switch (filling_method) {
-    case FillingMethod::kGroupFillingName:
+  switch (GroupTypeOfFieldType(trigger_field_type)) {
+    case FieldTypeGroup::kName:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
-    case FillingMethod::kGroupFillingAddress:
+    case FieldTypeGroup::kAddress:
+    case FieldTypeGroup::kCompany:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
-    case FillingMethod::kGroupFillingEmail:
-    case FillingMethod::kGroupFillingPhoneNumber:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kPhone:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kIban:
       return u"";
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -844,7 +851,7 @@ CreateSuggestionLabelsWithGranularFillingDetails(
   }
 
   const std::u16string suggestions_granular_filling_label =
-      GetGranularFillingLabels(last_targeted_fields);
+      GetGranularFillingLabels(last_targeted_fields, trigger_field_type);
 
   const std::vector<std::u16string> suggestions_differentiating_labels =
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,

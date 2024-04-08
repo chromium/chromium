@@ -1348,6 +1348,40 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
                 {{Suggestion::Text(u"Fill full name")}}));
 }
 
+// If the last targeted fields belong to a different group than the triggering
+// field, the granular filling label should still match the triggering field.
+TEST_F(
+    AutofillChildrenSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName_DifferentLastTargetedFields) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/
+      GetAddressFieldsForGroupFilling(),
+      /*trigger_field_type=*/NAME_FIRST,
+      /*field_types=*/{NAME_FIRST, NAME_LAST});
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Fill full name")}}));
+}
+
+// If the last targeted fields belong to a different group than the triggering
+// field, the granular filling label should still match the triggering field.
+TEST_F(
+    AutofillChildrenSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillAddress_DifferentLastTargetedFields) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/GetFieldTypesOfGroup(FieldTypeGroup::kName),
+      /*trigger_field_type=*/ADDRESS_HOME_LINE1,
+      /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels, std::vector<std::vector<Suggestion::Text>>(
+                                       {{Suggestion::Text(u"Fill address")}}));
+}
+
 // Test that no labels are added when filling targets only one field.
 TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
