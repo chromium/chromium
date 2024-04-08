@@ -521,6 +521,10 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/more/conformance/methods.html [ Failure ]
 crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 
+# Graphite
+crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/video-rotation.html [ Failure ]
+
 ####################
 # Mac failures     #
 ####################
