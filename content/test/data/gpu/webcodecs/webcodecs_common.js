@@ -275,6 +275,88 @@ class ArrayBufferSource extends FrameSource {
   }
 }
 
+class HBDArrayBufferSource extends FrameSource {
+  constructor(width, height) {
+    super();
+    this.width = width;
+    this.height = height;
+    this.timestamp = 0;
+    this.duration = 16666;  // 1/60 s
+    this.frame_index = 0;
+  }
+
+  async getNextFrame() {
+    const kDepth = 10;
+    const kShift = kDepth - 8;
+    // 8-bit YUV colors assuming BT.709 matrix and sRGB primaries.
+    const kYellow = [219, 16, 138];
+    const kRed = [63, 102, 240];
+    const kBlue = [32, 240, 118];
+    const kGreen = [173, 42, 26];
+
+    const width = this.width;
+    const height = this.height;
+    const halfW = Math.ceil(width / 2);
+    const halfH = Math.ceil(height / 2);
+    const qtrW = Math.ceil(width / 4);
+    const qtrH = Math.ceil(height / 4);
+    const data = new Uint8Array((width * height + 2 * halfW * halfH) * 2);
+    const view = new DataView(data.buffer)
+
+    let i = 0;
+
+    // Y plane.
+    for (let y = 0; y < height; ++y) {
+      const colors = y < halfH ? [kYellow, kRed] : [kBlue, kGreen];
+      for (let x = 0; x < width; ++x) {
+        const color = x < halfW ? colors[0] : colors[1];
+        // Note: Rounding is not quite accurate due to shifting rather than
+        // scaling, in addition to using already rounded YUV values.
+        view.setUint16(i, color[0] << kShift, true);
+        i += 2;
+      }
+    }
+
+    // U plane.
+    for (let y = 0; y < halfH; ++y) {
+      const colors = y < qtrH ? [kYellow, kRed] : [kBlue, kGreen];
+      for (let x = 0; x < halfW; ++x) {
+        const color = x < qtrW ? colors[0] : colors[1];
+        view.setUint16(i, color[1] << kShift, true);
+        i += 2;
+      }
+    }
+
+    // V plane.
+    for (let y = 0; y < halfH; ++y) {
+      const colors = y < qtrH ? [kYellow, kRed] : [kBlue, kGreen];
+      for (let x = 0; x < halfW; ++x) {
+        const color = x < qtrW ? colors[0] : colors[1];
+        view.setUint16(i, color[2] << kShift, true);
+        i += 2;
+      }
+    }
+
+    const init = {
+      format: `I420P${kDepth}`,
+      timestamp: this.timestamp,
+      codedWidth: width,
+      codedHeight: height,
+      // sRGB with BT.709 YUV matrix.
+      colorSpace: {
+        matrix: 'bt709',
+        primaries: 'bt709',
+        transfer: 'iec61966-2-1',
+        fullRange: false,
+      },
+      transfer: [data.buffer]
+    };
+    this.timestamp += this.duration;
+    this.frame_index++;
+    return new VideoFrame(data, init);
+  }
+}
+
 // Source of video frames coming from either hardware of software decoder.
 class DecoderSource extends FrameSource {
   constructor(decoderConfig, chunks) {
@@ -468,6 +550,9 @@ async function createFrameSource(type, width, height) {
     }
     case 'arraybuffer': {
       return new ArrayBufferSource(width, height);
+    }
+    case 'hbd_arraybuffer': {
+      return new HBDArrayBufferSource(width, height);
     }
   }
 }

@@ -92,12 +92,34 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
     case V8VideoPixelFormat::Enum::kI420:
       return media::PIXEL_FORMAT_I420;
+    case V8VideoPixelFormat::Enum::kI420P10:
+      return media::PIXEL_FORMAT_YUV420P10;
+    case V8VideoPixelFormat::Enum::kI420P12:
+      return media::PIXEL_FORMAT_YUV420P12;
     case V8VideoPixelFormat::Enum::kI420A:
       return media::PIXEL_FORMAT_I420A;
+    case V8VideoPixelFormat::Enum::kI420AP10:
+      return media::PIXEL_FORMAT_YUV420AP10;
     case V8VideoPixelFormat::Enum::kI422:
       return media::PIXEL_FORMAT_I422;
+    case V8VideoPixelFormat::Enum::kI422P10:
+      return media::PIXEL_FORMAT_YUV422P10;
+    case V8VideoPixelFormat::Enum::kI422P12:
+      return media::PIXEL_FORMAT_YUV422P12;
+    case V8VideoPixelFormat::Enum::kI422A:
+      return media::PIXEL_FORMAT_I422A;
+    case V8VideoPixelFormat::Enum::kI422AP10:
+      return media::PIXEL_FORMAT_YUV422AP10;
     case V8VideoPixelFormat::Enum::kI444:
       return media::PIXEL_FORMAT_I444;
+    case V8VideoPixelFormat::Enum::kI444P10:
+      return media::PIXEL_FORMAT_YUV444P10;
+    case V8VideoPixelFormat::Enum::kI444P12:
+      return media::PIXEL_FORMAT_YUV444P12;
+    case V8VideoPixelFormat::Enum::kI444A:
+      return media::PIXEL_FORMAT_I444A;
+    case V8VideoPixelFormat::Enum::kI444AP10:
+      return media::PIXEL_FORMAT_YUV422AP10;
     case V8VideoPixelFormat::Enum::kNV12:
       return media::PIXEL_FORMAT_NV12;
     case V8VideoPixelFormat::Enum::kRGBA:
@@ -111,11 +133,23 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   }
 }
 
+// TODO(crbug.com/40215121): This is very similar to the method in
+// video_encoder.cc.
 media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
   DCHECK(!media::IsOpaque(fmt));
   switch (fmt) {
     case media::PIXEL_FORMAT_I420A:
       return media::PIXEL_FORMAT_I420;
+    case media::PIXEL_FORMAT_YUV420AP10:
+      return media::PIXEL_FORMAT_YUV420P10;
+    case media::PIXEL_FORMAT_I422A:
+      return media::PIXEL_FORMAT_I422;
+    case media::PIXEL_FORMAT_YUV422AP10:
+      return media::PIXEL_FORMAT_YUV422P10;
+    case media::PIXEL_FORMAT_I444A:
+      return media::PIXEL_FORMAT_I444;
+    case media::PIXEL_FORMAT_YUV444AP10:
+      return media::PIXEL_FORMAT_YUV444P10;
     case media::PIXEL_FORMAT_ARGB:
       return media::PIXEL_FORMAT_XRGB;
     case media::PIXEL_FORMAT_ABGR:
@@ -131,12 +165,34 @@ std::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
   switch (fmt) {
     case media::PIXEL_FORMAT_I420:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
+    case media::PIXEL_FORMAT_YUV420P10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420P10);
+    case media::PIXEL_FORMAT_YUV420P12:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420P12);
     case media::PIXEL_FORMAT_I420A:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420A);
+    case media::PIXEL_FORMAT_YUV420AP10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420AP10);
     case media::PIXEL_FORMAT_I422:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422);
+    case media::PIXEL_FORMAT_YUV422P10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422P10);
+    case media::PIXEL_FORMAT_YUV422P12:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422P12);
+    case media::PIXEL_FORMAT_I422A:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422A);
+    case media::PIXEL_FORMAT_YUV422AP10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422AP10);
     case media::PIXEL_FORMAT_I444:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444);
+    case media::PIXEL_FORMAT_YUV444P10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444P10);
+    case media::PIXEL_FORMAT_YUV444P12:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444P12);
+    case media::PIXEL_FORMAT_I444A:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444A);
+    case media::PIXEL_FORMAT_YUV444AP10:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI444AP10);
     case media::PIXEL_FORMAT_NV12:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
     case media::PIXEL_FORMAT_ABGR:
@@ -150,6 +206,35 @@ std::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
     default:
       NOTREACHED();
       return std::nullopt;
+  }
+}
+
+bool IsFormatEnabled(media::VideoPixelFormat fmt) {
+  switch (fmt) {
+    case media::PIXEL_FORMAT_I420:
+    case media::PIXEL_FORMAT_I420A:
+    case media::PIXEL_FORMAT_I422:
+    case media::PIXEL_FORMAT_I444:
+    case media::PIXEL_FORMAT_NV12:
+    case media::PIXEL_FORMAT_ABGR:
+    case media::PIXEL_FORMAT_XBGR:
+    case media::PIXEL_FORMAT_ARGB:
+    case media::PIXEL_FORMAT_XRGB:
+      return true;
+    case media::PIXEL_FORMAT_YUV420P10:
+    case media::PIXEL_FORMAT_YUV420P12:
+    case media::PIXEL_FORMAT_YUV420AP10:
+    case media::PIXEL_FORMAT_YUV422P10:
+    case media::PIXEL_FORMAT_YUV422P12:
+    case media::PIXEL_FORMAT_I422A:
+    case media::PIXEL_FORMAT_YUV422AP10:
+    case media::PIXEL_FORMAT_YUV444P10:
+    case media::PIXEL_FORMAT_YUV444P12:
+    case media::PIXEL_FORMAT_I444A:
+    case media::PIXEL_FORMAT_YUV444AP10:
+      return RuntimeEnabledFeatures::WebCodecsHBDFormatsEnabled();
+    default:
+      return false;
   }
 }
 
@@ -358,26 +443,20 @@ std::optional<media::VideoPixelFormat> CopyToFormat(
   if (!(mappable || texturable))
     return std::nullopt;
 
-  // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
-  // low-bit depth frame.
-  if (!mappable && frame.RequiresExternalSampler() && frame.BitDepth() == 8u) {
+  // Readback is not supported for high bit-depth formats.
+  if (!mappable && frame.BitDepth() != 8u) {
+    return std::nullopt;
+  }
+
+  // Externally-sampled frames read back as RGB, regardless of the format.
+  // TODO(crbug.com/40215121): Enable alpha readback for supported formats.
+  if (!mappable && frame.RequiresExternalSampler()) {
     DCHECK_EQ(frame.NumTextures(), 1u);
     return media::PIXEL_FORMAT_XRGB;
   }
 
-  switch (frame.format()) {
-    case media::PIXEL_FORMAT_I420:
-    case media::PIXEL_FORMAT_I420A:
-    case media::PIXEL_FORMAT_I422:
-    case media::PIXEL_FORMAT_I444:
-    case media::PIXEL_FORMAT_XBGR:
-    case media::PIXEL_FORMAT_ABGR:
-    case media::PIXEL_FORMAT_XRGB:
-    case media::PIXEL_FORMAT_ARGB:
-    case media::PIXEL_FORMAT_NV12:
-      break;
-    default:
-      return std::nullopt;
+  if (!IsFormatEnabled(frame.format())) {
+    return std::nullopt;
   }
 
   if (mappable) {
@@ -474,6 +553,10 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
   media::VideoPixelFormat copy_to_format = frame_format.value();
   if (options->hasFormat()) {
     copy_to_format = ToMediaPixelFormat(options->format().AsEnum());
+    if (!IsFormatEnabled(copy_to_format)) {
+      exception_state.ThrowTypeError("Unsupported format.");
+      return false;
+    }
   }
 
   if (options->hasColorSpace() &&
@@ -835,6 +918,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   // Handle format; the string was validated by the V8 binding.
   auto typed_fmt = V8VideoPixelFormat::Create(init->format());
   auto media_fmt = ToMediaPixelFormat(typed_fmt->AsEnum());
+
+  if (!IsFormatEnabled(media_fmt)) {
+    exception_state.ThrowTypeError("Unsupported format.");
+    return nullptr;
+  }
 
   // Validate coded size.
   uint32_t coded_width = init->codedWidth();

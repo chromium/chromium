@@ -118,6 +118,30 @@ namespace {
 
 constexpr const char kCategory[] = "media";
 
+// TODO(crbug.com/40215121): This is very similar to the method in
+// video_frame.cc. It should probably be a function in video_types.cc.
+media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
+  switch (fmt) {
+    case media::PIXEL_FORMAT_I420A:
+      return media::PIXEL_FORMAT_I420;
+    case media::PIXEL_FORMAT_YUV420AP10:
+      return media::PIXEL_FORMAT_YUV420P10;
+    case media::PIXEL_FORMAT_I422A:
+      return media::PIXEL_FORMAT_I422;
+    case media::PIXEL_FORMAT_YUV422AP10:
+      return media::PIXEL_FORMAT_YUV422P10;
+    case media::PIXEL_FORMAT_I444A:
+      return media::PIXEL_FORMAT_I444;
+    case media::PIXEL_FORMAT_YUV444AP10:
+      return media::PIXEL_FORMAT_YUV444P10;
+    case media::PIXEL_FORMAT_NV12A:
+      return media::PIXEL_FORMAT_NV12;
+    default:
+      NOTIMPLEMENTED() << "Missing support for making " << fmt << " opaque.";
+      return fmt;
+  }
+}
+
 int ComputeMaxActiveEncodes(std::optional<int> frame_delay = std::nullopt,
                             std::optional<int> input_capacity = std::nullopt) {
   constexpr int kDefaultEncoderFrameDelay = 0;
@@ -1009,10 +1033,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
         FrameMetadata{*frame->metadata().frame_duration};
   }
 
+  bool mappable = frame->IsMappable() || frame->HasGpuMemoryBuffer();
+
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
-  if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
+  if (!mappable) {
+    DCHECK(frame->HasTextures());
     // Stall request processing while we wait for the copy to complete. It'd
     // be nice to not have to do this, but currently the request processing
     // loop must execute synchronously or flush() will miss frames.
@@ -1044,9 +1071,12 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // Currently underlying encoders can't handle alpha channel, so let's
   // wrap a frame with an alpha channel into a frame without it.
   // For example such frames can come from 2D canvas context with alpha = true.
-  if (frame->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY &&
-      frame->format() == media::PIXEL_FORMAT_I420A) {
-    frame = media::WrapAsI420VideoFrame(std::move(frame));
+  DCHECK(mappable);
+  if (media::IsYuvPlanar(frame->format()) &&
+      !media::IsOpaque(frame->format())) {
+    frame = media::VideoFrame::WrapVideoFrame(
+        frame, ToOpaqueMediaPixelFormat(frame->format()), frame->visible_rect(),
+        frame->natural_size());
   }
 
   --requested_encodes_;

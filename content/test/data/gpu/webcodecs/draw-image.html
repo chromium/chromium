@@ -44,6 +44,10 @@ CanvasRenderingContext2D.drawImage().
             checkFourColorsFrame(ctx, cnv.width, cnv.height, 15);
             break;
           }
+          case 'hbd_arraybuffer': {
+            checkFourColorsFrame(ctx, cnv.width, cnv.height, 15);
+            break;
+          }
           default:
             TEST.reportFailure("Unexpected frame source.");
         }
@@ -54,6 +58,7 @@ CanvasRenderingContext2D.drawImage().
       TEST.log('Test completed');
     }
     addManualTestButton([{'source_type': 'offscreen'}]);
+    addManualTestButton([{'source_type': 'hbd_arraybuffer'}]);
   </script>
 </head>
 
