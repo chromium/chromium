@@ -2388,6 +2388,9 @@ extern const char kEnableEncryptedAV1Description[];
 extern const char kEnablePixDetectionName[];
 extern const char kEnablePixDetectionDescription[];
 
+extern const char kEnablePixDetectionOnDomContentLoadedName[];
+extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
+
 extern const char kExternalNavigationDebugLogsName[];
 extern const char kExternalNavigationDebugLogsDescription[];
 

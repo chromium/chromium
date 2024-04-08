@@ -4030,6 +4030,14 @@ const char kEnablePixDetectionName[] = "Enable PIX detection";
 const char kEnablePixDetectionDescription[] =
     "Enables PIX code detection on allow-listed merchant websites.";
 
+const char kEnablePixDetectionOnDomContentLoadedName[] =
+    "Enable triggering PIX code detection when "
+    "`WebContentsObserver::DOMContentLoaded` is fired";
+const char kEnablePixDetectionOnDomContentLoadedDescription[] =
+    "When enabled, PIX detection will be triggered on allow-listed merchant "
+    "websites when `WebContentsObserver::DOMContentLoaded` is fired instead of "
+    "`WebContentsObserver::DidFinishLoad`.";
+
 const char kExternalNavigationDebugLogsName[] =
     "External Navigation Debug Logs";
 const char kExternalNavigationDebugLogsDescription[] =

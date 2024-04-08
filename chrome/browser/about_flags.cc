@@ -5792,6 +5792,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-pix-detection", flag_descriptions::kEnablePixDetectionName,
      flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixDetection)},
+
+    {"enable-pix-detection-on-dom-content-loaded",
+     flag_descriptions::kEnablePixDetectionOnDomContentLoadedName,
+     flag_descriptions::kEnablePixDetectionOnDomContentLoadedDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         payments::facilitated::kEnablePixDetectionOnDomContentLoaded)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

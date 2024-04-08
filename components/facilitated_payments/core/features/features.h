@@ -10,6 +10,7 @@
 namespace payments::facilitated {
 
 BASE_DECLARE_FEATURE(kEnablePixDetection);
+BASE_DECLARE_FEATURE(kEnablePixDetectionOnDomContentLoaded);
 BASE_DECLARE_FEATURE(kEnablePixPayments);
 
 }  // namespace payments::facilitated
