@@ -50,9 +50,8 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
-  base::flat_set<base::PlatformThreadId> GetThreadIds() const {
-    return thread_ids_;
-  }
+  // Must be called on Viz thread.
+  base::flat_set<base::PlatformThreadId> GetThreadIds() const;
 
   // Must be called from the TaskQueueWebView thread. |task| is allowed to call
   // TaskQueueWebView::ScheduleTask.
@@ -83,6 +82,8 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   void InitFrameSinkManagerOnViz();
   void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params,
                                  viz::GpuServiceImpl* gpu_service_impl);
+  void SetIOThreadIdOnViz(base::PlatformThreadId io_thread_id,
+                          base::WaitableEvent* event);
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;

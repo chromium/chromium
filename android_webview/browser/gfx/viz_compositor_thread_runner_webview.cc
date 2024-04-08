@@ -123,7 +123,12 @@ bool VizCompositorThreadRunnerWebView::CreateHintSessionFactory(
 void VizCompositorThreadRunnerWebView::SetIOThreadId(
     base::PlatformThreadId io_thread_id) {
   if (io_thread_id != base::kInvalidThreadId) {
-    thread_ids_.insert(io_thread_id);
+    base::WaitableEvent event;
+    viz_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VizCompositorThreadRunnerWebView::SetIOThreadIdOnViz,
+                       base::Unretained(this), io_thread_id, &event));
+    event.Wait();
   }
 }
 
@@ -157,6 +162,20 @@ void VizCompositorThreadRunnerWebView::BindFrameSinkManagerOnViz(
 viz::GpuServiceImpl* VizCompositorThreadRunnerWebView::GetGpuService() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   return gpu_service_impl_;
+}
+
+base::flat_set<base::PlatformThreadId>
+VizCompositorThreadRunnerWebView::GetThreadIds() const {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  return thread_ids_;
+}
+
+void VizCompositorThreadRunnerWebView::SetIOThreadIdOnViz(
+    base::PlatformThreadId io_thread_id,
+    base::WaitableEvent* event) {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  thread_ids_.insert(io_thread_id);
+  event->Signal();
 }
 
 }  // namespace android_webview
