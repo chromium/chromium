@@ -35,7 +35,6 @@ found in the LICENSE file.
         android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/webapk_edit_shortcut_name_hint"
         android:textAppearance="@style/TextAppearance.AddToHomeScreenEditText"
         android:singleLine="true"
         android:paddingTop="0dp"
@@ -71,7 +70,6 @@ found in the LICENSE file.
             android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/webapk_edit_app_name_hint"
             android:textAppearance="@style/TextAppearance.AddToHomeScreenEditText"
             android:singleLine="true" />
 
