@@ -19,6 +19,7 @@
 #include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory_impl.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
+#include "components/affiliations/core/browser/affiliation_prefetcher.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
@@ -129,6 +130,7 @@ class AffiliationServiceImpl : public AffiliationService,
                             callback) const override;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
+  void RegisterSource(std::unique_ptr<AffiliationSource> source) override;
 
   AffiliationBackend* GetBackendForTesting() { return backend_.get(); }
 
@@ -159,6 +161,7 @@ class AffiliationServiceImpl : public AffiliationService,
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   std::vector<FetchInfo> pending_fetches_;
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
+  AffiliationPrefetcher prefetcher_{this};
 
   // The backend, owned by this AffiliationService instance, but
   // living on the backend thread. It will be deleted asynchronously during

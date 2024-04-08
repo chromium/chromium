@@ -35,6 +35,7 @@ class FakeAffiliationService : public AffiliationService {
                             callback) const override;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
+  void RegisterSource(std::unique_ptr<AffiliationSource> source) override;
 };
 
 }  // namespace affiliations

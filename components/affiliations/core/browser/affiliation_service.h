@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/affiliations/core/browser/affiliation_source.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
@@ -119,6 +120,12 @@ class AffiliationService : public KeyedService {
   virtual void UpdateAffiliationsAndBranding(
       const std::vector<FacetURI>& facets,
       base::OnceClosure callback) = 0;
+
+  // Registers an affiliation source. Affiliation sources are used for
+  // prefetching of affiliation data soon after start-up. They are owned by
+  // the prefetcher, and observed for changes in their underlying data model to
+  // keep an updated cache of affiliations.
+  virtual void RegisterSource(std::unique_ptr<AffiliationSource> source) = 0;
 };
 
 }  // namespace affiliations

@@ -57,6 +57,10 @@ class MockAffiliationService : public AffiliationService {
               UpdateAffiliationsAndBranding,
               (const std::vector<FacetURI>&, base::OnceClosure),
               (override));
+  MOCK_METHOD(void,
+              RegisterSource,
+              (std::unique_ptr<AffiliationSource>),
+              (override));
 };
 
 }  // namespace affiliations

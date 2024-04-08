@@ -61,5 +61,7 @@ void FakeAffiliationService::UpdateAffiliationsAndBranding(
     base::OnceClosure callback) {
   std::move(callback).Run();
 }
+void FakeAffiliationService::RegisterSource(
+    std::unique_ptr<AffiliationSource> source) {}
 
 }  // namespace affiliations

@@ -297,4 +297,9 @@ void AffiliationServiceImpl::UpdateAffiliationsAndBranding(
                      std::move(callback_in_main_sequence)));
 }
 
+void AffiliationServiceImpl::RegisterSource(
+    std::unique_ptr<AffiliationSource> source) {
+  prefetcher_.RegisterSource(std::move(source));
+}
+
 }  // namespace affiliations
