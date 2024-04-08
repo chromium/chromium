@@ -86,19 +86,13 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
     InteractiveBrowserTest::SetUp();
   }
 
-  void ShowPrompt() {
-    auto* manager = DefaultBrowserPromptManager::GetInstance();
-    ASSERT_TRUE(manager->ShouldShowInfoBarPromptForTesting());
-    manager->MaybeShowPromptForTesting();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        ShowsDefaultBrowserPromptOnNewTab) {
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -108,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        HeightStaysConstant) {
   int height;
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       WithView(ConfirmInfoBar::kInfoBarElementId,
@@ -130,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
 
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       SendAccelerator(kBrowserViewElementId, incognito_accelerator),
@@ -141,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        RemovesAllBrowserPromptsOnAccept) {
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -160,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
@@ -174,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kDismissButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
@@ -183,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        LogsMetrics) {
   base::HistogramTester histogram_tester;
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // This flush is needed to prevent TSan builders from flaking.
                   FlushEvents(),
@@ -200,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   // stop subscribing to TabStripModelObserver updates when new windows were
   // created.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabMovedToNewWindowId);
-  ShowPrompt();
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       // Open two tabs
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),

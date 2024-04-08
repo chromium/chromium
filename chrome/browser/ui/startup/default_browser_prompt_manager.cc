@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -88,10 +87,6 @@ void DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
 }
 
-DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
-
-DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
-
 void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -105,23 +100,6 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
   }
-}
-
-void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
-    content::WebContents* web_contents,
-    Profile* profile) {
-  // Ensure that an infobar hasn't already been created.
-  CHECK(!infobars_.contains(web_contents));
-
-  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
-  infobars_[web_contents] = infobar;
-
-  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
-
-  auto* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobar_manager->AddObserver(this);
 }
 
 void DefaultBrowserPromptManager::CloseAllInfoBars() {
@@ -186,19 +164,9 @@ void DefaultBrowserPromptManager::OnDismiss() {
   user_initiated_info_bar_close_pending_ = true;
 }
 
-void DefaultBrowserPromptManager::MaybeShowPromptForTesting() {
-  MaybeShowPrompt();
-}
+DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
-bool DefaultBrowserPromptManager::ShouldShowInfoBarPromptForTesting(
-    PrefService* local_state) {
-  return ShouldShowInfoBarPrompt(local_state);
-}
-
-void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibilityForTesting(
-    bool show) {
-  SetShowAppMenuPromptVisibility(show);
-}
+DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
 
 // static
 void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
@@ -240,6 +208,23 @@ bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
       features::kRepromptDuration.Get() *
       std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
+}
+
+void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
+    content::WebContents* web_contents,
+    Profile* profile) {
+  // Ensure that an infobar hasn't already been created.
+  CHECK(!infobars_.contains(web_contents));
+
+  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
+  infobars_[web_contents] = infobar;
+
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddObserver(this);
 }
 
 void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {

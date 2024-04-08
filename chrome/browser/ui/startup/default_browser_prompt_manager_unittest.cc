@@ -10,53 +10,68 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class DefaultBrowserPromptManagerTest : public testing::Test,
-                                        DefaultBrowserPromptManager::Observer {
+namespace {
+class DefaultBrowserPromptManagerObserver
+    : public DefaultBrowserPromptManager::Observer {
+ public:
+  MOCK_METHOD(void, OnShowAppMenuPromptChanged, (), (override));
+};
+
+class InfoBarManagerObserver : public infobars::InfoBarManager::Observer {
+ public:
+  MOCK_METHOD(void, OnInfoBarAdded, (infobars::InfoBar * infobar), (override));
+};
+}  // namespace
+
+class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
+ public:
+  DefaultBrowserPromptManagerTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  protected:
   void SetUp() override {
-    auto* service = DefaultBrowserPromptManager::GetInstance();
-    service->SetShowAppMenuPromptVisibilityForTesting(false);
-    service->AddObserver(this);
-    ResetHasAppMenuPromptChanged();
+    BrowserWithTestWindowTest::SetUp();
 
-    local_state_.registry()->RegisterTimePref(
-        prefs::kDefaultBrowserLastDeclinedTime, base::Time());
-    local_state_.registry()->RegisterIntegerPref(
-        prefs::kDefaultBrowserDeclinedCount, 0);
+    DefaultBrowserPromptManager::GetInstance()
+        ->set_show_app_menu_prompt_for_testing(false);
+
+    prompt_manager_observation_.Observe(
+        DefaultBrowserPromptManager::GetInstance());
+
+    // Set up a single tab in the foreground.
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(
+            profile(), content::SiteInstance::Create(profile()));
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
   }
 
   void TearDown() override {
-    DefaultBrowserPromptManager::GetInstance()->RemoveObserver(this);
+    prompt_manager_observation_.Reset();
+    BrowserWithTestWindowTest::TearDown();
   }
-
-  // DefaultBrowserPromptManager::Observer
-  void OnShowAppMenuPromptChanged() override {
-    has_app_menu_prompt_changed_ = true;
-  }
-
-  bool get_has_app_menu_prompt_changed() const {
-    return has_app_menu_prompt_changed_;
-  }
-
-  void ResetHasAppMenuPromptChanged() { has_app_menu_prompt_changed_ = false; }
 
   void EnableDefaultBrowserPromptRefreshFeatureWithParams(
       std::map<std::string, std::string> params) {
-    scoped_feature_list.Reset();
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh, params);
   }
 
   void TestShouldShowInfoBarPrompt(
       std::optional<base::TimeDelta> last_declined_time_delta,
       std::optional<int> declined_count,
-      bool expected) {
+      bool expect_infobar_exists) {
     if (last_declined_time_delta.has_value()) {
       local_state()->SetTime(
           prefs::kDefaultBrowserLastDeclinedTime,
@@ -70,39 +85,56 @@ class DefaultBrowserPromptManagerTest : public testing::Test,
     } else {
       local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
     }
-    EXPECT_EQ(expected, DefaultBrowserPromptManager::GetInstance()
-                            ->ShouldShowInfoBarPromptForTesting(local_state()));
+
+    auto* manager = DefaultBrowserPromptManager::GetInstance();
+    manager->CloseAllInfoBars();
+
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(
+            browser()->tab_strip_model()->GetWebContentsAt(0));
+    infobar_observation_.Observe(infobar_manager);
+
+    EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded)
+        .Times(expect_infobar_exists ? 1 : 0);
+    manager->MaybeShowPrompt();
+
+    infobar_observation_.Reset();
   }
 
-  PrefService* local_state() { return &local_state_; }
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
+  DefaultBrowserPromptManagerObserver prompt_manager_observer_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list;
-  TestingPrefServiceSimple local_state_;
-  bool has_app_menu_prompt_changed_ = false;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::ScopedObservation<DefaultBrowserPromptManager,
+                          DefaultBrowserPromptManager::Observer>
+      prompt_manager_observation_{&prompt_manager_observer_};
+
+  InfoBarManagerObserver infobar_manager_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{&infobar_manager_observer_};
 };
 
-TEST_F(DefaultBrowserPromptManagerTest, NotifiesObservers) {
-  auto* service = DefaultBrowserPromptManager::GetInstance();
-  EXPECT_FALSE(get_has_app_menu_prompt_changed());
+// TODO(charlesmeng): Disabled until we implement setting the app menu prompt
+// visibility from MaybeShowPrompt()
+TEST_F(DefaultBrowserPromptManagerTest, DISABLED_NotifiesAppMenuObservers) {
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
+  ASSERT_FALSE(manager->get_show_app_menu_prompt());
 
-  service->SetShowAppMenuPromptVisibilityForTesting(true);
-  EXPECT_TRUE(get_has_app_menu_prompt_changed());
+  EXPECT_CALL(prompt_manager_observer_, OnShowAppMenuPromptChanged).Times(1);
+  manager->MaybeShowPrompt();
+  ASSERT_TRUE(manager->get_show_app_menu_prompt());
+
+  // Does not notify observers a second time if the value is the same.
+  EXPECT_CALL(prompt_manager_observer_, OnShowAppMenuPromptChanged).Times(0);
+  manager->MaybeShowPrompt();
+  ASSERT_TRUE(manager->get_show_app_menu_prompt());
 }
 
-TEST_F(DefaultBrowserPromptManagerTest, DoesNotNotifyObserversWhenValueIsSame) {
-  auto* service = DefaultBrowserPromptManager::GetInstance();
-  service->SetShowAppMenuPromptVisibilityForTesting(true);
-  EXPECT_TRUE(get_has_app_menu_prompt_changed());
-
-  ResetHasAppMenuPromptChanged();
-  service->SetShowAppMenuPromptVisibilityForTesting(true);
-  EXPECT_FALSE(get_has_app_menu_prompt_changed());
-}
-
-TEST_F(DefaultBrowserPromptManagerTest, MaxPromptCount) {
+TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // If max prompt count is negative, do not limit the number of times the
   // prompt is shown.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
@@ -153,7 +185,7 @@ TEST_F(DefaultBrowserPromptManagerTest, MaxPromptCount) {
       /*expected=*/false);
 }
 
-TEST_F(DefaultBrowserPromptManagerTest, RepromptDuration) {
+TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
        {features::kMaxPromptCount.name, "-1"},

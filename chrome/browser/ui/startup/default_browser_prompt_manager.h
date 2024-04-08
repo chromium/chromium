@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/singleton.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -57,18 +58,15 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // before re-prompting.
   static void UpdatePrefsForDismissedPrompt(Profile* profile);
 
-  DefaultBrowserPromptManager();
-  ~DefaultBrowserPromptManager() override;
-
   bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
+  void set_show_app_menu_prompt_for_testing(bool show) {
+    show_app_menu_prompt_ = show;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   void MaybeShowPrompt();
-
-  void CreateInfoBarForWebContents(content::WebContents* contents,
-                                   Profile* profile);
   void CloseAllInfoBars();
 
   // BrowserTabStripTrackerDelegate
@@ -87,16 +85,17 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void OnAccept() override;
   void OnDismiss() override;
 
-  void MaybeShowPromptForTesting();
-
-  bool ShouldShowInfoBarPromptForTesting(
-      PrefService* local_state = g_browser_process->local_state());
-
-  void SetShowAppMenuPromptVisibilityForTesting(bool show);
-
  private:
+  friend struct base::DefaultSingletonTraits<DefaultBrowserPromptManager>;
+
+  DefaultBrowserPromptManager();
+  ~DefaultBrowserPromptManager() override;
+
   // Reports to the launch study for the default browser prompt synthetic trial.
   static void RegisterSyntheticFieldTrial(const std::string& group_name);
+
+  void CreateInfoBarForWebContents(content::WebContents* contents,
+                                   Profile* profile);
 
   bool ShouldShowInfoBarPrompt(
       PrefService* local_state = g_browser_process->local_state());
