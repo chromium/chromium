@@ -699,6 +699,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void OnDictationKeyboardDialogAccepted();
   void OnDictationKeyboardDialogDismissed();
 
+  void RecordSelectToSpeakSpeechDuration(SelectToSpeakState old_state,
+                                         SelectToSpeakState new_state);
+
   // Dictation's SODA download progress. Values are between 0 and 100. Tracked
   // for testing purposes only.
   int dictation_soda_download_progress_ = 0;
@@ -786,6 +789,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   base::RepeatingCallback<void()>
       show_confirmation_dialog_callback_for_testing_;
+
+  base::Time select_to_speak_speech_start_time_;
 
   base::WeakPtrFactory<AccessibilityController> weak_ptr_factory_{this};
 };

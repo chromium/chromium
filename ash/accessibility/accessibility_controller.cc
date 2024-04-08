@@ -1748,7 +1748,28 @@ void AccessibilityController::RequestSelectToSpeakStateChange() {
   client_->RequestSelectToSpeakStateChange();
 }
 
+void AccessibilityController::RecordSelectToSpeakSpeechDuration(
+    SelectToSpeakState old_state,
+    SelectToSpeakState new_state) {
+  if (new_state != SelectToSpeakState::kSelectToSpeakStateSpeaking &&
+      select_to_speak_speech_start_time_ == base::Time()) {
+    select_to_speak_speech_start_time_ = base::Time::Now();
+  }
+  if (old_state != SelectToSpeakState::kSelectToSpeakStateSpeaking &&
+      new_state != old_state &&
+      select_to_speak_speech_start_time_ != base::Time()) {
+    base::TimeDelta duration =
+        base::Time::Now() - select_to_speak_speech_start_time_;
+    base::UmaHistogramCustomCounts(
+        "Accessibility.CrosSelectToSpeak.SpeechDuration", duration.InSeconds(),
+        /*min=*/ 1, /*max=*/ base::Minutes(20) / base::Seconds(1),
+        /*buckets=*/ 100);
+    select_to_speak_speech_start_time_ = base::Time();
+  }
+}
+
 void AccessibilityController::SetSelectToSpeakState(SelectToSpeakState state) {
+  RecordSelectToSpeakSpeechDuration(select_to_speak_state_, state);
   select_to_speak_state_ = state;
 
   // Forward the state change event to select_to_speak_event_handler_.

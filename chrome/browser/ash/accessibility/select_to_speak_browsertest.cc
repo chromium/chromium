@@ -55,6 +55,10 @@
 #include "url/url_constants.h"
 
 namespace ash {
+namespace {
+constexpr char kSpeechDurationMetric[] =
+    "Accessibility.CrosSelectToSpeak.SpeechDuration";
+}  // namespace
 
 class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
  public:
@@ -77,6 +81,10 @@ class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
     if (tray_loop_runner_ && tray_loop_runner_->running()) {
       tray_loop_runner_->Quit();
     }
+  }
+
+  void ExpectTotalSpeechDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(kSpeechDurationMetric, expected_count);
   }
 
  protected:
@@ -110,6 +118,7 @@ class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
   }
 
   test::SpeechMonitor sm_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
@@ -837,6 +846,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
       "data:text/html;charset=utf-8,<p>Not me!</p><p>%s</p><p>Nor me!</p>",
       text.c_str()));
   SelectNodeWithText(text);
+  ExpectTotalSpeechDurationSamples(0);
 
   generator_->PressKey(ui::VKEY_LWIN, /*flags=*/0);
   generator_->PressKey(ui::VKEY_S, /*flags=*/0);
@@ -844,7 +854,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
   generator_->ReleaseKey(ui::VKEY_S, /*flags=*/0);
 
   sm_.ExpectSpeechPattern(text);
+  sm_.Call([this]() {
+    generator_->PressKey(ui::VKEY_CONTROL, /*flags=*/0);
+    generator_->ReleaseKey(ui::VKEY_CONTROL, /*flags=*/0);
+  });
   sm_.Replay();
+
+  ExpectTotalSpeechDurationSamples(1);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
