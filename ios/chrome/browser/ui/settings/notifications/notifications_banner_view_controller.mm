@@ -62,6 +62,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   NSLayoutConstraint* _tableViewHeightConstraint;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   NSDiffableDataSourceSnapshot* _snapshot;
+  ChromeTableViewStyler* _tableViewStyler;
 }
 
 - (void)viewDidLoad {
@@ -119,16 +120,14 @@ CGFloat const kSpaceAboveTitle = 20.0;
   [super viewWillLayoutSubviews];
   [self updateTableViewHeightConstraint];
   self.bannerName = IsLandscape(self.view.window) ? kBannerLandscape : kBanner;
+  // Make the navigation bar buttons white when the banner is visible.
+  self.navigationController.navigationBar.tintColor =
+      self.shouldHideBanner ? nil : UIColor.whiteColor;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -162,8 +161,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
       if (cell) {
         TableViewCell* tableViewCell =
             base::apple::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell
-                 withStyler:[[ChromeTableViewStyler alloc] init]];
+        [item configureCell:tableViewCell withStyler:[self tableViewStyler]];
       }
     }
   }
@@ -335,14 +333,12 @@ CGFloat const kSpaceAboveTitle = 20.0;
       DequeueTableViewCell<TableViewSwitchCell>(tableView);
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
-  [switchItem configureCell:cell
-                 withStyler:[[ChromeTableViewStyler alloc] init]];
+  [switchItem configureCell:cell withStyler:[self tableViewStyler]];
   cell.switchView.tag = itemIdentifier;
   [cell.switchView addTarget:self
                       action:@selector(switchAction:)
             forControlEvents:UIControlEventValueChanged];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   return cell;
 }
 
@@ -354,8 +350,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
       DequeueTableViewCell<TableViewMultiDetailTextCell>(tableView);
   TableViewMultiDetailTextItem* detailItem =
       base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
-  [detailItem configureCell:cell
-                 withStyler:[[ChromeTableViewStyler alloc] init]];
+  [detailItem configureCell:cell withStyler:[self tableViewStyler]];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.accessibilityIdentifier = detailItem.accessibilityIdentifier;
@@ -376,6 +371,16 @@ CGFloat const kSpaceAboveTitle = 20.0;
 // Updates the tableView's height constraint.
 - (void)updateTableViewHeightConstraint {
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
+}
+
+// ChromeTableViewStyler for the cells.
+- (ChromeTableViewStyler*)tableViewStyler {
+  if (!_tableViewStyler) {
+    _tableViewStyler = [[ChromeTableViewStyler alloc] init];
+    _tableViewStyler.cellBackgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  return _tableViewStyler;
 }
 
 @end
