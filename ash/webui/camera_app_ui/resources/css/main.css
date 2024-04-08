@@ -50,7 +50,12 @@ body {
   overflow: hidden;
   position: absolute;
   top: 0;
-  touch-action: none;
+  /*
+   * Disable pinch-to-zoom in CCA and allow the back gesture. Note that back
+   * gesture is an OS-level gesture and can only be disabled by setting
+   * `touch-action: none`.
+   */
+  touch-action: pan-left;
   width: 100%;
 }
 
