@@ -772,27 +772,48 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 }
 
 CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
-  struct v4l2_ext_control ctrl;
   std::vector<struct v4l2_ext_control> ctrls;
   struct v4l2_ctrl_hevc_sps v4l2_sps;
+#if BUILDFLAG(IS_CHROMEOS)
+  struct v4l2_ctrl_av1_sequence v4l2_av1_sequence;
+#endif
 
+  struct v4l2_ext_control ctrl;
+  memset(&ctrl, 0, sizeof(ctrl));
+
+  // 10-bit formats require codec specific parameters be passed before the
+  // CAPTURE queue will report the proper decoded formats.
   if (input_format_fourcc_ == V4L2_PIX_FMT_HEVC_SLICE) {
+    // For HEVC the SPS data is sent in to indicate 10-bit content. We also set
+    // the size and chroma format since that should be all the information
+    // needed in order to know the format.
     VLOGF(1) << "Setting EXT_CTRLS for 10-bit HEVC";
-    // For 10-bit formats the CAPTURE queue will not report the proper formats
-    // until the SPS data is sent in to indicate 10-bit content. We also set the
-    // size and chroma format since that should be all the information needed in
-    // order to know the format.
     memset(&v4l2_sps, 0, sizeof(v4l2_sps));
     v4l2_sps.pic_width_in_luma_samples = size.width();
     v4l2_sps.pic_height_in_luma_samples = size.height();
     v4l2_sps.bit_depth_luma_minus8 = 2;
     v4l2_sps.bit_depth_chroma_minus8 = 2;
     v4l2_sps.chroma_format_idc = 1;  // 4:2:0
-    memset(&ctrl, 0, sizeof(ctrl));
+
     ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
     ctrl.size = sizeof(v4l2_sps);
     ctrl.ptr = &v4l2_sps;
+
     ctrls.push_back(ctrl);
+#if BUILDFLAG(IS_CHROMEOS)
+  } else if (input_format_fourcc_ == V4L2_PIX_FMT_AV1_FRAME) {
+    // AV1 only requires that the |bit_depth| parameter be set to enable
+    // 10 bit formats on the CAPTURE queue.
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit AV1";
+    memset(&v4l2_av1_sequence, 0, sizeof(v4l2_av1_sequence));
+    v4l2_av1_sequence.bit_depth = 10;
+
+    ctrl.id = V4L2_CID_STATELESS_AV1_SEQUENCE;
+    ctrl.size = sizeof(v4l2_av1_sequence);
+    ctrl.ptr = &v4l2_av1_sequence;
+
+    ctrls.push_back(ctrl);
+#endif
   } else {
     // TODO(b/): Add other 10-bit codecs
     return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
