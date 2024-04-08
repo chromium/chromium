@@ -353,10 +353,8 @@ using chrome_test_util::WindowWithNumber;
       assertWithMatcher:ElementIsSelected(NO)];
 
   // Dismiss the view without having going through the deletion.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 
   // Check that Settings has been dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
