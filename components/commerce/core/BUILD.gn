@@ -103,14 +103,18 @@ proto_library("proto") {
     "proto/parcel.proto",
     "proto/price_insights.proto",
     "proto/price_tracking.proto",
+    "proto/product_category.proto",
     "proto/shopping_page_types.proto",
   ]
 }
 
 if (is_android) {
   proto_java_library("proto_java") {
-    proto_path = "."
-    sources = [ "proto/price_tracking.proto" ]
+    proto_path = "//"
+    sources = [
+      "proto/price_tracking.proto",
+      "proto/product_category.proto",
+    ]
   }
 
   proto_library("merchant_signal_db_proto") {

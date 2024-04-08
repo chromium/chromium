@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/tuple.h"
 #include "components/commerce/core/proto/parcel.pb.h"
+#include "components/commerce/core/proto/product_category.pb.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -119,6 +120,7 @@ struct ProductInfo {
   int64_t amount_micros{0};
   std::optional<int64_t> previous_amount_micros;
   std::string country_code;
+  CategoryData category_data;
 
  private:
   friend class ShoppingService;

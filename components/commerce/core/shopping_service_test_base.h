@@ -103,7 +103,8 @@ class MockOptGuideDecider
       const std::string& country_code,
       const int64_t amount_micros = 0,
       const std::string& currency_code = "USD",
-      const std::string& gpc_title = "example_gpc_title");
+      const std::string& gpc_title = "example_gpc_title",
+      const std::vector<std::vector<std::string>>& product_categories = {});
 
   void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
                                              const std::string& currency_code,

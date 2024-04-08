@@ -86,6 +86,9 @@ const uint64_t kDiscountId1 = 111;
 const uint64_t kDiscountId2 = 222;
 const uint64_t kDiscountOfferId = 123456;
 
+const std::vector<std::vector<std::string>> kProductCategories = {
+    {"Dress", "Red Dress"}};
+
 }  // namespace
 
 class ShoppingServiceTest : public ShoppingServiceTestBase,
@@ -134,7 +137,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
-      kCurrencyCode, kGpcTitle);
+      kCurrencyCode, kGpcTitle, kProductCategories);
   opt_guide_->AddPriceUpdateToPriceTrackingResponse(&meta, kCurrencyCode,
                                                     kNewPrice, kPrice);
 
@@ -162,6 +165,19 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
             ASSERT_TRUE(info->previous_amount_micros.has_value());
             ASSERT_EQ(kPrice, info->previous_amount_micros.value());
 
+            ASSERT_EQ(static_cast<int>(kProductCategories.size()),
+                      info->category_data.product_categories().size());
+
+            for (size_t i = 0; i < kProductCategories.size(); i++) {
+              auto labels =
+                  info->category_data.product_categories()[i].category_labels();
+              ASSERT_EQ(static_cast<int>(kProductCategories[i].size()),
+                        labels.size());
+              for (int j = 0; j < labels.size(); j++) {
+                ASSERT_EQ(kProductCategories[i][j],
+                          labels[j].category_default_label());
+              }
+            }
             run_loop->Quit();
           },
           &run_loop));

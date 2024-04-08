@@ -970,6 +970,10 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
     }
   }
 
+  if (buyable_product.has_category_data()) {
+    info->category_data = buyable_product.category_data();
+  }
+
   return info;
 }
 
