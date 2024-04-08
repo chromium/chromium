@@ -4,7 +4,9 @@
 
 module media.mojom;
 
+import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/encryption_pattern.mojom";
@@ -430,6 +432,7 @@ union VideoFrameData {
   SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   MailboxVideoFrameData mailbox_data;
+  SharedImageVideoFrameData shared_image_data;
 };
 
 // A marker for EOS frames.
@@ -456,6 +459,17 @@ struct GpuMemoryBufferVideoFrameData {
 struct MailboxVideoFrameData {
   // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
   array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+  gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
+};
+
+// This defines video frame data stored in texture shared images.
+struct SharedImageVideoFrameData {
+  // Size should be no greater than media::VideoFrame::kMaxPlanes.
+  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
+  // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
+  // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 

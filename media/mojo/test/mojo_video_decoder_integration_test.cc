@@ -140,11 +140,12 @@ class MockVideoDecoder : public VideoDecoder {
         // Simulate the case where outputs are only returned when key arrives.
         waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
       } else {
-        gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-        mailbox_holders[0].mailbox.name[0] = 1;
-        scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-            PIXEL_FORMAT_ARGB, mailbox_holders, GetReleaseMailboxCB(),
-            config_.coded_size(), config_.visible_rect(),
+        scoped_refptr<gpu::ClientSharedImage>
+            shared_images[VideoFrame::kMaxPlanes] = {
+                gpu::ClientSharedImage::CreateForTesting()};
+        scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
+            PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 0,
+            GetReleaseMailboxCB(), config_.coded_size(), config_.visible_rect(),
             config_.natural_size(), buffer->timestamp());
         frame->metadata().power_efficient = true;
         output_cb_.Run(frame);

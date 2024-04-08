@@ -511,6 +511,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns the number of native textures.
   size_t NumTextures() const;
 
+  // Returns true if the video frame uses ClientSharedImage.
+  bool HasSharedImages() const;
+
   // Returns true if the video frame is backed with GpuMemoryBuffer.
   bool HasGpuMemoryBuffer() const;
 
@@ -624,6 +627,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Only valid to call if this is a NATIVE_TEXTURE frame. Before using the
   // mailbox, the caller must wait for the included sync point.
   const gpu::MailboxHolder& mailbox_holder(size_t texture_index) const;
+
+  // Returns a ClientSharedImage for a given texture.
+  // Only valid to call if this is a NATIVE_TEXTURE frame and contains valid
+  // ClientSharedImage pointers. Before using the shared_image, the caller must
+  // wait for the included sync point.
+  scoped_refptr<gpu::ClientSharedImage> shared_image(
+      size_t texture_index) const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The number of DmaBufs will be equal or less than the number of planes of

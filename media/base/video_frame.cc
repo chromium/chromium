@@ -1284,6 +1284,11 @@ size_t VideoFrame::NumTextures() const {
   return i;
 }
 
+bool VideoFrame::HasSharedImages() const {
+  return wrapped_frame_ ? wrapped_frame_->HasSharedImages()
+                        : shared_images_[0] != nullptr;
+}
+
 bool VideoFrame::HasGpuMemoryBuffer() const {
   return wrapped_frame_ ? wrapped_frame_->HasGpuMemoryBuffer()
                         : !!gpu_memory_buffer_;
@@ -1419,6 +1424,15 @@ const gpu::MailboxHolder& VideoFrame::mailbox_holder(
   DCHECK(IsValidPlane(format(), texture_index));
   return wrapped_frame_ ? wrapped_frame_->mailbox_holder(texture_index)
                         : mailbox_holders_[texture_index];
+}
+
+scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image(
+    size_t texture_index) const {
+  DCHECK(HasTextures());
+  DCHECK(IsValidPlane(format(), texture_index));
+  DCHECK(HasSharedImages());
+  return wrapped_frame_ ? wrapped_frame_->shared_image(texture_index)
+                        : shared_images_[texture_index];
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

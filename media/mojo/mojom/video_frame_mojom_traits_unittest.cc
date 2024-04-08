@@ -233,6 +233,26 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   ASSERT_EQ(frame->mailbox_holder(0).mailbox, mailbox);
 }
 
+TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes] =
+      {gpu::ClientSharedImage::CreateForTesting()};
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
+      PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 0,
+      VideoFrame::ReleaseMailboxCB(), gfx::Size(100, 100),
+      gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100), base::Seconds(100));
+
+  ASSERT_TRUE(RoundTrip(&frame));
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
+  EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
+  EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
+  EXPECT_EQ(frame->timestamp(), base::Seconds(100));
+  ASSERT_TRUE(frame->HasTextures());
+  ASSERT_EQ(frame->shared_image(0)->mailbox(), shared_images[0]->mailbox());
+}
+
 // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) because
 // media::FakeGpuMemoryBuffer supports NativePixmapHandle backed
 // GpuMemoryBufferHandle only. !BUILDFLAG(IS_OZONE) so as to force

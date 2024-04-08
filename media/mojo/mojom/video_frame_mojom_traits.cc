@@ -135,9 +135,22 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::GpuMemoryBufferVideoFrameData::New(
             std::move(gpu_memory_buffer_handle), std::move(mailbox_holder)));
   } else if (input->HasTextures()) {
-    return media::mojom::VideoFrameData::NewMailboxData(
-        media::mojom::MailboxVideoFrameData::New(
-            std::move(mailbox_holder), std::move(input->ycbcr_info())));
+    if (input->HasSharedImages()) {
+      std::vector<gpu::ExportedSharedImage> shared_images;
+      for (size_t i = 0; i < input->NumTextures(); i++) {
+        shared_images.push_back(input->shared_image(i)->Export());
+      }
+
+      return media::mojom::VideoFrameData::NewSharedImageData(
+          media::mojom::SharedImageVideoFrameData::New(
+              std::move(shared_images), std::move(mailbox_holder[0].sync_token),
+              std::move(mailbox_holder[0].texture_target),
+              std::move(input->ycbcr_info())));
+    } else {
+      return media::mojom::VideoFrameData::NewMailboxData(
+          media::mojom::MailboxVideoFrameData::New(
+              std::move(mailbox_holder), std::move(input->ycbcr_info())));
+    }
   }
 
   NOTREACHED() << "Unsupported VideoFrame conversion";
@@ -343,6 +356,44 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     frame = media::VideoFrame::WrapNativeTextures(
         format, mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(),
         coded_size, visible_rect, natural_size, timestamp);
+    frame->set_ycbcr_info(ycbcr_info);
+  } else if (data.is_shared_image_data()) {
+    media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
+    data.GetSharedImageDataDataView(&shared_image_data);
+
+    std::vector<gpu::ExportedSharedImage> exported_shared_images;
+    if (!shared_image_data.ReadSharedImages(&exported_shared_images)) {
+      return false;
+    }
+
+    if (exported_shared_images.size() > media::VideoFrame::kMaxPlanes) {
+      return false;
+    }
+
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_image_array[media::VideoFrame::kMaxPlanes];
+
+    for (size_t i = 0; i < exported_shared_images.size(); i++) {
+      shared_image_array[i] =
+          gpu::ClientSharedImage::ImportUnowned(exported_shared_images[i]);
+    }
+
+    gpu::SyncToken sync_token;
+    if (!shared_image_data.ReadSyncToken(&sync_token)) {
+      return false;
+    }
+
+    uint32_t texture_target = shared_image_data.texture_target();
+
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    if (!shared_image_data.ReadYcbcrData(&ycbcr_info)) {
+      return false;
+    }
+
+    frame = media::VideoFrame::WrapSharedImages(
+        format, shared_image_array, sync_token, texture_target,
+        media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
+        natural_size, timestamp);
     frame->set_ycbcr_info(ycbcr_info);
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
