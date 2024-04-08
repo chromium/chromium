@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -13,42 +14,20 @@
 #include "components/policy/policy_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/hash_value.h"
+#include "net/cert/test_root_certs.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/http/transport_security_state.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::BrowserThread;
 
 namespace policy {
-
-void SetRequireCTForTesting(bool required) {
-  if (content::IsOutOfProcessNetworkService()) {
-    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterfaceForTesting(
-        network_service_test.BindNewPipeAndPassReceiver());
-    network::mojom::NetworkServiceTest::RequireCT required_ct =
-        required ? network::mojom::NetworkServiceTest::RequireCT::REQUIRE
-                 : network::mojom::NetworkServiceTest::RequireCT::DEFAULT;
-
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->SetRequireCT(required_ct);
-    return;
-  }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&net::TransportSecurityState::SetRequireCTForTesting,
-                     required));
-}
 
 class CertificateTransparencyPolicyTest : public SafeBrowsingPolicyTest {
  public:
@@ -67,15 +46,20 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                        CertificateTransparencyEnforcementDisabledForUrls) {
   SystemNetworkContextManager::GetInstance()->SetCTLogListTimelyForTesting();
 
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
+
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  constexpr char kHostname[] = "example.com";
+  https_server_ok.SetCertHostnames({kHostname});
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_ok.Start());
 
-  // Require CT for all hosts (in the absence of policy).
-  SetRequireCTForTesting(true);
-
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL(kHostname, "/"), this));
 
   // The page should initially be blocked.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
@@ -87,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
   // Now exempt the URL from being blocked by setting policy.
   base::Value::List disabled_urls;
-  disabled_urls.Append(https_server_ok.host_port_pair().HostForURL());
+  disabled_urls.Append(kHostname);
 
   PolicyMap policies;
   policies.Set(key::kCertificateTransparencyEnforcementDisabledForUrls,
@@ -96,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/simple.html"), this));
+  ASSERT_TRUE(
+      NavigateToUrl(https_server_ok.GetURL(kHostname, "/simple.html"), this));
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
@@ -106,12 +91,13 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/title1.html"), this));
+  ASSERT_TRUE(
+      NavigateToUrl(https_server_ok.GetURL(kHostname, "/title1.html"), this));
 
   SimulateNetworkServiceCrash();
-  SetRequireCTForTesting(true);
 
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/simple.html"), this));
+  ASSERT_TRUE(
+      NavigateToUrl(https_server_ok.GetURL(kHostname, "/simple.html"), this));
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
@@ -122,15 +108,20 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                        CertificateTransparencyEnforcementDisabledForCas) {
   SystemNetworkContextManager::GetInstance()->SetCTLogListTimelyForTesting();
 
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
+
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  constexpr char kHostname[] = "example.com";
+  https_server_ok.SetCertHostnames({kHostname});
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_ok.Start());
 
-  // Require CT for all hosts (in the absence of policy).
-  SetRequireCTForTesting(true);
-
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL(kHostname, "/"), this));
 
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
@@ -164,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  ASSERT_TRUE(NavigateToUrl(https_server_ok.GetURL("/simple.html"), this));
+  ASSERT_TRUE(
+      NavigateToUrl(https_server_ok.GetURL(kHostname, "/simple.html"), this));
 
   // Check we are no longer in the interstitial.
   EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());

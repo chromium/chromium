@@ -151,15 +151,6 @@ interface NetworkServiceTest {
       CertVerifyResult verify_result,
       int32 rv) => ();
 
-  // Toggles requiring CT for testing
-  enum RequireCT {
-    DEFAULT = 0,
-    REQUIRE = 1,
-  };
-
-  [Sync]
-  SetRequireCT(RequireCT required) => ();
-
   // Set the global transport security state preloaded static data source to
   // the unittest_default source, with the reporting URIs rewritten to use
   // |reporting_port|.  If |reporting_port| is 0, the source will be reset to

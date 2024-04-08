@@ -557,13 +557,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
-  void SetRequireCT(RequireCT required,
-                    SetRequireCTCallback callback) override {
-    net::TransportSecurityState::SetRequireCTForTesting(
-        required == NetworkServiceTest::RequireCT::REQUIRE);
-    std::move(callback).Run();
-  }
-
   void SetTransportSecurityStateSource(
       uint16_t reporting_port,
       SetTransportSecurityStateSourceCallback callback) override {

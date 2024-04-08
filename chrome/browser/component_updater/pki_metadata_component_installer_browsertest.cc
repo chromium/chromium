@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -25,45 +26,30 @@
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/sha2.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/cert/test_root_certs.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
-#include "net/cert/test_root_certs.h"
-#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
-#include "net/test/cert_test_util.h"
 #endif
 
 namespace {
 
 enum class CTEnforcement { kEnabled, kDisabledByProto, kDisabledByFeature };
-
-void SetRequireCTForTesting() {
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterfaceForTesting(
-      network_service_test.BindNewPipeAndPassReceiver());
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  network_service_test->SetRequireCT(
-      network::mojom::NetworkServiceTest::RequireCT::REQUIRE);
-  return;
-}
 
 int64_t SecondsSinceEpoch(base::Time t) {
   return (t - base::Time::UnixEpoch()).InSeconds();
@@ -169,16 +155,20 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
     return;
   }
 
-  // CT enforcement is disabled by default on tests. Override this behaviour.
-  SetRequireCTForTesting();
-  WaitForPKIConfiguration(1);
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  constexpr char kHostname[] = "example.com";
+  https_server_ok.SetCertHostnames({kHostname});
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_ok.Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("/simple.html")));
+      browser(), https_server_ok.GetURL(kHostname, "/simple.html")));
 
   // Check that the page is blocked depending on CT enforcement.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
@@ -191,12 +181,10 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
 
   // Restart the network service.
   SimulateNetworkServiceCrash();
-  SetRequireCTForTesting();
-  WaitForPKIConfiguration(2);
 
   // Check that the page is still blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("/simple.html")));
+      browser(), https_server_ok.GetURL(kHostname, "/simple.html")));
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -230,9 +218,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       SecondsSinceEpoch(base::Time::Now() - base::Days(1));
   const int64_t kLogEnd = SecondsSinceEpoch(base::Time::Now() + base::Days(1));
 
-  // CT enforcement is disabled by default on tests. Override this behaviour.
-  SetRequireCTForTesting();
-  WaitForPKIConfiguration(1);
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   // Start a test server that uses a certificate with SCTs for the above test
   // logs.
@@ -319,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   // Should be trusted now.
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
-  WaitForPKIConfiguration(2);
+  WaitForPKIConfiguration(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
   EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -359,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   // other has a timestamp after the log retirement state change timestamp.
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
-  WaitForPKIConfiguration(3);
+  WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   if (GetParam() == CTEnforcement::kEnabled) {
@@ -784,9 +775,6 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
 
     InstallCRSUpdate(std::move(root_store_proto));
   }
-
-  // CT enforcement is disabled by default on tests. Override this behaviour.
-  SetRequireCTForTesting();
 
   // Install CT configuration that trusts log1 and log2.
   //
