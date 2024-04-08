@@ -94,6 +94,7 @@ void DataAggregatorService::AddDataSource(
 
 void DataAggregatorService::AddWatchDog(
     const std::string& source_name,
+    mojom::DataFilterPtr filter,
     mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
     AddWatchDogCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -108,8 +109,8 @@ void DataAggregatorService::AddWatchDog(
   }
 
   // Pass the callback through to the data source and run it there.
-  data_source_map_[source_name]->AddWatchDog(std::move(watch_dog),
-                                             std::move(callback));
+  data_source_map_[source_name]->AddWatchDog(
+      std::move(filter), std::move(watch_dog), std::move(callback));
 }
 
 void DataAggregatorService::AddLocalCommandSource(const std::string& command) {

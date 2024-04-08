@@ -27,10 +27,8 @@ struct DataFilter {
 // A watchdog used to notify a client when input triggers a filter
 [Stable, Uuid="82f840c8-9a52-4c48-9212-b6f45c7a5b08"]
 interface DataWatchDog {
-  // Returns the filter associated with the watchdog
-  GetFilter@0()=>(DataFilter filter);
   // Notifies the client that their filter was triggered
-  OnNotify@1(string data);
+  OnNotify@0(string data);
 };
 
 // Describes a single source of data (eg a log file)
@@ -40,7 +38,8 @@ interface DataSource {
   Fetch@0()=>(array<string> serialized_payloads);
   // Adds a watchdog to the log source. Returns true if successful
   // and false otherwise.
-  AddWatchDog@1(pending_remote<DataWatchDog> watch_dog)=>(bool success);
+  AddWatchDog@1(DataFilter filter, pending_remote<DataWatchDog> watch_dog)=>
+    (bool success);
   // Tell the data source to flush any internal buffers. Typically
   // used after a successful processing step (eg upload to cloud logs).
   Flush@2();
@@ -61,6 +60,6 @@ interface DataAggregator {
     (bool success);
   // Adds a new Watchdog to a specified data source
   // to inform a client when a specified trigger occurs
-  AddWatchDog@2(string source_name, pending_remote<DataWatchDog> watch_dog)=>
-    (bool success);
+  AddWatchDog@2(string source_name, DataFilter filter,
+                pending_remote<DataWatchDog> watch_dog)=>(bool success);
 };

@@ -22,7 +22,8 @@ class LogSource : public mojom::DataSource {
  protected:
   // mojom::DataSource implementation
   void Fetch(FetchCallback callback) override;
-  void AddWatchDog(mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
+  void AddWatchDog(mojom::DataFilterPtr filter,
+                   mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
                    AddWatchDogCallback callback) override;
   void Flush() override;
 

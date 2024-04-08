@@ -15,7 +15,8 @@ void LogSource::Fetch(FetchCallback callback) {
   (void)callback;
 }
 
-void LogSource::AddWatchDog(mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
+void LogSource::AddWatchDog(mojom::DataFilterPtr filter,
+                            mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
                             AddWatchDogCallback callback) {
   // TODO: (b/326440932)
   (void)watch_dog;
