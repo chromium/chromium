@@ -76,8 +76,6 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
     // The flow instance was created, but not invoked. The passwords are not
     // read from disk.
     kCreated,
-    // The flow was invoked, but the passwords were not read from disk yet.
-    kInvokedWithoutPasswords,
     // The passwords were read from disk. The flow might or might not have been
     // invoked already.
     kPasswordsRetrived,
@@ -113,9 +111,13 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // * it is changed to `kPasswordsAvailable` when the passwords are read from
   // disk by the `SavedPasswordsPresenter`.
   FlowState flow_state_ = FlowState::kCreated;
+
+  // This is used to delay the flow invocation whenever the flow is run while
+  // some data is not yet fetched. This member is initialized only if at least
+  // one invocation is delayed.
+  base::OnceClosure on_all_password_data_ready_;
+
   autofill::FieldRendererId saved_field_id_;
-  std::optional<gfx::RectF> saved_bounds_;
-  std::optional<base::i18n::TextDirection> saved_text_direction_;
   // Reads passwords from disk and
   std::unique_ptr<SavedPasswordsPresenter> passwords_presenter_;
   base::ScopedObservation<SavedPasswordsPresenter,

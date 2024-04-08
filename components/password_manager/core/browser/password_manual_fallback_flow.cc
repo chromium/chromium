@@ -64,12 +64,12 @@ void PasswordManualFallbackFlow::OnSavedPasswordsChanged(
     const PasswordStoreChangeList& changes) {
   FlowState old_state =
       std::exchange(flow_state_, FlowState::kPasswordsRetrived);
-  if (old_state == FlowState::kInvokedWithoutPasswords) {
-    CHECK(saved_bounds_);
-    CHECK(saved_text_direction_);
-    RunFlowImpl(saved_bounds_.value(), saved_text_direction_.value());
-    saved_bounds_.reset();
-    saved_text_direction_.reset();
+  if (old_state != FlowState::kPasswordsRetrived) {
+    // The flow state transition to `FlowState::kPasswordsRetrived` can happen
+    // only once.
+    if (on_all_password_data_ready_) {
+      std::move(on_all_password_data_ready_).Run();
+    }
   }
 }
 
@@ -79,9 +79,9 @@ void PasswordManualFallbackFlow::RunFlow(
     base::i18n::TextDirection text_direction) {
   saved_field_id_ = field_id;
   if (flow_state_ != FlowState::kPasswordsRetrived) {
-    flow_state_ = FlowState::kInvokedWithoutPasswords;
-    saved_bounds_ = bounds;
-    saved_text_direction_ = text_direction;
+    on_all_password_data_ready_ =
+        base::BindOnce(&PasswordManualFallbackFlow::RunFlowImpl,
+                       base::Unretained(this), bounds, text_direction);
     return;
   }
   RunFlowImpl(bounds, text_direction);
