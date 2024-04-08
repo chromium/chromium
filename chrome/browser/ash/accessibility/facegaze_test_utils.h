@@ -7,11 +7,35 @@
 
 #include <string>
 
+#include "base/values.h"
+
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace ash {
 
 // A class that can be used to exercise FaceGaze in browsertests.
 class FaceGazeTestUtils {
  public:
+  // A class that represents a fake FaceLandmarkerResult.
+  class MockFaceLandmarkerResult {
+   public:
+    MockFaceLandmarkerResult();
+    ~MockFaceLandmarkerResult();
+    MockFaceLandmarkerResult(const MockFaceLandmarkerResult&) = delete;
+    MockFaceLandmarkerResult& operator=(const MockFaceLandmarkerResult&) =
+        delete;
+
+    void SetNormalizedForeheadLocation(double x, double y);
+    const base::Value::Dict& forehead_location() const {
+      return forehead_location_;
+    }
+
+   private:
+    base::Value::Dict forehead_location_;
+  };
+
   FaceGazeTestUtils();
   ~FaceGazeTestUtils();
   FaceGazeTestUtils(const FaceGazeTestUtils&) = delete;
@@ -21,6 +45,17 @@ class FaceGazeTestUtils {
   void EnableFaceGaze();
   // Creates and initializes the FaceLandmarker API within the extension.
   void CreateFaceLandmarker();
+  // Waits for the mouse location to propagate to the FaceGaze MouseController.
+  void WaitForMousePosition(const gfx::Point& location);
+  // Manually sets the buffer size on the FaceGaze MouseController.
+  void InitializeBufferSizeAndAcceleration(int size);
+  // Forces FaceGaze to process `result`, since tests don't have access to real
+  // camera data.
+  void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);
+  // The MouseController updates the mouse location at a set interval. To
+  // increase test stability, the interval is canceled in tests, and must be
+  // triggered manually using this method.
+  void TriggerMouseControllerInterval();
 
  private:
   void ExecuteAccessibilityCommonScript(const std::string& script);
@@ -29,6 +64,7 @@ class FaceGazeTestUtils {
   void SetUpMediapipeDir();
   void WaitForJSReady();
   void SetUpJSTestSupport();
+  void CancelMouseControllerInterval();
 };
 
 }  // namespace ash

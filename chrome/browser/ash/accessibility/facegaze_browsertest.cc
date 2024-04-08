@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ash {
 
@@ -29,19 +34,60 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        Shell::Get()->GetPrimaryRootWindow());
+    display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+        .UpdateDisplay("1200x800");
+
+    // Initialize FaceGaze.
     utils_->EnableFaceGaze();
+    utils_->CreateFaceLandmarker();
+    utils_->InitializeBufferSizeAndAcceleration(1);
+    SetMouseSourceDeviceId(1);
+    // By default the mouse is placed at the center of the screen. To initialize
+    // FaceGaze at the center of the screen, move the mouse somewhere, then
+    // move it back to the center.
+    SendMouseMoveTo(gfx::Point(0, 0));
+    utils_->WaitForMousePosition(gfx::Point(0, 0));
+    SendMouseMoveTo(gfx::Point(600, 400));
+    utils_->WaitForMousePosition(gfx::Point(600, 400));
+
+    // No matter the starting location, the cursor position won't change
+    // initially, and upcoming forehead locations will be computed relative to
+    // this.
+    FaceGazeTestUtils::MockFaceLandmarkerResult result;
+    result.SetNormalizedForeheadLocation(0.1, 0.2);
+    utils_->ProcessFaceLandmarkerResult(result);
+    utils_->TriggerMouseControllerInterval();
+    ASSERT_EQ(gfx::Point(600, 400),
+              display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
+
+  void SendMouseMoveTo(const gfx::Point& location) {
+    event_generator_->MoveMouseTo(location.x(), location.y());
+  }
+
+  void SetMouseSourceDeviceId(int id) {
+    event_generator_->set_mouse_source_device_id(id);
   }
 
   FaceGazeTestUtils* utils() { return utils_.get(); }
 
  private:
   std::unique_ptr<FaceGazeTestUtils> utils_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that the FaceLandmarker can be instantiated.
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CreateFaceLandmarker) {
-  utils()->CreateFaceLandmarker();
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateMouseLocation) {
+  FaceGazeTestUtils::MockFaceLandmarkerResult result;
+  result.SetNormalizedForeheadLocation(0.11, 0.21);
+  utils()->ProcessFaceLandmarkerResult(result);
+  utils()->TriggerMouseControllerInterval();
+
+  // Verify mouse location.
+  ASSERT_EQ(gfx::Point(360, 560),
+            display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
 }  // namespace ash
