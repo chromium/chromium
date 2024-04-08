@@ -42,6 +42,7 @@ component("fido") {
     "fido_transport_protocol.h",
     "json_request.cc",
     "json_request.h",
+    "network_context_factory.h",
     "opaque_attestation_statement.cc",
     "opaque_attestation_statement.h",
     "p256_public_key.cc",

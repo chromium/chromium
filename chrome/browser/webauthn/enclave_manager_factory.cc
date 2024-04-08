@@ -46,10 +46,13 @@ std::unique_ptr<KeyedService>
 EnclaveManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
+  // TODO(nsatragno): this should probably use the storage partition network
+  // manager instead.
   return std::make_unique<EnclaveManager>(
       /*base_dir=*/profile->GetPath(),
-      IdentityManagerFactory::GetForProfile(profile),
-      SystemNetworkContextManager::GetInstance()->GetContext(),
+      IdentityManagerFactory::GetForProfile(profile), base::BindRepeating([]() {
+        return SystemNetworkContextManager::GetInstance()->GetContext();
+      }),
       g_url_loader_factory_test_override
           ? g_url_loader_factory_test_override
           : profile->GetDefaultStoragePartition()

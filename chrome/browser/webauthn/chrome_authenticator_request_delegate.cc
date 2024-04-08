@@ -964,8 +964,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   if (non_extension_cablev2_enabled || cablev2_extension_provided ||
       enclave_manager_) {
     if (SystemNetworkContextManager::GetInstance()) {
-      discovery_factory->set_network_context(
-          SystemNetworkContextManager::GetInstance()->GetContext());
+      // TODO(nsatragno): this should probably use a storage partition network
+      // context instead. See the SystemNetworkContextManager class comments.
+      discovery_factory->set_network_context_factory(base::BindRepeating([]() {
+        return SystemNetworkContextManager::GetInstance()->GetContext();
+      }));
     }
   }
 

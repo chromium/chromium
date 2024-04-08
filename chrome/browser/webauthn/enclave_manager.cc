@@ -50,6 +50,7 @@
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/network_context_factory.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -1346,8 +1347,8 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kRegisteringWithEnclave;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
-                      std::move(token),
+    enclave::Transact(manager_->network_context_factory_,
+                      enclave::GetEnclaveIdentity(), std::move(token),
                       /*reauthentication_token=*/std::nullopt,
                       BuildRegistrationMessage(user_->device_id(),
                                                manager_->hardware_key_->key(),
@@ -1403,7 +1404,7 @@ class EnclaveManager::StateMachine {
     state_ = State::kWrappingSecrets;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
     enclave::Transact(
-        manager_->network_context_, enclave::GetEnclaveIdentity(),
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
         /*reauthentication_token=*/std::nullopt,
         cbor::Value(
@@ -1571,7 +1572,7 @@ class EnclaveManager::StateMachine {
     // PIN for transmission to the recovery key store.
     state_ = State::kWrappingPIN;
     enclave::Transact(
-        manager_->network_context_, enclave::GetEnclaveIdentity(),
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
         /*reauthentication_token=*/std::nullopt,
         ConcatEnclaveRequests(
@@ -1592,7 +1593,7 @@ class EnclaveManager::StateMachine {
     base::span<const uint8_t> wrapped_secret =
         ToSpan(user_->wrapped_security_domain_secrets().begin()->second);
     enclave::Transact(
-        manager_->network_context_, enclave::GetEnclaveIdentity(),
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::move(rapt_),
         // The enclave needs to do two things:
         //   1) Encrypt the PIN hash with the security domain secret,
@@ -2058,11 +2059,11 @@ EnclaveManager::UVKeyOptions& EnclaveManager::UVKeyOptions::operator=(
 EnclaveManager::EnclaveManager(
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
-    raw_ptr<network::mojom::NetworkContext> network_context,
+    device::NetworkContextFactory network_context_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : file_path_(base_dir.Append(FILE_PATH_LITERAL("passkey_enclave_state"))),
       identity_manager_(identity_manager),
-      network_context_(network_context),
+      network_context_factory_(network_context_factory),
       url_loader_factory_(url_loader_factory),
       trusted_vault_conn_(trusted_vault::NewFrontendTrustedVaultConnection(
           trusted_vault::SecurityDomainId::kPasskeys,

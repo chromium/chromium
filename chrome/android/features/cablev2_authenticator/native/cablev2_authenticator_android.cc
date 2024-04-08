@@ -541,7 +541,7 @@ static jlong JNI_CableAuthenticator_StartQR(
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
+      device::cablev2::authenticator::TransactFromQRCodeDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,
@@ -595,7 +595,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   RecordEvent(&global_data, CableV2MobileEvent::kServerLink);
 
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
+      device::cablev2::authenticator::TransactFromQRCodeDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, dummy_root_secret,
@@ -629,7 +629,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromFCM(
+      device::cablev2::authenticator::TransactFromFCMDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,

@@ -72,9 +72,9 @@ EnclaveAuthenticator::EnclaveAuthenticator(
     std::unique_ptr<CredentialRequest> ui_request,
     base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
         save_passkey_callback,
-    raw_ptr<network::mojom::NetworkContext> network_context)
+    NetworkContextFactory network_context_factory)
     : id_(RandomId()),
-      network_context_(network_context),
+      network_context_factory_(std::move(network_context_factory)),
       ui_request_(std::move(ui_request)),
       save_passkey_callback_(std::move(save_passkey_callback)) {}
 
@@ -95,7 +95,7 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
       std::make_unique<PendingMakeCredentialRequest>(
           std::move(request), std::move(options), std::move(callback));
 
-  Transact(network_context_, GetEnclaveIdentity(),
+  Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
            BuildMakeCredentialCommand(
@@ -116,7 +116,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
 
-  Transact(network_context_, GetEnclaveIdentity(),
+  Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
            BuildGetAssertionCommand(

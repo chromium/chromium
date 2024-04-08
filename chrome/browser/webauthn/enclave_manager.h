@@ -20,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/network_context_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -99,7 +100,7 @@ class EnclaveManager : public KeyedService {
   EnclaveManager(
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,
-      raw_ptr<network::mojom::NetworkContext> network_context,
+      device::NetworkContextFactory network_context_factory,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~EnclaveManager() override;
   EnclaveManager(const EnclaveManager&) = delete;
@@ -279,7 +280,7 @@ class EnclaveManager : public KeyedService {
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  device::NetworkContextFactory network_context_factory_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::unique_ptr<trusted_vault::TrustedVaultConnection>
       trusted_vault_conn_;

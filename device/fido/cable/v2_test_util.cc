@@ -25,6 +25,7 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/network_context_factory.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -645,12 +646,12 @@ class LateLinkingDevice : public authenticator::Transaction {
  public:
   LateLinkingDevice(CtapDeviceResponseCode ctap_error,
                     std::unique_ptr<Platform> platform,
-                    network::mojom::NetworkContext* network_context,
+                    NetworkContextFactory network_context_factory,
                     base::span<const uint8_t> qr_secret,
                     base::span<const uint8_t, kP256X962Length> peer_identity)
       : ctap_error_(ctap_error),
         platform_(std::move(platform)),
-        network_context_(network_context),
+        network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             qr_secret,
             base::span<uint8_t>(),
@@ -670,7 +671,7 @@ class LateLinkingDevice : public authenticator::Transaction {
     const GURL target = device::cablev2::tunnelserver::GetNewTunnelURL(
         kTunnelServer, tunnel_id_);
 
-    network_context_->CreateWebSocket(
+    network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         /*has_storage_access=*/false, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
@@ -850,7 +851,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
   const CtapDeviceResponseCode ctap_error_;
   const std::unique_ptr<Platform> platform_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const NetworkContextFactory network_context_factory_;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   const std::array<uint8_t, kP256X962Length> peer_identity_;
@@ -867,10 +868,10 @@ class LateLinkingDevice : public authenticator::Transaction {
 class HandshakeErrorDevice : public authenticator::Transaction {
  public:
   HandshakeErrorDevice(std::unique_ptr<Platform> platform,
-                       network::mojom::NetworkContext* network_context,
+                       NetworkContextFactory network_context_factory,
                        base::span<const uint8_t> qr_secret)
       : platform_(std::move(platform)),
-        network_context_(network_context),
+        network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             qr_secret,
             base::span<uint8_t>(),
@@ -889,7 +890,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
     const GURL target = device::cablev2::tunnelserver::GetNewTunnelURL(
         kTunnelServer, tunnel_id_);
 
-    network_context_->CreateWebSocket(
+    network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         /*has_storage_access=*/false, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
@@ -938,7 +939,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
   }
 
   const std::unique_ptr<Platform> platform_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const NetworkContextFactory network_context_factory_;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   const std::vector<uint8_t> secret_;
@@ -974,20 +975,20 @@ std::unique_ptr<authenticator::Platform> NewMockPlatform(
 std::unique_ptr<Transaction> NewLateLinkingDevice(
     CtapDeviceResponseCode ctap_error,
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity) {
   return std::make_unique<LateLinkingDevice>(ctap_error, std::move(platform),
-                                             network_context, qr_secret,
-                                             peer_identity);
+                                             std::move(network_context_factory),
+                                             qr_secret, peer_identity);
 }
 
 std::unique_ptr<Transaction> NewHandshakeErrorDevice(
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret) {
-  return std::make_unique<HandshakeErrorDevice>(std::move(platform),
-                                                network_context, qr_secret);
+  return std::make_unique<HandshakeErrorDevice>(
+      std::move(platform), std::move(network_context_factory), qr_secret);
 }
 
 }  // namespace authenticator

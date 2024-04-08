@@ -9,6 +9,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/network_context_factory.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -77,13 +78,13 @@ EnclaveWebSocketClient::EnclaveWebSocketClient(
     const GURL& service_url,
     std::string access_token,
     std::optional<std::string> reauthentication_token,
-    raw_ptr<network::mojom::NetworkContext> network_context,
+    NetworkContextFactory network_context_factory,
     OnResponseCallback on_response)
     : state_(State::kInitialized),
       service_url_(service_url),
       access_token_(std::move(access_token)),
       reauthentication_token_(std::move(reauthentication_token)),
-      network_context_(network_context),
+      network_context_factory_(std::move(network_context_factory)),
       on_response_(std::move(on_response)),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
@@ -127,7 +128,7 @@ void EnclaveWebSocketClient::Connect() {
         "Reauthentication", *reauthentication_token_));
   }
 
-  network_context_->CreateWebSocket(
+  network_context_factory_.Run()->CreateWebSocket(
       service_url_, {kEnclaveWebSocketProtocol}, net::SiteForCookies(),
       /*has_storage_access=*/false, net::IsolationInfo(),
       std::move(additional_headers), network::mojom::kBrowserProcessId,

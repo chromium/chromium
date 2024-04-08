@@ -13,6 +13,7 @@
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_discovery.h"
+#include "device/fido/network_context_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace device {
@@ -66,7 +67,7 @@ std::unique_ptr<Platform> NewMockPlatform(
 std::unique_ptr<Transaction> NewLateLinkingDevice(
     CtapDeviceResponseCode ctap_error,
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity);
 
@@ -74,7 +75,7 @@ std::unique_ptr<Transaction> NewLateLinkingDevice(
 // caBLEv2 handshake.
 std::unique_ptr<Transaction> NewHandshakeErrorDevice(
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret);
 
 }  // namespace authenticator

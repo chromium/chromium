@@ -19,8 +19,7 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
-namespace device {
-namespace cablev2 {
+namespace device::cablev2 {
 
 namespace {
 
@@ -49,7 +48,7 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 
 Discovery::Discovery(
     FidoRequestType request_type,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
     std::unique_ptr<EventStream<std::unique_ptr<Pairing>>>
@@ -62,7 +61,7 @@ Discovery::Discovery(
     std::optional<base::RepeatingCallback<void(Event)>> event_callback)
     : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
       request_type_(request_type),
-      network_context_(network_context),
+      network_context_factory_(std::move(network_context_factory)),
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),
       extension_keys_(KeysFromExtension(extension_contents)),
       advert_stream_(std::move(advert_stream)),
@@ -161,7 +160,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
         event_callback_->Run(Event::kBLEAdvertReceived);
       }
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
-          network_context_, pairing_callback_, event_callback_,
+          network_context_factory_, pairing_callback_, event_callback_,
           qr_keys_->qr_secret, qr_keys_->local_identity_seed, *plaintext));
       return;
     }
@@ -177,7 +176,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
       RecordEvent(CableV2DiscoveryEvent::kExtensionMatch);
       device_committed_ = true;
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
-          network_context_, base::DoNothing(), event_callback_,
+          network_context_factory_, base::DoNothing(), event_callback_,
           extension.qr_secret, extension.local_identity_seed, *plaintext));
       return;
     }
@@ -190,7 +189,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
 void Discovery::OnContactDevice(std::unique_ptr<Pairing> pairing) {
   auto pairing_copy = std::make_unique<Pairing>(*pairing);
   tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
-      request_type_, network_context_, std::move(pairing),
+      request_type_, network_context_factory_, std::move(pairing),
       base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
                      std::move(pairing_copy)),
       event_callback_));
@@ -249,5 +248,4 @@ std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
   return ret;
 }
 
-}  // namespace cablev2
-}  // namespace device
+}  // namespace device::cablev2

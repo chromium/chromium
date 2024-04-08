@@ -17,6 +17,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/network_context_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -96,7 +97,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 FidoTunnelDevice::FidoTunnelDevice(
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback,
     std::optional<base::RepeatingCallback<void(Event)>> event_callback,
@@ -130,7 +131,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       base::BindOnce(&FidoTunnelDevice::OnTunnelReady, base::Unretained(this)),
       base::BindRepeating(&FidoTunnelDevice::OnTunnelData,
                           base::Unretained(this)));
-  network_context->CreateWebSocket(
+  network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       /*has_storage_access=*/false, net::IsolationInfo(),
       /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
@@ -145,7 +146,7 @@ FidoTunnelDevice::FidoTunnelDevice(
 
 FidoTunnelDevice::FidoTunnelDevice(
     FidoRequestType request_type,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     std::unique_ptr<Pairing> pairing,
     base::OnceClosure pairing_is_invalid,
     std::optional<base::RepeatingCallback<void(Event)>> event_callback)
@@ -185,7 +186,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       kCableClientPayloadHeader, client_payload_hex));
   headers.emplace_back(
       network::mojom::HttpHeader::New(kCableSignalConnectionHeader, "true"));
-  network_context->CreateWebSocket(
+  network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       /*has_storage_access=*/false, net::IsolationInfo(), std::move(headers),
       network::mojom::kBrowserProcessId, url::Origin::Create(url),

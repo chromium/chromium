@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/process/process.h"
@@ -206,7 +207,10 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
             FakeSecurityDomainService::New(kSecretVersion)),
         manager_(temp_dir_.GetPath(),
                  identity_test_env_.identity_manager(),
-                 network_context_.get(),
+                 base::BindLambdaForTesting(
+                     [&]() -> network::mojom::NetworkContext* {
+                       return network_context_.get();
+                     }),
                  url_loader_factory_.GetSafeWeakWrapper()) {
     OSCryptMocker::SetUp();
 
@@ -280,7 +284,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                   std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
                       std::move(in_specifics));
             }),
-        network_context_.get());
+        base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+          return network_context_.get();
+        }));
 
     std::vector<device::PublicKeyCredentialParams::CredentialInfo>
         pub_key_params;
@@ -360,7 +366,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         std::move(ui_request), /*save_passkey_callback=*/
         base::BindRepeating(
             [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
-        network_context_.get());
+        base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+          return network_context_.get();
+        }));
 
     device::CtapGetAssertionRequest ctap_request("test.com",
                                                  R"({"foo": "bar"})");

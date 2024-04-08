@@ -26,11 +26,11 @@ EnclaveAuthenticatorDiscovery::EnclaveAuthenticatorDiscovery(
     std::unique_ptr<
         FidoDiscoveryBase::EventStream<std::unique_ptr<CredentialRequest>>>
         ui_request_stream,
-    raw_ptr<network::mojom::NetworkContext> network_context)
+    NetworkContextFactory network_context_factory)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       ui_request_stream_(std::move(ui_request_stream)),
       save_passkey_callback_(std::move(save_passkey_callback)),
-      network_context_(network_context) {
+      network_context_factory_(std::move(network_context_factory)) {
   ui_request_stream_->Connect(base::BindRepeating(
       &EnclaveAuthenticatorDiscovery::OnUIRequest, base::Unretained(this)));
 }
@@ -46,7 +46,8 @@ void EnclaveAuthenticatorDiscovery::Start() {
 void EnclaveAuthenticatorDiscovery::OnUIRequest(
     std::unique_ptr<CredentialRequest> request) {
   auto authenticator = std::make_unique<EnclaveAuthenticator>(
-      std::move(request), std::move(save_passkey_callback_), network_context_);
+      std::move(request), std::move(save_passkey_callback_),
+      network_context_factory_);
   auto* ptr = authenticator.get();
   authenticators_.emplace_back(std::move(authenticator));
   observer()->AuthenticatorAdded(this, ptr);

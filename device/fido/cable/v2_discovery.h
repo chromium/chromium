@@ -20,6 +20,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_discovery.h"
+#include "device/fido/network_context_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace device::cablev2 {
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
 
   Discovery(
       FidoRequestType request_type,
-      network::mojom::NetworkContext* network_context,
+      NetworkContextFactory network_context_factory,
       std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
       // contact_device_stream contains a series of pairings indicating that the
@@ -80,7 +81,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       const std::vector<CableDiscoveryData>& extension_contents);
 
   const FidoRequestType request_type_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  NetworkContextFactory network_context_factory_;
   const std::optional<UnpairedKeys> qr_keys_;
   const std::vector<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
