@@ -158,13 +158,8 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
 
   void MakeAllCommitsFailForTesting() { fail_commits_for_testing_ = true; }
 
-  // Constructs a new DomStorageDatabase, creating or opening persistent
-  // on-filesystem database as specified. Asynchronously invokes |callback| on
-  // |callback_task_runner| when done.
-  //
-  // This must be called on a sequence that allows blocking operations. Prefer
-  // to instead call one of the static methods defined below, which can be
-  // called from any sequence.
+  // Use the static factory functions above to construct this class. These
+  // constructors are only public for the sake of `base::SequenceBound`.
   DomStorageDatabase(
       PassKey,
       const base::FilePath& directory,
@@ -174,9 +169,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
-
-  // Same as above, but for an in-memory database. |tracking_name| is used
-  // internally for memory dump details.
   DomStorageDatabase(
       PassKey,
       const std::string& tracking_name,
@@ -185,8 +177,13 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
 
+ private:
+  // Constructs a new DomStorageDatabase, creating or opening persistent
+  // on-filesystem database as specified. Asynchronously invokes `callback` on
+  // `callback_task_runner` when done.
+  //
+  // This must be called on a sequence that allows blocking operations.
   DomStorageDatabase(
-      PassKey,
       const std::string& name,
       std::unique_ptr<leveldb::Env> env,
       const leveldb_env::Options& options,
@@ -195,7 +192,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
 
- private:
   template <typename... Args>
   static void CreateSequenceBoundDomStorageDatabase(
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,

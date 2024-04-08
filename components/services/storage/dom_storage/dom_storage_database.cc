@@ -143,8 +143,7 @@ DomStorageDatabase::DomStorageDatabase(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
-    : DomStorageDatabase(PassKey(),
-                         MakeFullPersistentDBName(directory, name),
+    : DomStorageDatabase(MakeFullPersistentDBName(directory, name),
                          /*env=*/nullptr,
                          options,
                          memory_dump_id,
@@ -158,8 +157,7 @@ DomStorageDatabase::DomStorageDatabase(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
-    : DomStorageDatabase(PassKey(),
-                         "",
+    : DomStorageDatabase("",
                          leveldb_chrome::NewMemEnv(tracking_name),
                          CreateDefaultInMemoryOptions(),
                          memory_dump_id,
@@ -167,7 +165,6 @@ DomStorageDatabase::DomStorageDatabase(
                          std::move(callback)) {}
 
 DomStorageDatabase::DomStorageDatabase(
-    PassKey,
     const std::string& name,
     std::unique_ptr<leveldb::Env> env,
     const leveldb_env::Options& options,
