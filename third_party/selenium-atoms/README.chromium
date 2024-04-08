@@ -46,6 +46,8 @@ Contents:
 Local Modifications:
 - Applied changes in patch.diff to the selenium tree prior to building the atoms.
 
+The following dependency list is obtained from //third_party/js of selenium repo.
+
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -69,14 +71,3 @@ Security Critical: no
 Shipped: yes
 License: MIT
 License File: LICENSE.wgxpath
-
--------------------- DEPENDENCY DIVIDER --------------------
-
-Name: Closure Library
-URL: https://developers.google.com/closure/library
-Version: N/A
-Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
-Security Critical: no
-Shipped: yes
-License: Apache 2.0
-License File: LICENSE.closure
