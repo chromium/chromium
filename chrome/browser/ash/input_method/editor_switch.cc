@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -192,6 +193,44 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
 
 }  // namespace
 
+bool IsAllowedForUseInDemoMode(std::string_view country_code) {
+  return base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kFeatureManagementOrca) &&
+         IsCountryAllowed(country_code);
+}
+
+bool IsAllowedForUseInNonDemoMode(Profile* profile,
+                                  std::string_view country_code) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kFeatureManagementOrca) ||
+      !IsCountryAllowed(country_code) ||
+      (base::FeatureList::IsEnabled(
+           ash::features::kOrcaUseAccountCapabilities) &&
+       FetchOrcaAccountCapabilityFromMantaService(profile) !=
+           manta::FeatureSupportStatus::kSupported)) {
+    return false;
+  }
+
+  // Always allow the feature on unmanaged users.
+  if (!IsProfileManaged(profile)) {
+    return true;
+  }
+
+  // For managed users, if the feature flag `OrcaControlledByPolicy `is set, let
+  // the feature enablement be driven by the policy.
+  if (base::FeatureList::IsEnabled(features::kOrcaControlledByPolicy)) {
+    return profile->GetPrefs()->IsManagedPreference(prefs::kManagedOrcaEnabled)
+               ? profile->GetPrefs()->GetBoolean(prefs::kManagedOrcaEnabled)
+               : false;
+  }
+
+  // If the Orca policy is not ready to launch on managed users, disallow the
+  // feature.
+  return false;
+}
+
 EditorSwitch::EditorSwitch(Delegate* delegate,
                            Profile* profile,
                            std::string_view country_code)
@@ -215,33 +254,10 @@ bool EditorSwitch::IsAllowedForUse() const {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kFeatureManagementOrca) ||
-      !IsCountryAllowed(country_code_) || 
-      (base::FeatureList::IsEnabled(
-          ash::features::kOrcaUseAccountCapabilities) &&
-      FetchOrcaAccountCapabilityFromMantaService(profile_) !=
-          manta::FeatureSupportStatus::kSupported)) {
-    return false;
-  }
-
-  // Always allow the feature on unmanaged users.
-  if (!IsProfileManaged(profile_)) {
-    return true;
-  }
-
-  // For managed users, if the feature flag `OrcaControlledByPolicy `is set, let
-  // the feature enablement be driven by the policy.
-  if (base::FeatureList::IsEnabled(features::kOrcaControlledByPolicy)) {
-    return profile_->GetPrefs()->IsManagedPreference(prefs::kManagedOrcaEnabled)
-               ? profile_->GetPrefs()->GetBoolean(prefs::kManagedOrcaEnabled)
-               : false;
-  }
-
-  // If the Orca policy is not ready to launch on managed users, disallow the
-  // feature.
-  return false;
+  return base::FeatureList::IsEnabled(ash::features::kOrcaSupportDemoMode) &&
+                 ash::DemoSession::IsDeviceInDemoMode()
+             ? IsAllowedForUseInDemoMode(country_code_)
+             : IsAllowedForUseInNonDemoMode(profile_, country_code_);
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
