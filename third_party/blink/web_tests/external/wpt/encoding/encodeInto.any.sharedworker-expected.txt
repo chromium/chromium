@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] encodeInto() into SharedArrayBuffer with Hi and destination length 0, offset 0, filler 0
   Failed to execute 'encodeInto' on 'TextEncoder': The provided Uint8Array value must not be shared.
 [FAIL] encodeInto() into SharedArrayBuffer with Hi and destination length 0, offset 4, filler 0
@@ -84,5 +84,9 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'encodeInto' on 'TextEncoder': The provided Uint8Array value must not be shared.
 [FAIL] encodeInto() into SharedArrayBuffer with ¥¥ and destination length 4, offset 4, filler random
   Failed to execute 'encodeInto' on 'TextEncoder': The provided Uint8Array value must not be shared.
+[FAIL] Invalid encodeInto() destination: Float16Array, backed by: ArrayBuffer
+  self[type] is not a constructor
+[FAIL] Invalid encodeInto() destination: Float16Array, backed by: SharedArrayBuffer
+  self[type] is not a constructor
 Harness: the test ran to completion.
 

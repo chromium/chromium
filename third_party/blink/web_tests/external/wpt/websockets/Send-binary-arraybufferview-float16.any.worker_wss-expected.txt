@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Send binary data on a WebSocket - ArrayBufferView - Float16Array - Connection should be closed
+  Float16Array is not defined
+Harness: the test ran to completion.
+

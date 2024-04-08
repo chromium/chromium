@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Passing typed arrays as elements of the blobParts array should work.
+  Float16Array is not defined
+Harness: the test ran to completion.
+

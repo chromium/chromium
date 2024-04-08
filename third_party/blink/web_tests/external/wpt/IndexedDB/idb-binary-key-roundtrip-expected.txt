@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Binary keys can be supplied using the view type Float16Array
+  self[type] is not a constructor
+Harness: the test ran to completion.
+
