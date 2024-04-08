@@ -18,27 +18,19 @@
 
 namespace crosapi {
 
-SearchControllerAsh::SearchControllerAsh() = default;
+SearchControllerAsh::SearchControllerAsh(
+    mojo::PendingRemote<mojom::SearchController> search_controller)
+    : search_controller_(std::move(search_controller)) {}
+
 SearchControllerAsh::~SearchControllerAsh() = default;
 
 void SearchControllerAsh::Search(const std::u16string& query,
                                  SearchResultsReceivedCallback callback) {
-  if (search_controller_.is_bound() && search_controller_.is_connected()) {
+  if (search_controller_.is_connected()) {
     search_controller_->Search(
         query, base::BindOnce(&SearchControllerAsh::BindPublisher,
                               weak_factory_.GetWeakPtr(), std::move(callback)));
   }
-}
-
-void SearchControllerAsh::RegisterSearchController(
-    mojo::PendingRemote<mojom::SearchController> search_controller) {
-  if (search_controller_.is_bound() && search_controller_.is_connected()) {
-    LOG(ERROR) << "Search Controller is already connected.";
-    return;
-  }
-
-  search_controller_.reset();
-  search_controller_.Bind(std::move(search_controller));
 }
 
 void SearchControllerAsh::OnSearchResultsReceived(
@@ -66,7 +58,7 @@ void SearchControllerAsh::OnSearchResultsReceived(
 }
 
 bool SearchControllerAsh::IsConnected() const {
-  return search_controller_.is_bound() && search_controller_.is_connected();
+  return search_controller_.is_connected();
 }
 
 void SearchControllerAsh::BindPublisher(

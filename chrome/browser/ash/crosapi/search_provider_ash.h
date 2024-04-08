@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_SEARCH_PROVIDER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_SEARCH_PROVIDER_ASH_H_
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
@@ -66,7 +67,7 @@ class SearchProviderAsh : public mojom::SearchControllerRegistry {
   bool IsSearchControllerConnected() const;
 
  private:
-  SearchControllerAsh search_controller_;
+  std::unique_ptr<SearchControllerAsh> search_controller_;
 
   mojo::ReceiverSet<mojom::SearchControllerRegistry> registry_receivers_;
 };

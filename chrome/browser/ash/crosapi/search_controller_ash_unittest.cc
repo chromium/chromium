@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -63,32 +64,22 @@ using SearchResultsTestFuture =
 
 using SearchControllerAshTest = ::testing::Test;
 
-TEST_F(SearchControllerAshTest, CallbackNotCalledIfNotBound) {
-  base::test::SingleThreadTaskEnvironment environment;
-  SearchResultsTestFuture future;
-
-  SearchControllerAsh controller;
-  controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
-
-  EXPECT_FALSE(future.IsReady());
-}
-
 TEST_F(SearchControllerAshTest, CallbackNotCalledIfNotConnected) {
   base::test::SingleThreadTaskEnvironment environment;
   SearchResultsTestFuture future;
 
-  SearchControllerAsh controller;
+  std::unique_ptr<SearchControllerAsh> controller;
   {
     TestMojomSearchController mojom_controller;
-    controller.RegisterSearchController(mojom_controller.BindToRemote());
+    controller =
+        std::make_unique<SearchControllerAsh>(mojom_controller.BindToRemote());
     // Run until idle to ensure that the controller binds the remote...
     environment.RunUntilIdle();
     // ...then destroy the receiver to disconnect it...
   }
   // ...and ensure that the controller receives the disconnection.
   environment.RunUntilIdle();
-  controller.Search(u"cat", future.GetRepeatingCallback());
+  controller->Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
 
   EXPECT_FALSE(future.IsReady());
@@ -99,8 +90,7 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfBackendUnavailable) {
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
@@ -116,8 +106,7 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfCancelled) {
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
@@ -132,8 +121,7 @@ TEST_F(SearchControllerAshTest, CallbackCalledWithEmptyResults) {
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
@@ -150,8 +138,7 @@ TEST_F(SearchControllerAshTest,
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
@@ -188,8 +175,7 @@ TEST_F(SearchControllerAshTest, CallbackCalledWithMultipleResultsSeparately) {
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();
@@ -231,8 +217,7 @@ TEST_F(SearchControllerAshTest, CallbackIsNotCalledWithInProgressResults) {
   SearchResultsTestFuture future;
   TestMojomSearchController mojom_controller;
 
-  SearchControllerAsh controller;
-  controller.RegisterSearchController(mojom_controller.BindToRemote());
+  SearchControllerAsh controller(mojom_controller.BindToRemote());
   environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
   environment.RunUntilIdle();

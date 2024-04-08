@@ -21,7 +21,12 @@
 
 namespace crosapi {
 
-// Wrapper around a remote `SearchController` for omnibox search.
+// Wrapper around a remote `SearchController` for omnibox search. The remote is
+// always bound for the lifetime of this object, but may be disconnected
+// (possibly on construction - it is not guaranteed that an object is ever
+// connected). As the remote cannot be rebound through the public API, it is
+// impossible for a disconnected `SearchControllerAsh` to become connected
+// again.
 //
 // Internally, this class implements one `SearchResultsPublisher` per search
 // request (even though the search controller can only execute one search at a
@@ -32,13 +37,11 @@ class SearchControllerAsh : public mojom::SearchResultsPublisher {
   using SearchResultsReceivedCallback =
       base::RepeatingCallback<void(std::vector<mojom::SearchResultPtr>)>;
 
-  SearchControllerAsh();
+  explicit SearchControllerAsh(
+      mojo::PendingRemote<mojom::SearchController> search_controller);
   SearchControllerAsh(const SearchControllerAsh&) = delete;
   SearchControllerAsh& operator=(const SearchControllerAsh&) = delete;
   ~SearchControllerAsh() override;
-
-  void RegisterSearchController(
-      mojo::PendingRemote<mojom::SearchController> search_controller);
 
   bool IsConnected() const;
 

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
+#include "base/logging.h"
+#include "chrome/browser/ash/crosapi/search_controller_ash.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -22,16 +25,23 @@ void SearchProviderAsh::BindReceiver(
 
 void SearchProviderAsh::Search(const std::u16string& query,
                                SearchResultsReceivedCallback callback) {
-  search_controller_.Search(query, std::move(callback));
+  if (search_controller_) {
+    search_controller_->Search(query, std::move(callback));
+  }
 }
 
 void SearchProviderAsh::RegisterSearchController(
     mojo::PendingRemote<mojom::SearchController> search_controller) {
-  search_controller_.RegisterSearchController(std::move(search_controller));
+  if (search_controller_ && search_controller_->IsConnected()) {
+    LOG(ERROR) << "Search Controller is already connected.";
+    return;
+  }
+  search_controller_ =
+      std::make_unique<SearchControllerAsh>(std::move(search_controller));
 }
 
 bool SearchProviderAsh::IsSearchControllerConnected() const {
-  return search_controller_.IsConnected();
+  return search_controller_ && search_controller_->IsConnected();
 }
 
 }  // namespace crosapi
