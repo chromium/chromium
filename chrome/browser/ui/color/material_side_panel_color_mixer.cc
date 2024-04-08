@@ -30,6 +30,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {kColorToolbarTextDisabled};
   mixer[kColorSidePanelResizeAreaHandle] = {kColorToolbarText};
 
+  mixer[kColorSidePanelHoverResizeAreaHandle] = {ui::kColorSysOutline};
   mixer[kColorSidePanelCardBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorSidePanelCardPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelCardSecondaryForeground] = {

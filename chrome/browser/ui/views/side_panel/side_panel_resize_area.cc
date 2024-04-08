@@ -45,7 +45,7 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
 void SidePanelResizeHandle::UpdateVisibility(bool visible) {
   if (visible) {
     const SkColor resize_handle_color =
-        GetColorProvider()->GetColor(kColorSidePanelResizeAreaHandle);
+        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
     SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
   } else {
     SetBackground(nullptr);
