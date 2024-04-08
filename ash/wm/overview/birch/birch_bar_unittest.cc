@@ -414,24 +414,15 @@ TEST_F(BirchBarTest, HideBirchBarInPartialSplitScreen) {
   EXPECT_TRUE(grid_test_api.birch_bar_view());
 }
 
-// Tests that the birch bar will be hidden in the Tablet mode.
-// TODO(http://b/325963519): change this to test showing birch bar in tablet
-// mode when the spec is finalized.
-TEST_F(BirchBarTest, HideBirchBarInTabletMode) {
+TEST_F(BirchBarTest, ShowBirchBarInTabletMode) {
   EnterOverview();
-
-  // The birch bar should be shown in the normal Overview.
-  auto grid_test_api = OverviewGridTestApi(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(grid_test_api.birch_bar_view());
-
-  // Convert to Tablet mode, the birch bar should be hidden.
+  // Convert to Tablet mode, the birch bar should be shown in Overview mode.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_FALSE(grid_test_api.birch_bar_view());
 
-  // Convert to Clamshell mode, the birch bar should be shown.
-  tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_TRUE(grid_test_api.birch_bar_view());
+  EnterOverview();
+  EXPECT_TRUE(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

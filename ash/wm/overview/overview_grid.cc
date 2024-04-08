@@ -23,6 +23,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -475,6 +476,17 @@ int GetTopViewInset(const aura::Window::Windows& windows) {
   return inset;
 }
 
+// Returns the bottom padding of birch bar according to the appearance of the
+// home launcher.
+int GetBirchBarBottomPadding(aura::Window* root_window) {
+  // There is no padding when home launcher shows.
+  return Shelf::ForWindow(root_window)
+                     ->shelf_layout_manager()
+                     ->hotseat_state() == HotseatState::kShownHomeLauncher
+             ? 0
+             : kBirchBarBottomPadding;
+}
+
 // Returns the corresponding `SplitViewOverviewSessionExitPoint` with the
 // overview end action deduced from the given `overview_session`.
 SplitViewOverviewSessionExitPoint GetSplitViewOverviewSessionExitPoint(
@@ -521,11 +533,8 @@ bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
 bool ShouldShowBirchBar(aura::Window* root_window) {
   // The birch bar should not be shown in tablet mode, partial split view,
   // the forest feature is disabled, or the birch bars are disabled by users.
-  // TODO(http://b/325963519): remove the restriction of tablet mode when the
-  // design is finalized.
   return features::IsForestFeatureEnabled() &&
          BirchBarController::Get()->GetShowBirchSuggestions() &&
-         !Shell::Get()->IsInTabletMode() &&
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
 
@@ -1645,13 +1654,18 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 }
 
 gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
-  if (!features::IsForestFeatureEnabled() || InTabletMode()) {
+  if (!features::IsForestFeatureEnabled()) {
     return gfx::Insets();
   }
 
   // Use compact paddings for partial overview.
   if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
     return gfx::Insets::VH(0, kCompactPaddingForEffectiveBounds);
+  }
+
+  // Use spacious padding for tablet mode.
+  if (InTabletMode()) {
+    return gfx::Insets::VH(0, kSpaciousPaddingForEffectiveBounds);
   }
 
   gfx::Insets horizontal_paddings;
@@ -1690,35 +1704,46 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
   const bool has_desk_bar =
       desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
 
-  vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight() : 0);
+  const int no_desk_bar_padding =
+      forest_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
+  vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight()
+                                         : no_desk_bar_padding);
 
-  // TODO(http://b/325963519): implement the paddings in tablet mode when the
-  // design is finalized.
-  if (!forest_enabled || InTabletMode()) {
+  if (!forest_enabled) {
     return vertical_paddings;
   }
 
-  // Calculate the bottom padding according to the existence of birch bar and
-  // shelf.
+  // Calculate the bottom padding according to the existence of birch bar,
+  // shelf, and home launcher.
   const bool has_birch_bar = birch_bar_view_ && birch_bar_view_->GetChipsNum();
 
   // If birch bar exist, add compact padding with birch bar height and birch bar
   // bottom padding to the bottom.
   if (has_birch_bar) {
-    vertical_paddings.set_bottom(kBirchBarBottomPadding +
+    vertical_paddings.set_bottom(GetBirchBarBottomPadding(root_window_) +
                                  birch_bar_view_->GetPreferredSize().height() +
                                  kCompactPaddingForEffectiveBounds);
     return vertical_paddings;
   }
 
+  auto* shelf = Shelf::ForWindow(root_window_);
+
+  if (InTabletMode()) {
+    // Use compact padding for home launcher and spacious padding otherwise.
+    vertical_paddings.set_bottom(
+        shelf->shelf_layout_manager()->hotseat_state() ==
+                HotseatState::kShownHomeLauncher
+            ? kCompactPaddingForEffectiveBounds
+            : kSpaciousPaddingForEffectiveBounds);
+    return vertical_paddings;
+  }
+
   // Otherwise, if there is a bottom shelf, use compact padding and spacious
   // padding otherwise.
-  vertical_paddings.set_bottom(
-      Shelf::ForWindow(root_window_)
-          ->SelectValueForShelfAlignment(
-              /*bottom=*/kCompactPaddingForEffectiveBounds,
-              /*left=*/kSpaciousPaddingForEffectiveBounds,
-              /*right=*/kSpaciousPaddingForEffectiveBounds));
+  vertical_paddings.set_bottom(shelf->SelectValueForShelfAlignment(
+      /*bottom=*/kCompactPaddingForEffectiveBounds,
+      /*left=*/kSpaciousPaddingForEffectiveBounds,
+      /*right=*/kSpaciousPaddingForEffectiveBounds));
   return vertical_paddings;
 }
 
@@ -2452,14 +2477,7 @@ void OverviewGrid::OnTabletModeChanged() {
   // either. In this case, we may need to init the virtual desk bar.
   MaybeInitDesksWidget();
 
-  // Show the birch bar in clamshell mode and hide it in tablet mode.
-  // TODO(http://b/325963519): remove it when the design of the birch bar in
-  // tablet mode is finalized.
-  if (ShouldShowBirchBar(root_window_)) {
-    MaybeInitBirchBarWidget();
-  } else {
-    DestroyBirchBarWidget();
-  }
+  MaybeInitBirchBarWidget();
 }
 
 size_t OverviewGrid::GetNumWindows() const {
@@ -3095,14 +3113,17 @@ gfx::Rect OverviewGrid::GetBirchBarWidgetBounds() const {
   birch_bar_view_->UpdateAvailableSpace(available_space.width());
   const gfx::Size birch_bar_widget_size = birch_bar_view_->GetPreferredSize();
 
+  const int birch_bar_bottom_padding = GetBirchBarBottomPadding(root_window_);
+
   // Centeralize the bich bar at the bottom.
   const int top_inset = available_space.height() -
-                        birch_bar_widget_size.height() - kBirchBarBottomPadding;
+                        birch_bar_widget_size.height() -
+                        birch_bar_bottom_padding;
   const int horizontal_inset =
       (available_space.width() - birch_bar_widget_size.width()) / 2;
 
   available_space.Inset(gfx::Insets::TLBR(
-      top_inset, horizontal_inset, kBirchBarBottomPadding, horizontal_inset));
+      top_inset, horizontal_inset, birch_bar_bottom_padding, horizontal_inset));
   return available_space;
 }
 

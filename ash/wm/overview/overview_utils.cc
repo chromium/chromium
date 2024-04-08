@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -239,12 +240,14 @@ gfx::Rect GetGridBoundsInScreen(
   }
 
   // Hotseat overlaps the work area / split view bounds when extended, but in
-  // some cases we don't want its bounds in our calculations.
+  // some cases we don't want its bounds in our calculations. When the forest
+  // features are enabled, we want to exclude the hotseat bounds when it is
+  // shown in home launcher.
   if (account_for_hotseat && display::Screen::GetScreen()->InTabletMode()) {
-    const bool hotseat_extended =
-        Shelf::ForWindow(target_root)
-            ->shelf_layout_manager()
-            ->hotseat_state() == HotseatState::kExtended;
+    const HotseatState hotseat_state =
+        Shelf::ForWindow(target_root)->shelf_layout_manager()->hotseat_state();
+
+    const bool hotseat_extended = hotseat_state == HotseatState::kExtended;
     // When a window is dragged from the top of the screen, overview gets
     // entered immediately but the window does not get deactivated right away so
     // the hotseat state does not get updated until the window gets dragged a
@@ -254,15 +257,25 @@ gfx::Rect GetGridBoundsInScreen(
     const bool hotseat_will_extend =
         overview_session && overview_session->ShouldEnterWithoutAnimations() &&
         !split_view_controller->InSplitViewMode();
-    if (hotseat_extended || hotseat_will_extend) {
-      // Use the default hotseat size here to avoid the possible re-layout
-      // due to the update in HotseatWidget::is_forced_dense_.
-      const int hotseat_bottom_inset =
-          ShelfConfig::Get()->GetHotseatSize(
-              /*density=*/HotseatDensity::kNormal) +
-          ShelfConfig::Get()->hotseat_bottom_padding();
 
+    const bool show_home_launcher =
+        hotseat_state == HotseatState::kShownHomeLauncher;
+
+    const bool forest_enabled = features::IsForestFeatureEnabled();
+
+    // Use the default hotseat size here to avoid the possible re-layout
+    // due to the update in HotseatWidget::is_forced_dense_.
+    const int hotseat_bottom_inset =
+        ShelfConfig::Get()->GetHotseatSize(
+            /*density=*/HotseatDensity::kNormal) +
+        ShelfConfig::Get()->hotseat_bottom_padding();
+
+    if (!forest_enabled && (hotseat_extended || hotseat_will_extend)) {
       bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
+    } else if (forest_enabled && show_home_launcher) {
+      bounds.Inset(gfx::Insets::TLBR(
+          0, 0, hotseat_bottom_inset - ShelfConfig::Get()->in_app_shelf_size(),
+          0));
     }
   }
 
