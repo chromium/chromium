@@ -55,6 +55,10 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
       return power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
     case power_manager::SetBacklightBrightnessRequest_Cause_MODEL:
       return power_manager::BacklightBrightnessChange_Cause_MODEL;
+    case power_manager::
+        SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP:
+      return power_manager::
+          BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP;
   }
   NOTREACHED() << "Unhandled brightness request cause " << cause;
   return power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
