@@ -1070,7 +1070,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
     AutofillSuggestionTriggerSource trigger_source) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles =
-      personal_data().GetProfilesToSuggest();
+      personal_data().address_data_manager().GetProfilesToSuggest();
   std::u16string field_contents_canon =
       NormalizeForComparisonForType(field_contents, trigger_field_type);
   if (!IsAddressType(trigger_field_type)) {

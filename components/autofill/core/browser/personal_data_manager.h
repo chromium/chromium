@@ -412,16 +412,12 @@ class PersonalDataManager : public KeyedService,
   // present in the cache, this function will return a nullptr.
   gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
-  // Returns the profiles to suggest to the user for filling, ordered by
-  // frecency.
-  // TODO(crbug.com/1487119): Change return type to
-  // std::vector<const AutofillProfile*>
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `address_data_manager()` instead. Migrate remaining callers.
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
 
-  // Returns all `GetProfiles()` in the order that the should be shown in the
-  // settings.
-  // TODO(crbug.com/1487119): Change return type to
-  // std::vector<const AutofillProfile*>
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `address_data_manager()` instead. Migrate remaining callers.
   std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns the credit cards to suggest to the user. Those have been deduped

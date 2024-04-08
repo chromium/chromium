@@ -190,7 +190,7 @@ namespace extensions::autofill_util {
 AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<autofill::AutofillProfile*>& profiles =
-      personal_data.GetProfilesForSettings();
+      personal_data.address_data_manager().GetProfilesForSettings();
   std::vector<std::u16string> labels;
   // TODO(crbug.com/1487119): Replace by `profiles` when
   // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.

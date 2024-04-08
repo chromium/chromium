@@ -86,6 +86,18 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
 
+  // Returns the profiles to suggest to the user for filling, ordered by
+  // frecency.
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
+  std::vector<AutofillProfile*> GetProfilesToSuggest() const;
+
+  // Returns all `GetProfiles()` in the order that the should be shown in the
+  // settings.
+  // TODO(crbug.com/1487119): Change return type to
+  // std::vector<const AutofillProfile*>
+  std::vector<AutofillProfile*> GetProfilesForSettings() const;
+
   // Returns the profile with the specified `guid`, or nullptr if there is no
   // profile such profile. See `GetProfiles()` for the lifetime of the pointer.
   // TODO(crbug.com/1487119): Change return type to const AutofillProfile*

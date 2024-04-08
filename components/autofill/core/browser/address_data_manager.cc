@@ -153,6 +153,17 @@ std::vector<AutofillProfile*> AddressDataManager::GetProfilesFromSource(
   return result;
 }
 
+std::vector<AutofillProfile*> AddressDataManager::GetProfilesToSuggest() const {
+  return IsAutofillProfileEnabled()
+             ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
+             : std::vector<AutofillProfile*>{};
+}
+
+std::vector<AutofillProfile*> AddressDataManager::GetProfilesForSettings()
+    const {
+  return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
+}
+
 AutofillProfile* AddressDataManager::GetProfileByGUID(
     const std::string& guid) const {
   std::vector<AutofillProfile*> profiles = GetProfiles();

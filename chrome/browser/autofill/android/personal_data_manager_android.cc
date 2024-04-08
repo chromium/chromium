@@ -189,12 +189,16 @@ jboolean PersonalDataManagerAndroid::IsDataLoaded(JNIEnv* env) const {
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileGUIDsForSettings(JNIEnv* env) {
-  return GetProfileGUIDs(env, personal_data_manager_->GetProfilesForSettings());
+  return GetProfileGUIDs(
+      env,
+      personal_data_manager_->address_data_manager().GetProfilesForSettings());
 }
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileGUIDsToSuggest(JNIEnv* env) {
-  return GetProfileGUIDs(env, personal_data_manager_->GetProfilesToSuggest());
+  return GetProfileGUIDs(
+      env,
+      personal_data_manager_->address_data_manager().GetProfilesToSuggest());
 }
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
@@ -267,11 +271,11 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileLabelsForSettings(JNIEnv* env) {
-  return GetProfileLabels(env, false /* address_only */,
-                          false /* include_name_in_label */,
-                          true /* include_organization_in_label */,
-                          true /* include_country_in_label */,
-                          personal_data_manager_->GetProfilesForSettings());
+  return GetProfileLabels(
+      env, false /* address_only */, false /* include_name_in_label */,
+      true /* include_organization_in_label */,
+      true /* include_country_in_label */,
+      personal_data_manager_->address_data_manager().GetProfilesForSettings());
 }
 
 ScopedJavaLocalRef<jobjectArray>
@@ -280,10 +284,10 @@ PersonalDataManagerAndroid::GetProfileLabelsToSuggest(
     jboolean include_name_in_label,
     jboolean include_organization_in_label,
     jboolean include_country_in_label) {
-  return GetProfileLabels(env, true /* address_only */, include_name_in_label,
-                          include_organization_in_label,
-                          include_country_in_label,
-                          personal_data_manager_->GetProfilesToSuggest());
+  return GetProfileLabels(
+      env, true /* address_only */, include_name_in_label,
+      include_organization_in_label, include_country_in_label,
+      personal_data_manager_->address_data_manager().GetProfilesToSuggest());
 }
 
 base::android::ScopedJavaLocalRef<jstring>

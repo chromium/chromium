@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -230,6 +231,93 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
                   PersonalDataManager::ProfileOrder::kMostRecentlyModifiedDesc),
               testing::ElementsAre(Pointee(profile1), Pointee(profile3),
                                    Pointee(profile2)));
+}
+
+// Test that profiles are not shown if |kAutofillProfileEnabled| is set to
+// |false|.
+TEST_F(AddressDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
+  const std::string kServerAddressId("server_address1");
+  ASSERT_TRUE(TurnOnSyncFeature(personal_data_.get()));
+
+  // Add two different profiles, a local and a server one.
+  AutofillProfile local_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
+                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
+                       "Orlando", "FL", "32801", "US", "19482937549");
+  AddProfileToPersonalDataManager(local_profile);
+
+  // Disable Profile autofill.
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Check that profiles were saved.
+  const size_t expected_profiles = 1;
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
+  // Expect no autofilled values or suggestions.
+  EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
+}
+
+// Test that local and server profiles are not loaded into memory on start-up if
+// |kAutofillProfileEnabled| is set to |false|.
+TEST_F(AddressDataManagerTest,
+       GetProfilesToSuggest_NoProfilesLoadedIfDisabled) {
+  const std::string kServerAddressId("server_address1");
+  ASSERT_TRUE(TurnOnSyncFeature(personal_data_.get()));
+
+  // Add two different profiles, a local and a server one.
+  AutofillProfile local_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
+                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
+                       "Orlando", "FL", "32801", "US", "19482937549");
+  AddProfileToPersonalDataManager(local_profile);
+
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Expect that all profiles are suggested.
+  const size_t expected_profiles = 1;
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
+  EXPECT_EQ(expected_profiles, personal_data_->GetProfilesToSuggest().size());
+
+  // Disable Profile autofill.
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
+  // Reload the database.
+  ResetPersonalDataManager();
+
+  // Expect no profile values or suggestions were loaded.
+  EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
+}
+
+// Test that profiles are not added if `kAutofillProfileEnabled` is set to
+// false.
+TEST_F(AddressDataManagerTest, GetProfilesToSuggest_NoProfilesAddedIfDisabled) {
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
+  AddProfileToPersonalDataManager(test::GetFullProfile());
+  EXPECT_TRUE(personal_data_->GetProfiles().empty());
+}
+
+// Tests that `GetProfilesForSettings()` orders by descending modification
+// dates.
+// TODO(crbug.com/1420547): The modification date is set in AutofillTable.
+// Setting it on the test profiles directly doesn't suffice.
+TEST_F(AddressDataManagerTest, GetProfilesForSettings) {
+  TestAutofillClock test_clock;
+
+  AutofillProfile kAccountProfile = test::GetFullProfile();
+  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AddProfileToPersonalDataManager(kAccountProfile);
+
+  AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
+  kLocalOrSyncableProfile.set_source_for_testing(
+      AutofillProfile::Source::kLocalOrSyncable);
+  test_clock.Advance(base::Minutes(123));
+  AddProfileToPersonalDataManager(kLocalOrSyncableProfile);
+
+  EXPECT_THAT(personal_data_->GetProfilesForSettings(),
+              testing::ElementsAre(testing::Pointee(kLocalOrSyncableProfile),
+                                   testing::Pointee(kAccountProfile)));
 }
 
 // Adding, updating, removing operations without waiting in between.

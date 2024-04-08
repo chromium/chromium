@@ -76,10 +76,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
         use_sync_transport_mode, personal_data_.get());
   }
 
-  bool TurnOnSyncFeature() {
-    return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
-  }
-
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
     PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
@@ -110,28 +106,6 @@ class PersonalDataManagerSyncTransportModeTest
   }
   void TearDown() override { TearDownTest(); }
 };
-
-// Tests that `GetProfilesForSettings()` orders by descending modification
-// dates.
-// TODO(crbug.com/1420547): The modification date is set in AutofillTable.
-// Setting it on the test profiles directly doesn't suffice.
-TEST_F(PersonalDataManagerTest, GetProfilesForSettings) {
-  TestAutofillClock test_clock;
-
-  AutofillProfile kAccountProfile = test::GetFullProfile();
-  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  AddProfileToPersonalDataManager(kAccountProfile);
-
-  AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
-  kLocalOrSyncableProfile.set_source_for_testing(
-      AutofillProfile::Source::kLocalOrSyncable);
-  test_clock.Advance(base::Minutes(123));
-  AddProfileToPersonalDataManager(kLocalOrSyncableProfile);
-
-  EXPECT_THAT(personal_data_->GetProfilesForSettings(),
-              testing::ElementsAre(testing::Pointee(kLocalOrSyncableProfile),
-                                   testing::Pointee(kAccountProfile)));
-}
 
 TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithNewCard) {
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -254,72 +228,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
       unexpected_country_code);
   actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
   EXPECT_EQ(expected_country_code, actual_country_code);
-}
-
-// Test that profiles are not shown if |kAutofillProfileEnabled| is set to
-// |false|.
-TEST_F(PersonalDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
-  const std::string kServerAddressId("server_address1");
-  ASSERT_TRUE(TurnOnSyncFeature());
-
-  // Add two different profiles, a local and a server one.
-  AutofillProfile local_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
-  AddProfileToPersonalDataManager(local_profile);
-
-  // Disable Profile autofill.
-  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Check that profiles were saved.
-  const size_t expected_profiles = 1;
-  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
-  // Expect no autofilled values or suggestions.
-  EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
-}
-
-// Test that local and server profiles are not loaded into memory on start-up if
-// |kAutofillProfileEnabled| is set to |false|.
-TEST_F(PersonalDataManagerTest,
-       GetProfilesToSuggest_NoProfilesLoadedIfDisabled) {
-  const std::string kServerAddressId("server_address1");
-  ASSERT_TRUE(TurnOnSyncFeature());
-
-  // Add two different profiles, a local and a server one.
-  AutofillProfile local_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
-  AddProfileToPersonalDataManager(local_profile);
-
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Expect that all profiles are suggested.
-  const size_t expected_profiles = 1;
-  EXPECT_EQ(expected_profiles, personal_data_->GetProfiles().size());
-  EXPECT_EQ(expected_profiles, personal_data_->GetProfilesToSuggest().size());
-
-  // Disable Profile autofill.
-  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  // Reload the database.
-  ResetPersonalDataManager();
-
-  // Expect no profile values or suggestions were loaded.
-  EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
-}
-
-// Test that profiles are not added if `kAutofillProfileEnabled` is set to
-// false.
-TEST_F(PersonalDataManagerTest,
-       GetProfilesToSuggest_NoProfilesAddedIfDisabled) {
-  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  AddProfileToPersonalDataManager(test::GetFullProfile());
-  EXPECT_TRUE(personal_data_->GetProfiles().empty());
 }
 
 TEST_F(PersonalDataManagerTest, ClearAllLocalData) {

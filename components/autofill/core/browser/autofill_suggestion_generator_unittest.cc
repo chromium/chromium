@@ -303,7 +303,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
   personal_data().AddProfile(profile_1);
   personal_data().AddProfile(profile_2);
-  ASSERT_EQ(personal_data().GetProfilesToSuggest().size(), 2u);
+  ASSERT_EQ(
+      personal_data().address_data_manager().GetProfilesToSuggest().size(), 2u);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles =
       test_api(suggestion_generator())

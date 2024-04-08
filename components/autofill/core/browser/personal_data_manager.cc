@@ -497,14 +497,12 @@ void PersonalDataManager::Refresh() {
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
     const {
-  return address_data_manager_->IsAutofillProfileEnabled()
-             ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
-             : std::vector<AutofillProfile*>{};
+  return address_data_manager_->GetProfilesToSuggest();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
     const {
-  return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
+  return address_data_manager_->GetProfilesForSettings();
 }
 
 std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {

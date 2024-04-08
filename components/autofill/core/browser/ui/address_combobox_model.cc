@@ -29,7 +29,8 @@ AddressComboboxModel::AddressComboboxModel(
     const std::string& app_locale,
     const std::string& default_selected_guid)
     : app_locale_(app_locale), default_selected_guid_(default_selected_guid) {
-  for (const auto* profile : personal_data_manager.GetProfilesToSuggest()) {
+  for (const auto* profile :
+       personal_data_manager.address_data_manager().GetProfilesToSuggest()) {
     profiles_cache_.push_back(std::make_unique<AutofillProfile>(*profile));
   }
   UpdateAddresses();
