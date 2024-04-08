@@ -4,51 +4,48 @@
 
 // no-include-guard-because-multiply-included
 
+// This header emits the usable Foo class for each message Foo, which may be
+// used directly by ipcz implementation. In particular this header is used to
+// generate version struct accessors (v0, v1, etc.) which expose all available
+// message parameters. See message_params_declaration_macros.h for their
+// definitions.
+
 #define IPCZ_MSG_BEGIN_INTERFACE(name)
 #define IPCZ_MSG_END_INTERFACE()
 
 #define IPCZ_MSG_ID(x) static constexpr uint8_t kId = x
 
 #define IPCZ_MSG_BEGIN(name, id_decl)                            \
-  class name : public MessageWithParams<name##_Params> {         \
+  class name : public name##_Base {                              \
    public:                                                       \
-    using ParamsType = name##_Params;                            \
-    static_assert(sizeof(ParamsType) % 8 == 0, "Invalid size");  \
     id_decl;                                                     \
-    static constexpr uint32_t kVersion = 0;                      \
     name();                                                      \
     explicit name(decltype(kIncoming));                          \
     ~name();                                                     \
     bool Deserialize(const DriverTransport::RawMessage& message, \
                      const DriverTransport& transport);          \
     bool DeserializeRelayed(absl::Span<const uint8_t> data,      \
-                            absl::Span<DriverObject> objects);   \
-                                                                 \
-    ParamsType* v0() {                                           \
-      return &params();                                          \
-    }                                                            \
-    const ParamsType* v0() const {                               \
-      return &params();                                          \
-    }                                                            \
-    static constexpr internal::ParamMetadata kMetadata[] = {
+                            absl::Span<DriverObject> objects);
+
 #define IPCZ_MSG_END() \
-  }                    \
-  ;                    \
   }                    \
   ;
 
-#define IPCZ_MSG_BEGIN_VERSION(version)
-#define IPCZ_MSG_END_VERSION(version)
+#define IPCZ_MSG_BEGIN_VERSION(version)                                     \
+  static_assert(version < std::size(kVersions) &&                           \
+                    kVersions[version].version_number == version,           \
+                "Invalid version declaration(s). Message versions must be " \
+                "declared sequentially starting from 0.");                  \
+                                                                            \
+  ParamsType::V##version* v##version() {                                    \
+    return params().v##version();                                           \
+  }                                                                         \
+  const ParamsType::V##version* v##version() const {                        \
+    return params().v##version();                                           \
+  }
 
-#define IPCZ_MSG_PARAM(type, name)                          \
-  {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \
-   internal::ParamType::kData},
-#define IPCZ_MSG_PARAM_ARRAY(type, name)                               \
-  {offsetof(ParamsType, name), sizeof(ParamsType::name), sizeof(type), \
-   internal::ParamType::kDataArray},
-#define IPCZ_MSG_PARAM_DRIVER_OBJECT(name)                  \
-  {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \
-   internal::ParamType::kDriverObject},
-#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name)            \
-  {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \
-   internal::ParamType::kDriverObjectArray},
+#define IPCZ_MSG_END_VERSION(version)
+#define IPCZ_MSG_PARAM(type, name)
+#define IPCZ_MSG_PARAM_ARRAY(type, name)
+#define IPCZ_MSG_PARAM_DRIVER_OBJECT(name)
+#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name)

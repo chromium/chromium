@@ -361,5 +361,66 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
 }
 
+TEST_F(MessageTest, AcceptOldVersions) {
+  using Msg = test::msg::MessageWithMultipleVersions;
+  Msg in;
+  in.v0()->a = 2;
+  in.v0()->b = 3;
+  in.v1()->c = 5;
+  in.v1()->d = 7;
+
+  const uint32_t e_offset = in.AllocateArray<uint32_t>(3);
+  const auto e_data = in.GetArrayView<uint32_t>(e_offset);
+  in.v2()->e = e_offset;
+  e_data[0] = 11;
+  e_data[1] = 13;
+  e_data[2] = 17;
+
+  // Serialize and deserialize the full V2 message.
+  {
+    transport().Transmit(in);
+    ReceivedMessage serialized = TakeNextReceivedMessage();
+    Msg out;
+    EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
+    EXPECT_EQ(2u, out.v0()->a);
+    EXPECT_EQ(3u, out.v0()->b);
+    EXPECT_EQ(5u, out.v1()->c);
+    EXPECT_EQ(7u, out.v1()->d);
+    const auto data = out.GetArrayView<uint32_t>(out.v2()->e);
+    EXPECT_EQ(3u, data.size());
+    EXPECT_EQ(11u, data[0]);
+    EXPECT_EQ(13u, data[1]);
+    EXPECT_EQ(17u, data[2]);
+  }
+
+  // Now serialize and deserialize again, forcing the message to look like a
+  // V1 message.
+  {
+    in.params().header.size -= Msg::kVersions[2].size;
+    transport().Transmit(in);
+    ReceivedMessage serialized = TakeNextReceivedMessage();
+    Msg out;
+    EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
+    EXPECT_EQ(2u, out.v0()->a);
+    EXPECT_EQ(3u, out.v0()->b);
+    EXPECT_EQ(5u, out.v1()->c);
+    EXPECT_EQ(7u, out.v1()->d);
+    EXPECT_EQ(nullptr, out.v2());
+  }
+
+  // Finally, do it for V0.
+  {
+    in.params().header.size -= Msg::kVersions[1].size;
+    transport().Transmit(in);
+    ReceivedMessage serialized = TakeNextReceivedMessage();
+    Msg out;
+    EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
+    EXPECT_EQ(2u, out.v0()->a);
+    EXPECT_EQ(3u, out.v0()->b);
+    EXPECT_EQ(nullptr, out.v1());
+    EXPECT_EQ(nullptr, out.v2());
+  }
+}
+
 }  // namespace
 }  // namespace ipcz

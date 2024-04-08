@@ -62,12 +62,11 @@ using LatestMessageHeaderVersion = MessageHeaderV0;
 
 // Header encoding metadata about a structure within a message.
 struct IPCZ_ALIGN(8) StructHeader {
-  // The size of the structure in bytes.
+  // The size of the structure in bytes. Used for versioning.
   uint32_t size;
 
-  // The version number of the structure, which may be used to differentiate
-  // between different versions of the same encoded size.
-  uint32_t version;
+  // Unused. Must be zero.
+  uint32_t padding;
 };
 static_assert(sizeof(StructHeader) == 8, "Unexpected size");
 
@@ -147,10 +146,11 @@ enum class ParamType {
 };
 
 // Metadata about a single parameter declared within a message via one of the
-// IPCZ_MSG_PARAM* macros.
+// IPCZ_MSG_PARAM* macros. Constants of this type are genereated by such macros.
+// See documentation in message_versions_declaration_macros.h and
+// message_base_declaration_macros.h.
 struct ParamMetadata {
-  // The offset of this parameter from the start of the macro-generated
-  // parameters structure, including the StructHeader itself.
+  // The offset of this parameter from the start of its version's field block.
   size_t offset;
 
   // The size of the data expected at `offset` in order for the field to be
@@ -163,6 +163,30 @@ struct ParamMetadata {
 
   // The generic type of this parameter. See ParamType above.
   ParamType type;
+};
+
+// Metadata about a single message version. Note that versions are additive:
+// "version 0" refers only to the fields defined for version 0 of a message;
+// "version 1" refers only to the fields added for version 1. More generally, a
+// message with a "version N" block also has a block for all versions from 0 to
+// N-1, and all blocks are non-overlapping.
+//
+// Constants of this type are genereated by IPCZ_MSG_PARAM* macros. See
+// documentation in message_versions_declaration_macros.h and
+// message_base_declaration_macros.h.
+struct VersionMetadata {
+  // The version number for the described version.
+  int version_number;
+
+  // The offset of this version's parameter data from the start of the
+  // parameters structure, including the StructHeader.
+  size_t offset;
+
+  // The size of the parameter data which comprises this version.
+  size_t size;
+
+  // Metadata about all the parameters in the parameter data.
+  const absl::Span<const ParamMetadata> params;
 };
 
 }  // namespace internal
@@ -384,10 +408,8 @@ class IPCZ_ALIGN(8) Message {
   // message definition. Must only be called on a Message with `data_` already
   // populated, the header already validated, and DriverObjects already
   // deserialized into `driver_objects_`.
-  bool ValidateParameters(
-      size_t params_size,
-      uint32_t params_current_version,
-      absl::Span<const internal::ParamMetadata> params_metadata);
+  bool ValidateParameters(size_t params_size,
+                          absl::Span<const internal::VersionMetadata> versions);
 
   // Attempts to deserialize a message from raw `data` and `handles` into `this`
   // message object, given the `params_size`, `params_current_version` and
@@ -398,8 +420,7 @@ class IPCZ_ALIGN(8) Message {
   // received.
   bool DeserializeFromTransport(
       size_t params_size,
-      uint32_t params_current_version,
-      absl::Span<const internal::ParamMetadata> params_metadata,
+      absl::Span<const internal::VersionMetadata> versions,
       const DriverTransport::RawMessage& message,
       const DriverTransport& transport);
 
@@ -411,8 +432,7 @@ class IPCZ_ALIGN(8) Message {
   // validated here.
   bool DeserializeFromRelay(
       size_t params_size,
-      uint32_t params_current_version,
-      absl::Span<const internal::ParamMetadata> params_metadata,
+      absl::Span<const internal::VersionMetadata> versions,
       absl::Span<const uint8_t> data,
       absl::Span<DriverObject> objects);
 
@@ -483,7 +503,7 @@ class MessageWithParams : public Message {
   MessageWithParams() : Message(ParamDataType::kId, sizeof(ParamDataType)) {
     ParamDataType& p = *(new (&params()) ParamDataType());
     p.header.size = sizeof(p);
-    p.header.version = ParamDataType::kVersion;
+    p.header.padding = 0;
   }
 
   // Special constructor which avoids initializing storage that won't be used
@@ -500,7 +520,8 @@ class MessageWithParams : public Message {
   //
   // If this object was deserialized from the wire, it must already have been
   // validated to have an enough space for `header().size` bytes plus the size
-  // if ParamDataType (TODO: or some older version thereof.)
+  // of ParamDataType or some older version thereof. Safe access to newer
+  // versions' fields is managed by the ParamDataType itself.
   ParamDataType& params() {
     return *reinterpret_cast<ParamDataType*>(&data_[header().size]);
   }
