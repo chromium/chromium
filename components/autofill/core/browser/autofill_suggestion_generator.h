@@ -297,6 +297,9 @@ class AutofillSuggestionGenerator {
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card) const;
 
+  // Returns the acceptability of the card suggestion.
+  bool IsCardAcceptable(const CreditCard& card, bool is_manual_fallback) const;
+
   const PersonalDataManager& personal_data() const {
     // The PDM outlives the ASG, hence this is safe.
     return *autofill_client_->GetPersonalDataManager();

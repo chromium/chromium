@@ -646,10 +646,11 @@ void PopupViewViews::SetSelectedCell(
 
     const Suggestion& suggestion =
         controller_->GetSuggestionAt(cell_index->first);
+
     bool can_open_sub_popup =
         !suppress_popup &&
         (cell_index->second == PopupRowView::CellType::kControl ||
-         !suggestion.is_acceptable);
+         CanOpenSubPopupSuggestion(suggestion));
 
     CHECK(!can_open_sub_popup ||
           !controller_->GetSuggestionAt(cell_index->first).children.empty());
@@ -1054,6 +1055,12 @@ void PopupViewViews::SetRowWithOpenSubPopup(
       }
     }
   }
+}
+
+bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
+  // Checking both `is_acceptable` and `apply_deactivated_style` because the
+  // latter is used for disabling virtual cards which cannot open a sub popup.
+  return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {

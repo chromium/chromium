@@ -1733,17 +1733,48 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   pdm().AddCreditCard(enrolled_card);
+
   Suggestion suggestion =
       test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
                                      /*main_text_value=*/u"Virtual credit card",
                                      Suggestion::Guid(enrolled_card.guid()));
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidSelectSuggestion(suggestion);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_MerchantOptOut_CreditCardForm_NoPreview) {
+  IssueOnQuery();
+  CreditCard card = test::GetMaskedServerCard();
+  pdm().AddCreditCard(card);
+
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+
+  Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
+  suggestion.payload = Suggestion::Guid(card.guid());
+  suggestion.is_acceptable = false;
+  suggestion.apply_deactivated_style = true;
+  external_delegate().DidSelectSuggestion(suggestion);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_MerchantOptOut_CreditCardForm_NoAccept) {
+  IssueOnQuery();
+  CreditCard card = test::GetMaskedServerCard();
+  pdm().AddCreditCard(card);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+  Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
+  suggestion.payload = Suggestion::Guid(card.guid());
+  suggestion.is_acceptable = false;
+  suggestion.apply_deactivated_style = true;
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,

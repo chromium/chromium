@@ -1828,7 +1828,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
   suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
-  suggestion.is_acceptable = !is_manual_fallback;
+  suggestion.is_acceptable = IsCardAcceptable(credit_card, is_manual_fallback);
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -2094,19 +2094,27 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   }
 
   suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
-  suggestion.is_acceptable = true;
+  // If a virtual card is non-acceptable, it needs to be displayed in
+  // grayed-out style.
+  suggestion.apply_deactivated_style = !suggestion.is_acceptable;
   suggestion.feature_for_iph =
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
 
   // Add virtual card labelling to suggestions. For keyboard accessory, it is
   // prefixed to the suggestion, and for the dropdown, it is shown as a label on
   // a separate line.
-  const std::u16string& VIRTUAL_CARD_LABEL = l10n_util::GetStringUTF16(
+  const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  const std::u16string& virtual_card_disabled_label = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE);
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVirtualCardMetadata)) {
     suggestion.minor_text.value = suggestion.main_text.value;
-    suggestion.main_text.value = VIRTUAL_CARD_LABEL;
+    if (suggestion.is_acceptable) {
+      suggestion.main_text.value = virtual_card_label;
+    } else {
+      suggestion.main_text.value = virtual_card_disabled_label;
+    }
   } else {
 #if BUILDFLAG(IS_ANDROID)
     // The keyboard accessory chips can only accommodate 2 strings which are
@@ -2133,10 +2141,10 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     // null, labels = last 4 digits.
     if (ShouldSplitCardNameAndLastFourDigits()) {
       suggestion.main_text.value =
-          base::StrCat({VIRTUAL_CARD_LABEL, u"  ", suggestion.main_text.value});
+          base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
     } else {
       suggestion.minor_text.value = suggestion.main_text.value;
-      suggestion.main_text.value = VIRTUAL_CARD_LABEL;
+      suggestion.main_text.value = virtual_card_label;
     }
     if (trigger_field_type == CREDIT_CARD_NUMBER) {
       // The expiration date is not shown for the card number field, so it is
@@ -2154,8 +2162,13 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
         suggestion.labels.push_back({*benefit_label});
       }
     }
-    suggestion.labels.push_back(
-        std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
+    if (suggestion.is_acceptable) {
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
+    } else {
+      suggestion.labels.push_back(std::vector<Suggestion::Text>{
+          Suggestion::Text(virtual_card_disabled_label)});
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 }
@@ -2252,14 +2265,34 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
   // optimization guide returns that this suggestion should be blocked.
   if (auto* autofill_optimization_guide =
           autofill_client_->GetAutofillOptimizationGuide()) {
-    bool blocked = autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
-        autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-        card);
+    bool blocked =
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableVcnGrayOutForMerchantOptOut) &&
+        autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
+            autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+            card);
     return !blocked;
   }
   // No conditions to prevent displaying a virtual card suggestion were
   // found, so return true.
   return true;
+}
+
+bool AutofillSuggestionGenerator::IsCardAcceptable(
+    const CreditCard& card,
+    bool is_manual_fallback) const {
+  if (card.record_type() != CreditCard::RecordType::kVirtualCard) {
+    return !is_manual_fallback;
+  }
+
+  auto* optimization_guide = autofill_client_->GetAutofillOptimizationGuide();
+  return !(
+      optimization_guide &&
+      optimization_guide->ShouldBlockFormFieldSuggestion(
+          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+          card) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnGrayOutForMerchantOptOut));
 }
 
 }  // namespace autofill

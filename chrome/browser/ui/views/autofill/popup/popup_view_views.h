@@ -211,6 +211,11 @@ class PopupViewViews : public PopupBaseView,
       AutoselectFirstSuggestion autoselect_first_suggestion =
           AutoselectFirstSuggestion(false));
 
+  // Returns true when fields `is_acceptable` and `apply_style_deactivated` are
+  // false for the suggestion as it indicates that the suggestion is a manual
+  // fallback suggestion.
+  bool CanOpenSubPopupSuggestion(const Suggestion& suggestion);
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 

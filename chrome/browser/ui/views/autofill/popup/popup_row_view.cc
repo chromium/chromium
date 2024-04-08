@@ -221,9 +221,9 @@ PopupRowView::PopupRowView(
   content_view_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kListBoxOption);
   content_view_->GetViewAccessibility().SetName(
-      GetSuggestionA11yString(
-          suggestion,
-          /*add_call_to_action_if_expandable=*/suggestion.is_acceptable),
+      GetSuggestionA11yString(suggestion,
+                              /*add_call_to_action_if_expandable=*/
+                              suggestion.is_acceptable),
       ax::mojom::NameFrom::kAttribute);
   auto [position, set_size] = ComputePositionInSet(controller_, line_number);
   content_view_->GetViewAccessibility().SetPosInSet(position);

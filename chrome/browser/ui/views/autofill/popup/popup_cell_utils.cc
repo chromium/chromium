@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/style/typography.h"
@@ -77,6 +78,9 @@ constexpr int kGooglePasswordManagerIconSize = 20;
 // Metric to measure the duration of getting the image for the Autofill pop-up.
 constexpr char kHistogramGetImageViewByName[] =
     "Autofill.PopupGetImageViewTime";
+
+// The opacity for grayed-out disabled views.
+constexpr double kGrayedOutOpacity = 0.38;
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
@@ -474,6 +478,9 @@ void AddSuggestionContentToView(
     content_view.SetEnabled(false);
   } else if (std::unique_ptr<views::ImageView> icon =
                  GetIconImageView(suggestion)) {
+    if (suggestion.apply_deactivated_style) {
+      ApplyDeactivatedStyle(*icon);
+    }
     content_view.AddChildView(std::move(icon));
     AddSpacerWithSize(content_view, layout,
                       PopupBaseView::GetHorizontalPadding(),
@@ -529,35 +536,40 @@ void FormatLabel(views::Label& label,
 }
 
 // Creates a label for the suggestion's main text.
-std::unique_ptr<views::Label> CreateMainTextLabel(
-    const Suggestion::Text& main_text,
-    int primary_text_style) {
+std::unique_ptr<views::Label> CreateMainTextLabel(const Suggestion& suggestion,
+                                                  int primary_text_style) {
   int non_primary_text_style = ShouldApplyNewAutofillPopupStyle()
                                    ? views::style::TextStyle::STYLE_BODY_3
                                    : views::style::TextStyle::STYLE_PRIMARY;
   auto label = std::make_unique<views::Label>(
-      main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      main_text.is_primary ? primary_text_style : non_primary_text_style);
+      suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      suggestion.main_text.is_primary ? primary_text_style
+                                      : non_primary_text_style);
 
-  if (!main_text.is_primary && ShouldApplyNewAutofillPopupStyle()) {
+  if (!suggestion.main_text.is_primary && ShouldApplyNewAutofillPopupStyle()) {
     label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
-
+  if (suggestion.apply_deactivated_style) {
+    ApplyDeactivatedStyle(*label);
+  }
   return label;
 }
 
 // Creates a label for the suggestion's minor text.
 std::unique_ptr<views::Label> CreateMinorTextLabel(
-    const Suggestion::Text& minor_text) {
-  if (minor_text.value.empty()) {
+    const Suggestion& suggestion) {
+  if (suggestion.minor_text.value.empty()) {
     return nullptr;
   }
 
   auto label = std::make_unique<views::Label>(
-      minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       GetSecondaryTextStyle());
   if (ShouldApplyNewAutofillPopupStyle()) {
     label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  }
+  if (suggestion.apply_deactivated_style) {
+    ApplyDeactivatedStyle(*label);
   }
   return label;
 }
@@ -628,6 +640,11 @@ std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     int icon_size = kIconSize) {
   return std::make_unique<views::ImageView>(
       ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
+}
+
+void ApplyDeactivatedStyle(views::View& view) {
+  view.SetPaintToLayer();
+  view.layer()->SetOpacity(kGrayedOutOpacity);
 }
 
 }  // namespace autofill::popup_cell_utils

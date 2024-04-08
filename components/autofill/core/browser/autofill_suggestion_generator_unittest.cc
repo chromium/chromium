@@ -2150,7 +2150,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
   // This is the check which actually verifies that the suggestion looks the
   // same as the ones for an unclassified field (such a suggestion has
-  // `is_acceptable` false).
+  // `is_acceptable` as false).
   EXPECT_EQ(suggestions[0].is_acceptable, false);
   EXPECT_THAT(suggestions, ContainsAddressFooterSuggestions());
 }
@@ -2185,7 +2185,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kCreditCardEntry);
   // This is the check which actually verifies that the suggestion looks the
   // same as the ones for an unclassified field (such a suggestion has
-  // `is_acceptable` false).
+  // `is_acceptable` as false).
   EXPECT_EQ(suggestions[0].is_acceptable, false);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
@@ -2802,10 +2802,35 @@ TEST_F(AutofillSuggestionGeneratorTest,
                   .ShouldShowVirtualCardOption(&local_card));
 }
 
+// Test that the virtual card option is shown even if the merchant is opted-out
+// of virtual cards.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldShowVirtualCardOption_InDisabledStateForOptedOutMerchants) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableVcnGrayOutForMerchantOptOut);
+
+  // Create an enrolled server card.
+  CreditCard server_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  personal_data().AddServerCreditCard(server_card);
+
+  // Even if the URL is opted-out of virtual cards for `server_card`, display
+  // the virtual card suggestion.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
+  EXPECT_TRUE(test_api(suggestion_generator())
+                  .ShouldShowVirtualCardOption(&server_card));
+}
+
 // Test that the virtual card option is not shown if the merchant is opted-out
 // of virtual cards.
 TEST_F(AutofillSuggestionGeneratorTest,
        ShouldNotShowVirtualCardOption_MerchantOptedOutOfVirtualCards) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kAutofillEnableVcnGrayOutForMerchantOptOut);
   // Create an enrolled server card.
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -3147,7 +3172,9 @@ class AutofillCreditCardSuggestionContentTest
   AutofillCreditCardSuggestionContentTest() {
     feature_list_metadata_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                              features::kAutofillEnableCardProductName},
+                              features::kAutofillEnableCardProductName,
+                              features::
+                                  kAutofillEnableVcnGrayOutForMerchantOptOut},
         /*disabled_features=*/{});
   }
 
@@ -3232,7 +3259,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                   /*obfuscation_length=*/4, u"1111"));
   }
 #endif
-
+  EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable, true);
   if (!keyboard_accessory_enabled()) {
     // The virtual card text should be populated in the labels to be shown in a
     // new line.
@@ -3280,7 +3307,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                   /*obfuscation_length=*/4, u"1111"));
   }
 #endif
-
+  EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable, true);
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, there is no label.
     ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
@@ -3386,7 +3413,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Only the name is displayed on the first line.
   EXPECT_EQ(server_card_suggestion.popup_item_id,
             PopupItemId::kCreditCardEntry);
-  EXPECT_FALSE(server_card_suggestion.is_acceptable);
+  EXPECT_EQ(server_card_suggestion.is_acceptable, false);
   // For Desktop, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(server_card_suggestion.main_text.value, u"Visa");
@@ -3407,8 +3434,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 // `Suggestion::popup_item_id, AX label and is selectable.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard) {
-  CreditCard enrolled_card =
-      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  CreditCard enrolled_card = test::GetVirtualCard();
 
   Suggestion enrolled_card_suggestion =
       test_api(suggestion_generator())
@@ -3419,7 +3445,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Only the name is displayed on the first line.
   EXPECT_EQ(enrolled_card_suggestion.popup_item_id,
             PopupItemId::kVirtualCreditCardEntry);
-  EXPECT_TRUE(enrolled_card_suggestion.is_acceptable);
+  EXPECT_EQ(enrolled_card_suggestion.is_acceptable, true);
   EXPECT_EQ(enrolled_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY));
@@ -3428,8 +3454,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 // Verify that the virtual credit card suggestion has the correct labels.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard_Labels) {
-  CreditCard enrolled_card =
-      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  CreditCard enrolled_card = test::GetVirtualCard();
 
   Suggestion enrolled_card_suggestion =
       test_api(suggestion_generator())
@@ -3897,6 +3922,103 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
 }
 
 #endif  // BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// The 2 boolean params denote if kAutofillEnableVcnGrayOutForMerchantOptOut
+// is turned on and if merchant accepts VCN.
+class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
+    : public AutofillCreditCardSuggestionContentTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  bool is_flag_enabled() { return std::get<0>(GetParam()); }
+
+  bool is_merchant_opted_out() { return std::get<1>(GetParam()); }
+
+  int expected_message_id() {
+    return is_flag_enabled() && is_merchant_opted_out()
+               ? IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE
+               : IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE;
+  }
+
+ private:
+  void SetUp() override {
+    AutofillCreditCardSuggestionContentTest::SetUp();
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAutofillEnableVcnGrayOutForMerchantOptOut,
+        is_flag_enabled());
+
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_client()->GetAutofillOptimizationGuide()),
+            ShouldBlockFormFieldSuggestion)
+        .WillByDefault(testing::Return(is_merchant_opted_out()));
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+// Verify that the suggestion's texts are populated correctly for a virtual
+// card suggestion when the cardholder name field is focused and the merchant
+// has opted-out of virtual cards.
+TEST_P(
+    AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NameField) {
+  CreditCard server_card = test::GetVirtualCard();
+
+  // Name field suggestion for virtual cards.
+  Suggestion virtual_card_name_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+                                      /*virtual_card_option=*/true,
+                                      /*card_linked_offer_available=*/false);
+
+  // `is_acceptable` is false only when the flag is enabled and merchant has
+  // opted out of VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable,
+            (!is_merchant_opted_out() || !is_flag_enabled()));
+  // `apply_deactivated_style` is true only when flag is enabled and merchant
+  // has opted out of VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.apply_deactivated_style,
+            (is_merchant_opted_out() && is_flag_enabled()));
+  // The virtual card text should be populated in the labels to be shown in
+  // a new line.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
+            l10n_util::GetStringUTF16(expected_message_id()));
+}
+
+// Verify that the suggestion's texts are populated correctly for a virtual
+// card suggestion when the card number field is focused and merchant has
+// opted-out of virtual cards.
+TEST_P(
+    AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NumberField) {
+  CreditCard server_card = test::GetVirtualCard();
+
+  // Card number field suggestion for virtual cards.
+  Suggestion virtual_card_number_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/true,
+                                      /*card_linked_offer_available=*/false);
+
+  // `is_acceptable` is false only when flag is enabled and merchant has opted
+  // out of VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable,
+            (!is_merchant_opted_out() || !is_flag_enabled()));
+  // `apply_deactivated_style` is true only when flag is enabled and merchant
+  // has opted out of VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.apply_deactivated_style,
+            (is_merchant_opted_out() && is_flag_enabled()));
+  // For Desktop/Android dropdown, and on iOS, "Virtual card" is the label.
+  EXPECT_THAT(
+      virtual_card_number_field_suggestion,
+      EqualLabels({{l10n_util::GetStringUTF16(expected_message_id())}}));
+}
+#endif  // BUILDFLAG(!IS_ANDROID)
 
 class AutofillSuggestionGeneratorTestForMetadata
     : public AutofillSuggestionGeneratorTest,

@@ -243,6 +243,11 @@ struct Suggestion {
   // Whether the user is able to preview the suggestion by hovering on it or
   // accept it by clicking on it.
   bool is_acceptable = true;
+
+  // If true, the user will see the suggestion in a "disabled and grayed-out"
+  // form. This field should be true only when `is_acceptable` is false  which
+  // will make the suggestion deactivated and unclickable.
+  bool apply_deactivated_style = false;
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);
