@@ -1,0 +1,198 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/tpcd/metadata/manager.h"
+
+#include <algorithm>
+#include <memory>
+#include <tuple>
+
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/parser.h"
+#include "net/base/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace tpcd::metadata {
+
+class ManagerTest : public testing::Test,
+                    public testing::WithParamInterface<
+                        std::tuple</*kTpcdMetadataGrants*/ bool,
+                                   /*kIndexedHostContentSettingsMap*/ bool>> {
+ public:
+  ManagerTest() = default;
+  ~ManagerTest() override = default;
+
+  bool IsTpcdMetadataGrantsEnabled() { return std::get<0>(GetParam()); }
+  bool IsIndexedHostContentSettingsMapEnabled() {
+    return std::get<1>(GetParam());
+  }
+
+  Parser* GetParser() {
+    if (!parser_) {
+      parser_ = std::make_unique<Parser>();
+    }
+    return parser_.get();
+  }
+
+  Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
+    if (!manager_) {
+      manager_ = std::make_unique<Manager>(GetParser(), callback);
+    }
+    return manager_.get();
+  }
+
+ protected:
+  base::test::TaskEnvironment env_;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsTpcdMetadataGrantsEnabled()) {
+      enabled_features.push_back(net::features::kTpcdMetadataGrants);
+    } else {
+      disabled_features.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    if (IsIndexedHostContentSettingsMapEnabled()) {
+      enabled_features.push_back(
+          content_settings::features::kIndexedHostContentSettingsMap);
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kIndexedHostContentSettingsMap);
+    }
+
+    scoped_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  // Guarantees proper tear down of dependencies.
+  void TearDown() override {
+    delete manager_.release();
+    delete parser_.release();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_list_;
+  std::unique_ptr<Parser> parser_;
+  std::unique_ptr<Manager> manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    ManagerTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(ManagerTest, OnMetadataReady) {
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  Manager* manager = GetManager();
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+  if (!IsTpcdMetadataGrantsEnabled()) {
+    EXPECT_TRUE(manager->GetGrants().empty());
+  } else {
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+              primary_pattern_spec);
+    EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+              secondary_pattern_spec);
+    EXPECT_EQ(manager->GetGrants().front().metadata.tpcd_metadata_rule_source(),
+              content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
+  }
+}
+
+TEST_P(ManagerTest, IsAllowed) {
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  GURL first_party_url = GURL(secondary_pattern_spec);
+  GURL third_party_url = GURL(primary_pattern_spec);
+  GURL third_party_url_no_grants = GURL("https://www.bar.com");
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  Manager* manager = GetManager();
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  {
+    content_settings::SettingInfo out_info;
+    EXPECT_EQ(manager->IsAllowed(third_party_url, first_party_url, &out_info),
+              IsTpcdMetadataGrantsEnabled());
+    EXPECT_EQ(out_info.primary_pattern.ToString(),
+              IsTpcdMetadataGrantsEnabled() ? primary_pattern_spec : "*");
+    EXPECT_EQ(out_info.secondary_pattern.ToString(),
+              IsTpcdMetadataGrantsEnabled() ? secondary_pattern_spec : "*");
+    EXPECT_EQ(out_info.metadata.tpcd_metadata_rule_source(),
+              IsTpcdMetadataGrantsEnabled()
+                  ? content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST
+                  : content_settings::mojom::TpcdMetadataRuleSource::
+                        SOURCE_UNSPECIFIED);
+  }
+
+  {
+    content_settings::SettingInfo out_info;
+    EXPECT_FALSE(manager->IsAllowed(third_party_url_no_grants, first_party_url,
+                                    &out_info));
+    EXPECT_EQ(out_info.primary_pattern.ToString(), "*");
+    EXPECT_EQ(out_info.secondary_pattern.ToString(), "*");
+    EXPECT_EQ(
+        out_info.metadata.tpcd_metadata_rule_source(),
+        content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED);
+  }
+}
+
+TEST_P(ManagerTest, FireSyncCallback) {
+  base::RunLoop run_loop;
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  auto dummy_callback = [&](const ContentSettingsForOneType& grants) {
+    run_loop.Quit();
+    if (!IsTpcdMetadataGrantsEnabled()) {
+      EXPECT_TRUE(grants.empty());
+    } else {
+      EXPECT_EQ(grants.size(), 1u);
+      EXPECT_EQ(grants.front().primary_pattern.ToString(),
+                primary_pattern_spec);
+      EXPECT_EQ(grants.front().secondary_pattern.ToString(),
+                secondary_pattern_spec);
+      EXPECT_EQ(grants.front().metadata.tpcd_metadata_rule_source(),
+                content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
+    }
+  };
+  Manager* manager = GetManager(base::BindLambdaForTesting(dummy_callback));
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+  if (!IsTpcdMetadataGrantsEnabled()) {
+    EXPECT_TRUE(manager->GetGrants().empty());
+  } else {
+    EXPECT_EQ(manager->GetGrants().size(), 1u);
+    run_loop.Run();
+  }
+}
+
+}  // namespace tpcd::metadata

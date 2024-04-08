@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/content_settings/core/common",
+  "+net",
+  "+testing",
+]

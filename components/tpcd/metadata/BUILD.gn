@@ -27,6 +27,22 @@ proto_library("metadata_proto") {
   proto_out_dir = "components/tpcd/metadata"
 }
 
+source_set("manager") {
+  sources = [
+    "manager.cc",
+    "manager.h",
+  ]
+  deps = [
+    ":metadata",
+    ":metadata_proto",
+  ]
+  public_deps = [
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/common:features",
+    "//components/tpcd/metadata/common",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -50,9 +66,13 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "parser_unittest.cc" ]
+  sources = [
+    "manager_unittest.cc",
+    "parser_unittest.cc",
+  ]
 
   deps = [
+    ":manager",
     ":metadata",
     ":metadata_proto",
     ":test_support",
