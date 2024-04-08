@@ -349,7 +349,7 @@ state.GetFontBuilder().{{property.setter}}
   for (const CSSValue* item : *list) {
     const auto& pair = To<CSSValuePair>(*item);
     AtomicString identifier(To<CSSCustomIdentValue>(pair.First()).Value());
-    int counter_value = To<CSSPrimitiveValue>(pair.Second()).GetIntValue();
+    int counter_value = To<CSSPrimitiveValue>(pair.Second()).ComputeInteger(state.CssToLengthConversionData());
     CounterDirectives& directives =
     map.insert(identifier, CounterDirectives()).stored_value->value;
         {% if action == 'Reset' %}
