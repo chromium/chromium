@@ -396,7 +396,7 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 
   void SetUpPolicyProvider() {
     provider_ = std::make_unique<StandardManagementPolicyProvider>(
-        extension_management_.get());
+        extension_management_.get(), profile_.get());
   }
 
   void CreateExtension(ManifestLocation location) {

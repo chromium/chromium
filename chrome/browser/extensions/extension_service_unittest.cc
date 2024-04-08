@@ -4297,63 +4297,6 @@ TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 }
 
-// Tests that non-CWS extensions are disabled when force-installed in non
-// domain-join environment. See https://b/283274398.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-TEST_F(ExtensionServiceTest, NonCWSForceInstalledDisabledOnNonDomainJoin) {
-  // Mark as non enterprise managed.
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::NONE);
-  InitializeEmptyExtensionServiceWithTestingPrefs();
-
-  {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
-    // Mark good.crx for force-installation.
-    pref.SetIndividualExtensionAutoInstalled(
-        good_crx, "http://example.com/update_url", true);
-  }
-
-  // Have policy force-install an extension.
-  MockExternalProvider* provider =
-      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
-  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
-                                 data_dir().AppendASCII("good.crx"));
-
-  WaitForInstallationAttemptToComplete(good_crx);
-
-  // Extension should be disabled.
-  EXPECT_EQ(1u, registry()->disabled_extensions().size());
-  EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
-  EXPECT_EQ(0u, registry()->enabled_extensions().size());
-}
-
-TEST_F(ExtensionServiceTest, NonCWSForceInstalledEnabledOnDomainJoin) {
-  // Mark as enterprise managed.
-  policy::ScopedDomainEnterpriseManagement scoped_domain;
-  InitializeEmptyExtensionServiceWithTestingPrefs();
-
-  {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
-    // Mark good.crx for force-installation.
-    pref.SetIndividualExtensionAutoInstalled(
-        good_crx, "http://example.com/update_url", true);
-  }
-
-  // Have policy force-install an extension.
-  MockExternalProvider* provider =
-      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
-  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
-                                 data_dir().AppendASCII("good.crx"));
-
-  WaitForExternalExtensionInstalled(good_crx);
-
-  // Extension is enabled.
-  EXPECT_EQ(1u, registry()->enabled_extensions().size());
-  EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
-}
-#endif
-
 // Tests that extensions cannot be installed if the policy provider prohibits
 // it. This functionality is implemented in CrxInstaller::ConfirmInstall().
 TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsInstall) {
