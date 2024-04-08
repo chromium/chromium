@@ -214,7 +214,7 @@
 
   .customize-icon {
     --cr-icon-button-margin-start: 0;
-    --cr-icon-color: currentColor;
+    --cr-icon-color: var(--text-color);
     --cr-icon-ripple-margin: 0;
     --cr-icon-ripple-size: 16px;
     --cr-icon-size: 100%;
@@ -276,12 +276,13 @@
 
   :host([wallpaper-search-button-animation-enabled_])
       #wallpaperSearchButton {
-    animation: 750ms forwards grow;
+    animation: 750ms forwards grow-container, 500ms forwards 300ms color-text;
+    color: rgba(0,0,0,0);
     opacity: 0;
     transform-origin: right;
   }
 
-  @keyframes grow {
+  @keyframes grow-container {
     from {
       opacity: 0;
       transform: scale(0.8);
@@ -292,33 +293,21 @@
     }
   }
 
+  /* The text inherits the color of the button,
+  while the icon has a color rule of it's own. */
+  @keyframes color-text {
+    from { color: rgba(0,0,0,0); }
+    to { color: var(--text-color); }
+  }
+
   :host([wallpaper-search-button-animation-enabled_])
       #wallpaperSearchIcon {
-    animation: 2.5s 350ms spin;
+    animation: 2.5s 350ms spin-icon;
   }
 
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(720deg);
-    }
-  }
-
-  :host([wallpaper-search-button-animation-enabled_])
-      #wallpaperSearchText {
-    animation: 500ms forwards 300ms show;
-    opacity: 0;
-  }
-
-  @keyframes show {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 100%;
-    }
+  @keyframes spin-icon {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(720deg); }
   }
 
   #themeAttribution {

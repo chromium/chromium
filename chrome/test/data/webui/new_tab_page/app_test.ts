@@ -1188,7 +1188,7 @@ suite('NewTabPageAppTest', () => {
         assertNotStyle(
             $$(app, '#wallpaperSearchButton .customize-icon')!,
             'animation-name', 'none');
-        assertNotStyle(
+        assertStyle(
             $$(app, '#wallpaperSearchButton .customize-text')!,
             'animation-name', 'none');
       });
