@@ -13,12 +13,15 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -51,6 +54,8 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
                                    /*highlight_on_focus=*/true);
+  views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
+      base::TimeDelta());
 
   switch (focus_indicator_style_) {
     case FocusIndicatorStyle::kFocusRing:
