@@ -117,6 +117,7 @@
     <div class="header">
       <chromium-bidi-header />
       <div>
+        <button class="failures button" type="button">Failures</button>
         <button class="expand button" type="button">Expand</button>
         <button class="toggle button" type="button">Long</button>
       </div>
@@ -157,6 +158,35 @@
           expandState = 'expand';
         } else {
           expandState = 'collapse';
+        }
+      });
+
+      const failures = document.querySelector('.failures');
+      let failureState = 'all';
+      const summaryQuery = '.test-card:has(> details > .path.pass)';
+      const summaryDividerQuery = `${summaryQuery} + .divider`;
+      const passingTestQuery = '.test-card.test-card-subtest.pass';
+      const passingTestDividerQuery = `${passingTestQuery} + .divider`;
+      failures.addEventListener('click', () => {
+        failures.innerText =
+          failureState.charAt(0).toUpperCase() + failureState.slice(1);
+        if (failureState === 'all') {
+          failureState = 'failures';
+        } else {
+          failureState = 'all';
+        }
+        for (const query of [
+          summaryQuery,
+          summaryDividerQuery,
+          passingTestQuery,
+          passingTestDividerQuery,
+        ]) {
+          document
+            .querySelectorAll(query)
+            .forEach(
+              (element) =>
+                (element.style.display = failureState === 'all' ? '' : 'none')
+            );
         }
       });
     </script>
