@@ -1481,12 +1481,6 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
-  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
-  // OOPIF PDF.
-  if (UseOopif() && IsLibraryAvailable()) {
-    GTEST_SKIP();
-  }
-
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1497,12 +1491,6 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
-  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
-  // OOPIF PDF.
-  if (UseOopif() && IsLibraryAvailable()) {
-    GTEST_SKIP();
-  }
-
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1523,12 +1511,6 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
-  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
-  // OOPIF PDF.
-  if (UseOopif() && IsLibraryAvailable()) {
-    GTEST_SKIP();
-  }
-
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1539,12 +1521,6 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
-  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
-  // OOPIF PDF.
-  if (UseOopif() && IsLibraryAvailable()) {
-    GTEST_SKIP();
-  }
-
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
