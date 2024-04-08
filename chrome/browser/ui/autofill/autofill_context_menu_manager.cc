@@ -365,6 +365,8 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
       ShouldAddPlusAddressManualFallbackItem(driver);
   const bool add_address_fallback = ShouldAddAddressManualFallbackItem(driver);
   const bool add_payments_fallback =
+      personal_data_manager_->payments_data_manager()
+          .IsAutofillPaymentMethodsEnabled() &&
       !personal_data_manager_->GetCreditCardsToSuggest().empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable);
@@ -399,6 +401,11 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     ContentAutofillDriver& driver) {
+  if (!personal_data_manager_->address_data_manager()
+           .IsAutofillProfileEnabled()) {
+    return false;
+  }
+
   // If the field is of address type and there is information in the profile to
   // fill it, we always show the fallback option.
   // TODO(crbug.com/1493361): Remove the following code block once feature is
