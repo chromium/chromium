@@ -5706,7 +5706,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5387116558048951800">Modifier le <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Règles Enterprise modifiées. Bouton de tests ajouté à la barre d'outils. Cliquez dessus pour pouvoir activer les tests.</translation>
 <translation id="5388436023007579456">Les applis et sites Web autorisés à accéder à l'appareil photo, ainsi que les services système, peuvent l'utiliser. Pour utiliser l'appareil photo, vous devrez peut-être redémarrer l'appli ou actualiser la page.</translation>
-<translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site trouvé avec de nombreuses notifications}one{{NUM_SITES} site trouvé avec de nombreuses notifications}other{{NUM_SITES} sites trouvés avec de nombreuses notifications}}</translation>
+<translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site avec de nombreuses notifications trouvé}one{{NUM_SITES} site avec de nombreuses notifications trouvé}other{{NUM_SITES} sites avec de nombreuses notifications trouvés}}</translation>
 <translation id="5388885445722491159">Associé</translation>
 <translation id="5389626883706033615">Les sites ne peuvent pas vous demander d'utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="5389794555912875905">Voir des avertissements avant d'accéder à des sites non sécurisés (recommandé)</translation>
@@ -6594,7 +6594,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6077189836672154517">Conseils et actualités sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parler pour saisir votre texte</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invité}one{# fenêtre en mode Invité ouverte}other{# fenêtres en mode Invité ouvertes}}</translation>
-<translation id="6078323886959318429">Ajouter raccourci</translation>
+<translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6078742430369906859">La connectivité sur "<ph name="NETWORK_ID" />" peut être limitée</translation>
 <translation id="6078752646384677957">Veuillez vérifier le volume de votre micro et le volume audio.</translation>
 <translation id="608029822688206592">Aucun réseau trouvé. Veuillez insérer votre carte SIM et réessayer.</translation>
