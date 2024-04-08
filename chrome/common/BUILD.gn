@@ -22,6 +22,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
+assert(enable_supervised_users)
+
 fuzzer_test("ini_parser_fuzzer") {
   sources = [ "ini_parser_fuzzer.cc" ]
   deps = [
@@ -225,6 +227,7 @@ static_library("common_lib") {
     "//components/services/app_service",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
+    "//components/supervised_user/core/common",
     "//components/translate/content/common",
     "//components/translate/core/common",
     "//components/url_formatter",
@@ -269,10 +272,6 @@ static_library("common_lib") {
 
   if (is_android || enable_library_cdms) {
     public_deps += [ "//components/cdm/common" ]
-  }
-
-  if (enable_supervised_users) {
-    public_deps += [ "//components/supervised_user/core/common" ]
   }
 
   if (enable_ppapi) {
