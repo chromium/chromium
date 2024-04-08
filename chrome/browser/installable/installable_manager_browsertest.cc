@@ -20,6 +20,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -1013,7 +1015,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckFavicon) {
+// Flaky on Mac. TODO(crbug.com/333331507): Re-enable once the issue is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CheckFavicon DISABLED_CheckFavicon
+#else
+#define MAYBE_CheckFavicon CheckFavicon
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckFavicon) {
   // Checks that InstallableManager chooses the correct primary icon when
   // fetching favicon.
 
