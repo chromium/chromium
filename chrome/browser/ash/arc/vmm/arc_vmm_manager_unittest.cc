@@ -330,14 +330,14 @@ TEST_F(ArcVmmManagerTest, EnableSwapRequestWillEnableHeartbeat) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 
-  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  task_environment_.FastForwardBy(kVmmSwapTrimInterval.Get());
   EXPECT_EQ(2, client()->force_enable_count());
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
   task_environment_.RunUntilIdle();
 
-  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  task_environment_.FastForwardBy(kVmmSwapTrimInterval.Get());
   EXPECT_EQ(3, client()->force_enable_count());
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
@@ -352,14 +352,14 @@ TEST_F(ArcVmmManagerTest, EnableSwapRequestWillEnableHeartbeat) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 
-  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  task_environment_.FastForwardBy(kVmmSwapTrimInterval.Get());
   EXPECT_EQ(3, client()->force_enable_count());
   EXPECT_EQ(2, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
   task_environment_.RunUntilIdle();
 
-  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  task_environment_.FastForwardBy(kVmmSwapTrimInterval.Get());
   EXPECT_EQ(3, client()->force_enable_count());
   EXPECT_EQ(3, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
@@ -397,7 +397,7 @@ TEST_F(ArcVmmManagerTest, NotResendSameStateRequestButHeartbeat) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 
-  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  task_environment_.FastForwardBy(kVmmSwapTrimInterval.Get());
   EXPECT_EQ(0, client()->force_enable_count());
   EXPECT_EQ(2, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());

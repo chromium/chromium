@@ -439,6 +439,15 @@ const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
 const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
     &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
 
+// Controls the interval for swap trimming maintenance.
+const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval{
+    &kVmmSwapPolicy, "swap_trim_interval", base::Hours(1)};
+
+// Controls the minimum time interval between attempts to shrink ARCVM memory
+// when swap is enabled or swap trimming is performed.
+const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval{
+    &kVmmSwapPolicy, "min_shrink_interval", base::Minutes(10)};
+
 // When enabled, ARC uses XDG-based Wayland protocols.
 BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -7,6 +7,7 @@
 #ifndef ASH_COMPONENTS_ARC_ARC_FEATURES_H_
 #define ASH_COMPONENTS_ARC_ARC_FEATURES_H_
 
+#include <base/time/time.h>
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -91,6 +92,8 @@ BASE_DECLARE_FEATURE(kVmmSwapPolicy);
 extern const base::FeatureParam<int> kVmmSwapOutDelaySecond;
 extern const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond;
 extern const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond;
+extern const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval;
+extern const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval;
 BASE_DECLARE_FEATURE(kXdgMode);
 BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
 extern const base::FeatureParam<int> kPriorityAppLmkDelaySecond;

@@ -48,9 +48,6 @@ class ArcVmmManagerFactory
   ~ArcVmmManagerFactory() override = default;
 };
 
-// The minimal time interval for two successful ARCVM memory shrink request.
-const base::TimeDelta kMinimalShrinkMemoryInterval = base::Minutes(10);
-
 }  // namespace
 
 // static
@@ -156,14 +153,14 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   // Reset the timer anyway since the enable state and force enable state may
   // overwrite each other.
   enabled_state_heartbeat_timer_.Start(
-      FROM_HERE, kEnabledStateHeartbeatInterval,
+      FROM_HERE, kVmmSwapTrimInterval.Get(),
       base::BindRepeating(&ArcVmmManager::SetSwapState,
                           weak_ptr_factory_.GetWeakPtr(), state));
 
   // Enable or ForceEnable need shrink ARCVM memory first.
   if (!last_shrink_timestamp_ ||
       base::Time::Now() - last_shrink_timestamp_.value() >
-          kMinimalShrinkMemoryInterval) {
+          kVmmSwapMinShrinkInterval.Get()) {
     last_shrink_timestamp_ = base::Time::Now();
     last_shrink_result_ = false;
     // Following attempts to enable vmm-swap will be ignored until

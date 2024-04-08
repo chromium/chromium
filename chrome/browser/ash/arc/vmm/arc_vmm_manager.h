@@ -23,8 +23,6 @@
 
 namespace arc {
 
-const base::TimeDelta kEnabledStateHeartbeatInterval = base::Hours(1);
-
 class ArcBridgeService;
 
 enum class SwapState {
