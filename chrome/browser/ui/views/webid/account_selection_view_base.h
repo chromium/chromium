@@ -64,6 +64,8 @@ inline constexpr int kRightMargin = 40;
 // The size of the space between the top boundary of the WebContents and the top
 // boundary of the bubble.
 inline constexpr int kTopMargin = 16;
+// The size of the icon of the identity provider in the modal dialog.
+inline constexpr int kModalIdpIconSize = 32;
 // The size of avatars in the modal dialog.
 inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
@@ -141,7 +143,8 @@ class BrandIconImageView : public views::ImageView {
  public:
   BrandIconImageView(
       base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
-      int image_size);
+      int image_size,
+      bool should_circle_crop = true);
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
   ~BrandIconImageView() override;
@@ -157,6 +160,7 @@ class BrandIconImageView : public views::ImageView {
 
   base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image_;
   int image_size_;
+  bool should_circle_crop_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };
@@ -318,7 +322,8 @@ class AccountSelectionViewBase {
   // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
                                const GURL& brand_icon_url,
-                               int image_size = kDesiredIdpIconSize);
+                               int image_size = kDesiredIdpIconSize,
+                               bool should_circle_crop = true);
 
   // Sets the badge of the AccountImageView, if available, or initiates the
   // fetch otherwise.

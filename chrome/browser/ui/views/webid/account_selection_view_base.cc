@@ -111,8 +111,11 @@ void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
 
 BrandIconImageView::BrandIconImageView(
     base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
-    int image_size)
-    : add_image_(std::move(add_image)), image_size_(image_size) {}
+    int image_size,
+    bool should_circle_crop)
+    : add_image_(std::move(add_image)),
+      image_size_(image_size),
+      should_circle_crop_(should_circle_crop) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
@@ -137,8 +140,12 @@ void BrandIconImageView::OnImageFetched(
     return;
   }
   gfx::ImageSkia skia_image = image.AsImageSkia();
-  SetImage(ui::ImageModel::FromImageSkia(
-      CreateCircleCroppedImage(skia_image, image_size_)));
+  gfx::ImageSkia cropped_image =
+      should_circle_crop_ ? CreateCircleCroppedImage(skia_image, image_size_)
+                          : gfx::ImageSkiaOperations::CreateResizedImage(
+                                skia_image, skia::ImageOperations::RESIZE_BEST,
+                                gfx::Size(image_size_, image_size_));
+  SetImage(ui::ImageModel::FromImageSkia(cropped_image));
   // TODO(crbug.com/327509202): This stops the crashes but should fix to prevent
   // this from crashing in the first place.
   if (!add_image_) {
@@ -451,7 +458,8 @@ void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
 void AccountSelectionViewBase::ConfigureBrandImageView(
     BrandIconImageView* image_view,
     const GURL& brand_icon_url,
-    int image_size) {
+    int image_size,
+    bool should_circle_crop) {
   // Show placeholder brand icon prior to brand icon being fetched so that
   // header text wrapping does not change when brand icon is fetched.
   bool has_icon = brand_icon_url.is_valid();
@@ -462,8 +470,12 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
 
   auto it = brand_icon_images_.find(brand_icon_url);
   if (it != brand_icon_images_.end()) {
-    image_view->SetImage(ui::ImageModel::FromImageSkia(
-        CreateCircleCroppedImage(it->second, image_size)));
+    gfx::ImageSkia cropped_image =
+        should_circle_crop ? CreateCircleCroppedImage(it->second, image_size)
+                           : gfx::ImageSkiaOperations::CreateResizedImage(
+                                 it->second, skia::ImageOperations::RESIZE_BEST,
+                                 gfx::Size(image_size, image_size));
+    image_view->SetImage(ui::ImageModel::FromImageSkia(cropped_image));
     return;
   }
 

@@ -135,8 +135,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_FALSE(dialog()->GetCancelButton());
 
     // Order: Brand icon, title, potentially body
-    std::vector<std::string> expected_class_names = {"BrandIconImageView",
-                                                     "Label"};
+    std::vector<std::string> expected_class_names = {"View", "Label"};
     if (!expected_body.empty()) {
       expected_class_names.push_back("Label");
     }
@@ -148,9 +147,36 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     ASSERT_EQ(header_children.size(), expected_class_names.size());
 
     // Check IDP brand icon.
-    BrandIconImageView* brand_icon =
-        static_cast<BrandIconImageView*>(header_children[0]);
-    ASSERT_TRUE(brand_icon);
+    views::View* background_container =
+        static_cast<views::View*>(header_children[0]);
+    ASSERT_TRUE(background_container);
+
+    // Check background container contains the background image and icon
+    // container.
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        background_container_children = background_container->children();
+    ASSERT_EQ(background_container_children.size(), 2u);
+
+    views::View* background_image =
+        static_cast<views::View*>(background_container_children[0]);
+    ASSERT_TRUE(background_image);
+
+    views::View* icon_container =
+        static_cast<views::View*>(background_container_children[1]);
+    ASSERT_TRUE(icon_container);
+
+    // Check icon container contains the icon image.
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        icon_container_children = icon_container->children();
+    ASSERT_EQ(icon_container_children.size(), 1u);
+
+    views::View* icon_image =
+        static_cast<views::View*>(icon_container_children[0]);
+    ASSERT_TRUE(icon_image);
+
+    // Check icon image is of the correct size.
+    EXPECT_EQ(icon_image->size(),
+              gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
 
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);

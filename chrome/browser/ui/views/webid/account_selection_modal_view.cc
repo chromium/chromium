@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -42,6 +43,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -57,8 +59,6 @@ constexpr int kVerticalPadding = 8;
 constexpr int kDialogWidth = 448;
 // The margins of the modal dialog.
 constexpr int kDialogMargin = 20;
-// The size of brand icons of the modal dialog.
-constexpr int kModalIconSize = 50;
 // The height of the progress bar on the modal dialog.
 constexpr int kModalProgressBarHeight = 4;
 
@@ -568,23 +568,57 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateBrandIconImageView(
     const GURL& brand_icon_url) {
-  std::unique_ptr<BrandIconImageView> image_view =
+  // Create IDP brand icon image view.
+  std::unique_ptr<BrandIconImageView> brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          kModalIconSize);
-  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_bottom(kVerticalPadding));
+          kModalIdpIconSize, /*should_circle_crop=*/false);
+  brand_icon_image_view->SetImageSize(
+      gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   if (brand_icon_url.is_valid()) {
-    ConfigureBrandImageView(image_view.get(), brand_icon_url, kModalIconSize);
+    ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url,
+                            kModalIdpIconSize,
+                            /*should_circle_crop=*/false);
   } else {
-    image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
-    image_view->SetVisible(true);
+    brand_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlobeIcon, gfx::kGoogleGrey700, kModalIdpIconSize));
+    brand_icon_image_view->SetVisible(true);
   }
 
-  return image_view;
+  // Create background image view.
+  constexpr int kBackgroundWidth = 408;
+  constexpr int kBackgroundHeight = 100;
+  const bool is_dark_mode = color_utils::IsDark(
+      web_contents_->GetColorProvider().GetColor(ui::kColorDialogBackground));
+  gfx::ImageSkia* background =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          is_dark_mode ? IDR_WEBID_MODAL_ICON_BACKGROUND_DARK
+                       : IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT);
+  std::unique_ptr<views::ImageView> background_image_view =
+      std::make_unique<views::ImageView>();
+  background_image_view->SetImage(*background);
+  background_image_view->SetImageSize(
+      gfx::Size(kBackgroundWidth, kBackgroundHeight));
+
+  // Put background image view into a FillLayout container.
+  std::unique_ptr<views::View> background_container =
+      std::make_unique<views::View>();
+  background_container->SetUseDefaultFillLayout(true);
+  background_container->AddChildView(std::move(background_image_view));
+
+  // Put brand icon image view into a BoxLayout container.
+  std::unique_ptr<views::BoxLayoutView> icon_container =
+      std::make_unique<views::BoxLayoutView>();
+  icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->AddChildView(std::move(brand_icon_image_view));
+
+  // Put BoxLayout container into FillLayout container to stack the views. This
+  // stacks the IDP icon on top of the background image.
+  background_container->AddChildView(std::move(icon_container));
+
+  return background_container;
 }
 
 void AccountSelectionModalView::CloseDialog() {
