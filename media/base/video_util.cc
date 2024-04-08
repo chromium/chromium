@@ -794,12 +794,13 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
   // All platforms except android have shipped passthrough command decoder which
   // supports it. On Android this code path should always use RasterDecoder
   // which also supports this.
-  DUMP_WILL_BE_CHECK(caps.supports_yuv_to_rgb_conversion);
+  CHECK(caps.supports_yuv_to_rgb_conversion);
 
   bool result;
+  // TODO(crbug.com/332564976): Remove this codepath once last usages of legacy
+  // mailboxes from video frame are deleted.
   if (gr_context &&
-      !(caps.supports_yuv_to_rgb_conversion &&
-        src_frame.mailbox_holder(src_plane).mailbox.IsSharedImage())) {
+      !(src_frame.mailbox_holder(src_plane).mailbox.IsSharedImage())) {
     result = ReadbackTexturePlaneToMemorySyncSkImage(
         src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri,
         gr_context);
