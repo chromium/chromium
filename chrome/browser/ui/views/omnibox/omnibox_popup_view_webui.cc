@@ -82,7 +82,11 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
       omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {
+    const bool was_visible = presenter_->IsShown();
     presenter_->Show();
+    if (!was_visible) {
+      NotifyOpenListeners();
+    }
   }
 }
 

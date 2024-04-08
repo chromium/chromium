@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -317,12 +318,16 @@ class OmniboxViewViews
   // Helper method to construct part of the context menu.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
 
+  // Called when the popup view becomes visible.
+  void OnPopupOpened();
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
 
   // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
   std::unique_ptr<OmniboxPopupView> popup_view_;
+  base::CallbackListSubscription popup_view_opened_subscription_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   std::vector<gfx::Range> saved_temporary_selection_ = {{}};

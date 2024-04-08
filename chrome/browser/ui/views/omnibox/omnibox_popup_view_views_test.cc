@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -25,15 +27,22 @@ views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
-  edit_model()->SetUserText(u"foo");
-  AutocompleteInput input(
-      u"foo", metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_omit_asynchronous_matches(true);
-  controller()->StartAutocomplete(input);
+  // Verify that the on-shown callback is called at the correct time.
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, popup_callback);
+  const auto subscription = popup_view()->AddOpenListener(popup_callback.Get());
 
-  EXPECT_FALSE(autocomplete_controller->result().empty());
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_CALL_IN_SCOPE(popup_callback, Run, {
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo", metrics::OmniboxEventProto::BLANK,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->StartAutocomplete(input);
+
+    EXPECT_FALSE(autocomplete_controller->result().empty());
+    EXPECT_TRUE(popup_view()->IsOpen());
+  });
+
   views::Widget* popup = GetPopupWidget();
   EXPECT_TRUE(popup);
   return popup;

@@ -349,17 +349,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       FireAXEventsForNewActiveDescendant(result_view);
     }
 
-#if BUILDFLAG(IS_MAC)
-    // It's not great for promos to overlap the omnibox if the user opens the
-    // drop-down after showing the promo. This especially causes issues on Mac
-    // due to z-order/rendering issues, see crbug.com/1225046 for examples.
-    auto* const promo_controller =
-        BrowserFeaturePromoController::GetForView(omnibox_view_);
-    if (promo_controller) {
-      promo_controller->DismissNonCriticalBubbleInRegion(
-          omnibox_view_->GetBoundsInScreen());
-    }
-#endif
+    NotifyOpenListeners();
   }
   InvalidateLayout();
 }

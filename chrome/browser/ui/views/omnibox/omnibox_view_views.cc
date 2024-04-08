@@ -237,6 +237,9 @@ void OmniboxViewViews::Init() {
       popup_view_ = std::make_unique<OmniboxPopupViewViews>(
           /*omnibox_view=*/this, controller(), location_bar_view_);
     }
+    popup_view_opened_subscription_ =
+        popup_view_->AddOpenListener(base::BindRepeating(
+            &OmniboxViewViews::OnPopupOpened, base::Unretained(this)));
     // Set whether the text should be used to improve typing suggestions.
     SetShouldDoLearning(!location_bar_view_->profile()->IsOffTheRecord());
   }
@@ -1945,6 +1948,19 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
   menu_contents->SetIcon(index, ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
+}
+
+void OmniboxViewViews::OnPopupOpened() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // It's not great for promos to overlap the omnibox if the user opens the
+  // drop-down after showing the promo. This especially causes issues on Mac and
+  // Linux due to z-order/rendering issues, see crbug.com/1225046 and
+  // crbug.com/332769403 for examples.
+  if (auto* const promo_controller =
+          BrowserFeaturePromoController::GetForView(this)) {
+    promo_controller->DismissNonCriticalBubbleInRegion(GetBoundsInScreen());
+  }
+#endif
 }
 
 BEGIN_METADATA(OmniboxViewViews)

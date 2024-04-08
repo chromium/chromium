@@ -13,6 +13,8 @@
 
 #include <stddef.h>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -26,7 +28,7 @@ struct AXNodeData;
 class OmniboxPopupView {
  public:
   explicit OmniboxPopupView(OmniboxController* controller);
-  virtual ~OmniboxPopupView() = default;
+  virtual ~OmniboxPopupView();
 
   virtual OmniboxEditModel* model();
   virtual const OmniboxEditModel* model() const;
@@ -76,9 +78,19 @@ class OmniboxPopupView {
   virtual void SetSuggestionGroupVisibility(size_t match_index,
                                             bool suggestion_group_hidden) {}
 
+  // Adds a callback that will be called when the popup window becomes visible.
+  base::CallbackListSubscription AddOpenListener(
+      base::RepeatingClosure callback);
+
+ protected:
+  // Call when the popup will appear to notify listeners.
+  void NotifyOpenListeners();
+
  private:
+  base::RepeatingClosureList on_popup_callbacks_;
+
   // Owned by OmniboxView which owns this.
-  raw_ptr<OmniboxController> controller_;
+  const raw_ptr<OmniboxController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_VIEW_H_
