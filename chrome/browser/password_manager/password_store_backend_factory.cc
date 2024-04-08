@@ -29,6 +29,10 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#endif
+
 namespace {
 #if BUILDFLAG(IS_ANDROID)
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;

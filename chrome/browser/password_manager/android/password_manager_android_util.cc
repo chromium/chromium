@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/version_info/android/channel_getter.h"
@@ -58,19 +57,6 @@ enum class ActivationError {
   kMigrationWarningUnacknowledged = 6,
   kMaxValue = kMigrationWarningUnacknowledged,
 };
-
-UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
-    PrefService* pref_service) {
-  auto value = static_cast<UseUpmLocalAndSeparateStoresState>(
-      pref_service->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
-  switch (value) {
-    case kOff:
-    case kOffAndMigrationPending:
-    case kOn:
-      return value;
-  }
-  NOTREACHED_NORETURN();
-}
 
 bool IsPasswordSyncEnabled(PrefService* pref_service) {
   // It's not possible to ask the SyncService whether password sync is enabled,
@@ -370,6 +356,19 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
 }
 
 }  // namespace
+
+UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
+    PrefService* pref_service) {
+  auto value = static_cast<UseUpmLocalAndSeparateStoresState>(
+      pref_service->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  switch (value) {
+    case kOff:
+    case kOffAndMigrationPending:
+    case kOn:
+      return value;
+  }
+  NOTREACHED_NORETURN();
+}
 
 bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
   // TODO(crbug.com/1327294): Re-evaluate if the SyncService can be passed here
