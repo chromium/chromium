@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -891,18 +890,13 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->pinned = tab_renderer_data.pinned;
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   const auto& last_committed_url = tab_renderer_data.last_committed_url;
+  // A visible URL is used when the a new tab is still loading.
+  // If it is cancelled during loading the visible URL becomes empty.
+  // We will display an empty URL as about:blank in Javascript.
   tab_data->url =
       !last_committed_url.is_valid() || last_committed_url.is_empty()
           ? tab_renderer_data.visible_url
           : last_committed_url;
-
-  // TODO(crbug.com/329638230): remove dump after we figure out why the url
-  // is empty.
-  static bool dumped_empty_url = false;
-  if (!dumped_empty_url && tab_data->url.is_empty()) {
-    dumped_empty_url = true;
-    base::debug::DumpWithoutCrashing();
-  }
 
   if (tab_renderer_data.favicon.IsEmpty()) {
     tab_data->is_default_favicon = true;
