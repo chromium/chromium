@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -33,8 +36,10 @@
 
 namespace ash {
 
+constexpr char kTestDomain[] = "test.org";
 constexpr char kTestUserEmail[] = "user@test.org";
 constexpr char kTestAuthCode[] = "test_auth_code";
+constexpr char kTestDeviceId[] = "test_device_id";
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -47,8 +52,7 @@ namespace {
 class ScopedNetworkInitializer {
  public:
   ScopedNetworkInitializer() {
-    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    network_handler_test_helper_->AddDefaultProfiles();
+    network_handler_test_helper_.AddDefaultProfiles();
     // Will be deleted in `network_portal_detector::Shutdown()`.
     MockNetworkPortalDetector* mock_network_portal_detector =
         new MockNetworkPortalDetector();
@@ -64,7 +68,7 @@ class ScopedNetworkInitializer {
 
  private:
   // Initializes NetworkHandler and required DBus clients.
-  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 }  // namespace
@@ -77,8 +81,9 @@ class EnrollmentScreenBaseTest : public testing::Test {
  protected:
   EnrollmentScreenBaseTest()
       : mock_error_screen_(mock_error_view_.AsWeakPtr()) {
-    RegisterLocalState(pref_service_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+    RegisterLocalState(fake_local_state_.registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&fake_local_state_);
+
     policy::EnrollmentRequisitionManager::Initialize();
   }
 
@@ -95,6 +100,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
                             base::Unretained(this)));
 
     enrollment_screen_->SetEnrollmentConfig(config);
+    enrollment_screen_->set_tpm_updater_for_testing(base::DoNothing());
   }
 
   // Fast forwards time by the specified amount.
@@ -102,12 +108,15 @@ class EnrollmentScreenBaseTest : public testing::Test {
     task_environment_.FastForwardBy(time);
   }
 
-  void ExpectAttestationBasedEnrollmentAndReportSuccess() {
+  void ExpectAttestationBasedEnrollmentAndReportEnrolled() {
     EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
         .WillOnce([this]() {
           ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
-          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+          SetupEnrolledDevice();
+          enrollment_screen_->OnDeviceEnrolled();
         });
+
+    ExpectSetEnterpriseDomainInfo();
   }
 
   void ExpectAttestationBasedEnrollmentAndReportFailure(
@@ -117,7 +126,6 @@ class EnrollmentScreenBaseTest : public testing::Test {
         << "Cannot not expect failure with a success code";
 
     EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-        .Times(AnyNumber())
         .WillOnce([this, status]() {
           ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
           enrollment_screen_->OnEnrollmentError(status);
@@ -137,12 +145,15 @@ class EnrollmentScreenBaseTest : public testing::Test {
                 DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
   }
 
-  void ExpectManualEnrollmentAndReportSuccess() {
+  void ExpectManualEnrollmentAndReportEnrolled() {
     EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
         .WillOnce([this]() {
           ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
-          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+          SetupEnrolledDevice();
+          enrollment_screen_->OnDeviceEnrolled();
         });
+
+    ExpectSetEnterpriseDomainInfo();
   }
 
   void ExpectManualEnrollmentAndReportFailure(policy::EnrollmentStatus status) {
@@ -151,7 +162,6 @@ class EnrollmentScreenBaseTest : public testing::Test {
         << "Cannot not expect failure with a success code";
 
     EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
-        .Times(AnyNumber())
         .WillOnce([this, status]() {
           ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
           enrollment_screen_->OnEnrollmentError(status);
@@ -162,6 +172,15 @@ class EnrollmentScreenBaseTest : public testing::Test {
     ExpectManualEnrollmentAndReportFailure(
         policy::EnrollmentStatus::ForRegistrationError(
             policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
+  void ExpectGetDeviceAttributeUpdatePermission(bool permission_granted) {
+    EXPECT_CALL(mock_enrollment_launcher_, GetDeviceAttributeUpdatePermission())
+        .WillOnce([this, permission_granted]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->OnDeviceAttributeUpdatePermission(
+              permission_granted);
+        });
   }
 
   void ExpectSuccessScreen() {
@@ -182,6 +201,10 @@ class EnrollmentScreenBaseTest : public testing::Test {
   void ExpectErrorScreen() {
     ExpectErrorScreen(policy::EnrollmentStatus::ForRegistrationError(
         policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
+  void ExpectSetEnterpriseDomainInfo() {
+    EXPECT_CALL(mock_view_, SetEnterpriseDomainInfo(kTestDomain, _));
   }
 
   void ExpectClearAuth() {
@@ -216,11 +239,19 @@ class EnrollmentScreenBaseTest : public testing::Test {
       enrollment_screen_->retry_policy_.jitter_factor = 0;
     }
     enrollment_screen_->Show(&wizard_context());
+
+    FlushTasksAndWaitCompletion();
   }
 
-  void UserCancel() { enrollment_screen_->OnCancel(); }
+  void UserCancel() {
+    enrollment_screen_->OnCancel();
+    FlushTasksAndWaitCompletion();
+  }
 
-  void UserRetry() { enrollment_screen_->OnRetry(); }
+  void UserRetry() {
+    enrollment_screen_->OnRetry();
+    FlushTasksAndWaitCompletion();
+  }
 
   int GetEnrollmentScreenRetries() const {
     return enrollment_screen_->num_retries_;
@@ -231,6 +262,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
   WizardContext& wizard_context() {
     return CHECK_DEREF(fake_login_display_host_.GetWizardContext());
   }
+
+  TestingPrefServiceSimple& local_state() { return fake_local_state_; }
 
  private:
   void HandleScreenExit(EnrollmentScreen::Result screen_result) {
@@ -244,16 +277,27 @@ class EnrollmentScreenBaseTest : public testing::Test {
         << "EnrollmentScreen is not status consumer of EnrollmentLauncher";
   }
 
+  void SetupEnrolledDevice() {
+    test_install_attributes_.Get()->SetCloudManaged(kTestDomain, kTestDeviceId);
+    test_install_attributes_.Get()->set_device_locked(true);
+  }
+
+  void FlushTasksAndWaitCompletion() {
+    // Trigger and wait for async tasks to finish. E.g.
+    // `StartupUtils::MarkDeviceRegistered`.
+    FastForwardTime(base::TimeDelta());
+    base::RunLoop().RunUntilIdle();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Must outlive `mock_error_screen_`.
-  ScopedNetworkInitializer scoped_network;
+  ScopedNetworkInitializer scoped_network_;
 
   // Mocks must outlive `enrollment_screen_`.
   NiceMock<MockEnrollmentScreenView> mock_view_;
   NiceMock<MockErrorScreenView> mock_error_view_;
-  // Network portal must be initialized before destroying.
   NiceMock<MockErrorScreen> mock_error_screen_;
   NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
   ScopedEnrollmentLauncherFactoryOverrideForTesting
@@ -264,12 +308,13 @@ class EnrollmentScreenBaseTest : public testing::Test {
   // Used by `enrollment_screen_`.
   ScopedStubInstallAttributes test_install_attributes_;
 
-  // Used by `EnrollmentRequisitionManager`.
-  TestingPrefServiceSimple pref_service_;
+  // Used by `EnrollmentRequisitionManager` and `StartupUtils`.
+  TestingPrefServiceSimple fake_local_state_;
 
   // Used by `EnrollmentRequisitionManager`.
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
+  // Used by `enrollment_screen_`.
   FakeLoginDisplayHost fake_login_display_host_;
 
   std::unique_ptr<EnrollmentScreen> enrollment_screen_;
@@ -300,7 +345,8 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
 
   ExpectShowViewWithLogin();
-  ExpectManualEnrollmentAndReportSuccess();
+  ExpectManualEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   ExpectSuccessScreen();
   ExpectClearAuth();
 
@@ -308,6 +354,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenManualFlowTest, ShouldNotAutomaticallyRetryEnrollment) {
@@ -342,7 +389,8 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
     // Second view is shown after user retry.
     ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportSuccess();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
   }
 
@@ -357,6 +405,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -392,7 +441,8 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
 
   ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
 
-  ExpectAttestationBasedEnrollmentAndReportSuccess();
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   ExpectSuccessScreen();
   ExpectClearAuth();
 
@@ -400,6 +450,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenAttestationFlowTest,
@@ -433,7 +484,8 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
     // Second view is shown after user retry.
     ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportSuccess();
+    ExpectAttestationBasedEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
   }
 
@@ -448,6 +500,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -490,7 +543,8 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
     ExpectEnrollmentConfig(fallback_config.mode,
                            fallback_config.auth_mechanism);
     ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportSuccess();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
   }
 
@@ -500,6 +554,7 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
@@ -520,7 +575,8 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
     ExpectEnrollmentConfig(fallback_config.mode,
                            fallback_config.auth_mechanism);
     ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportSuccess();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
   }
 
@@ -534,6 +590,7 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   UserCancel();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -574,7 +631,8 @@ class EnrollmentScreenRollbackFlowTest : public EnrollmentScreenBaseTest {
 TEST_F(EnrollmentScreenRollbackFlowTest, ShouldFinishEnrollmentScreen) {
   ExpectEnrollmentConfig(rollback_config().mode,
                          rollback_config().auth_mechanism);
-  ExpectAttestationBasedEnrollmentAndReportSuccess();
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   ExpectClearAuth();
 
   SetUpEnrollmentScreen(
@@ -582,6 +640,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest, ShouldFinishEnrollmentScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_F(EnrollmentScreenRollbackFlowTest,
@@ -614,7 +673,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
     // Second view is shown after user retry.
     ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportSuccess();
+    ExpectAttestationBasedEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   }
 
   ExpectClearAuth();
@@ -629,6 +689,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_F(EnrollmentScreenRollbackFlowTest,
@@ -645,7 +706,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
     ExpectEnrollmentConfig(rollback_fallback_config().mode,
                            rollback_fallback_config().auth_mechanism);
     ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportSuccess();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   }
 
   ExpectClearAuth();
@@ -655,6 +717,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 TEST_F(EnrollmentScreenRollbackFlowTest,
@@ -673,7 +736,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
     ExpectEnrollmentConfig(rollback_fallback_config().mode,
                            rollback_fallback_config().auth_mechanism);
     ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportSuccess();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
   }
 
   ExpectClearAuth();
@@ -687,6 +751,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
   UserCancel();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
 }  // namespace ash

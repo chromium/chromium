@@ -124,6 +124,11 @@ class EnrollmentScreen
                           weak_ptr_factory_.GetWeakPtr());
   }
 
+  void set_tpm_updater_for_testing(
+      base::RepeatingClosure tpm_updater_for_testing) {
+    tpm_updater_ = std::move(tpm_updater_for_testing);
+  }
+
   // Changes network state. Useful for simulating network issues in tests.
   void SetNetworkStateForTesting(const NetworkState* state);
 
@@ -248,6 +253,9 @@ class EnrollmentScreen
   raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
+  // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
+  // the policy is set to "auto-update vulnerable TPM firmware at enrollment".
+  base::RepeatingClosure tpm_updater_;
   policy::EnrollmentConfig config_;
   policy::EnrollmentConfig enrollment_config_;
   policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;
