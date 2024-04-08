@@ -136,7 +136,6 @@
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
-#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
@@ -275,10 +274,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -556,10 +551,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIFeedbackHost &&
-      FeedbackUI::IsFeedbackEnabled(profile)) {
-    return &NewWebUI<FeedbackUI>;
-  }
   if (url.host_piece() == chrome::kChromeUIReadLaterHost)
     return &NewWebUI<ReadingListUI>;
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
@@ -701,13 +692,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWebRtcLogsHost)
     return &NewWebUI<WebRtcLogsUI>;
 #if !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (url.host_piece() == chrome::kChromeUICastFeedbackHost &&
-      media_router::MediaRouterEnabled(profile) &&
-      FeedbackUI::IsFeedbackEnabled(profile)) {
-    return &NewWebUI<media_router::CastFeedbackUI>;
-  }
-#endif
   if (url.host_piece() == chrome::kChromeUIWebuiGalleryHost) {
     return &NewWebUI<WebuiGalleryUI>;
   }

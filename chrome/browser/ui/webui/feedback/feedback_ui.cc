@@ -102,4 +102,14 @@ void FeedbackUI::BindInterface(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+FeedbackUIConfig::FeedbackUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIFeedbackHost) {}
+
+bool FeedbackUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return FeedbackUI::IsFeedbackEnabled(
+      Profile::FromBrowserContext(browser_context));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(FeedbackUI)

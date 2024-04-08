@@ -17,9 +17,13 @@
 #include "printing/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
+#endif
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
@@ -61,6 +65,10 @@ void RegisterChromeWebUIConfigs() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
   map.AddWebUIConfig(

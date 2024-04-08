@@ -14,6 +14,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
@@ -199,6 +200,16 @@ CastFeedbackUI::~CastFeedbackUI() = default;
 
 void CastFeedbackUI::OnCloseMessage(const base::Value::List&) {
   web_contents_->GetDelegate()->CloseContents(web_contents_);
+}
+
+CastFeedbackUIConfig::CastFeedbackUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUICastFeedbackHost) {}
+
+bool CastFeedbackUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return MediaRouterEnabled(profile) && FeedbackUI::IsFeedbackEnabled(profile);
 }
 
 }  // namespace media_router
