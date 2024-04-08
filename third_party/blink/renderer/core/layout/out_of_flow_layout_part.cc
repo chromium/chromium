@@ -2337,8 +2337,6 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       // Paginated fixed-positioned elements are repeated on every page, if
       // contained by the initial containing block (i.e. when not contained by a
       // transformed element or similar) and may therefore not fragment.
-      DCHECK(container_builder_->Node().IsPaginatedRoot());
-      DCHECK_EQ(node.Style().GetPosition(), EPosition::kFixed);
       builder.SetShouldRepeat(true);
       builder.SetIsInsideRepeatableContent(true);
       builder.DisableMonolithicOverflowPropagation();
