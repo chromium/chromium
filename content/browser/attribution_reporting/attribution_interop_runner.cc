@@ -171,15 +171,26 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
                                        AttributionDelayMode::kDefault,
                                        config) {
     std::vector<std::pair<base::Time, RandomizedResponse>> responses;
+    std::vector<std::pair<base::Time, base::flat_set<int>>>
+        null_aggregatable_reports_days;
     for (auto& event : events) {
       if (auto* data =
-              absl::get_if<AttributionSimulationEvent::Response>(&event.data);
-          data && data->randomized_response.has_value()) {
-        responses.emplace_back(
-            event.time, std::exchange(data->randomized_response, std::nullopt));
+              absl::get_if<AttributionSimulationEvent::Response>(&event.data)) {
+        if (data->randomized_response.has_value()) {
+          responses.emplace_back(
+              event.time,
+              std::exchange(data->randomized_response, std::nullopt));
+        }
+        if (!data->null_aggregatable_reports_days.empty()) {
+          null_aggregatable_reports_days.emplace_back(
+              event.time,
+              std::exchange(data->null_aggregatable_reports_days, {}));
+        }
       }
     }
     randomized_responses_.replace(std::move(responses));
+    null_aggregatable_reports_days_.replace(
+        std::move(null_aggregatable_reports_days));
   }
 
   ~ControllableStorageDelegate() override = default;
@@ -226,10 +237,26 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
     return response_data;
   }
 
-  // TODO(apaseltiner): Allow null aggregatable reports to be configured in the
-  // same way.
+  bool GenerateNullAggregatableReportForLookbackDay(
+      int lookback_day,
+      attribution_reporting::mojom::SourceRegistrationTimeConfig
+          source_registration_time_config) const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    bool ret = AttributionStorageDelegateImpl::
+        GenerateNullAggregatableReportForLookbackDay(
+            lookback_day, source_registration_time_config);
+    auto it = null_aggregatable_reports_days_.find(base::Time::Now());
+    if (it != null_aggregatable_reports_days_.end()) {
+      ret = it->second.contains(lookback_day);
+    }
+    return ret;
+  }
+
   base::flat_map<base::Time, RandomizedResponse> randomized_responses_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<base::Time, base::flat_set<int>>
+      null_aggregatable_reports_days_;
 };
 
 void Handle(const AttributionSimulationEvent::StartRequest& event,

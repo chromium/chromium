@@ -1,0 +1,268 @@
+{
+  "description": "null aggregatable reports for triggers with aggregatable data",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "aggregation_keys": {
+                  "a": "0x159"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Creates one aggregatable report and two null aggregatable reports.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
+                },
+                "aggregatable_source_registration_time": "include"
+              }
+            }
+          }
+        ]
+      },
+      // Creates three null aggregatable reports.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 456
+                },
+                "aggregatable_source_registration_time": "include",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Trigger without aggregataable data doesn't create null aggregatable reports.
+      {
+        "timestamp": "2001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_source_registration_time": "include",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Creates one aggregatable report.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x200"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 321
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Creates one null aggregatable report.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 654
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Trigger without aggregatable data doesn't create null aggregatable reports.
+      {
+        "timestamp": "4001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "null_aggregatable_reports_days": [0, 2, 5],
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+           },
+           "type": "trigger-aggregate-no-contributions"
+        } ],
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 123
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "3601000"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3601000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3601000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3602000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3602000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3602000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x359",
+              "value": 321
+           } ]
+        },
+        "report_time": "3603000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x0",
+              "value": 0
+           } ]
+        },
+        "report_time": "3604000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      }
+    ]
+  }
+}

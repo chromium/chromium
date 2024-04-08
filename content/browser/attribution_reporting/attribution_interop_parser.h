@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -42,12 +43,15 @@ struct AttributionSimulationEvent {
     scoped_refptr<net::HttpResponseHeaders> response_headers;
     // Only relevant for sources, not triggers.
     attribution_reporting::RandomizedResponse randomized_response;
+    // Only relevant for triggers, not sources.
+    base::flat_set<int> null_aggregatable_reports_days;
     bool debug_permission = false;
 
     Response(int64_t request_id,
              GURL url,
              scoped_refptr<net::HttpResponseHeaders>,
              attribution_reporting::RandomizedResponse,
+             base::flat_set<int> null_aggregatable_reports_days,
              bool debug_permission);
 
     ~Response();

@@ -284,9 +284,8 @@ class AttributionInteropParser {
     return ErrorWriter(error_stream_);
   }
 
-  void ParseListOfDicts(
-      base::Value* values,
-      base::FunctionRef<void(base::Value::Dict)> parse_element) {
+  void ParseList(base::Value* values,
+                 base::FunctionRef<void(base::Value)> parse_element) {
     if (!values) {
       *Error() << "must be present";
       return;
@@ -301,12 +300,20 @@ class AttributionInteropParser {
     size_t index = 0;
     for (auto& value : *list) {
       auto index_context = PushContext(index);
+      parse_element(std::move(value));
+      index++;
+    }
+  }
+
+  void ParseListOfDicts(
+      base::Value* values,
+      base::FunctionRef<void(base::Value::Dict)> parse_element) {
+    ParseList(values, [&](base::Value value) {
       if (!EnsureDictionary(&value)) {
         return;
       }
       parse_element(std::move(value).TakeDict());
-      index++;
-    }
+    });
   }
 
   void ParseRegistration(base::Value::Dict dict,
@@ -347,6 +354,9 @@ class AttributionInteropParser {
             attribution_reporting::RandomizedResponse randomized_response =
                 ParseRandomizedResponse(response);
 
+            base::flat_set<int> null_aggregatable_reports_days =
+                ParseNullAggregatableReportsDays(response);
+
             // The timestamp is required for all but the first response. If
             // omitted on the first response, it defaults to the registration
             // time.
@@ -384,7 +394,9 @@ class AttributionInteropParser {
                       response_time,
                       AttributionSimulationEvent::Response(
                           request_id, std::move(url), builder.Build(),
-                          std::move(randomized_response), debug_permission));
+                          std::move(randomized_response),
+                          std::move(null_aggregatable_reports_days),
+                          debug_permission));
 
                 });
           });
@@ -616,6 +628,28 @@ class AttributionInteropParser {
     return randomized_response;
   }
 
+  base::flat_set<int> ParseNullAggregatableReportsDays(
+      base::Value::Dict& dict) {
+    base::flat_set<int> null_aggregatable_reports_days;
+
+    static constexpr char kNullAggregatableReports[] =
+        "null_aggregatable_reports_days";
+    if (base::Value* v = dict.Find(kNullAggregatableReports);
+        v && !v->is_none()) {
+      auto context = PushContext(kNullAggregatableReports);
+      ParseList(v, [&](base::Value value) {
+        std::optional<int> int_value = value.GetIfInt();
+        if (!int_value || *int_value < 0) {
+          *Error() << "must be a non-negative integer";
+        } else {
+          null_aggregatable_reports_days.emplace(*int_value);
+        }
+      });
+    }
+
+    return null_aggregatable_reports_days;
+  }
+
   bool ParseDict(base::Value::Dict& value,
                  std::string_view key,
                  base::FunctionRef<void(base::Value::Dict)> parse_dict) {
@@ -747,11 +781,13 @@ AttributionSimulationEvent::Response::Response(
     GURL url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     attribution_reporting::RandomizedResponse randomized_response,
+    base::flat_set<int> null_aggregatable_reports_days,
     bool debug_permission)
     : request_id(request_id),
       url(std::move(url)),
       response_headers(std::move(response_headers)),
       randomized_response(std::move(randomized_response)),
+      null_aggregatable_reports_days(std::move(null_aggregatable_reports_days)),
       debug_permission(debug_permission) {}
 
 AttributionSimulationEvent::Response::~Response() = default;

@@ -86,6 +86,10 @@ and triggers.
               }
             ],
 
+            // If present and non-null, the lookback days that would create null
+            // aggregatable reports. Defaults to null. Ignored for sources.
+            "null_aggregatable_reports_days": [1, 5]
+
             // Exactly one of the registration fields must be present. See
             // https://github.com/WICG/attribution-reporting-api for the
             // complete schema.

@@ -43,6 +43,7 @@ using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
 using ::attribution_reporting::SuitableOrigin;
@@ -129,6 +130,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
         {
           "url": "https://c.r.test/z",
           "timestamp": "102",
+          "null_aggregatable_reports_days": [1, 5],
           "response": {
             "Attribution-Reporting-Register-Trigger": "***"
           }
@@ -189,7 +191,10 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
                                     }))),
                           Field(&Response::debug_permission, false)))),
           AllOf(SimulationEventTimeIs(kExpectedTime3),
-                ResponseIs(Field(&Response::url, GURL("https://c.r.test/z")))),
+                ResponseIs(
+                    AllOf(Field(&Response::url, GURL("https://c.r.test/z")),
+                          Field(&Response::null_aggregatable_reports_days,
+                                UnorderedElementsAre(1, 5))))),
           AllOf(SimulationEventTimeIs(kExpectedTime3),
                 EndRequestIs(RequestIdIs(kExpectedRequestId2)))));
 }
@@ -347,6 +352,26 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "context_origin": "https://a.s.test"
           },
           "responses": [{}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["null_aggregatable_reports_days"]: must be a list)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"null_aggregatable_reports_days": 1}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["null_aggregatable_reports_days"][0]: must be a non-negative integer)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"null_aggregatable_reports_days": [-1]}]
         }]})json",
     },
     {
