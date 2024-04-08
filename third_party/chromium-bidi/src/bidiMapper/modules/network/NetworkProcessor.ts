@@ -60,8 +60,7 @@ export class NetworkProcessor {
     });
 
     await Promise.all(
-      // TODO: We should to this for other CDP targets as well
-      this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+      this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleFetchIfNeeded();
       })
     );
@@ -264,8 +263,7 @@ export class NetworkProcessor {
     this.#networkStorage.removeIntercept(params.intercept);
 
     await Promise.all(
-      // TODO: We should to this for other CDP targets as well
-      this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+      this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleFetchIfNeeded();
       })
     );

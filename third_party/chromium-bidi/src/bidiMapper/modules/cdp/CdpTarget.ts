@@ -132,10 +132,6 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
-    // Check if the network domain is enabled globally.
-    const enabledNetwork = this.isSubscribedTo(BiDiModule.Network);
-    this.#networkDomainEnabled = enabledNetwork;
-
     try {
       await Promise.all([
         this.#cdpClient.sendCommand('Runtime.enable'),
@@ -147,11 +143,7 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
           ignore: this.#acceptInsecureCerts,
         }),
-        // TODO: enable Network domain for OOPiF targets.
-        enabledNetwork
-          ? this.#cdpClient.sendCommand('Network.enable')
-          : undefined,
-        this.toggleFetchIfNeeded(),
+        this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -215,7 +207,11 @@ export class CdpTarget {
     }
   }
 
-  async toggleNetworkIfNeeded(enabled: boolean): Promise<void> {
+  /**
+   * Toggles both Network and Fetch domains.
+   */
+  async toggleNetworkIfNeeded(): Promise<void> {
+    const enabled = this.isSubscribedTo(BiDiModule.Network);
     if (enabled === this.#networkDomainEnabled) {
       return;
     }

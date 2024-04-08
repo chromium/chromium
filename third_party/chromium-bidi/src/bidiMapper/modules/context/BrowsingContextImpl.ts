@@ -17,7 +17,6 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import {
   BrowsingContext,
   ChromiumBidi,
@@ -995,12 +994,7 @@ export class BrowsingContextImpl {
   }
 
   async toggleModulesIfNeeded(): Promise<void> {
-    const enableNetwork = this.#eventManager.subscriptionManager.isSubscribedTo(
-      BiDiModule.Network,
-      this.id
-    );
-
-    await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
+    await this.#cdpTarget.toggleNetworkIfNeeded();
   }
 
   async locateNodes(

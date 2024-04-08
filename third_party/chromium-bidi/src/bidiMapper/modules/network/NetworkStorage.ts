@@ -238,7 +238,7 @@ export class NetworkStorage {
       if (
         !intercept.phases.includes(phase) ||
         (intercept.contexts &&
-          !intercept.contexts.includes(request.cdpTarget.id))
+          !intercept.contexts.includes(request.cdpTarget.topLevelId))
       ) {
         continue;
       }
