@@ -165,6 +165,10 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // locally approved and ignore the rest.
   void RemoveLocalParentalApproval(const std::set<std::string> extension_ids);
 
+  // Handles the parent-approval state of the present extensions,
+  // whenever the parent changes the value of the FL "Extension" switch.
+  void OnSkipParentApprovalToInstallExtensionsChanged();
+
   // The current state of registration of this class as a management policy.
   bool is_active_policy_for_supervised_users_ = false;
 

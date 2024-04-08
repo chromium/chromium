@@ -272,6 +272,132 @@ TEST_P(SupervisedUserExtensionsManagerTest,
             manager_->IsExtensionAllowed(*locally_approved_extn));
 }
 
+// Tests that extensions missing parent approval are granted parent approval
+// on their installation, when the extensions are managed by the Extensions
+// toggle and the toggle is ON. If extensions are managed by the Permissions
+// toggle, the extensions remain disabled and pending approval.
+TEST_P(SupervisedUserExtensionsManagerTest,
+       GrantParentApprovalOnInstallationWhenExtensionsToggleOn) {
+  ASSERT_TRUE(profile_->IsChild());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Mark the migration done to avoid any interference with the one-off
+  // migration.
+  auto* prefs = profile()->GetPrefs();
+  CHECK(prefs);
+  prefs->SetInteger(
+      prefs::kLocallyParentApprovedExtensionsMigrationState,
+      static_cast<int>(
+          supervised_user::LocallyParentApprovedExtensionsMigrationState::
+              kComplete));
+#endif
+
+  // Create the object under test.
+  MakeSupervisedUserExtensionsManager();
+
+  // Set the Extensions switch to OFF. The extensions installed on this mode,
+  // should be pending approval and disabled.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  // Install an extension.
+  scoped_refptr<const Extension> extn_with_switch_off =
+      MakeExtension("extension_test_1");
+  service()->OnExtensionInstalled(extn_with_switch_off.get(),
+                                  /*page_ordinal=*/syncer::StringOrdinal());
+
+  extensions::disable_reason::DisableReason reason;
+  std::u16string error;
+  EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
+  EXPECT_TRUE(manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
+                                           &error));
+
+  // Set the Extensions switch to ON. Install another extension which should be
+  // granted parental approval by the end of the installation, if the Extensions
+  // switch manages them.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+  // Install an extension.
+  scoped_refptr<const Extension> extn_with_switch_on =
+      MakeExtension("extension_test_2");
+  service()->OnExtensionInstalled(extn_with_switch_on.get(),
+                                  /*page_ordinal=*/syncer::StringOrdinal());
+
+  bool is_extension_approved =
+      GetParam() == ExtensionsManagingToggle::kExtensions ? true : false;
+  EXPECT_EQ(is_extension_approved,
+            manager_->IsExtensionAllowed(*extn_with_switch_on.get()));
+  EXPECT_EQ(is_extension_approved,
+            !manager_->MustRemainDisabled(extn_with_switch_on.get(), &reason,
+                                          &error));
+  EXPECT_EQ(is_extension_approved,
+            profile()
+                ->GetPrefs()
+                ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+                .contains(extn_with_switch_on->id()));
+}
+
+// Tests that extensions missing parent approval are granted parent approval
+// when the extensions are managed by the Extensions toggle and the toggle is
+// flipped to ON.
+// If extensions are managed by the Permissions toggle, the extensions remain
+// disabled and pending approval.
+TEST_P(SupervisedUserExtensionsManagerTest,
+       GrantParentApprovalOnExtensionsWhenExtensionsToggleSetToOn) {
+  ASSERT_TRUE(profile_->IsChild());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Mark the migration done to avoid any interference with the one-off
+  // migration.
+  auto* prefs = profile()->GetPrefs();
+  CHECK(prefs);
+  prefs->SetInteger(
+      prefs::kLocallyParentApprovedExtensionsMigrationState,
+      static_cast<int>(
+          supervised_user::LocallyParentApprovedExtensionsMigrationState::
+              kComplete));
+#endif
+
+  // Create the object under test.
+  MakeSupervisedUserExtensionsManager();
+
+  // Set the Extensions switch to OFF. The extensions installed on this mode,
+  // should be pending approval and disabled.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  // Install an extension.
+  scoped_refptr<const Extension> extn_with_switch_off =
+      MakeExtension("extension_test_1");
+  service()->OnExtensionInstalled(extn_with_switch_off.get(),
+                                  /*page_ordinal=*/syncer::StringOrdinal());
+
+  extensions::disable_reason::DisableReason reason;
+  std::u16string error;
+  EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
+  EXPECT_TRUE(manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
+                                           &error));
+
+  // Set the Extensions switch to ON. The extension should have been granted
+  // parent approval when the SkipParentApprovalToInstallExtension preference is
+  // flipped.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+
+  bool is_extension_approved =
+      GetParam() == ExtensionsManagingToggle::kExtensions ? true : false;
+  EXPECT_EQ(is_extension_approved,
+            manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
+  EXPECT_EQ(is_extension_approved,
+            !manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
+                                          &error));
+  EXPECT_EQ(is_extension_approved,
+            profile()
+                ->GetPrefs()
+                ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+                .contains(extn_with_switch_off->id()));
+}
+
 // Tests the local approval is revoked on uninstalling the extension or
 // when the extension gains normal parental approval.
 TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {

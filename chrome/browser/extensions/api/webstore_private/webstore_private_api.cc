@@ -53,8 +53,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/core/common/pref_names.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -364,31 +362,6 @@ void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
         "Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction",
         installed);
   }
-}
-
-// Grants parental approval to extensions installed dy supervised users
-// the end of the extension installation, if the parent has allowed installing
-// extensions without their intervention.
-void GrantExtensionApprovalForChildWhenSkipParentApprovalEnabled(
-    const std::string& extension_id,
-    content::BrowserContext& browser_context) {
-  const Profile* profile = Profile::FromBrowserContext(&browser_context);
-  if (!supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) ||
-      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          *profile->GetPrefs())) {
-    return;
-  }
-  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-      ManagementAPI::GetFactoryInstance()
-          ->Get(&browser_context)
-          ->GetSupervisedUserExtensionsDelegate();
-  CHECK(supervised_user_extensions_delegate);
-  CHECK(supervised_user_extensions_delegate->CanInstallExtensions());
-  const ExtensionRegistry* registry = ExtensionRegistry::Get(&browser_context);
-  const Extension* extension =
-      registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
-  CHECK(extension);
-  supervised_user_extensions_delegate->AddExtensionApproval(*extension);
 }
 }  // namespace
 
@@ -1051,10 +1024,6 @@ void WebstorePrivateCompleteInstallFunction::OnExtensionInstallSuccess(
   Respond(NoArguments());
 
   RecordWebstoreExtensionInstallResult(true);
-
-  CHECK(Profile::FromBrowserContext(browser_context()));
-  GrantExtensionApprovalForChildWhenSkipParentApprovalEnabled(
-      id, *Profile::FromBrowserContext(browser_context()));
 
   // Matches the AddRef in Run().
   Release();
