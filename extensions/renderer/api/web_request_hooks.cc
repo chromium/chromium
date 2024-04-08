@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/api/web_request_hooks.h"
 
+#include "base/logging.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/web_request.h"
@@ -42,7 +43,9 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
     if (!script_context->module_system()
              ->Require("webRequestEvent")
              .ToLocal(&internal_bindings)) {
-      return false;
+      // Even though this failed, we return true because a custom event was
+      // supposed to be created.
+      return true;
     }
   }
 
@@ -54,8 +57,18 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
                    gin::StringToSymbol(isolate, "createWebRequestEvent"))
              .ToLocal(&get_event_value) ||
         !get_event_value->IsFunction()) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
-      return false;
+      // In theory we should always be able to get the function from the
+      // internal bindings, however in practice the Get() call could fail if the
+      // worker is closing or if the custom bindings have been somehow modified.
+      // Since we have instances of this occurring, we just log an error here
+      // rather than crash. See crbug.com/40072548.
+      // TODO(tjudkins): We should handle the situations leading to this more
+      // gracefully.
+      LOG(ERROR) << "Unexpected error when creating custom webRequest event: "
+                 << "`createWebRequestEvent` not found on internal bindings.";
+      // Even though this failed, we return true because a custom event was
+      // supposed to be created.
+      return true;
     }
   }
 
@@ -84,8 +97,9 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
   if (!JSRunner::Get(context)
            ->RunJSFunctionSync(get_event, context, std::size(args), args)
            .ToLocal(&event)) {
-    // TODO(devlin): Do we care about the error? In theory, this should never
-    // happen, so probably not.
+    // In theory this should never happen, but log an error in case it does.
+    LOG(ERROR) << "Unexpected error when creating custom webRequest event: "
+               << "`createWebRequestEvent` function did not successfully run.";
     event = v8::Undefined(isolate);
   }
 
