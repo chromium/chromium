@@ -4207,7 +4207,7 @@
 <translation id="4190492351494485814">在进行初始设置时，您需要连接到互联网才能将文件同步到 Chromebook</translation>
 <translation id="4190828427319282529">突出显示键盘焦点</translation>
 <translation id="4191892134568599822">要接收来自“<ph name="FEATURE_NAME" />”的内容吗？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{撤消了 1 个未使用的网站的权限}other{撤消了 {NUM_SITES} 个未使用的网站的权限}}</translation>
+<translation id="4192024474038595073">{NUM_SITES,plural, =1{撤消了 1 个未使用网站的权限}other{撤消了 {NUM_SITES} 个未使用网站的权限}}</translation>
 <translation id="4193251682249731404">可信 CA</translation>
 <translation id="4193575319002689239">显示卡片</translation>
 <translation id="4193836101014293726">无法删除此个人资料</translation>
@@ -10763,7 +10763,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{应用}other{应用}}</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
-<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了很多通知的 1 个网站}other{查看最近发送了很多通知的 {NUM_SITES} 个网站}}</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了大量通知的 1 个网站}other{查看最近发送了大量通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{关闭这份个人资料(&amp;C)}other{关闭这份已打开 # 个窗口的个人资料(&amp;C)}}</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>

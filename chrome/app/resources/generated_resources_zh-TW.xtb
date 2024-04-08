@@ -4215,7 +4215,7 @@
 <translation id="4190492351494485814">如要進行初始設定，請先連上網際網路，才能將檔案同步至 Chromebook</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4191892134568599822">要用<ph name="FEATURE_NAME" />功能接收嗎？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{已從 1 個未使用的網站移除權限}other{已從 {NUM_SITES} 個未使用的網站移除權限}}</translation>
+<translation id="4192024474038595073">{NUM_SITES,plural, =1{已移除 1 個未使用網站的權限}other{已移除 {NUM_SITES} 個未使用網站的權限}}</translation>
 <translation id="4193251682249731404">信任的 CA</translation>
 <translation id="4193575319002689239">顯示資訊卡</translation>
 <translation id="4193836101014293726">無法刪除這個設定檔</translation>
