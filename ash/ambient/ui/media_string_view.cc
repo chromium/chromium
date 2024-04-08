@@ -143,7 +143,8 @@ void MediaStringView::MediaSessionMetadataChanged(
 
   media_text_->SetText(media_string);
   media_text_->layer()->SetTransform(gfx::Transform());
-  const auto& text_size = media_text_->GetPreferredSize();
+  const auto& text_size = media_text_->GetPreferredSize(
+      views::SizeBounds(media_text_->width(), {}));
   const int text_width = text_size.width();
   media_text_container_->SetPreferredSize(gfx::Size(
       std::min(kMediaStringMaxWidthDip, text_width), text_size.height()));
@@ -258,8 +259,9 @@ void MediaStringView::UpdateMaskLayer() {
 }
 
 bool MediaStringView::NeedToAnimate() const {
-  return media_text_->GetPreferredSize().width() >
-         media_text_container_->GetPreferredSize().width();
+  return media_text_
+             ->GetPreferredSize(views::SizeBounds(media_text_->width(), {}))
+             .width() > media_text_container_->GetPreferredSize().width();
 }
 
 gfx::Transform MediaStringView::GetMediaTextTransform(bool is_initial) {
@@ -285,7 +287,10 @@ void MediaStringView::StartScrolling(bool is_initial) {
   text_layer->SetTransform(GetMediaTextTransform(is_initial));
   {
     // Desired speed is 10 seconds for kMediaStringMaxWidthDip.
-    const int text_width = media_text_->GetPreferredSize().width();
+    const int text_width =
+        media_text_
+            ->GetPreferredSize(views::SizeBounds(media_text_->width(), {}))
+            .width();
     const int shadow_width =
         gfx::ShadowValue::GetMargin(
             ambient::util::GetTextShadowValues(
