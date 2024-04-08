@@ -3734,7 +3734,7 @@ No devices connected.
         No available hotspot. Make sure your device is nearby and Bluetooth is turned on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH" desc="The message to display in the tether hosts network list when Bluetooth is disabled.">
-        Turn on Bluetooth to discover available hotspots nearby
+        Turn on Bluetooth to scan for nearby hotspots
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VPN_DISCONNECTED" desc="The label used in system tray bubble to display vpn is disconnected.">
         VPN disconnected
