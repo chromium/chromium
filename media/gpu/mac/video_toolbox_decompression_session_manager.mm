@@ -239,7 +239,7 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
   if (session_metadata.chroma_sampling == VideoChromaSampling::k422 ||
       session_metadata.chroma_sampling == VideoChromaSampling::k444) {
     pixel_format = session_metadata.bit_depth > 8
-                       ? kCVPixelFormatType_ARGB2101010LEPacked
+                       ? kCVPixelFormatType_64RGBAHalf
                        : kCVPixelFormatType_32BGRA;
   } else {
     pixel_format = session_metadata.bit_depth > 8

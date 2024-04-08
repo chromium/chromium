@@ -54,8 +54,8 @@ std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
       return viz::MultiPlaneFormat::kNV12A;
     case kCVPixelFormatType_32BGRA:
       return viz::SinglePlaneFormat::kBGRA_8888;
-    case kCVPixelFormatType_ARGB2101010LEPacked:
-      return viz::SinglePlaneFormat::kBGRA_1010102;
+    case kCVPixelFormatType_64RGBAHalf:
+      return viz::SinglePlaneFormat::kRGBA_F16;
     default:
       return std::nullopt;
   }
@@ -71,8 +71,8 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
       return PIXEL_FORMAT_NV12A;
     case kCVPixelFormatType_32BGRA:
       return PIXEL_FORMAT_ARGB;
-    case kCVPixelFormatType_ARGB2101010LEPacked:
-      return PIXEL_FORMAT_XR30;
+    case kCVPixelFormatType_64RGBAHalf:
+      return PIXEL_FORMAT_RGBAF16;
     default:
       return PIXEL_FORMAT_UNKNOWN;
   }
