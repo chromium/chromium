@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">Лозинка је копирана</translation>
 <translation id="2626236249646841566">Проверите везу и пробајте поново да се пријавите.</translation>
 <translation id="2637313651144986786">Претражите картице…</translation>
+<translation id="2640733327287333451">Нема корисничког имена ••••••</translation>
 <translation id="2648721026697078500">Никад не премештај</translation>
 <translation id="2648803196158606475">Избриши прочитано</translation>
 <translation id="2664621323652615289">Заустави</translation>
@@ -1280,6 +1281,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7569588934989281656">Можете да превлачите траку са картицама да бисте прелазили са једне картице на другу.</translation>
 <translation id="7582857256643797524">Ово подешавање је омогућено на уређају</translation>
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7598439272585186139">Побољшајте безбедност</translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Блокирани искачући прозори (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Избриши лозинку</translation>

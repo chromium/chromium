@@ -4397,7 +4397,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4309165024397827958">Lubage asukohale juurdepääsu loaga Androidi rakendustel ja teenustel kasutada teie seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.</translation>
 <translation id="4309183709806093061">Jaga ka süsteemi heli See seade vaigistatakse, et vältida heli tagasisidet.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />kB (<ph name="NUM_KILOBYTES_LIVE" />kB reaalajas)</translation>
-<translation id="4310132194679586591">Valige selle lingi avamiseks oma seadmes rakendus</translation>
 <translation id="4310139701823742692">Failivorming on vale. Kontrollige PPD-faili ja proovige uuesti.</translation>
 <translation id="4310496734563057511">Kui jagate seda seadet teistega, saate sisse lülitada Windows Hello, et salvestatud parooli kasutades oma isik kinnitada</translation>
 <translation id="431076611119798497">&amp;Üksikasjad</translation>
@@ -5968,7 +5967,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5554403733534868102">Edaspidi värskendamisel enam aega ei kulu</translation>
 <translation id="5554489410841842733">See ikoon on nähtav, kui laiendit saab vaadataval lehel kasutada.</translation>
 <translation id="5554720593229208774">Saatke meil sertifitseerimisorganile</translation>
-<translation id="5554866693883022680">Valige selle lingi avamiseks oma seadmes <ph name="DEVICE_TYPE" /> rakendus</translation>
 <translation id="5555363196923735206">Kaamera vahetamine</translation>
 <translation id="5555525474779371165">Valige oma Google'i ohutu sirvimise kaitse</translation>
 <translation id="5555639311269196631">Lülita kuumkoht välja</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">معاينة الصورة</translation>
 <translation id="1611649489706141841">للأمام</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">استخدام مظهر</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1622402072367425417">فقاعات لامعة</translation>
 <translation id="1626590945318984973">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون استخدام مفتاحَي الوظائف و<ph name="META_KEY" />.</translation>
@@ -1275,6 +1276,7 @@
 <translation id="8372667721254470022">زيتوني</translation>
 <translation id="8373046809163484087">يمكنك استخدام مجموعات الألوان التي تتطابق مع خلفيتك.</translation>
 <translation id="8380114448424469341">إرساء النافذة على النصف <ph name="DIRECTION" /> من الشاشة</translation>
+<translation id="8391349326751432483">يجب توفُّر مساحة قدرها 500 ميغابايت على الأقل لإجراء اختبار الذاكرة. ولإخلاء مساحة، أغلِق علامات التبويب والتطبيقات.</translation>
 <translation id="8395584934117017006">تُدير المؤسسة جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
 <translation id="8403988360557588704">صورة <ph name="ART_FEATURE" /> بأسلوب <ph name="ART_MOVEMENT" /></translation>

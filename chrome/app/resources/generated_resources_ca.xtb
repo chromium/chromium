@@ -4390,7 +4390,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4309165024397827958">Permet que les aplicacions i els serveis d'Android amb permís d'ubicació utilitzin la ubicació del dispositiu. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
 <translation id="4309183709806093061">Comparteix també l'àudio del sistema. Aquest dispositiu se silenciarà per evitar la retroacció.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K actius)</translation>
-<translation id="4310132194679586591">Selecciona una aplicació del dispositiu per obrir aquest enllaç</translation>
 <translation id="4310139701823742692">El format del fitxer PPD és incorrecte. Revisa'l i torna-ho a provar.</translation>
 <translation id="4310496734563057511">Si comparteixes aquest dispositiu amb altres persones, pots activar Windows Hello per verificar la teva identitat sempre que utilitzis una contrasenya desada</translation>
 <translation id="431076611119798497">&amp;Detalls</translation>
@@ -5962,7 +5961,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5554403733534868102">Després d'això, les actualitzacions ja no ocuparan el teu temps</translation>
 <translation id="5554489410841842733">Aquesta icona serà visible quan les extensions puguin actuar a la pàgina actual.</translation>
 <translation id="5554720593229208774">Correu electrònic de l'entitat emissora de certificats</translation>
-<translation id="5554866693883022680">Selecciona una aplicació del <ph name="DEVICE_TYPE" /> per obrir aquest enllaç</translation>
 <translation id="5555363196923735206">Canvia de càmera</translation>
 <translation id="5555525474779371165">Tria la teva protecció de Navegació segura</translation>
 <translation id="5555639311269196631">Desactiva el punt d'accés Wi‑Fi</translation>

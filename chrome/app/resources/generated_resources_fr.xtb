@@ -4392,7 +4392,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4309165024397827958">Permettre aux applis et services Android autorisés à accéder à la position d'utiliser celle de votre appareil. Google peut collecter régulièrement les données de localisation et s'en servir de façon anonyme pour améliorer la précision de la localisation et les services basés sur la localisation.</translation>
 <translation id="4309183709806093061">Partager aussi l'audio du système. Le son de cet appareil sera désactivé pour éviter l'effet Larsen.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> Ko (<ph name="NUM_KILOBYTES_LIVE" /> Ko effectifs)</translation>
-<translation id="4310132194679586591">Sélectionnez une appli sur votre appareil pour ouvrir ce lien</translation>
 <translation id="4310139701823742692">Le format du fichier n'est pas valide. Vérifiez le fichier PPD, puis réessayez.</translation>
 <translation id="4310496734563057511">Si vous partagez cet appareil, vous pouvez activer Windows Hello pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
@@ -5739,7 +5738,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5387116558048951800">Modifier le <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Règles Enterprise modifiées. Bouton de tests ajouté à la barre d'outils. Cliquez dessus pour pouvoir activer les tests.</translation>
 <translation id="5388436023007579456">Les applis et sites Web autorisés à accéder à l'appareil photo, ainsi que les services système, peuvent l'utiliser. Pour utiliser l'appareil photo, vous devrez peut-être redémarrer l'appli ou actualiser la page.</translation>
-<translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site trouvé avec de nombreuses notifications}one{{NUM_SITES} site trouvé avec de nombreuses notifications}other{{NUM_SITES} sites trouvés avec de nombreuses notifications}}</translation>
+<translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site avec de nombreuses notifications trouvé}one{{NUM_SITES} site avec de nombreuses notifications trouvé}other{{NUM_SITES} sites avec de nombreuses notifications trouvés}}</translation>
 <translation id="5388885445722491159">Associé</translation>
 <translation id="5389626883706033615">Les sites ne peuvent pas vous demander d'utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="5389794555912875905">Voir des avertissements avant d'accéder à des sites non sécurisés (recommandé)</translation>
@@ -5963,7 +5962,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5554403733534868102">Plus besoin d'attendre de mises à jour par la suite</translation>
 <translation id="5554489410841842733">Cette icône s'affiche lorsque l'extension peut agir sur la page active.</translation>
 <translation id="5554720593229208774">Autorité de certification de messagerie</translation>
-<translation id="5554866693883022680">Sélectionnez une appli sur votre <ph name="DEVICE_TYPE" /> pour ouvrir ce lien</translation>
 <translation id="5555363196923735206">Activer le mode selfie</translation>
 <translation id="5555525474779371165">Choisissez votre mode de navigation sécurisée</translation>
 <translation id="5555639311269196631">Désactiver le point d'accès</translation>
@@ -6632,7 +6630,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6077189836672154517">Conseils et actualités sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parler pour saisir votre texte</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invité}one{# fenêtre en mode Invité ouverte}other{# fenêtres en mode Invité ouvertes}}</translation>
-<translation id="6078323886959318429">Ajouter raccourci</translation>
+<translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6078742430369906859">La connectivité sur "<ph name="NETWORK_ID" />" peut être limitée</translation>
 <translation id="6078752646384677957">Veuillez vérifier le volume de votre micro et le volume audio.</translation>
 <translation id="608029822688206592">Aucun réseau trouvé. Veuillez insérer votre carte SIM et réessayer.</translation>

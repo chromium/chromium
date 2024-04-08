@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">Алып кету мекенжайы</translation>
 <translation id="1343356790768851700">Бұл сайт сізге ұнайтын нәрселерді анықтайды, одан кейін басқа сайттарға жарнамалар ұсынады.</translation>
 <translation id="1346748346194534595">Оңға</translation>
-<translation id="1348198688976932919">Сайтта зиянды қолданбалар бар</translation>
 <translation id="1348779747280417563">Атты растау</translation>
 <translation id="1352798470428594123">Chrome браузері сайттардың көпшілігіне браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдалануға шектеу қояды. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="1355158069018170842">Бағаның түсуін қойындыларда көрсету</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">Альпинизм және құзға өрмелеу</translation>
 <translation id="2215727959747642672">Файлды өңдеу</translation>
 <translation id="2215963164070968490">Иттер</translation>
-<translation id="2218879909401188352">Ағымдағы <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар құрылғыңызға зақым келтіретін қауіпті қолданбаларды орнатуы, мобильді шотқа жасырын ақыларды қосуы немесе жеке ақпаратты ұрлауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Оқулықты қайта бастау</translation>
 <translation id="2219735899272417925">Құрылғыны бастапқы күйге қайтару қажет.</translation>
 <translation id="2221227930294879156">Тағам мен сусын іс-шаралары</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="REPLACED_HANDLER_TITLE" /> орнына барлық <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
 <translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
-<translation id="2354430244986887761">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" /> зиянды қолданбаларды тапты<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Шабуылдаушылар бұл сайтта көріп жатқан кескіндеріңізді біліп, оларды өзгерту арқылы сізді алдауы мүмкін.</translation>
 <translation id="2356070529366658676">Сұрау</translation>
 <translation id="2356926036049612643">V8 оңтайландырғышы</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">Енгізу</translation>
 <translation id="2625385379895617796">Сағатыңыз алда</translation>
 <translation id="262745152991669301">USB құрылғыларына қосылуға рұқсат сұрайды</translation>
-<translation id="2629325967560697240">Chrome-ның ең жоғарғы деңгейдегі қауіпсіздігіне ие болу үшін <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />жақсартылған қорғанысты<ph name="END_ENHANCED_PROTECTION_LINK" /> қосыңыз.</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверінің IP мекенжайын табу мүмкін емес.</translation>
 <translation id="2639739919103226564">Күйі:</translation>
 <translation id="2647086987482648627">Мата (жартылай жылтыр)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">Бұл құрылғының әкімшілері қауіпсіздік сертификаттарын орнатты, енді олар сіз кірген веб-сайттардың контентін көруі мүмкін.</translation>
 <translation id="2794233252405721443">Сайт блокталған</translation>
 <translation id="2794629552137076216">Шыны (беттік)</translation>
-<translation id="2799020568854403057">Сайтта зиянды қолданбалар бар</translation>
 <translation id="2799223571221894425">Қайта іске қосу</translation>
 <translation id="2799758406651937857">Ерлер киімі</translation>
-<translation id="2803306138276472711"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады.</translation>
 <translation id="2807052079800581569">Кескіннің Y бойынша орналасуы</translation>
 <translation id="2808278141522721006">Windows Hello функциясын "<ph name="SETTINGS" />" бөлімінен қосуға не өшіруге болады.</translation>
 <translation id="2814184336982254349">Бұл PDF қолжетімді емес. Іздеу белгішесі мен m әрпін басып, контекстік мәзірді ашыңыз. Содан кейін "PDF-тен мәтін шығарып алу" мүмкіндігін қосыңыз.</translation>
@@ -1443,7 +1437,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-да жаңа Google презентациясын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3727309136762649052">Атау кеңістігі</translation>
 <translation id="3727850735097852673">Google Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chrome-ды қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
-<translation id="3736520371357197498">Қауіпсіздігіңіздің қатерлерін түсінсеңіз, қауіпті бағдарламалар жойылмай жатып, <ph name="BEGIN_LINK" />осы қауіпті сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
 <translation id="3736739313435669994">Сіз сайттарды браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдаланудан блоктадыңыз. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="3738166223076830879">Браузеріңізді әкімші басқарады.</translation>
 <translation id="3739842843727261045">"Ұнайды" белгішесін бассаңыз, бұл нәтижелер сізге ұнағанын білдіресіз</translation>
@@ -1454,7 +1447,6 @@
 <translation id="3744899669254331632">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chromium өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="3745599309295009257">Мәтініңіз және сіз жазып отырған беттің контенті мен URL мекенжайы Google-ға жіберіледі және оларды тексерушілер тексереді. Бұл ақпарат осы функцияны жақсарту үшін қолданылады. Жеке ақпарат (мысалы, денсаулық туралы не қаржылық мәліметтер) қоспаңыз немесе бұл құралды құпия ақпараты бар сайттарда қолданбаңыз.</translation>
 <translation id="3748009735914587286">Металл (жылтырлығы жоғары)</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар бағдарламалық құрал орнату немесе жеке ақпарат (мысалы, құпия сөздер, телефон нөмірлері немесе несиелік карталар) көрсету секілді зиянды нәрсе жасатуы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">Еленбеген, себебі <ph name="POLICY_NAME" /> орнатылмаған.</translation>
 <translation id="3754210790023674521">"Суреттегі сурет" режимінен шығу</translation>
 <translation id="3759461132968374835">Жақында хабарланған жаңылыстар жоқ. Жаңылыс туралы хабарлау өшірілген кезде орын алған жаңылыстар мұнда көрсетілмейді.</translation>
@@ -1610,7 +1602,6 @@
 <translation id="4092349052316400070">Мекежайды енгізіңіз.</translation>
 <translation id="4096237801206588987">11 x 15 дюйм</translation>
 <translation id="4098306082496067348">Виртуалдық карта мәліметтерін төлеу процесіне қосу үшін түртіңіз.</translation>
-<translation id="4098354747657067197">Жалған сайт</translation>
 <translation id="4099048595830172239">Әкімші саясатына сәйкес құпия контент көрініп тұрғанда, экранды <ph name="APPLICATION_TITLE" /> қолданбасымен бөліспеген жөн:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4101413244023615925">Мәтін және графика</translation>
@@ -1675,7 +1666,6 @@
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">кіру экраны профилі</translation>
 <translation id="4220128509585149162">Жаңылыстар</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар шолу әрекетіңізге (мысалы, негізгі бетіңізді өзгерту немесе сіз кірген сайттарда қосымша жарнамалар көрсету) зиян келтіретін бағдарламаларды алдап орнаттыруы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;1-қадам. Порталға кіріңіз&lt;/h4&gt;
     &lt;p&gt;Кафе немесе әуежай сияқты орындардағы Wi-Fi желілеріне қосылу үшін аккаунтқа кіру қажет. Кіру беті шығуы үшін, &lt;code&gt;http://&lt;/code&gt; пайдаланылатын бетке кіріңіз.&lt;/p&gt;
     &lt;ol&gt;
@@ -2398,7 +2388,6 @@
 <translation id="5629630648637658800">Саясат параметрлерін жүктеу сәтсіз аяқталды</translation>
 <translation id="5631439013527180824">Құрылғының басқару таңбалауышы жарамсыз</translation>
 <translation id="5632485077360054581">Орындалуын көру</translation>
-<translation id="5633066919399395251">Қазір <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, фотосуреттер, құпия сөздер, хабарлар және несиелік карталар) ұрлайтын не жоятын қауіпті бағдарламаларды компьютеріңізде орнатуға әрекет етуі мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Жалған контент бөгелді.</translation>
 <translation id="563371367637259496">Мобильдік</translation>
 <translation id="5634725266554983459">Өз бетінше растау функциясын қосу керек пе?</translation>
@@ -2585,7 +2574,6 @@
 <translation id="6014851866995737824">"Қосу" немесе "өшіру" тізімі жоқ болғандықтан еленбеді.</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6017514345406065928">Жасыл</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар өздерін басқа контент ретінде көрсететін жалған қолданбалар орнатуы немесе сізді бақылауға пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синхрондалған)</translation>
 <translation id="6028591542479806248">Мобильдік және электрондық пошта хабарландырулары басқарылады.</translation>
 <translation id="6028833024483927901">Әлем халықтарының тағамдары</translation>
@@ -2602,7 +2590,6 @@
 <translation id="6042308850641462728">Жаю</translation>
 <translation id="6044573915096792553">Өлшемі: 12</translation>
 <translation id="6045164183059402045">Жолақтарды түсіру үлгісі</translation>
-<translation id="6047233362582046994">Қауіпсіздігіңізге келетін қатерлерді түсінсеңіз, зиянды қолданбалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
 <translation id="6047927260846328439">Бұл контент бағдарламалық құрал орнату немесе жеке ақпаратыңызды көрсету мақсатында сізді алдауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 хатқалтасы</translation>
 <translation id="6049488691372270142">Бетті беру</translation>
@@ -2693,7 +2680,6 @@
 <translation id="622039917539443112">Параллель бүктеу</translation>
 <translation id="6221286101741304627">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="6221311046884916259">Бұл картаны Google аккаунтыңызға сақтағыңыз келе ме?</translation>
-<translation id="6221345481584921695"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады. Зиянды контент белгілі зиянды бағдарлама үлестірушісі болып табылатын <ph name="SUBRESOURCE_HOST" /> хостынан келеді.</translation>
 <translation id="6221892641068781024">Қарапайым көрініс</translation>
 <translation id="6222527803348563979">Кеңсе заттары</translation>
 <translation id="6224281071334553713">Асыл тастар және зергерлік бұйымдар</translation>
@@ -2906,7 +2892,6 @@
 <translation id="6629652037942826935">Сәнді саяхат</translation>
 <translation id="6630043285902923878">USB құрылғылары ізделуде...</translation>
 <translation id="6630388727238334626">"Chrome параметрлерін басқару" түймесі, Chrome параметрлеріне кіру үшін белсендіріңіз</translation>
-<translation id="6630809736994426279">Қазір <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, фотосуреттер, құпия сөздер, хабарлар және несиелік карталар) ұрлайтын не жоятын қауіпті бағдарламаларды Mac компьютеріңізде орнатуға әрекет етуі мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">Аустралиялық футбол</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Компьютерлік білім</translation>
@@ -3236,7 +3221,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Бизнес операциялар</translation>
-<translation id="724691107663265825">Алдағы сайтта зиянды бағдарлама бар</translation>
 <translation id="7251437084390964440">Желі конфигурациясы ONC стандартына сәйкес келмейді. Конфигурацияның кей бөліктері импортталмаған болуы мүмкін.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
@@ -3823,7 +3807,6 @@
 <translation id="833262891116910667">Ерекшелеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">Қауіп-қатерлерді түсінсеңіз, зиянды бағдарламалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
 <translation id="8344776605855290140">Виртуалдық картаны тіркеудің диалогтік терезесі толық ашылды</translation>
 <translation id="8349305172487531364">Бетбелгілер жолағы</translation>
 <translation id="8350416046273606058">Жылдам пәрменде бос орындар болмауы керек: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3932,7 +3915,6 @@
 <translation id="8541579497401304453">Телефон қоңырауын бастау арқылы компаниямен хабарласыңыз.</translation>
 <translation id="8542014550340843547">Төменгі жағын үш рет қапсыру</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">Сіз <ph name="BEGIN_ERROR_LINK" />анықтау мәселесі туралы хабарлай<ph name="END_ERROR_LINK" /> аласыз, қауіпсіздігіңізге төнетін қатерді түсінетін болсаңыз, <ph name="BEGIN_LINK" />қауіпті сайтқа кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">Google Chrome төлеу әдістерін толтыру параметрлерін өзгерткісі келеді.</translation>
 <translation id="8544303911974837265">Полиэстер</translation>
 <translation id="854548366864113872">Бағасы жоғары опция</translation>
@@ -4035,7 +4017,6 @@
 <translation id="8757526089434340176">Google Pay ұсынысы қолжетімді</translation>
 <translation id="8759274551635299824">Картаның мерзімі біткен</translation>
 <translation id="87601671197631245">Бұл сайттың қауіпсіздік конфигурациясы ескірген. Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер, хабарлар не несиелік карта нөмірлері) жария етілуі мүмкін.</translation>
-<translation id="8761567432415473239">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />зиянды бағдарламаларды тапты<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8763986294015493060">Қазір ашық тұрған инкогнито терезелерінің барлығын жабу</translation>
 <translation id="8766943070169463815">Қауіпсіз төлем деректерін аутентификациялау парағы ашылды.</translation>
@@ -4132,7 +4113,6 @@
 <translation id="8971063699422889582">Сервер сертификатының мерзімі аяқталды.</translation>
 <translation id="8975012916872825179">Телефон нөмірлері, электрондық мекенжайлар және жеткізу мекенжайлары сияқты ақпараттан тұрады</translation>
 <translation id="8975263830901772334">Басып шығарылатын файлдардың атаулары</translation>
-<translation id="8978053250194585037">Google Safe Browsing қызметі жақында <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />фишингті анықтады<ph name="END_LINK" />. Фишинг сайттары сізді алдау үшін басқа вебсайттар болып көрінуі мүмкін.</translation>
 <translation id="8982884016487650216">PDF жүктелді.</translation>
 <translation id="8983369100812962543">Енді қолданбаның өлшемін өзгерте аласыз.</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузерін қолдану тарихын көру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
@@ -4141,7 +4121,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">Жүйенің нұсқасын іздеп жатырсыз ба? Келесіге бетке өтіңіз:</translation>
 <translation id="899688752321268742"><ph name="URL" /> сіз құрылғыны қашан белсенді пайдаланатыныңыз туралы білгісі келеді.</translation>
-<translation id="8996941253935762404">Алдағы сайт зиянды бағдарламаларды қамтиды</translation>
 <translation id="8997023839087525404">Сервер Сертификат айқындығы саясаты жалпыға жарияламаған сертификатты ұсынды. Бұл – кейбір сертификаттардың сенімді екенін растау үшін және оларды шабуылдаушылардан қорғау мақсатында қойылатын міндетті талап.</translation>
 <translation id="9000145382638074673">Құрылғыларыңыз</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> проксиіне пайдаланушы аты мен құпия сөз қажет.</translation>

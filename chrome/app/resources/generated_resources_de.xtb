@@ -4383,7 +4383,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4309165024397827958">Android-Apps und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
 <translation id="4309183709806093061">Auch Audio des Systems teilen. Dieses Gerät wird stummgeschaltet, um eine Rückkopplung zu verhindern.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
-<translation id="4310132194679586591">Wähle eine App auf deinem Gerät aus, um diesen Link zu öffnen</translation>
 <translation id="4310139701823742692">Die Datei hat das falsche Format. Prüfe die PPD-Datei und versuche es noch einmal.</translation>
 <translation id="4310496734563057511">Wenn du dieses Gerät gemeinsam mit anderen nutzt, kannst du Windows Hello aktivieren, um deine Identität zu bestätigen, wenn du ein gespeichertes Passwort verwendest</translation>
 <translation id="431076611119798497">&amp;Details</translation>
@@ -5952,7 +5951,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5554403733534868102">Du musst in Zukunft nicht mehr auf Updates warten</translation>
 <translation id="5554489410841842733">Dieses Symbol wird eingeblendet, wenn die Erweiterung auf die aktuelle Seite angewendet werden kann.</translation>
 <translation id="5554720593229208774">E-Mail-Zertifizierungsstelle</translation>
-<translation id="5554866693883022680">Wähle eine App auf dem <ph name="DEVICE_TYPE" /> aus, um diesen Link zu öffnen</translation>
 <translation id="5555363196923735206">Kamera umschalten</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5555639311269196631">Hotspot deaktivieren</translation>

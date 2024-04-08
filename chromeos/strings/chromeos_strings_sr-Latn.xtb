@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Pregled slike</translation>
 <translation id="1611649489706141841">kretanje napred</translation>
 <translation id="1615335640928990664">Potrošnja podataka od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Koristite temu</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1622402072367425417">svetlećim mehurićima</translation>
 <translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korišćenja funkcijskih tastera i tastera <ph name="META_KEY" />.</translation>
@@ -1275,6 +1276,7 @@
 <translation id="8372667721254470022">maslinaste</translation>
 <translation id="8373046809163484087">Koristite skupove boja koji se podudaraju sa pozadinom</translation>
 <translation id="8380114448424469341">Fiksirajte prozor na polovini ekrana (<ph name="DIRECTION" />)</translation>
+<translation id="8391349326751432483">Treba da imate slobodno barem 500 MB da biste pokrenuli test memorije. Da biste oslobodili memoriju, zatvorite kartice i aplikacije.</translation>
 <translation id="8395584934117017006">Preduzeće upravlja ovim <ph name="DEVICE_TYPE" /> uređajem</translation>
 <translation id="8398927464629426868">Stopa po kojoj se uređaj trenutno puni ili prazni</translation>
 <translation id="8403988360557588704">Slika na kojoj je <ph name="ART_FEATURE" /> u stilu <ph name="ART_MOVEMENT" /></translation>

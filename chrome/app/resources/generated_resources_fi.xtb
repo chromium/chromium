@@ -4402,7 +4402,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4309165024397827958">Salli laitteen sijainnin käyttäminen Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="4309183709806093061">Jaa myös järjestelmän audio. Laite mykistetään palautteen estämiseksi.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kt (<ph name="NUM_KILOBYTES_LIVE" /> kt live)</translation>
-<translation id="4310132194679586591">Avaa linkki valitsemalla sovellus laitteella</translation>
 <translation id="4310139701823742692">Tiedostomuoto on virheellinen. Tarkasta PPD-tiedosto ja yritä uudelleen.</translation>
 <translation id="4310496734563057511">Jos muutkin käyttävät tätä laitetta, voit laittaa Windows Hellon päälle ja vahvistaa henkilöllisyytesi, kun käytät tallennettua salasanaa</translation>
 <translation id="431076611119798497">&amp;Tiedot</translation>
@@ -5974,7 +5973,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5554403733534868102">Jatkossa ei enää päivitysten odottelua</translation>
 <translation id="5554489410841842733">Tämä kuvake näytetään, kun laajennus voi toimia nykyisellä sivulla.</translation>
 <translation id="5554720593229208774">Sähköpostivarmenteen myöntäjä</translation>
-<translation id="5554866693883022680">Avaa linkki valitsemalla sovellus laitteella (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5555363196923735206">Vaihda kameraa</translation>
 <translation id="5555525474779371165">Valitse haluamasi Selaussuoja</translation>
 <translation id="5555639311269196631">Laita hotspot pois päältä</translation>

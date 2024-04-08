@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">رمز مجموعة علامات التبويب باللون <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) مؤرشفة.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}two{لديك علامتا تبويب (<ph name="TABS_COUNT_MANY" />) مؤرشفتان.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب مؤرشفة.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}}</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>

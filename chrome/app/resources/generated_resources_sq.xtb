@@ -4389,7 +4389,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4309165024397827958">Jepu aplikacioneve dhe shërbimeve të Android leje për të përdorur vendndodhjen e pajisjes sate. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara në vendndodhje.</translation>
 <translation id="4309183709806093061">Ndaj po ashtu audion e sistemit. Kjo pajisje do të vendoset në heshtje për të parandaluar reagimet.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB të drejtpërdrejta)</translation>
-<translation id="4310132194679586591">Zgjidh një aplikacion në pajisjen tënde për të hapur këtë lidhje</translation>
 <translation id="4310139701823742692">Skedari është në formatin e gabuar. Kontrollo skedarin PPD dhe provo përsëri.</translation>
 <translation id="4310496734563057511">Nëse e ndan këtë pajisje me të tjerët, mund të aktivizosh Windows Hello për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="431076611119798497">&amp;Detajet</translation>
@@ -5960,7 +5959,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5554403733534868102">Pas kësaj, nuk ka pritje për përditësimet</translation>
 <translation id="5554489410841842733">Kjo ikonë do të jetë e dukshme kur shtesa të arrijë të veprojë në faqen aktuale.</translation>
 <translation id="5554720593229208774">Autoriteti i vërtetimit të mail-eve</translation>
-<translation id="5554866693883022680">Zgjidh një aplikacion në pajisjen tënde <ph name="DEVICE_TYPE" /> për të hapur këtë lidhje</translation>
 <translation id="5555363196923735206">Rrotulloje kamerën</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
 <translation id="5555639311269196631">Çaktivizo zonën e qasjes për internet</translation>

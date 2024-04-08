@@ -311,6 +311,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2625189173221582860">Lozinka je kopirana</translation>
 <translation id="2626236249646841566">Proverite vezu i probajte ponovo da se prijavite.</translation>
 <translation id="2637313651144986786">Pretražite kartice…</translation>
+<translation id="2640733327287333451">Nema korisničkog imena ••••••</translation>
 <translation id="2648721026697078500">Nikad ne premeštaj</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
 <translation id="2664621323652615289">Zaustavi</translation>
@@ -1280,6 +1281,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7569588934989281656">Možete da prevlačite traku sa karticama da biste prelazili sa jedne kartice na drugu.</translation>
 <translation id="7582857256643797524">Ovo podešavanje je omogućeno na uređaju</translation>
 <translation id="7583004045319035904">Otključajte kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7598439272585186139">Poboljšajte bezbednost</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokirani iskačući prozori (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši lozinku</translation>

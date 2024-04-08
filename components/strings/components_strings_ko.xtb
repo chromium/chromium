@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">수령 주소</translation>
 <translation id="1343356790768851700">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다.</translation>
 <translation id="1346748346194534595">오른쪽</translation>
-<translation id="1348198688976932919">방문하려는 사이트에 위험한 앱이 있습니다.</translation>
 <translation id="1348779747280417563">이름 확인</translation>
 <translation id="1352798470428594123">Chrome은 대부분의 사이트에 대해 서드 파티 쿠키를 사용하여 탐색 중인 사용자를 추적하지 못하도록 제한합니다. <ph name="LINK" />를 하려면 설정으로 이동하세요.</translation>
 <translation id="1355158069018170842">탭에 가격 인하 표시</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">등산</translation>
 <translation id="2215727959747642672">파일 수정</translation>
 <translation id="2215963164070968490">개</translation>
-<translation id="2218879909401188352">현재 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 기기를 손상시키거나, 모바일 요금에 몰래 추가 요금을 부과하거나, 개인정보를 도용하는 위험한 앱을 설치할 수도 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">가이드 다시 시작</translation>
 <translation id="2219735899272417925">기기 재설정 필요</translation>
 <translation id="2221227930294879156">식음료 이벤트</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" />에서 <ph name="REPLACED_HANDLER_TITLE" /> 대신 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2354001756790975382">기타 북마크</translation>
-<translation id="2354430244986887761">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />유해한 앱을 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356070529366658676">확인</translation>
 <translation id="2356926036049612643">V8 옵티마이저</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">삽입</translation>
 <translation id="2625385379895617796">시간이 너무 먼 미래로 설정되어 있습니다.</translation>
 <translation id="262745152991669301">USB 기기에 연결하도록 요청할 수 있음</translation>
-<translation id="2629325967560697240">Chrome에서 가장 강력한 보안 기능을 사용하려면 <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하세요.</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
 <translation id="2639739919103226564">상태:</translation>
 <translation id="2647086987482648627">패브릭(반광택)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
 <translation id="2794233252405721443">차단된 사이트</translation>
 <translation id="2794629552137076216">유리(표면)</translation>
-<translation id="2799020568854403057">방문하려는 사이트에 유해한 앱이 있습니다.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2799758406651937857">남성 의류</translation>
-<translation id="2803306138276472711">최근 Google 세이프 브라우징이 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 때가 있습니다.</translation>
 <translation id="2807052079800581569">이미지 Y 위치</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" />에서 Windows Hello를 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="2814184336982254349">이 PDF에 액세스할 수 없습니다. 검색 + m 키를 눌러 컨텍스트 메뉴를 열고 'PDF에서 텍스트 추출'을 사용 설정합니다</translation>
@@ -1444,7 +1438,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Slides에서 빠르게 새 Google 프레젠테이션 만들기</translation>
 <translation id="3727309136762649052">네임스페이스</translation>
 <translation id="3727850735097852673">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
-<translation id="3736520371357197498">보안 관련 위험을 이해한다면 위험한 프로그램이 삭제되기 전에 <ph name="BEGIN_LINK" />안전하지 않은 사이트<ph name="END_LINK" />에 방문해도 됩니다.</translation>
 <translation id="3736739313435669994">탐색 중인 사용자를 추적하기 위해 사이트에서 서드 파티 쿠키를 사용하지 못하도록 차단했습니다. <ph name="LINK" />하려면 설정으로 이동하세요.</translation>
 <translation id="3738166223076830879">관리자가 관리하는 브라우저입니다.</translation>
 <translation id="3739842843727261045">좋아요를 누르면 이러한 결과가 마음에 든다는 의견이 제출됩니다</translation>
@@ -1455,7 +1448,6 @@
 <translation id="3744899669254331632">웹사이트가 Chromium이 처리할 수 없는 암호화된 사용자 인증 정보를 전송하였으므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 이후에는 이 페이지가 제대로 작동할 가능성이 높습니다.</translation>
 <translation id="3745599309295009257">텍스트와 작성 중인 페이지의 콘텐츠 및 URL이 Google로 전송되어 담당자가 검토한 후 이 기능을 개선하는 데 사용됩니다. 의료 또는 금융 정보와 같은 개인 정보를 입력하거나 비공개 정보 또는 민감한 정보가 포함된 사이트에서는 이 도구를 사용하지 마세요.</translation>
 <translation id="3748009735914587286">금속(고광택)</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
@@ -1611,7 +1603,6 @@
 <translation id="4092349052316400070">주소 입력</translation>
 <translation id="4096237801206588987">11x15인치</translation>
 <translation id="4098306082496067348">가상 카드 세부정보를 탭하여 결제에 추가합니다.</translation>
-<translation id="4098354747657067197">사기성 사이트 주의</translation>
 <translation id="4099048595830172239">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 <ph name="APPLICATION_TITLE" /> 앱과 화면을 공유하지 않는 것이 좋습니다.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome의 글꼴 크기와 서체 맞춤설정</translation>
 <translation id="4101413244023615925">텍스트 및 그래픽</translation>
@@ -1676,7 +1667,6 @@
 <translation id="4213500579045346575">보디빌딩</translation>
 <translation id="4214357935346142455">로그인 화면 프로필</translation>
 <translation id="4220128509585149162">비정상 종료</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에 있는 공격자가 브라우저 환경에 악영향을 미치는 프로그램을 설치하도록 속임수(예: 방문하는 사이트의 홈페이지를 변경하거나 추가로 광고를 표시)를 시도할 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;1단계: 포털에 로그인하기&lt;/h4&gt;
     &lt;p&gt;카페, 공항 등의 장소에서 Wi-Fi 네트워크에 연결하려면 로그인해야 합니다. 로그인 페이지를 보려면 &lt;code&gt;http://&lt;/code&gt;를 사용하는 페이지로 이동하세요.&lt;/p&gt;
     &lt;ol&gt;
@@ -2399,7 +2389,6 @@
 <translation id="5629630648637658800">정책 설정 로드 실패</translation>
 <translation id="5631439013527180824">잘못된 기기 관리 토큰</translation>
 <translation id="5632485077360054581">방법 보기</translation>
-<translation id="5633066919399395251">현재 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 사용자 정보(예: 사진, 비밀번호, 메시지, 신용카드)를 도용하거나 삭제하는 위험한 프로그램을 컴퓨터에 설치하려고 시도할 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">사기성 콘텐츠 차단됨</translation>
 <translation id="563371367637259496">모바일</translation>
 <translation id="5634725266554983459">수동 인증을 사용 설정하시겠습니까?</translation>
@@ -2586,7 +2575,6 @@
 <translation id="6014851866995737824">'사용' 또는 '사용 안함' 목록이 없으므로 무시되었습니다.</translation>
 <translation id="6015796118275082299">연도</translation>
 <translation id="6017514345406065928">녹색</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에 있는 공격자는 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" />(동기화됨)</translation>
 <translation id="6028591542479806248">모바일 및 이메일 알림 관리</translation>
 <translation id="6028833024483927901">세계 음식</translation>
@@ -2603,7 +2591,6 @@
 <translation id="6042308850641462728">자세히</translation>
 <translation id="6044573915096792553">크기 12</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
-<translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
 <translation id="6047927260846328439">이 콘텐츠는 사용자를 속여 소프트웨어를 설치하거나 개인정보를 유출할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">봉투 B4</translation>
 <translation id="6049488691372270142">페이지 제공</translation>
@@ -2694,7 +2681,6 @@
 <translation id="622039917539443112">평행 폴드</translation>
 <translation id="6221286101741304627">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="6221311046884916259">이 카드를 Google 계정에 저장하시겠습니까?</translation>
-<translation id="6221345481584921695">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 수가 있습니다. 악성 콘텐츠의 출처는 알려진 멀웨어 배포자인 <ph name="SUBRESOURCE_HOST" />입니다.</translation>
 <translation id="6221892641068781024">간단히 보기</translation>
 <translation id="6222527803348563979">편지지</translation>
 <translation id="6224281071334553713">보석 및 귀금속</translation>
@@ -2907,7 +2893,6 @@
 <translation id="6629652037942826935">고급 여행</translation>
 <translation id="6630043285902923878">USB 기기를 찾는 중...</translation>
 <translation id="6630388727238334626">Chrome 설정 관리 버튼, Chrome 설정을 방문하려면 활성화하세요.</translation>
-<translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 사용자 정보(예: 사진, 비밀번호, 메시지, 신용카드)를 도용하거나 삭제하는 위험한 프로그램을 Mac에 설치하려고 시도할 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">오스트레일리아 축구</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">컴퓨터 교육</translation>
@@ -3237,7 +3222,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">비즈니스 운영</translation>
-<translation id="724691107663265825">다음 사이트에 멀웨어가 있습니다.</translation>
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
@@ -3823,7 +3807,6 @@
 <translation id="833262891116910667">강조표시</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
-<translation id="834457929814110454">보안 관련 위험을 이해한다면 악성 프로그램이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />해도 됩니다.</translation>
 <translation id="8344776605855290140">가상 카드 등록이 전체 높이로 열림</translation>
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3932,7 +3915,6 @@
 <translation id="8541579497401304453">전화를 걸어 비즈니스와 연결하세요</translation>
 <translation id="8542014550340843547">하단 트리플 스테이플</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />감지 문제를 신고<ph name="END_ERROR_LINK" />할 수 있으며, 보안에 미치는 위험을 감수한다면 <ph name="BEGIN_LINK" />이 안전하지 않은 사이트를 방문<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="8544217240017914508">Chrome에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
 <translation id="8544303911974837265">폴리에스테르</translation>
 <translation id="854548366864113872">높은 가격 옵션</translation>
@@ -4035,7 +4017,6 @@
 <translation id="8757526089434340176">Google Pay 쿠폰 이용 가능</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
-<translation id="8761567432415473239">Google 세이프 브라우징 결과 <ph name="SITE" />에서 최근 <ph name="BEGIN_LINK" />악성 프로그램이 발견<ph name="END_LINK" />되었습니다.</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>
 <translation id="8766943070169463815">보안 결제 사용자 인증 정보 승인 시트가 열림</translation>
@@ -4132,7 +4113,6 @@
 <translation id="8971063699422889582">서버 인증서가 만료되었습니다.</translation>
 <translation id="8975012916872825179">전화번호, 이메일 주소, 배송지 주소 등의 정보를 포함합니다.</translation>
 <translation id="8975263830901772334">인쇄하는 파일의 이름</translation>
-<translation id="8978053250194585037">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />피싱을 감지<ph name="END_LINK" />했습니다. 피싱 사이트는 사용자를 속이기 위해 다른 웹사이트인 것처럼 가장합니다.</translation>
 <translation id="8982884016487650216">PDF 로드 완료</translation>
 <translation id="8983369100812962543">이제 앱 크기를 조절할 수 있습니다.</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 방문 기록 보기</translation>
@@ -4141,7 +4121,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">시스템 버전을 찾는다면 다음으로 이동하세요.</translation>
 <translation id="899688752321268742">사용자가 현재 기기를 사용 중인지 <ph name="URL" />에서 알고자 합니다.</translation>
-<translation id="8996941253935762404">방문하려는 사이트에 유해한 프로그램이 있습니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
 <translation id="9000145382638074673">내 기기</translation>
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>

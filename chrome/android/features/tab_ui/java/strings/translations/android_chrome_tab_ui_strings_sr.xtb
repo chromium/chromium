@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Уклони из групе</translation>
 <translation id="3008554597174452548">Заустави праћење производа</translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Боја иконе групе картица је <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> архивирану картицу}one{Имате <ph name="TABS_COUNT_MANY" /> архивирану картицу}few{Имате <ph name="TABS_COUNT_MANY" /> архивиране картице}other{Имате <ph name="TABS_COUNT_MANY" /> архивираних картица}}</translation>
 <translation id="3194464645767632461">оцена</translation>
 <translation id="3291470810748040983">Добићете обавештење када постоји нижа цена на отвореној картици</translation>

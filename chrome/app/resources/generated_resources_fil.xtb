@@ -4407,7 +4407,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4309165024397827958">Payagan ang mga Android app at serbisyo na may pahintulot ng lokasyon na gamitin ang lokasyon ng iyong device. Posibleng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin nito ang data na ito nang anonymous para mas maging tumpak ang lokasyon at pahusayin ang mga serbisyong batay sa lokasyon.</translation>
 <translation id="4309183709806093061">Ibahagi rin ang audio ng system. Imu-mute ang device na ito para maiwasan ang feedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
-<translation id="4310132194679586591">Pumili ng app sa iyong device para mabuksan ang link na ito</translation>
 <translation id="4310139701823742692">Nasa maling format ang file. Tingnan ang PPD file at subukan ulit.</translation>
 <translation id="4310496734563057511">Kung ipinapagamit mo ang device na ito sa ibang tao, puwede mong i-on ang Windows Hello para i-verify na ikaw iyan kapag gagamit ka ng naka-save na password</translation>
 <translation id="431076611119798497">&amp;Mga Detalye</translation>
@@ -5979,7 +5978,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5554403733534868102">Pagkatapos nito, hindi na maghihintay ng mga update</translation>
 <translation id="5554489410841842733">Makikita ang icon na ito kapag maaaring kumilos ang extension sa kasalukuyang pahina.</translation>
 <translation id="5554720593229208774">Email Certification Authority</translation>
-<translation id="5554866693883022680">Pumili ng app sa iyong <ph name="DEVICE_TYPE" /> para mabuksan ang link na ito</translation>
 <translation id="5555363196923735206">I-flip ang camera</translation>
 <translation id="5555525474779371165">Piliin ang iyong proteksyon sa Ligtas na Pag-browse</translation>
 <translation id="5555639311269196631">I-off ang hotspot</translation>

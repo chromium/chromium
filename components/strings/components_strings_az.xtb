@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">Götürmə ünvanı</translation>
 <translation id="1343356790768851700">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir</translation>
 <translation id="1346748346194534595">Sağ</translation>
-<translation id="1348198688976932919">Sonrakı saytda təhlükəli tətbiq var</translation>
 <translation id="1348779747280417563">Adı təsdiq edin</translation>
 <translation id="1352798470428594123">Chrome əksər saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="1355158069018170842">Tablarda qiymət endirimlərini göstərin</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">Dağçılıq və Dırmanma</translation>
 <translation id="2215727959747642672">Fayl redaktəsi</translation>
 <translation id="2215963164070968490">İtlər</translation>
-<translation id="2218879909401188352">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular cihazı zədələyən təhlükəli tətbiqlər quraşdıra, mobil fakturaya gizli ödəniş əlavə edə və ya şəxsi məlumatı oğurlaya bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Dərsliyi yenidən başladın</translation>
 <translation id="2219735899272417925">Cihazın sıfırlanması tələb olunur</translation>
 <translation id="2221227930294879156">Qida və içki tədbirləri</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> hostuna <ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərinin açılması icazəsi verilsin?</translation>
 <translation id="2353297238722298836">Kamera və mikrofona icazə verildi</translation>
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
-<translation id="2354430244986887761">Təhlükəsiz Google Axtarış bu yaxınlarda <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli tətbiq tapdı<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Hücumçular bu saytda baxdığınız şəkilləri görə bilər və onları deyişdirərək Sizi aldada bilər.</translation>
 <translation id="2356070529366658676">Soruşun</translation>
 <translation id="2356926036049612643">V8 optimallaşdırıcısı</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">Daxil edin</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
 <translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
-<translation id="2629325967560697240">Chrome'un ən yüksək təhlükəsizlik səviyyəsini əldə etmək üçün<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />genişləndirilmiş qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverinin IP ünvanı tapılmadı.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Parça (yarıparlaq)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">Bu cihazın administratorlarının quraşdırdığı güvənlik sertifikatları daxil olduğunuz veb saytların kontentini görmələrinə imkan verir.</translation>
 <translation id="2794233252405721443">Sayt blok edilib</translation>
 <translation id="2794629552137076216">Şüşə (cilalı)</translation>
-<translation id="2799020568854403057">Sonrakı saytda zərərli tətbiq var</translation>
 <translation id="2799223571221894425">Yenidən başladın</translation>
 <translation id="2799758406651937857">Kişi Geyimi</translation>
-<translation id="2803306138276472711">Google Güvənlik Baxış <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli proqram aşkar etdi<ph name="END_LINK" />. Adətən güvənli olan veb saytlar bəzən zərərli proqramlar ilə yoluxur.</translation>
 <translation id="2807052079800581569">Şəklin Y oxu üzrə mövqeyi</translation>
 <translation id="2808278141522721006">Windows Hello'nu <ph name="SETTINGS" /> bölməsində aktiv və ya deaktiv edə bilərsiniz</translation>
 <translation id="2814184336982254349">Bu PDF-ə daxil olmaq olmur. Axtarış və m üzərinə basaraq kontekst menyusunu açıb, "PDF-dən mətn çıxarın" seçimini aktiv edin</translation>
@@ -1440,7 +1434,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Slaydda cəld yeni Google təqdimatı yaradın</translation>
 <translation id="3727309136762649052">Ad sahəsi</translation>
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
-<translation id="3736520371357197498">Güvənliyinizin üzləşdiyi riskləri anlayırsınızsa, təhlükəli proqramlar silinmədən öncə <ph name="BEGIN_LINK" />güvənsiz sayta daxil ola bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="3736739313435669994">Saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini blokladınız. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3739842843727261045">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir</translation>
@@ -1451,7 +1444,6 @@
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
 <translation id="3745599309295009257">Mətn, yazdığınız səhifənin kontent və URL-i Google-a göndəriləcək, insanlar tərəfindən nəzərdən keçiriləcək və bu funksiyanı təkmilləşdirmək üçün istifadə ediləcək. Şəxsi məlumat (tibbi və ya maliyyə detalları kimi) daxil etməyin. Şəxsi və ya həssas məlumat olan saytlarda bu alətdən istifadə etməyin.</translation>
 <translation id="3748009735914587286">Metal (çox parlaq)</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Sizi zərərli proqram təminatı quraşdırmaq və ya şəxsi məlumatı (məsələn, parol, telefon nömrəsi və ya kredit kartları) paylaşmaq kimi təhlükəli işləri görməyə sövq edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığına görə nəzərə alınmayıb.</translation>
 <translation id="3754210790023674521">Şəkildə şəkil rejimindən çıxın</translation>
 <translation id="3759461132968374835">Xəbər verdiyiniz qəza yoxdur. Qəza haqqında hesabat deaktiv edildikdə baş verən qəzalar burada görünmür.</translation>
@@ -1607,7 +1599,6 @@
 <translation id="4092349052316400070">Ünvanı doldurun</translation>
 <translation id="4096237801206588987">11 x 15 düym</translation>
 <translation id="4098306082496067348">Virtual kart detallarına toxunaraq kassaya əlavə edin.</translation>
-<translation id="4098354747657067197">Qabaqda aldadıcı site</translation>
 <translation id="4099048595830172239">Administrator siyasəti məxfi kontent görünəndə ekranınızı <ph name="APPLICATION_TITLE" /> ilə paylaşmağı tövsiyə etmir:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da şrift ölçülərini və şriftləri fərdiləşdirin</translation>
 <translation id="4101413244023615925">Mətn və qrafik</translation>
@@ -1672,7 +1663,6 @@
 <translation id="4213500579045346575">Bodibildinq</translation>
 <translation id="4214357935346142455">giriş ekranı profili</translation>
 <translation id="4220128509585149162">Qəzalar</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Sizi axtarış təcrübənizə zərər gətirəcək (məsələn, əsas səhifəni dəyişməklə və ya daxil olduğunuz saytlarda əlavə reklamlar göstərməklə) proqramları quraşdırmağa sövq edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Mərhələ 1: Portala daxil olun&lt;/h4&gt;
     &lt;p&gt;Kafe, hava limanı kimi yerlərdə olan Wi-Fi şəbəkələri giriş tələb edir. Giriş səhifəsinə baxmaq üçün &lt;code&gt;http://&lt;/code&gt; istifadə edən səhifəyə daxil olun.&lt;/p&gt;
     &lt;ol&gt;
@@ -2395,7 +2385,6 @@
 <translation id="5629630648637658800">Siyasət ayarlarını yükləmək uğursuz oldu</translation>
 <translation id="5631439013527180824">Yanlış cihaz idarəetmə markeri</translation>
 <translation id="5632485077360054581">İstifadə qaydasını göstərin</translation>
-<translation id="5633066919399395251">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular kompüterdəki məlumatları (məsələn, foto, parol, mesaj və kredit kartları) oğurlayan və ya silən zərərli proqramlar quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Aldadıcı kontent blok edildi.</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634725266554983459">Manual doğrulama yandırılsın?</translation>
@@ -2582,7 +2571,6 @@
 <translation id="6014851866995737824">"Aktiv" və ya "Deaktiv" siyahısı olmadığı üçün nəzərə alınmayıb.</translation>
 <translation id="6015796118275082299">İl</translation>
 <translation id="6017514345406065928">Yaşıl</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular digər tətbiqlərə bənzəyən aldadıcı tətbiq quraşdıra və ya sizi izləmək üçün data toplaya bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinxronlaşdırıldı)</translation>
 <translation id="6028591542479806248">Mobil və e-poçt bildirişlərini idarə edin</translation>
 <translation id="6028833024483927901">Dünya mətbəxi</translation>
@@ -2599,7 +2587,6 @@
 <translation id="6042308850641462728">Daha çox</translation>
 <translation id="6044573915096792553">Ölçü 12</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
-<translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="6047927260846328439">Bu kontent Sizi proqram təminatı quraşdırmaq və ya şəxsi məlumatı aşkar etmək üçün aldatmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Zərf B4</translation>
 <translation id="6049488691372270142">Səhifə çatdırılması</translation>
@@ -2690,7 +2677,6 @@
 <translation id="622039917539443112">Paralel qatlayın</translation>
 <translation id="6221286101741304627">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| üzərinə basın</translation>
 <translation id="6221311046884916259">Bu kart Google Hesabında yadda saxlansın?</translation>
-<translation id="6221345481584921695">Google Güvənli Brauzinq <ph name="SITE" /> üzərində <ph name="BEGIN_LINK" />virus aşkarladı<ph name="END_LINK" />. Ziyanverici məzmun virus yaymağı ilə məşhur olan <ph name="SUBRESOURCE_HOST" /> tərəfdən gəlir.</translation>
 <translation id="6221892641068781024">Sadə Görünüş</translation>
 <translation id="6222527803348563979">Yazı ləvazimatları</translation>
 <translation id="6224281071334553713">Qiymətli daş və cəvahirat</translation>
@@ -2903,7 +2889,6 @@
 <translation id="6629652037942826935">Lüks səyahət</translation>
 <translation id="6630043285902923878">USB cihazları axtarılır...</translation>
 <translation id="6630388727238334626">"Chrome ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarına daxil olun</translation>
-<translation id="6630809736994426279">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Mac cihazındakı məlumatları (məsələn, foto, parol, mesaj və kredit kartları) oğurlayan və ya silən təhlükəli proqramlar quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">Avstraliya Futbolu</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Kompüter təhsili</translation>
@@ -3233,7 +3218,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Biznes Əməliyyatları</translation>
-<translation id="724691107663265825">Sonrakı sayda virus var</translation>
 <translation id="7251437084390964440">Şəbəkə konfiqurasiyası ONC standartına uyğun deyil. Konfiqurasiyanın hissələri import edilə bilməz.
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
@@ -3820,7 +3804,6 @@
 <translation id="833262891116910667">Vurğulama</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilində olan səhifələr tərcümə edilməyəcək</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">Güvənliyinizə olan riskləri anlamaq üçün zərərverici proqramların silinməsindən öncə <ph name="BEGIN_LINK" />bu sayta daxil olun<ph name="END_LINK" />.</translation>
 <translation id="8344776605855290140">Virtual kart qeydiyyatı tam uzunluqda açıldı</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8350416046273606058">Qısayolda boşluqlar olmamalıdır: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3929,7 +3912,6 @@
 <translation id="8541579497401304453">Telefon zəngi edərək müəssisə ilə əlaqə saxlayın.</translation>
 <translation id="8542014550340843547">Aşağıdan üçlü ştapel vurun</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Aşkarlama problemini bildirə<ph name="END_ERROR_LINK" /> bilərsiniz, təhlükəsizliyiniz ilə bağlı riski başa düşürsünüzsə, <ph name="BEGIN_LINK" />bu təhlükəli sayta daxil ola bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">Google Chrome ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>
 <translation id="8544303911974837265">Poliefir</translation>
 <translation id="854548366864113872">Yüksək qiymət seçimi</translation>
@@ -4032,7 +4014,6 @@
 <translation id="8757526089434340176">Google Pay təklifi əlçatandır</translation>
 <translation id="8759274551635299824">Bu kartın vaxtı bitib</translation>
 <translation id="87601671197631245">Bu sayt vaxtı keçmiş təhlükəsizlik konfiqurasiyasından istifadə edir və bu da sayta göndərilən məlumatınızın (məsələn, parollar, mesajlar və ya kredit kartları) paylaşılmasına səbəb ola bilər.</translation>
-<translation id="8761567432415473239">Google Təhlükəsiz Brauzinq yenicə <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli proqram tapdı<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8763986294015493060">Hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>
@@ -4129,7 +4110,6 @@
 <translation id="8971063699422889582">Server sertifikatının vaxtı bitdi.</translation>
 <translation id="8975012916872825179">Telefon nömrələri, e-poçt ünvanları və çatdırılma ünvanı kimi məlumat daxildir</translation>
 <translation id="8975263830901772334">Çap edilən fayl adları</translation>
-<translation id="8978053250194585037">Google Təhlükəsizlik Axtarışı bu yaxınlarda <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />fişinq<ph name="END_LINK" /> aşkarlayıb. Digər saytlara oxşayan zərərli saytlar Sizi aldatmağa cəhd edir.</translation>
 <translation id="8982884016487650216">PDF yükləndi</translation>
 <translation id="8983369100812962543">İndi tətbiqin ölçüsünü dəyişə bilərsiniz</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da brauzer tarixçənizə baxın</translation>
@@ -4138,7 +4118,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">Sistem versiyası axtarırsınız? Ziyarət edin</translation>
 <translation id="899688752321268742"><ph name="URL" /> bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədyir</translation>
-<translation id="8996941253935762404">Qarşıdakı saytda ziyanverici proqramlar var</translation>
 <translation id="8997023839087525404">Server, Sertifikat Şəffaflığı siyasəti istifadə edilərək aşkarlanmamış sertifikatı təqdim etdi. Bu, sertifikatların etibarlı və hücum edənlərə qarşı qorunduğuna əmin olmaq üçün tələb olunur.</translation>
 <translation id="9000145382638074673">Cihazlar</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksisi istifadəçi adı və parol tələb edir.</translation>

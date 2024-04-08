@@ -4406,7 +4406,6 @@
 <translation id="4309165024397827958">위치 정보 액세스 권한이 있는 Android 앱과 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다.</translation>
 <translation id="4309183709806093061">시스템 오디오도 공유합니다. 오디오 피드백을 방지하기 위해 이 기기는 음소거됩니다.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K(<ph name="NUM_KILOBYTES_LIVE" />K 활성)</translation>
-<translation id="4310132194679586591">기기에서 이 링크를 여는 데 사용할 앱을 선택합니다</translation>
 <translation id="4310139701823742692">파일 형식이 잘못되었습니다. PPD 파일을 확인하고 다시 시도하세요.</translation>
 <translation id="4310496734563057511">이 기기를 다른 사용자와 공유하는 경우, Windows Hello를 사용 설정하면 저장된 비밀번호를 사용할 때마다 본인 인증이 완료됩니다.</translation>
 <translation id="431076611119798497">세부정보(&amp;D)</translation>
@@ -5978,7 +5977,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5554403733534868102">다음부터는 업데이트를 기다리지 않아도 됩니다</translation>
 <translation id="5554489410841842733">현재 페이지에서 확장 프로그램을 실행할 수 있게 되면 아이콘이 표시됩니다.</translation>
 <translation id="5554720593229208774">이메일 인증 기관</translation>
-<translation id="5554866693883022680"><ph name="DEVICE_TYPE" />에서 이 링크를 여는 데 사용할 앱을 선택합니다</translation>
 <translation id="5555363196923735206">카메라 전환</translation>
 <translation id="5555525474779371165">세이프 브라우징 보호 기능을 선택하세요</translation>
 <translation id="5555639311269196631">핫스팟 사용 중지</translation>

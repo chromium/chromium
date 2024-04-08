@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">This allows <ph name="APP_NAME" /> and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="1017556409696559990">Minimise top window when there's no back history in Chrome</translation>
+<translation id="101823271612280837">Recording stopped. Can't use Game Dashboard in tablet mode.</translation>
 <translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
 <translation id="1036073649888683237">To manage notifications, go to Settings</translation>
@@ -95,6 +96,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Open explore</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Press <ph name="LAUNCHER_KEY_NAME" /> + g at any time</translation>
 <translation id="1306549533752902673">RECOMMENDED APPS</translation>
 <translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
@@ -228,6 +230,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Unlock with fingerprint</translation>
+<translation id="1894024878080591367">Set up to play with your keyboard</translation>
 <translation id="1904997243703671177">When you turn off Bluetooth, <ph name="DEVICE_COUNT" /> external devices will disconnect from your <ph name="DEVICE_TYPE" />, including:</translation>
 <translation id="1908992311423394684">New install</translation>
 <translation id="1915307458270490472">Hang up</translation>
@@ -326,6 +329,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="2367972762794486313">Show apps</translation>
 <translation id="2368828502825385061">Locate</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
+<translation id="2370971919968699910">This may incur data cost.
+<ph name="DEVICECOUNT" /> devices connected</translation>
 <translation id="2382875860893882175">Casting is currently paused. You can resume casting or stop casting at any time.</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
 <translation id="2392659840443812875">No available hotspot. Make sure that your device is nearby and Bluetooth is turned on.</translation>
@@ -395,6 +400,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2624588537172718173">Device audio and microphone</translation>
 <translation id="263399434338050016">'Select all'</translation>
 <translation id="2644422758626431000">Pin window to left</translation>
+<translation id="2645380101799517405">Controls</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Window capture</translation>
 <translation id="2653659639078652383">Submit</translation>
@@ -407,6 +413,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
 <translation id="2700493154570097719">Set your keyboard</translation>
+<translation id="2701576323154693023">Hotspot is on (Wi-Fi is off)</translation>
 <translation id="2704781753052663061">Join other Wi-Fi networks</translation>
 <translation id="2705001408393684014">Toggle mic. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
@@ -428,6 +435,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2798702144670138229">Tablet mode is on. Game Dashboard is unavailable.</translation>
 <translation id="2801954693771979815">Screen size</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selected</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -476,6 +484,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
+<translation id="3001391739687111021">Edit screen size</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="301282384882049174">Shared by your administrator</translation>
@@ -505,6 +514,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">Welcome notification is <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Highlight previous item on shelf</translation>
 <translation id="311799651966070385">Close nudge</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
@@ -743,6 +753,7 @@ Connect your device to power.</translation>
 <translation id="3984536049089846927">Next page</translation>
 <translation id="3986082989454912832">Answer</translation>
 <translation id="3990002060657467458">Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots.</translation>
+<translation id="3991203706072366707">Off for <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="40062176907008878">Handwriting</translation>
@@ -836,6 +847,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">The Ctrl + Alt + up arrow keyboard shortcut has changed. To use the Home key, press the <ph name="LAUNCHER_KEY_NAME" /> key + left arrow.</translation>
 <translation id="4324840740119394760">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission</translation>
+<translation id="4327147325944669226">Record game</translation>
 <translation id="4333628967105022692">Lacros is not supported while multiple users are signed in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
@@ -871,6 +883,8 @@ Some features are limited to increase battery life.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4477350412780666475">Next track</translation>
+<translation id="4477751544736611934">This may incur data cost.
+One device connected.</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
@@ -1000,6 +1014,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
+<translation id="4950800194215951939">Customise your gaming experience</translation>
 <translation id="4952936045814352993">Locate phone is not available when alarm sounds are disabled</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requires you to roll back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
 <translation id="4961318399572185831">Cast screen</translation>
@@ -1014,6 +1029,8 @@ Some features are limited to increase battery life.</translation>
 <translation id="4981175556418720939">Modified <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="4989163558385430922">See all</translation>
+<translation id="4995963195354861331">Welcome dialogue</translation>
+<translation id="4996265698919320288">Recording</translation>
 <translation id="5003993274120026347">Next sentence</translation>
 <translation id="5004607513195820459">Network is managed</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
@@ -1105,6 +1122,8 @@ Some features are limited to increase battery life.</translation>
 <translation id="533282197239610265">Show cast devices</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
+<translation id="5354804064646502504">This may incur data cost.
+No devices connected.</translation>
 <translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
 <translation id="536019650977002321">Your administrator doesn’t allow audio capture. Contact your administrator for more info.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> speech files partially downloaded</translation>
@@ -1204,6 +1223,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5712132663381964774">Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher.</translation>
 <translation id="571295407079589142">Mobile data is turned off</translation>
 <translation id="5727460725221669831">If you forgot your password or changed your Google Account password recently, try recovering this user.</translation>
+<translation id="5733630091161562207">Welcome notification</translation>
 <translation id="573413375004481890">This device couldn't support all of your displays, so one has been disconnected</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -1389,6 +1409,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="6453179446719226835">Language has been changed</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">images</translation>
+<translation id="6467290994038932560">On for <ph name="GAME_APP_NAME" /></translation>
 <translation id="6469104339369989396">Toggle hotspot.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
@@ -1778,6 +1799,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7963689218131240420">Do Not Disturb is off.</translation>
 <translation id="7963992254934562106">From <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Select folder…</translation>
+<translation id="7973756967040444713">Close toolbar</translation>
 <translation id="797512352675305461">Turn fullscreen magnifier on or off</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -1930,6 +1952,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="861045123704058818">Apps are organised by category temporarily</translation>
 <translation id="8612216344243590325">Keep important files in <ph name="HOLDING_SPACE_TITLE" /> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
+<translation id="8615778328722901791">Open toolbar</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Turn volume down</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
@@ -1952,6 +1975,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8704155109538237473">Focus on the picture-in-picture window</translation>
 <translation id="870917907284186124">Turn on/off dictation (type with your voice)</translation>
+<translation id="8711169534266271368">Game Dashboard options</translation>
 <translation id="8714138378966541668">Locked by provider</translation>
 <translation id="8717459106217102612">Select previous word or letter</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
@@ -1982,6 +2006,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8815390544836110344">Press the screenshot shortcut, Ctrl plus Shift plus Overview mode key</translation>
 <translation id="881757059229893486">Input methods settings</translation>
 <translation id="8819728065740986820">Adaptive charging is on</translation>
+<translation id="8822104519413696986">This is a touch game</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8832513206237979203">Show or hide bookmarks bar</translation>
 <translation id="8834539327799336565">Currently connected</translation>
@@ -2092,6 +2117,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="953431725143473984">Shut down the device?</translation>
 <translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="956452277966142925">Game Dashboard settings</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">No due date</translation>
 <translation id="98120814841227350">Go to end of document</translation>

@@ -4406,7 +4406,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4309165024397827958">Tillåt att Android-appar och Android-tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
 <translation id="4309183709806093061">Dela även systemljud. Ljudet stängs av på enheten för att undvika rundgång.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K aktiva)</translation>
-<translation id="4310132194679586591">Välj en app på enheten för att öppna den här länken</translation>
 <translation id="4310139701823742692">Filen har fel format. Kontrollera PPD-filen och försök igen.</translation>
 <translation id="4310496734563057511">Om du delar enheten med andra kan du aktivera Windows Hello för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="431076611119798497">&amp;Info</translation>
@@ -5978,7 +5977,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5554403733534868102">Efter det här behöver du inte vänta på fler uppdateringar</translation>
 <translation id="5554489410841842733">Ikonen visas när tillägget kan agera på den aktuella sidan.</translation>
 <translation id="5554720593229208774">Utfärdare av e-postcertifikat</translation>
-<translation id="5554866693883022680">Välj en app på din <ph name="DEVICE_TYPE" /> för att öppna den här länken</translation>
 <translation id="5555363196923735206">Vänd kameran</translation>
 <translation id="5555525474779371165">Välj ditt skydd med Säker webbsökning</translation>
 <translation id="5555639311269196631">Inaktivera surfzon</translation>

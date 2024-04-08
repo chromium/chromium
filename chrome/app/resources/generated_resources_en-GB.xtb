@@ -1077,6 +1077,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1795214765651529549">Use Classic</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1797117170091578105">Play using your Chromebook keyboard. You can customise keys to specific actions.</translation>
+<translation id="1798335429200675510">Right-click in a text box to create a draft or refine existing work, powered by Google AI. Currently has limited availability.</translation>
 <translation id="180203835522132923">Search + O, then W</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
@@ -1472,6 +1473,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2088092308059522196">Enrolment is only supported after you install <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Built-in TrackPoint</translation>
 <translation id="208928984520943006">To get to the home screen at any time, swipe up from the bottom.</translation>
+<translation id="2089550919269323883">Installing <ph name="VM_NAME" /> is blocked by enterprise policy. Please contact your system administrator for support. The error code is <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">OR</translation>
 <translation id="2090165459409185032">To recover your account information, go to: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatically connects when you log in</translation>
@@ -1515,6 +1517,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">Authority Information Access</translation>
+<translation id="2114145607116268663">Unable to install, reboot is required. Please restart your computer and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Reload &amp;Frame</translation>
 <translation id="2114413269775311385">Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN" />Apps settings<ph name="LINK_END" />.</translation>
 <translation id="2114820389966440614">See 'Recent highlights' and other memories here</translation>
@@ -2683,6 +2686,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2979893796619951531">Exclude site</translation>
+<translation id="2981033191524548279">Sorry, something went wrong. Please file feedback with #bruschetta in the description. The error code is <ph name="ERROR" />. This may be fixed by rebooting and trying again.</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
 <translation id="2983373101216420412">Case battery level <ph name="PERCENTAGE" />%.</translation>
@@ -4354,6 +4358,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4275397969489577657">Enable event stream logging</translation>
 <translation id="4275788652681621337">Close side panel</translation>
 <translation id="4275830172053184480">Restart your device</translation>
+<translation id="4276856098224910511">Unable to install, OS update is pending. Please apply any pending OS updates, restart and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML configuration source</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Permissions removed from one site}other{Permissions removed from {NUM_SITES} sites}}</translation>
 <translation id="4278390842282768270">Allowed</translation>
@@ -4401,7 +4406,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4309165024397827958">Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="4309183709806093061">Also share system audio. This device will be muted to prevent feedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
-<translation id="4310132194679586591">Select an app on your device to open this link</translation>
 <translation id="4310139701823742692">File is in the wrong format. Check the PPD file and try again.</translation>
 <translation id="4310496734563057511">If you share this device with others, you can turn on Windows Hello to verify that it's you whenever you use a saved password</translation>
 <translation id="431076611119798497">&amp;Details</translation>
@@ -4563,6 +4567,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4426490308207168518">Share feedback or report an issue</translation>
 <translation id="4426508677408162512">All Bookmarks</translation>
 <translation id="4426513927906544654">Get content recommendations</translation>
+<translation id="4426857487270413362">Unable to download installer files. Please check your Internet connection, and that you have enough free disk space and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
@@ -5165,6 +5170,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4899696330053002588">Contains ads</translation>
 <translation id="490031510406860025">Not allowed on this site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
+<translation id="490056871160016482">Sites use this feature to offer immersive fullscreen experiences regardless of user gestures</translation>
 <translation id="4900652253009739885">Can’t remove the only switch assigned to 'Select'. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Expand recently closed</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
@@ -5971,7 +5977,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5554403733534868102">After this, no waiting for updates</translation>
 <translation id="5554489410841842733">This icon will be visible when the extension can act on the current page.</translation>
 <translation id="5554720593229208774">Email Certification Authority</translation>
-<translation id="5554866693883022680">Select an app on your <ph name="DEVICE_TYPE" /> to open this link</translation>
 <translation id="5555363196923735206">Flip camera</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5555639311269196631">Turn off hotspot</translation>
@@ -7184,6 +7189,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6517227424170598783">Remove '<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />' shortcut?</translation>
 <translation id="6517382055541687102">The selected device changed to <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Your files in My Drive sync to your Chromebook automatically so that you can access them without an Internet connection. This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE_AVAILABLE" /> available.</translation>
+<translation id="651753338596587143">Sorry, something went wrong installing DLC dependencies. Please try rebooting, and if the issue persists, file feedback with #bruschetta in the description. The error code is <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Your device may no longer work properly, and you may experience security and performance issues. Turning off updates may also impact your right to make legal claims if you experience any issues.</translation>
 <translation id="6518014396551869914">Cop&amp;y image</translation>
 <translation id="6518133107902771759">Verify</translation>
@@ -7631,6 +7637,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6847125920277401289">Free up space to continue</translation>
 <translation id="6848388270925200958">At the moment, you have some cards that can only be used on this device</translation>
 <translation id="6848716236260083778">To set up fingerprint, get your child to touch the fingerprint sensor. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6849623577495734856">Toolbar icons</translation>
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6851181413209322061">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="6851497530878285708">App enabled</translation>
@@ -8388,6 +8395,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Extended preloading</translation>
 <translation id="7456847797759667638">Open Location...</translation>
+<translation id="7457027286267861992">Not enough disk space. Please free up some more disk space and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{a link}other{# links}}</translation>
 <translation id="7458168200501453431">Uses the same spell checker that’s used in Google search. Text that you type in the browser is sent to Google.</translation>
 <translation id="7458715171471938198">Restore apps?</translation>
@@ -10183,6 +10191,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8787752878731558379">Help us improve Chrome by telling us why you allowed third-party cookies</translation>
 <translation id="8791157330927639737">Learn more about updating</translation>
 <translation id="8791534160414513928">Send a ‘Do Not Track’ request with your browsing traffic</translation>
+<translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
 <translation id="8795916974678578410">New Window</translation>
 <translation id="8796919761992612392">C&amp;ustomize your Chrome</translation>
@@ -10674,6 +10683,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9150045010208374699">Use your camera</translation>
 <translation id="9150079578948279438">Profile could not be removed. Please try again or contact your operator for technical support.</translation>
 <translation id="9150860646299915960">Upgrade your Linux container</translation>
+<translation id="915112772806845021">Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video while freeing up your screen for other tasks.</translation>
 <translation id="9151249085738989067">Automatically switch ChromeVox voice based on language</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros system information</translation>

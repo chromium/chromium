@@ -4393,7 +4393,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4309165024397827958">Joylashuv axborotiga ruxsati bor Android ilova va xizmatlariga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="4309183709806093061">Tizim audiosini ham ulashing. Fikr-mulohazalarni taqiqlash uchun bu qurilma ovozi oʻchiriladi.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB faol)</translation>
-<translation id="4310132194679586591">Bu havolani ochish uchun qurilmangizdagi ilovani tanlang</translation>
 <translation id="4310139701823742692">Fayl formati nosoz. PPD faylni tekshiring va yana urinib ko‘ring.</translation>
 <translation id="4310496734563057511">Bu qurilmani boshqalar bilan birga ishlatsangiz, saqlangan parollaringizdan foydalanishda Windows Hello tekshiruvini yoqishingiz mumkin.</translation>
 <translation id="431076611119798497">&amp;Tafsilotlar</translation>
@@ -5965,7 +5964,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5554403733534868102">Bundan keyin yangilanishlar kutilmaydi</translation>
 <translation id="5554489410841842733">Agar kengaytma joriy sahifada ishlay olsa, uning nishochasi ko‘rinadi.</translation>
 <translation id="5554720593229208774">Email sertifikatlash markasi</translation>
-<translation id="5554866693883022680">Bu havolani ochish uchun <ph name="DEVICE_TYPE" /> qurilmangizdagi ilovani tanlang</translation>
 <translation id="5555363196923735206">Kamerani almashtirish</translation>
 <translation id="5555525474779371165">Saytlarni xavfsiz kezish himoyasini tanlang</translation>
 <translation id="5555639311269196631">Hotspotni faolsizlantirish</translation>

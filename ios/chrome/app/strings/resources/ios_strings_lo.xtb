@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">ສຳເນົາລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="2626236249646841566">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານແລ້ວລອງເຂົ້າສູ່ລະບົບອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="2637313651144986786">ຊອກຫາແຖບ...</translation>
+<translation id="2640733327287333451">ບໍ່ມີຊື່ຜູ້ໃຊ້ ••••••</translation>
 <translation id="2648721026697078500">ບໍ່ຕ້ອງຍ້າຍ</translation>
 <translation id="2648803196158606475">ລຶບລາຍການທີ່ອ່ານແລ້ວ</translation>
 <translation id="2664621323652615289">ຢຸດ</translation>
@@ -1280,6 +1281,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7569588934989281656">ທ່ານສາມາດປັດລາຍແຖບເພື່ອສະຫຼັບໄປມາລະຫວ່າງແຖບໄດ້.</translation>
 <translation id="7582857256643797524">ການຕັ້ງຄ່ານີ້ຖືກເປີດໃຊ້ຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7583004045319035904">ໃຊ້ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ເພື່ອປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
+<translation id="7598439272585186139">ຮັບຄວາມປອດໄພເພີ່ມເຕີມ</translation>
 <translation id="7600965453749440009">ຢ່າແປ <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">ປັອບ​ອັບ​ຖືກບ​ລັອກ (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">ລຶບລະຫັດຜ່ານ</translation>

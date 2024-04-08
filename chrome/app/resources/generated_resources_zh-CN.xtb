@@ -4225,7 +4225,7 @@
 <translation id="4190492351494485814">在进行初始设置时，您需要连接到互联网才能将文件同步到 Chromebook</translation>
 <translation id="4190828427319282529">突出显示键盘焦点</translation>
 <translation id="4191892134568599822">要接收来自“<ph name="FEATURE_NAME" />”的内容吗？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{撤消了 1 个未使用的网站的权限}other{撤消了 {NUM_SITES} 个未使用的网站的权限}}</translation>
+<translation id="4192024474038595073">{NUM_SITES,plural, =1{撤消了 1 个未使用网站的权限}other{撤消了 {NUM_SITES} 个未使用网站的权限}}</translation>
 <translation id="4193251682249731404">可信 CA</translation>
 <translation id="4193575319002689239">显示卡片</translation>
 <translation id="4193836101014293726">无法删除此个人资料</translation>
@@ -4382,7 +4382,6 @@
 <translation id="4309165024397827958">允许有位置信息权限的 Android 应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="4309183709806093061">同时共享系统音频。此设备会被静音，以免收到反馈。</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（实际大小为 <ph name="NUM_KILOBYTES_LIVE" /> K）</translation>
-<translation id="4310132194679586591">请在您的设备上选择一款应用以打开此链接</translation>
 <translation id="4310139701823742692">文件格式有误。请检查 PPD 文件，然后重试。</translation>
 <translation id="4310496734563057511">如果您与他人共用此设备，则可以开启 Windows Hello，以便在您使用已保存的密码时验证您的身份</translation>
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
@@ -5953,7 +5952,6 @@
 <translation id="5554403733534868102">此后，再也不必等待系统完成更新</translation>
 <translation id="5554489410841842733">如果该扩展程序可以在当前网页上运行，则会显示此图标。</translation>
 <translation id="5554720593229208774">电子邮件证书授权中心</translation>
-<translation id="5554866693883022680">请在您的 <ph name="DEVICE_TYPE" /> 上选择一款应用以打开此链接</translation>
 <translation id="5555363196923735206">切换摄像头模式</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
 <translation id="5555639311269196631">关闭热点</translation>
@@ -10789,7 +10787,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{应用}other{应用}}</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
-<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了很多通知的 1 个网站}other{查看最近发送了很多通知的 {NUM_SITES} 个网站}}</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了大量通知的 1 个网站}other{查看最近发送了大量通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{关闭这份个人资料(&amp;C)}other{关闭这份已打开 # 个窗口的个人资料(&amp;C)}}</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>

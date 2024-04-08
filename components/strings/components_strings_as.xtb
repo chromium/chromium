@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">পিক আপ কৰাৰ ঠিকনা</translation>
 <translation id="1343356790768851700">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে</translation>
 <translation id="1346748346194534595">সোঁ</translation>
-<translation id="1348198688976932919">আপুনি খুলিব বিচৰা ছাইটোত ক্ষতিকাৰক এপ্‌ আছে</translation>
 <translation id="1348779747280417563">নাম নিশ্চিত কৰক</translation>
 <translation id="1352798470428594123">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ বেছিভাগ ছাইটে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ সীমিত কৰে। <ph name="LINK" />ৰ বাবে ছেটিঙলৈ যাওক।</translation>
 <translation id="1355158069018170842">টেবত মূল্য কমাৰ জাননী দেখুৱাওক</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">বগোৱা আৰু পৰ্বতাৰোহন</translation>
 <translation id="2215727959747642672">ফাইল সম্পাদনা</translation>
 <translation id="2215963164070968490">কুকুৰ</translation>
-<translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত থকা আক্ৰমণকাৰীসকলে এতিয়াও ক্ষতিকাৰক এপ্ ইনষ্টল কৰিব পাৰে যিবিলাকে আপোনাৰ ডিভাইচটোৰ ক্ষতি কৰিব পাৰে, আপোনাৰ ম’বাইল ফ‘নৰ বিলত আপুনি গম নোপোৱাকৈ মাচুল যোগ কৰিব পাৰে বা আপোনাৰ ব্যক্তিগত তথ্য চুৰি কৰিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">টিউট’ৰিয়েল ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2219735899272417925">ডিভাইচ ৰিছেট কৰাৰ আৱশ্যক</translation>
 <translation id="2221227930294879156">খাদ্য আৰু পানীয়ৰ অনুষ্ঠান</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542">সকলো <ph name="PROTOCOL" /> লিংক <ph name="REPLACED_HANDLER_TITLE" />ৰ সলনি <ph name="HANDLER_HOSTNAME" />ক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="2353297238722298836">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2354001756790975382">অন্য বুকমাৰ্কসমূহ</translation>
-<translation id="2354430244986887761">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে অলপতে <ph name="SITE" />ত <ph name="BEGIN_LINK" />ক্ষতিকাৰক এপ্‌ বিচাৰি পাইছিল<ph name="END_LINK" />।</translation>
 <translation id="2355395290879513365">আক্ৰমণকাৰীয়ে আপুনি এই ছাইটটোত চাই থকা প্ৰতিচ্ছবিসমূহ চাব পাৰিব পাৰে আৰু সেইসমূহ সলনি কৰি আপোনাক জালত পেলাব পাৰে।</translation>
 <translation id="2356070529366658676">সোধক</translation>
 <translation id="2356926036049612643">V8 অপ্টিমাইজাৰ</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">ভৰাওক</translation>
 <translation id="2625385379895617796">আপোনাৰ ঘড়ীৰ সময় আগবাঢ়ি আছে</translation>
 <translation id="262745152991669301">ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
-<translation id="2629325967560697240">Chromeৰ সৰ্বোচ্চ স্তৰৰ সুৰক্ষা লাভ কৰিবলৈ <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />বৰ্ধিত সুৰক্ষাৰ সুবিধাটো অন কৰক<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ৰ ছাৰ্ভাৰৰ IP ঠিকনাটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="2639739919103226564">স্থিতি:</translation>
 <translation id="2647086987482648627">ফেব্ৰিক (ছেমি-গ্লছ)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">এই ডিভাচৰ প্ৰশাসকে কিছুমান সুৰক্ষা সম্পর্কীয় প্ৰমাণপত্ৰ ছেট আপ কৰিছে, যিবোৰে তেওঁলোকক আপুনি চোৱা সমল বা ৱেবছাইটসমূহ চাবলৈ অনুমতি দিব পাৰে।</translation>
 <translation id="2794233252405721443">ছাইট অৱৰোধ কৰা আছে</translation>
 <translation id="2794629552137076216">কাচ (ছাৰ্ফেচ কৰা)</translation>
-<translation id="2799020568854403057">আপুনি খুলিব বিচৰা ছাইটটোত ক্ষতিকাৰক এপ্‌ আছে</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
 <translation id="2799758406651937857">পুৰুষৰ পোছাক</translation>
-<translation id="2803306138276472711">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ<ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়।</translation>
 <translation id="2807052079800581569">প্ৰতিচ্ছবিৰ Y স্থান</translation>
 <translation id="2808278141522721006">আপুনি <ph name="SETTINGS" />ত Windows Hello অন অথবা অফ কৰিব পাৰে</translation>
 <translation id="2814184336982254349">এই PDFটো এক্সেছ কৰিব নোৱাৰি। প্ৰসংগ মেনুখন খুলিবলৈ ছাৰ্চ কী আৰু m টিপক আৰু "PDFৰ পৰা পাঠ আহৰণ" সুবিধাটো অন কৰক</translation>
@@ -1441,7 +1435,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slidesত ক্ষিপ্ৰভাৱে এটা নতুন Google উপস্থাপন সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3727309136762649052">নামৰ স্থান</translation>
 <translation id="3727850735097852673">macOS কীচেইনৰ জৰিয়তে Google Password Manager ব্যৱহাৰ কৰিবলৈ, Chrome পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
-<translation id="3736520371357197498">যদি আপুনি আপোনাৰ সুৰক্ষাৰ প্ৰতি সৃষ্টি হ‘ব পৰা ভাবুকিৰ কথা বুজি পাইছে তেন্তে বিপজ্জনক প্ৰ‘গ্ৰামসমূহ আঁতৰোৱাৰ আগেয়ে আপুনি <ph name="BEGIN_LINK" />এই অসুৰক্ষিত ছাইটটো<ph name="END_LINK" /> খুলি চাব পাৰে।</translation>
 <translation id="3736739313435669994">আপুনি ব্ৰাউজ কৰি থাকোঁতে ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ কৰাটো আপুনি অৱৰোধ কৰিছে। <ph name="LINK" />ৰ বাবে ছেটিঙলৈ যাওক।</translation>
 <translation id="3738166223076830879">আপোনাৰ প্ৰশাসকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে।</translation>
 <translation id="3739842843727261045">থাম্বছ আপে আপুনি এই ফলাফলসমূহ লাইক কৰা বুলি মতামত দাখিল কৰে</translation>
@@ -1452,7 +1445,6 @@
 <translation id="3744899669254331632">বর্তমান আপুনি <ph name="SITE" />ৰ চাব নোৱাৰে কাৰণ ৱেবছাইটটোৱে এক বিশৃংখল ক্ৰিডেনশ্বিয়েল পঠিয়াইছে যিটোত Chromiumএ প্ৰক্ৰিয়া চলাব নোৱাৰে। নেটৱর্কৰ আসোঁৱাহ আৰু আক্ৰমণবোৰ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে পাছত কাম কৰিব পাৰে।</translation>
 <translation id="3745599309295009257">আপোনাৰ পাঠ আৰু আপুনি যিখন পৃষ্ঠাত লিখিবলৈ লৈছে সেইখনৰ সমল আৰু URL Googleলৈ পঠিওৱা হ’ব, মানুহৰ দ্বাৰা পৰ্যালোচনা কৰা হ’ব আৰু সেয়া এই সুবিধাটো উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব। ব্যক্তিগত তথ্য (যেনে - চিকিৎসা সম্পৰ্কীয় অথবা বিত্তীয় সবিশেষ) দিয়া অথবা এই সঁজুলিটো ব্যক্তিগত অথবা সংবেদনশীল তথ্য থকা ছাইটত ব্যৱহাৰ কৰাৰ পৰা বিৰত থাকক।</translation>
 <translation id="3748009735914587286">মেটেল (হাই-গ্লছ)</translation>
-<translation id="3748148204939282805">আক্ৰমণকাৰীয়ে <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত আপোনাৰ দ্বাৰা কিছুমান বিপজ্জনক কাম কৰাবলৈ চেষ্টা কৰিব পাৰে, যেনে কোনো ছফ্টৱেৰ ইনষ্টল কৰোৱা বা আপোনাৰ ব্যক্তিগত তথ্য (উদাহৰণস্বৰূপে, পাছৱর্ড, ফ’ন নম্বৰ বা ক্ৰেডিট কার্ড) ফাদিল কৰা। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ছেট কৰা হোৱা নাই বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="3754210790023674521">চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="3759461132968374835">আপোনাৰ শেহতীয়াকৈ ৰিপ’ৰ্ট কৰা কোনো ক্ৰেশ্ব নাই।  ক্ৰেশ্ব ৰিপ’ৰ্টিং অক্ষম কৰি ৰখাৰ সময়ত হোৱা ক্ৰেশ্ব ইয়াত দেখা পোৱা নাযাব।</translation>
@@ -1608,7 +1600,6 @@
 <translation id="4092349052316400070">ঠিকনা পূৰাওক</translation>
 <translation id="4096237801206588987">১১ x ১৫ ইঞ্চি</translation>
 <translation id="4098306082496067348">ভাৰ্ছুৱেল কাৰ্ডৰ সবিশেষ চেকআউটত যোগ দিবলৈ সেইটোত টিপক।</translation>
-<translation id="4098354747657067197">আগত বিভ্ৰান্তিকৰ ছাইট আছে</translation>
 <translation id="4099048595830172239">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল এটা দেখা পোৱা অৱস্থাত আপোনাৰ স্ক্ৰীনখন <ph name="APPLICATION_TITLE" />ৰ সৈতে শ্বেয়াৰ কৰা টো চুপাৰিছ নকৰে:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeত ফণ্টৰ আকাৰ আৰু টাইপফেচ কাষ্টমাইজ কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4101413244023615925">পাঠ আৰু গ্ৰাফিক</translation>
@@ -1673,7 +1664,6 @@
 <translation id="4213500579045346575">শৰীৰচৰ্চা</translation>
 <translation id="4214357935346142455">ছাইন-ইন স্ক্রীন প্ৰ’ফাইল</translation>
 <translation id="4220128509585149162">ক্রেশ্ব</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> আক্ৰমণকাৰীয়ে আপোনাক ছল-চাতুৰিৰে কিছুমান প্ৰ'গ্ৰাম ইনষ্টল কৰাবলৈ বাধ্য কৰাব পাৰে, যিবোৰে আপোনাৰ ব্ৰাউজিং অভিজ্ঞতা ক্ষতিগ্ৰস্থ কৰিব পাৰে (উদাহৰণস্বৰূপে, আপোনাৰ গৃহপৃষ্ঠা সলনি কৰি বা আপুনি চোৱা ছাইটত অধিক বিজ্ঞাপন প্ৰদর্শন কৰি)। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;পদক্ষেপ ১: পর্টেলটোত ছাইন ইন কৰক&lt;/h4&gt;
     &lt;p&gt;কেফে বা বিমান বন্দৰৰ দৰে ঠাইসমূহৰ ৱাই-ফাই নেটৱর্ক ব্যৱহাৰ কৰিবলৈ আপুনি ছাইন ইন কৰিব লাগিব। ছাইন ইন কৰা পৃষ্ঠাটো চাবলৈ &lt;code&gt;http://&lt;/code&gt; ব্যৱহাৰ কৰা পৃষ্ঠা এটা চাওক।&lt;/p&gt;
     &lt;ol&gt;
@@ -2395,7 +2385,6 @@
 <translation id="5629630648637658800">নীতিৰ ছেটিংসমূহ ল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="5631439013527180824">অমান্য ডিভাইচ পৰিচালনাৰ ট’কেন</translation>
 <translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
-<translation id="5633066919399395251">বর্তমান <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত থকা আক্ৰমণকাৰীয়ে আপোনাৰ কম্পিউটাৰত কিছুমান ক্ষতিকাৰক প্র’গ্ৰেম ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে ,যিবোৰে আপোনাৰ তথ্য (উদাহৰণ স্বৰূপে ফট’, পাছৱৰ্ড, বাৰ্তা আৰু ক্ৰেডিট কাৰ্ডসমূহ) চুৰি কৰিব বা মচিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">বিভ্ৰান্তিকৰ সমল অৱৰোধ কৰা হৈছে।</translation>
 <translation id="563371367637259496">ম’বাইল</translation>
 <translation id="5634725266554983459">মেনুৱেলী সত্যাপন কৰাৰ সুবিধাটো অন কৰিবনে?</translation>
@@ -2582,7 +2571,6 @@
 <translation id="6014851866995737824">"সক্ষম" অথবা "অক্ষম" সূচীখন নথকাৰ বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="6015796118275082299">বছৰ</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
-<translation id="6017850046339264347">আক্ৰমণকাৰীয়ে <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত বিভ্রান্তিকৰ এপ্‌ ইনষ্টল কৰিব পাৰে যিয়ে অন্য ছদ্মৱেশ ধাৰণ কৰি আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ছিংক কৰা)</translation>
 <translation id="6028591542479806248">ম’বাইল আৰু ইমেইল জাননীসমূহ পৰিচালনা কৰক</translation>
 <translation id="6028833024483927901">বিশ্বৰ ৰন্ধনবিধি</translation>
@@ -2599,7 +2587,6 @@
 <translation id="6042308850641462728">অধিক</translation>
 <translation id="6044573915096792553">আকাৰ ১২</translation>
 <translation id="6045164183059402045">ইম্পজিশ্বন টেমপ্লে’ট</translation>
-<translation id="6047233362582046994">যদি আপুনি আপোনাৰ সুৰক্ষাৰ প্ৰতি সৃষ্টি হ‘ব পৰা ক্ষতিৰ কথা বুজি পাইছে তেন্তে ক্ষতিকাৰক এপ্‌সমূহ আঁতৰোৱাৰ আগেয়ে আপুনি <ph name="BEGIN_LINK" />এই ছাইটটো চাওক<ph name="END_LINK" /> খুলি চাব পাৰে।</translation>
 <translation id="6047927260846328439">এই সমলে আপোনাক ছল-চাতুৰিৰে কিছুমান ছফ্টৱেৰ ইনষ্টল কৰাবলৈ বা আপোনাৰ ব্যক্তিগত তথ্য ফাদিল কৰিবলৈ বাধ্য কৰাব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">এনভেল’প B4</translation>
 <translation id="6049488691372270142">পৃষ্ঠা ডেলিভাৰী</translation>
@@ -2689,7 +2676,6 @@
 <translation id="622039917539443112">সমান্তৰালকৈ ফ'ল্ড কৰক</translation>
 <translation id="6221286101741304627">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ'বলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="6221311046884916259">আপুনি এই কাৰ্ড নিজৰ Google একাউণ্টত ছেভ কৰিব খোজেনে?</translation>
-<translation id="6221345481584921695">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়। ক্ষতিকাৰক সমল এটা জনাজাত মালৱেৰ বিতৰণকাৰী <ph name="SUBRESOURCE_HOST" />ৰ পৰা আহে।</translation>
 <translation id="6221892641068781024">সৰলীকৃত ভিউ</translation>
 <translation id="6222527803348563979">লেখন সামগ্ৰী</translation>
 <translation id="6224281071334553713">ৰত্ন আৰু অলংকাৰ</translation>
@@ -2902,7 +2888,6 @@
 <translation id="6629652037942826935">বিলাসী ভ্ৰমণ</translation>
 <translation id="6630043285902923878">ইউএছবি ডিভাইচ বিচাৰি থকা হৈছে...</translation>
 <translation id="6630388727238334626">Chromeৰ ছেটিং পৰিচালনা কৰাৰ বুটাম, আপোনাৰ Chromeৰ ছেটিঙলৈ যাবলৈ সক্ৰিয় কৰক</translation>
-<translation id="6630809736994426279">বর্তমান <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত থকা আক্ৰমণকাৰীয়ে আপোনাৰ Macত কিছুমান ক্ষতিকাৰক প্র’গ্ৰেম ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে ,যিবোৰে আপোনাৰ তথ্য (উদাহৰণ স্বৰূপে ফট’, পাছৱৰ্ড, বাৰ্তা আৰু ক্ৰেডিট কাৰ্ডসমূহ) চুৰি কৰিব বা মচিব পাৰে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">অষ্ট্ৰেলিয়ান ফুটবল</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">কম্পিউটাৰ সম্পৰ্কীয় শিক্ষা</translation>
@@ -3232,7 +3217,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ব্যৱসায়ৰ কাম</translation>
-<translation id="724691107663265825">এই ছাইটোত মালৱেৰ আছে</translation>
 <translation id="7251437084390964440">নেটৱৰ্ক কনফিগাৰেশ্বনটোৱে ONC নীতি মানি নচলে। কনফিগাৰেশ্বনটোৰ কিছু অংশ হয়তো আমদানি কৰা হ’ব।
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
@@ -3819,7 +3803,6 @@
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">যদি আপুনি আপোনাৰ সুৰক্ষাৰ প্ৰতি সৃষ্টি হ‘ব পৰা ভাবুকিৰ কথা বুজি পাইছে তেন্তে বিপজ্জনক প্ৰ‘গ্ৰামসমূহ আঁতৰোৱাৰ আগেয়ে আপুনি <ph name="BEGIN_LINK" />এই ছাইটটো<ph name="END_LINK" /> খুলি চাব পাৰে।</translation>
 <translation id="8344776605855290140">ভাৰ্চুৱেল কাৰ্ডৰ পঞ্জীয়ন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="8350416046273606058">শ্বৰ্টকাটত স্পেচ থাকিব নোৱাৰে: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3928,7 +3911,6 @@
 <translation id="8541579497401304453">এটা ফ’ন কলৰ জৰিয়তে এটা ব্যৱসায়ৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="8542014550340843547">তলত তিনিবাৰ ষ্টে'পল কৰক</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">আপুনি <ph name="BEGIN_ERROR_LINK" />চিনাক্ত কৰাৰ লগত জড়িত কোনো সমস্যাৰ অভিযোগ দিব পাৰে<ph name="END_ERROR_LINK" /> বা যদি আপুনি নিজৰ নিৰাপত্তাজনিত শংকাৰ বিষয়ে জানে, তেন্তে <ph name="BEGIN_LINK" />এই অসুৰক্ষিত ছাইটটো চাব পাৰে<ph name="END_LINK" />।</translation>
 <translation id="8544217240017914508">Google Chromeএ পৰিশোধ পদ্ধতি পূৰ কৰাৰ বাবে ছেটিং সংশোধন কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="8544303911974837265">পলিয়েষ্টাৰ</translation>
 <translation id="854548366864113872">উচ্চ মূল্যৰ বিকল্প</translation>
@@ -4031,7 +4013,6 @@
 <translation id="8757526089434340176">Google Payৰ অফাৰ উপলব্ধ</translation>
 <translation id="8759274551635299824">কার্ডখনৰ ম্যাদ উকলিল</translation>
 <translation id="87601671197631245">এই ছাইটটোৱে সুৰক্ষা সম্পৰ্কীয় এটা পুৰণি কনফিগাৰেশ্বন ব্যৱহাৰ কৰে, যিটোৱে আপোনাৰ তথ্য (উদাহৰণস্বৰূপে, পাছৱৰ্ড, বার্তা অথবা ক্ৰেডিট কাৰ্ডসমূহ) এই ছাইটটোলৈ পঠিওৱা হ’লে সেয়া ফাদিল কৰিব পাৰে।</translation>
-<translation id="8761567432415473239">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />কিছুমান ক্ষতিকাৰক প্ৰ’গাম বিচাৰি পাইছিল<ph name="END_LINK" />।</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
 <translation id="8763986294015493060">বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="8766943070169463815">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ বিষয়ক শ্বীটখন খোলা হৈছে</translation>
@@ -4128,7 +4109,6 @@
 <translation id="8971063699422889582">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰৰ ম্যাদ উকলিছে।</translation>
 <translation id="8975012916872825179">ফ'ন নম্বৰ, ইমেইল ঠিকনা আৰু শ্বিপিঙৰ ঠিকনাৰ দৰে তথ্য অন্তৰ্ভুক্ত কৰে</translation>
 <translation id="8975263830901772334">আপুনি প্ৰিণ্ট কৰা ফাইলসমূহৰ নাম</translation>
-<translation id="8978053250194585037">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />ফিশ্বিং চিনাক্ত কৰিছে<ph name="END_LINK" />। ফিশ্বিং ছাইটে অন্য কোনো ছাইটৰ ৰূপ লৈ আপোনাক সমস্যাত পেলাব পাৰে।</translation>
 <translation id="8982884016487650216">PDF ল'ড কৰাটো সম্পূৰ্ণ হৈছে</translation>
 <translation id="8983369100812962543">আপুনি এতিয়া এপ্‌টোৰ আকাৰ সলনি কৰিব পাৰে</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চাবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -4137,7 +4117,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">ছিষ্টেমৰ সংস্কৰণটো জানিব বিচাৰিছে নেকি? ইয়ালৈ যাওক</translation>
 <translation id="899688752321268742">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে <ph name="URL" />এ জানিব বিচাৰে</translation>
-<translation id="8996941253935762404">আপুনি খুলিব বিচৰা ছাইটটোত ক্ষতিকাৰক প্ৰ’গ্ৰাম আছে</translation>
 <translation id="8997023839087525404">ছাৰ্ভাৰটোৱে প্ৰমাণপত্ৰৰ স্বচ্ছতাৰ নীতি ব্যৱহাৰ কৰি ৰাজহুৱাকৈ প্ৰকাশ নকৰা এখন প্ৰমাণপত্ৰ উপস্থানপন কৰিছে। প্ৰমাণপত্ৰসমূহ বিশ্বাসযোগ্য আৰু সেইবোৰে আক্ৰমণকাৰীৰ পৰা সুৰক্ষা প্ৰদান কৰিব পাৰে বুলি নিশ্চিতি প্ৰদান কৰিবলৈ কিছুমান প্ৰমাণপত্ৰৰ বাবে এইটো অত্যাৱশ্যকীয়।</translation>
 <translation id="9000145382638074673">আপোনাৰ ডিভাইচ</translation>
 <translation id="9001074447101275817">প্ৰ’ক্সী <ph name="DOMAIN" />ক এটা ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ডৰ প্ৰয়োজন।</translation>

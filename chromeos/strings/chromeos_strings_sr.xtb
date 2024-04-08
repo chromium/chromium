@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Преглед слике</translation>
 <translation id="1611649489706141841">кретање напред</translation>
 <translation id="1615335640928990664">Потрошња података од <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Користите тему</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
 <translation id="1622402072367425417">светлећим мехурићима</translation>
 <translation id="1626590945318984973">Пречица није доступна. Притисните нову пречицу без коришћења функцијских тастера и тастера <ph name="META_KEY" />.</translation>
@@ -1275,6 +1276,7 @@
 <translation id="8372667721254470022">маслинасте</translation>
 <translation id="8373046809163484087">Користите скупове боја који се подударају са позадином</translation>
 <translation id="8380114448424469341">Фиксирајте прозор на половини екрана (<ph name="DIRECTION" />)</translation>
+<translation id="8391349326751432483">Треба да имате слободно барем 500 MB да бисте покренули тест меморије. Да бисте ослободили меморију, затворите картице и апликације.</translation>
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8403988360557588704">Слика на којој је <ph name="ART_FEATURE" /> у стилу <ph name="ART_MOVEMENT" /></translation>

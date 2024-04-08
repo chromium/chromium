@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">取貨地址</translation>
 <translation id="1343356790768851700">此網站會判斷您喜歡的內容，以便向其他網站建議廣告</translation>
 <translation id="1346748346194534595">向右</translation>
-<translation id="1348198688976932919">您要前往的網站包含危險的應用程式</translation>
 <translation id="1348779747280417563">確認名稱</translation>
 <translation id="1352798470428594123">Chrome 會限制大部份網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往設定即可<ph name="LINK" />。</translation>
 <translation id="1355158069018170842">在分頁上顯示減價通知</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">攀岩和登山運動</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2215963164070968490">狗</translation>
-<translation id="2218879909401188352">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會安裝危險的應用程式來損害您的裝置、暗中加入隱藏的流動服務費用，或竊取您的個人資料。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2221227930294879156">美食節</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2353297238722298836">已允許使用相機和麥克風</translation>
 <translation id="2354001756790975382">其他書籤</translation>
-<translation id="2354430244986887761">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />發現有害的應用程式<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻擊者可能可以看到您正在此網站上看到的圖片，然後透過修改圖片來欺騙您。</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2356926036049612643">V8 優化工具</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">插入</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
-<translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2639739919103226564">狀態：</translation>
 <translation id="2647086987482648627">布料 (半光面)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">此裝置的管理員已設定安全性憑證，這些憑證可允許管理員查看您瀏覽的網站內容。</translation>
 <translation id="2794233252405721443">網站已被封鎖</translation>
 <translation id="2794629552137076216">玻璃 (磨光)</translation>
-<translation id="2799020568854403057">您要前往的網站包含有害的應用程式</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2799758406651937857">男裝</translation>
-<translation id="2803306138276472711">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。</translation>
 <translation id="2807052079800581569">圖片 Y 位置</translation>
 <translation id="2808278141522721006">您可在「<ph name="SETTINGS" />」中開啟或關閉 Windows Hello</translation>
 <translation id="2814184336982254349">無法存取此 PDF。�請按下搜尋鍵 + M 鍵開啟內容選單，然後開啟「擷取 PDF 中的文字」</translation>
@@ -1443,7 +1437,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺「簡報」度快速建立新嘅 Google 簡報</translation>
 <translation id="3727309136762649052">命名空間</translation>
 <translation id="3727850735097852673">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chrome 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
-<translation id="3736520371357197498">如果您瞭解安全性風險，也可以選擇在危險程式尚未被移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="3736739313435669994">你已禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往設定即可<ph name="LINK" />。</translation>
 <translation id="3738166223076830879">您的瀏覽器由管理員管理。</translation>
 <translation id="3739842843727261045">㩒一下鍾意就可以俾正評</translation>
@@ -1454,7 +1447,6 @@
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
 <translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google、由真人審核，並用來改善此功能。因此，請勿輸入醫療或財務資料等個人資料，亦不要在含有私人或敏感資料的網站上使用此工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機報告功能停用時發生的當機不會在這裡顯示。</translation>
@@ -1610,7 +1602,6 @@
 <translation id="4092349052316400070">填入地址</translation>
 <translation id="4096237801206588987">11 x 15 吋</translation>
 <translation id="4098306082496067348">結帳時輕按虛擬卡詳情即可使用。</translation>
-<translation id="4098354747657067197">前往的是欺詐網站</translation>
 <translation id="4099048595830172239">當螢幕上出現機密內容時，管理員政策不建議您與 <ph name="APPLICATION_TITLE" /> 分享螢幕畫面：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂 Chrome 嘅字型大小同字體</translation>
 <translation id="4101413244023615925">文字和圖片</translation>
@@ -1675,7 +1666,6 @@
 <translation id="4213500579045346575">健身</translation>
 <translation id="4214357935346142455">登入畫面個人檔案</translation>
 <translation id="4220128509585149162">當機</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />上的攻擊者可能會企圖誘使您安裝妨礙瀏覽體驗的程式 (例如變更您的首頁，或在您瀏覽的網站上顯示多餘的廣告)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;步驟 1：從入口主頁登入&lt;/h4&gt;
     &lt;p&gt;咖啡室或機場等地點的 Wi-Fi 網絡需要先登入才能使用。如要查看登入頁面，請瀏覽使用 &lt;code&gt;http://&lt;/code&gt; 的網頁。&lt;/p&gt;
     &lt;ol&gt;
@@ -2398,7 +2388,6 @@
 <translation id="5629630648637658800">無法載入政策設定</translation>
 <translation id="5631439013527180824">裝置管理憑證無效</translation>
 <translation id="5632485077360054581">顯示方法</translation>
-<translation id="5633066919399395251">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會試圖在您的電腦上安裝危險的應用程式，以竊取或刪除您的資料 (例如相片、密碼、訊息和信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">已封鎖欺詐內容。</translation>
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5634725266554983459">要開啟手動驗證嗎？</translation>
@@ -2585,7 +2574,6 @@
 <translation id="6014851866995737824">此政策缺少「啟用」或「停用」清單，因此系統已忽略。</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6017514345406065928">綠色</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會安裝欺詐應用程式來冒充其他內容，或收集可能用於追蹤您的資料。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
 <translation id="6028591542479806248">管理流動裝置/應用程式和電郵通知</translation>
 <translation id="6028833024483927901">環球美食</translation>
@@ -2602,7 +2590,6 @@
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="6044573915096792553">粗幼：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
-<translation id="6047233362582046994">如果您瞭解安全性風險，也可以選擇在有害應用程式尚未移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個網站<ph name="END_LINK" />。</translation>
 <translation id="6047927260846328439">此內容可能會試圖誘使您安裝軟件或顯示個人資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 信封</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
@@ -2693,7 +2680,6 @@
 <translation id="622039917539443112">雙對摺</translation>
 <translation id="6221286101741304627">如要離開全螢幕，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">要將此付款卡儲存至 Google 帳戶嗎？</translation>
-<translation id="6221345481584921695">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。這些惡意內容來自已知的惡意軟件散佈網站 <ph name="SUBRESOURCE_HOST" />。</translation>
 <translation id="6221892641068781024">簡化檢視</translation>
 <translation id="6222527803348563979">信紙</translation>
 <translation id="6224281071334553713">珠寶和首飾</translation>
@@ -2906,7 +2892,6 @@
 <translation id="6629652037942826935">豪華旅遊</translation>
 <translation id="6630043285902923878">正在尋找 USB 裝置…</translation>
 <translation id="6630388727238334626">管理 Chrome 設定按鈕，啟動之後就可以去 Chrome 設定</translation>
-<translation id="6630809736994426279">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會試圖在您的 Mac 上安裝危險的應用程式，以竊取或刪除您的資料 (例如相片、密碼、訊息和信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">澳式足球</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">電腦教育</translation>
@@ -3236,7 +3221,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />，<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">商業營運</translation>
-<translation id="724691107663265825">您將前往的網站含有惡意軟件</translation>
 <translation id="7251437084390964440">網絡設定未遵循 ONC 標準，系統可能無法匯入部分設定。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
@@ -3823,7 +3807,6 @@
 <translation id="833262891116910667">突顯嘅內容</translation>
 <translation id="8339163506404995330">系統將不會自動翻譯來源語言為<ph name="LANGUAGE" />的網頁</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">如果您瞭解有關安全性風險，也可以選擇在有害程式尚未移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個網站<ph name="END_LINK" />。</translation>
 <translation id="8344776605855290140">虛擬卡註冊宜家顯示喺成個畫面</translation>
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8350416046273606058">快速指令不可包含空格：「<ph name="SHORTCUT_NAME" />」</translation>
@@ -3932,7 +3915,6 @@
 <translation id="8541579497401304453">撥打電話聯絡商家。</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方法的設定。</translation>
 <translation id="8544303911974837265">聚酯纖維</translation>
 <translation id="854548366864113872">高價選項</translation>
@@ -4035,7 +4017,6 @@
 <translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8759274551635299824">此信用卡已過期</translation>
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>
-<translation id="8761567432415473239">Google 安全瀏覽最近在「<ph name="SITE" />」<ph name="BEGIN_LINK" />發現有害程式<ph name="END_LINK" />。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8763986294015493060">關閉目前開啟的所有無痕式視窗</translation>
 <translation id="8766943070169463815">開咗安全付款憑證驗證工作表</translation>
@@ -4132,7 +4113,6 @@
 <translation id="8971063699422889582">伺服器憑證已過期。</translation>
 <translation id="8975012916872825179">包括手機號碼、電郵地址及付運地址等資料</translation>
 <translation id="8975263830901772334">您列印的檔案名稱</translation>
-<translation id="8978053250194585037">「Google 安全瀏覽」功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到網絡釣魚行為<ph name="END_LINK" />。網絡釣魚網站會偽裝成其他網站，藉此騙取您的資料。</translation>
 <translation id="8982884016487650216">已完成載入 PDF</translation>
 <translation id="8983369100812962543">您現在可以調整應用程式大小</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以睇您嘅 Chrome 瀏覽記錄</translation>
@@ -4141,7 +4121,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">要查看系統版本嗎？請前往</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想知道您是否正在使用此裝置</translation>
-<translation id="8996941253935762404">您將前往內含有害程式的網站</translation>
 <translation id="8997023839087525404">伺服器的憑證並未根據憑證透明度政策向公眾披露。部分憑證必須符合此規定，以確保憑證可信，並讓使用者免受攻擊。</translation>
 <translation id="9000145382638074673">你的裝置</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>

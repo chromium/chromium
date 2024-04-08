@@ -4233,7 +4233,7 @@
 <translation id="4190492351494485814">如要進行初始設定，請先連上網際網路，才能將檔案同步至 Chromebook</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4191892134568599822">要用<ph name="FEATURE_NAME" />功能接收嗎？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{已從 1 個未使用的網站移除權限}other{已從 {NUM_SITES} 個未使用的網站移除權限}}</translation>
+<translation id="4192024474038595073">{NUM_SITES,plural, =1{已移除 1 個未使用網站的權限}other{已移除 {NUM_SITES} 個未使用網站的權限}}</translation>
 <translation id="4193251682249731404">信任的 CA</translation>
 <translation id="4193575319002689239">顯示資訊卡</translation>
 <translation id="4193836101014293726">無法刪除這個設定檔</translation>
@@ -4390,7 +4390,6 @@
 <translation id="4309165024397827958">允許具有位置存取權的 Android 應用程式和服務使用您裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
 <translation id="4309183709806093061">一併分享系統音訊。這部裝置將設為靜音，以避免音訊回授。</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K 作用中)</translation>
-<translation id="4310132194679586591">在你的裝置上選取應用程式以開啟這個連結</translation>
 <translation id="4310139701823742692">檔案格式錯誤。請檢查 PPD 檔案，然後再試一次。</translation>
 <translation id="4310496734563057511">如果你與其他人共用這部裝置，可以開啟 Windows Hello，讓系統在有人使用已儲存的密碼時驗證身分</translation>
 <translation id="431076611119798497">詳細資訊(&amp;D)</translation>
@@ -5961,7 +5960,6 @@
 <translation id="5554403733534868102">以後不需要等待更新</translation>
 <translation id="5554489410841842733">當擴充功能適用於目前網頁時，即會顯示此圖示。</translation>
 <translation id="5554720593229208774">電子郵件憑證授權單位</translation>
-<translation id="5554866693883022680">在「<ph name="DEVICE_TYPE" />」上選取應用程式以開啟這個連結</translation>
 <translation id="5555363196923735206">切換鏡頭</translation>
 <translation id="5555525474779371165">選擇安全瀏覽防護設定</translation>
 <translation id="5555639311269196631">關閉無線基地台</translation>

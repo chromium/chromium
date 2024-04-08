@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">受け取り場所の住所</translation>
 <translation id="1343356790768851700">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します</translation>
 <translation id="1346748346194534595">右</translation>
-<translation id="1348198688976932919">アクセス先のサイトには危険なアプリがあります</translation>
 <translation id="1348779747280417563">名前を確認</translation>
 <translation id="1352798470428594123">Chrome はほとんどのサイトに対してサードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="1355158069018170842">タブに値下げ情報を表示する</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">登山</translation>
 <translation id="2215727959747642672">ファイルの編集</translation>
 <translation id="2215963164070968490">犬</translation>
-<translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって危険なアプリ（デバイスに問題を生じさせたり、モバイル利用料に不明瞭な請求を加えたり、個人情報を抜き取ったりするアプリ）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">チュートリアルをもう一度開始</translation>
 <translation id="2219735899272417925">デバイスのリセットが必要</translation>
 <translation id="2221227930294879156">飲食料品のイベント</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542">すべての <ph name="PROTOCOL" /> リンクを <ph name="REPLACED_HANDLER_TITLE" /> ではなく <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
 <translation id="2354001756790975382">その他のブックマーク</translation>
-<translation id="2354430244986887761"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なアプリが検出<ph name="END_LINK" />されました。</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
 <translation id="2356070529366658676">確認する</translation>
 <translation id="2356926036049612643">V8 オプティマイザー</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">挿入</translation>
 <translation id="2625385379895617796">時計が進んでいます</translation>
 <translation id="262745152991669301">USB デバイスへの接続を要求できる</translation>
-<translation id="2629325967560697240">Chrome の最高レベルのセキュリティで保護するには、<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能を有効にしてください<ph name="END_ENHANCED_PROTECTION_LINK" />。</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2639739919103226564">ステータス:</translation>
 <translation id="2647086987482648627">布（半光沢）</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">このデバイスの管理者が設定したセキュリティ証明書により、アクセス先のウェブサイトのコンテンツを管理者が把握できるようになっている可能性があります。</translation>
 <translation id="2794233252405721443">サイトがブロックされています</translation>
 <translation id="2794629552137076216">ガラス（表面加工）</translation>
-<translation id="2799020568854403057">アクセス先のサイトには有害なアプリがあります</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2799758406651937857">紳士服</translation>
-<translation id="2803306138276472711"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />不正なソフトウェアが検出されました<ph name="END_LINK" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。</translation>
 <translation id="2807052079800581569">画像の Y 座標</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> で Windows Hello のオンとオフを切り替えることができます</translation>
 <translation id="2814184336982254349">この PDF にアクセスできません。検索+M キーを押してコンテキスト メニューを開き、[PDF からテキストを抽出] をオンにしてください</translation>
@@ -1444,7 +1438,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="3727309136762649052">名前空間</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
-<translation id="3736520371357197498">危険なプログラムが削除されるより前に<ph name="BEGIN_LINK" />この安全でないサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
 <translation id="3736739313435669994">ブラウジング中にトラッキングされないように、サイトによるサードパーティ Cookie の使用をブロックしました。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="3738166223076830879">お使いのブラウザは管理者によって管理されています。</translation>
 <translation id="3739842843727261045">高く評価すると、この結果が気に入ったというフィードバックが送信されます</translation>
@@ -1455,7 +1448,6 @@
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="3745599309295009257">入力したテキストとページのコンテンツおよび URL が Google に送信され、人間による確認が行われ、この機能の改善に使用されます。個人情報（医療や財務情報など）を入力したり、個人情報や機密情報を含むサイトでこのツールを使用したりしないでください。</translation>
 <translation id="3748009735914587286">金属（高光沢）</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導される可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
@@ -1611,7 +1603,6 @@
 <translation id="4092349052316400070">住所を入力してください</translation>
 <translation id="4096237801206588987">11x15 インチ</translation>
 <translation id="4098306082496067348">購入手続きに追加するには、仮想カード情報をタップします。</translation>
-<translation id="4098354747657067197">偽のサイトにアクセスしようとしています</translation>
 <translation id="4099048595830172239">機密コンテンツが表示されているときに <ph name="APPLICATION_TITLE" /> で画面を共有することは、管理者が設定したポリシーで推奨されていません。</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="4101413244023615925">テキストとグラフィック</translation>
@@ -1676,7 +1667,6 @@
 <translation id="4213500579045346575">ボディビル</translation>
 <translation id="4214357935346142455">ログイン画面のプロファイル</translation>
 <translation id="4220128509585149162">クラッシュ</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、今後の閲覧に悪影響を及ぼすソフトウェア（ホームページを変更したり、アクセス先のサイトで追加の広告を表示したりするソフトウェア）をインストールするよう誘導される可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;ステップ 1: ポータルにログインする&lt;/h4&gt;
     &lt;p&gt;カフェや空港といった場所の Wi-Fi ネットワークを使用するには、ログインが必要です。ログインページを表示するには、&lt;code&gt;http://&lt;/code&gt; を使用しているページにアクセスします。&lt;/p&gt;
     &lt;ol&gt;
@@ -2399,7 +2389,6 @@
 <translation id="5629630648637658800">ポリシー設定を読み込めませんでした</translation>
 <translation id="5631439013527180824">無効なデバイス管理トークンです</translation>
 <translation id="5632485077360054581">手順を見る</translation>
-<translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって、お使いのパソコン上に危険なプログラム（写真、パスワード、メッセージ、クレジット カードなどの情報を盗んだり削除したりするプログラム）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">不正の可能性があるコンテンツがブロックされました。</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5634725266554983459">手動での確認を有効にしますか？</translation>
@@ -2586,7 +2575,6 @@
 <translation id="6014851866995737824">「有効」リストまたは「無効」リストがないため、無視されました。</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6017514345406065928">緑</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（同期済み）</translation>
 <translation id="6028591542479806248">モバイル通知とメール通知を管理します</translation>
 <translation id="6028833024483927901">各国料理</translation>
@@ -2603,7 +2591,6 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6044573915096792553">サイズ 12</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
-<translation id="6047233362582046994">有害なアプリがまだ存在する可能性があるにもかかわらず<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上の危険性をあらかじめご認識ください。</translation>
 <translation id="6047927260846328439">アクセス先のコンテンツは、ユーザーをだましてソフトウェアをインストールさせようとしたり、個人情報を危険にさらしたりする可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 封筒</translation>
 <translation id="6049488691372270142">排紙</translation>
@@ -2694,7 +2681,6 @@
 <translation id="622039917539443112">巻き折り</translation>
 <translation id="6221286101741304627">全画面表示を終了するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6221311046884916259">このカードを Google アカウントに保存しますか？</translation>
-<translation id="6221345481584921695"><ph name="BEGIN_LINK" /> では最近、Google セーフ ブラウジングにより、<ph name="END_LINK" />不正なソフトウェアが検出されました<ph name="SITE" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。今回の悪意のあるコンテンツは、不正なソフトウェアの既知の配布元である「<ph name="SUBRESOURCE_HOST" />」からもたらされました。</translation>
 <translation id="6221892641068781024">簡易表示</translation>
 <translation id="6222527803348563979">ステーショナリー</translation>
 <translation id="6224281071334553713">宝石</translation>
@@ -2907,7 +2893,6 @@
 <translation id="6629652037942826935">ハイクラス旅行</translation>
 <translation id="6630043285902923878">USB デバイスを検出しています...</translation>
 <translation id="6630388727238334626">[Chrome の設定を管理] ボタンです。実行すると Chrome の設定に移動できます</translation>
-<translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって、お使いの Mac 上に危険なプログラム（写真、パスワード、メッセージ、クレジット カードなどの情報を盗んだり削除したりするプログラム）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">オーストラリアン フットボール</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">コンピュータ教育</translation>
@@ -3237,7 +3222,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />、<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">事業運営</translation>
-<translation id="724691107663265825">アクセス先のサイトで不正なソフトウェアを検出しました</translation>
 <translation id="7251437084390964440">ネットワーク設定が ONC 標準に準拠していません。設定の一部がインポートされない可能性があります。
 詳細:
 <ph name="DEBUG_INFO" /></translation>
@@ -3825,7 +3809,6 @@
 <translation id="833262891116910667">ハイライト表示</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />のページは翻訳されません</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">有害なプログラムが削除されるより前に<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
 <translation id="8344776605855290140">仮想カードの登録が画面全体に表示されています</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8350416046273606058">ショートカットにスペースを含めることはできません: 「<ph name="SHORTCUT_NAME" />」</translation>
@@ -3934,7 +3917,6 @@
 <translation id="8541579497401304453">ビジネスに電話で問い合わせます。</translation>
 <translation id="8542014550340843547">3 か所のステープル（下）</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />検出の問題をご報告<ph name="END_ERROR_LINK" />ください。<ph name="BEGIN_LINK" />安全でないこのサイトにアクセス<ph name="END_LINK" />する場合は、セキュリティ上のリスクがあることをご承知おきください。</translation>
 <translation id="8544217240017914508">Google Chrome がお支払い方法の入力の設定を変更しようとしています。</translation>
 <translation id="8544303911974837265">ポリエステル</translation>
 <translation id="854548366864113872">高価格のオプション</translation>
@@ -4038,7 +4020,6 @@
 <translation id="8757526089434340176">Google Pay のクーポンをご利用いただけます</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
-<translation id="8761567432415473239"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なプログラムが検出<ph name="END_LINK" />されました。</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8763986294015493060">現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="8766943070169463815">保護されたお支払い認証情報の認証シートが開いています</translation>
@@ -4135,7 +4116,6 @@
 <translation id="8971063699422889582">サーバーの証明書の有効期限が切れています。</translation>
 <translation id="8975012916872825179">電話番号、メールアドレス、配送先住所などの情報が含まれます</translation>
 <translation id="8975263830901772334">印刷するファイルの名前</translation>
-<translation id="8978053250194585037"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />フィッシング行為が検出されました<ph name="END_LINK" />。フィッシング サイトは、他のウェブサイトになりすましてユーザーを欺こうとするサイトです。</translation>
 <translation id="8982884016487650216">PDF の読み込みが完了しました</translation>
 <translation id="8983369100812962543">アプリのサイズ変更を許可できるようになりました</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の閲覧履歴を表示します</translation>
@@ -4144,7 +4124,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">システムのバージョン情報をお探しですか？次にアクセスしてください</translation>
 <translation id="899688752321268742"><ph name="URL" /> がこのデバイスのアクティブ状態の検出を求めています</translation>
-<translation id="8996941253935762404">この先のサイトには有害なプログラムがあります</translation>
 <translation id="8997023839087525404">サーバーから提示された証明書は、証明書の透明性ポリシーを介して公開されていません。一部の証明書は、信頼性の確保と攻撃者からの保護のため、証明書の透明性ポリシーを介して公開されることが要件となっています。</translation>
 <translation id="9000145382638074673">お使いのデバイス</translation>
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>

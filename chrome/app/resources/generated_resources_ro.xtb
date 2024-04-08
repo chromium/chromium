@@ -4392,7 +4392,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4309165024397827958">Permite ca serviciile și aplicațiile pentru Android cu permisiune pentru locație să folosească locația dispozitivului. Google poate să culeagă periodic date despre locație și să le folosească în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="4309183709806093061">Permite accesul și la conținutul audio de pe sistem. Sunetul dispozitivului va fi dezactivat pentru a evita feedbackul audio.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
-<translation id="4310132194679586591">Selectează o aplicație pe dispozitiv ca să deschizi acest link</translation>
 <translation id="4310139701823742692">Fișierul are un format incorect. Verifică fișierul PPD și încearcă din nou.</translation>
 <translation id="4310496734563057511">Dacă folosești dispozitivul în comun cu alte persoane, poți activa Windows Hello pentru a-ți confirma identitatea atunci când utilizezi o parolă salvată</translation>
 <translation id="431076611119798497">&amp;Detalii</translation>
@@ -5963,7 +5962,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5554403733534868102">În viitor nu vei mai aștepta actualizări</translation>
 <translation id="5554489410841842733">Această pictogramă va deveni vizibilă când extensia va putea acționa pe pagina curentă.</translation>
 <translation id="5554720593229208774">Autoritate de certificare e-mail</translation>
-<translation id="5554866693883022680">Selectează o aplicație pe <ph name="DEVICE_TYPE" /> ca să deschizi acest link</translation>
 <translation id="5555363196923735206">Comută camera foto</translation>
 <translation id="5555525474779371165">Alege protecția prin Navigarea sigură</translation>
 <translation id="5555639311269196631">Dezactivează hotspotul</translation>

@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">घेण्याचा पत्ता</translation>
 <translation id="1343356790768851700">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते</translation>
 <translation id="1346748346194534595">उजवे</translation>
-<translation id="1348198688976932919">पुढील साइटमध्ये धोकादायक ॲप आहे</translation>
 <translation id="1348779747280417563">नावाची खात्री करा</translation>
 <translation id="1352798470428594123">Chrome हे तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून अनेक साइटना मर्यादित करते. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="1355158069018170842">टॅबवर किमतीमध्ये घट झाल्याच्या सूचना</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">आरोहण आणि पर्वतारोहण</translation>
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
 <translation id="2215963164070968490">कुत्रे</translation>
-<translation id="2218879909401188352">सध्या <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />वर असलेले आक्रमणकर्ता तुमच्या डिव्हाइसला हानी पोहोचवणारे धोकादायक ॲप इंस्टॉल करू शकतात, तुमच्या मोबाइल बिलामध्ये लपलेले शुल्क जोडू शकतात किंवा तुमची वैयक्तिक माहिती चोरू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="2219735899272417925">डिव्हाइस रीसेट करण्याची आवश्यकता आहे</translation>
 <translation id="2221227930294879156">खाद्यपदार्थ आणि पेय इव्हेंट</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
 <translation id="2354001756790975382">इतर बुकमार्क</translation>
-<translation id="2354430244986887761">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" />मध्ये <ph name="BEGIN_LINK" />हानिकारक ॲप्स सापडले<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">तुम्ही या साइटवर पाहत असलेल्या इमेज पाहण्यास आक्रमणकर्ते सक्षम असू शकतात आणि त्यात सुधारणा करून तुमची फसवणूक करू शकतात.</translation>
 <translation id="2356070529366658676">विचारा</translation>
 <translation id="2356926036049612643">V8 ऑप्टिमायझर</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">समाविष्ट करा</translation>
 <translation id="2625385379895617796">तुमचे घड्याळ पुढे आहे</translation>
 <translation id="262745152991669301">USB डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
-<translation id="2629325967560697240">Chrome ची सर्वोत्तम सुरक्षितता मिळवण्यासाठी, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />सुधारित केलेली सुरक्षितता सुरू करा<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> चा सर्व्हर आयपी ॲड्रेस सापडला नाही.</translation>
 <translation id="2639739919103226564">स्थिती:</translation>
 <translation id="2647086987482648627">फॅब्रिक (सेमी-ग्लॉस)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने सुरक्षा सर्टिफिकेट सेट केले आहे जे त्यांना तुम्ही भेट देत असलेल्या वेबसाइटचा आशय पाहण्याची परवानगी देऊ शकतात.</translation>
 <translation id="2794233252405721443">साइट ब्लॉक केली</translation>
 <translation id="2794629552137076216">ग्लास (सरफेस्ड)</translation>
-<translation id="2799020568854403057">पुढील साइटमध्ये हानिकारक ॲप आहे</translation>
 <translation id="2799223571221894425">पुन्हा लाँच करा</translation>
 <translation id="2799758406651937857">पुरुषांचे कपडे</translation>
-<translation id="2803306138276472711">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" /> वर <ph name="BEGIN_LINK" />मालवेअर आढळले आहे<ph name="END_LINK" />. सामान्यतः सुरक्षित असलेल्या वेबसाइट काहीवेळा मालवेअरमुळे संक्रमित झालेल्या असतात.</translation>
 <translation id="2807052079800581569">इमेज Y स्थिती</translation>
 <translation id="2808278141522721006">तुम्ही <ph name="SETTINGS" /> मध्ये Windows Hello सुरू किंवा बंद करू शकता</translation>
 <translation id="2814184336982254349">ही PDF ॲक्सेस करण्यायोग्य नाही. कॉंटेक्स्ट मेनू उघडण्यासाठी सर्च + M प्रेस करा आणि "PDF मधून मजकूर काढा" सुरू करा</translation>
@@ -1443,7 +1437,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
-<translation id="3736520371357197498">तुम्ही तुमच्या सुरक्षिततेच्या जोखमी समजत असल्यास, धोकादायक प्रोग्राम काढण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
 <translation id="3736739313435669994">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून साइटना ब्लॉक करता. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="3738166223076830879">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="3739842843727261045">थंब्स अपवर क्लिक केल्यावर तुम्हाला हे परिणाम आवडले आहेत असा फीडबॅक सबमिट केला जातो</translation>
@@ -1454,7 +1447,6 @@
 <translation id="3744899669254331632">Chromium प्रक्रिया करू शकत नसलेले सरमिसळ केलेले क्रेडेन्‍शियल वेबसाइटने पाठविल्‍याने तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही. नेटवर्क एरर आणि आक्रमण सहसा तात्पुरते आहेत त्यामुळे संभवत: हे पेज नंतर कार्य करेल.</translation>
 <translation id="3745599309295009257">तुमचा मजकूर आणि तुम्ही ज्या पेजवर लिहित आहात त्याचा आशय व URL या गोष्टी Google कडे पाठवल्या जातील, त्यांचे माणसांद्वारे पुनरावलोकन केले जाईल आणि त्या या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी वापरल्या जातील. वैयक्तिक माहिती एंटर करणे टाळा (जसे की वैद्यकीय किंवा आर्थिक तपशील) अथवा खाजगी किंवा संवेदनशील माहिती असलेल्या साइटवर हे टूल वापरणे टाळा.</translation>
 <translation id="3748009735914587286">मेटल (हाय-ग्लॉस)</translation>
-<translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वरील हल्लेखोर कदाचित तुम्हाला सॉफ्टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्डे) उघड करणे यासारख्या काही धोकादायक गोष्टी करण्यासाठी तुम्हाला फसवू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> सेट केले नसल्याने दुर्लक्ष केले.</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
 <translation id="3759461132968374835">तुम्ही अलीकडे कोणतेही क्रॅश नोंदवले नाहीत. क्रॅश नोंदवणे अक्षम असताना झालेले क्रॅश येथे दिसून येणार नाहीत.</translation>
@@ -1610,7 +1602,6 @@
 <translation id="4092349052316400070">पत्ता भरा</translation>
 <translation id="4096237801206588987">११ x १५ इं</translation>
 <translation id="4098306082496067348">चेकआउटमध्ये व्हर्च्युअल कार्डचे तपशील जोडण्यासाठी त्यांवर टॅप करा.</translation>
-<translation id="4098354747657067197">भ्रामक साइट पुढे आहे</translation>
 <translation id="4099048595830172239">गोपनीय आशय दृश्यमान असताना, अ‍ॅडमिनिस्ट्रेटर धोरण हे तुमची स्क्रीन <ph name="APPLICATION_TITLE" /> सोबत शेअर करण्याची शिफारस करत नाही:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
 <translation id="4101413244023615925">मजकूर आणि ग्राफिक</translation>
@@ -1675,7 +1666,6 @@
 <translation id="4213500579045346575">शरीरसौष्‍ठव</translation>
 <translation id="4214357935346142455">साइन इन करा स्क्रीन प्रोफाइल</translation>
 <translation id="4220128509585149162">क्रॅश होते</translation>
-<translation id="422022731706691852"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वरील हल्लेखोर कदाचित तुमच्या ब्राउझ करण्याच्या अनुभवाला हानिकारक असे प्रोग्राम (उदाहरणार्थ, तुमचे होमपेज बदलणे किंवा तुम्ही भेट दिलेल्या साइटवर जास्तीच्या जाहिराती दाखवणे) इंस्टॉल करण्यासाठी तुम्हाला फसवण्याचा प्रयत्न करू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;पायरी १: पोर्टलमध्ये साइन इन करा&lt;/h4&gt;
     &lt;p&gt;कॅफे किंवा एअरपोर्टवर असणाऱ्या वाय-फाय नेटवर्कसाठी तुम्ही साइन इन करणे आवश्यक असते. साइन इन पेज पाहण्यासाठी, &lt;code&gt;http://&lt;/code&gt; वापरत असलेल्या पेजला भेट द्या.&lt;/p&gt;
     &lt;ol&gt;
@@ -2398,7 +2388,6 @@
 <translation id="5629630648637658800">धोरण सेटिंग्ज लोड करण्यात अयशस्वी</translation>
 <translation id="5631439013527180824">चुकीचे डिव्हाइस व्यवस्थापन टोकन</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
-<translation id="5633066919399395251">सध्या <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वर असलेले हल्लेखोर कदाचित तुमच्या काँप्युटरमधील तुमची माहिती चोरू किंवा हटवू शकणारे धोकादायक प्रोग्राम (उदाहरणार्थ, फोटो, पासवर्ड, मेसेज आणि क्रेडिट कार्डे) इंस्टॉल करण्याचा प्रयत्न करू शकतील. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">फसवणारा आशय ब्लॉक केला.</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5634725266554983459">मॅन्युअली पडताळणी सुरू करायची आहे का?</translation>
@@ -2585,7 +2574,6 @@
 <translation id="6014851866995737824">"सुरू करा" किंवा "बंद करा" सूची उपलब्ध नसल्यामुळे दुर्लक्ष केले.</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6017514345406065928">हिरवा</translation>
-<translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />वर असलेले आक्रमणकर्ता फसवणारे ॲप्स इंस्टॉल करू शकतात जे दुसरे काहीतरी असल्याचे भासवू शकतात किंवा तुम्हाला शोधण्यासाठी डेटा वापरू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक केलेले)</translation>
 <translation id="6028591542479806248">मोबाइल आणि ईमेल सूचना व्यवस्थापित करा</translation>
 <translation id="6028833024483927901">जागतिक पाकशैली</translation>
@@ -2602,7 +2590,6 @@
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">लागू करण्याचे टेम्पलेट</translation>
-<translation id="6047233362582046994">तुम्हाला तुमच्या सुरक्षेला असणारा धोका समजत असल्यास, हानिकारक अ‍ॅप्स काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">हा आशय तुम्हाला सॉफ्टवेअर इंस्टॉल करण्याचा किंवा वैयक्तिक माहिती उघड करण्याचा फसवा प्रयत्न करू शकेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">एन्व्हलप बी४</translation>
 <translation id="6049488691372270142">पेज वितरण</translation>
@@ -2694,7 +2681,6 @@
 <translation id="622039917539443112">समांतर फोल्ड</translation>
 <translation id="6221286101741304627">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="6221311046884916259">तुम्हाला तुमच्या Google खाते मध्ये हे कार्ड सेव्ह करायचे आहे का?</translation>
-<translation id="6221345481584921695">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" /> वर <ph name="BEGIN_LINK" />मालवेअर आढळले आहे<ph name="END_LINK" />. सामान्यतः सुरक्षित असलेल्या वेबसाइट काहीवेळा मालवेअरमुळे संक्रमित झालेल्या असतात. एक ज्ञात मालवेअर वितरक असलेल्या, <ph name="SUBRESOURCE_HOST" /> कडून दुर्भावनापूर्ण आशय येते.</translation>
 <translation id="6221892641068781024">सिंप्लिफाइड व्ह्यू</translation>
 <translation id="6222527803348563979">स्टेशनरी</translation>
 <translation id="6224281071334553713">रत्ने आणि दागिने</translation>
@@ -2907,7 +2893,6 @@
 <translation id="6629652037942826935">लक्झरी प्रवास</translation>
 <translation id="6630043285902923878">USB डिव्हाइस शोधत आहे…</translation>
 <translation id="6630388727238334626">Chrome सेटिंग्ज व्यवस्थापित करा बटण, तुमच्या Chrome सेटिंग्जना भेट देण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
-<translation id="6630809736994426279">सध्या <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वर असलेले हल्लेखोर कदाचित तुमच्या मॅकमधील तुमची माहिती चोरू किंवा हटवू शकणारे धोकादायक प्रोग्राम (उदाहरणार्थ, फोटो, पासवर्ड, संदेश आणि क्रेडिट कार्डे) इंस्टॉल करण्याचा प्रयत्न करू शकतील. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">ऑस्ट्रेलियन फुटबॉल</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">कॉंप्युटर शिक्षण</translation>
@@ -3237,7 +3222,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">व्यवसायासंबंधित कामकाज</translation>
-<translation id="724691107663265825">साइटमध्ये पुढे मालवेअर आहे</translation>
 <translation id="7251437084390964440">नेटवर्क कॉन्फिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉन्फिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
@@ -3824,7 +3808,6 @@
 <translation id="833262891116910667">हायलाइट</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाही</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">तुमच्या सुरक्षिततेच्या जोखमी समजत असल्यास, धोकादायक प्रोग्राम काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
 <translation id="8344776605855290140">व्हर्च्युअल कार्डची नोंदणी पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8350416046273606058">शॉर्टकटमध्ये स्पेस असू शकत नाहीत: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3933,7 +3916,6 @@
 <translation id="8541579497401304453">फोन कॉल सुरू करून व्यवसायाशी कनेक्ट करा.</translation>
 <translation id="8542014550340843547">ट्रिपल स्टेपल बॉटम</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">तुम्ही <ph name="BEGIN_ERROR_LINK" />ओळखण्‍याच्या समस्‍येची तक्रार<ph name="END_ERROR_LINK" /> करू शकता किंवा तुमच्या सुरक्षिततेस असणार्‍या जोखमींची पूर्ण जाणीव ठेवून <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट द्या<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">Google Chrome पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="8544303911974837265">पॉलिस्टर</translation>
 <translation id="854548366864113872">जास्त किमतीचे पर्याय</translation>
@@ -4036,7 +4018,6 @@
 <translation id="8757526089434340176">Google Pay ऑफर उपलब्ध</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट एक्सपायर झालेली सुरक्षितता कॉन्फिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>
-<translation id="8761567432415473239">Google सुरक्षित ब्राउझिंग ला <ph name="SITE" /> वर अलीकडे <ph name="BEGIN_LINK" />हानिकारक प्रोग्राम आढळले आहेत<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB डिव्हाइस</translation>
 <translation id="8763986294015493060">सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करा</translation>
 <translation id="8766943070169463815">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट उघडी आहे</translation>
@@ -4133,7 +4114,6 @@
 <translation id="8971063699422889582">सर्व्हरचे सर्टिफिकेट एक्स्पायर झाले आहे.</translation>
 <translation id="8975012916872825179">फोन नंबर, ईमेल ॲड्रेस आणि शिपिंग पत्ते यांसारखी माहिती समाविष्ट आहे</translation>
 <translation id="8975263830901772334">तुम्ही प्रिंट करत असलेल्या फायलींची नावे</translation>
-<translation id="8978053250194585037">Google सुरक्षित ब्राउझिंगला <ph name="SITE" /> वर अलीकडे <ph name="BEGIN_LINK" />फिशिंग आढळले<ph name="END_LINK" />. तुम्हाला फसवण्यासाठी फिशिंग साइट दुसर्‍याच कुठल्यातरी वेबसाइट असल्याचे भासवतात.</translation>
 <translation id="8982884016487650216">PDF लोड करणे पूर्ण झाले</translation>
 <translation id="8983369100812962543">तुम्ही आता अ‍ॅपचा आकार बदलू शकता</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मधील तुमचा ब्राउझिंग इतिहास पाहण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
@@ -4142,7 +4122,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">सिस्टीम आवृत्ती शोधत आहात का? भेट द्या</translation>
 <translation id="899688752321268742">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे <ph name="URL" /> ला जाणून घ्यायचे आहे</translation>
-<translation id="8996941253935762404">पुढे असणार्‍या साइटमध्ये हानिकारक प्रोग्राम आहेत</translation>
 <translation id="8997023839087525404">सर्व्हरने सर्टिफिकेट पारदर्शकता धोरणाचा वापर करून सार्वजनिकरत्या उघड न केलेले एक सर्टिफिकेट सादर केले. काही सर्टिफिकेट विश्वसनीय आहेत आणि हल्लेखोरांविरूद्ध संरक्षण करतात याची खात्री करण्‍यासाठी त्यांच्यासाठी ही एक आवश्यकता आहे.</translation>
 <translation id="9000145382638074673">तुमची डिव्हाइस</translation>
 <translation id="9001074447101275817">प्रॉक्सी <ph name="DOMAIN" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहेत.</translation>

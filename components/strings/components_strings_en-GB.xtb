@@ -183,6 +183,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="132301787627749051">Search for clipboard image</translation>
 <translation id="1323433172918577554">Show More</translation>
 <translation id="132390688737681464">Save and fill addresses</translation>
+<translation id="1325412080783393306">Search more buying options</translation>
 <translation id="1325749054628832887">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads but they may be less interesting. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Send a report</translation>
 <translation id="1330449323196174374">Left gate fold</translation>
@@ -198,7 +199,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1340482604681802745">Pickup address</translation>
 <translation id="1343356790768851700">This site determines things that you like and then suggests ads to other sites</translation>
 <translation id="1346748346194534595">Right</translation>
-<translation id="1348198688976932919">The site ahead contains dangerous apps</translation>
 <translation id="1348779747280417563">Confirm name</translation>
 <translation id="1352798470428594123">Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Show price drops on tabs</translation>
@@ -669,7 +669,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2215539479425228550">Climbing and mountaineering</translation>
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2215963164070968490">Dogs</translation>
-<translation id="2218879909401188352">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install dangerous apps that damage your device, add hidden charges to your mobile bill or steal your personal information. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Restart tutorial</translation>
 <translation id="2219735899272417925">Device reset required</translation>
 <translation id="2221227930294879156">Food and Drink Events</translation>
@@ -732,7 +731,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
-<translation id="2354430244986887761">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful apps<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
 <translation id="2356070529366658676">Ask</translation>
 <translation id="2356926036049612643">V8 optimiser</translation>
@@ -867,7 +865,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">Your clock is ahead</translation>
 <translation id="262745152991669301">Can ask to connect to USB devices</translation>
-<translation id="2629325967560697240">To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Fabric (semi-gloss)</translation>
@@ -948,10 +945,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
 <translation id="2794233252405721443">Site blocked</translation>
 <translation id="2794629552137076216">Glass (surfaced)</translation>
-<translation id="2799020568854403057">The site ahead contains harmful apps</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2799758406651937857">Men's clothing</translation>
-<translation id="2803306138276472711">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware.</translation>
 <translation id="2807052079800581569">Image Y position</translation>
 <translation id="2808278141522721006">You can turn Windows Hello on or off in <ph name="SETTINGS" /></translation>
 <translation id="2814184336982254349">This PDF is inaccessible. Press search plus m to open context menu and turn on "extract text from PDF"</translation>
@@ -1190,6 +1185,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Download when online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
+<translation id="3289578402369490638">From other stores across the web</translation>
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
 <translation id="3299098170013242198">Windows Hello is on for filling passwords</translation>
@@ -1442,7 +1438,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google presentation in Slides quickly</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching.</translation>
-<translation id="3736520371357197498">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this unsafe site<ph name="END_LINK" /> before the dangerous programs have been removed.</translation>
 <translation id="3736739313435669994">You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Your browser is managed by your administrator.</translation>
 <translation id="3739842843727261045">Thumbs up submits feedback that you like these results</translation>
@@ -1453,7 +1448,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3744899669254331632">You cannot visit <ph name="SITE" /> right now because the website sent scrambled credentials that Chromium cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="3745599309295009257">Your text and the content and URL of the page that you're writing on will be sent to Google, reviewed by humans and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.</translation>
 <translation id="3748009735914587286">Metal (high gloss)</translation>
-<translation id="3748148204939282805">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
 <translation id="3759461132968374835">You have no recently reported crashes.  Crashes that occurred when crash reporting was disabled will not appear here.</translation>
@@ -1609,7 +1603,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4092349052316400070">Fill address</translation>
 <translation id="4096237801206588987">11 in x 15 in</translation>
 <translation id="4098306082496067348">Tap virtual card details to add them to checkout.</translation>
-<translation id="4098354747657067197">Deceptive site ahead</translation>
 <translation id="4099048595830172239">Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE" /> when confidential content is visible:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to customise font sizes and typefaces in Chrome</translation>
 <translation id="4101413244023615925">Text and graphic</translation>
@@ -1674,7 +1667,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4213500579045346575">Bodybuilding</translation>
 <translation id="4214357935346142455">sign-in screen profile</translation>
 <translation id="4220128509585149162">Crashes</translation>
-<translation id="422022731706691852">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites that you visit). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Step 1: Sign in to the portal&lt;/h4&gt;
     &lt;p&gt;Wi-Fi networks at places such as cafés or airports need you to sign in. To see the sign-in page, visit a page that uses &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2397,7 +2389,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5629630648637658800">Failed to load policy settings</translation>
 <translation id="5631439013527180824">Invalid device management token</translation>
 <translation id="5632485077360054581">Show me how</translation>
-<translation id="5633066919399395251">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Deceptive content blocked.</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634725266554983459">Turn on manual verification?</translation>
@@ -2584,7 +2575,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6014851866995737824">Ignored because either the 'enable' or 'disable' list is missing.</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6017514345406065928">Green</translation>
-<translation id="6017850046339264347">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="6028833024483927901">World cuisine</translation>
@@ -2601,7 +2591,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6042308850641462728">More</translation>
 <translation id="6044573915096792553">Size 12</translation>
 <translation id="6045164183059402045">Imposition template</translation>
-<translation id="6047233362582046994">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this site<ph name="END_LINK" /> before the harmful apps have been removed.</translation>
 <translation id="6047927260846328439">This content might try to trick you into installing software or revealing personal information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Page delivery</translation>
@@ -2692,7 +2681,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="622039917539443112">Parallel fold</translation>
 <translation id="6221286101741304627">To exit full screen, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Do you want to save this card in your Google Account?</translation>
-<translation id="6221345481584921695">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware. The malicious content comes from <ph name="SUBRESOURCE_HOST" />, a known malware distributor.</translation>
 <translation id="6221892641068781024">Simplified View</translation>
 <translation id="6222527803348563979">Stationery</translation>
 <translation id="6224281071334553713">Gems and Jewellery</translation>
@@ -2905,7 +2893,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6629652037942826935">Luxury Travel</translation>
 <translation id="6630043285902923878">Finding USB devices…</translation>
 <translation id="6630388727238334626">Manage Chrome settings button, activate to visit your Chrome settings</translation>
-<translation id="6630809736994426279">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your Mac that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">Australian football</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Computer Education</translation>
@@ -3235,7 +3222,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Business operations</translation>
-<translation id="724691107663265825">The site ahead contains malware</translation>
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
@@ -3822,7 +3808,6 @@ Additional details:
 <translation id="833262891116910667">Highlight</translation>
 <translation id="8339163506404995330">Pages in <ph name="LANGUAGE" /> will not be translated</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this site<ph name="END_LINK" /> before the harmful programs have been removed.</translation>
 <translation id="8344776605855290140">Virtual card enrollment opened at full height</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8350416046273606058">Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3931,7 +3916,6 @@ Additional details:
 <translation id="8541579497401304453">Connect with a business by initiating a phone call.</translation>
 <translation id="8542014550340843547">Triple staple bottom</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">You can <ph name="BEGIN_ERROR_LINK" />report a detection problem<ph name="END_ERROR_LINK" /> or, if you understand the risks to your security, <ph name="BEGIN_LINK" />visit this unsafe site<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">Google Chrome is trying to modify settings for filling payment methods.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">High-priced option</translation>
@@ -4034,7 +4018,6 @@ Additional details:
 <translation id="8757526089434340176">Google Pay offer available</translation>
 <translation id="8759274551635299824">This card has expired</translation>
 <translation id="87601671197631245">This site uses an outdated security configuration, which may expose your information (for example, passwords, messages or credit cards) when it is sent to this site.</translation>
-<translation id="8761567432415473239">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful programs<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Close all incognito windows that are currently open</translation>
 <translation id="8766943070169463815">Secure payment credential authentication sheet is opened</translation>
@@ -4131,7 +4114,6 @@ Additional details:
 <translation id="8971063699422889582">Server's certificate has expired.</translation>
 <translation id="8975012916872825179">Includes information such as phone numbers, email addresses and delivery addresses</translation>
 <translation id="8975263830901772334">Names of files that you print</translation>
-<translation id="8978053250194585037">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected phishing<ph name="END_LINK" /> on <ph name="SITE" />. Phishing sites pretend to be other websites to trick you.</translation>
 <translation id="8982884016487650216">Finished loading PDF</translation>
 <translation id="8983369100812962543">You can now resize the app</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to view your browsing history in Chrome</translation>
@@ -4140,7 +4122,6 @@ Additional details:
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">Looking for system version? Visit</translation>
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
-<translation id="8996941253935762404">The site ahead contains harmful programs</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
 <translation id="9000145382638074673">Your devices</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>

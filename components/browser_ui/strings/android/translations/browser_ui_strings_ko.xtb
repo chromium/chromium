@@ -469,7 +469,7 @@
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8617611086246832542">사용 설정하면 웹사이트 데스크톱 뷰가 표시됩니다. 사용 중지하면 웹사이트 모바일 뷰가 표시됩니다.</translation>
-<translation id="8649036394979866943">Chrome은 대부분의 사이트에 대해 서드 파티 쿠키를 사용하여 탐색 중인 사용자를 추적하는 것을 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 보호 조치를 관리<ph name="END_LINK" />하세요.</translation>
+<translation id="8649036394979866943">Chrome은 대부분의 사이트에 대해 서드 파티 쿠키를 사용하여 탐색 중인 사용자를 추적하지 못하도록 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 방지 기능을 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>
 <translation id="868929229000858085">연락처 검색</translation>

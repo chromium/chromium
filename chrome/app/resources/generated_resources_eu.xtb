@@ -4391,7 +4391,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4309165024397827958">Eman gailuaren kokapena erabiltzeko baimena kokapena erabiltzeko baimena duten Android-erako aplikazio eta zerbitzuei. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
 <translation id="4309183709806093061">Partekatu sistemaren audioa ere. Audio bidezko erantzunak saihesteko, gailuaren audioa desaktibatuko da.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (zuzeneko <ph name="NUM_KILOBYTES_LIVE" /> K)</translation>
-<translation id="4310132194679586591">Esteka irekitzeko, hautatu aplikazio bat gailua erabilita</translation>
 <translation id="4310139701823742692">Fitxategiaren formatua ez da zuzena. Egiaztatu PPD fitxategia eta saiatu berriro.</translation>
 <translation id="4310496734563057511">Gailua beste batzuekin partekatzen baduzu, Windows Hello aktiba dezakezu. Horrela, gordetako pasahitz bat erabiltzen duzun bakoitzean zeu zarela egiaztatuko da.</translation>
 <translation id="431076611119798497">&amp;Xehetasunak</translation>
@@ -5962,7 +5961,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5554403733534868102">Hau amaitu ondoren, ez duzu berriz itxaron beharko eguneratzeko</translation>
 <translation id="5554489410841842733">Ikonoa ikusgai egongo da luzapenak oraingo orrian ekintzak egin ditzakeenean.</translation>
 <translation id="5554720593229208774">Mezu elektronikoaren ziurtagiri-emailea</translation>
-<translation id="5554866693883022680">Esteka irekitzeko, hautatu aplikazio bat <ph name="DEVICE_TYPE" /> gailua erabilita</translation>
 <translation id="5555363196923735206">Biratu kamera</translation>
 <translation id="5555525474779371165">Aukeratu Arakatze segurua eginbidearen babesa</translation>
 <translation id="5555639311269196631">Desaktibatu wifi-gunea</translation>

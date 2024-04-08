@@ -199,7 +199,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1340482604681802745">Endereço de retirada</translation>
 <translation id="1343356790768851700">Este site determina o seus interesses e sugere anúncios para outros sites</translation>
 <translation id="1346748346194534595">À direita</translation>
-<translation id="1348198688976932919">O site a seguir contém apps perigosos</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1352798470428594123">O Chrome impede que a maioria dos sites use cookies de terceiros para rastrear você durante a navegação. Acesse as configurações para <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Mostrar reduções no preço nas guias</translation>
@@ -670,7 +669,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2215539479425228550">Escalada e montanhismo</translation>
 <translation id="2215727959747642672">Edição de arquivo</translation>
 <translation id="2215963164070968490">Cães</translation>
-<translation id="2218879909401188352">Os invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem instalar apps perigosos que danificam seu dispositivo, acrescentam cobranças ocultas junto à operadora ou roubam suas informações pessoais. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Reiniciar tutorial</translation>
 <translation id="2219735899272417925">É necessário redefinir o dispositivo</translation>
 <translation id="2221227930294879156">Festivais gastronômicos</translation>
@@ -733,7 +731,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Câmera e microfone permitidos</translation>
 <translation id="2354001756790975382">Outros favoritos</translation>
-<translation id="2354430244986887761">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />encontrou apps prejudiciais<ph name="END_LINK" /> em <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2356926036049612643">Otimizador V8</translation>
@@ -868,7 +865,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2619052155095999743">Inserir</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode pedir para se conectar a dispositivos USB</translation>
-<translation id="2629325967560697240">Para usar o nível mais alto de segurança do Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Tecido (semibrilho)</translation>
@@ -949,10 +945,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
 <translation id="2794233252405721443">Site bloqueado</translation>
 <translation id="2794629552137076216">Vidro (superfície)</translation>
-<translation id="2799020568854403057">O site a seguir contém apps prejudiciais</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2799758406651937857">Roupas masculinas</translation>
-<translation id="2803306138276472711">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros, algumas vezes, são infetados com malware.</translation>
 <translation id="2807052079800581569">Posição da imagem Y</translation>
 <translation id="2808278141522721006">Você pode ativar ou desativar o Windows Hello nas <ph name="SETTINGS" /></translation>
 <translation id="2814184336982254349">Não é possível acessar este PDF. Pressione a tecla de pesquisa + "m" para abrir o menu de contexto e ativar a opção "Extrair texto do PDF"</translation>
@@ -1444,7 +1438,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
-<translation id="3736520371357197498">Se você entende os riscos à sua segurança, pode <ph name="BEGIN_LINK" />acessar este site inseguro<ph name="END_LINK" /> antes de os programas perigosos serem removidos.</translation>
 <translation id="3736739313435669994">Você bloqueou o uso de cookies de terceiros para rastreamento durante a navegação. Acesse as configurações para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Seu navegador é gerenciado pelo administrador.</translation>
 <translation id="3739842843727261045">O botão "Gostei" envia feedback informando que você gostou desses resultados</translation>
@@ -1455,7 +1448,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3745599309295009257">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google, revisados por humanos e usados para melhorar esse recurso. Evite inserir informações pessoais, como detalhes médicos ou financeiros. Evite também usar essa ferramenta em sites que contenham informações particulares ou sensíveis.</translation>
 <translation id="3748009735914587286">Metal (alto brilho)</translation>
-<translation id="3748148204939282805">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem levar você a fazer algo perigoso, como instalar software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair do modo picture-in-picture</translation>
 <translation id="3759461132968374835">Você não relatou falhas recentemente. As falhas que ocorreram quando o relatório de erros estava desativado não aparecerão aqui.</translation>
@@ -1611,7 +1603,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4092349052316400070">Preencha o endereço</translation>
 <translation id="4096237801206588987">11 x 15 pol.</translation>
 <translation id="4098306082496067348">Toque nos detalhes do cartão virtual para adicioná-lo ao pagamento.</translation>
-<translation id="4098354747657067197">Site fraudulento</translation>
 <translation id="4099048595830172239">A política do administrador não recomenda compartilhar a tela com o app <ph name="APPLICATION_TITLE" /> quando algum conteúdo confidencial estiver visível:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar tamanhos e fontes no Chrome</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
@@ -1676,7 +1667,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4213500579045346575">Fisiculturismo</translation>
 <translation id="4214357935346142455">perfil da tela de login</translation>
 <translation id="4220128509585149162">Falhas</translation>
-<translation id="422022731706691852">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem tentar levar você a instalar programas que podem prejudicar sua experiência de navegação (por exemplo, alterando sua página inicial ou exibindo anúncios extras em sites que você visitar). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Etapa 1: fazer login no portal&lt;/h4&gt;
     &lt;p&gt;Redes Wi-Fi em lugares como cafés ou aeroportos exigem que você faça login. Para acessar a página de login, visite uma página que use &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2399,7 +2389,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5629630648637658800">Falha ao carregar as configurações da política</translation>
 <translation id="5631439013527180824">Token de gerenciamento de dispositivo inválido</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
-<translation id="5633066919399395251">Invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem tentar instalar programas perigosos no seu computador e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="563371367637259496">Celular</translation>
 <translation id="5634725266554983459">Ativar a verificação manual?</translation>
@@ -2586,7 +2575,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6014851866995737824">Ignorado. A lista "enable" ou "disable" está ausente.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6017514345406065928">Verde</translation>
-<translation id="6017850046339264347">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem instalar apps enganosos que fingem ser outra pessoa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Gerenciar notificações recebidas por e-mail e no dispositivo móvel</translation>
 <translation id="6028833024483927901">Culinária mundial</translation>
@@ -2603,7 +2591,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
-<translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Entrega de página</translation>
@@ -2694,7 +2681,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221286101741304627">Para sair do modo tela cheia, pressione |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Quer salvar este cartão na sua Conta do Google?</translation>
-<translation id="6221345481584921695">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros estão, algumas vezes, infectados com malware. O conteúdo malicioso vem de <ph name="SUBRESOURCE_HOST" />, um distribuidor de malware conhecido.</translation>
 <translation id="6221892641068781024">Visualização simplificada</translation>
 <translation id="6222527803348563979">Papel de carta</translation>
 <translation id="6224281071334553713">Pedras preciosas e joias</translation>
@@ -2907,7 +2893,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6629652037942826935">Viagens de luxo</translation>
 <translation id="6630043285902923878">Procurando dispositivos USB…</translation>
 <translation id="6630388727238334626">Botão "Gerenciar configurações do Chrome". Ative para acessar as configurações do Chrome</translation>
-<translation id="6630809736994426279">Invasores presentes no momento em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem tentar instalar programas perigosos no seu Mac e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">Futebol australiano</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Educação de informática</translation>
@@ -3238,7 +3223,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7243010569062352439"><ph name="PASSWORDS" />, <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operações comerciais</translation>
-<translation id="724691107663265825">O site a seguir contém malware</translation>
 <translation id="7251437084390964440">A configuração de rede não está de acordo com o padrão ONC. É possível que partes da configuração não sejam importadas.
 Mais detalhes:
 <ph name="DEBUG_INFO" /></translation>
@@ -3825,7 +3809,6 @@ Mais detalhes:
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">Se você entende os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os programas nocivos serem removidos.</translation>
 <translation id="8344776605855290140">Registro de cartão virtual aberto no tamanho máximo</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3934,7 +3917,6 @@ Mais detalhes:
 <translation id="8541579497401304453">Conecte-se com uma empresa iniciando uma ligação.</translation>
 <translation id="8542014550340843547">Três grampos na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784">Você pode <ph name="BEGIN_ERROR_LINK" />denunciar um problema de detecção<ph name="END_ERROR_LINK" /> ou, se entende os riscos à sua segurança, <ph name="BEGIN_LINK" />acessar este site não seguro<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">O Google Chrome está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="8544303911974837265">Poliéster</translation>
 <translation id="854548366864113872">Opção com preço alto</translation>
@@ -4038,7 +4020,6 @@ Mais detalhes:
 <translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site usa uma configuração de segurança desatualizada que pode expor suas informações (como senhas, mensagens ou números de cartão de crédito) quando elas forem enviadas para o site.</translation>
-<translation id="8761567432415473239">Recentemente, a Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas nocivos<ph name="END_LINK" /> no site <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Fechar todas as janelas anônimas abertas</translation>
 <translation id="8766943070169463815">A página de autenticação de credenciais para pagamento seguro está aberta</translation>
@@ -4135,7 +4116,6 @@ Mais detalhes:
 <translation id="8971063699422889582">O certificado do servidor expirou.</translation>
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de e-mail e endereços de entrega</translation>
 <translation id="8975263830901772334">Nomes de arquivos impressos</translation>
-<translation id="8978053250194585037">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />detectou phishing<ph name="END_LINK" /> em <ph name="SITE" />. Os sites de phishing fingem ser outros sites para enganar você.</translation>
 <translation id="8982884016487650216">O PDF foi carregado</translation>
 <translation id="8983369100812962543">Agora você pode redimensionar o app</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para ver seu histórico de navegação no Chrome</translation>
@@ -4144,7 +4124,6 @@ Mais detalhes:
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">Procurando a versão do sistema? Acesse</translation>
 <translation id="899688752321268742"><ph name="URL" /> quer saber quando você está usando este dispositivo</translation>
-<translation id="8996941253935762404">O site a seguir contém programas prejudiciais</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente usando a política de Transparência dos certificados. Esse é um requisito para alguns certificados, a fim de garantir que eles sejam confiáveis e protejam você contra invasores.</translation>
 <translation id="9000145382638074673">Seus dispositivos</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>

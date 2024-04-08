@@ -4393,7 +4393,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4309165024397827958">Atļaujiet Android lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google varēs periodiski vākt atrašanās vietas datus un tos anonīmi izmantot, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="4309183709806093061">Kopīgot arī sistēmas audio. Lai izvairītos no akustiskiem traucējumiem, šīs ierīces skaņa būs izslēgta.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB tiešsaistē)</translation>
-<translation id="4310132194679586591">Atlasiet lietotni savā ierīcē, lai atvērtu šo saiti.</translation>
 <translation id="4310139701823742692">Nepareizs faila formāts. Pārbaudiet PPD failu un mēģiniet vēlreiz.</translation>
 <translation id="4310496734563057511">Ja šo ierīci izmanto arī citas personas, varat ieslēgt Windows Hello, lai tiktu pārbaudīta jūsu identitāte ikreiz, kad izmantojat saglabātu paroli.</translation>
 <translation id="431076611119798497">&amp;Informācija</translation>
@@ -5964,7 +5963,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5554403733534868102">Pēdējā reize, kad jāgaida atjauninājums</translation>
 <translation id="5554489410841842733">Šī ikona tiks parādīta, ja paplašinājums varēs veikt darbības apmeklētajā lapā.</translation>
 <translation id="5554720593229208774">E-pasta sertifikāta izdevējiestāde</translation>
-<translation id="5554866693883022680">Atlasiet lietotni savā ierīcē (<ph name="DEVICE_TYPE" />), lai atvērtu šo saiti.</translation>
 <translation id="5555363196923735206">Apvērst kameru</translation>
 <translation id="5555525474779371165">Drošas pārlūkošanas aizsardzības opciju izvēle</translation>
 <translation id="5555639311269196631">Izslēgt tīklāju</translation>

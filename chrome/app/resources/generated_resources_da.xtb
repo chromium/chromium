@@ -4407,7 +4407,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4309165024397827958">Tillad, at Android-apps og -tjenester med lokationstilladelse kan bruge din enheds lokation. Google kan med jævne mellemrum indsamle lokationsdata og bruge oplysningerne anonymt til at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="4309183709806093061">Del også systemlyd. Lyden slås fra på denne enhed for at forhindre lydfeedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
-<translation id="4310132194679586591">Vælg en app på din enhed for at åbne dette link</translation>
 <translation id="4310139701823742692">Filen har et forkert format. Tjek PPD-filen, og prøv igen.</translation>
 <translation id="4310496734563057511">Hvis du deler denne enhed med andre, kan du aktivere Windows Hello for at verificere din identitet, når du bruger en gemt adgangskode</translation>
 <translation id="431076611119798497">&amp;Detaljer</translation>
@@ -5979,7 +5978,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5554403733534868102">Bagefter skal du aldrig vente på opdateringer igen</translation>
 <translation id="5554489410841842733">Dette ikon er synligt, når udvidelsen kan fungere på den aktuelle side.</translation>
 <translation id="5554720593229208774">Mail-certificeringsautoritet</translation>
-<translation id="5554866693883022680">Vælg en app på din <ph name="DEVICE_TYPE" /> for at åbne dette link</translation>
 <translation id="5555363196923735206">Skift kamera</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5555639311269196631">Deaktiver hotspot</translation>

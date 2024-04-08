@@ -4414,7 +4414,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4309165024397827958">Dozvolite Android aplikacijama i uslugama s odobrenjem za lokaciju da koriste lokaciju vašeg uređaja. Google može povremeno prikupljati podatke o lokaciji i koristiti ih anonimno radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji.</translation>
 <translation id="4309183709806093061">Dijeli i zvuk sistema. Zvuk ovog uređaja će se isključiti da se spriječe povratne informacije.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K uživo)</translation>
-<translation id="4310132194679586591">Odaberite aplikaciju na svom uređaju da otvorite ovaj link</translation>
 <translation id="4310139701823742692">Fajl je u pogrešnom formatu. Provjerite PPD fajl i pokušajte ponovo.</translation>
 <translation id="4310496734563057511">Ako dijelite ovaj uređaj s drugima, možete uključiti Windows Hello da potvrdite svoj identitet kad god koristite sačuvanu lozinku</translation>
 <translation id="431076611119798497">&amp;Detalji</translation>
@@ -5987,7 +5986,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5554403733534868102">Nakon ovoga neće više biti čekanja ažuriranja</translation>
 <translation id="5554489410841842733">Ikona će biti vidljiva kada ekstenzija može djelovati na trenutnoj stranici.</translation>
 <translation id="5554720593229208774">Tijelo za certifikaciju e-pošte</translation>
-<translation id="5554866693883022680">Odaberite aplikaciju na svom uređaju <ph name="DEVICE_TYPE" /> da otvorite ovaj link</translation>
 <translation id="5555363196923735206">Obrni kameru</translation>
 <translation id="5555525474779371165">Odaberite zaštitu Sigurno pregledanje</translation>
 <translation id="5555639311269196631">Isključi pristupnu tačku</translation>

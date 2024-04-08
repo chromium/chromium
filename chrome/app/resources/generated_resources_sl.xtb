@@ -4409,7 +4409,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4309165024397827958">Aplikacijam in storitvam za Android z dovoljenjem za lokacijo omogoči uporabo lokacije vaše naprave. Google bo morda občasno zbiral lokacijske podatke ter jih na anonimen način uporabil za izboljšanje natančnosti zaznavanja lokacije in izpopolnjevanje storitev na podlagi lokacije.</translation>
 <translation id="4309183709806093061">Deli tudi sistemski zvok. V tej napravi bo zvok izklopljen, da ne bo prišlo do zvočne povratne zanke.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB dejavno)</translation>
-<translation id="4310132194679586591">Izberite aplikacijo v napravi, če želite odpreti to povezavo.</translation>
 <translation id="4310139701823742692">Datoteka je v napačni obliki zapisa. Preverite datoteko PPD in poskusite znova.</translation>
 <translation id="4310496734563057511">Če napravo delite z drugimi, lahko vklopite Windows Hello in potrdite, da ste to res vi, ko uporabite shranjeno geslo.</translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
@@ -5981,7 +5980,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5554403733534868102">Po tem ne bo treba več čakati na posodobitve</translation>
 <translation id="5554489410841842733">Ta ikona bo vidna, ko lahko razširitev deluje na trenutni strani.</translation>
 <translation id="5554720593229208774">Overitelj potrdil za e-pošto</translation>
-<translation id="5554866693883022680">Izberite aplikacijo v napravi <ph name="DEVICE_TYPE" />, če želite odpreti to povezavo.</translation>
 <translation id="5555363196923735206">Obrni fotoaparat</translation>
 <translation id="5555525474779371165">Izbira zaščite Varnega brskanja</translation>
 <translation id="5555639311269196631">Izklopi dostopno točko</translation>

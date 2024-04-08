@@ -199,7 +199,6 @@
 <translation id="1340482604681802745">Адрес выдачи</translation>
 <translation id="1343356790768851700">Этот сайт определяет ваши интересы и предлагает рекламу на их основе другим сайтам</translation>
 <translation id="1346748346194534595">Справа</translation>
-<translation id="1348198688976932919">Сайт содержит опасные приложения</translation>
 <translation id="1348779747280417563">Подтверждение</translation>
 <translation id="1352798470428594123">Chrome ограничивает большинству сайтов возможность использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="1355158069018170842">Показывать скидки на вкладках</translation>
@@ -670,7 +669,6 @@
 <translation id="2215539479425228550">Альпинизм и скалолазание</translation>
 <translation id="2215727959747642672">Редактирование файлов</translation>
 <translation id="2215963164070968490">Собаки</translation>
-<translation id="2218879909401188352">Злоумышленники могут использовать сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, чтобы установить опасные приложения, которые причиняют вред устройствам, увеличивают расходы на мобильную связь и крадут личные данные. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Открыть руководство</translation>
 <translation id="2219735899272417925">требуется сбросить настройки устройства</translation>
 <translation id="2221227930294879156">Мероприятия, связанные с продовольственными товарами</translation>
@@ -733,7 +731,6 @@
 <translation id="2350796302381711542">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />" вместо сервиса "<ph name="REPLACED_HANDLER_TITLE" />"?</translation>
 <translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
 <translation id="2354001756790975382">Другие закладки</translation>
-<translation id="2354430244986887761">Система Безопасного просмотра Google недавно <ph name="BEGIN_LINK" />обнаружила вредоносные приложения<ph name="END_LINK" /> на сайте <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
 <translation id="2356070529366658676">Спрашивать</translation>
 <translation id="2356926036049612643">Оптимизатор V8</translation>
@@ -868,7 +865,6 @@
 <translation id="2619052155095999743">Вставить</translation>
 <translation id="2625385379895617796">Часы спешат</translation>
 <translation id="262745152991669301">Разрешено отправлять запрос на подключение к USB-устройствам</translation>
-<translation id="2629325967560697240">Чтобы браузер Chrome стал максимально безопасным, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />включите режим "Улучшенная защита"<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="2634124572758952069">Не удалось найти IP-адрес сервера <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Состояние:</translation>
 <translation id="2647086987482648627">Ткань (полуглянцевая)</translation>
@@ -949,10 +945,8 @@
 <translation id="2792012897584536778">Администраторы этого устройства настроили сертификаты безопасности, которые дают возможность просматривать контент посещаемых вами сайтов.</translation>
 <translation id="2794233252405721443">Сайт заблокирован</translation>
 <translation id="2794629552137076216">Стекло (шлифованное)</translation>
-<translation id="2799020568854403057">Сайт содержит вредоносные приложения</translation>
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2799758406651937857">Мужская одежда</translation>
-<translation id="2803306138276472711">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />. Будьте внимательны, иногда даже на безопасных сайтах появляются вирусы.</translation>
 <translation id="2807052079800581569">Положение изображения по оси Y</translation>
 <translation id="2808278141522721006">Включить или отключить Windows Hello можно в разделе "<ph name="SETTINGS" />"</translation>
 <translation id="2814184336982254349">Этот файл PDF недоступен. Нажмите Поиск + M, чтобы открыть контекстное меню, и включите функцию "Извлекать текст из файлов PDF".</translation>
@@ -1443,7 +1437,6 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать презентацию Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="3727309136762649052">Пространство имен</translation>
 <translation id="3727850735097852673">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
-<translation id="3736520371357197498">Если вы готовы подвергнуть риску ваши личные данные, вы можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносного ПО.</translation>
 <translation id="3736739313435669994">Вы запретили сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="3738166223076830879">Этим браузером управляет администратор.</translation>
 <translation id="3739842843727261045">Поставить результатам отметку "Нравится".</translation>
@@ -1454,7 +1447,6 @@
 <translation id="3744899669254331632">Перейти на сайт <ph name="SITE" /> невозможно, так как его идентификационные данные зашифрованы, и Chrome не может их обработать. Это могло произойти из-за ошибки сети или атаки на сайт. Скорее всего, он заработает через некоторое время.</translation>
 <translation id="3745599309295009257">Ваш текст, а также содержимое и URL страницы, на которой вы пишете, будут отправлены в Google, проверены специалистами и использованы для улучшения этой функции. Не указывайте персональные данные, например медицинские или финансовые сведения, и не используйте этот инструмент на сайтах, содержащих личную или конфиденциальную информацию.</translation>
 <translation id="3748009735914587286">Металл (с высоким лоском)</translation>
-<translation id="3748148204939282805">Посещение сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> может привести к установке вредоносного ПО или хищению личной информации (например, паролей, телефонных номеров и данных банковских карт). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3752543821772132562">Игнорируется, так как правило <ph name="POLICY_NAME" /> не настроено.</translation>
 <translation id="3754210790023674521">Выйти из режима "Картинка в картинке"</translation>
 <translation id="3759461132968374835">Нет записей о недавних сбоях. Сбои, которые произошли при отключенной функции записи сбоев, здесь не отображаются.</translation>
@@ -1610,7 +1602,6 @@
 <translation id="4092349052316400070">Указать этот адрес</translation>
 <translation id="4096237801206588987">11 x 15 дюймов</translation>
 <translation id="4098306082496067348">Нажмите на реквизиты виртуальной карты, чтобы добавить их при оформлении покупки.</translation>
-<translation id="4098354747657067197">Осторожно, поддельный сайт!</translation>
 <translation id="4099048595830172239">Администратор не рекомендует предоставлять доступ к экрану для приложения "<ph name="APPLICATION_TITLE" />", когда видны конфиденциальные данные:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить шрифты и их размеры в Chrome.</translation>
 <translation id="4101413244023615925">Текст и изображения</translation>
@@ -1675,7 +1666,6 @@
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">профиль экрана входа</translation>
 <translation id="4220128509585149162">Сбои в работе Chrome</translation>
-<translation id="422022731706691852">Посещение сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> может привести к установке вредоносного ПО, которое будет мешать вашей работе в браузере (например, менять стартовую страницу или показывать дополнительную рекламу на сайтах). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Шаг 1. Войдите на портал&lt;/h4&gt;
     &lt;p&gt;Чтобы воспользоваться общедоступной сетью Wi-Fi (например, в кафе или аэропорту), сначала подключитесь к ней, открыв любую веб-страницу с префиксом &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2398,7 +2388,6 @@
 <translation id="5629630648637658800">Не удалось применить настройки политики</translation>
 <translation id="5631439013527180824">Токен устройства недействителен</translation>
 <translation id="5632485077360054581">Показать</translation>
-<translation id="5633066919399395251">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> может установить на ваш компьютер вредоносное ПО, которое крадет или удаляет личную информацию (например, фотографии, пароли, сообщения и реквизиты банковских карт). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Мошеннический контент заблокирован</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>
 <translation id="5634725266554983459">Включить обязательную проверку?</translation>
@@ -2585,7 +2574,6 @@
 <translation id="6014851866995737824">Игнорируется, так как отсутствует список "Включено" или "Отключено".</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6017514345406065928">Зеленый</translation>
-<translation id="6017850046339264347">Злоумышленники могут использовать сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, чтобы установить вредоносные приложения, маскирующиеся под безопасные программы или собирающие данные, по которым вас можно отследить. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (данные синхронизируются)</translation>
 <translation id="6028591542479806248">Управление уведомлениями по электронной почте и на мобильном устройстве</translation>
 <translation id="6028833024483927901">Кухни мира</translation>
@@ -2602,7 +2590,6 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6044573915096792553">Размер: 12</translation>
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
-<translation id="6047233362582046994">Если вы осознаете, что можете подвергнуть риску свои личные данные, то можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносных приложений.</translation>
 <translation id="6047927260846328439">Посещение этой страницы может привести к установке вредоносной программы или хищению вашей личной информации. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Выдача страниц</translation>
@@ -2693,7 +2680,6 @@
 <translation id="622039917539443112">Двойная параллельная фальцовка</translation>
 <translation id="6221286101741304627">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Сохранить эту карту в аккаунте Google?</translation>
-<translation id="6221345481584921695">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />. Его источником является <ph name="SUBRESOURCE_HOST" />, не раз замеченным в распространении вирусов. Будьте внимательны, иногда даже на безопасных сайтах появляются вредоносные программы.</translation>
 <translation id="6221892641068781024">Упрощенный просмотр</translation>
 <translation id="6222527803348563979">Бумага</translation>
 <translation id="6224281071334553713">Драгоценные камни и ювелирные украшения</translation>
@@ -2906,7 +2892,6 @@
 <translation id="6629652037942826935">Путешествия класса люкс</translation>
 <translation id="6630043285902923878">Поиск USB-устройств…</translation>
 <translation id="6630388727238334626">Кнопка "Открыть настройки Chrome". Нажмите ее, чтобы перейти в настройки Chrome.</translation>
-<translation id="6630809736994426279">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> может установить на ваш компьютер Mac вредоносное ПО, которое крадет или удаляет личную информацию (например, фотографии, пароли, сообщения и реквизиты банковских карт). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631133499533814479">Австралийский футбол</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Компьютерное образование</translation>
@@ -3236,7 +3221,6 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Коммерческая деятельность</translation>
-<translation id="724691107663265825">Осторожно, вредоносное ПО!</translation>
 <translation id="7251437084390964440">Некоторые элементы сетевой конфигурации невозможно импортировать, поскольку она не соответствует стандарту ONC.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
@@ -3823,7 +3807,6 @@
 <translation id="833262891116910667">Выделить</translation>
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
-<translation id="834457929814110454">Если вы готовы подвергнуть риску ваши личные данные, вы можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносного ПО.</translation>
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8350416046273606058">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна содержать пробелов.</translation>
@@ -3932,7 +3915,6 @@
 <translation id="8541579497401304453">Позвонить в компанию</translation>
 <translation id="8542014550340843547">Три скобы внизу</translation>
 <translation id="8542617028204211143">SRA0</translation>
-<translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Сообщите о зараженном сайте<ph name="END_ERROR_LINK" />. Если вы готовы подвергнуть риску личные данные, то можете <ph name="BEGIN_LINK" />перейти на страницу<ph name="END_LINK" />.</translation>
 <translation id="8544217240017914508">Google Chrome пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="8544303911974837265">Полиэстер</translation>
 <translation id="854548366864113872">Дорогой вариант</translation>
@@ -4035,7 +4017,6 @@
 <translation id="8757526089434340176">Доступно специальное предложение Google Pay</translation>
 <translation id="8759274551635299824">Срок действия карты истек.</translation>
 <translation id="87601671197631245">Настройки безопасности этого сайта устарели. Злоумышленники могут получить доступ к вашим данным (например, паролям, сообщениям и номерам банковских карт) при их отправке на этот сайт.</translation>
-<translation id="8761567432415473239">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB-устройство</translation>
 <translation id="8763986294015493060">Закрыть все окна, открытые в режиме инкогнито</translation>
 <translation id="8766943070169463815">Открыт экран проверки учетных данных для защищенных платежей</translation>
@@ -4132,7 +4113,6 @@
 <translation id="8971063699422889582">Сертификат сервера устарел.</translation>
 <translation id="8975012916872825179">В том числе телефонные номера, адреса электронной почты и адреса доставки.</translation>
 <translation id="8975263830901772334">Названия файлов, выведенных на печать.</translation>
-<translation id="8978053250194585037">Функция "Google Безопасный просмотр" недавно <ph name="BEGIN_LINK" />обнаружила попытку фишинга<ph name="END_LINK" /> на сайте <ph name="SITE" />. Будьте внимательны! Мошенники часто создают веб-страницы, похожие на знакомые вам сайты.</translation>
 <translation id="8982884016487650216">Загрузка PDF завершена.</translation>
 <translation id="8983369100812962543">Теперь можно изменить размер приложения.</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы посмотреть историю браузера в Chrome.</translation>
@@ -4141,7 +4121,6 @@
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="8992061558343343009">Ищете версию системы? Перейдите на страницу</translation>
 <translation id="899688752321268742">Разрешить сайту <ph name="URL" /> доступ к информации об использовании устройства?</translation>
-<translation id="8996941253935762404">Сайт содержит нежелательное ПО</translation>
 <translation id="8997023839087525404">Предоставленный сервером сертификат не проходил проверку безопасности. Она необходима в некоторых случаях, чтобы доказать, что сертификат надежен и защищает от злоумышленников.</translation>
 <translation id="9000145382638074673">Ваши устройства</translation>
 <translation id="9001074447101275817">Для доступа на прокси-сервер <ph name="DOMAIN" /> требуется указать имя пользователя и пароль.</translation>

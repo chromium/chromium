@@ -4409,7 +4409,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4309165024397827958">Caniatáu i apiau Android a gwasanaethau sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad.</translation>
 <translation id="4309183709806093061">Rhannu sain system hefyd. Bydd y ddyfais hon yn cael ei thewi i atal adborth.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K byw)</translation>
-<translation id="4310132194679586591">Dewiswch ap ar eich dyfais i agor y ddolen hon</translation>
 <translation id="4310139701823742692">Mae'r ffeil yn y fformat anghywir. Gwiriwch y ffeil PPD a rhowch gynnig arall arni.</translation>
 <translation id="4310496734563057511">Os ydych yn rhannu'r ddyfais hon ag eraill, gallwch droi Windows Hello ymlaen i gadarnhau mai chi sydd yno pryd bynnag y byddwch yn defnyddio cyfrinair sydd wedi'i gadw</translation>
 <translation id="431076611119798497">&amp;Manylion</translation>
@@ -5981,7 +5980,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5554403733534868102">Ar ôl hyn, dim aros am ddiweddariadau</translation>
 <translation id="5554489410841842733">Bydd yr eicon hwn yn weladwy pan fydd yr estyniad yn gallu gweithredu ar y dudalen bresennol.</translation>
 <translation id="5554720593229208774">Awdurdod Ardystio E-bost</translation>
-<translation id="5554866693883022680">Dewiswch ap ar eich <ph name="DEVICE_TYPE" /> i agor y ddolen hon</translation>
 <translation id="5555363196923735206">Newid camera</translation>
 <translation id="5555525474779371165">Dewiswch eich diogelwch Pori'n Ddiogel</translation>
 <translation id="5555639311269196631">Diffodd poethfan</translation>
