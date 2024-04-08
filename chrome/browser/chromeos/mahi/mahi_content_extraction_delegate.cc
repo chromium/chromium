@@ -23,7 +23,7 @@ namespace mahi {
 
 namespace {
 // The word count threshold for a distillable page.
-static constexpr int kWordCountThreshold = 500;
+static constexpr int kWordCountThreshold = 50;
 }  // namespace
 
 MahiContentExtractionDelegate::MahiContentExtractionDelegate(
