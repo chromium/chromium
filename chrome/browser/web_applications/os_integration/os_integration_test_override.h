@@ -19,10 +19,6 @@
 class ShellLinkItem;
 #endif
 
-namespace base {
-class Environment;
-}
-
 namespace web_app {
 
 class OsIntegrationTestOverrideImpl;
@@ -69,7 +65,7 @@ class OsIntegrationTestOverride
   // This will return a nullptr in production code or tests that have not
   // created a `OsIntegrationTestOverrideImpl::BlockingRegistration` through
   // `OsIntegrationTestOverrideImpl::OverrideForTesting`.
-  static scoped_refptr<OsIntegrationTestOverride> Get();
+  static const scoped_refptr<OsIntegrationTestOverride>& Get();
 
   OsIntegrationTestOverride(OsIntegrationTestOverride&&) = delete;
   OsIntegrationTestOverride(const OsIntegrationTestOverride&) = delete;
@@ -88,17 +84,19 @@ class OsIntegrationTestOverride
   virtual void DeleteShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id) = 0;
 
-  virtual base::FilePath desktop() = 0;
-  virtual base::FilePath application_menu() = 0;
-  virtual base::FilePath quick_launch() = 0;
-  virtual base::FilePath startup() = 0;
+  virtual const base::FilePath& desktop() = 0;
+  virtual const base::FilePath& application_menu() = 0;
+  virtual const base::FilePath& quick_launch() = 0;
+  virtual const base::FilePath& startup() = 0;
 #elif BUILDFLAG(IS_MAC)
   virtual bool IsChromeAppsValid() = 0;
-  virtual base::FilePath chrome_apps_folder() = 0;
+  virtual const base::FilePath& chrome_apps_folder() = 0;
   virtual void EnableOrDisablePathOnLogin(const base::FilePath& file_path,
                                           bool enable_on_login) = 0;
 #elif BUILDFLAG(IS_LINUX)
-  virtual base::Environment* environment() = 0;
+  virtual const base::FilePath& desktop() = 0;
+  virtual const base::FilePath& startup() = 0;
+  virtual const base::FilePath& applications_dir() = 0;
 #endif
 
   // Creates a tuple of app_id to protocols and adds it to the vector

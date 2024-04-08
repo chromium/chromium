@@ -35,7 +35,8 @@ GetMutableOsIntegrationTestOverrideStateForTesting() {
 }  // namespace
 
 // static
-scoped_refptr<OsIntegrationTestOverride> OsIntegrationTestOverride::Get() {
+const scoped_refptr<OsIntegrationTestOverride>&
+OsIntegrationTestOverride::Get() {
   auto& state = GetMutableOsIntegrationTestOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
   return state.global_os_integration_test_override;

@@ -46,6 +46,10 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
+    }
     provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
@@ -60,6 +64,17 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
     provider_->SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+  void TearDown() override {
+    test::UninstallAllWebApps(profile());
+    {
+      // Blocking required due to file operations in the shortcut override
+      // destructor.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_.reset();
+    }
+    WebAppTest::TearDown();
   }
 
   webapps::AppId InstallWebApp() {
@@ -101,7 +116,8 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  OsIntegrationTestOverrideBlockingRegistration test_override_;
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      test_override_;
 };
 
 // Configure tests only.
@@ -376,16 +392,16 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
-        profile(), app_id, app_name));
-  }
+    if (IsRunOnOsLoginExecuteEnabled()) {
+      ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+          profile(), app_id, app_name));
+    }
 
   test::UninstallAllWebApps(profile());
-  if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
-        profile(), app_id, app_name));
-  }
+    if (IsRunOnOsLoginExecuteEnabled()) {
+      ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+          profile(), app_id, app_name));
+    }
 }
 
 TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
@@ -400,7 +416,7 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
 
@@ -409,7 +425,7 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   test::SynchronizeOsIntegration(profile(), app_id, options);
 
   if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
 }
@@ -430,21 +446,26 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
         profile(), app_id, app_name));
   }
 
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
+  scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
+  // Run on OS Login should still be registered with the OS.
   if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
-  // This should have no affect.
   SynchronizeOsOptions options;
   options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
+
   if (IsRunOnOsLoginExecuteEnabled()) {
-    EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
+  scoped_supress.reset();
 }
 
 }  // namespace

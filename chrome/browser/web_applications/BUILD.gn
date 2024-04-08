@@ -640,8 +640,6 @@ source_set("web_applications_test_support") {
     "test/external_app_registration_waiter.h",
     "test/fake_data_retriever.cc",
     "test/fake_data_retriever.h",
-    "test/fake_environment.cc",
-    "test/fake_environment.h",
     "test/fake_externally_managed_app_manager.cc",
     "test/fake_externally_managed_app_manager.h",
     "test/fake_os_integration_manager.cc",

@@ -55,7 +55,11 @@ apps::FileHandler GetTestFileHandler(const std::string& action,
 class WebAppFileHandlerRegistrationLinuxBrowserTest
     : public InProcessBrowserTest {
  protected:
-  WebAppFileHandlerRegistrationLinuxBrowserTest() = default;
+  WebAppFileHandlerRegistrationLinuxBrowserTest() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -66,14 +70,21 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      override_registration_.reset();
+    }
   }
 
   const base::FilePath GetUserApplicationsDir() {
-    return override_registration_.test_override().applications();
+    return override_registration_->test_override().applications_dir().Append(
+        "applications");
   }
 
   std::optional<webapps::InstallResultCode> result_code_;
-  OsIntegrationTestOverrideBlockingRegistration override_registration_;
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 // Verify that the MIME type registration callback is called with
