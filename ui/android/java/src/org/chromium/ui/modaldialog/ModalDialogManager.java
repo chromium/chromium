@@ -6,6 +6,7 @@ package org.chromium.ui.modaldialog;
 
 import android.util.SparseArray;
 
+import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,12 +35,24 @@ public class ModalDialogManager {
     public interface ModalDialogManagerObserver {
         /**
          * A notification that the manager queues a dialog to be shown.
+         *
          * @param model The model that describes the dialog that was added.
          */
         default void onDialogAdded(PropertyModel model) {}
 
         /**
+         * A notification that the manager has created the dialog but not shown it yet.
+         *
+         * @param model The model that describes the dialog that was dismissed.
+         * @param dialog The ComponentDialog associated with the {@link AppModalPresenter}
+         *     implementation of the modal dialog. For dialog types that don't use the
+         *     ComponentDialog internally, this value will be null.
+         */
+        default void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {}
+
+        /**
          * A notification that the manager dismisses a modal dialog.
+         *
          * @param model The model that describes the dialog that was dismissed.
          */
         default void onDialogDismissed(PropertyModel model) {}
@@ -54,11 +67,13 @@ public class ModalDialogManager {
         private PropertyModel mDialogModel;
 
         /**
-         * @param model The dialog model that's currently showing in this presenter.
-         *              If null, no dialog is currently showing.
+         * @param model The dialog model that's currently showing in this presenter. If null, no
+         *     dialog is currently showing.
          */
         private void setDialogModel(
-                @Nullable PropertyModel model, @Nullable Callback<Integer> dismissCallback) {
+                @Nullable PropertyModel model,
+                @Nullable Callback<Integer> dismissCallback,
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
             if (model == null) {
                 removeDialogView(mDialogModel);
                 mDialogModel = null;
@@ -68,7 +83,7 @@ public class ModalDialogManager {
                         : "Should call setDialogModel(null) before setting a dialog model.";
                 mDialogModel = model;
                 mDismissCallback = dismissCallback;
-                addDialogView(model);
+                addDialogView(model, onDialogCreatedCallback);
             }
         }
 
@@ -103,12 +118,18 @@ public class ModalDialogManager {
 
         /**
          * Creates a view for the specified dialog model and puts the view in a container.
+         *
          * @param model The dialog model that needs to be shown.
+         * @param onDialogCreatedCallback The callback that notifies observers when the dialog is
+         *     created but not shown yet, providing the ComponentDialog associated with the {@link
+         *     AppModalPresenter} implementation of this modal dialog.
          */
-        protected abstract void addDialogView(PropertyModel model);
+        protected abstract void addDialogView(
+                PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback);
 
         /**
          * Removes the view created for the specified model from a container.
+         *
          * @param model The dialog model that needs to be removed.
          */
         protected abstract void removeDialogView(PropertyModel model);
@@ -360,7 +381,13 @@ public class ModalDialogManager {
         mCurrentPriority = dialogPriority;
         mCurrentPresenter = mPresenters.get(dialogType, mDefaultPresenter);
         mCurrentPresenter.setDialogModel(
-                model, (dismissalCause) -> dismissDialog(model, dismissalCause));
+                model,
+                (dismissalCause) -> dismissDialog(model, dismissalCause),
+                (dialog) -> {
+                    for (ModalDialogManagerObserver o : mObserverList) {
+                        o.onDialogCreated(model, dialog);
+                    }
+                });
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogAdded(model);
     }
 
@@ -392,7 +419,7 @@ public class ModalDialogManager {
         if (mDismissingCurrentDialog) return;
         mDismissingCurrentDialog = true;
         model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-        mCurrentPresenter.setDialogModel(null, null);
+        mCurrentPresenter.setDialogModel(null, null, null);
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogDismissed(model);
         mCurrentPresenter = null;
         mCurrentPriority = ModalDialogPriority.LOW;
@@ -509,7 +536,7 @@ public class ModalDialogManager {
     private void suspendCurrentDialog() {
         assert isShowing();
         PropertyModel dialogView = mCurrentPresenter.getDialogModel();
-        mCurrentPresenter.setDialogModel(null, null);
+        mCurrentPresenter.setDialogModel(null, null, null);
         mCurrentPresenter = null;
         mPendingDialogContainer.put(
                 mCurrentType, mCurrentPriority, dialogView, /* showAsNext= */ true);

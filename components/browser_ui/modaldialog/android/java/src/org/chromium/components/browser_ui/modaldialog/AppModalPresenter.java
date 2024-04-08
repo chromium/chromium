@@ -11,8 +11,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.activity.ComponentDialog;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -60,7 +62,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void addDialogView(PropertyModel model) {
+    protected void addDialogView(
+            PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
         int styles[][] = {
             {
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
@@ -119,6 +122,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 (dialogInterface) -> {
                     dialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
                 });
+
+        if (onDialogCreatedCallback != null) {
+            onDialogCreatedCallback.onResult(mDialog);
+        }
 
         try {
             mDialog.show();

@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import androidx.activity.ComponentDialog;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 
@@ -23,6 +25,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -52,8 +55,9 @@ public class TabGroupCreationDialogManager implements Destroyable {
             View customView =
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.tab_group_creation_dialog, null);
-            ((AppCompatEditText) customView.findViewById(R.id.title_input_text))
-                    .setText(defaultGroupTitle);
+            AppCompatEditText editTextView =
+                    (AppCompatEditText) customView.findViewById(R.id.title_input_text);
+            editTextView.setText(defaultGroupTitle);
 
             List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
             // TODO(b/330597857): Allow a dynamic incognito setting for the color picker.
@@ -133,6 +137,22 @@ public class TabGroupCreationDialogManager implements Destroyable {
                             .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                             .build();
 
+            mModalDialogManagerObserver =
+                    new ModalDialogManagerObserver() {
+                        @Override
+                        public void onDialogCreated(PropertyModel model, ComponentDialog dialog) {
+                            // Ensure that this dialog's model is the one that's being acted upon.
+                            if (model == mModel) {
+                                // Focus the edit text and display the keyboard on dialog showing.
+                                editTextView.requestFocus();
+                                dialog.getWindow()
+                                        .setSoftInputMode(
+                                                WindowManager.LayoutParams
+                                                        .SOFT_INPUT_STATE_VISIBLE);
+                            }
+                        }
+                    };
+            mModalDialogManager.addObserver(mModalDialogManagerObserver);
             mModalDialogManager.showDialog(mModel, ModalDialogType.APP);
         }
     }
@@ -144,6 +164,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
     private PropertyModel mModel;
     private ShowDialogDelegate mShowDialogDelegate;
     private Runnable mOnDialogAcceptedRunnable;
+    private ModalDialogManagerObserver mModalDialogManagerObserver;
 
     public TabGroupCreationDialogManager(
             @NonNull Activity activity,
@@ -189,6 +210,10 @@ public class TabGroupCreationDialogManager implements Destroyable {
             ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
                     .removeTabGroupObserver(mFilterObserver);
             mFilterObserver = null;
+        }
+
+        if (mModalDialogManagerObserver != null) {
+            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
     }
 

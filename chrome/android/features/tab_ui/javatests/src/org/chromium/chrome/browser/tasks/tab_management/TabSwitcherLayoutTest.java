@@ -406,7 +406,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
         // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
         Tab tab = cta.getTabModelSelector().getCurrentTab();
@@ -1696,7 +1696,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         // Verify the color icon exists.
         onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
                 .check(matches(isDisplayed()));
@@ -1927,7 +1927,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
@@ -1998,7 +1998,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(3), normalTabModel.getTabAt(4)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 4);
 
         // Assert default color 1 was set properly.
@@ -2020,7 +2020,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup2);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2098,7 +2098,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         int[] ungroupedRootId = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2169,7 +2169,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2226,7 +2226,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss();
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2624,12 +2624,16 @@ public class TabSwitcherLayoutTest {
                         });
     }
 
-    private void verifyGroupCreationDialogOpenedAndDismiss() {
+    private void verifyGroupCreationDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
         // Verify that the modal dialog is now showing.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         // Verify the creation dialog exists.
         onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
+        // Wait until the keyboard is showing.
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        CriteriaHelper.pollUiThread(
+                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
         // Dismiss the tab group creation dialog.
         dismissAllModalDialogs();
         // Verify that the modal dialog is now hidden.
