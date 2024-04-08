@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
@@ -60,10 +61,20 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
           autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
     }
   }
+
+  // Add appropriate ClientBehaviorConstants to the request based on the
+  // user experience.
   if (ShouldShowCardMetadata(unmask_request_details_->card)) {
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
+  if (DidDisplayBenefitForCard(unmask_request_details_->card,
+                               autofill_client_.get(),
+                               *autofill_client_->GetPersonalDataManager())) {
+    unmask_request_details_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardBenefits);
+  }
+
   unmask_request_details_->billing_customer_number =
       payments::GetBillingCustomerId(
           autofill_client_->GetPersonalDataManager());

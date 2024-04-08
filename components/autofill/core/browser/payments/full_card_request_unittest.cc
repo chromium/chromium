@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -137,6 +138,9 @@ class FullCardRequestTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
+    autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data_.SetSyncServiceForTest(&sync_service_);
     payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
         test_shared_loader_factory_, autofill_client_.GetIdentityManager(),
         &personal_data_);
@@ -149,6 +153,12 @@ class FullCardRequestTest : public testing::Test {
     // Payments server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         "sync-url", "https://google.com");
+  }
+
+  void TearDown() override {
+    // Order of destruction is important as AutofillDriver relies on
+    // PersonalDataManager to be around when it gets destroyed.
+    personal_data_.SetPrefService(nullptr);
   }
 
   FullCardRequestTest(const FullCardRequestTest&) = delete;
@@ -211,6 +221,7 @@ class FullCardRequestTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<FullCardRequest> request_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Matches the |arg| credit card to the given |record_type| and |card_number|.
@@ -950,6 +961,70 @@ TEST_P(FullCardRequestCardMetadataTest, MetadataSignal) {
   } else {
     EXPECT_TRUE(signals.empty());
   }
+}
+
+// Params:
+// 1. Function reference to call which creates the appropriate credit card
+// benefit for the unittest.
+// 2. Whether the flag to render benefits is enabled.
+// 3. Issuer ID which is set for the credit card with benefits.
+class FullCardRequestCardBenefitsTest
+    : public FullCardRequestTest,
+      public ::testing::WithParamInterface<
+          std::tuple<base::FunctionRef<CreditCardBenefit()>,
+                     bool,
+                     std::string>> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForCapitalOne,
+          IsCreditCardBenefitsEnabled()}});
+
+    card_ = test::GetMaskedServerCard();
+    autofill_client()->set_last_committed_primary_main_frame_url(
+        test::GetOriginsForMerchantBenefit().begin()->GetURL());
+    test::SetUpCreditCardAndBenefitData(
+        card_, GetBenefit(), GetIssuerId(), *personal_data(),
+        autofill_client()->GetAutofillOptimizationGuide());
+  }
+
+  CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
+
+  bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
+
+  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+
+  const CreditCard& card() { return card_; }
+
+ private:
+  CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FullCardRequestTest,
+    FullCardRequestCardBenefitsTest,
+    testing::Combine(
+        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                          &test::GetActiveCreditCardCategoryBenefit,
+                          &test::GetActiveCreditCardMerchantBenefit),
+        ::testing::Bool(),
+        ::testing::Values("amex", "capitalone")));
+
+// Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
+// signal if a card benefit was shown when unmasking a credit card suggestion
+// through the FullCardRequest.
+TEST_P(FullCardRequestCardBenefitsTest, Benefits_ClientBehaviorConstants) {
+  MakeGetFullCardRequest(FullCardRequestOptions().with_credit_card(card()));
+  ASSERT_TRUE(request()->GetShouldUnmaskCardForTesting());
+  std::vector<ClientBehaviorConstants> signals =
+      request()->GetUnmaskRequestDetailsForTesting()->client_behavior_signals;
+  EXPECT_EQ(base::ranges::find(signals,
+                               ClientBehaviorConstants::kShowingCardBenefits) !=
+                signals.end(),
+            IsCreditCardBenefitsEnabled());
 }
 
 }  // namespace payments

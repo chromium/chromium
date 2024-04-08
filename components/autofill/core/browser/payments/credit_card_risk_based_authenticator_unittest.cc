@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -37,6 +38,9 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
   void SetUp() override {
     requester_ = std::make_unique<TestAuthenticationRequester>();
+    autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -66,6 +70,12 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
         ->GetPaymentsNetworkInterface();
   }
 
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
+  }
+
+  TestAutofillClient* autofill_client() { return &autofill_client_; }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAuthenticationRequester> requester_;
@@ -73,6 +83,7 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> authenticator_;
   CreditCard card_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Ensure the UnmaskRequestDetails is populated with the correct contents when
@@ -381,6 +392,76 @@ TEST_P(CreditCardRiskBasedAuthenticatorCardMetadataTest, MetadataSignal) {
   } else {
     EXPECT_TRUE(signals.empty());
   }
+}
+
+// Params:
+// 1. Function reference to call which creates the appropriate credit card
+// benefit for the unittest.
+// 2. Whether the flag to render benefits is enabled.
+// 3. Issuer ID which is set for the credit card with benefits.
+class CreditCardRiskBasedAuthenticatorCardBenefitsTest
+    : public CreditCardRiskBasedAuthenticatorTest,
+      public ::testing::WithParamInterface<
+          std::tuple<base::FunctionRef<CreditCardBenefit()>,
+                     bool,
+                     std::string>> {
+ public:
+  void SetUp() override {
+    CreditCardRiskBasedAuthenticatorTest::SetUp();
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForCapitalOne,
+          IsCreditCardBenefitsEnabled()}});
+    card_ = test::GetMaskedServerCard();
+    autofill_client()->set_last_committed_primary_main_frame_url(
+        test::GetOriginsForMerchantBenefit().begin()->GetURL());
+    test::SetUpCreditCardAndBenefitData(
+        card_, GetBenefit(), GetIssuerId(), personal_data(),
+        autofill_client()->GetAutofillOptimizationGuide());
+  }
+
+  CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
+
+  bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
+
+  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+
+  const CreditCard& card() { return card_; }
+
+ private:
+  CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardRiskBasedAuthenticatorTest,
+    CreditCardRiskBasedAuthenticatorCardBenefitsTest,
+    testing::Combine(
+        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                          &test::GetActiveCreditCardCategoryBenefit,
+                          &test::GetActiveCreditCardMerchantBenefit),
+        ::testing::Bool(),
+        ::testing::Values("amex", "capitalone")));
+
+// Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
+// signal if a card benefit was shown when unmasking a credit card suggestion
+// through the risk based authenticator.
+TEST_P(CreditCardRiskBasedAuthenticatorCardBenefitsTest,
+       Benefits_ClientBehaviorConstants) {
+  authenticator_->Authenticate(card(), requester_->GetWeakPtr());
+  ASSERT_TRUE(
+      payments_network_interface()->unmask_request()->context_token.empty());
+  ASSERT_FALSE(
+      payments_network_interface()->unmask_request()->risk_data.empty());
+
+  std::vector<ClientBehaviorConstants> signals =
+      payments_network_interface()->unmask_request()->client_behavior_signals;
+
+  EXPECT_EQ(base::ranges::find(signals,
+                               ClientBehaviorConstants::kShowingCardBenefits) !=
+                signals.end(),
+            IsCreditCardBenefitsEnabled());
 }
 
 }  // namespace autofill

@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -16,6 +18,19 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
          base::FeatureList::IsEnabled(
              features::kAutofillEnableCardProductName) &&
          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+}
+
+bool DidDisplayBenefitForCard(
+    const CreditCard& card,
+    const AutofillClient& autofill_client,
+    const PersonalDataManager& personal_data_manager) {
+  return card.IsCardEligibleForBenefits() &&
+         !personal_data_manager.payments_data_manager()
+              .GetApplicableBenefitDescriptionForCardAndOrigin(
+                  card,
+                  autofill_client.GetLastCommittedPrimaryMainFrameOrigin(),
+                  autofill_client.GetAutofillOptimizationGuide())
+              .empty();
 }
 
 bool VirtualCardFeatureEnabled() {

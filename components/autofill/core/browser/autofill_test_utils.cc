@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <cstdint>
 #include <iterator>
 #include <string>
 
+#include "base/functional/overloaded.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,6 +27,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -637,16 +640,50 @@ CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit() {
 }
 
 CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
-  base::flat_set<url::Origin> merchant_domains = {
-      url::Origin::Create(GURL("http://www.example.com")),
-      url::Origin::Create(GURL("http://www.example3.com"))};
   return CreditCardMerchantBenefit(
       CreditCardBenefitBase::BenefitId("id3"),
       CreditCardBenefitBase::LinkedCardInstrumentId(3234),
       /*benefit_description=*/u"Get 2x points on purchases on this website",
-      merchant_domains,
+      GetOriginsForMerchantBenefit(),
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
+}
+
+base::flat_set<url::Origin> GetOriginsForMerchantBenefit() {
+  return {url::Origin::Create(GURL("http://www.example.com")),
+          url::Origin::Create(GURL("http://www.example3.com"))};
+}
+
+void SetUpCreditCardAndBenefitData(
+    CreditCard& card,
+    const CreditCardBenefit& benefit,
+    const std::string& issuer_id,
+    TestPersonalDataManager& personal_data,
+    AutofillOptimizationGuide* optimization_guide) {
+  absl::visit(
+      base::Overloaded{
+          [&card](const CreditCardFlatRateBenefit& flat_rate_benefit) {
+            card.set_instrument_id(
+                *flat_rate_benefit.linked_card_instrument_id());
+          },
+          [&card](const CreditCardMerchantBenefit& merchant_benefit) {
+            card.set_instrument_id(
+                *merchant_benefit.linked_card_instrument_id());
+          },
+          [&card, &optimization_guide](
+              const CreditCardCategoryBenefit& category_benefit) {
+            card.set_instrument_id(
+                *category_benefit.linked_card_instrument_id());
+            ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                        optimization_guide),
+                    AttemptToGetEligibleCreditCardBenefitCategory)
+                .WillByDefault(testing::Return(
+                    CreditCardCategoryBenefit::BenefitCategory::kSubscription));
+          }},
+      benefit);
+  personal_data.AddCreditCardBenefitForTest(benefit);
+  card.set_issuer_id(issuer_id);
+  personal_data.AddServerCreditCard(card);
 }
 
 void SetProfileInfo(AutofillProfile* profile,

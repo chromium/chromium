@@ -37,6 +37,10 @@ enum class ClientBehaviorConstants {
   // message. The payments server will use the presence of this constant to
   // determine whether to send a legal message that includes the account email.
   kShowAccountEmailInLegalMessage = 4,
+
+  // This enum reflects that the selected credit card suggestion contained a
+  // label with a applicable credit card benefit.
+  kShowingCardBenefits = 5,
 };
 }  // namespace autofill
 

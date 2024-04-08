@@ -168,9 +168,19 @@ void FullCardRequest::GetFullCardImpl(
 
   request_->fido_assertion_info = std::move(fido_assertion_info);
 
+  // Add appropriate ClientBehaviorConstants to the request based on the
+  // user experience.
   if (ShouldShowCardMetadata(card)) {
     request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
+  // TODO(crbug.com/332715322): Refactor FullCardRequest to use
+  // AutofillClient::GetPersonalDataManager() instead of a separate class
+  // variable.
+  if (DidDisplayBenefitForCard(card, autofill_client_.get(),
+                               *personal_data_manager_)) {
+    request_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardBenefits);
   }
 
   // If there is a UI delegate, then perform a CVC check.

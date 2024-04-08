@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,17 +40,21 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetPrefService(autofill_client()->GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
+    personal_data().SetAutofillPaymentMethodsEnabled(true);
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
 
-    payments_network_interface_ = new payments::TestPaymentsNetworkInterface(
-        autofill_client_.GetURLLoaderFactory(),
-        autofill_client_.GetIdentityManager(), &personal_data_manager_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
-            std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-                payments_network_interface_));
+            std::make_unique<payments::TestPaymentsNetworkInterface>(
+                autofill_client_.GetURLLoaderFactory(),
+                autofill_client_.GetIdentityManager(),
+                &personal_data_manager_));
+    payments_network_interface_ = autofill_client()
+                                      ->GetPaymentsAutofillClient()
+                                      ->GetPaymentsNetworkInterface();
     authenticator_ =
         std::make_unique<CreditCardOtpAuthenticator>(&autofill_client_);
 
@@ -60,7 +65,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   void TearDown() override {
     // Order of destruction is important as AutofillDriver relies on
     // PersonalDataManager to be around when it gets destroyed.
-    personal_data_manager_.SetPrefService(nullptr);
+    personal_data().SetPrefService(nullptr);
   }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
@@ -125,6 +130,12 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   }
 
  protected:
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client()->GetPersonalDataManager();
+  }
+
+  TestAutofillClient* autofill_client() { return &autofill_client_; }
+
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
@@ -133,6 +144,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;
   CardUnmaskChallengeOption selected_otp_challenge_option_;
+  syncer::TestSyncService sync_service_;
 };
 
 class CreditCardOtpAuthenticatorTest
@@ -684,6 +696,76 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   } else {
     EXPECT_TRUE(signals.empty());
   }
+}
+
+// Params:
+// 1. Function reference to call which creates the appropriate credit card
+// benefit for the unittest.
+// 2. Whether the flag to render benefits is enabled.
+// 3. Issuer ID which is set for the credit card with benefits.
+class CreditCardOtpAuthenticatorCardBenefitsTest
+    : public CreditCardOtpAuthenticatorTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple<base::FunctionRef<CreditCardBenefit()>,
+                     bool,
+                     std::string>> {
+ public:
+  void SetUp() override {
+    CreditCardOtpAuthenticatorTestBase::SetUp();
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForCapitalOne,
+          IsCreditCardBenefitsEnabled()}});
+    CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
+    card_ = test::GetVirtualCard();
+    autofill_client()->set_last_committed_primary_main_frame_url(
+        test::GetOriginsForMerchantBenefit().begin()->GetURL());
+    test::SetUpCreditCardAndBenefitData(
+        card_, GetBenefit(), GetIssuerId(), personal_data(),
+        autofill_client()->GetAutofillOptimizationGuide());
+  }
+
+  CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
+
+  bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
+
+  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+
+  const CreditCard& card() { return card_; }
+
+ private:
+  CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardOtpAuthenticatorTestBase,
+    CreditCardOtpAuthenticatorCardBenefitsTest,
+    testing::Combine(
+        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                          &test::GetActiveCreditCardCategoryBenefit,
+                          &test::GetActiveCreditCardMerchantBenefit),
+        ::testing::Bool(),
+        ::testing::Values("amex", "capitalone")));
+
+// Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
+// signal if a card benefit was shown when unmasking a credit card suggestion
+// through the OTP authenticator.
+TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
+       Benefits_ClientsBehaviorConstant) {
+  authenticator_->OnChallengeOptionSelected(
+      &card(), selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
+
+  std::vector<ClientBehaviorConstants> signals =
+      payments_network_interface_->unmask_request()->client_behavior_signals;
+  EXPECT_EQ(base::ranges::find(signals,
+                               ClientBehaviorConstants::kShowingCardBenefits) !=
+                signals.end(),
+            IsCreditCardBenefitsEnabled());
 }
 
 }  // namespace autofill

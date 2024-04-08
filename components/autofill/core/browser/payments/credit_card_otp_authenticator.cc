@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
@@ -34,9 +35,17 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_->context_token = context_token_;
   unmask_request_->otp = otp_;
   unmask_request_->selected_challenge_option = selected_challenge_option_;
+
+  // Add appropriate ClientBehaviorConstants to the request based on the
+  // user experience.
   if (ShouldShowCardMetadata(*card_)) {
     unmask_request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
+  if (DidDisplayBenefitForCard(*card_, *autofill_client_,
+                               *autofill_client_->GetPersonalDataManager())) {
+    unmask_request_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardBenefits);
   }
 
   if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
