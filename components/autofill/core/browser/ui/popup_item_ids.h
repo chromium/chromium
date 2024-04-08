@@ -101,7 +101,7 @@ enum class PopupItemId : int {
 
 // Set of `PopupItemId`s that trigger filling a value into an input element
 // when the user selects a suggestion with that id.
-inline constexpr auto kItemsTriggeringFieldFilling = DenseSet<PopupItemId>(
+inline constexpr auto kItemsTriggeringFieldFilling = DenseSet(
     {PopupItemId::kAccountStoragePasswordEntry, PopupItemId::kAddressEntry,
      PopupItemId::kAutocompleteEntry, PopupItemId::kCompose,
      PopupItemId::kCreditCardEntry, PopupItemId::kDatalistEntry,

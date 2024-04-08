@@ -25,8 +25,7 @@ BankAccount::BankAccount(int64_t instrument_id,
       payment_instrument_(instrument_id,
                           nickname,
                           display_icon_url,
-                          DenseSet<PaymentInstrument::PaymentRail>(
-                              {PaymentInstrument::PaymentRail::kPix})) {}
+                          DenseSet({PaymentInstrument::PaymentRail::kPix})) {}
 
 BankAccount::~BankAccount() = default;
 
