@@ -68,7 +68,7 @@ class WolvicSigninClient : public SigninClient {
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
 
-  content::WolvicBrowserContext* context_;
+  raw_ptr<content::WolvicBrowserContext> context_;
 
   // Stored callback from PreSignOut();
   base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;
