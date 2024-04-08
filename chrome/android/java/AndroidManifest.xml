@@ -117,6 +117,7 @@ by a child template that "extends" this file.
     <!-- Feature declarations required to support conditional install for VR DFM -->
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
+    <uses-feature android:name="android.software.xr.immersive" android:required="false"/>
     {% endif %}
 
     <permission android:name="{{ manifest_package }}.permission.CHILD_SERVICE" android:protectionLevel="signature" />

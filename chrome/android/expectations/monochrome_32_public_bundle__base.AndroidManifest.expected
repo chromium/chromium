@@ -27,6 +27,7 @@
   <uses-feature android:name="android.hardware.vr.headtracking" android:required="false" android:version="1"/>
   <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
   <uses-feature android:name="android.software.vr.mode" android:required="false"/>
+  <uses-feature android:name="android.software.xr.immersive" android:required="false"/>
   <uses-permission android:name="$PACKAGE.TOS_ACKED"/>
   <uses-permission android:name="$PACKAGE.permission.C2D_MESSAGE"/>
   <uses-permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS"/>
