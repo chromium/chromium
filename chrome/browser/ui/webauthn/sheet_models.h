@@ -82,6 +82,7 @@ class AuthenticatorMechanismSelectorSheetModel
       AuthenticatorRequestDialogModel* dialog_model);
 
   // AuthenticatorSheetModelBase:
+  bool IsActivityIndicatorVisible() const override;
   bool IsManageDevicesButtonVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;

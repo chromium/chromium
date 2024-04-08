@@ -151,6 +151,11 @@ AuthenticatorMechanismSelectorSheetModel::
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
 
+bool AuthenticatorMechanismSelectorSheetModel::IsActivityIndicatorVisible()
+    const {
+  return dialog_model()->ui_disabled_;
+}
+
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
   switch (dialog_model()->request_type) {
     case device::FidoRequestType::kMakeCredential:

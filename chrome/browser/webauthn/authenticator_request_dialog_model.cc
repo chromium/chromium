@@ -446,6 +446,7 @@ AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
 void AuthenticatorRequestDialogModel::SetStep(Step step) {
   const StepUIType previous_ui_type = step_ui_type(step_);
   step_ = step;
+  ui_disabled_ = false;
 
   const StepUIType ui_type = step_ui_type(step_);
   auto* web_contents = GetWebContents();
@@ -1656,6 +1657,11 @@ void AuthenticatorRequestDialogController::set_account_state(
       PromptForGPMPin();
     }
   }
+
+  if (waiting_for_account_state_to_start_enclave_) {
+    waiting_for_account_state_to_start_enclave_ = false;
+    StartEnclave();
+  }
 }
 
 void AuthenticatorRequestDialogController::set_gpm_pin_is_arbitrary(
@@ -1964,8 +1970,8 @@ void AuthenticatorRequestDialogController::StartEnclave() {
 
     case AccountState::kLoading:
     case AccountState::kChecking:
-      // TODO(enclave): need to disable the UI elements.
-      NOTIMPLEMENTED();
+      waiting_for_account_state_to_start_enclave_ = true;
+      DisableUI();
       break;
 
     case AccountState::kNone:
@@ -2682,6 +2688,11 @@ void AuthenticatorRequestDialogController::
 
 void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
   model_->mechanisms[*model_->priority_mechanism_index].callback.Run();
+}
+
+void AuthenticatorRequestDialogController::DisableUI() {
+  model_->ui_disabled_ = true;
+  model_->OnSheetModelChanged();
 }
 
 void AuthenticatorRequestDialogController::

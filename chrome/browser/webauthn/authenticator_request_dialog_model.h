@@ -482,6 +482,12 @@ struct AuthenticatorRequestDialogModel {
   // Records the error during GPM pin entry / creation, if any.
   GpmPinError gpm_pin_error = GpmPinError::kNone;
 
+  // Whether the UI is currently in a disabled state, which is required for some
+  // transitions (e.g. `Step::kWaitingForEnclave`). Each step UI that needs it
+  // should handle it accordingly.
+  // TODO(rgod): Double check all steps and disable the needed elements.
+  bool ui_disabled_ = false;
+
 #if BUILDFLAG(IS_MAC)
   // lacontext contains an authenticated LAContext after a successful Touch ID
   // prompt.
@@ -972,6 +978,9 @@ class AuthenticatorRequestDialogController
 
   void OnUserConfirmedPriorityMechanism() override;
 
+  // Disables the UI elements of the currently displayed sheet.
+  void DisableUI();
+
   raw_ptr<Model> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -1075,6 +1084,9 @@ class AuthenticatorRequestDialogController
 
   // The entered GPM PIN.
   std::string gpm_pin_;
+
+  // Whether the UI is currently disabled, waiting for account state to load.
+  bool waiting_for_account_state_to_start_enclave_ = false;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
