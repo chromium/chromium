@@ -14,11 +14,11 @@ import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {EntryType, type FileData, type State} from '../../state/state.js';
+import {EntryType, type FileData, type MaterializedView, type State} from '../../state/state.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';
 
-import {addChildEntries, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
+import {addChildEntries, cacheMaterializedViews, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, myFilesEntryListKey} from './volumes.js';
 
 let store: Store;
@@ -932,4 +932,37 @@ export async function testUpdateFileDataWithoutValidFileData(done: () => void) {
   await waitDeepEquals(store, initialState, (state) => state);
 
   done();
+}
+
+/**
+ * Test adding a Materialized View to the allEntries.
+ */
+export async function testcacheMaterializedViews() {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+  const state = store.getState();
+  const key = 'materialized-view://1/';
+
+  const views: MaterializedView[] =
+      [{id: '1', key, label: 'test view', isRoot: true, icon: 'the-icon'}];
+  cacheMaterializedViews(store.getState(), views);
+
+  const want: FileData = {
+    key,
+    fullPath: '//1/',
+    icon: 'the-icon',
+    label: 'test view',
+    type: EntryType.MATERIALIZED_VIEW,
+    isDirectory: true,
+    volumeId: null,
+    rootType: null,
+    metadata: {},
+    isRootEntry: true,
+    isEjectable: false,
+    canExpand: true,
+    children: [],
+    expanded: false,
+    disabled: false,
+  };
+  assertDeepEquals(want, state.allEntries[key]);
 }

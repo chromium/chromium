@@ -100,7 +100,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
 
   // Add Starred files.
   for (const view of materializedViews) {
-    if (view.label === 'Starred files') {
+    if (view.isRoot) {
       roots.push({
         key: view.key,
         section: NavigationSection.TOP,
