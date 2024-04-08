@@ -87,12 +87,19 @@ constexpr char kStringSeparator[] = "_";
 // decomposed into multiple CoreML ops.
 constexpr char kInternalNamePrefix[] = "internal";
 
-// model op related consts.
+// Model op related consts.
+//
+// Special cases.
 constexpr char kPlaceholderOuputName[] = "placeholder_output";
 
 // op names
 constexpr char kOpConstTypeName[] = "const";
+// Generic operators.
 constexpr char kOpCastTypeName[] = "cast";
+constexpr char kOpClipTypeName[] = "clip";
+constexpr char kOpConv2dTypeName[] = "conv";
+constexpr char kOpTransposeTypeName[] = "transpose";
+// Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
 constexpr char kOpMultiplyTypeName[] = "mul";
 constexpr char kOpDivideTypeName[] = "real_div";
@@ -100,8 +107,7 @@ constexpr char kOpSubtractTypeName[] = "sub";
 constexpr char kOpMaximumTypeName[] = "maximum";
 constexpr char kOpMinimumTypeName[] = "minimum";
 constexpr char kOpPowerTypeName[] = "pow";
-constexpr char kOpTransposeTypeName[] = "transpose";
-constexpr char kOpConv2dTypeName[] = "conv";
+// Elementwise unary operators.
 constexpr char kOpLogicalEqual[] = "equal";
 constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
@@ -494,14 +500,22 @@ GraphBuilder::BuildCoreMLModel() {
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {
+      case mojom::Operation::Tag::kClamp: {
+        RETURN_IF_ERROR(AddOperationForClamp(*operation->get_clamp(), block));
+        break;
+      }
+      case mojom::Operation::Tag::kConv2d: {
+        RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
-        RETURN_IF_ERROR(AddOperationForBinary(
+        RETURN_IF_ERROR(AddOperationForElementwiseBinary(
             *operation->get_element_wise_binary(), block));
         break;
       }
       case mojom::Operation::Tag::kElementWiseUnary: {
-        RETURN_IF_ERROR(
-            AddOperationForUnary(*operation->get_element_wise_unary(), block));
+        RETURN_IF_ERROR(AddOperationForElementwiseUnary(
+            *operation->get_element_wise_unary(), block));
         break;
       }
       case mojom::Operation::Tag::kTranspose: {
@@ -509,13 +523,8 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForTranspose(*operation->get_transpose(), block));
         break;
       }
-      case mojom::Operation::Tag::kConv2d: {
-        RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
-        break;
-      }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kClamp:
       case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kExpand:
@@ -703,7 +712,56 @@ void GraphBuilder::AddPlaceholderInput(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
+    const mojom::Clamp& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  // WebNN's "clamp" maps to the "clip" operator in CoreML:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.elementwise_unary.clip
+  //
+  // TODO: crbug.com/332731569 - Use CoreML's support for float16.
+  if (input_operand_info.mil_data_type !=
+      CoreML::Specification::MILSpec::DataType::FLOAT32) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  static const char kParamX[] = "x";
+  static const char kParamAlpha[] = "alpha";
+  static const char kParamBeta[] = "beta";
+
+  // Clip's min and max values are passed as constant scalar tensors.
+  const std::string alpha_op_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamAlpha);
+  const std::string beta_op_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamBeta);
+
+  AddConstantImmediateValue<float>(
+      block, alpha_op_output_name,
+      /*dimensions=*/{},
+      /*value=*/base::make_span(&operation.min_value, 1u));
+  AddConstantImmediateValue<float>(
+      block, beta_op_output_name,
+      /*dimensions=*/{},
+      /*value=*/base::make_span(&operation.max_value, 1u));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpClipTypeName);
+
+  (*op->mutable_inputs())[kParamX].add_arguments()->set_name(
+      input_operand_info.coreml_name);
+  (*op->mutable_inputs())[kParamAlpha].add_arguments()->set_name(
+      alpha_op_output_name);
+  (*op->mutable_inputs())[kParamBeta].add_arguments()->set_name(
+      beta_op_output_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddOperationForElementwiseBinary(
     const mojom::ElementWiseBinary& operation,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -812,7 +870,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForUnary(
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddOperationForElementwiseUnary(
     const mojom::ElementWiseUnary& operation,
     CoreML::Specification::MILSpec::Block& block) {
   switch (operation.kind) {

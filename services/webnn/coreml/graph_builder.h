@@ -114,23 +114,31 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOutput(
       uint64_t output_id);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForBinary(
-      const mojom::ElementWiseBinary& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
-      const mojom::Transpose& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
-      const mojom::Conv2d& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForUnary(
-      const mojom::ElementWiseUnary& operation,
-      CoreML::Specification::MILSpec::Block& block);
+
+  // Serialization functions for members of the mojom::Operation union. Keep
+  // these functions in the same order as in webnn_graph.mojom.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
       const std::string& input_name,
       uint64_t output_operand_id,
       webnn::mojom::Operand::DataType input_data_type,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
+      const mojom::Clamp& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
+      const mojom::Conv2d& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForElementwiseBinary(
+      const mojom::ElementWiseBinary& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
+                                  CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
+      const mojom::Transpose& operation,
+      CoreML::Specification::MILSpec::Block& block);
+
   // Add constants as immediate values in the model file.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
