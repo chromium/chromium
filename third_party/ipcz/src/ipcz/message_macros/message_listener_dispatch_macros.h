@@ -14,13 +14,15 @@
     }
 
 #define IPCZ_MSG_ID(x)
-#define IPCZ_MSG_VERSION(x)
 
-#define IPCZ_MSG_BEGIN(name, id_decl, version_decl) \
-  case msg::name::kId:                              \
+#define IPCZ_MSG_BEGIN(name, id_decl) \
+  case msg::name::kId:                \
     return On##name(static_cast<name&>(message));
 
 #define IPCZ_MSG_END()
+
+#define IPCZ_MSG_BEGIN_VERSION(version)
+#define IPCZ_MSG_END_VERSION(version)
 
 #define IPCZ_MSG_PARAM(type, name)
 #define IPCZ_MSG_PARAM_ARRAY(type, name)

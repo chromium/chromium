@@ -26,9 +26,8 @@
     }
 
 #define IPCZ_MSG_ID(x)
-#define IPCZ_MSG_VERSION(x)
 
-#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)     \
+#define IPCZ_MSG_BEGIN(name, id_decl)                   \
   case name::kId: {                                     \
     name message(Message::kIncoming);                   \
     if (!message.Deserialize(raw_message, transport)) { \
@@ -38,6 +37,9 @@
   }
 
 #define IPCZ_MSG_END()
+
+#define IPCZ_MSG_BEGIN_VERSION(version)
+#define IPCZ_MSG_END_VERSION(version)
 
 #define IPCZ_MSG_PARAM(type, name)
 #define IPCZ_MSG_PARAM_ARRAY(type, name)

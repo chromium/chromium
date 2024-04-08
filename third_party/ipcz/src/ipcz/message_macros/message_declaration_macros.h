@@ -8,15 +8,14 @@
 #define IPCZ_MSG_END_INTERFACE()
 
 #define IPCZ_MSG_ID(x) static constexpr uint8_t kId = x
-#define IPCZ_MSG_VERSION(x) static constexpr uint32_t kVersion = x
 
-#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)              \
+#define IPCZ_MSG_BEGIN(name, id_decl)                            \
   class name : public MessageWithParams<name##_Params> {         \
    public:                                                       \
     using ParamsType = name##_Params;                            \
     static_assert(sizeof(ParamsType) % 8 == 0, "Invalid size");  \
     id_decl;                                                     \
-    version_decl;                                                \
+    static constexpr uint32_t kVersion = 0;                      \
     name();                                                      \
     explicit name(decltype(kIncoming));                          \
     ~name();                                                     \
@@ -25,12 +24,21 @@
     bool DeserializeRelayed(absl::Span<const uint8_t> data,      \
                             absl::Span<DriverObject> objects);   \
                                                                  \
+    ParamsType* v0() {                                           \
+      return &params();                                          \
+    }                                                            \
+    const ParamsType* v0() const {                               \
+      return &params();                                          \
+    }                                                            \
     static constexpr internal::ParamMetadata kMetadata[] = {
 #define IPCZ_MSG_END() \
   }                    \
   ;                    \
   }                    \
   ;
+
+#define IPCZ_MSG_BEGIN_VERSION(version)
+#define IPCZ_MSG_END_VERSION(version)
 
 #define IPCZ_MSG_PARAM(type, name)                          \
   {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \

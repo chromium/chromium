@@ -354,8 +354,8 @@ void Node::HandleIntroductionRequest(NodeLink& from_node_link,
   // network's broker. This introduction is therefore the other broker's
   // responsibility.
   msg::RequestIndirectIntroduction request;
-  request.params().source_node = from_node_link.remote_node_name();
-  request.params().target_node = target_connection->link->remote_node_name();
+  request.v0()->source_node = from_node_link.remote_node_name();
+  request.v0()->target_node = target_connection->link->remote_node_name();
   target_connection->broker->Transmit(request);
 }
 
@@ -447,25 +447,25 @@ void Node::NotifyIntroductionFailed(NodeLink& from_broker,
 
 bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
   ABSL_ASSERT(type_ == Type::kBroker);
-  auto link = GetLink(relay.params().destination);
+  auto link = GetLink(relay.v0()->destination);
   if (!link) {
     return true;
   }
 
-  absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.params().data);
+  absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.v0()->data);
   msg::AcceptRelayedMessage accept;
-  accept.params().source = from_node;
-  accept.params().data = accept.AllocateArray<uint8_t>(data.size());
-  accept.params().padding = 0;
-  memcpy(accept.GetArrayData(accept.params().data), data.data(), data.size());
-  accept.params().driver_objects =
+  accept.v0()->source = from_node;
+  accept.v0()->data = accept.AllocateArray<uint8_t>(data.size());
+  accept.v0()->padding = 0;
+  memcpy(accept.GetArrayData(accept.v0()->data), data.data(), data.size());
+  accept.v0()->driver_objects =
       accept.AppendDriverObjects(relay.driver_objects());
   link->Transmit(accept);
   return true;
 }
 
 bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
-  if (auto link = GetLink(accept.params().source)) {
+  if (auto link = GetLink(accept.v0()->source)) {
     link->DispatchRelayedMessage(accept);
   }
   return true;

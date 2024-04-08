@@ -143,9 +143,9 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
   const absl::Span<Ref<APIObject>> objects = parcel->objects_view();
 
   msg::AcceptParcel accept;
-  accept.params().sublink = sublink_;
-  accept.params().sequence_number = parcel->sequence_number();
-  accept.params().padding = 0;
+  accept.v0()->sublink = sublink_;
+  accept.v0()->sequence_number = parcel->sequence_number();
+  accept.v0()->padding = 0;
 
   size_t num_portals = 0;
   absl::InlinedVector<DriverObject, 2> driver_objects;
@@ -226,8 +226,8 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
     num_subparcels = parcel->num_subparcels();
   }
 
-  accept.params().num_subparcels = num_subparcels;
-  accept.params().subparcel_index = parcel->subparcel_index();
+  accept.v0()->num_subparcels = num_subparcels;
+  accept.v0()->subparcel_index = parcel->subparcel_index();
 
   // If driver objects will require relaying through the broker, then the parcel
   // must be split into two separate messages: one for the driver objects (which
@@ -252,26 +252,25 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
     // data fragment allocated already, or if the allocated fragment is on the
     // wrong link. The latter case is possible if the transmitting Router
     // switched links since the Parcel's data was allocated.
-    accept.params().parcel_data =
+    accept.v0()->parcel_data =
         accept.AllocateArray<uint8_t>(parcel->data_size());
   } else {
     // The data for this parcel already exists in this link's memory, so we only
     // stash a reference to it in the message. This relinquishes ownership of
     // the fragment, effectively passing it to the recipient.
-    accept.params().parcel_fragment = parcel->data_fragment().descriptor();
+    accept.v0()->parcel_fragment = parcel->data_fragment().descriptor();
     parcel->ReleaseDataFragment();
   }
-  accept.params().handle_types =
-      accept.AllocateArray<HandleType>(objects.size());
-  accept.params().new_routers =
+  accept.v0()->handle_types = accept.AllocateArray<HandleType>(objects.size());
+  accept.v0()->new_routers =
       accept.AllocateArray<RouterDescriptor>(num_portals);
 
   const absl::Span<uint8_t> inline_parcel_data =
-      accept.GetArrayView<uint8_t>(accept.params().parcel_data);
+      accept.GetArrayView<uint8_t>(accept.v0()->parcel_data);
   const absl::Span<HandleType> handle_types =
-      accept.GetArrayView<HandleType>(accept.params().handle_types);
+      accept.GetArrayView<HandleType>(accept.v0()->handle_types);
   const absl::Span<RouterDescriptor> new_routers =
-      accept.GetArrayView<RouterDescriptor>(accept.params().new_routers);
+      accept.GetArrayView<RouterDescriptor>(accept.v0()->new_routers);
 
   if (!inline_parcel_data.empty()) {
     memcpy(inline_parcel_data.data(), parcel->data_view().data(),
@@ -339,16 +338,16 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
 
   if (must_split_parcel) {
     msg::AcceptParcelDriverObjects accept_objects;
-    accept_objects.params().sublink = sublink_;
-    accept_objects.params().sequence_number = parcel->sequence_number();
-    accept_objects.params().driver_objects =
+    accept_objects.v0()->sublink = sublink_;
+    accept_objects.v0()->sequence_number = parcel->sequence_number();
+    accept_objects.v0()->driver_objects =
         accept_objects.AppendDriverObjects(absl::MakeSpan(driver_objects));
 
     DVLOG(4) << "Transmitting objects for " << parcel->Describe() << " over "
              << Describe();
     node_link()->Transmit(accept_objects);
   } else {
-    accept.params().driver_objects =
+    accept.v0()->driver_objects =
         accept.AppendDriverObjects(absl::MakeSpan(driver_objects));
   }
 
@@ -375,15 +374,15 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
 void RemoteRouterLink::AcceptRouteClosure(const OperationContext& context,
                                           SequenceNumber sequence_length) {
   msg::RouteClosed route_closed;
-  route_closed.params().sublink = sublink_;
-  route_closed.params().sequence_length = sequence_length;
+  route_closed.v0()->sublink = sublink_;
+  route_closed.v0()->sequence_length = sequence_length;
   node_link()->Transmit(route_closed);
 }
 
 void RemoteRouterLink::AcceptRouteDisconnected(
     const OperationContext& context) {
   msg::RouteDisconnected route_disconnected;
-  route_disconnected.params().sublink = sublink_;
+  route_disconnected.v0()->sublink = sublink_;
   node_link()->Transmit(route_disconnected);
 }
 
@@ -423,7 +422,7 @@ bool RemoteRouterLink::FlushOtherSideIfWaiting(
   }
 
   msg::FlushRouter flush;
-  flush.params().sublink = sublink_;
+  flush.v0()->sublink = sublink_;
   node_link()->Transmit(flush);
   return true;
 }
@@ -448,10 +447,10 @@ void RemoteRouterLink::BypassPeer(const OperationContext& context,
                                   const NodeName& bypass_target_node,
                                   SublinkId bypass_target_sublink) {
   msg::BypassPeer bypass;
-  bypass.params().sublink = sublink_;
-  bypass.params().reserved0 = 0;
-  bypass.params().bypass_target_node = bypass_target_node;
-  bypass.params().bypass_target_sublink = bypass_target_sublink;
+  bypass.v0()->sublink = sublink_;
+  bypass.v0()->reserved0 = 0;
+  bypass.v0()->bypass_target_node = bypass_target_node;
+  bypass.v0()->bypass_target_sublink = bypass_target_sublink;
   node_link()->Transmit(bypass);
 }
 
@@ -459,17 +458,17 @@ void RemoteRouterLink::StopProxying(const OperationContext& context,
                                     SequenceNumber inbound_sequence_length,
                                     SequenceNumber outbound_sequence_length) {
   msg::StopProxying stop;
-  stop.params().sublink = sublink_;
-  stop.params().inbound_sequence_length = inbound_sequence_length;
-  stop.params().outbound_sequence_length = outbound_sequence_length;
+  stop.v0()->sublink = sublink_;
+  stop.v0()->inbound_sequence_length = inbound_sequence_length;
+  stop.v0()->outbound_sequence_length = outbound_sequence_length;
   node_link()->Transmit(stop);
 }
 
 void RemoteRouterLink::ProxyWillStop(const OperationContext& context,
                                      SequenceNumber inbound_sequence_length) {
   msg::ProxyWillStop will_stop;
-  will_stop.params().sublink = sublink_;
-  will_stop.params().inbound_sequence_length = inbound_sequence_length;
+  will_stop.v0()->sublink = sublink_;
+  will_stop.v0()->inbound_sequence_length = inbound_sequence_length;
   node_link()->Transmit(will_stop);
 }
 
@@ -479,11 +478,10 @@ void RemoteRouterLink::BypassPeerWithLink(
     FragmentRef<RouterLinkState> new_link_state,
     SequenceNumber inbound_sequence_length) {
   msg::BypassPeerWithLink bypass;
-  bypass.params().sublink = sublink_;
-  bypass.params().new_sublink = new_sublink;
-  bypass.params().new_link_state_fragment =
-      new_link_state.release().descriptor();
-  bypass.params().inbound_sequence_length = inbound_sequence_length;
+  bypass.v0()->sublink = sublink_;
+  bypass.v0()->new_sublink = new_sublink;
+  bypass.v0()->new_link_state_fragment = new_link_state.release().descriptor();
+  bypass.v0()->inbound_sequence_length = inbound_sequence_length;
   node_link()->Transmit(bypass);
 }
 
@@ -491,8 +489,8 @@ void RemoteRouterLink::StopProxyingToLocalPeer(
     const OperationContext& context,
     SequenceNumber outbound_sequence_length) {
   msg::StopProxyingToLocalPeer stop;
-  stop.params().sublink = sublink_;
-  stop.params().outbound_sequence_length = outbound_sequence_length;
+  stop.v0()->sublink = sublink_;
+  stop.v0()->outbound_sequence_length = outbound_sequence_length;
   node_link()->Transmit(stop);
 }
 

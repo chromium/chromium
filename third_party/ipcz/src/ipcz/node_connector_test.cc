@@ -56,8 +56,8 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
   bool non_broker_received_connect = false;
   test::TestTransportListener listener(non_broker_transport);
   listener.OnMessage<msg::ConnectFromBrokerToNonBroker>([&](auto& connect) {
-    EXPECT_EQ(broker->GetAssignedName(), connect.params().broker_name);
-    EXPECT_EQ(1u, connect.params().num_initial_portals);
+    EXPECT_EQ(broker->GetAssignedName(), connect.v0()->broker_name);
+    EXPECT_EQ(1u, connect.v0()->num_initial_portals);
     non_broker_received_connect = true;
     return true;
   });
@@ -80,7 +80,7 @@ TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
   bool broker_received_connect = false;
   test::TestTransportListener listener(broker_transport);
   listener.OnMessage<msg::ConnectFromNonBrokerToBroker>([&](auto& connect) {
-    EXPECT_EQ(1u, connect.params().num_initial_portals);
+    EXPECT_EQ(1u, connect.v0()->num_initial_portals);
     broker_received_connect = true;
     return true;
   });
@@ -152,7 +152,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     // NodeConnector should reject this message.
     EXPECT_FALSE(rejected);
     msg::ConnectFromBrokerToNonBroker message;
-    message.params().buffer = message.AppendDriverObject(
+    message.v0()->buffer = message.AppendDriverObject(
         DriverMemory(kDriver, 64).TakeDriverObject());
     non_broker_transport->Transmit(message);
     EXPECT_TRUE(rejected);
