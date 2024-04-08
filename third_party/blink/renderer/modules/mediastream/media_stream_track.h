@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -177,7 +178,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate,
-      uint32_t context_buffer_size) = 0;
+      base::TimeDelta platform_buffer_duration) = 0;
 
   virtual ImageCapture* GetImageCapture() = 0;
   virtual std::optional<const MediaStreamDevice> device() const = 0;

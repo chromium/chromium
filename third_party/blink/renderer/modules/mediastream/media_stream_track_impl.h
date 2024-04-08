@@ -143,7 +143,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate,
-      uint32_t context_buffer_size) override;
+      base::TimeDelta platform_buffer_duration) override;
 
   MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
 

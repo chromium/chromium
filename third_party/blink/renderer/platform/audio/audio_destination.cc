@@ -318,6 +318,12 @@ int AudioDestination::FramesPerBuffer() const {
   return web_audio_device_->FramesPerBuffer();
 }
 
+base::TimeDelta AudioDestination::GetPlatformBufferDuration() const {
+  DCHECK(IsMainThread());
+  return audio_utilities::FramesToTime(web_audio_device_->FramesPerBuffer(),
+                                       web_audio_device_->SampleRate());
+}
+
 uint32_t AudioDestination::MaxChannelCount() {
   return web_audio_device_->MaxChannelCount();
 }

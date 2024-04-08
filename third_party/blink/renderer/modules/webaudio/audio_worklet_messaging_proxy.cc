@@ -110,8 +110,7 @@ std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {
   if (worklet_->GetBaseAudioContext()->HasRealtimeConstraint()) {
     AudioContext* context =
         static_cast<AudioContext*>(worklet_->GetBaseAudioContext());
-    realtime_buffer_duration = blink::audio_utilities::FramesToTime(
-        context->PlatformBufferSize(), context->sampleRate());
+    realtime_buffer_duration = context->PlatformBufferDuration();
   }
 
   return CreateWorkletThreadWithConstraints(WorkletObjectProxy(),

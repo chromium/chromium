@@ -364,10 +364,10 @@ bool TransferredMediaStreamTrack::HasPendingActivity() const {
 std::unique_ptr<AudioSourceProvider>
 TransferredMediaStreamTrack::CreateWebAudioSource(
     int context_sample_rate,
-    uint32_t context_buffer_size) {
+    base::TimeDelta platform_buffer_duration) {
   if (track_) {
     return track_->CreateWebAudioSource(context_sample_rate,
-                                        context_buffer_size);
+                                        platform_buffer_duration);
   }
   // TODO(https://crbug.com/1288839): Create one based on transferred data?
   return nullptr;
