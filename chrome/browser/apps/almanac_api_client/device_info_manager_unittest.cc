@@ -86,6 +86,29 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfoNoLanguagePreference) {
   ASSERT_EQ(device_info.locale, g_browser_process->GetApplicationLocale());
 }
 
+TEST_F(DeviceInfoManagerTest, GetDeviceInfoMultipleTimes) {
+  statistics_provider()->SetMachineStatistic(ash::system::kHardwareClassKey,
+                                             "FOOBAR D0G-F4N-C1UB");
+
+  base::test::TestFuture<DeviceInfo> info_future_1;
+  base::test::TestFuture<DeviceInfo> info_future_2;
+  base::test::TestFuture<DeviceInfo> info_future_3;
+
+  device_info_manager()->GetDeviceInfo(info_future_1.GetCallback());
+  device_info_manager()->GetDeviceInfo(info_future_2.GetCallback());
+
+  DeviceInfo device_info_1 = info_future_1.Take();
+  DeviceInfo device_info_2 = info_future_2.Take();
+
+  device_info_manager()->GetDeviceInfo(info_future_3.GetCallback());
+
+  DeviceInfo device_info_3 = info_future_3.Take();
+
+  // Check that we obtained the same result for all three DeviceInfos.
+  ASSERT_EQ(device_info_1.hardware_id, device_info_2.hardware_id);
+  ASSERT_EQ(device_info_1.hardware_id, device_info_3.hardware_id);
+}
+
 TEST_F(DeviceInfoManagerTest, DeviceInfoToProto) {
   DeviceInfo device_info;
   device_info.board = "brya";
