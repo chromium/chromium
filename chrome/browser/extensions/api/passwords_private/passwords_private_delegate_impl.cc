@@ -845,10 +845,8 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
     return;
   }
 
-  // When account storage is enabled by default, don't require reauth to
-  // re-enable it.
-  if (password_manager::features_util::IsAccountStorageEnabledByDefault(
-          profile_->GetPrefs())) {
+  if (!password_manager::features_util::AreAccountStorageOptInPromosAllowed()) {
+    // No need to show a reauth dialog in this case, just opt-in directly.
     client->GetPasswordFeatureManager()->OptInToAccountStorage();
     return;
   }

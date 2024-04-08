@@ -1043,7 +1043,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldReauthForOptInIfImplicitSignin) {
+       TestShouldNotReauthForOptInIfExplicitSigninUIEnabled) {
   base::test::ScopedFeatureList scoped_feature_list(
       switches::kExplicitBrowserSigninUIOnDesktop);
   profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, false);
@@ -1056,32 +1056,15 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   EXPECT_CALL(*client,
               TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _));
+                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
+      .Times(0);
 
   auto delegate = CreateDelegate();
   delegate->SetAccountStorageOptIn(true, web_contents.get());
-}
 
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldNotReauthForOptInIfExplicitSignin) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-
-  // Optin without reauth when the signin is explicit.
-  EXPECT_CALL(*client,
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
-      .Times(0);
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), OptInToAccountStorage);
-
-  auto delegate = CreateDelegate();
+  // Implicit and explicit sign-ins are treated alike.
   delegate->SetAccountStorageOptIn(true, web_contents.get());
 }
 

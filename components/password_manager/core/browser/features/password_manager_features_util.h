@@ -224,8 +224,11 @@ bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
-// Whether the account storage is enabled by default.
-bool IsAccountStorageEnabledByDefault(const PrefService* prefs);
+// Necessary but not sufficient condition to promote account storage opt-in
+// for users currently opted-out. In particular for
+// ShouldShowAccountStorageOptIn() and ShouldShowAccountStorageReSignin().
+// If the promos are disallowed, no reauth is required to enable the feature.
+bool AreAccountStorageOptInPromosAllowed();
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -422,14 +423,16 @@ class PasswordManagerSyncTest : public SyncTest {
   AccountInfo signed_in_account_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class PasswordManagerSyncExplicitParamTest
     : public PasswordManagerSyncTest,
-      public testing::WithParamInterface<bool /*explicit_signin*/> {
+      public base::test::WithFeatureOverride {
  public:
-  PasswordManagerSyncExplicitParamTest() = default;
-
-  bool is_explicit_signin() const { return GetParam(); }
+  PasswordManagerSyncExplicitParamTest()
+      : base::test::WithFeatureOverride(
+            switches::kExplicitBrowserSigninUIOnDesktop) {}
 };
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1013,20 +1016,16 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
 
-  SignIn(kTestUserEmail, is_explicit_signin());
+  SignIn(kTestUserEmail);
 
   // Still no opt-in. Plus, the user is signed-in already.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
 
-  if (!is_explicit_signin()) {
-    //  Opt-in if account storage is not enabled by default.
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
-  }
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+  // If the user isn't already opted-in, do it.
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
 
   // Now there's an opt-in but the user is signed-in already.
   EXPECT_FALSE(
@@ -1035,21 +1034,21 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
 
   SignOut();
 
-  // The preconditions are now met. Re-signin should be offered for all pages,
-  // except the Gaia sign-in page where it's useless. Native UI can offer
-  // re-signin too, in that case the GURL is empty.
-  // Re-signin is never shown when the signin is explicit.
+  // If kExplicitBrowserSigninUIOnDesktop is enabled, re-signin should never be
+  // offered. Otherwise, the preconditions are now met and re-signin should be
+  // offered for all pages, except the Gaia sign-in page where it's useless.
+  // Native UI can offer re-signin too, in that case the GURL is empty.
   EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
                 GetProfile(0)->GetPrefs(), GetSyncService(0),
                 GURL("http://www.example.com")),
-            !is_explicit_signin());
+            !IsParamFeatureEnabled());
   EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
                 GetProfile(0)->GetPrefs(), GetSyncService(0),
                 GURL("https://www.example.com")),
-            !is_explicit_signin());
+            !IsParamFeatureEnabled());
   EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
                 GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()),
-            !is_explicit_signin());
+            !IsParamFeatureEnabled());
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
           GetProfile(0)->GetPrefs(), GetSyncService(0),
@@ -1059,7 +1058,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
           GetProfile(0)->GetPrefs(), GetSyncService(0),
           GaiaUrls::GetInstance()->gaia_url().Resolve("path")));
 
-  SignIn(kTestUserEmail, is_explicit_signin());
+  SignIn(kTestUserEmail);
 
   // Once the user signs in, no re-signin offered anymore.
   EXPECT_FALSE(
@@ -1119,16 +1118,24 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordManagerSyncExplicitParamTest);
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest,
+// Context: Clearing cookies resets the opt-in to its default state. For users
+// whose default is "false", this means account storage gets disabled, and no
+// password data can be uploaded after that.
+// This test verifies that if such users delete passwords along with cookies,
+// the password deletions are uploaded before the server connection is cut.
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PasswordDeletionsPropagateToServer) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add credential to server.
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
 
-  SetupSyncTransportWithPasswordAccountStorage(is_explicit_signin());
+  // Do implicit sign-in, so the opt-in is false by default.
+  SetupSyncTransportWithPasswordAccountStorage(/*explicit_signin=*/false);
   password_manager::PasswordStoreInterface* account_store =
       passwords_helper::GetAccountPasswordStoreInterface(0);
 
@@ -1155,19 +1162,10 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest,
   EXPECT_EQ(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size(),
             0u);
 
-  // The opt-in persists only if the signin was explicit.
-  EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
-                GetProfile(0)->GetPrefs(), GetSyncService(0)),
-            is_explicit_signin());
+  // The opt-in is back to its default state, false.
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    PasswordManagerSyncExplicitParamTest,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "Explicit" : "Implicit";
-    });
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,

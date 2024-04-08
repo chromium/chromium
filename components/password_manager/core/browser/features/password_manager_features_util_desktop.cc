@@ -100,9 +100,7 @@ class ScopedAccountStorageSettingsUpdate {
 
 bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
                                    const syncer::SyncService* sync_service) {
-  // When signin is explicit, account storage is enabled by default. Users who
-  // disabled it manually should not be prompted to re-enable it.
-  if (IsAccountStorageEnabledByDefault(pref_service)) {
+  if (!AreAccountStorageOptInPromosAllowed()) {
     return false;
   }
 
@@ -115,9 +113,7 @@ bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
 bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url) {
-  // When signin is explicit, account storage is enabled by default. Users who
-  // disabled it manually should not be prompted to re-enable it.
-  if (IsAccountStorageEnabledByDefault(pref_service)) {
+  if (!AreAccountStorageOptInPromosAllowed()) {
     return false;
   }
 
@@ -398,19 +394,24 @@ void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
-  return IsAccountStorageEnabledByDefault(pref_service)
-             ? internal::IsUserEligibleForAccountStorage(pref_service,
-                                                         sync_service)
-             : (IsOptedInForAccountStorage(pref_service, sync_service) ||
-                ShouldShowAccountStorageOptIn(pref_service, sync_service));
+  return AreAccountStorageOptInPromosAllowed()
+             ? (IsOptedInForAccountStorage(pref_service, sync_service) ||
+                ShouldShowAccountStorageOptIn(pref_service, sync_service))
+             : internal::IsUserEligibleForAccountStorage(pref_service,
+                                                         sync_service);
 }
 
-bool IsAccountStorageEnabledByDefault(const PrefService* prefs) {
-  // When signin is explicit, account storage is enabled by default. Users who
-  // disabled it manually should not be prompted to re-enable it.
-  return prefs->GetBoolean(::prefs::kExplicitBrowserSignin) &&
-         switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             switches::ExplicitBrowserSigninPhase::kFull);
+bool AreAccountStorageOptInPromosAllowed() {
+  // Disallow promos when kExplicitBrowserSigninUIOnDesktop is on.
+  // - For users who went through explicit sign-in, account storage is enabled
+  //   by default. If they bothered to disable this feature, they should not be
+  //   spammed into re-enabling it.
+  // - Users who went through implicit sign-in will be migrated to explicit
+  //   sign-in in the future, at which point the above applies. In the meantime,
+  //   it's not worth keeping the promos UI. Most users in this group have seen
+  //   the promo by now and have accepted *if* they want the feature.
+  return !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kFull);
 }
 
 // Note: See also password_manager_features_util_common.cc for shared
