@@ -19,7 +19,8 @@ namespace bookmarks {
 void WriteBookmarksToPasteboard(
     NSPasteboard* pb,
     const std::vector<BookmarkNodeData::Element>& elements,
-    const base::FilePath& profile_path);
+    const base::FilePath& profile_path,
+    bool is_off_the_record);
 
 // Reads a set of bookmark elements from the specified pasteboard.
 bool ReadBookmarksFromPasteboard(

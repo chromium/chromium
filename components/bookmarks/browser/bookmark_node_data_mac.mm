@@ -36,8 +36,7 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
 void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   NSPasteboard* pb =
       ui::clipboard_util::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
-  // TODO(crbug.com/40945200): Add support for off-the-record bookmarks.
-  WriteBookmarksToPasteboard(pb, elements, profile_path_);
+  WriteBookmarksToPasteboard(pb, elements, profile_path_, is_off_the_record);
 }
 
 bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
@@ -58,7 +57,10 @@ void BookmarkNodeData::Write(const base::FilePath& profile_path,
   ui::OSExchangeDataProviderMac& provider =
       static_cast<ui::OSExchangeDataProviderMac&>(data->provider());
   NSPasteboard* pb = provider.GetPasteboard();
-  WriteBookmarksToPasteboard(pb, elements, profile_path);
+  // TODO(crbug.com/40945200): Add support for off-the-record bookmarks during
+  // drag and drop.
+  WriteBookmarksToPasteboard(pb, elements, profile_path,
+                             /*is_off_the_record=*/false);
 }
 
 bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
