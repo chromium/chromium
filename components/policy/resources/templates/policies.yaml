@@ -1250,6 +1250,7 @@ policies:
   1249: ShowTunaScreenEnabled
   1250: EnterpriseBadgingTemporarySetting
   1251: GenAILocalFoundationalModelSettings
+  1252: DeviceExtensionsSystemLogEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

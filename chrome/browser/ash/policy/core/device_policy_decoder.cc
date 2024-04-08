@@ -2258,6 +2258,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     base::Value(container.value()), nullptr);
     }
   }
+
+  if (policy.has_deviceextensionssystemlogenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceextensionssystemlogenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceExtensionsSystemLogEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 // TODO(b/324221325): Move other Kiosk-related policies to this function.

@@ -87,6 +87,7 @@ const char* const kKnownSettings[] = {
     kDeviceDockMacAddressSource,
     kDeviceEncryptedReportingPipelineEnabled,
     kDeviceExtendedAutoUpdateEnabled,
+    kDeviceExtensionsSystemLogEnabled,
     kDeviceHindiInscriptLayoutEnabled,
     kDeviceHostnameTemplate,
     kDeviceHostnameUserConfigurable,
@@ -1325,6 +1326,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     SetDeviceDlcPredownloadListSetting(
         policy.device_dlc_predownload_list().value().entries(),
         new_values_cache);
+  }
+
+  if (policy.has_deviceextensionssystemlogenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceextensionssystemlogenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceExtensionsSystemLogEnabled,
+                                 base::Value(container.value()));
+    }
   }
 }
 

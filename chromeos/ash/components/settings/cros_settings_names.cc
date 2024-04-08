@@ -616,4 +616,9 @@ const char kDeviceHindiInscriptLayoutEnabled[] =
 const char kDeviceDlcPredownloadList[] =
     "cros.device.device_dlc_predownload_list";
 
+// A boolean pref specifying whether enterprise extensions can add logs to the
+// system log file that is persisted between sessions.
+const char kDeviceExtensionsSystemLogEnabled[] =
+    "cros.device.extensions_system_log_enabled";
+
 }  // namespace ash

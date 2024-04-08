@@ -1054,6 +1054,7 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
   result->attestation_for_content_protection_enabled = MojoOptionalBool::kUnset;
   result->device_restricted_managed_guest_session_enabled =
       MojoOptionalBool::kUnset;
+  result->device_extensions_system_log_enabled = MojoOptionalBool::kUnset;
   if (ash::CrosSettings::IsInitialized()) {
     // It's expected that the CrosSettings values are trusted. The only
     // theoretical exception is when device ownership is taken on consumer
@@ -1142,6 +1143,14 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
         result->device_guest_mode_enabled = device_guest_mode_enabled
                                                 ? MojoOptionalBool::kTrue
                                                 : MojoOptionalBool::kFalse;
+      }
+
+      bool device_extensions_system_log_enabled = false;
+      if (cros_settings->GetBoolean(ash::kDeviceExtensionsSystemLogEnabled,
+                                    &device_extensions_system_log_enabled)) {
+        result->device_extensions_system_log_enabled =
+            device_extensions_system_log_enabled ? MojoOptionalBool::kTrue
+                                                 : MojoOptionalBool::kFalse;
       }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "

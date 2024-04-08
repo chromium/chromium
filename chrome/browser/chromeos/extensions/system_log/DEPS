@@ -3,4 +3,7 @@ specific_include_rules = {
     "+chrome/browser/ash/login/test",
     "+chrome/browser/ash/policy",
   ],
+  "system_log_api\.cc": [
+    "+chrome/browser/ash/settings",
+  ],
 }

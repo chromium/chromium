@@ -397,6 +397,8 @@ extern const char kDeviceHindiInscriptLayoutEnabled[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDeviceDlcPredownloadList[];
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceExtensionsSystemLogEnabled[];
 }  // namespace ash
 
 namespace chromeos {

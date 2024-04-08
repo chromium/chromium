@@ -833,4 +833,19 @@ TEST_F(DevicePolicyDecoderTest,
                                std::move(auth_flow_reload_interval));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceExtensionsSystemLogEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceExtensionsSystemLogEnabled);
+
+  base::Value deviceextensionssystemlogenabled(true);
+  device_policy.mutable_deviceextensionssystemlogenabled()->set_value(
+      deviceextensionssystemlogenabled.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceExtensionsSystemLogEnabled,
+                               std::move(deviceextensionssystemlogenabled));
+}
+
 }  // namespace policy

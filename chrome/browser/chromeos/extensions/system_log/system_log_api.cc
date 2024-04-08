@@ -13,12 +13,33 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace extensions {
 
 namespace {
+
+bool IsDeviceExtensionsSystemLogEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool device_extensions_system_log_enabled = false;
+  ash::CrosSettings::Get()->GetBoolean(ash::kDeviceExtensionsSystemLogEnabled,
+                                       &device_extensions_system_log_enabled);
+  return device_extensions_system_log_enabled;
+#else
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  return init_params->DeviceSettings()->device_extensions_system_log_enabled ==
+         crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
+#endif
+}
 
 bool IsSigninProfileCheck(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,7 +71,11 @@ ExtensionFunction::ResponseAction SystemLogAddFunction::Run() {
 
   std::string log_message =
       FormatLogMessage(extension_id(), profile, options.message);
-  if (chromeos::IsManagedGuestSession() || IsSigninProfileCheck(profile)) {
+  auto is_outside_user_session =
+      chromeos::IsManagedGuestSession() || IsSigninProfileCheck(profile);
+  // Only add logs to system log if the policy allows this and we are not in a
+  // user session.
+  if (IsDeviceExtensionsSystemLogEnabled() && is_outside_user_session) {
     SYSLOG(INFO) << base::StringPrintf("extensions: %s", log_message.c_str());
     // Will not be added to feedback reports to avoid duplication.
     EXTENSIONS_LOG(DEBUG) << log_message;

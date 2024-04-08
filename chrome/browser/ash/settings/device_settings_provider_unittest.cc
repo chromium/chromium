@@ -1447,4 +1447,16 @@ TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueUnset) {
   EXPECT_FALSE(actual_value);
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceExtensionsSystemLogEnabled) {
+  device_policy_->payload()
+      .mutable_deviceextensionssystemlogenabled()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtensionsSystemLogEnabled);
+
+  EXPECT_TRUE(actual_value->GetBool());
+}
+
 }  // namespace ash
