@@ -377,23 +377,28 @@ function createPerfLogger(): PerfLogger {
   });
 
   state.addObserver(state.State.TAKING, (val, extras) => {
-    // 'taking' state indicates either taking photo or video. Skips for
-    // video-taking case since we only want to collect the metrics of
-    // photo-taking.
-    if (state.get(Mode.VIDEO)) {
+    // `taking` state indicates either taking photo or video. Skips for
+    // some modes such as video mode since they didn't start `photo-taking`.
+    if (!state.get(PerfEvent.PHOTO_TAKING)) {
       return;
     }
     if (!val) {
-      perfLogger.stop(PerfEvent.PHOTO_TAKING, extras);
+      state.set(PerfEvent.PHOTO_TAKING, false, extras);
     }
   });
 
   state.addObserver(PerfEvent.PHOTO_CAPTURE_SHUTTER, (val) => {
+    // `photo-taking` is a sum of `photo-capture-shutter` and
+    // `photo-capture-post-processing`. As scan mode doesn't record
+    // `photo-capture-post-processing`, returns early in this case.
+    if (state.get(Mode.SCAN)) {
+      return;
+    }
     // If we log photo-taking metrics by 'taking' state, we cannot exclude the
     // timer duration. photo-capture-shutter is the timing that a shutter is
     // clicked.
     if (val) {
-      perfLogger.start(PerfEvent.PHOTO_TAKING);
+      state.set(PerfEvent.PHOTO_TAKING, true);
     }
   });
 
