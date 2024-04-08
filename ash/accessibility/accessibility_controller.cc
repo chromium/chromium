@@ -2278,6 +2278,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
         base::BindRepeating(
             &AccessibilityController::UpdateMouseKeysMaxSpeedFromPref,
             base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityMouseKeysDominantHand,
+        base::BindRepeating(
+            &AccessibilityController::UpdateMouseKeysDominantHandFromPref,
+            base::Unretained(this)));
   }
   pref_change_registrar_->Add(
       prefs::kAccessibilityFloatingMenuPosition,
@@ -2373,6 +2378,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickMenuPositionFromPref();
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     UpdateMouseKeysMaxSpeedFromPref();
+    UpdateMouseKeysDominantHandFromPref();
   }
   UpdateFloatingMenuPositionFromPref();
   UpdateLargeCursorFromPref();
@@ -2457,6 +2463,15 @@ void AccessibilityController::UpdateMouseKeysMaxSpeedFromPref() {
   double max_speed =
       active_user_prefs_->GetDouble(prefs::kAccessibilityMouseKeysMaxSpeed);
   Shell::Get()->mouse_keys_controller()->SetMaxSpeed(max_speed);
+}
+
+void AccessibilityController::UpdateMouseKeysDominantHandFromPref() {
+  DCHECK(active_user_prefs_);
+  MouseKeysDominantHand dominant_hand =
+      static_cast<MouseKeysDominantHand>(active_user_prefs_->GetInteger(
+          prefs::kAccessibilityMouseKeysDominantHand));
+  Shell::Get()->mouse_keys_controller()->set_left_handed(
+      dominant_hand == MouseKeysDominantHand::kLeftHandDominant);
 }
 
 void AccessibilityController::SetAutoclickMenuPosition(

@@ -184,7 +184,14 @@ class MouseKeysTest : public AshTestBase {
   }
 
   void SetLeftHanded(bool value) {
-    return Shell::Get()->mouse_keys_controller()->set_left_handed(value);
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+    MouseKeysDominantHand dominant_hand =
+        value ? MouseKeysDominantHand::kLeftHandDominant
+              : MouseKeysDominantHand::kRightHandDominant;
+    prefs->SetInteger(prefs::kAccessibilityMouseKeysDominantHand,
+                      static_cast<int>(dominant_hand));
   }
 
   void ClearEvents() { event_capturer_.Reset(); }
