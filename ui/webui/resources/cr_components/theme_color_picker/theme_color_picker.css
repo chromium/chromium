@@ -37,7 +37,9 @@ cr-grid {
   -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
-  background-color: var(--google-grey-700);
+  background-color: var(
+      --color-theme-color-picker-custom-color-icon-background,
+      var(--cr-fallback-color-on-surface-subtle));
   height: 20px;
   left: calc(50% - 10px);
   pointer-events: none;
@@ -46,17 +48,11 @@ cr-grid {
   width: 20px;
 }
 
-:host-context([chrome-refresh-2023]) #colorPickerIcon {
-  background-color: var(
-      --color-theme-color-picker-custom-color-icon-background,
-      var(--cr-fallback-color-on-surface-subtle));
-}
-
 managed-dialog {
   --cr-dialog-width: min(calc(100% - 32px), 512px);
 }
 
-:host-context([chrome-refresh-2023]) cr-theme-color {
+cr-theme-color {
   background-color: var(
       --color-theme-color-picker-option-background,
       var(--cr-fallback-color-neutral-container));
