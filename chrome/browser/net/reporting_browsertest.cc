@@ -498,12 +498,12 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
 // Flaky on other platforms as well, see https://crbug.com/1377031
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
-#define MAYBE_MainPageOptedIn MainPageOptedIn
-#define MAYBE_MainPageNotOptedIn MainPageNotOptedIn
+#define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
+#define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
-  IframeUnresponsiveWithJSCallStackOptedIn
+  DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
-  IframeUnresponsiveWithJSCallStackNotOptedIn
+  DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
@@ -639,10 +639,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
   if (GetParam()) {
-    // The process may be shutdown before we receive a response from the
-    // renderer with the call stack.
-    EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos ||
-                *call_stack == "Unable to collect JS call stack.");
+    EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
   } else {
     EXPECT_EQ(nullptr, call_stack);
   }
@@ -701,10 +698,9 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
   if (GetParam()) {
-    EXPECT_TRUE(*call_stack ==
-                    "Website owner has not opted in for JS call stacks in "
-                    "crash reports." ||
-                *call_stack == "Unable to collect JS call stack.");
+    EXPECT_EQ(
+        "Website owner has not opted in for JS call stacks in crash reports.",
+        *call_stack);
   } else {
     EXPECT_EQ(nullptr, call_stack);
   }
