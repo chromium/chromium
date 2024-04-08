@@ -107,6 +107,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
+                       UpdateContentSelectionWithHighlights) {
+  RunSidePanelTest(
+      "side_panel/read_anything/update_content_selection_with_highlights.js",
+      "mocha.run()");
+}
+
 // Integration tests that need the actual Read Aloud flag enabled because they
 // use the full C++ pipeline
 class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {

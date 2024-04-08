@@ -573,14 +573,53 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const range = new Range();
     const startNodeId = chrome.readingMode.startNodeId;
-    const startOffset = chrome.readingMode.startOffset;
     const endNodeId = chrome.readingMode.endNodeId;
-    const endOffset = chrome.readingMode.endOffset;
-    const startNode = this.domNodeToAxNodeIdMap_.keyFrom(startNodeId);
-    const endNode = this.domNodeToAxNodeIdMap_.keyFrom(endNodeId);
+    let startOffset = chrome.readingMode.startOffset;
+    let endOffset = chrome.readingMode.endOffset;
+    let startNode = this.domNodeToAxNodeIdMap_.keyFrom(startNodeId);
+    let endNode = this.domNodeToAxNodeIdMap_.keyFrom(endNodeId);
     if (!startNode || !endNode) {
       return;
     }
+
+    // Range.setStart/setEnd behaves differently if the node is an element or a
+    // text node. If the former, the offset refers to the index of the children.
+    // If the latter, the offset refers to the character offset inside the text
+    // node. The start and end nodes are elements if they've been read aloud
+    // because we add formatting to the text that wasn't there before. However,
+    // the information we receive from chrome.readingMode is always the id of a
+    // text node and character offset for that text, so find the corresponding
+    // text child here and adjust the offset
+    if (startNode.nodeType !== Node.TEXT_NODE) {
+      const startTreeWalker =
+          document.createTreeWalker(startNode, NodeFilter.SHOW_TEXT);
+      while (startTreeWalker.nextNode()) {
+        const textNodeLength = startTreeWalker.currentNode.textContent!.length;
+        // Once we find the child text node inside which the starting index
+        // fits, update the start node to be that child node and the adjusted
+        // offset will be relative to this child node
+        if (startOffset < textNodeLength) {
+          startNode = startTreeWalker.currentNode;
+          break;
+        }
+
+        startOffset -= textNodeLength;
+      }
+    }
+    if (endNode.nodeType !== Node.TEXT_NODE) {
+      const endTreeWalker =
+          document.createTreeWalker(endNode, NodeFilter.SHOW_TEXT);
+      while (endTreeWalker.nextNode()) {
+        const textNodeLength = endTreeWalker.currentNode.textContent!.length;
+        if (endOffset <= textNodeLength) {
+          endNode = endTreeWalker.currentNode;
+          break;
+        }
+
+        endOffset -= textNodeLength;
+      }
+    }
+
     range.setStart(startNode, startOffset);
     range.setEnd(endNode, endOffset);
     selection.addRange(range);
