@@ -628,7 +628,9 @@ Color LayoutTheme::DefaultSystemColor(
                  ? Color::FromRGBA32(0xFFFFFFFF)
                  : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kVisitedtext:
-      return Color::FromRGBA32(0xFF551A8B);
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                  ? Color::FromRGBA32(0xFFD0ADF0)
+                  : Color::FromRGBA32(0xFF551A8B);
     case CSSValueID::kSelecteditem:
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);

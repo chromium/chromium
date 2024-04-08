@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] System color VisitedText works
-  assert_not_equals: VisitedText should react to color-scheme got disallowed value "rgb(85, 26, 139)"
-Harness: the test ran to completion.
-
