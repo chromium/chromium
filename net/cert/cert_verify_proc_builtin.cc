@@ -30,7 +30,6 @@
 #include "net/cert/internal/cert_issuer_source_aia.h"
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/known_roots.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/time_conversions.h"
@@ -1015,22 +1014,12 @@ int AssignVerifyResult(X509Certificate* input_cert,
 
   AppendPublicKeyHashes(partial_path, &verify_result->public_key_hashes);
 
-  for (auto it = verify_result->public_key_hashes.rbegin();
-       it != verify_result->public_key_hashes.rend() &&
-       !verify_result->is_issued_by_known_root;
-       ++it) {
-    verify_result->is_issued_by_known_root =
-        GetNetTrustAnchorHistogramIdForSPKI(*it) != 0;
-  }
-
   bool path_is_valid = partial_path.IsValid();
 
   const bssl::ParsedCertificate* trusted_cert = partial_path.GetTrustedCert();
   if (trusted_cert) {
-    if (!verify_result->is_issued_by_known_root) {
-      verify_result->is_issued_by_known_root =
-          trust_store->IsKnownRoot(trusted_cert);
-    }
+    verify_result->is_issued_by_known_root =
+        trust_store->IsKnownRoot(trusted_cert);
 
     verify_result->is_issued_by_additional_trust_anchor =
         trust_store->IsAdditionalTrustAnchor(trusted_cert);
