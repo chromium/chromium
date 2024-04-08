@@ -12,7 +12,7 @@ specific_include_rules = {
   ".*(test|_fuzzer)\.cc": [
     "+cc",
   ],
-  "paint_op_buffer_fuzzer.cc": [
+  "paint_op_raster_fuzzer.cc": [
     "+components/viz/test",
     "+gpu/command_buffer",
   ],

@@ -161,8 +161,8 @@ cc_component("paint") {
   }
 }
 
-fuzzer_test("paint_op_buffer_fuzzer") {
-  sources = [ "paint_op_buffer_fuzzer.cc" ]
+fuzzer_test("paint_op_raster_fuzzer") {
+  sources = [ "paint_op_raster_fuzzer.cc" ]
 
   libfuzzer_options = [ "max_len=4096" ]
 
@@ -173,6 +173,14 @@ fuzzer_test("paint_op_buffer_fuzzer") {
     "//components/viz/test:test_support",
     "//gpu/command_buffer/service:gles2",
   ]
+}
+
+fuzzer_test("paint_op_buffer_fuzzer") {
+  sources = [ "paint_op_buffer_fuzzer.cc" ]
+
+  libfuzzer_options = [ "max_len=4096" ]
+
+  deps = [ "//cc/paint" ]
 }
 
 fuzzer_test("transfer_cache_fuzzer") {
