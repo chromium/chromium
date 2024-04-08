@@ -854,28 +854,10 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentStreetAddresses) {
   profile2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"275 Main Street");
 
   const AutofillProfileComparator comparator("en-US");
-  {
-    // The two profiles have different streets, since the default behavior is to
-    // ignore streets, they are considered equal.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kAutofillUseAddressRewriterInProfileSubsetComparison);
-    EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
-                                               {ADDRESS_HOME_STREET_ADDRESS}));
-    EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
-                                               {ADDRESS_HOME_STREET_ADDRESS}));
-  }
-  {
-    // When we start considering streets in subset comparison, the two profiles
-    // won't be considered equal anymore, since the differences in street
-    // addresses are more than just formatting differences.
-    base::test::ScopedFeatureList scoped_feature_list(
-        features::kAutofillUseAddressRewriterInProfileSubsetComparison);
-    EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
-                                                {ADDRESS_HOME_STREET_ADDRESS}));
-    EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
-                                                {ADDRESS_HOME_STREET_ADDRESS}));
-  }
+  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
+                                              {ADDRESS_HOME_STREET_ADDRESS}));
+  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
+                                              {ADDRESS_HOME_STREET_ADDRESS}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {

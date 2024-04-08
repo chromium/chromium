@@ -159,9 +159,6 @@ class AutofillSuggestionGenerator {
   // `field_types` holds the type of fields relevant for the current suggestion.
   // The profiles passed to this function should already have been matched on
   // `trigger_field_contents_canon` and deduplicated.
-  // `previously_hidden_profiles_guid` stores the guids of the profiles that
-  // were not displayed prior to the effects of the Finch feature
-  // kAutofillUseAddressRewriterInProfileSubsetComparison.
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,

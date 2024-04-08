@@ -1218,22 +1218,17 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   return suggestions;
 }
 
-// TODO(crbug.com/1417975): Remove `trigger_field_type` when
-// `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     const std::vector<const AutofillProfile*>& matched_profiles,
     FieldType trigger_field_type,
     const FieldTypeSet& field_types,
     const AutofillProfileComparator& comparator) {
-  // TODO(crbug.com/1417975): Remove when
-  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
     suggestion_main_text.push_back(GetProfileSuggestionMainText(
         *profile, personal_data().app_locale(), trigger_field_type));
   }
-
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       unique_matched_profiles;
   // Limit number of unique profiles as having too many makes the
@@ -1248,8 +1243,6 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     for (size_t b = 0; b < matched_profiles.size(); ++b) {
       const AutofillProfile* profile_b = matched_profiles[b];
 
-      // TODO(crbug.com/1417975): Remove when
-      // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
       if (profile_a == profile_b ||
           !comparator.Compare(suggestion_main_text[a],
                               suggestion_main_text[b])) {

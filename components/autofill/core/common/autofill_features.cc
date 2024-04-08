@@ -341,13 +341,6 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Makes AutofillProfile::IsSubsetOfForFieldSet stop ignoring street address
-// types during comparison, and instead compares them using address rewriter
-// normalization.
-BASE_FEATURE(kAutofillUseAddressRewriterInProfileSubsetComparison,
-             "AutofillUseAddressRewriterInProfileSubsetComparison",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using the newer i18n address model, overriding the legacy one.
 // This includes:
 // - Using newer i18n address hierarchies.

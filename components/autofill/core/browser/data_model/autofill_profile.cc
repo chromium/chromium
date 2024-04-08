@@ -653,9 +653,6 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     const AutofillProfile& profile,
     const FieldTypeSet& types) const {
   const std::string& app_locale = comparator.app_locale();
-  // TODO(crbug.com/1417975): Remove when
-  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
-  bool has_different_address = false;
   const AddressComponent& address = GetAddress().GetRoot();
   const AddressComponent& other_address = profile.GetAddress().GetRoot();
 
@@ -675,10 +672,10 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       // This will compare street addresses after applying appropriate address
       // rewriter rules to both values, so that for example US streets like
       // `Main Street` and `main st` evaluate to equal.
-      has_different_address =
-          has_different_address ||
-          (address.GetValueForComparisonForType(type, other_address) !=
-           other_address.GetValueForComparisonForType(type, address));
+      if (address.GetValueForComparisonForType(type, other_address) !=
+          other_address.GetValueForComparisonForType(type, address)) {
+        return false;
+      }
     } else if (type == NAME_FULL) {
       if (!comparator.IsNameVariantOf(
               AutofillProfileComparator::NormalizeForComparison(
@@ -708,15 +705,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       return false;
     }
   }
-  // When `kAutofillUseAddressRewriterInProfileSubsetComparison` is disabled,
-  // Ignore street addresses because comparing addresses such as 200 Elm St and
-  // 200 Elm Street could cause |profile| to not be seen as a subset of |this|.
-  // If the form includes a street address, then it is likely it contains
-  // another address field, e.g. a city or postal code, and comparing these
-  // other address parts is more reliable.
-  return !has_different_address ||
-         !base::FeatureList::IsEnabled(
-             features::kAutofillUseAddressRewriterInProfileSubsetComparison);
+  return true;
 }
 
 bool AutofillProfile::IsStrictSupersetOf(
