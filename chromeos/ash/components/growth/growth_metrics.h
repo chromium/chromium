@@ -18,20 +18,43 @@ namespace growth {
 // matching flow. Entries should not be renumbered and numeric values should
 // never be reused. Please keep in sync with "CampaignsManagerError" in
 // src/tools/metrics/histograms/metadata/ash/enums.xml.
-enum class CampaignsManagerError {
-  kCampaignsComponentLoadFail = 0,
-  kCampaignsFileLoadFail = 1,
-  kCampaignsParsingFail = 2,
-  kUserPrefUnavailableAtMatching = 3,
-  kInvalidCampaign = 4,
-  kInvalidTargeting = 5,
-  kInvalidSchedulingTargeting = 6,
-  kInvalidScheduling = 7,
-  kDemoModeAppVersionUnavailable = 8,
-  kSerializingDemoModePayloadFail = 9,
+enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+    CampaignsManagerError {
+      kCampaignsComponentLoadFail = 0,
+      kCampaignsFileLoadFail = 1,
+      kCampaignsParsingFail = 2,
+      kUserPrefUnavailableAtMatching = 3,
+      kInvalidCampaign = 4,
+      kInvalidTargeting = 5,
+      kInvalidSchedulingTargeting = 6,
+      kInvalidScheduling = 7,
+      kDemoModeAppVersionUnavailable = 8,
+      kSerializingDemoModePayloadFail = 9,
+      kOpenUrlParamsParsingFail = 10,
+      kMissingActionType = 11,
+      kInvalidAppTargeting = 12,
+      kInvalidAnchorType = 13,
+      kUnrecognizedBuiltInIcon = 14,
+      kMissingCampaignId = 15,
+      kInvalidAction = 16,
+      kPerformActionFailed = 17,
+      kInvalidEventTargetingCondition = 18,
+      kInvalidEventTargetingConditionParam = 19,
+      kNoOpendedWindowToAnchor = 20,
+      kNoOpendedWindowWidgetToAnchor = 21,
+      kNoRootViewToGetAnchorView = 22,
+      kNudgePayloadInvalidImage = 23,
+      kNudgePayloadMissingBody = 24,
+      kNudgeAnchorViewNotFound = 25,
+      kNotificationPayloadMissingIcon = 26,
+      kNotificationPayloadInvalidIcon = 27,
+      kNotificationPayloadInvalidButton = 28,
+      kNotificationPayloadMissingButtonLabel = 29,
+      kNotificationPayloadMissingButtonAction = 30,
+      kInvalidNotificationPayload = 31,
 
-  kMaxValue = kSerializingDemoModePayloadFail,
-};
+      kMaxValue = kInvalidNotificationPayload,
+    };
 
 // Records errors encountered during the campaigns loading and matching flow.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)

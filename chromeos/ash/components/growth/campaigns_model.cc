@@ -364,7 +364,7 @@ RuntimeTargeting::GetAppsOpened() const {
 
   for (auto& app_targeting_dict : *app_targeting_dicts) {
     if (!app_targeting_dict.is_dict()) {
-      // TODO(b/329124927): Record error.
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidAppTargeting);
       continue;
     }
     app_targetings.push_back(
@@ -392,7 +392,8 @@ Action::~Action() = default;
 std::optional<growth::ActionType> Action::GetActionType() const {
   auto action_type_value = action_dict_->FindInt(kActionTypePath);
   if (!action_type_value) {
-    // TODO: b/330347723 - Record error.
+    LOG(ERROR) << "Missing action type.";
+    RecordCampaignsManagerError(CampaignsManagerError::kMissingActionType);
     return std::nullopt;
   }
 
@@ -417,7 +418,8 @@ const std::optional<WindowAnchorType> Anchor::GetActiveAppWindowAnchorType()
   const auto anchor_type = anchor_dict_->FindInt(kActiveAppWindowAnchorType);
   if (!anchor_type) {
     // Invalid anchor type.
-    // TODO(b/329698643): Record invalid anchor type metric.
+    LOG(ERROR) << "Invalid anchor type";
+    RecordCampaignsManagerError(CampaignsManagerError::kInvalidAnchorType);
     return std::nullopt;
   }
 
@@ -476,7 +478,7 @@ const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // TODO: b/329666969 - Record unrecognized built in icon.
+  RecordCampaignsManagerError(CampaignsManagerError::kUnrecognizedBuiltInIcon);
   LOG(ERROR) << "Unrecognized built in icon: "
              << static_cast<int>(icon.value());
   return std::nullopt;

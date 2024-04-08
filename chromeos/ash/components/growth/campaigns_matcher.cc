@@ -120,6 +120,16 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags) {
   return base::Contains(*experiment_tags, exp_tag);
 }
 
+bool IsCampaignValid(const Campaign* campaign) {
+  if (!GetCampaignId(campaign)) {
+    LOG(ERROR) << "Invalid campaign: missing campaign ID.";
+    RecordCampaignsManagerError(CampaignsManagerError::kMissingCampaignId);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 CampaignsMatcher::CampaignsMatcher(CampaignsManagerClient* client,
@@ -147,7 +157,7 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
 
   for (auto& campaign_value : *targeted_campaigns) {
     const auto* campaign = campaign_value.GetIfDict();
-    if (!campaign) {
+    if (!campaign || !IsCampaignValid(campaign)) {
       LOG(ERROR) << "Invalid campaign.";
       RecordCampaignsManagerError(CampaignsManagerError::kInvalidCampaign);
       continue;
@@ -380,7 +390,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
 
   for (const auto& condition : *conditions) {
     if (!condition.is_list()) {
-      // TODO: b/332405607 - Add metrics to track wrong configurations.
+      RecordCampaignsManagerError(
+          CampaignsManagerError::kInvalidEventTargetingCondition);
       LOG(ERROR) << "Invalid events targeting conditions.";
       return false;
     }
@@ -388,7 +399,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
     bool any_event_matched = false;
     for (const auto& param : condition.GetList()) {
       if (!param.is_string()) {
-        // TODO: b/332405607 - Add metrics to track wrong configurations.
+        RecordCampaignsManagerError(
+            CampaignsManagerError::kInvalidEventTargetingConditionParam);
         LOG(ERROR) << "Invalid events targeting condition.";
         return false;
       }
@@ -435,7 +447,6 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
 
 bool CampaignsMatcher::Matched(const Targetings* targetings,
                                int campaign_id) const {
-  // TODO(b/299305911): Add metrics to track matching latency.
   if (!targetings || targetings->empty()) {
     return true;
   }

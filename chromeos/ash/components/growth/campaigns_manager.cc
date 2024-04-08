@@ -173,7 +173,8 @@ void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
   auto* params = action->GetParams();
   auto action_type = action->GetActionType();
   if (!action_type || !params) {
-    // TODO(b/306023057): Record invalid action error.
+    LOG(ERROR) << "Invalid action when performing action.";
+    RecordCampaignsManagerError(CampaignsManagerError::kInvalidAction);
     return;
   }
 
@@ -198,11 +199,12 @@ void CampaignsManager::PerformAction(int campaign_id,
               return;
             }
 
-            // TODO(b/306023057) Record perform action fail error.
             LOG(ERROR) << "Error running action. Action type: "
                        << int(action_type) << ". Error code:"
                        << static_cast<int>(reason.value_or(
                               growth::ActionResultReason::kUnknown));
+            RecordCampaignsManagerError(
+                CampaignsManagerError::kPerformActionFailed);
           },
           action_type));
 }

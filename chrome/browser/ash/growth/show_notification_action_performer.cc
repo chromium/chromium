@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -60,14 +61,16 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
   const auto* icon_value = params->FindDict(kIconPath);
   if (!icon_value) {
     // TODO: b/331633771 - Consider adding default icon for notification.
-    // TODO: b/330245345 - Records invalid icon error.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNotificationPayloadMissingIcon);
     LOG(ERROR) << "icon is required for notification.";
     return nullptr;
   }
 
   const auto* icon = growth::Image(icon_value).GetVectorIcon();
   if (!icon) {
-    // TODO: b/330245345 - Records invalid icon error.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNotificationPayloadInvalidIcon);
     return nullptr;
   }
   show_notification_params->icon = icon;
@@ -78,13 +81,16 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
     for (auto button_it = buttons->begin(); button_it != buttons->end();
          button_it++) {
       if (!button_it->is_dict()) {
-        // TODO: b/330245345 - Records invalid button error.
+        growth::RecordCampaignsManagerError(
+            growth::CampaignsManagerError::kNotificationPayloadInvalidButton);
         continue;
       }
 
       auto* const label = button_it->GetDict().FindString(kLabelPath);
       if (!label) {
-        // TODO(b/330245345): Records missing button label error.
+        growth::RecordCampaignsManagerError(
+            growth::CampaignsManagerError::
+                kNotificationPayloadMissingButtonLabel);
         continue;
       }
 
@@ -108,8 +114,8 @@ void ShowNotificationActionPerformer::Run(
   auto show_notification_params =
       ParseShowNotificationActionPerformerParams(params);
   if (!show_notification_params) {
-    // TODO(b/306023057): Record an UMA metric that parsing the params
-    // has failed.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kInvalidNotificationPayload);
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
     return;
@@ -173,7 +179,8 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   }
   const auto* action_value = button_value.GetDict().FindDict(kActionPath);
   if (!action_value) {
-    // TODO: b/330245345 - Log error metric.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNotificationPayloadMissingButtonAction);
     LOG(ERROR) << "Missing action.";
     return;
   }

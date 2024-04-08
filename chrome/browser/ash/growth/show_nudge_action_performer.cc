@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -144,7 +145,9 @@ void MaybeSetImageData(const base::Value::Dict* image_value,
   auto image_model = growth::Image(image_value).GetImage();
   if (!image_model) {
     // No image model matched the image payload.
-    // TODO(b/329666969): Record invalid image model error.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNudgePayloadInvalidImage);
+
     return;
   }
 
@@ -161,7 +164,8 @@ views::Widget* GetTriggeringWindowWidget() {
 
   auto* window = session->GetOpenedWindow();
   if (!window) {
-    // TODO: b/331212624 - Log error metric.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNoOpendedWindowToAnchor);
     LOG(ERROR) << "Error: No app window";
     return nullptr;
   }
@@ -169,7 +173,8 @@ views::Widget* GetTriggeringWindowWidget() {
   auto* widget =
       views::Widget::GetWidgetForNativeWindow(window->GetToplevelWindow());
   if (!widget) {
-    // TODO: b/331212624 - Log error metric.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNoOpendedWindowWidgetToAnchor);
     LOG(ERROR) << "Error: widget not found";
     return nullptr;
   }
@@ -184,7 +189,8 @@ views::View* GetWindowCaptionButtonContainer() {
   auto* targeting_window_widget = GetTriggeringWindowWidget();
   auto* root_view = targeting_window_widget->GetRootView();
   if (!root_view) {
-    // TODO: b/331212624 - Log error metric.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNoRootViewToGetAnchorView);
     LOG(ERROR) << "Error: root view not found";
     return nullptr;
   }
@@ -281,7 +287,8 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   auto* body_text = GetNudgeBody(nudge_payload);
   if (!body_text) {
-    // TODO(b/330378048): Records parsing error.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNudgePayloadMissingBody);
     return false;
   }
 
@@ -290,7 +297,8 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   auto anchor_view = GetAnchor(nudge_payload);
   if (!anchor_view) {
     // No targeted anchor view found. Skip showing nudge.
-    // TODO(b/330378048): Records a error metric.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
     LOG(ERROR) << "Targeted anchor view is not found. Skip showing nudge.";
     return false;
   }
