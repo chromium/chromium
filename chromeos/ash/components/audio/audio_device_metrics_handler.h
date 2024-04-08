@@ -36,6 +36,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // histogram metrics.
   static constexpr uint32_t kMaxAudioDevicesCount = 10;
 
+  // An enum histogram metric to measure the performance of audio selection
+  // mechanism.
+  static constexpr char kAudioSelectionPerformance[] =
+      "ChromeOS.AudioSelection";
+
   // A series of user action metrics to record when user switches the
   // input/output audio device and if this switch overrides the system decision.
   static constexpr char kUserActionSwitchInput[] =
@@ -250,6 +255,73 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   static constexpr char kConsecutiveOutputDevicsAdded[] =
       "ChromeOS.AudioSelection.Output.ConsecutiveDevicesChangeTimeElapsed.Add";
 
+  // A series of audio selection events used to record the audio selection
+  // performance. Note that these values are persisted to histograms so existing
+  // values should remain unchanged and new values should be added to the end.
+  enum class AudioSelectionEvents {
+    // The system switched the input device.
+    kSystemSwitchInput = 0,
+    // The system switched the output device.
+    kSystemSwitchOutput = 1,
+    // The system did not switch the input device.
+    kSystemNotSwitchInput = 2,
+    // The system did not switch the output device.
+    kSystemNotSwitchOutput = 3,
+    // User overrode the system decision to switch input device.
+    kUserOverrideSystemSwitchInput = 4,
+    // User overrode the system decision to switch output device.
+    kUserOverrideSystemSwitchOutput = 5,
+    // User overrode the system decision to not switch input device.
+    kUserOverrideSystemNotSwitchInput = 6,
+    // User overrode the system decision to not switch output device.
+    kUserOverrideSystemNotSwitchOutput = 7,
+    // The system switched the input device (for the first time after the system
+    // booted or chrome restarted).
+    kSystemSwitchInputChromeRestart = 8,
+    // The system switched the output device (for the first time after the
+    // system booted or chrome restarted).
+    kSystemSwitchOutputChromeRestart = 9,
+    // The system did not switch the input device (for the first time after the
+    // system booted or chrome restarted).
+    kSystemNotSwitchInputChromeRestart = 10,
+    // The system did not switch the output device (for the first time after the
+    // system booted or chrome restarted).
+    kSystemNotSwitchOutputChromeRestart = 11,
+    // User overrode the system decision to switch input device (for the first
+    // time after the system booted or chrome restarted).
+    kUserOverrideSystemSwitchInputChromeRestart = 12,
+    // User overrode the system decision to switch output device (for the first
+    // time after the system booted or chrome restarted).
+    kUserOverrideSystemSwitchOutputChromeRestart = 13,
+    // User overrode the system decision to not switch input device (for the
+    // first time after the system booted or chrome restarted).
+    kUserOverrideSystemNotSwitchInputChromeRestart = 14,
+    // User overrode the system decision to not switch output device (for the
+    // first time after the system booted or chrome restarted).
+    kUserOverrideSystemNotSwitchOutputChromeRestart = 15,
+    // The system switched the input device (for hot plug/unplug cases).
+    kSystemSwitchInputNonChromeRestart = 16,
+    // The system switched the output device (for hot plug/unplug cases).
+    kSystemSwitchOutputNonChromeRestart = 17,
+    // The system did not switch the input device (for hot plug/unplug cases).
+    kSystemNotSwitchInputNonChromeRestart = 18,
+    // The system did not switch the output device (for hot plug/unplug cases).
+    kSystemNotSwitchOutputNonChromeRestart = 19,
+    // User overrode the system decision to switch input device (for hot
+    // plug/unplug cases).
+    kUserOverrideSystemSwitchInputNonChromeRestart = 20,
+    // User overrode the system decision to switch output device (for hot
+    // plug/unplug cases).
+    kUserOverrideSystemSwitchOutputNonChromeRestart = 21,
+    // User overrode the system decision to not switch input device (for hot
+    // plug/unplug cases).
+    kUserOverrideSystemNotSwitchInputNonChromeRestart = 22,
+    // User overrode the system decision to not switch output device (for hot
+    // plug/unplug cases).
+    kUserOverrideSystemNotSwitchOutputNonChromeRestart = 23,
+    kMaxValue = kUserOverrideSystemNotSwitchOutputNonChromeRestart,
+  };
+
   // Record the histogram of system decision of switching or not switching after
   // audio device is added or removed. Only record if there are more than one
   // available devices.
@@ -275,7 +347,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Record user overrides system decision metrics.
   void RecordUserOverrideMetrics(const std::string_view histogram_name,
-                                 int time_delta) const;
+                                 AudioSelectionEvents audio_selection_event,
+                                 int time_delta_since_system_decision) const;
 
   // Record user overrides system decision metrics in the case of chrome
   // restarts, including system boots and users sign out, as well as the case of
@@ -284,7 +357,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       bool is_input,
       bool is_switched,
       bool is_chrome_restarts,
-      int time_delta) const;
+      int time_delta_since_system_decision) const;
 
   // Record the time elaspsed between two consecutive devices change event,
   // including devices added/removed and devices changed.

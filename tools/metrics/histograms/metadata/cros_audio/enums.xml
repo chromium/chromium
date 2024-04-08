@@ -56,6 +56,39 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unmuted"/>
 </enum>
 
+<enum name="AudioSelectionEvents">
+  <int value="0" label="Input|System switched"/>
+  <int value="1" label="Output|System switched"/>
+  <int value="2" label="Input|System didn't switch"/>
+  <int value="3" label="Output|System didn't switch"/>
+  <int value="4" label="Input|User overrode|System switched"/>
+  <int value="5" label="Output|User overrode|System switched"/>
+  <int value="6" label="Input|User overrode|System didn't switch"/>
+  <int value="7" label="Output|User overrode|System didn't switch"/>
+  <int value="8" label="Input|System switched|Chrome restarts"/>
+  <int value="9" label="Output|System switched|Chrome restarts"/>
+  <int value="10" label="Input|System didn't switch|Chrome restarts"/>
+  <int value="11" label="Output|System didn't switch|Chrome restarts"/>
+  <int value="12" label="Input|User overrode|System switched|Chrome restarts"/>
+  <int value="13" label="Output|User overrode|System switched|Chrome restarts"/>
+  <int value="14"
+      label="Input|User overrode|System didn't switch|Chrome restarts"/>
+  <int value="15"
+      label="Output|User overrode|System didn't switch|Chrome restarts"/>
+  <int value="16" label="Input|System switched|Non Chrome restarts"/>
+  <int value="17" label="Output|System switched|Non Chrome restarts"/>
+  <int value="18" label="Input|System didn't switch|Non Chrome restarts"/>
+  <int value="19" label="Output|System didn't switch|Non Chrome restarts"/>
+  <int value="20"
+      label="Input|User overrode|System switched|Non Chrome restarts"/>
+  <int value="21"
+      label="Output|User overrode|System switched|Non Chrome restarts"/>
+  <int value="22"
+      label="Input|User overrode|System didn't switch|Non Chrome restarts"/>
+  <int value="23"
+      label="Output|User overrode|System didn't switch|Non Chrome restarts"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

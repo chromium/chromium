@@ -22,6 +22,20 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="ChromeOS.AudioSelection" enum="AudioSelectionEvents"
+    expires_after="2025-03-31">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when audio selection events described in AudioSelectionEvents
+    happen. For example, the system switches or does not switch active audio
+    device after the device is added or removed, the user overrides the system
+    switching or not switching decision, etc. The user-override metrics are only
+    recorded if they occur within the first hour after the system decision was
+    made. Do not record if there is no alternative available audio device.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.ConsecutiveDevicesChangeTimeElapsed.{ChangeType}"
     units="seconds" expires_after="2025-02-25">
