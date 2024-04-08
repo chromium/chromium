@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "mall_context.proto" ]
+
+  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+}
+
+source_set("mall") {
+  sources = [
+    "mall_features.cc",
+    "mall_features.h",
+    "mall_url.cc",
+    "mall_url.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chromeos/constants",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "mall_url_unittest.cc" ]
+
+  deps = [
+    ":mall",
+    ":proto",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/system",
+    "//chromeos/constants",
+    "//testing/gtest",
+    "//url",
+  ]
+}

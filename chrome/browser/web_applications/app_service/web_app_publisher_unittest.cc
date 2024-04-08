@@ -16,10 +16,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -27,7 +31,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/constants/url_constants.h"
+#include "net/base/url_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -205,8 +215,7 @@ TEST_F(WebAppPublisherTest, UninstallWebApp_AppServiceShortcutEnabled) {
       cache.ForOneApp(web_shortcut_id, [](const apps::AppUpdate& update) {});
   ASSERT_FALSE(found);
 }
-
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -279,6 +288,37 @@ TEST_P(WebAppPublisherTest_Shortstand, GetMenuModelCrosapi) {
   for (size_t i = 1; i < menu_items.items.size(); ++i) {
     EXPECT_EQ(menu_items.items[i]->type, apps::MenuItemType::kCommand);
   }
+}
+
+class WebAppPublisherTest_Mall : public WebAppPublisherTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kCrosMall};
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+};
+
+// Verifies that when the `kCrosMall` feature is enabled, launches of the Mall
+// app have a "context" URL parameter appended.
+TEST_F(WebAppPublisherTest_Mall, LaunchMallAppWithContext) {
+  CreateWebApp(GURL(chromeos::kAppMallBaseUrl), "Mall");
+
+  auto* provider = WebAppProvider::GetForTest(profile());
+
+  base::test::TestFuture<apps::AppLaunchParams,
+                         web_app::LaunchWebAppWindowSetting>
+      app_launch_future;
+  static_cast<web_app::FakeWebAppUiManager*>(&provider->ui_manager())
+      ->SetOnLaunchWebAppCallback(app_launch_future.GetRepeatingCallback());
+
+  proxy()->Launch(kMallAppId, 0, apps::LaunchSource::kFromTest);
+  auto [params, setting] = app_launch_future.Take();
+
+  ASSERT_TRUE(params.intent->url.has_value());
+
+  std::string context_value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(*params.intent->url, "context",
+                                         &context_value));
+  ASSERT_FALSE(context_value.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(

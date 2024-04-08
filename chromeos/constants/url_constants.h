@@ -12,6 +12,10 @@ namespace chromeos {
 // The URI scheme for triggering app installs from Almanac.
 inline constexpr std::string_view kAppInstallUriScheme = "almanac";
 
+// The base URL for the Mall app.
+inline constexpr std::string_view kAppMallBaseUrl =
+    "https://discover.apps.chrome/";
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_CONSTANTS_URL_CONSTANTS_H_

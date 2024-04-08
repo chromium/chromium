@@ -6317,6 +6317,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom",
+    "//chrome/browser/ash/mall:unit_tests",
     "//chrome/browser/ash/nearby:bluetooth_adapter_manager",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ash/power/ml/smart_dim",

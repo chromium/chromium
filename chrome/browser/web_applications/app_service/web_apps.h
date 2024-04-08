@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -28,6 +29,10 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#endif
 
 static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
 
@@ -158,6 +163,11 @@ class WebApps final : public apps::AppPublisher,
       apps::MenuItems menu_items,
       base::OnceCallback<void(apps::MenuItems)> callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
+
+  void LaunchMallWithContext(int32_t event_flags,
+                             apps::LaunchSource launch_source,
+                             apps::WindowInfoPtr window_info,
+                             apps::DeviceInfo device_info);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;
@@ -169,6 +179,7 @@ class WebApps final : public apps::AppPublisher,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const raw_ptr<apps::InstanceRegistry> instance_registry_;
+  apps::DeviceInfoManager device_info_manager_;
 #endif
 
   WebAppPublisherHelper publisher_helper_;
