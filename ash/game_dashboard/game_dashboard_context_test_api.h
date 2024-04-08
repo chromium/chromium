@@ -110,7 +110,7 @@ class GameDashboardContextTestApi {
   IconButton* GetToolbarScreenshotButton();
 
   // Returns the quadrant that the toolbar is currently placed in.
-  GameDashboardContext::ToolbarSnapLocation GetToolbarSnapLocation() const;
+  GameDashboardToolbarSnapLocation GetToolbarSnapLocation() const;
 
   // Opens the toolbar.
   // Before opening the toolbar, verifies the main menu is open and the toolbar

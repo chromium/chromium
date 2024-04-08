@@ -498,6 +498,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
             : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
 
     main_menu_->UpdateGameControlsTile();
+    RecordGameDashboardControlsFeatureToggleState(is_toggled);
   }
 
   void UpdateSubtitle(bool is_feature_enabled) {
@@ -537,6 +538,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
     RecordGameDashboardEditControlsWithEmptyState(
         main_menu_->context_->app_id(),
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
+    RecordGameDashboardFunctionTriggered(
+        GameDashboardFunction::kGameControlsSetupOrEdit);
   }
 
   aura::Window* GetGameWindow() { return main_menu_->context_->game_window(); }
@@ -772,24 +775,28 @@ void GameDashboardMainMenuView::OnSettingsBackButtonPressed() {
   settings_view_container_->SetVisible(false);
   main_menu_container_->SetVisible(true);
   SizeToContents();
+  RecordGameDashboardFunctionTriggered(GameDashboardFunction::kSettingBack);
 }
 
 void GameDashboardMainMenuView::OnWelcomeDialogSwitchPressed() {
   const bool new_state = welcome_dialog_settings_switch_->GetIsOn();
   game_dashboard_utils::SetShowWelcomeDialog(new_state);
   OnWelcomeDialogSwitchStateChanged(new_state);
+  RecordGameDashboardWelcomeDialogNotificationToggleState(new_state);
 }
 
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
   auto* game_window = context_->game_window();
+  const bool was_toggled = game_controls_tile_->IsToggled();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
           ArcGameControlsFlag::kHint,
-          /*enable_flag=*/!game_controls_tile_->IsToggled()));
-
+          /*enable_flag=*/!was_toggled));
   UpdateGameControlsTile();
+  RecordGameDashboardControlsHintToggleSource(GameDashboardMenu::kMainMenu,
+                                              !was_toggled);
 }
 
 void GameDashboardMainMenuView::UpdateGameControlsTile() {
@@ -807,6 +814,7 @@ void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
   context_->CloseMainMenu(
       GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   GameDashboardController::Get()->ShowResizeToggleMenu(context_->game_window());
+  RecordGameDashboardFunctionTriggered(GameDashboardFunction::kScreenSize);
 }
 
 void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
@@ -814,12 +822,14 @@ void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
       ShellDelegate::FeedbackSource::kGameDashboard,
       /*description_template=*/"#GameDashboard\n\n",
       /*category_tag=*/std::string());
+  RecordGameDashboardFunctionTriggered(GameDashboardFunction::kFeedback);
 }
 
 void GameDashboardMainMenuView::OnHelpButtonPressed() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+  RecordGameDashboardFunctionTriggered(GameDashboardFunction::kHelp);
 }
 
 void GameDashboardMainMenuView::OnSettingsButtonPressed() {
@@ -831,6 +841,7 @@ void GameDashboardMainMenuView::OnSettingsButtonPressed() {
     AddSettingsViews();
   }
   SizeToContents();
+  RecordGameDashboardFunctionTriggered(GameDashboardFunction::kSetting);
 }
 
 void GameDashboardMainMenuView::AddMainMenuViews() {

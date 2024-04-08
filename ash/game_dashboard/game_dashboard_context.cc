@@ -105,7 +105,7 @@ void MaybeUpdateCameraPreview() {
 GameDashboardContext::GameDashboardContext(aura::Window* game_window)
     : game_window_(game_window),
       app_id_(*game_window->GetProperty(kAppIDKey)),
-      toolbar_snap_location_(ToolbarSnapLocation::kTopRight) {
+      toolbar_snap_location_(GameDashboardToolbarSnapLocation::kTopRight) {
   DCHECK(game_window_);
   window_state_observation_.Observe(WindowState::Get(game_window_));
   show_welcome_dialog_ = game_dashboard_utils::ShouldShowWelcomeDialog();
@@ -191,11 +191,12 @@ void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
   EnsureMainMenuAboveToolbar();
 }
 
-void GameDashboardContext::SetToolbarSnapLocation(
-    ToolbarSnapLocation new_location) {
+void GameDashboardContext::SetGameDashboardToolbarSnapLocation(
+    GameDashboardToolbarSnapLocation new_location) {
   toolbar_snap_location_ = new_location;
   AnimateToolbarWidgetBoundsChange(CalculateToolbarWidgetBounds());
   MaybeUpdateCameraPreview();
+  RecordGameDashboardToolbarNewLocation(new_location);
 }
 
 void GameDashboardContext::OnWindowBoundsChanged() {
@@ -580,27 +581,27 @@ const gfx::Rect GameDashboardContext::CalculateToolbarWidgetBounds() {
   gfx::Point origin;
 
   switch (toolbar_snap_location_) {
-    case ToolbarSnapLocation::kTopRight:
+    case GameDashboardToolbarSnapLocation::kTopRight:
       origin =
           gfx::Point(game_bounds.right() - game_dashboard::kToolbarEdgePadding -
                          preferred_size.width(),
                      game_bounds.y() + game_dashboard::kToolbarEdgePadding +
                          frame_header_height);
       break;
-    case ToolbarSnapLocation::kTopLeft:
+    case GameDashboardToolbarSnapLocation::kTopLeft:
       origin =
           gfx::Point(game_bounds.x() + game_dashboard::kToolbarEdgePadding,
                      game_bounds.y() + game_dashboard::kToolbarEdgePadding +
                          frame_header_height);
       break;
-    case ToolbarSnapLocation::kBottomRight:
+    case GameDashboardToolbarSnapLocation::kBottomRight:
       origin = gfx::Point(
           game_bounds.right() - game_dashboard::kToolbarEdgePadding -
               preferred_size.width(),
           game_bounds.bottom() - game_dashboard::kToolbarEdgePadding -
               preferred_size.height());
       break;
-    case ToolbarSnapLocation::kBottomLeft:
+    case GameDashboardToolbarSnapLocation::kBottomLeft:
       origin = gfx::Point(game_bounds.x() + game_dashboard::kToolbarEdgePadding,
                           game_bounds.bottom() -
                               game_dashboard::kToolbarEdgePadding -

@@ -39,14 +39,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
                                         public views::WidgetObserver,
                                         public WindowStateObserver {
  public:
-  // Indicator for the 4 quadrants that the toolbar is able to be placed.
-  enum class ToolbarSnapLocation {
-    kTopLeft,
-    kTopRight,
-    kBottomLeft,
-    kBottomRight
-  };
-
   explicit GameDashboardContext(aura::Window* game_window);
   GameDashboardContext(const GameDashboardContext&) = delete;
   GameDashboardContext& operator=(const GameDashboardContext&) = delete;
@@ -66,7 +58,7 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
     return game_dashboard_button_widget_.get();
   }
 
-  ToolbarSnapLocation toolbar_snap_location() const {
+  GameDashboardToolbarSnapLocation toolbar_snap_location() const {
     return toolbar_snap_location_;
   }
 
@@ -99,7 +91,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // Reassigns the new `toolbar_snap_location_` and performs an animation as the
   // toolbar moves to its new location.
-  void SetToolbarSnapLocation(ToolbarSnapLocation new_location);
+  void SetGameDashboardToolbarSnapLocation(
+      GameDashboardToolbarSnapLocation new_location);
 
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
@@ -242,7 +235,7 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   std::unique_ptr<views::Widget> welcome_dialog_widget_;
 
   // The indicator of the current corner that the toolbar is placed.
-  ToolbarSnapLocation toolbar_snap_location_;
+  GameDashboardToolbarSnapLocation toolbar_snap_location_;
 
   // The `GameDashboardButton` view in the `game_dashboard_button_widget_`.
   // Owned by the views hierarchy.

@@ -91,4 +91,49 @@ void RecordGameDashboardEditControlsWithEmptyState(const std::string& app_id,
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RecordGameDashboardToolbarClickToExpandState(bool is_expanded) {
+  base::UmaHistogramBoolean(
+      BuildGameDashboardHistogramName(
+          kGameDashboardToolbarClickToExpandStateHistogram),
+      is_expanded);
+}
+
+void RecordGameDashboardToolbarNewLocation(
+    GameDashboardToolbarSnapLocation location) {
+  base::UmaHistogramEnumeration(BuildGameDashboardHistogramName(
+                                    kGameDashboardToolbarNewLocationHistogram),
+                                location);
+}
+
+void RecordGameDashboardFunctionTriggered(GameDashboardFunction function) {
+  base::UmaHistogramEnumeration(
+      BuildGameDashboardHistogramName(kGameDashboardFunctionTriggeredHistogram),
+      function);
+}
+
+void RecordGameDashboardWelcomeDialogNotificationToggleState(bool toggled_on) {
+  base::UmaHistogramBoolean(
+      BuildGameDashboardHistogramName(
+          kGameDashboardWelcomeDialogNotificationToggleStateHistogram),
+      toggled_on);
+}
+
+void RecordGameDashboardControlsHintToggleSource(GameDashboardMenu menu,
+                                                 bool toggled_on) {
+  base::UmaHistogramEnumeration(
+      BuildGameDashboardHistogramName(
+          kGameDashboardControlsHintToggleSourceHistogram)
+          .append(kGameDashboardHistogramSeparator)
+          .append(toggled_on ? kGameDashboardHistogramOn
+                             : kGameDashboardHistogramOff),
+      menu);
+}
+
+void RecordGameDashboardControlsFeatureToggleState(bool toggled_on) {
+  base::UmaHistogramBoolean(
+      BuildGameDashboardHistogramName(
+          kGameDashboardControlsFeatureToggleStateHistogram),
+      toggled_on);
+}
+
 }  // namespace ash

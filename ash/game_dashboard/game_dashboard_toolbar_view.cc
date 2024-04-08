@@ -42,8 +42,6 @@ namespace ash {
 
 namespace {
 
-using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
-
 // Corner radius of the toolbar view.
 constexpr int kCornerRadius = 20;
 // Horizontal inset for the border around the toolbar.
@@ -70,45 +68,50 @@ std::unique_ptr<IconButton> CreateIconButton(
   return button;
 }
 
-ToolbarSnapLocation CalculateToolbarSnapLocation(
+GameDashboardToolbarSnapLocation CalculateGameDashboardToolbarSnapLocation(
     const gfx::Point& toolbar_center_point,
     const gfx::Rect& game_window_screen_bounds) {
   const auto game_window_center = game_window_screen_bounds.CenterPoint();
   if (toolbar_center_point.x() < game_window_center.x()) {
     return toolbar_center_point.y() < game_window_center.y()
-               ? ToolbarSnapLocation::kTopLeft
-               : ToolbarSnapLocation::kBottomLeft;
+               ? GameDashboardToolbarSnapLocation::kTopLeft
+               : GameDashboardToolbarSnapLocation::kBottomLeft;
   }
   return toolbar_center_point.y() < game_window_center.y()
-             ? ToolbarSnapLocation::kTopRight
-             : ToolbarSnapLocation::kBottomRight;
+             ? GameDashboardToolbarSnapLocation::kTopRight
+             : GameDashboardToolbarSnapLocation::kBottomRight;
 }
 
-ToolbarSnapLocation GetNextHorizontalSnapLocation(ToolbarSnapLocation current,
-                                                  bool going_left) {
+GameDashboardToolbarSnapLocation GetNextHorizontalSnapLocation(
+    GameDashboardToolbarSnapLocation current,
+    bool going_left) {
   switch (current) {
-    case ToolbarSnapLocation::kTopLeft:
-      return going_left ? current : ToolbarSnapLocation::kTopRight;
-    case ToolbarSnapLocation::kTopRight:
-      return going_left ? ToolbarSnapLocation::kTopLeft : current;
-    case ToolbarSnapLocation::kBottomLeft:
-      return going_left ? current : ToolbarSnapLocation::kBottomRight;
-    case ToolbarSnapLocation::kBottomRight:
-      return going_left ? ToolbarSnapLocation::kBottomLeft : current;
+    case GameDashboardToolbarSnapLocation::kTopLeft:
+      return going_left ? current : GameDashboardToolbarSnapLocation::kTopRight;
+    case GameDashboardToolbarSnapLocation::kTopRight:
+      return going_left ? GameDashboardToolbarSnapLocation::kTopLeft : current;
+    case GameDashboardToolbarSnapLocation::kBottomLeft:
+      return going_left ? current
+                        : GameDashboardToolbarSnapLocation::kBottomRight;
+    case GameDashboardToolbarSnapLocation::kBottomRight:
+      return going_left ? GameDashboardToolbarSnapLocation::kBottomLeft
+                        : current;
   }
 }
 
-ToolbarSnapLocation GetNextVerticalSnapLocation(ToolbarSnapLocation current,
-                                                bool going_up) {
+GameDashboardToolbarSnapLocation GetNextVerticalSnapLocation(
+    GameDashboardToolbarSnapLocation current,
+    bool going_up) {
   switch (current) {
-    case ToolbarSnapLocation::kTopLeft:
-      return going_up ? current : ToolbarSnapLocation::kBottomLeft;
-    case ToolbarSnapLocation::kTopRight:
-      return going_up ? current : ToolbarSnapLocation::kBottomRight;
-    case ToolbarSnapLocation::kBottomLeft:
-      return going_up ? ToolbarSnapLocation::kTopLeft : current;
-    case ToolbarSnapLocation::kBottomRight:
-      return going_up ? ToolbarSnapLocation::kTopRight : current;
+    case GameDashboardToolbarSnapLocation::kTopLeft:
+      return going_up ? current : GameDashboardToolbarSnapLocation::kBottomLeft;
+    case GameDashboardToolbarSnapLocation::kTopRight:
+      return going_up ? current
+                      : GameDashboardToolbarSnapLocation::kBottomRight;
+    case GameDashboardToolbarSnapLocation::kBottomLeft:
+      return going_up ? GameDashboardToolbarSnapLocation::kTopLeft : current;
+    case GameDashboardToolbarSnapLocation::kBottomRight:
+      return going_up ? GameDashboardToolbarSnapLocation::kTopRight : current;
   }
 }
 
@@ -274,9 +277,10 @@ void GameDashboardToolbarView::RepositionToolbar(const gfx::Vector2d& offset) {
 
 void GameDashboardToolbarView::EndDraggingToolbar(const gfx::Vector2d& offset) {
   RepositionToolbar(offset);
-  context_->SetToolbarSnapLocation(CalculateToolbarSnapLocation(
-      GetWidget()->GetWindowBoundsInScreen().CenterPoint(),
-      context_->game_window()->GetBoundsInScreen()));
+  context_->SetGameDashboardToolbarSnapLocation(
+      CalculateGameDashboardToolbarSnapLocation(
+          GetWidget()->GetWindowBoundsInScreen().CenterPoint(),
+          context_->game_window()->GetBoundsInScreen()));
 }
 
 void GameDashboardToolbarView::UpdateViewForGameControls(
@@ -307,13 +311,14 @@ bool GameDashboardToolbarView::OnKeyPressed(const ui::KeyEvent& event) {
   switch (event_key_code) {
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT:
-      context_->SetToolbarSnapLocation(GetNextHorizontalSnapLocation(
-          current_snap_location,
-          /*going_left=*/event_key_code == ui::VKEY_LEFT));
+      context_->SetGameDashboardToolbarSnapLocation(
+          GetNextHorizontalSnapLocation(
+              current_snap_location,
+              /*going_left=*/event_key_code == ui::VKEY_LEFT));
       return true;
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      context_->SetToolbarSnapLocation(GetNextVerticalSnapLocation(
+      context_->SetGameDashboardToolbarSnapLocation(GetNextVerticalSnapLocation(
           current_snap_location, /*going_up=*/event_key_code == ui::VKEY_UP));
       return true;
     default:
@@ -333,17 +338,21 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
     }
   }
   UpdateGamepadButtonTooltipText();
+  RecordGameDashboardToolbarClickToExpandState(is_expanded_);
   context_->MaybeUpdateToolbarWidgetBounds();
 }
 
 void GameDashboardToolbarView::OnGameControlsButtonPressed() {
   auto* game_window = context_->game_window();
+  const bool was_toggled = game_controls_button_->toggled();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
           static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kHint),
-          /*enable_flag=*/!game_controls_button_->toggled()));
+          /*enable_flag=*/!was_toggled));
+  RecordGameDashboardControlsHintToggleSource(GameDashboardMenu::kToolbar,
+                                              !was_toggled);
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {

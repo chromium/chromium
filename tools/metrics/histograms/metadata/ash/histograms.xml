@@ -3690,6 +3690,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.GameDashboard.ControlsFeatureToggleState"
+    enum="BooleanEnabled" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records whether the game controls feature is toggled on or off.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.ControlsHintToggleSource.{OnOrOff}"
+    enum="GameDashboardMenu" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>Records where the game controls hint is toggled {OnOrOff}.</summary>
+  <token key="OnOrOff">
+    <variant name="Off" summary="game controls hint off"/>
+    <variant name="On" summary="game controls hint on"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.GameDashboard.EditControlsWithEmptyState"
     enum="BooleanEnabled" expires_after="2025-02-22">
   <owner>cuicuiruan@google.com</owner>
@@ -3697,6 +3717,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether Game Controls is in the empty state when users start to edit
     the Game Controls.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.FunctionTriggered"
+    enum="GameDashboardFunction" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records how often a specific function within the game dashboard is
+    triggered.
   </summary>
 </histogram>
 
@@ -3731,11 +3761,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.GameDashboard.ToolbarClickToExpandState"
+    enum="BooleanEnabled" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records whether the tool bar is toggled to expanded or collapsed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.ToolbarNewLocation"
+    enum="GameDashboardToolbarSnapLocation" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>Records where the toolbar is repositioned.</summary>
+</histogram>
+
 <histogram name="Ash.GameDashboard.ToolbarToggleState" enum="BooleanEnabled"
     expires_after="2025-02-22">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>Records whether the tool bar is toggled on or off.</summary>
+</histogram>
+
+<histogram name="Ash.GameDashboard.WelcomeDialogNotificationToggleState"
+    enum="BooleanEnabled" expires_after="2025-04-04">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records whether the welcome notification is toggled on or off.
+  </summary>
 </histogram>
 
 <histogram

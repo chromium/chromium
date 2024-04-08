@@ -254,7 +254,7 @@ IconButton* GameDashboardContextTestApi::GetToolbarScreenshotButton() {
           GameDashboardToolbarView::ToolbarViewId::kScreenshotButton)));
 }
 
-GameDashboardContext::ToolbarSnapLocation
+GameDashboardToolbarSnapLocation
 GameDashboardContextTestApi::GetToolbarSnapLocation() const {
   return context_->toolbar_snap_location_;
 }

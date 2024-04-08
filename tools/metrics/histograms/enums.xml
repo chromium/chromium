@@ -12204,6 +12204,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Overflow"/>
 </enum>
 
+<enum name="GameDashboardFunction">
+  <int value="0" label="Feedback"/>
+  <int value="1" label="Help"/>
+  <int value="2" label="Setting"/>
+  <int value="3" label="Setting back"/>
+  <int value="4" label="Screen size"/>
+  <int value="5" label="Controls setup or edit"/>
+</enum>
+
 <enum name="GameDashboardMainMenuToggleMethod">
   <int value="0" label="Game dashboard button"/>
   <int value="1" label="Search plus G"/>
@@ -12217,6 +12226,13 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="GameDashboardMenu">
   <int value="0" label="Main menu"/>
   <int value="1" label="Toolbar"/>
+</enum>
+
+<enum name="GameDashboardToolbarSnapLocation">
+  <int value="0" label="Top left"/>
+  <int value="1" label="Top right"/>
+  <int value="2" label="Bottom right"/>
+  <int value="3" label="Bottom left"/>
 </enum>
 
 <enum name="GameModeResult">
