@@ -16,14 +16,17 @@ found in the LICENSE file.
             android:id="@+id/creation_dialog_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp" >
 
             <androidx.appcompat.widget.DialogTitle
                 android:id="@+id/creation_dialog_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:layout_marginHorizontal="@dimen/tab_group_creation_dialog_horizontal_margin"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
                 android:text="@string/tab_group_creation_dialog_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
@@ -31,7 +34,6 @@ found in the LICENSE file.
                         android:id="@+id/tab_group_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/tab_group_creation_dialog_horizontal_margin"
                         android:layout_marginVertical="8dp"
                         app:emptyErrorMessage="@string/tab_group_creation_missing_title">
 
