@@ -52,6 +52,7 @@ import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import type {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {PowerBookmarksDragManager} from './power_bookmarks_drag_manager.js';
 import type {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
+import {TEMP_FOLDER_ID_PREFIX} from './power_bookmarks_edit_dialog.js';
 import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import type {Label} from './power_bookmarks_service.js';
@@ -947,6 +948,13 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (folder.id === parentId) {
         parentId = newFolder.id;
       }
+      // Removing folders added in edit menu while editing a bookmark as they
+      // are made with TEMP_FOLDER_ID_PREFIX bookmark-id and are again created
+      // with correct id with createFolder method above
+      const parentFolder =
+          this.bookmarksService_.findBookmarkWithId(folder.parentId)!;
+      parentFolder.children = parentFolder.children?.filter(
+          child => !child.id.startsWith(TEMP_FOLDER_ID_PREFIX));
     }
     this.bookmarksApi_.editBookmarks(
         event.detail.bookmarks.map(bookmark => bookmark.id), event.detail.name,
