@@ -8300,7 +8300,7 @@
   {
     "name": "use-gpu-scheduler-dfs",
     "owners": [ "vikassoni@chromium.org", "sunnyps@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "use-hdr-transfer-function",
