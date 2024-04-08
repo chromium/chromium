@@ -256,8 +256,16 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   // context menu.
   [menuElements
       addObject:[actionFactory actionToAddNewTabInGroupWithBlock:nil]];
-  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:nil]];
-  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:nil]];
+  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                  [weakSelf.contextMenuDelegate
+                      ungroupTabGroup:group
+                            incognito:weakSelf.incognito];
+                }]];
+  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                  [weakSelf.contextMenuDelegate
+                      closeTabGroup:group
+                          incognito:weakSelf.incognito];
+                }]];
 
   return menuElements;
 }

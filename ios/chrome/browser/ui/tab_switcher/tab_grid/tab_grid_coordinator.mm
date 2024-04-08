@@ -1397,6 +1397,30 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeItemWithID:identifier];
 }
 
+- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to close a tab group outside the Tab Groups "
+         "experiment.";
+  if (incognito) {
+    [self.incognitoTabsMediator closeTabGroup:group];
+    return;
+  }
+
+  [self.regularTabsMediator closeTabGroup:group];
+}
+
+- (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to ungroup a tab group outside the Tab Groups "
+         "experiment.";
+  if (incognito) {
+    [self.incognitoTabsMediator ungroupTabGroup:group];
+    return;
+  }
+
+  [self.regularTabsMediator ungroupTabGroup:group];
+}
+
 - (void)selectTabs {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));

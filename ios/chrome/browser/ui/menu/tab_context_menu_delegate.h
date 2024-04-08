@@ -69,9 +69,17 @@ class WebStateID;
 - (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
 
 // Tells the delegate to close the tab with the item identifier `identifier`.
-// `incognito`tracks the incognito state of the tab.
+// `incognito` tracks the incognito state of the tab.
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito;
+
+// Tells the delegate to close the group. `incognito` tracks the incognito state
+// of the group.
+- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
+
+// Tells the delegate to ungroup the group. `incognito` tracks the incognito
+// state of the group.
+- (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
 
 @end
 
