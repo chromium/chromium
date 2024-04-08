@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -19,14 +22,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +56,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.model_execution.ExecutionResult;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
@@ -59,6 +68,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -85,6 +95,7 @@ public class PageInfoSharingControllerUnitTest {
     @Mock private ModelExecutionSession mModelExecutionSession;
     @Mock private InnerTextBridge.Natives mInnerTextJniMock;
     @Mock private ChromeOptionShareCallback mChromeOptionShareCallback;
+    @Mock private HelpAndFeedbackLauncher mMockFeedbackLauncher;
     @Mock private PageInfoSharingBridge.Natives mPageInfoSharingBridgeJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private Profile mProfile;
@@ -112,6 +123,46 @@ public class PageInfoSharingControllerUnitTest {
                         });
         ((PageInfoSharingControllerImpl) PageInfoSharingControllerImpl.getInstance())
                 .setModelExecutionSessionForTesting(mModelExecutionSession);
+    }
+
+    /**
+     * Sets up and starts a summarization flow for {@code tab} and invokes the result callbacks that
+     * move the UI into the success state, where the result can be shared and feedback can be
+     * provided.
+     */
+    private void simulateSuccessfulSummarization(
+            Context context, Tab tab, ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor) {
+
+        ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Optional<String>> innerTextCallback =
+                                    invocationOnMock.getArgument(1);
+                            innerTextCallback.onResult(Optional.of("Inner text of web page"));
+                            return null;
+                        })
+                .when(mInnerTextJniMock)
+                .getInnerText(any(), any());
+
+        PageInfoSharingControllerImpl.getInstance()
+                .sharePageInfo(
+                        context,
+                        mBottomSheetController,
+                        mChromeOptionShareCallback,
+                        mMockFeedbackLauncher,
+                        tab);
+
+        verify(mBottomSheetController)
+                .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+        verify(mModelExecutionSession).executeModel(any(), modelExecutionCallbackCaptor.capture());
+        Callback<ExecutionResult> executionResultCallback = modelExecutionCallbackCaptor.getValue();
+        executionResultCallback.onResult(
+                new ExecutionResult("Summary text", /* isCompleteResult= */ true));
     }
 
     @Test
@@ -196,6 +247,7 @@ public class PageInfoSharingControllerUnitTest {
                                     activity,
                                     mBottomSheetController,
                                     mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
                                     firstTab);
                     assertFalse(
                             "Page sharing process should only happen for one tab at a time",
@@ -219,6 +271,7 @@ public class PageInfoSharingControllerUnitTest {
                                     activity,
                                     mBottomSheetController,
                                     mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
                                     tab);
                     verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
                 });
@@ -243,6 +296,7 @@ public class PageInfoSharingControllerUnitTest {
                                     activity,
                                     mBottomSheetController,
                                     mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
                                     tab);
 
                     // Verify page text extraction was requested.
@@ -290,6 +344,7 @@ public class PageInfoSharingControllerUnitTest {
                                     activity,
                                     mBottomSheetController,
                                     mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
                                     tab);
 
                     verify(mBottomSheetController)
@@ -363,6 +418,7 @@ public class PageInfoSharingControllerUnitTest {
                                     activity,
                                     mBottomSheetController,
                                     mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
                                     tab);
 
                     verify(mBottomSheetController)
@@ -419,6 +475,111 @@ public class PageInfoSharingControllerUnitTest {
                     assertEquals(
                             DetailedContentType.PAGE_INFO,
                             chromeShareExtrasCaptor.getValue().getDetailedContentType());
+                });
+    }
+
+    @Test
+    public void testNegativeFeedback() {
+        ArgumentCaptor<BottomSheetContent> sheetContentCaptor =
+                ArgumentCaptor.forClass(BottomSheetContent.class);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        String tabUrl = tab.getUrl().getSpec();
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    simulateSuccessfulSummarization(activity, tab, sheetContentCaptor);
+
+                    BottomSheetContent summaryBottomSheetContent = sheetContentCaptor.getValue();
+
+                    // Summary bottom sheet has positive and negative feedback buttons, get
+                    // the negative one and click it.
+                    View negativeFeedbackButton =
+                            summaryBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.negative_feedback_button);
+                    negativeFeedbackButton.performClick();
+
+                    // Summary sheet should be hidden, and a new sheet with feedback options
+                    // should be shown.
+                    verify(mBottomSheetController).hideContent(summaryBottomSheetContent, true);
+                    verify(mBottomSheetController, times(2))
+                            .requestShowContent(sheetContentCaptor.capture(), eq(true));
+
+                    // Get feedback form and accept button from feedback sheet.
+                    BottomSheetContent feedbackBottomSheetContent = sheetContentCaptor.getValue();
+                    RadioButtonLayout radioButtons =
+                            feedbackBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.radio_buttons);
+                    Button acceptFeedbackButton =
+                            feedbackBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.accept_button);
+
+                    // Ensure radio button group is not empty.
+                    assertNotEquals(0, radioButtons.getChildCount());
+                    // Click on first radio button item (offensive result).
+                    radioButtons.selectChildAtIndex(0);
+                    acceptFeedbackButton.performClick();
+
+                    // Feedback sheet should be hidden.
+                    verify(mBottomSheetController).hideContent(feedbackBottomSheetContent, true);
+
+                    // Feedback launcher should have been invoked.
+                    verify(mMockFeedbackLauncher)
+                            .showFeedback(eq(activity), eq(tabUrl), anyString(), any());
+                });
+    }
+
+    @Test
+    public void testNegativeFeedback_cancelFeedbackSheet() {
+        ArgumentCaptor<BottomSheetContent> sheetContentCaptor =
+                ArgumentCaptor.forClass(BottomSheetContent.class);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    simulateSuccessfulSummarization(activity, tab, sheetContentCaptor);
+
+                    BottomSheetContent summaryBottomSheetContent = sheetContentCaptor.getValue();
+
+                    // Summary bottom sheet has positive and negative feedback buttons, get
+                    // the negative one and click it.
+                    View negativeFeedbackButton =
+                            summaryBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.negative_feedback_button);
+                    negativeFeedbackButton.performClick();
+
+                    // Summary sheet should be hidden, and a new sheet with feedback options
+                    // should be shown.
+                    verify(mBottomSheetController).hideContent(summaryBottomSheetContent, true);
+                    verify(mBottomSheetController, times(2))
+                            .requestShowContent(sheetContentCaptor.capture(), eq(true));
+
+                    // Get feedback form and accept button from feedback sheet.
+                    BottomSheetContent feedbackBottomSheetContent = sheetContentCaptor.getValue();
+                    Button cancelFeedbackButton =
+                            feedbackBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.cancel_button);
+
+                    // Select an item and click accept.
+                    cancelFeedbackButton.performClick();
+
+                    // Feedback sheet should be hidden.
+                    verify(mBottomSheetController).hideContent(feedbackBottomSheetContent, true);
+                    // Loading sheet should be shown again.
+                    verify(mBottomSheetController, times(3))
+                            .requestShowContent(sheetContentCaptor.capture(), eq(true));
+                    MatcherAssert.assertThat(
+                            sheetContentCaptor.getValue(),
+                            is(instanceOf(PageInfoBottomSheetContent.class)));
+
+                    // Feedback launcher shouldn't have been invoked.
+                    verifyNoInteractions(mMockFeedbackLauncher);
                 });
     }
 }

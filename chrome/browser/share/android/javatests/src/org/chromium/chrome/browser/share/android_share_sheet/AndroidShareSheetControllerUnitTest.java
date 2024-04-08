@@ -328,7 +328,7 @@ public class AndroidShareSheetControllerUnitTest {
         chooseCustomAction(intent, R.string.share);
 
         verify(mockPageInfoSharingController)
-                .sharePageInfo(any(), eq(mBottomSheetController), any(), eq(mTab));
+                .sharePageInfo(any(), eq(mBottomSheetController), any(), any(), eq(mTab));
     }
 
     @Test

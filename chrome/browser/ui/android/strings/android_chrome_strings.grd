@@ -6033,6 +6033,21 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_DISCLAIMER" desc="Disclaimer at the bottom of a bottom sheet to provide feedback for a generated web page summary.">
         The URL of the page you\u2019re providing feedback for will be sent by Google and may be reviewed by humans to improve this feature
       </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_OFFENSIVE" desc="Label of a radio button item for providing feedback on a generated summary that's offensive or unsafe.">
+        Offensive or unsafe
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_INACCURATE" desc="Label of a radio button item for providing feedback on a generated summary that's inaccurate.">
+        Inaccurate
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_REPETITIVE" desc="Label of a radio button item for providing feedback on a generated summary that's repetitive.">
+        Repetitive
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_MISSING_INFO" desc="Label of a radio button item for providing feedback on a generated summary that's missing information.">
+        Missing information
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_OTHER" desc="Label of a radio button item for providing feedback on a generated summary that doesn't fit any other category.">
+        Other
+      </message>
 
       <!-- Data Sharing -->
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">

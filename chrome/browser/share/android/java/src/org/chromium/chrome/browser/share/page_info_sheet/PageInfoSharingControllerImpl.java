@@ -8,15 +8,12 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.DestroyChecker;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.model_execution.ExecutionResult;
 import org.chromium.chrome.browser.model_execution.ExecutionResult.ExecutionError;
@@ -24,8 +21,6 @@ import org.chromium.chrome.browser.model_execution.ModelExecutionFeature;
 import org.chromium.chrome.browser.model_execution.ModelExecutionManager;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
-import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.Delegate;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,75 +36,6 @@ import java.util.Optional;
  * <p>This class is a singleton because at any point there can only exist one sharing flow.
  */
 public class PageInfoSharingControllerImpl implements PageInfoSharingController {
-
-    private static class PageInfoSharingRequest implements Delegate {
-
-        private final Tab mTab;
-        private final ChromeOptionShareCallback mChromeOptionShareCallback;
-        private final Runnable mDestroyCallback;
-        private final ObservableSupplierImpl<PageInfoContents> mPageInfoSupplier;
-        private final DestroyChecker mDestroyChecker = new DestroyChecker();
-
-        public PageInfoSharingRequest(
-                @NonNull Tab tab,
-                @NonNull ChromeOptionShareCallback chromeOptionShareCallback,
-                @NonNull ObservableSupplierImpl<PageInfoContents> pageInfoSupplier,
-                @NonNull Runnable destroyCallback) {
-            mTab = tab;
-            mChromeOptionShareCallback = chromeOptionShareCallback;
-            mDestroyCallback = destroyCallback;
-            mPageInfoSupplier = pageInfoSupplier;
-        }
-
-        @Override
-        public void onAccept() {
-            if (!mPageInfoSupplier.hasValue() || mDestroyChecker.isDestroyed()) return;
-
-            var pageInfo = mPageInfoSupplier.get();
-            var chromeShareExtras =
-                    new ChromeShareExtras.Builder()
-                            .setDetailedContentType(DetailedContentType.PAGE_INFO)
-                            .build();
-
-            if (!TextUtils.isEmpty(pageInfo.errorMessage)
-                    || pageInfo.isLoading
-                    || TextUtils.isEmpty(pageInfo.resultContents)) return;
-
-            ShareParams shareParams =
-                    new ShareParams.Builder(
-                                    mTab.getWindowAndroid(),
-                                    mTab.getTitle(),
-                                    mTab.getUrl().getSpec())
-                            .setText(pageInfo.resultContents)
-                            .build();
-
-            mChromeOptionShareCallback.showShareSheet(
-                    shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
-
-            destroy();
-        }
-
-        @Override
-        public void onCancel() {
-            destroy();
-        }
-
-        @Override
-        public void onPositiveFeedback() {}
-
-        @Override
-        public void onNegativeFeedback() {}
-
-        @Override
-        public ObservableSupplier<PageInfoContents> getContentSupplier() {
-            return mPageInfoSupplier;
-        }
-
-        private void destroy() {
-            mDestroyChecker.destroy();
-            mDestroyCallback.run();
-        }
-    }
 
     private ObservableSupplierImpl<PageInfoContents> mCurrentRequestInfoSupplier;
     private ModelExecutionSession mSession;
@@ -167,20 +93,21 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             Context context,
             BottomSheetController bottomSheetController,
             ChromeOptionShareCallback chromeOptionShareCallback,
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab) {
         if (!isAvailableForTab(tab)) return;
 
         mCurrentRequestInfoSupplier = new ObservableSupplierImpl<>();
-        PageInfoSharingRequest request =
-                new PageInfoSharingRequest(
+        PageSummarySharingRequest request =
+                new PageSummarySharingRequest(
+                        context,
                         tab,
                         chromeOptionShareCallback,
+                        helpAndFeedbackLauncher,
                         mCurrentRequestInfoSupplier,
-                        this::onRequestDestroyed);
-
-        PageInfoBottomSheetCoordinator uiCoordinator =
-                new PageInfoBottomSheetCoordinator(context, request, bottomSheetController);
-        uiCoordinator.requestShowContent();
+                        this::onRequestDestroyed,
+                        bottomSheetController);
+        request.openPageSummarySheet();
 
         InnerTextBridge.getInnerText(tab.getWebContents().getMainFrame(), this::onTabTextReceived);
     }

@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ShortcutHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/download/FileAccessPermissionHelper.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/sync",
