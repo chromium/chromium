@@ -2102,8 +2102,6 @@ void PdfViewWebPlugin::RecordDocumentMetrics() {
     return;
 
   metrics_handler_->RecordDocumentMetrics(engine_->GetDocumentMetadata());
-  metrics_handler_->RecordAttachmentTypes(
-      engine_->GetDocumentAttachmentInfoList());
 }
 
 void PdfViewWebPlugin::SendAttachments() {

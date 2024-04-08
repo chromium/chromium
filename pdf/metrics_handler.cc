@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "pdf/document_metadata.h"
-#include "pdf/file_extension.h"
 
 namespace chrome_pdf {
 
@@ -27,14 +26,6 @@ enum class PdfHasAttachment {
 MetricsHandler::MetricsHandler() = default;
 
 MetricsHandler::~MetricsHandler() = default;
-
-void MetricsHandler::RecordAttachmentTypes(
-    const std::vector<DocumentAttachmentInfo>& attachments) {
-  for (const auto& info : attachments) {
-    base::UmaHistogramEnumeration("PDF.AttachmentType",
-                                  FileNameToExtensionIndex(info.name));
-  }
-}
 
 void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration("PDF.Version", metadata.version);

@@ -5,10 +5,6 @@
 #ifndef PDF_METRICS_HANDLER_H_
 #define PDF_METRICS_HANDLER_H_
 
-#include <vector>
-
-#include "pdf/document_attachment_info.h"
-
 namespace chrome_pdf {
 
 struct DocumentMetadata;
@@ -20,9 +16,6 @@ class MetricsHandler {
   MetricsHandler(const MetricsHandler& other) = delete;
   MetricsHandler& operator=(const MetricsHandler& other) = delete;
   ~MetricsHandler();
-
-  void RecordAttachmentTypes(
-      const std::vector<DocumentAttachmentInfo>& attachments);
 
   void RecordDocumentMetrics(const DocumentMetadata& metadata);
 };
