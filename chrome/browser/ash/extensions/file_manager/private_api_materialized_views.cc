@@ -84,9 +84,10 @@ FileManagerPrivateReadMaterializedViewFunction::Run() {
 
   std::vector<GURL> items = holding_space->GetPinnedFiles();
 
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          Profile::FromBrowserContext(browser_context()), render_frame_host());
+          profile, render_frame_host());
 
   auto barrier_callback = base::BarrierCallback<
       base::FileErrorOr<api::file_manager_private::EntryData>>(
@@ -96,7 +97,7 @@ FileManagerPrivateReadMaterializedViewFunction::Run() {
           this));
 
   for (const GURL& item : items) {
-    file_manager::util::GURLToEntryData(file_system_context, item,
+    file_manager::util::GURLToEntryData(profile, file_system_context, item,
                                         barrier_callback);
   }
 

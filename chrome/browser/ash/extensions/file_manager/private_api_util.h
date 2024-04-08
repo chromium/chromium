@@ -175,6 +175,7 @@ extensions::api::file_manager_private::BulkPinProgress BulkPinProgressToJs(
 // Converts the given GURL into an EntryData struct that can be returned by
 // fileManagerPrivate.
 void GURLToEntryData(
+    Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const GURL& url,
     base::OnceCallback<void(

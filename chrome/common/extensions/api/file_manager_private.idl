@@ -1370,8 +1370,13 @@ dictionary EntryData {
   // File system URL of the entry.
   DOMString entryUrl;
 
+  // If false, the entry is a file.
   boolean isDirectory;
 
+  // Localized name of the entry for display.
+  DOMString name;
+
+  // Information about the filesystem the entry is located in.
   FileSystemData filesystem;
 };
 

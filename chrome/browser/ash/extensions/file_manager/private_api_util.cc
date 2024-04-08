@@ -309,6 +309,7 @@ bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
 
 // Part of GURLToEntryData().
 void GURLToEntryDataOnResolve(
+    std::string entry_name,
     const GURL& url,
     base::OnceCallback<void(base::FileErrorOr<fmp::EntryData>)> callback,
     base::File::Error result,
@@ -332,6 +333,7 @@ void GURLToEntryDataOnResolve(
           base::unexpected(base::File::FILE_ERROR_NOT_FOUND));
       return;
   }
+  entry_data.name = std::move(entry_name);
   entry_data.entry_url = url.spec();
   entry_data.filesystem.name = file_system_info.name;
   entry_data.filesystem.root_url = file_system_info.root_url.spec();
@@ -850,14 +852,20 @@ fmp::BulkPinProgress BulkPinProgressToJs(
 }
 
 void GURLToEntryData(
+    Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const GURL& url,
     base::OnceCallback<void(base::FileErrorOr<fmp::EntryData>)> callback) {
   storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);
+  std::string entry_name = GetDisplayablePath(profile, file_system_url)
+                               .value_or(base::FilePath())
+                               .BaseName()
+                               .value();
   file_system_context->ResolveURL(
       file_system_url,
-      base::BindOnce(GURLToEntryDataOnResolve, url, std::move(callback)));
+      base::BindOnce(GURLToEntryDataOnResolve, std::move(entry_name), url,
+                     std::move(callback)));
 }
 
 }  // namespace file_manager::util
