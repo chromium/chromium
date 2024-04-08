@@ -829,7 +829,7 @@ void CreateTestYUVVideoDrawQuad_NV12(
       video_resource_updater->YuvSharedImageFormat(8), color_space, y_pixels);
 
   // U goes in the R component and V goes in the G component.
-  uint32_t rgba_pixel = (u << 24) | (v << 16);
+  uint32_t rgba_pixel = (u) | (v << 8);
   std::vector<uint32_t> uv_pixels(uv_tex_size.GetArea(), rgba_pixel);
   ResourceId resource_u = CreateGpuResource(
       child_context_provider, child_resource_provider, uv_tex_size,
@@ -2723,10 +2723,10 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
   SharedQuadState* shared_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
 
-  // YUV of (149,43,21) should be green (0,255,0) in RGB.
+  // YUV of (149,100,50) should be emerald green (39, 214, 99) in RGB.
   CreateTestYUVVideoDrawQuad_NV12(
       shared_state, gfx::ColorSpace::CreateJpeg(),
-      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), 149, 43, 21, pass.get(),
+      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), 149, 100, 50, pass.get(),
       this->video_resource_updater_.get(), rect, rect,
       this->resource_provider_.get(), this->child_resource_provider_.get(),
       this->child_context_provider_);
@@ -2735,7 +2735,7 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
   pass_list.push_back(std::move(pass));
 
   EXPECT_TRUE(this->RunPixelTest(
-      &pass_list, base::FilePath(FILE_PATH_LITERAL("green.png")),
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("emerald_green.png")),
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
