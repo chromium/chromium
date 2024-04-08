@@ -2175,17 +2175,23 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
                      "var fenced_frame = document.createElement('fencedframe');"
                      "fenced_frame.id = 'fenced_frame';"
                      "document.body.appendChild(fenced_frame);"));
-  auto* fenced_frame_node =
+  content::RenderFrameHost* fenced_frame_rfh =
       fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
           primary_main_frame_host());
-  content::TestFrameNavigationObserver observer(fenced_frame_node);
+  content::TestFrameNavigationObserver observer(fenced_frame_rfh);
   fenced_frame_test_helper().NavigateFencedFrameUsingFledge(
       primary_main_frame_host(), fenced_frame_url, "fenced_frame");
   observer.Wait();
 
+  // Embedder-initiated fenced frame navigation uses a new browsing instance.
+  // Fenced frame RenderFrameHost is a new one after navigation, so we need
+  // to retrieve it.
+  fenced_frame_rfh = fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+      primary_main_frame_host());
+
   // Set the automatic beacon
   EXPECT_TRUE(ExecJs(
-      fenced_frame_node,
+      fenced_frame_rfh,
       content::JsReplace(R"(
       window.fence.setReportEventDataForAutomaticBeacons({
         eventType: $1,
@@ -2205,7 +2211,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
   // Open the contextual menu and click "Open Link in New Tab".
-  TestRenderViewContextMenu menu(*fenced_frame_node, params);
+  TestRenderViewContextMenu menu(*fenced_frame_rfh, params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 

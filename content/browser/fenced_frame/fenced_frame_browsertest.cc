@@ -5030,6 +5030,54 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(new_page_url, root->current_frame_host()->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       EmbedderInitiatedNavigationForceNewBrowsingInstance) {
+  base::HistogramTester histogram_tester;
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create parent fenced frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html");
+  RenderFrameHost* ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), fenced_frame_url);
+
+  // Create nested fenced frame.
+  const GURL nested_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+  RenderFrameHost* nested_ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
+      ff_rfh, nested_fenced_frame_url);
+  FrameTreeNode* nested_ff_node =
+      static_cast<RenderFrameHostImpl*>(nested_ff_rfh)->frame_tree_node();
+  scoped_refptr<SiteInstance> nested_ff_site_instance =
+      nested_ff_rfh->GetSiteInstance();
+
+  TestFrameNavigationObserver load_observer(nested_ff_rfh);
+
+  // Embedder initiates nested fenced frame navigation.
+  const GURL navigate_url =
+      https_server()->GetURL("b.test", "/fenced_frames/basic.html");
+  EXPECT_TRUE(ExecJs(
+      ff_rfh, JsReplace(
+                  R"(document.getElementsByTagName('fencedframe')[0].config =
+                         new FencedFrameConfig($1);)",
+                  navigate_url)));
+
+  // Wait for load stops.
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  load_observer.Wait();
+  EXPECT_EQ(nested_ff_node->current_frame_host()->GetLastCommittedURL(),
+            navigate_url);
+
+  // An embedder-initiated fenced frame navigation through a fenced frame config
+  // will use a new SiteInstance in a different BrowsingInstance.
+  SiteInstance* post_navigation_site_instance =
+      nested_ff_node->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(nested_ff_site_instance, post_navigation_site_instance);
+  EXPECT_FALSE(nested_ff_site_instance->IsRelatedSiteInstance(
+      post_navigation_site_instance));
+}
+
 class FencedFrameReportEventBrowserTest
     : public FencedFrameParameterizedBrowserTest {
  public:

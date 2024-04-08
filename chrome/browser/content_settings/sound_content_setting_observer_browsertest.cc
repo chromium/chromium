@@ -400,13 +400,22 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverFencedFrameBrowserTest,
 
   auto fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
 
+  // Create a blank fenced frame.
+  EXPECT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), GURL()));
+
   // Creates MultipleFramesObserver to observe fenced frame creation and
   // intercept AddAutoplayFlags() for it.
   MultipleFramesObserver observer{web_contents(), 1};
 
-  // Create a fenced frame and wait for the autoplay flag to be set.
-  fenced_frame_test_helper().CreateFencedFrameAsync(
-      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+  // Navigate a fenced frame and wait for the autoplay flag to be set.
+  content::ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
+                              content::JsReplace(R"(
+                              document.getElementsByTagName('fencedframe')[0].
+                              config = new FencedFrameConfig($1);
+                           )",
+                                                 fenced_frame_url));
+
   observer.WaitForFencedFrame();
   observer.GetTestClientForFencedFrame()->AddExpectedOriginAndFlags(
       url::Origin::Create(fenced_frame_url),

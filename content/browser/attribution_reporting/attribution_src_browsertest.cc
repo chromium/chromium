@@ -1175,6 +1175,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
       fenced_frame_helper_->CreateFencedFrame(
           root_rfh, GURL(url::kAboutBlankURL), net::OK,
           blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds));
+  FrameTreeNode* fenced_frame_node =
+      static_cast<RenderFrameHostImpl*>(&(*fenced_frame_host))
+          ->frame_tree_node();
   bool rfh_should_change =
       fenced_frame_host->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   TestFrameNavigationObserver observer(fenced_frame_host.get());
@@ -1188,7 +1191,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
   if (rfh_should_change) {
     EXPECT_TRUE(fenced_frame_host.WaitUntilRenderFrameDeleted());
   } else {
-    ASSERT_NE(fenced_frame_host.get(), nullptr);
+    ASSERT_NE(fenced_frame_node->current_frame_host(), nullptr);
   }
 
   RenderFrameHostWrapper fenced_frame_host2(

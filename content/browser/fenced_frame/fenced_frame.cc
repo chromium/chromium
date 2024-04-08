@@ -161,6 +161,8 @@ void FencedFrame::Navigate(
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation;
 
+  // Embedder initiated fenced frame navigation should force a new browsing
+  // instance.
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
@@ -177,7 +179,7 @@ void FencedFrame::Navigate(
       navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,
-      /*force_new_browsing_instance=*/false, /*is_container_initiated=*/false,
+      /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
       embedder_shared_storage_context);
 }
 

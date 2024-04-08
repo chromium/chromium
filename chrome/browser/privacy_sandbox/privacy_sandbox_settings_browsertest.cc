@@ -354,7 +354,11 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
         "fenced_frame");
     observer.Wait();
 
-    return fenced_frame_rfh;
+    // Embedder-initiated fenced frame navigation uses a new browsing instance.
+    // Fenced frame RenderFrameHost is a new one after navigation, so we need
+    // to retrieve it.
+    return fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+        web_contents()->GetPrimaryMainFrame());
   }
 
   content::RenderFrameHost*
@@ -662,8 +666,15 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
+
+    // Embedder-initiated fenced frame navigation uses a new browsing instance.
+    // Fenced frame RenderFrameHost is a new one after navigation, so we need
+    // to retrieve it.
+    fenced_frame_rfh =
+        fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+            web_contents()->GetPrimaryMainFrame());
     ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
 
     // Send the beacon.
     EXPECT_TRUE(ExecJs(fenced_frame_rfh, content::JsReplace(R"(
@@ -757,8 +768,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
-    ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
 
     // Verify the `reportWin()` beacon was sent.
     response.WaitForRequest();
@@ -853,8 +863,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
-    ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
 
     // Verify the `reportResult()` beacon was sent.
     response.WaitForRequest();
