@@ -481,4 +481,17 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     await flushTasks();
     assertEquals(secondAdjustedBrightness, provider.getKeyboardBrightness());
   });
+
+  test('Record keyboard color link clicked', async () => {
+    await changeIsExternalState(false);
+    assertEquals(0, provider.getKeyboardColorLinkClicks());
+    const rgbKeyboardControlLink =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#rgbKeyboardControlLink');
+    assertTrue(!!rgbKeyboardControlLink);
+
+    rgbKeyboardControlLink.click();
+    await flushTasks();
+    assertEquals(1, provider.getKeyboardColorLinkClicks());
+  });
 });

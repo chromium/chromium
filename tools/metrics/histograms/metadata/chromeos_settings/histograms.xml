@@ -188,6 +188,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.KeyboardColorLinkClicks"
+    enum="Boolean" expires_after="2025-04-02">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when a user clicks the &quot;Keyboard Color&quot; link within
+    Keyboard Settings, that navigates to the Personalization Hub's RGB Keyboard
+    Control section. Fires upon link clicks.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
     enum="BooleanToggled" expires_after="2024-08-11">
   <owner>jimmyxgong@chromium.org</owner>

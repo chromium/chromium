@@ -93,6 +93,7 @@ export class FakeInputDeviceSettingsProvider implements
       null;
   private observedIds: number[] = [];
   private keyboardBrightness: number = 40;
+  private keyboardColorLinkClicks: number = 0;
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
     setMouseSettings: 0,
@@ -111,6 +112,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeHasLauncherButton');
     this.methods.register('fakeHasKeyboardBacklight');
     this.methods.register('fakeIsRgbKeyboardSupported');
+    this.methods.register('fakeRecordKeyboardColorLinkClicked');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -419,5 +421,13 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult(
         'fakeIsRgbKeyboardSupported',
         {isRgbKeyboardSupported: isRgbKeyboardSupported});
+  }
+
+  recordKeyboardColorLinkClicked(): void {
+    this.keyboardColorLinkClicks++;
+  }
+
+  getKeyboardColorLinkClicks(): number {
+    return this.keyboardColorLinkClicks;
   }
 }

@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
@@ -652,6 +653,12 @@ void InputDeviceSettingsProvider::IsRgbKeyboardSupported(
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
   std::move(callback).Run(
       Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
+}
+
+void InputDeviceSettingsProvider::RecordKeyboardColorLinkClicked() {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", true);
 }
 
 }  // namespace ash::settings

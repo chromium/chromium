@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
@@ -524,6 +525,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
         std::make_unique<FakeKeyboardBrightnessControlDelegate>();
     power_manager_client_ =
         std::make_unique<chromeos::FakePowerManagerClient>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -535,6 +537,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     widget_.reset();
     views::ViewsTestBase::TearDown();
     feature_list_.reset();
+    histogram_tester_.reset();
   }
 
  protected:
@@ -547,6 +550,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
@@ -1151,6 +1155,15 @@ TEST_F(InputDeviceSettingsProviderTest, HasKeyboardBacklight) {
   power_manager_client_->set_has_keyboard_backlight(false);
   provider_->HasKeyboardBacklight(future.GetCallback());
   EXPECT_FALSE(future.Get<0>());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, RecordKeyboardColorLinkClicked) {
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", 0);
+  provider_->RecordKeyboardColorLinkClicked();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", 1);
 }
 
 }  // namespace ash::settings

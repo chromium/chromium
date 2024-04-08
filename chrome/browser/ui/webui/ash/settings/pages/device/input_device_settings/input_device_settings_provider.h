@@ -129,6 +129,7 @@ class InputDeviceSettingsProvider
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
   void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
+  void RecordKeyboardColorLinkClicked() override;
 
  private:
   void NotifyKeyboardsUpdated();

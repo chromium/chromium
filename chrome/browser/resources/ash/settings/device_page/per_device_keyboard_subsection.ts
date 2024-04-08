@@ -330,6 +330,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private openPersonalizationHub(): void {
+    this.inputDeviceSettingsProvider.recordKeyboardColorLinkClicked();
     this.personalizationHubBrowserProxy.openPersonalizationHub();
   }
 

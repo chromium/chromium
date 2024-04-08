@@ -160,4 +160,8 @@ interface InputDeviceSettingsProvider {
 
   // Returns whether the internal keyboard support RGB lighting.
   IsRgbKeyboardSupported() => (bool is_rgb_keyboard_supported);
+
+  // Tracks clicks on the "Keyboard Color" link in Keyboard Settings, that
+  // navigates to the RGB Control in the Personalization Hub.
+  RecordKeyboardColorLinkClicked();
 };
