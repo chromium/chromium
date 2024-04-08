@@ -52,19 +52,6 @@ class RTCEncodedVideoStreamTransformerDelegate
   }
 
   // webrtc::FrameTransformerInterface
-  // TODO(crbug.com/1065838): Remove the non-ssrc version of the registration
-  // and unregistration methods once WebRTC uses the ssrc version in all cases.
-  void RegisterTransformedFrameCallback(
-      rtc::scoped_refptr<webrtc::TransformedFrameCallback>
-          send_frame_to_sink_callback) override {
-    transformer_broker_->RegisterTransformedFrameSinkCallback(
-        std::move(send_frame_to_sink_callback), 0);
-  }
-
-  void UnregisterTransformedFrameCallback() override {
-    transformer_broker_->UnregisterTransformedFrameSinkCallback(0);
-  }
-
   void RegisterTransformedFrameSinkCallback(
       rtc::scoped_refptr<webrtc::TransformedFrameCallback>
           send_frame_to_sink_callback,
@@ -143,16 +130,6 @@ RTCEncodedVideoStreamTransformer::Broker::Broker(
     RTCEncodedVideoStreamTransformer* transformer_)
     : transformer_(transformer_) {}
 
-void RTCEncodedVideoStreamTransformer::Broker::RegisterTransformedFrameCallback(
-    rtc::scoped_refptr<webrtc::TransformedFrameCallback>
-        send_frame_to_sink_callback) {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->RegisterTransformedFrameCallback(
-        std::move(send_frame_to_sink_callback));
-  }
-}
-
 void RTCEncodedVideoStreamTransformer::Broker::
     RegisterTransformedFrameSinkCallback(
         rtc::scoped_refptr<webrtc::TransformedFrameCallback>
@@ -162,14 +139,6 @@ void RTCEncodedVideoStreamTransformer::Broker::
   if (transformer_) {
     transformer_->RegisterTransformedFrameSinkCallback(
         std::move(send_frame_to_sink_callback), ssrc);
-  }
-}
-
-void RTCEncodedVideoStreamTransformer::Broker::
-    UnregisterTransformedFrameCallback() {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->UnregisterTransformedFrameCallback();
   }
 }
 
@@ -244,15 +213,6 @@ RTCEncodedVideoStreamTransformer::RTCEncodedVideoStreamTransformer(
 
 RTCEncodedVideoStreamTransformer::~RTCEncodedVideoStreamTransformer() {
   broker_->ClearTransformer();
-}
-
-void RTCEncodedVideoStreamTransformer::RegisterTransformedFrameCallback(
-    rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback) {
-  RegisterTransformedFrameSinkCallback(callback, 0);
-}
-
-void RTCEncodedVideoStreamTransformer::UnregisterTransformedFrameCallback() {
-  UnregisterTransformedFrameSinkCallback(0);
 }
 
 void RTCEncodedVideoStreamTransformer::RegisterTransformedFrameSinkCallback(
