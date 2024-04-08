@@ -1104,7 +1104,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .feature_for_iph,
-      feature_engagement::kIPHAutofillCreditCardBenefitFeature.name);
+      &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
 // Checks that feature_for_iph is set to display the virtual card IPH for
@@ -1117,7 +1117,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false)
           .feature_for_iph,
-      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name);
+      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown
@@ -4193,9 +4193,8 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
   if (keyboard_accessory_offer_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(real_card_suggestion.labels.size(), 1U);
-    EXPECT_EQ(
-        real_card_suggestion.feature_for_iph,
-        feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name);
+    EXPECT_EQ(real_card_suggestion.feature_for_iph,
+              &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
 #endif
   } else {
     ASSERT_EQ(real_card_suggestion.labels.size(), 2U);

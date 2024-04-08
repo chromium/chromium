@@ -1195,8 +1195,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
       suggestions.back().feature_for_iph =
-          feature_engagement::
-              kIPHAutofillExternalAccountProfileSuggestionFeature.name;
+          &feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature;
     }
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
@@ -1467,7 +1467,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
     suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.feature_for_iph =
-        feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
+        &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
     // TODO(crbug.com/1511277): Create translation string for standalone CVC
     // suggestion which includes spacing.
@@ -1859,7 +1859,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableOffersInClankKeyboardAccessory)) {
       suggestion.feature_for_iph =
-          feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name;
+          &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature;
       suggestion.icon = Suggestion::Icon::kOfferTag;
     } else {
 #else   // Add the offer label on Desktop unconditionally.
@@ -2002,7 +2002,7 @@ void AutofillSuggestionGenerator::SetSuggestionLabelsForCard(
         labels.push_back({*benefit_label});
       }
       suggestion.feature_for_iph =
-          feature_engagement::kIPHAutofillCreditCardBenefitFeature.name;
+          &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
     }
     labels.push_back({Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
@@ -2096,7 +2096,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
   suggestion.is_acceptable = true;
   suggestion.feature_for_iph =
-      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
+      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
 
   // Add virtual card labelling to suggestions. For keyboard accessory, it is
   // prefixed to the suggestion, and for the dropdown, it is shown as a label on

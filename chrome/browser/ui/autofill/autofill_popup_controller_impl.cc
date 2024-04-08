@@ -471,8 +471,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
     std::string event_name =
         suggestion.feature_for_iph ==
-                feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature
-                    .name
+                &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature
             ? "autofill_virtual_card_cvc_suggestion_accepted"
             : "autofill_virtual_card_suggestion_accepted";
     feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -481,8 +480,8 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 
   if (suggestion.feature_for_iph ==
-      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature
-          .name) {
+      &feature_engagement::
+          kIPHAutofillExternalAccountProfileSuggestionFeature) {
     feature_engagement::TrackerFactory::GetForBrowserContext(
         web_contents_->GetBrowserContext())
         ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");

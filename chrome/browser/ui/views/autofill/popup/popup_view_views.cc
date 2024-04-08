@@ -745,31 +745,29 @@ void PopupViewViews::CreateChildViews() {
                   /*selection_delegate=*/*this, current_line_number));
           rows_.push_back(row_view);
 
-          const std::string& feature_for_iph =
+          const base::Feature* const feature_for_iph =
               kSuggestions[current_line_number].feature_for_iph;
 
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
           if (feature_for_iph ==
-              feature_engagement::kIPHAutofillVirtualCardSuggestionFeature
-                  .name) {
+              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature_for_iph ==
-                     feature_engagement::
-                         kIPHAutofillVirtualCardCVCSuggestionFeature.name) {
+                     &feature_engagement::
+                         kIPHAutofillVirtualCardCVCSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillStandaloneCvcSuggestionElementId);
           } else if (feature_for_iph ==
-                     feature_engagement::
-                         kIPHAutofillExternalAccountProfileSuggestionFeature
-                             .name) {
+                     &feature_engagement::
+                         kIPHAutofillExternalAccountProfileSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillSuggestionElementId);
           } else if (feature_for_iph ==
-                     feature_engagement::kIPHAutofillCreditCardBenefitFeature
-                         .name) {
+                     &feature_engagement::
+                         kIPHAutofillCreditCardBenefitFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardBenefitElementId);
           }

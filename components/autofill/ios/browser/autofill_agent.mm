@@ -759,9 +759,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
-    if (!popup_suggestion.feature_for_iph.empty()) {
+    if (popup_suggestion.feature_for_iph) {
       suggestion.featureForIPH =
-          base::SysUTF8ToNSString(popup_suggestion.feature_for_iph);
+          base::SysUTF8ToNSString(popup_suggestion.feature_for_iph->name);
     }
 
     // Put "clear form" entry at the front of the suggestions.

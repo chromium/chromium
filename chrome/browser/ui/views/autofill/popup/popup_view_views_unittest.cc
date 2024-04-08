@@ -1343,7 +1343,7 @@ TEST_F(PopupViewViewsTest, PopupPositioning) {
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
   Suggestion suggestion(u"dummy_main_text");
   suggestion.feature_for_iph =
-      feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
+      &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
 
@@ -1354,7 +1354,7 @@ TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
 TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
   Suggestion suggestion(u"dummy_main_text");
   suggestion.feature_for_iph =
-      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
+      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
 

@@ -107,7 +107,7 @@ void AutofillKeyboardAccessoryView::Show() {
         env, data_array, position++, label, sublabel, android_icon_id,
         base::to_underlying(suggestion.popup_item_id),
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-        suggestion.feature_for_iph,
+        suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array);

@@ -10,7 +10,9 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
@@ -224,8 +226,7 @@ struct Suggestion {
   IsLoading is_loading = IsLoading(false);
 
   // The In-Product-Help feature that should be shown for the suggestion.
-  // TODO(1432893): Consider making it `const Feature*`.
-  std::string feature_for_iph;
+  raw_ptr<const base::Feature> feature_for_iph = nullptr;
 
   // If specified, this text will be played back as voice over for a11y.
   std::optional<std::u16string> voice_over;
