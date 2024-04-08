@@ -499,7 +499,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.setComponentList();
+    const result = await service.setComponentList([]);
     assertEquals(State.kUpdateOs, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
@@ -523,7 +523,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.setComponentList();
+    const result = await service.setComponentList([]);
     assertEquals(State.kWelcomeScreen, result.stateResult.state);
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });

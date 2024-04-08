@@ -25,7 +25,7 @@ build_webui_tests("build_webui_tests") {
     "onboarding_enter_rsu_wp_disable_code_page_test.ts",
     "onboarding_landing_page_test.ts",
     "onboarding_network_page_test.ts",
-    "onboarding_select_components_page_test.js",
+    "onboarding_select_components_page_test.ts",
     "onboarding_update_page_test.js",
     "onboarding_wait_for_manual_wp_disable_page_test.js",
     "onboarding_wp_disable_complete_page_test.js",

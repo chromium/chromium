@@ -400,7 +400,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.components = components;
   }
 
-  setComponentList(): Promise<{stateResult: StateResult}> {
+  setComponentList(_components: Component[]):
+      Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
         'setComponentList', State.kSelectComponents);
   }
