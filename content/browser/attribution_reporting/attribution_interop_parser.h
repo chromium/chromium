@@ -84,13 +84,11 @@ struct AttributionSimulationEvent {
   AttributionSimulationEvent& operator=(AttributionSimulationEvent&&);
 };
 
-using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
-
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // schema.
 
-base::expected<AttributionSimulationEvents, std::string>
-ParseAttributionInteropInput(base::Value::Dict input);
+base::expected<std::vector<AttributionSimulationEvent>, std::string>
+    ParseAttributionInteropInput(base::Value::Dict);
 
 struct AttributionInteropConfig {
   AttributionConfig attribution_config;
@@ -150,6 +148,25 @@ std::ostream& operator<<(std::ostream&,
                          const AttributionInteropOutput::Report&);
 
 std::ostream& operator<<(std::ostream&, const AttributionInteropOutput&);
+
+struct AttributionInteropRun {
+  std::vector<AttributionSimulationEvent> events;
+  AttributionInteropConfig config;
+
+  static base::expected<AttributionInteropRun, std::string> Parse(
+      base::Value::Dict,
+      const AttributionInteropConfig& default_config);
+
+  AttributionInteropRun();
+
+  ~AttributionInteropRun();
+
+  AttributionInteropRun(const AttributionInteropRun&) = delete;
+  AttributionInteropRun& operator=(const AttributionInteropRun&) = delete;
+
+  AttributionInteropRun(AttributionInteropRun&&);
+  AttributionInteropRun& operator=(AttributionInteropRun&&);
+};
 
 }  // namespace content
 

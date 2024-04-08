@@ -103,10 +103,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  auto run =
+      content::AttributionInteropRun::Parse(std::move(*input), *default_config);
+  if (!run.has_value()) {
+    std::cerr << "failed to parse input: " << run.error() << std::endl;
+    return 1;
+  }
+
   Env env(argc, argv);
 
   auto output = content::RunAttributionInteropSimulation(
-      std::move(*input), *default_config, kHpkeKey.GetPublicKey());
+      std::move(*run), kHpkeKey.GetPublicKey());
   if (!output.has_value()) {
     std::cerr << output.error() << std::endl;
     return 1;

@@ -229,7 +229,6 @@ AttributionInteropConfig AttributionInteropTest::g_config_;
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  AttributionInteropConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
   std::optional<base::Value> output = dict.Extract("output");
@@ -239,9 +238,12 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
       auto expected_output,
       AttributionInteropOutput::Parse(std::move(*output).TakeDict()));
 
-  ASSERT_OK_AND_ASSIGN(AttributionInteropOutput actual_output,
-                       RunAttributionInteropSimulation(
-                           std::move(dict), config, kHpkeKey.GetPublicKey()));
+  ASSERT_OK_AND_ASSIGN(
+      auto run, AttributionInteropRun::Parse(std::move(dict), GetConfig()));
+
+  ASSERT_OK_AND_ASSIGN(
+      AttributionInteropOutput actual_output,
+      RunAttributionInteropSimulation(std::move(run), kHpkeKey.GetPublicKey()));
 
   PreProcessOutput(expected_output, /*actual=*/false);
   PreProcessOutput(actual_output, /*actual=*/true);

@@ -130,8 +130,8 @@ class AttributionInteropParser {
   AttributionInteropParser& operator=(const AttributionInteropParser&) = delete;
   AttributionInteropParser& operator=(AttributionInteropParser&&) = delete;
 
-  base::expected<AttributionSimulationEvents, std::string> ParseInput(
-      base::Value::Dict input) && {
+  base::expected<std::vector<AttributionSimulationEvent>, std::string>
+  ParseInput(base::Value::Dict input) && {
     std::vector<AttributionSimulationEvent> events;
 
     static constexpr char kKeyRegistrations[] = "registrations";
@@ -793,7 +793,7 @@ AttributionSimulationEvent::Response::Response(Response&&) = default;
 AttributionSimulationEvent::Response&
 AttributionSimulationEvent::Response::operator=(Response&&) = default;
 
-base::expected<AttributionSimulationEvents, std::string>
+base::expected<std::vector<AttributionSimulationEvent>, std::string>
 ParseAttributionInteropInput(base::Value::Dict input) {
   return AttributionInteropParser().ParseInput(std::move(input));
 }
@@ -872,5 +872,40 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionInteropOutput& output) {
   return out << output.ToJson();
 }
+
+// static
+base::expected<AttributionInteropRun, std::string> AttributionInteropRun::Parse(
+    base::Value::Dict dict,
+    const AttributionInteropConfig& default_config) {
+  AttributionInteropRun run;
+  run.config = default_config;
+
+  if (const base::Value* api_config = dict.Find("api_config")) {
+    const base::Value::Dict* config_dict = api_config->GetIfDict();
+    if (!config_dict) {
+      return base::unexpected("api_config must be a dict");
+    }
+    RETURN_IF_ERROR(MergeAttributionInteropConfig(*config_dict, run.config));
+  }
+
+  std::optional<base::Value> input = dict.Extract("input");
+  if (!input.has_value() || !input->is_dict()) {
+    return base::unexpected("input must be a dict");
+  }
+
+  ASSIGN_OR_RETURN(run.events,
+                   ParseAttributionInteropInput(std::move(*input).TakeDict()));
+
+  return run;
+}
+
+AttributionInteropRun::AttributionInteropRun() = default;
+
+AttributionInteropRun::~AttributionInteropRun() = default;
+
+AttributionInteropRun::AttributionInteropRun(AttributionInteropRun&&) = default;
+
+AttributionInteropRun& AttributionInteropRun::operator=(
+    AttributionInteropRun&&) = default;
 
 }  // namespace content

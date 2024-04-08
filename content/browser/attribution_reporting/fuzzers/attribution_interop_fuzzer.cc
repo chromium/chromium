@@ -61,13 +61,18 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonObject& json_object) {
     return;
   }
 
+  auto run = AttributionInteropRun::Parse(std::move(*parsed).TakeDict(),
+                                          AttributionInteropConfig());
+  if (!run.has_value()) {
+    return;
+  }
+
   static const PublicKey kMockPublicKey(/*id=*/"", /*key=*/{});
 
   // TODO(crbug.com/332721859) Fuzz the `AttributionInteropConfig()` parameter
   // when we define a custom protobuf input for this fuzzer.
-  std::ignore = RunAttributionInteropSimulation(std::move(*parsed).TakeDict(),
-                                                AttributionInteropConfig(),
-                                                kMockPublicKey);
+  std::ignore =
+      RunAttributionInteropSimulation(std::move(*run), kMockPublicKey);
 }
 
 }  // namespace

@@ -165,15 +165,14 @@ class FakeCookieChecker : public AttributionCookieChecker {
 
 class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
  public:
-  ControllableStorageDelegate(const AttributionConfig& config,
-                              std::vector<AttributionSimulationEvent>& events)
+  explicit ControllableStorageDelegate(AttributionInteropRun& run)
       : AttributionStorageDelegateImpl(AttributionNoiseMode::kNone,
                                        AttributionDelayMode::kDefault,
-                                       config) {
+                                       run.config.attribution_config) {
     std::vector<std::pair<base::Time, RandomizedResponse>> responses;
     std::vector<std::pair<base::Time, base::flat_set<int>>>
         null_aggregatable_reports_days;
-    for (auto& event : events) {
+    for (auto& event : run.events) {
       if (auto* data =
               absl::get_if<AttributionSimulationEvent::Response>(&event.data)) {
         if (data->randomized_response.has_value()) {
@@ -334,16 +333,14 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
 }  // namespace
 
 base::expected<AttributionInteropOutput, std::string>
-RunAttributionInteropSimulation(base::Value::Dict dict,
-                                AttributionInteropConfig config,
+RunAttributionInteropSimulation(AttributionInteropRun run,
                                 const PublicKey& hpke_key) {
-  if (const base::Value* api_config = dict.Find("api_config")) {
-    const base::Value::Dict* config_dict = api_config->GetIfDict();
-    if (!config_dict) {
-      return base::unexpected("api_config must be a dict");
-    }
-    RETURN_IF_ERROR(MergeAttributionInteropConfig(*config_dict, config));
+  if (run.events.empty()) {
+    return AttributionInteropOutput();
   }
+
+  DCHECK(base::ranges::is_sorted(run.events, /*comp=*/{},
+                                 &AttributionSimulationEvent::time));
 
   std::vector<base::test::FeatureRef> enabled_features(
       {blink::features::kKeepAliveInBrowserMigration,
@@ -351,7 +348,7 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
 
   std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
       scoped_api_state;
-  if (config.needs_cross_app_web) {
+  if (run.config.needs_cross_app_web) {
     enabled_features.emplace_back(
         network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
@@ -369,12 +366,7 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
       });
 
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
-      scoped_max_event_level_epsilon(config.max_event_level_epsilon);
-
-  std::optional<base::Value> input = dict.Extract("input");
-  if (!input.has_value() || !input->is_dict()) {
-    return base::unexpected("input must be a dict");
-  }
+      scoped_max_event_level_epsilon(run.config.max_event_level_epsilon);
 
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(
@@ -403,27 +395,18 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
 
   const base::Time time_origin = base::Time::Now();
 
-  ASSIGN_OR_RETURN(AttributionSimulationEvents events,
-                   ParseAttributionInteropInput(std::move(*input).TakeDict()));
-  if (events.empty()) {
-    return AttributionInteropOutput();
-  }
-
-  DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
-                                 &AttributionSimulationEvent::time));
-
-  for (auto& event : events) {
+  for (auto& event : run.events) {
     event.time = time_origin + (event.time - base::Time::UnixEpoch());
   }
 
-  const base::Time min_event_time = events.front().time;
+  const base::Time min_event_time = run.events.front().time;
 
   task_environment.FastForwardBy(min_event_time - time_origin);
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
-  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>(events);
+  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>(run.events);
 
   AttributionInteropOutput output;
 
@@ -448,8 +431,7 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
       /*user_data_directory=*/base::FilePath(),
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
-      std::make_unique<ControllableStorageDelegate>(config.attribution_config,
-                                                    events),
+      std::make_unique<ControllableStorageDelegate>(run),
       std::move(fake_cookie_checker),
       std::make_unique<AttributionReportNetworkSender>(
           test_url_loader_factory.GetSafeWeakWrapper()),
@@ -466,7 +448,7 @@ RunAttributionInteropSimulation(base::Value::Dict dict,
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
-  for (const auto& event : events) {
+  for (const auto& event : run.events) {
     task_environment.FastForwardBy(event.time - base::Time::Now());
 
     absl::visit(
