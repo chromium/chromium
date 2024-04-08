@@ -735,7 +735,6 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
   mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x80, 0x80, 0x80)};
   mixer[kColorCssSystemHighlight] = {SK_ColorBLUE};
   mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
-  mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
   if (dark_mode) {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
     mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
@@ -743,6 +742,7 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
     mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0x12, 0x12, 0x12)};
     mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x12, 0x12, 0x12)};
     mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
+    mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x9E, 0x9E, 0xFF)};
   } else {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
@@ -750,6 +750,7 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
     mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
     mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
     mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
+    mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
   }
 }
 

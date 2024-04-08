@@ -616,7 +616,9 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kHighlighttext:
       return ActiveSelectionForegroundColor(color_scheme);
     case CSSValueID::kLinktext:
-      return Color::FromRGBA32(0xFF0000EE);
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFF9E9EFF)
+                 : Color::FromRGBA32(0xFF0000EE);
     case CSSValueID::kMark:
       return Color::FromRGBA32(0xFFFFFF00);
     case CSSValueID::kMarktext:
