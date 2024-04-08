@@ -43,7 +43,7 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
         std::nullopt,
         IntersectionObserver::Params{
             .root = root,
-            .thresholds = {IntersectionObserver::kMinimumThreshold, 1.0f},
+            .thresholds = {IntersectionObserver::kMinimumThreshold},
             .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
         });
     // TODO(pdr): Refactor intersection observer to take const objects.
