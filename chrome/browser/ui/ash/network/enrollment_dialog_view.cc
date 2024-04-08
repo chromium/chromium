@@ -142,62 +142,32 @@ gfx::Size EnrollmentDialogView::CalculatePreferredSize() const {
 ////////////////////////////////////////////////////////////////////////////////
 // Handler for certificate enrollment.
 
-class DialogEnrollmentDelegate {
- public:
-  // |owning_window| is the window that will own the dialog.
-  DialogEnrollmentDelegate(const std::string& network_guid,
-                           const std::string& network_name,
-                           Profile* profile);
-
-  DialogEnrollmentDelegate(const DialogEnrollmentDelegate&) = delete;
-  DialogEnrollmentDelegate& operator=(const DialogEnrollmentDelegate&) = delete;
-
-  ~DialogEnrollmentDelegate();
-
-  bool Enroll(const std::vector<std::string>& uri_list);
-
- private:
-  std::string network_guid_;
-  std::string network_name_;
-  raw_ptr<Profile> profile_;
-};
-
-DialogEnrollmentDelegate::DialogEnrollmentDelegate(
-    const std::string& network_guid,
-    const std::string& network_name,
-    Profile* profile)
-    : network_guid_(network_guid),
-      network_name_(network_name),
-      profile_(profile) {}
-
-DialogEnrollmentDelegate::~DialogEnrollmentDelegate() = default;
-
-bool DialogEnrollmentDelegate::Enroll(
-    const std::vector<std::string>& uri_list) {
-  // Keep the closure for later activation if we notice that
-  // a certificate has been added.
-
-  // TODO(gspencer): Do something smart with the closure.  At the moment it is
-  // being ignored because we don't know when the enrollment tab is closed.
-  // http://crosbug.com/30422
-  for (std::vector<std::string>::const_iterator iter = uri_list.begin();
-       iter != uri_list.end(); ++iter) {
+// Find the first usable URL from `enrollment_uri_list`, then show the "enroll a
+// client certificate for `network_name`" dialog which will offer to open that
+// URL in a Tab created for `profile`.
+bool ShowEnrollmentDialog(const std::string& network_guid,
+                          const std::string& network_name,
+                          Profile* profile,
+                          const std::vector<std::string>& enrollment_uri_list) {
+  for (std::vector<std::string>::const_iterator iter =
+           enrollment_uri_list.begin();
+       iter != enrollment_uri_list.end(); ++iter) {
     GURL uri(*iter);
     if (uri.IsStandard() || uri.scheme() == extensions::kExtensionScheme) {
       // If this is a "standard" scheme, like http, ftp, etc., then open that in
       // the enrollment dialog.
       NET_LOG(EVENT) << "Showing enrollment dialog for: "
-                     << NetworkGuidId(network_guid_);
-      EnrollmentDialogView::ShowDialog(network_name_, profile_, uri);
+                     << NetworkGuidId(network_guid);
+      EnrollmentDialogView::ShowDialog(network_name, profile, uri);
       return true;
     }
     NET_LOG(DEBUG) << "Nonstandard URI: " + uri.spec()
-                   << " For: " << NetworkGuidId(network_guid_);
+                   << " For: " << NetworkGuidId(network_guid);
   }
 
   // No appropriate scheme was found.
   NET_LOG(ERROR) << "No usable enrollment URI for: "
-                 << NetworkGuidId(network_guid_);
+                 << NetworkGuidId(network_guid);
   return false;
 }
 
@@ -276,10 +246,8 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   }
 
   NET_LOG(USER) << "Enrolling: " << NetworkGuidId(network_id);
-
-  DialogEnrollmentDelegate* enrollment =
-      new DialogEnrollmentDelegate(network_id, network->name(), profile);
-  return enrollment->Enroll(cert_config.pattern.enrollment_uri_list());
+  return ShowEnrollmentDialog(network_id, network->name(), profile,
+                              cert_config.pattern.enrollment_uri_list());
 }
 
 }  // namespace ash::enrollment
