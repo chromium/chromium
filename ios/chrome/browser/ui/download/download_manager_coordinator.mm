@@ -370,6 +370,7 @@
 - (void)downloadManagerViewControllerDidOpenInDriveApp:
     (UIViewController*)controller {
   CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
+  base::RecordAction(base::UserMetricsAction("IOSDownloadOpenInDriveApp"));
   UploadTask* uploadTask = _mediator.GetUploadTask();
   CHECK(uploadTask);
   std::optional<GURL> openFileInDriveURL =

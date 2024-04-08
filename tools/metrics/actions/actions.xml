@@ -14075,6 +14075,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSDownloadOpenInDriveApp">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User tapped on OPEN button in Download Manager after download to Drive
+    succeeded.
+  </description>
+</action>
+
 <action name="IOSDownloadStartDownload">
   <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
