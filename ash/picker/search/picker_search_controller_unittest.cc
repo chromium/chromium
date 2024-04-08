@@ -792,24 +792,18 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
 TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(LastElement(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kGifs),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              Contains(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("full_url", &PickerSearchResult::GifData::full_url,
-                            Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                     "plink-cat-plink.gif")),
-                      Field("content_description",
-                            &PickerSearchResult::GifData::content_description,
-                            u"cat blink"))))))))))
-      .Times(AtLeast(1));
+  EXPECT_CALL(search_results_callback,
+              Call(LastElement(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kGifs),
+                  Property("results", &PickerSearchResultsSection::results,
+                           Contains(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"gif")))))))))
+      .Times(1);
   PickerSearchController controller(&client(), kBurnInPeriod);
 
   controller.StartSearch(
@@ -818,18 +812,11 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
+  std::move(client().gif_search_callback())
+      .Run({ash::PickerSearchResult::Text(u"gif")});
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          ui::ImageModel())});
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+      {ash::PickerSearchResult::Text(u"omnibox")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchRequest::kGifDebouncingDelay);
 }
@@ -904,39 +891,42 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   EXPECT_CALL(
       search_results_callback,
       Call(IsSupersetOf({
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kGifs),
-              Property(
-                  "results", &PickerSearchResultsSection::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("full_url",
-                                &PickerSearchResult::GifData::full_url,
-                                Property("spec", &GURL::spec,
-                                         "https://media.tenor.com/"
-                                         "GOabrbLMl4AAAAAC/"
-                                         "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink"))))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kLinks),
-              Property(
-                  "results", &PickerSearchResultsSection::results,
-                  ElementsAre(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
-                          Field(
-                              "url",
-                              &PickerSearchResult::BrowsingHistoryData::url,
-                              Property(
-                                  "spec", &GURL::spec,
-                                  "https://www.google.com/search?q=cat"))))))),
-
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLinks),
+                Property("results", &PickerSearchResultsSection::results,
+                         Contains(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"omnibox")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         Contains(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"file")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kDriveFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         Contains(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kGifs),
+                Property("results", &PickerSearchResultsSection::results,
+                         Contains(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"gif")))))),
       })))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
@@ -949,16 +939,14 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          ui::ImageModel())});
+      {ash::PickerSearchResult::Text(u"omnibox")});
+  client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
+                                      {ash::PickerSearchResult::Text(u"file")});
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"drive")});
   std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+      .Run({ash::PickerSearchResult::Text(u"gif")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchRequest::kGifDebouncingDelay);
 }
@@ -981,13 +969,6 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
 
   client().cros_search_callback().Run(ash::AppListSearchResultType::kOmnibox,
                                       {});
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -1009,35 +990,23 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
 
   client().cros_search_callback().Run(ash::AppListSearchResultType::kOmnibox,
                                       {});
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
 }
 
-TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
+TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
       Call(Contains(AllOf(
           Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kGifs),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              Contains(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("full_url", &PickerSearchResult::GifData::full_url,
-                            Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                     "plink-cat-plink.gif")),
-                      Field("content_description",
-                            &PickerSearchResult::GifData::content_description,
-                            u"cat blink"))))))))))
+                   PickerSectionType::kLinks),
+          Property("results", &PickerSearchResultsSection::results,
+                   Contains(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerSearchResult::TextData>(AllOf(
+                           Field("primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"test"))))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
 
@@ -1046,13 +1015,9 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBurnInPeriod);
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+  std::move(client().cros_search_callback())
+      .Run(ash::AppListSearchResultType::kOmnibox,
+           {ash::PickerSearchResult::Text(u"test")});
 }
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
