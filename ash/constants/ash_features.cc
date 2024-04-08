@@ -1388,7 +1388,7 @@ BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
 // Enables consumer session customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInConsumerSession,
              "GrowthCampaignsInConsumerSession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Demo Mode customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInDemoMode,

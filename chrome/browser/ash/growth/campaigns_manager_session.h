@@ -55,7 +55,9 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
                           apps::InstanceRegistry::Observer>
       scoped_observation_{this};
 
-  raw_ptr<aura::Window, AllowPtrArithmetic> opened_window_ = nullptr;
+  // Dangling when executing
+  // AudioSettingsInteractiveUiTest.LaunchAudioSettingDisabledOnLockScreen:
+  raw_ptr<aura::Window, DanglingUntriaged> opened_window_ = nullptr;
 
   base::WeakPtrFactory<CampaignsManagerSession> weak_ptr_factory_{this};
 };

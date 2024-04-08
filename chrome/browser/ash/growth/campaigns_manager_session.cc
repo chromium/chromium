@@ -202,7 +202,11 @@ bool CampaignsManagerSession::IsEligible() {
 }
 
 void CampaignsManagerSession::SetupWindowObserver() {
-  CHECK(!scoped_observation_.IsObserving());
+  // Tests might not go through LOCKED state and `scoped_observation_` might
+  // be observing.
+  if (scoped_observation_.IsObserving()) {
+    return;
+  }
 
   auto* profile = GetProfile();
   // Some test profiles will not have AppServiceProxy.
