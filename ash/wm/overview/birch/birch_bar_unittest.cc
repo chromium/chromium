@@ -35,6 +35,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -340,6 +341,8 @@ class BirchBarTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  // Ensure base::Time::Now() is a fixed value.
+  base::ScopedMockClockOverride mock_clock_override_;
 };
 
 // Tests that the birch bar will be shown in the normal Overview.
@@ -375,6 +378,14 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                                BirchItemType::kFile, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kCalendar, 1);
+
+  // Two rankings were recorded for the current time slot histogram.
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 9, 1);
+
+  // The same ranking were recorded for the all-day total histogram.
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 9, 1);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split

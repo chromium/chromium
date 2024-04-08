@@ -26,6 +26,31 @@ PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
+// Records the ranking of each item in `items` in a histogram selected based on
+// the time of day. The histogram time cutoffs are chosen based on BirchRanker
+// behavior.
+void RecordTimeOfDayRankingHistogram(
+    const std::vector<std::unique_ptr<BirchItem>>& items) {
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  const char* now_histogram = nullptr;
+  if (exploded.hour < 5) {
+    now_histogram = "Ash.Birch.Ranking.0000to0500";
+  } else if (exploded.hour < 12) {
+    now_histogram = "Ash.Birch.Ranking.0500to1200";
+  } else if (exploded.hour < 17) {
+    now_histogram = "Ash.Birch.Ranking.1200to1700";
+  } else {
+    now_histogram = "Ash.Birch.Ranking.1700to0000";
+  }
+  for (const auto& item : items) {
+    int ranking_int = static_cast<int>(item->ranking());
+    base::UmaHistogramCounts100(now_histogram, ranking_int);
+    // Also record an aggregate for the day.
+    base::UmaHistogramCounts100("Ash.Birch.Ranking.Total", ranking_int);
+  }
+}
+
 }  // namespace
 
 BirchBarController::BirchBarController(bool from_pine_service)
@@ -187,6 +212,7 @@ void BirchBarController::OnItemsFetchedFromModel() {
   base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items.size(),
                                  /*min=*/0, /*exclusive_max=*/10,
                                  /*buckets=*/10);
+  RecordTimeOfDayRankingHistogram(items);
 
   for (auto& bar_and_callback : bar_map_) {
     InitBarWithItems(bar_and_callback.first, items);
