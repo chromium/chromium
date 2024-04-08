@@ -5664,8 +5664,6 @@ static_library("ui") {
       "views/page_info/page_info_security_content_view.h",
       "views/page_info/page_info_view_factory.cc",
       "views/page_info/page_info_view_factory.h",
-      "views/page_info/permission_icon.cc",
-      "views/page_info/permission_icon.h",
       "views/page_info/permission_toggle_row_view.cc",
       "views/page_info/permission_toggle_row_view.h",
       "views/page_info/permission_toggle_row_view_observer.h",
