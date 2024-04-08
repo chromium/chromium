@@ -4700,6 +4700,21 @@
             ]
         }
     ],
+    "CrOSBluetoothA2dpAacCodec": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootAudioA2DPAdvancedCodecs"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothCoredump": [
         {
             "platforms": [
