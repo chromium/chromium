@@ -960,8 +960,10 @@ const InlineNodeData& InlineNode::EnsureData() const {
 }
 
 const OffsetMapping* InlineNode::ComputeOffsetMappingIfNeeded() const {
+#if DCHECK_IS_ON()
   DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
-         GetLayoutBlockFlow()->IsLayoutNGObjectForFormattedText());
+         GetLayoutBlockFlow()->IsDetachedNonDomRoot());
+#endif
 
   InlineNodeData* data = MutableData();
   if (!data->offset_mapping) {
@@ -974,9 +976,11 @@ const OffsetMapping* InlineNode::ComputeOffsetMappingIfNeeded() const {
 
 void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                       InlineNodeData* data) {
+#if DCHECK_IS_ON()
   DCHECK(!data->offset_mapping);
   DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
-         layout_block_flow->IsLayoutNGObjectForFormattedText());
+         layout_block_flow->IsDetachedNonDomRoot());
+#endif
 
   const SvgTextChunkOffsets* chunk_offsets = nullptr;
   if (data->svg_node_data_ && data->svg_node_data_->chunk_offsets.size() > 0)
