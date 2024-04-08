@@ -140,7 +140,7 @@
     ],
     "de": [
       {
-        "positive_pattern": "(haus|^)(nummer|nr)",
+        "positive_pattern": "(haus.?|^)(nummer|nr)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -550,7 +550,7 @@
     ],
     "de": [
       {
-        "positive_pattern": "adresszusatz|ergänzende.?angaben",
+        "positive_pattern": "adresszusatz|ergänzende.?angaben|adresszeile 2",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -804,7 +804,7 @@
     ],
     "de": [
       {
-        "positive_pattern": "postleitzahl",
+        "positive_pattern": "postleitzahl|\\bplz\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1626,9 +1626,17 @@
     ],
     "de": [
       {
+        "__comment__": "Note that this is not limited to German. The term 'nummer' is relevant to many languages and the negative patterns apply to many languages as well.",
         "positive_pattern": "nummer",
         "positive_score": 1.0,
-        "negative_pattern": "(telefon|haus|person|fødsels|kunden)nummer",
+        "negative_pattern": "telefon|telefoon|haus|person|fødsels|kunden|post|mobil|mobiel|handy|produkt|sendungs|verfolgungs|artikel|konto",
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_PASSWORD", "INPUT_NUMBER"]
+      },
+      {
+        "positive_pattern": "karten.?nr",
+        "positive_score": 1.0,
+        "negative_pattern": "sim|kunden|geschenk|freundschafts|benachrichtigungs|service|personal|more|leistungs",
         "match_field_attributes": ["LABEL", "NAME"],
         "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_PASSWORD", "INPUT_NUMBER"]
       }
@@ -1728,6 +1736,16 @@
     "br": [
       {
         "positive_pattern": "código de segurança",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_PASSWORD", "INPUT_NUMBER"]
+      }
+    ],
+    "de": [
+      {
+        // kartenprüfnummer and kartenprüfnr.
+        "positive_pattern": "karten.?prüfn",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

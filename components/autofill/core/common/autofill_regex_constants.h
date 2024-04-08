@@ -39,7 +39,7 @@ inline constexpr char16_t kStreetNameRe[] =
     u"|calle";                     // es-MX
 inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"    // en
-    u"|(haus|^)(nummer|nr)"                    // de
+    u"|(haus.?|^)(nummer|nr)"                  // de
     u"|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
     u"|exterior"                               // es
     u"|дом|номер.?дома";                       // ru
@@ -85,15 +85,15 @@ inline constexpr char16_t kAddressLine1LabelRe[] =
     u"|улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц";  // ru
 inline constexpr char16_t kAddressLine2Re[] =
     u"address[_-]?line(2|two)|address2|addr2|street|suite|unit"
-    u"|adresszusatz|ergänzende.?angaben"        // de-DE
-    u"|direccion2|adicional"                    // es
-    u"|addresssuppl|complementnom|appartement"  // fr-FR
-    u"|indirizzo2"                              // it-IT
-    u"|住所2"                                   // ja-JP
-    u"|complemento|addrcomplement"              // pt-BR, pt-PT
-    u"|Улица"                                   // ru
-    u"|地址2"                                   // zh-CN
-    u"|주소.?2";                                // ko-KR
+    u"|adresszusatz|ergänzende.?angaben|adresszeile 2"  // de-DE
+    u"|direccion2|adicional"                            // es
+    u"|addresssuppl|complementnom|appartement"          // fr-FR
+    u"|indirizzo2"                                      // it-IT
+    u"|住所2"                                           // ja-JP
+    u"|complemento|addrcomplement"                      // pt-BR, pt-PT
+    u"|Улица"                                           // ru
+    u"|地址2"                                           // zh-CN
+    u"|주소.?2";                                        // ko-KR
 inline constexpr char16_t kAddressLine2LabelRe[] =
     u"address|line"
     u"|adresse"    // fr-FR
@@ -119,12 +119,12 @@ inline constexpr char16_t kCountryLocationRe[] = u"location";
 inline constexpr char16_t kZipCodeRe[] =
     u"((?<!\\.))zip"  // .zip indicates a file extension
     u"|postal|post.*code|pcode"
-    u"|pin.?code"     // en-IN
-    u"|postleitzahl"  // de-DE
-    u"|\\bcp\\b"      // es
-    u"|\\bcdp\\b"     // fr-FR
-    u"|\\bcap\\b"     // it-IT
-    u"|郵便番号"      // ja-JP
+    u"|pin.?code"               // en-IN
+    u"|postleitzahl|\\bplz\\b"  // de-DE
+    u"|\\bcp\\b"                // es
+    u"|\\bcdp\\b"               // fr-FR
+    u"|\\bcap\\b"               // it-IT
+    u"|郵便番号"                // ja-JP
     // The negative lookahead "segur" after codigo is for "código de segurança"
     // (pt-BR) and "código de seguridad" (es), which refer to CVCs.
     u"|codigo(?!.*segur)|codpos|\\bcep\\b"  // pt-BR, pt-PT
@@ -268,13 +268,16 @@ inline constexpr char16_t kNameOnCardRe[] =
 inline constexpr char16_t kNameOnCardContextualRe[] = u"name";
 inline constexpr char16_t kCardNumberRe[] =
     u"(?:card|cc|acct).?(?:number|#|no|num|field(?!s)|pan)"
-    u"|(?<!telefon|haus|person|fødsels|kunden)nummer"  // de-DE, sv-SE, no
-    u"|カード番号"                                     // ja-JP
-    u"|Номер.*карты"                                   // ru
-    u"|no.*kartu"                                      // id
-    u"|信用卡号|信用卡号码"                            // zh-CN
-    u"|信用卡卡號"                                     // zh-TW
-    u"|카드"                                           // ko-KR
+    u"|(?<!telefon|telefoon|haus|person|fødsels|kunden|post|mobil|mobiel|handy|"
+    u"produkt|sendungs|verfolgungs|artikel|konto).?nummer"  // de-DE, sv-SE, no
+    u"|(?<!sim|kunden|geschenk|freundschafts|benachrichtigungs|service|"
+    u"personal|more|leistungs).?karten.?nr"  // de-DE
+    u"|カード番号"                           // ja-JP
+    u"|Номер.*карты"                         // ru
+    u"|no.*kartu"                            // id
+    u"|信用卡号|信用卡号码"                  // zh-CN
+    u"|信用卡卡號"                           // zh-TW
+    u"|카드"                                 // ko-KR
     // es/pt/fr
     // E.g. "número de (?:la )?tarjeta" in es-MX, "número do cartão" in pt-BR
     u"|(numero|número|numéro)(?!.*(document|fono|phone|réservation))"
@@ -288,6 +291,7 @@ inline constexpr char16_t kCardCvcRe[] =
     u"|security.?number|card.?pin|c-v-v"
     u"|código de segurança"  // pt-BR
     u"|código de seguridad"  // es-MX
+    u"|karten.?prüfn"        // de-DE
     u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
     // We used to match "cid", but it is a substring of "cidade" (Portuguese for
     // "city") and needs to be handled carefully.
