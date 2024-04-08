@@ -66,7 +66,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Removes the profile with the given `profile_id` and returns true if the
   // operation succeeded. Trying to remove a non-existing profile is a no-op and
   // not considered a failure.
-  bool RemovePlusProfile(int64_t profile_id);
+  bool RemovePlusProfile(const std::string& profile_id);
 
   // Deletes all stored PlusProfiles, returning true if the operation succeeded.
   bool ClearPlusProfiles();
@@ -105,6 +105,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // succeeded.
   bool MigrateToVersion126_InitialSchema();
   bool MigrateToVersion127_SyncSupport();
+  bool MigrateToVersion128_ProfileIdString();
 };
 
 }  // namespace plus_addresses

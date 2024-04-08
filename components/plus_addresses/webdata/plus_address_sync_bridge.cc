@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
@@ -91,11 +90,7 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
-        int64_t profile_id;
-        // TODO(b/322147254): Remove conversion once `PlusProfile::profile_id`
-        // is a string.
-        CHECK(base::StringToInt64(change->storage_key(), &profile_id));
-        if (!GetPlusAddressTable()->RemovePlusProfile(profile_id)) {
+        if (!GetPlusAddressTable()->RemovePlusProfile(change->storage_key())) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to remove profile in database.");
         }

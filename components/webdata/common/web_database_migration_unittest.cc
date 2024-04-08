@@ -145,7 +145,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 127;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 128;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1364,5 +1364,30 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion126ToCurrent) {
     EXPECT_TRUE(
         connection.DoesTableExist("plus_address_sync_model_type_state"));
     EXPECT_TRUE(connection.DoesTableExist("plus_address_sync_entity_metadata"));
+  }
+}
+
+// Expect that version 128 altered the type plus_addresses' primary key column
+// from INTEGER to VARCHAR.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion127ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_127.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(127, VersionFromConnection(&connection));
+    EXPECT_NE(
+        connection.GetSchema().find(
+            "CREATE TABLE plus_addresses (profile_id INTEGER PRIMARY KEY"),
+        std::string::npos);
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_NE(
+        connection.GetSchema().find(
+            "CREATE TABLE plus_addresses (profile_id VARCHAR PRIMARY KEY"),
+        std::string::npos);
   }
 }

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/model_type.h"
@@ -115,6 +116,9 @@ bool PlusAddressTable::MigrateToVersion(int version,
     case 127:
       *update_compatible_version = true;
       return MigrateToVersion127_SyncSupport();
+    case 128:
+      *update_compatible_version = true;
+      return MigrateToVersion128_ProfileIdString();
   }
   return true;
 }
@@ -126,8 +130,12 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
           .c_str()));
   std::vector<PlusProfile> result;
   while (query.Step()) {
+    int64_t profile_id;
+    // TODO(b/322147254): Failure is not handled. Once `PlusProfile::profile_id`
+    // is a string, no conversion will be necessary anymore.
+    base::StringToInt64(query.ColumnString(0), &profile_id);
     result.push_back({
-        .profile_id = query.ColumnInt64(0),
+        .profile_id = profile_id,
         .facet = query.ColumnString(1),
         .plus_address = query.ColumnString(2),
         .is_confirmed = true,
@@ -143,18 +151,18 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
           "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
           kPlusAddressTable, kProfileId, kFacet, kPlusAddress)
           .c_str()));
-  query.BindInt64(0, profile.profile_id);
+  query.BindString(0, base::NumberToString(profile.profile_id));
   query.BindString(1, profile.facet);
   query.BindString(2, profile.plus_address);
   return query.Run();
 }
 
-bool PlusAddressTable::RemovePlusProfile(int64_t profile_id) {
+bool PlusAddressTable::RemovePlusProfile(const std::string& profile_id) {
   sql::Statement query(
       db_->GetUniqueStatement(base::StringPrintf("DELETE FROM %s WHERE %s=?",
                                                  kPlusAddressTable, kProfileId)
                                   .c_str()));
-  query.BindInt64(0, profile_id);
+  query.BindString(0, profile_id);
   return query.Run();
 }
 
@@ -224,7 +232,7 @@ bool PlusAddressTable::GetAllSyncMetadata(
 
 bool PlusAddressTable::CreatePlusAddressesTable() {
   return db_->DoesTableExist(kPlusAddressTable) ||
-         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s INTEGER PRIMARY "
+         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
                                          "KEY, %s VARCHAR, %s VARCHAR)",
                                          kPlusAddressTable, kProfileId, kFacet,
                                          kPlusAddress)
@@ -280,6 +288,21 @@ bool PlusAddressTable::MigrateToVersion127_SyncSupport() {
                           "PRIMARY KEY (%s, %s))",
                           kSyncEntityMetadata, kModelType, kStorageKey, kValue,
                           kModelType, kStorageKey)
+                          .c_str()) &&
+         transaction.Commit();
+}
+
+bool PlusAddressTable::MigrateToVersion128_ProfileIdString() {
+  sql::Transaction transaction(db_);
+  // Recreates `kPlusAddressTable`, with `kProfileId`'s type changed to VARCHAR.
+  // No data needs to be migrated, since the table was not used yet.
+  return transaction.Begin() &&
+         db_->Execute(
+             base::StrCat({"DROP TABLE ", kPlusAddressTable}).c_str()) &&
+         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
+                                         "KEY, %s VARCHAR, %s VARCHAR)",
+                                         kPlusAddressTable, kProfileId, kFacet,
+                                         kPlusAddress)
                           .c_str()) &&
          transaction.Commit();
 }
