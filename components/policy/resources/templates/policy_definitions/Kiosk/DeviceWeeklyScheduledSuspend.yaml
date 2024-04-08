@@ -28,7 +28,7 @@ schema:
   items:
     $ref: WeeklyTimeIntervals
   type: array
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:125-
 tags: []
 type: dict
