@@ -301,8 +301,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       device_local_account_policy_service_(nullptr),
       multi_user_sign_in_policy_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
-  UpdateNumberOfUsers();
-
   // UserManager instance should be used only on UI thread.
   // (or in unit tests)
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -703,8 +701,6 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   UserSessionManager::OverrideHomedir();
-  UpdateNumberOfUsers();
-
   UserManagerBase::NotifyOnLogin();
 
   CheckProfileForSanity();
@@ -1010,22 +1006,7 @@ void ChromeUserManagerImpl::NotifyUserAddedToSession(
     SetPendingUserSwitchId(added_user->GetAccountId());
   }
 
-  UpdateNumberOfUsers();
   UserManagerBase::NotifyUserAddedToSession(added_user, user_switch_pending);
-}
-
-void ChromeUserManagerImpl::UpdateNumberOfUsers() {
-  size_t users = GetLoggedInUsers().size();
-  if (users) {
-    // Write the user number as UMA stat when a multi user session is possible.
-    if ((users + GetUsersAllowedForMultiProfile().size()) > 1) {
-      UMA_HISTOGRAM_COUNTS_100("MultiProfile.UsersPerSessionIncremental",
-                               users);
-    }
-  }
-
-  static crash_reporter::CrashKeyString<64> crash_key("num-users");
-  crash_key.Set(base::NumberToString(GetLoggedInUsers().size()));
 }
 
 void ChromeUserManagerImpl::SetUserAffiliation(

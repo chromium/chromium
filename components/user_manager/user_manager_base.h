@@ -378,8 +378,14 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Insert |user| at the front of the LRU user list.
   void SetLRUUser(User* user);
 
+  // Updates num-users crash key.
+  void UpdateCrashKey(int num_users, std::optional<UserType> active_user_type);
+
   // Sends metrics in response to a user with gaia account (regular) logging in.
   void SendGaiaUserLoginMetrics(const AccountId& account_id);
+
+  // Sends metrics for multi user sign-in.
+  void SendMultiUserSignInMetrics();
 
   // Sets account locale for user with id |account_id|.
   virtual void UpdateUserAccountLocale(const AccountId& account_id,

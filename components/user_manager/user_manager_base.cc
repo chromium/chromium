@@ -119,6 +119,7 @@ UserManagerBase::UserManagerBase(
   if (!local_state) {
     CHECK_IS_TEST();
   }
+  UpdateCrashKey(0, std::nullopt);
 }
 
 UserManagerBase::~UserManagerBase() = default;
@@ -184,6 +185,8 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 
     // Reset the new user flag if the user already exists.
     SetIsCurrentUserNew(false);
+    UpdateCrashKey(logged_in_users_.size(), std::nullopt);
+    SendMultiUserSignInMetrics();
     NotifyUserAddedToSession(user, true /* user switch pending */);
 
     return;
@@ -246,8 +249,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
   base::UmaHistogramEnumeration("UserManager.LoginUserType",
                                 active_user_->GetType());
 
-  static crash_reporter::CrashKeyString<32> session_type("session-type");
-  session_type.Set(UserTypeToString(active_user_->GetType()));
+  UpdateCrashKey(logged_in_users_.size(), active_user_->GetType());
 
   local_state_->SetString(
       prefs::kLastLoggedInGaiaUser,
@@ -1338,6 +1340,17 @@ void UserManagerBase::SetLRUUser(User* user) {
   lru_logged_in_users_.insert(lru_logged_in_users_.begin(), user);
 }
 
+void UserManagerBase::UpdateCrashKey(int num_users,
+                                     std::optional<UserType> active_user_type) {
+  static crash_reporter::CrashKeyString<64> crash_key("num-users");
+  crash_key.Set(base::NumberToString(GetLoggedInUsers().size()));
+
+  static crash_reporter::CrashKeyString<32> session_type("session-type");
+  if (active_user_type.has_value()) {
+    session_type.Set(UserTypeToString(active_user_type.value()));
+  }
+}
+
 void UserManagerBase::SendGaiaUserLoginMetrics(const AccountId& account_id) {
   // If this isn't the first time Chrome was run after the system booted,
   // assume that Chrome was restarted because a previous session ended.
@@ -1354,6 +1367,18 @@ void UserManagerBase::SendGaiaUserLoginMetrics(const AccountId& account_id) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("UserManager.LogoutToLoginDelay",
                                 time_to_login.InSeconds(), 1,
                                 kLogoutToLoginDelayMaxSec, 50);
+  }
+}
+
+void UserManagerBase::SendMultiUserSignInMetrics() {
+  size_t users = logged_in_users_.size();
+  if (!users) {
+    return;
+  }
+
+  // Write the user number as UMA stat when a multi user session is possible.
+  if (users + GetUsersAllowedForMultiProfile().size() > 1) {
+    UMA_HISTOGRAM_COUNTS_100("MultiProfile.UsersPerSessionIncremental", users);
   }
 }
 
