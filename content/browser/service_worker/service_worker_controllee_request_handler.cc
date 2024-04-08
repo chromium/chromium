@@ -536,7 +536,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     return;
   }
 
-  switch (active_version->EffectiveFetchHandlerType()) {
+  switch (active_version->fetch_handler_type()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
       RecordSkipReason(FetchHandlerSkipReason::kNoFetchHandler);
       TRACE_EVENT_WITH_FLOW1(
@@ -557,8 +557,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Info",
           "The fetch handler is skippable. Falling back to network",
           "FetchHandlerType",
-          FetchHandlerTypeToString(
-              active_version->EffectiveFetchHandlerType()));
+          FetchHandlerTypeToString(active_version->fetch_handler_type()));
       active_version->CountFeature(
           blink::mojom::WebFeature::kServiceWorkerSkippedForEmptyFetchHandler);
       CompleteWithoutLoader();

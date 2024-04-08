@@ -503,13 +503,6 @@ void ServiceWorkerVersion::set_fetch_handler_type(
   fetch_handler_type_ = fetch_handler_type;
 }
 
-// TODO(crbug.com/41494030): Remove this method and directly use
-// fetch_handler_type() instead.
-ServiceWorkerVersion::FetchHandlerType
-ServiceWorkerVersion::EffectiveFetchHandlerType() const {
-  return fetch_handler_type();
-}
-
 void ServiceWorkerVersion::set_has_hid_event_handlers(
     bool has_hid_event_handlers) {
   has_hid_event_handlers_ = has_hid_event_handlers;

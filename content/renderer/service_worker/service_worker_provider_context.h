@@ -294,8 +294,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type_ =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
-  blink::mojom::ServiceWorkerFetchHandlerType effective_fetch_handler_type_ =
-      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
   bool need_router_evaluate_ = false;
 
   blink::mojom::ServiceWorkerFetchHandlerBypassOption

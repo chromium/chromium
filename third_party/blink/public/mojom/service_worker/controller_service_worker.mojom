@@ -89,12 +89,6 @@ struct ControllerServiceWorkerInfo {
   // Type of the service worker fetch handler.
   ServiceWorkerFetchHandlerType fetch_handler_type =
       ServiceWorkerFetchHandlerType.kNoHandler;
-  // Effective type of the service worker fetch handler.
-  // This value will be kNotSkippable if the feature flag does not allow
-  // to skip the fetch handler type. The value will be different from
-  // `fetch_handler_type` above in that case.
-  ServiceWorkerFetchHandlerType effective_fetch_handler_type =
-      ServiceWorkerFetchHandlerType.kNoHandler;
 
   // Experimental feature (crbug.com/1371756). Not followed by the spec.
   //

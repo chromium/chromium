@@ -701,8 +701,6 @@ ServiceWorkerContainerHost::CreateControllerServiceWorkerInfo() {
   controller_info->client_id = client_uuid();
   controller_info->mode = GetControllerMode();
   controller_info->fetch_handler_type = controller()->fetch_handler_type();
-  controller_info->effective_fetch_handler_type =
-      controller()->EffectiveFetchHandlerType();
   controller_info->fetch_handler_bypass_option =
       controller()->fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =

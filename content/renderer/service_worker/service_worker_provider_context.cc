@@ -150,7 +150,7 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
       return nullptr;
     }
 
-    if (effective_fetch_handler_type_ !=
+    if (fetch_handler_type_ !=
         blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable) {
       // The fetch handler can be skipped.  The service worker process should
       // not be ready for this case.
@@ -394,7 +394,6 @@ void ServiceWorkerProviderContext::SetController(
          controller_));
   controller_mode_ = controller_info->mode;
   fetch_handler_type_ = controller_info->fetch_handler_type;
-  effective_fetch_handler_type_ = controller_info->effective_fetch_handler_type;
   need_router_evaluate_ = controller_info->need_router_evaluate;
   remote_controller_ = std::move(controller_info->remote_controller);
   fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;
