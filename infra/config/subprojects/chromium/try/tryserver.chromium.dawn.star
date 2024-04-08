@@ -14,6 +14,8 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     builderless = False,
     os = os.LINUX_DEFAULT,
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
@@ -227,6 +229,8 @@ try_.builder(
     ],
     gn_args = "ci/Dawn Win10 x86 DEPS Builder",
     os = os.WINDOWS_ANY,
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
