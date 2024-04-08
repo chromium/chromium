@@ -82,8 +82,8 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       hardware_(StrDupParam(params, 24)),
       is_at_least_t_(GetIntParam(params, 25)),
       is_automotive_(GetIntParam(params, 26)),
-      is_at_least_v_(GetIntParam(params, 27)),
-      targets_at_least_v_(GetIntParam(params, 28)),
+      is_at_least_u_(GetIntParam(params, 27)),
+      targets_at_least_u_(GetIntParam(params, 28)),
       codename_(StrDupParam(params, 29)),
       vulkan_deqp_level_(GetIntParam(params, 30)),
       is_foldable_(GetIntParam(params, 31)) {}

@@ -9,6 +9,9 @@
 //build/android
 //build/config
 //build/config/compiler
+//build/rust
+//build/rust/std
+//build/rust/std/rules
 //build/win
 //buildtools/third_party/libc++
 //buildtools/third_party/libc++abi
@@ -37,15 +40,6 @@
 //third_party/androidx:androidx_annotation_annotation_experimental_java
 //third_party/androidx:androidx_annotation_annotation_java
 //third_party/androidx:androidx_annotation_annotation_jvm_java
-//third_party/androidx:androidx_arch_core_core_common_java
-//third_party/androidx:androidx_arch_core_core_runtime_java
-//third_party/androidx:androidx_collection_collection_jvm_java
-//third_party/androidx:androidx_concurrent_concurrent_futures_java
-//third_party/androidx:androidx_core_core_java
-//third_party/androidx:androidx_interpolator_interpolator_java
-//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java
-//third_party/androidx:androidx_lifecycle_lifecycle_runtime_android_java
-//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java
 //third_party/ashmem
 //third_party/boringssl
 //third_party/boringssl/src/third_party/fiat
@@ -60,6 +54,7 @@
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf
+//third_party/rust
 //third_party/zlib
 //third_party/zstd
 //tools/android/errorprone_plugin

@@ -26,13 +26,13 @@ std::string AndroidAboutAppInfo::GetOsInfo() {
                                    content::IncludeAndroidModel::Include);
 }
 
-std::string AndroidAboutAppInfo::GetTargetsVInfo() {
+std::string AndroidAboutAppInfo::GetTargetsUInfo() {
   std::string targets_u_info =
-      base::android::BuildInfo::GetInstance()->is_at_least_v() ? "true"
+      base::android::BuildInfo::GetInstance()->is_at_least_u() ? "true"
                                                                : "false";
   targets_u_info += "/";
   targets_u_info +=
-      base::android::BuildInfo::GetInstance()->targets_at_least_v() ? "true"
+      base::android::BuildInfo::GetInstance()->targets_at_least_u() ? "true"
                                                                     : "false";
   return targets_u_info;
 }
