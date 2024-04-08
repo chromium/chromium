@@ -382,7 +382,6 @@ crbug.com/324003994 [ android-pixel-6 android-u angle-disabled no-passthrough ] 
 # Android and Windows Graphite/Dawn failures to be investigated.
 crbug.com/41494082 [ android android-pixel-6 passthrough graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
 crbug.com/41494082 [ android android-pixel-6 passthrough graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/330743857 [ win passthrough graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -461,6 +460,18 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [
 crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLDrawImage [ Failure ]
 crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
+
+# Failures on Windows with SkiaGraphite
+crbug.com/329235191 [ win graphite-enabled ] Pixel_BackgroundImage [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_PrecisionRoundedCorner [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
+crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture_Hidden [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
