@@ -650,6 +650,10 @@ export class NetworkRequest {
           type: NetworkRequest.#getInitiatorType(
             this.#request.info.initiator.type
           ),
+          columnNumber: this.#request.info.initiator.columnNumber,
+          lineNumber: this.#request.info.initiator.lineNumber,
+          stackTrace: this.#request.info.initiator.stack,
+          request: this.#request.info.initiator.requestId,
         },
       },
     };

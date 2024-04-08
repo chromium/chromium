@@ -187,6 +187,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
             "context": context_id,
             "initiator": {
                 "type": "script",
+                "stackTrace": ANY_DICT
             },
             "intercepts": [result["intercept"]],
             "isBlocked": True,

@@ -337,6 +337,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "context": context_id,
             "initiator": {
                 "type": "script",
+                "stackTrace": ANY_DICT
             },
             "intercepts": ANY_LIST,
             "isBlocked": True,
