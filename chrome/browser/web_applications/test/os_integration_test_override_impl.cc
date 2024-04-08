@@ -13,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/test/fake_environment.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -43,6 +45,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
@@ -365,8 +371,7 @@ bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
       shell_integration::CanApplicationHandleURL(app_path, test_file_url);
   base::DeleteFile(test_file_path);
 #elif BUILDFLAG(IS_LINUX)
-  base::FilePath user_applications_dir =
-      applications_dir().Append("applications");
+  base::FilePath user_applications_dir = applications();
   bool database_update_called = false;
   for (const LinuxFileRegistration& command : linux_file_registration_) {
     if (base::Contains(command.xdg_command, app_id) &&
@@ -645,16 +650,17 @@ void OsIntegrationTestOverrideImpl::DeleteShortcutsMenuJumpListEntryForApp(
   jump_list_entry_map_.erase(app_user_model_id);
   shortcut_menu_apps_registered_.erase(app_user_model_id);
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::desktop() {
+
+base::FilePath OsIntegrationTestOverrideImpl::desktop() {
   return desktop_.GetPath();
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::application_menu() {
+base::FilePath OsIntegrationTestOverrideImpl::application_menu() {
   return application_menu_.GetPath();
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::quick_launch() {
+base::FilePath OsIntegrationTestOverrideImpl::quick_launch() {
   return quick_launch_.GetPath();
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::startup() {
+base::FilePath OsIntegrationTestOverrideImpl::startup() {
   return startup_.GetPath();
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -663,7 +669,7 @@ const base::FilePath& OsIntegrationTestOverrideImpl::startup() {
 bool OsIntegrationTestOverrideImpl::IsChromeAppsValid() {
   return chrome_apps_folder_.IsValid();
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::chrome_apps_folder() {
+base::FilePath OsIntegrationTestOverrideImpl::chrome_apps_folder() {
   return chrome_apps_folder_.GetPath();
 }
 void OsIntegrationTestOverrideImpl::EnableOrDisablePathOnLogin(
@@ -674,14 +680,20 @@ void OsIntegrationTestOverrideImpl::EnableOrDisablePathOnLogin(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
-const base::FilePath& OsIntegrationTestOverrideImpl::desktop() {
+base::FilePath OsIntegrationTestOverrideImpl::desktop() {
   return desktop_.GetPath();
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::startup() {
-  return startup_.GetPath();
+base::FilePath OsIntegrationTestOverrideImpl::startup() {
+  return xdg_config_home_dir_.GetPath().Append("autostart");
 }
-const base::FilePath& OsIntegrationTestOverrideImpl::applications_dir() {
-  return applications_dir_.GetPath();
+base::FilePath OsIntegrationTestOverrideImpl::applications() {
+  return xdg_data_home_dir_.GetPath().Append("applications");
+}
+base::FilePath OsIntegrationTestOverrideImpl::xdg_data_home_dir() {
+  return xdg_data_home_dir_.GetPath();
+}
+base::Environment* OsIntegrationTestOverrideImpl::environment() {
+  return &environment_;
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -723,8 +735,11 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
   CHECK(success);
   success = startup_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
   CHECK(success);
-  success =
-      applications_dir_.CreateUniqueTempDirUnderPath(outer_temp_dir_.GetPath());
+  success = xdg_config_home_dir_.CreateUniqueTempDirUnderPath(
+      outer_temp_dir_.GetPath());
+  CHECK(success);
+  success = xdg_data_home_dir_.CreateUniqueTempDirUnderPath(
+      outer_temp_dir_.GetPath());
   CHECK(success);
 #endif
 
@@ -742,6 +757,19 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
     return true;
   });
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
+  user_desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_USER_DESKTOP, desktop_.GetPath());
+  base::FilePath applications_path =
+      xdg_data_home_dir_.GetPath().AppendASCII("applications");
+  CHECK(base::CreateDirectory(applications_path))
+      << "could not create applications directory.";
+  base::FilePath autostart_path =
+      xdg_config_home_dir_.GetPath().AppendASCII("autostart");
+  CHECK(base::CreateDirectory(autostart_path))
+      << "could not create applications directory.";
+  environment_.Set("XDG_DATA_HOME", xdg_data_home_dir_.GetPath().value());
+  environment_.Set(base::nix::kXdgConfigHomeEnvVar,
+                   xdg_config_home_dir_.GetPath().value());
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -773,7 +801,8 @@ OsIntegrationTestOverrideImpl::~OsIntegrationTestOverrideImpl() {
 #elif BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(!desktop_.IsValid() || desktop_.Delete());
   EXPECT_TRUE(!startup_.IsValid() || startup_.Delete());
-  EXPECT_TRUE(!applications_dir_.IsValid() || applications_dir_.Delete());
+  EXPECT_TRUE(!xdg_data_home_dir_.IsValid() || xdg_data_home_dir_.Delete());
+  EXPECT_TRUE(!xdg_config_home_dir_.IsValid() || xdg_config_home_dir_.Delete());
   // Reset the file handling callback.
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::NullCallback());
 #endif

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -81,14 +82,17 @@ void RefreshMimeInfoCache() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::vector<std::string> argv;
 
+  base::Environment* env_ptr = env.get();
+  if (test_override) {
+    env_ptr = test_override->environment();
+  }
+
   // Some Linux file managers (Nautilus and Nemo) depend on an up to date
   // mimeinfo.cache file to detect whether applications can open files, so
   // manually run update-desktop-database on the user applications folder.
   // See this bug on xdg desktop-file-utils.
   // https://gitlab.freedesktop.org/xdg/desktop-file-utils/issues/54
-  base::FilePath user_dir = test_override
-                                ? test_override->applications_dir()
-                                : base::nix::GetXDGDataWriteLocation(env.get());
+  base::FilePath user_dir = base::nix::GetXDGDataWriteLocation(env_ptr);
   base::FilePath user_applications_dir = user_dir.Append("applications");
 
   argv.push_back("update-desktop-database");
@@ -105,8 +109,9 @@ void RefreshMimeInfoCache() {
     RecordRegistration(RegistrationResult::kUpdateDesktopDatabaseFailed,
                        (mime_cache_update_exit_code == 0));
   } else {
+    CHECK_IS_TEST();
     GetUpdateMimeInfoDatabaseCallbackForTesting().Run(  // IN-TEST
-        base::FilePath(), base::JoinString(argv, " "), " ");
+        base::FilePath(), base::JoinString(argv, " "), "");
   }
 }
 

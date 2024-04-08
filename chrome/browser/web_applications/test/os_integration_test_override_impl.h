@@ -17,9 +17,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_path_override.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/test/fake_environment.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -224,19 +226,21 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  const base::FilePath& desktop() override;
-  const base::FilePath& application_menu() override;
-  const base::FilePath& quick_launch() override;
-  const base::FilePath& startup() override;
+  base::FilePath desktop() override;
+  base::FilePath application_menu() override;
+  base::FilePath quick_launch() override;
+  base::FilePath startup() override;
 #elif BUILDFLAG(IS_MAC)
   bool IsChromeAppsValid() override;
-  const base::FilePath& chrome_apps_folder() override;
+  base::FilePath chrome_apps_folder() override;
   void EnableOrDisablePathOnLogin(const base::FilePath& file_path,
                                   bool enable_on_login) override;
 #elif BUILDFLAG(IS_LINUX)
-  const base::FilePath& desktop() override;
-  const base::FilePath& startup() override;
-  const base::FilePath& applications_dir() override;
+  base::FilePath desktop();
+  base::FilePath startup();
+  base::FilePath applications();
+  base::FilePath xdg_data_home_dir();
+  base::Environment* environment() override;
 #endif
 
   // Creates a tuple of app_id to protocols and adds it to the vector
@@ -301,7 +305,13 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 #elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop_;
   base::ScopedTempDir startup_;
-  base::ScopedTempDir applications_dir_;
+  base::ScopedTempDir xdg_data_home_dir_;
+  base::ScopedTempDir xdg_config_home_dir_;
+
+  // Path overrides.
+  std::unique_ptr<base::ScopedPathOverride> user_desktop_override_;
+  FakeEnvironment environment_;
+
   std::vector<LinuxFileRegistration> linux_file_registration_;
 #endif
 
