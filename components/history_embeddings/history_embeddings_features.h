@@ -25,9 +25,6 @@ extern const base::FeatureParam<int> kSearchResultItemCount;
 // followed by the first letter of a starter pack keyword.
 extern const base::FeatureParam<bool> kAtKeywordAcceleration;
 
-// Specifies the content visibility threshold that can be shown to the user.
-extern const base::FeatureParam<double> kContentVisibilityThreshold;
-
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

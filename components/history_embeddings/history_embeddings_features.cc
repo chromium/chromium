@@ -25,9 +25,4 @@ const base::FeatureParam<bool> kAtKeywordAcceleration(&kHistoryEmbeddings,
                                                       "AtKeywordAcceleration",
                                                       false);
 
-const base::FeatureParam<double> kContentVisibilityThreshold(
-    &kHistoryEmbeddings,
-    "ContentVisibilityThreshold",
-    0.5);
-
 }  // namespace history_embeddings
