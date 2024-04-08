@@ -216,6 +216,7 @@ void LensOverlayController::CloseUI() {
   overlay_widget_.reset();
   tab_contents_observer_.reset();
 
+  searchbox_handler_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
   receiver_.reset();
@@ -273,6 +274,16 @@ void LensOverlayController::BindSidePanel(
         lens::BuildSearchURL(*pending_text_query_));
     pending_text_query_.reset();
   }
+}
+
+void LensOverlayController::SetSearchboxHandler(
+    std::unique_ptr<RealboxHandler> handler) {
+  searchbox_handler_.reset();
+  searchbox_handler_ = std::move(handler);
+}
+
+void LensOverlayController::ResetSearchboxHandler() {
+  searchbox_handler_.reset();
 }
 
 views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {

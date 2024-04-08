@@ -72,6 +72,10 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     auto* web_contents = overlay_web_view->GetWebContents();
     content::WaitForLoadStop(web_contents);
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
+
+    // Clean up (the searchbox handler will leave a dangling pointer if not
+    // explicitly destroyed).
+    controller->ResetSearchboxHandler();
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
@@ -109,9 +113,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, ManualRegionSelectionCanvas) {
   RunOverlayTest("lens/overlay/region_selection_canvas_test.js", "mocha.run()");
 }
 
-using LensSidePanelTest = LensWebUIBrowserTest;
+using LensSidePanelTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
-  RunTest("lens/side_panel/results_frame_test.js", "mocha.run()");
+  RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");
 }
 
 }  // namespace

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -95,6 +98,17 @@ class LensOverlayController : public TabStripModelObserver,
   void BindSidePanel(
       mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
+
+  // This method is used to set up communication between this instance and the
+  // searchbox WebUI. This is called by the WebUIController when the WebUI is
+  // executing javascript and has bound the handler. Takes ownership of
+  // `handler`.
+  void SetSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+
+  // This method is used to release the owned `SearchboxHandler`. It should be
+  // called before the embedding web contents is destroyed since it contains a
+  // reference to that web contents.
+  void ResetSearchboxHandler();
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -264,6 +278,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Side panel coordinator for showing results in the panel.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
+
+  // Searchbox handler for passing in image and text selections.
+  std::unique_ptr<RealboxHandler> searchbox_handler_;
 
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay widget is showing.

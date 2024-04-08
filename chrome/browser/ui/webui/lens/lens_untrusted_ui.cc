@@ -106,11 +106,14 @@ void LensUntrustedUI::BindInterface(
 
 void LensUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  searchbox_handler_ = std::make_unique<RealboxHandler>(
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  auto handler = std::make_unique<RealboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/nullptr,
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
       /*omnibox_controller=*/nullptr);
+  controller->SetSearchboxHandler(std::move(handler));
 }
 
 void LensUntrustedUI::BindInterface(

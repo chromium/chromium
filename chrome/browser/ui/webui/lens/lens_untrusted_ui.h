@@ -13,8 +13,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
-class RealboxHandler;
-
 namespace ui {
 class ColorChangeHandler;
 }
@@ -64,7 +62,6 @@ class LensUntrustedUI : public UntrustedTopChromeWebUIController,
       const std::string& resource_path,
       content::WebUIDataSource::GotDataCallback got_data_callback);
 
-  std::unique_ptr<RealboxHandler> searchbox_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>

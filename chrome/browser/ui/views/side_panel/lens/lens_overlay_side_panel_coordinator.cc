@@ -86,9 +86,11 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
 void LensOverlaySidePanelCoordinator::DeregisterEntry() {
   auto* registry = SidePanelRegistry::Get(GetTabWebContents());
   CHECK(registry);
-  // If the side panel web view was created, then we need to remove the glue to
-  // the overlay controller if it is present.
+  // If the side panel web view was created, then we need to release the
+  // associated searchbox handler and remove the glue to the overlay controller
+  // if it is present.
   if (side_panel_web_view_) {
+    lens_overlay_controller_->ResetSearchboxHandler();
     lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
     side_panel_web_view_ = nullptr;
   }
