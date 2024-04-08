@@ -1778,6 +1778,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.QueryEmbeddingSucceeded" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the attempt to compute the query embedding succeeded. Logged each
+    time an embedding was requested for a query.
+  </summary>
+</histogram>
+
 <histogram name="History.FaviconDatabaseSizeMB" units="MB" expires_after="M130">
   <owner>rogerm@chromium.org</owner>
   <owner>sky@chromium.org</owner>

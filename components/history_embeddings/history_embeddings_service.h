@@ -26,8 +26,7 @@
 
 namespace history_embeddings {
 
-using ComputeEmbeddingsCallback =
-    base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
+class Embedder;
 
 // A single item that forms part of a search result; combines metadata found in
 // the history embeddings database with additional info from history database.
@@ -81,16 +80,15 @@ class HistoryEmbeddingsService : public KeyedService,
   struct Storage {
     explicit Storage(const base::FilePath& storage_dir);
 
-    // Called on the worker sequence to process and persist passages &
-    // embeddings.
-    void ProcessAndStorePassages(ComputeEmbeddingsCallback compute_embeddings,
-                                 UrlPassages url_passages);
+    // Called on the worker sequence to persist passages and embeddings.
+    void ProcessAndStorePassages(UrlPassages url_passages,
+                                 std::vector<Embedding> passages_embeddings);
 
     // Runs search on worker sequence.
     std::vector<ScoredUrl> Search(
         base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
         size_t query_id,
-        std::string query,
+        Embedding query_embedding,
         size_t count);
 
     // A VectorDatabase implementation that holds data in memory.
@@ -101,7 +99,20 @@ class HistoryEmbeddingsService : public KeyedService,
   };
 
   // Called indirectly via RetrievePassages when passage extraction completes.
-  void OnPassagesRetrieved(UrlPassages passages);
+  void OnPassagesRetrieved(UrlPassages url_passages,
+                           std::vector<std::string> passages);
+
+  // Invoked after the embeddings for `passages` has been computed.
+  void OnPassagesEmbeddingsComputed(UrlPassages url_passages,
+                                    std::vector<std::string> passages,
+                                    std::vector<Embedding> passages_embeddings);
+
+  // Invoked after the embedding for the original search query has been
+  // computed.
+  void OnQueryEmbeddingComputed(size_t count,
+                                SearchResultCallback callback,
+                                std::vector<std::string> query_passages,
+                                std::vector<Embedding> query_embedding);
 
   // Finishes a search result by combining found data with additional data from
   // history database. Moves each ScoredUrl into a more complete structure with
@@ -119,6 +130,9 @@ class HistoryEmbeddingsService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  // The embedder used to compute embeddings.
+  std::unique_ptr<Embedder> embedder_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

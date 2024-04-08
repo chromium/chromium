@@ -4,6 +4,7 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -74,6 +75,8 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(store_future.Wait());
 
+  base::HistogramTester histogram_tester;
+
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
   service()->Search("A B C D e f g", 1, search_future.GetCallback());
@@ -81,6 +84,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(result[0].scored_url.passage, "A B C D");
   EXPECT_EQ(result[0].row.url(), url);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
 }
 
 }  // namespace history_embeddings

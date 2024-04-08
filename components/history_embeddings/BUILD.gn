@@ -4,10 +4,13 @@
 
 static_library("history_embeddings") {
   sources = [
+    "embedder.h",
     "history_embeddings_features.cc",
     "history_embeddings_features.h",
     "history_embeddings_service.cc",
     "history_embeddings_service.h",
+    "mock_embedder.cc",
+    "mock_embedder.h",
     "passages_util.cc",
     "passages_util.h",
     "sql_database.cc",

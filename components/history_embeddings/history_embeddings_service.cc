@@ -17,6 +17,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -28,14 +29,14 @@ namespace history_embeddings {
 
 void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
                     base::TimeTicks start_time,
-                    UrlPassages url_passages,
-                    base::OnceCallback<void(UrlPassages)> callback,
+                    base::OnceCallback<void(std::vector<std::string>)> callback,
                     blink::mojom::InnerTextFramePtr mojo_frame) {
+  std::vector<std::string> valid_passages;
   const base::TimeDelta extraction_time = base::TimeTicks::Now() - start_time;
   if (mojo_frame) {
     for (const auto& segment : mojo_frame->segments) {
       if (segment->is_text()) {
-        url_passages.passages.add_passages(segment->get_text());
+        valid_passages.emplace_back(segment->get_text());
       }
     }
     base::UmaHistogramTimes("History.Embeddings.Passages.ExtractionTime",
@@ -43,30 +44,15 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
   }
   // Save passages
   const size_t total_text_size =
-      std::accumulate(url_passages.passages.passages().cbegin(),
-                      url_passages.passages.passages().cend(), 0u,
+      std::accumulate(valid_passages.cbegin(), valid_passages.cend(), 0u,
                       [](size_t acc, const std::string& passage) {
                         return acc + passage.size();
                       });
   base::UmaHistogramCounts1000("History.Embeddings.Passages.PassageCount",
-                               url_passages.passages.passages_size());
+                               valid_passages.size());
   base::UmaHistogramCounts10M("History.Embeddings.Passages.TotalTextSize",
                               total_text_size);
-  std::move(callback).Run(std::move(url_passages));
-}
-
-Embedding StubComputeQueryEmbedding(const std::string& query) {
-  // TODO(b/328114635): Synchronous inference to compute vector embedding?
-  Embedding embedding({1.0f, 2.0f, 3.0f, 4.0f});
-  embedding.Normalize();
-  return embedding;
-}
-
-std::vector<Embedding> StubComputePassagesEmbeddings(
-    const UrlPassages& url_passages) {
-  // TODO(b/328114635): Synchronous inference to compute vector embeddings?
-  return std::vector<Embedding>(url_passages.passages.passages_size(),
-                                StubComputeQueryEmbedding(""));
+  std::move(callback).Run(std::move(valid_passages));
 }
 
 // This is run on the HistoryService's worker thread to access the full URL
@@ -116,6 +102,9 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
   CHECK(history_service_);
   history_service_observation_.Observe(history_service_);
 
+  // TODO: b/333094780 - Swap this to the model-backed embedder once ready.
+  embedder_ = std::make_unique<MockEmbedder>();
+
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -140,20 +129,43 @@ void HistoryEmbeddingsService::RetrievePassages(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
               &OnGotInnerText, std::move(agent), start_time,
-              UrlPassages(visit_row.url_id, visit_row.visit_id,
-                          visit_row.visit_time),
               base::BindOnce(&HistoryEmbeddingsService::OnPassagesRetrieved,
-                             weak_ptr_factory_.GetWeakPtr())),
+                             weak_ptr_factory_.GetWeakPtr(),
+                             UrlPassages(visit_row.url_id, visit_row.visit_id,
+                                         visit_row.visit_time))),
           nullptr));
 }
 
 void HistoryEmbeddingsService::Search(std::string query,
                                       size_t count,
                                       SearchResultCallback callback) {
+  embedder_->ComputePassagesEmbeddings(
+      {std::move(query)},
+      base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
+                     weak_ptr_factory_.GetWeakPtr(), count,
+                     std::move(callback)));
+}
+
+void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
+    size_t count,
+    SearchResultCallback callback,
+    std::vector<std::string> query_passages,
+    std::vector<Embedding> query_embeddings) {
+  bool succeeded = !query_embeddings.empty();
+  base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
+                            succeeded);
+  if (!succeeded) {
+    // Query embedding failed. Just return no search results.
+    std::move(callback).Run({});
+    return;
+  }
+
+  CHECK_EQ(query_embeddings.size(), 1u);
+
   query_id_++;
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
-                std::move(query), count)
+                std::move(query_embeddings.front()), count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback)));
@@ -179,11 +191,11 @@ HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
     : sql_database(storage_dir) {}
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
-    ComputeEmbeddingsCallback compute_embeddings,
-    UrlPassages url_passages) {
+    UrlPassages url_passages,
+    std::vector<Embedding> passages_embeddings) {
   // Compute and save embeddings vectors.
   UrlEmbeddings url_embeddings(url_passages);
-  url_embeddings.embeddings = std::move(compute_embeddings).Run(url_passages);
+  url_embeddings.embeddings = std::move(passages_embeddings);
   vector_database.AddUrlEmbeddings(std::move(url_embeddings));
   vector_database.SaveTo(&sql_database);
 
@@ -193,10 +205,10 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
 std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
     size_t query_id,
-    std::string query,
+    Embedding query_embedding,
     size_t count) {
   std::vector<ScoredUrl> scored_urls = sql_database.FindNearest(
-      count, StubComputeQueryEmbedding(query),
+      count, std::move(query_embedding),
       base::BindRepeating(
           [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
              size_t query_id) {
@@ -220,9 +232,24 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
   return scored_urls;
 }
 
-void HistoryEmbeddingsService::OnPassagesRetrieved(UrlPassages url_passages) {
+void HistoryEmbeddingsService::OnPassagesRetrieved(
+    UrlPassages url_passages,
+    std::vector<std::string> passages) {
+  embedder_->ComputePassagesEmbeddings(
+      std::move(passages),
+      base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_passages)));
+}
+
+void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
+    UrlPassages url_passages,
+    std::vector<std::string> passages,
+    std::vector<Embedding> passages_embeddings) {
+  url_passages.passages.mutable_passages()->Assign(
+      std::make_move_iterator(passages.begin()),
+      std::make_move_iterator(passages.end()));
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
-      .WithArgs(base::BindOnce(&StubComputePassagesEmbeddings), url_passages)
+      .WithArgs(url_passages, std::move(passages_embeddings))
       .Then(base::BindOnce(callback_for_tests_, url_passages));
 }
 
