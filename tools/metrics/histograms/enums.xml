@@ -15891,6 +15891,21 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="After redirect or next navigation started"/>
 </enum>
 
+<enum name="LoadPlatformModelStatus">
+  <int value="0" label="First load success"/>
+  <int value="1" label="Load existing success"/>
+  <int value="2" label="Invalid UUID"/>
+  <int value="3" label="No DLC client"/>
+  <int value="4" label="Install DLC fail"/>
+  <int value="5" label="Read model descriptor fail"/>
+  <int value="6" label="Parse model descriptor fail"/>
+  <int value="7" label="Invalid model descriptor"/>
+  <int value="8" label="Invalid base model descriptor"/>
+  <int value="9" label="Load model fail"/>
+  <int value="10" label="Load base model fail"/>
+  <int value="11" label="Invalid base model version"/>
+</enum>
+
 <enum name="LocaleCodeISO639">
   <summary>
     Hash values for ISO 639 locale codes (including country and script tags e.g

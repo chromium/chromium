@@ -7698,6 +7698,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OnDeviceModel.LoadPlatformModelStatus"
+    enum="LoadPlatformModelStatus" expires_after="2024-10-08">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>yich@google.com</owner>
+  <summary>
+    The result of loading a platform model in the OnDeviceModelService. Logged
+    every time when loading a platform model.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.MaxBufferSize.{GpuType}" units="MB"
     expires_after="2024-09-29">
   <owner>cduvall@chromium.org</owner>

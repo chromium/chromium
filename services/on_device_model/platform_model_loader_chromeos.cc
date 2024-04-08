@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -71,6 +72,26 @@ constexpr char kWeightPathKey[] = "weight_path";
 constexpr char kSpModelPathKey[] = "sp_model_path";
 constexpr char kVersionKey[] = "version";
 constexpr int kDefaultMaxTokens = 1024;
+constexpr char kLoadStatusHistogramName[] =
+    "OnDeviceModel.LoadPlatformModelStatus";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LoadStatus {
+  kFirstLoadSuccess = 0,
+  kLoadExistingSuccess = 1,
+  kInvalidUuid = 2,
+  kNoDlcClient = 3,
+  kInstallDlcFail = 4,
+  kReadModelDescriptorFail = 5,
+  kParseModelDescriptorFail = 6,
+  kInvalidModelDescriptor = 7,
+  kInvalidBaseModelDescriptor = 8,
+  kLoadModelFail = 9,
+  kLoadBaseModelFail = 10,
+  kInvalidModelVersion = 11,
+  kMaxValue = kInvalidModelVersion,
+};
 }  // namespace
 
 namespace on_device_model {
@@ -158,7 +179,8 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
     LoadModelCallback callback) {
   if (!uuid.is_valid()) {
     LOG(ERROR) << "Invalid model UUID";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kInvalidUuid);
     std::move(callback).Run(mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -167,6 +189,8 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
       PendingLoad(std::move(pending), std::move(callback)));
 
   if (ReplyModelAlreadyLoaded(uuid)) {
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kLoadExistingSuccess);
     return;
   }
 
@@ -182,7 +206,8 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
 
   if (!client) {
     LOG(ERROR) << "Failed to get DlcserviceClient";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kNoDlcClient);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -201,7 +226,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
     const ash::DlcserviceClient::InstallResult& result) {
   if (result.error != dlcservice::kErrorNone) {
     LOG(ERROR) << "Failed to install ML DLC with error " << result.error;
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kInstallDlcFail);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -212,7 +238,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
 
   if (!base::ReadFileToString(model_desc, &model_json)) {
     LOG(ERROR) << "Failed to read model descriptor file";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kReadModelDescriptorFail);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -222,7 +249,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
 
   if (!model_dict) {
     LOG(ERROR) << "Failed to parse model descriptor file";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kParseModelDescriptorFail);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -233,7 +261,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
 
   if (!model_path || !weight_path || !version) {
     LOG(ERROR) << "Failed to read model data from model descriptor file";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kInvalidModelDescriptor);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -246,7 +275,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
     const std::string* base_version = base_model->FindString(kVersionKey);
     if (!base_uuid || !base_version) {
       LOG(ERROR) << "Failed to read base model data from model descriptor file";
-      // TODO(b/331050878): Report UMA to measure the various failure hit.
+      base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                    LoadStatus::kInvalidBaseModelDescriptor);
       ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
       return;
     }
@@ -269,7 +299,8 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
 
   if (!sp_model) {
     LOG(ERROR) << "Failed to read sp model path from model descriptor file";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kInvalidModelDescriptor);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -312,7 +343,8 @@ void ChromeosPlatformModelLoader::FinishLoadModel(
     scoped_refptr<PlatformModel> model,
     mojom::LoadModelResult result) {
   if (result != mojom::LoadModelResult::kSuccess) {
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kLoadModelFail);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -322,6 +354,8 @@ void ChromeosPlatformModelLoader::FinishLoadModel(
   platform_models_[uuid].platform_model = model->AsWeakPtr();
 
   CHECK(ReplyModelAlreadyLoaded(uuid));
+  base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                LoadStatus::kFirstLoadSuccess);
 }
 
 void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
@@ -336,7 +370,8 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
     mojom::LoadModelResult result) {
   if (result != mojom::LoadModelResult::kSuccess) {
     LOG(ERROR) << "Failed to load base model for adaptation";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kLoadBaseModelFail);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
@@ -346,7 +381,8 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
 
   if (base_record.platform_model->version() != base_version) {
     LOG(ERROR) << "Base model version mismatch or no valid base model";
-    // TODO(b/331050878): Report UMA to measure the various failure hit.
+    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
+                                  LoadStatus::kInvalidModelVersion);
     ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
