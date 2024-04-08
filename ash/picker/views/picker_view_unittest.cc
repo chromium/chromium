@@ -877,5 +877,36 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
               Optional(PickerSearchResult::Emoji(u"😊")));
 }
 
+TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kCategories,
+                    {{PickerSearchResult::Category(PickerCategory::kLinks)}}),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  PickerItemView* category_result = view->search_results_view_for_testing()
+                                        .section_list_view_for_testing()
+                                        ->GetTopItem();
+  ASSERT_TRUE(category_result);
+  ViewDrawnWaiter().Wait(category_result);
+
+  LeftClickOn(category_result);
+
+  EXPECT_EQ(
+      view->search_field_view_for_testing().textfield_for_testing().GetText(),
+      u"");
+}
+
 }  // namespace
 }  // namespace ash

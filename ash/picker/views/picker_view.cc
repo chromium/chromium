@@ -259,6 +259,7 @@ void PickerView::SelectCategory(PickerCategory category) {
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
+  search_field_view_->SetQueryText(u"");
   SetActivePage(category_view_);
   delegate_->GetResultsForCategory(
       category, base::BindRepeating(&PickerView::PublishCategoryResults,

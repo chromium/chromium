@@ -58,5 +58,27 @@ TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
   EXPECT_EQ(view.textfield_for_testing().GetPlaceholderText(), u"hello");
 }
 
+TEST_F(PickerSearchFieldViewTest, SetQueryText) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
+
+  view.SetQueryText(u"test");
+
+  EXPECT_EQ(view.textfield_for_testing().GetText(), u"test");
+}
+
+TEST_F(PickerSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  base::test::TestFuture<const std::u16string&> future;
+  PickerSearchFieldView view(future.GetRepeatingCallback(), &key_event_handler,
+                             &metrics);
+
+  view.SetQueryText(u"test");
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace
 }  // namespace ash
