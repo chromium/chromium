@@ -9,18 +9,15 @@
 #include <tuple>
 #include <vector>
 
-#include "base/check.h"
-#include "base/strings/stringprintf.h"
 #include "base/timer/lap_timer.h"
 #include "base/types/expected.h"
-#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
-#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace attribution_reporting {
 namespace {
@@ -29,26 +26,23 @@ struct NumStatesTestCase {
   std::string story_name;
   MaxEventLevelReports max_reports;
   std::vector<int> windows_per_type;
-  absl::uint128 expected_num_states;
 };
 
 const NumStatesTestCase kNumStatesTestCases[] = {
-    {"default_nav", MaxEventLevelReports(3), {3, 3, 3, 3, 3, 3, 3, 3}, 2925},
-    {"default_event", MaxEventLevelReports(1), {1, 1}, 3},
+    {"default_nav", MaxEventLevelReports(3),
+     std::vector<int>(/*count=*/8, /*value=*/3)},
+
+    {"default_event", MaxEventLevelReports(1),
+     std::vector<int>(/*count=*/2, /*value=*/1)},
 
     // r = max event level reports
     // w = num windows
     // t = trigger data types
-    {"(20r,5w,8t)",
-     MaxEventLevelReports(20),
-     {5, 5, 5, 5, 5, 5, 5, 5},
-     4191844505805495},
+    {"(20r,5w,8t)", MaxEventLevelReports(20),
+     std::vector<int>(/*count=*/8, /*value=*/5)},
 
-    {"(20r,5w,32t)",
-     MaxEventLevelReports(20),
-     {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
-     absl::MakeUint128(/*high=*/9494472u, /*low=*/10758590974061625903u)},
+    {"(20r,5w,32t)", MaxEventLevelReports(20),
+     std::vector<int>(/*count=*/32, /*value=*/5)},
 };
 
 class PrivacyMathPerfTest
@@ -58,17 +52,16 @@ class PrivacyMathPerfTest
 
 TEST_P(PrivacyMathPerfTest, NumStates) {
   const auto [collapse, test_case] = GetParam();
-  base::LapTimer timer;
   const auto specs = SpecsFromWindowList(test_case.windows_per_type, collapse);
-  bool valid = true;
+
+  base::LapTimer timer;
   do {
-    // Do a trivial check to ensure the GetNumStates call is not optimized by
-    // the compiler.
-    valid &= GetNumStates(specs, test_case.max_reports) ==
-             test_case.expected_num_states;
+    auto result = GetNumStates(specs, test_case.max_reports);
+
+    ::benchmark::DoNotOptimize(result);
+
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
-  CHECK(valid);
 
   std::string story = test_case.story_name + (collapse ? "(collapsed)" : "");
   perf_test::PerfResultReporter reporter("AttributionReporting.NumStates",
@@ -79,19 +72,19 @@ TEST_P(PrivacyMathPerfTest, NumStates) {
 
 TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
   const auto [collapse, test_case] = GetParam();
-  base::LapTimer timer;
   const auto specs = SpecsFromWindowList(test_case.windows_per_type, collapse);
-  bool valid_rates = true;
+
+  base::LapTimer timer;
   do {
-    auto response_data = DoRandomizedResponse(
+    auto result = DoRandomizedResponse(
         specs, test_case.max_reports,
         /*epsilon=*/0, /*max_trigger_state_cardinality=*/absl::Uint128Max(),
         /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
-    // Do a trivial check to ensure the call is not optimized by the compiler.
-    valid_rates &= response_data->rate() >= 0;
+
+    ::benchmark::DoNotOptimize(result);
+
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
-  CHECK(valid_rates);
 
   std::string story = test_case.story_name + (collapse ? " (collapsed)" : "");
   perf_test::PerfResultReporter reporter(

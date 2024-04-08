@@ -1171,6 +1171,7 @@ if (use_blink) {
       "//components/test:test_support",
       "//components/visitedlink/browser",
       "//testing/perf",
+      "//third_party/google_benchmark:google_benchmark",
       "//url",
     ]
 
