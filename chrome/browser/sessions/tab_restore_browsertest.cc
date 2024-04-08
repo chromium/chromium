@@ -2427,3 +2427,76 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
                 ->ListTabs(),
             gfx::Range(1, 3));
 }
+
+// Verify restoring a tab part of a closed group, opens the entire group and
+// adds the tab to it with its navigation stack.
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabWhenGroupIsClosed) {
+  AddTab(browser(), GURL("https://www.1.com"));
+  AddTab(browser(), GURL("https://www.2.com"));
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  CHECK(service);
+
+  // Save it.
+  base::Uuid saved_group_id = service->SaveGroup(group);
+  ASSERT_TRUE(service->model()->Contains(group));
+  ASSERT_TRUE(service->model()->Contains(saved_group_id));
+  EXPECT_EQ(1, service->model()->Count());
+
+  // Navigate the second tab in the group a few times.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(2);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.3.com"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.4.com"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_EQ(3, web_contents->GetController().GetEntryCount());
+
+  // Close the second tab in the group.
+  CloseTab(2);
+
+  // Ungroup the group (disconnect first so we don't deleted the saved group).
+  service->DisconnectLocalTabGroup(group);
+  browser()->tab_strip_model()->RemoveFromGroup({1});
+
+  tab_groups::SavedTabGroup saved_group =
+      *service->model()->Get(saved_group_id);
+
+  EXPECT_FALSE(saved_group.local_group_id().has_value());
+  EXPECT_EQ(saved_group_id, saved_group.saved_guid());
+  EXPECT_EQ(1u, saved_group.saved_tabs().size());
+
+  // There should be 2 tabs in the browser. 1 for the initial new tab, 1 for the
+  // tab we ungrouped.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Restore the tab.
+  chrome::RestoreTab(browser());
+  saved_group = *service->model()->Get(saved_group_id);
+
+  // Verify the saved tab was added to the correct group.
+  EXPECT_TRUE(saved_group.local_group_id().has_value());
+  EXPECT_EQ(saved_group_id, saved_group.saved_guid());
+  EXPECT_EQ(2u, saved_group.saved_tabs().size());
+
+  // Check the number of tabs in the tabstrip are the same.
+  // State: |New Tab| |Ungrouped Tab| Group[|Restored Tab 1| |Restored Tab 2|]
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(saved_group.local_group_id().value())
+                ->ListTabs(),
+            gfx::Range(2, 4));
+
+  content::WebContents* restored_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(3);
+  EXPECT_EQ(3, restored_contents->GetController().GetEntryCount());
+}

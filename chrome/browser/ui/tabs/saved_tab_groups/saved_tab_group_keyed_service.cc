@@ -123,7 +123,6 @@ SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // If our tab group was not found in any tabstrip model, open the group in
   // this browser's tabstrip model.
-  TabStripModel* tab_strip_model_for_creation = browser->tab_strip_model();
   std::map<content::WebContents*, base::Uuid> opened_web_contents_to_uuid =
       GetWebContentsToTabGuidMappingForOpening(browser, saved_group,
                                                saved_group_guid);
@@ -133,6 +132,22 @@ SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     return std::nullopt;
   }
 
+  // Take the opened tabs and move them into a TabGroup in the TabStrip. Link
+  // the `tab_group_id` to `saved_group_guid` to stay up-to-date.
+  tab_groups::TabGroupId tab_group_id = AddOpenedTabsToGroup(
+      browser->tab_strip_model(), opened_web_contents_to_uuid, *saved_group);
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
+
+  return tab_group_id;
+}
+
+tab_groups::TabGroupId SavedTabGroupKeyedService::AddOpenedTabsToGroup(
+    TabStripModel* const tab_strip_model_for_creation,
+    const std::map<content::WebContents*, base::Uuid>&
+        opened_web_contents_to_uuid,
+    const SavedTabGroup& saved_group) {
   // Figure out which tabs we actually opened in this browser that aren't
   // already in groups.
   std::vector<int> tab_indices;
@@ -149,7 +164,7 @@ SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   tab_strip_model_for_creation->AddToGroupForRestore(tab_indices, tab_group_id);
 
   // Update the saved tab group to link to the local group id.
-  model_.OnGroupOpenedInTabStrip(saved_group_guid, tab_group_id);
+  model_.OnGroupOpenedInTabStrip(saved_group.saved_guid(), tab_group_id);
 
   TabGroup* const tab_group =
       tab_strip_model_for_creation->group_model()->GetTabGroup(tab_group_id);
@@ -161,13 +176,10 @@ SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // Set the group's visual data after the tab strip is in its final state. This
   // ensures the tab group's bounds are correctly set. crbug/1408814.
-  UpdateGroupVisualData(saved_group_guid,
-                        saved_group->local_group_id().value());
+  UpdateGroupVisualData(saved_group.saved_guid(),
+                        saved_group.local_group_id().value());
 
-  listener_.ConnectToLocalTabGroup(*saved_group, opened_web_contents_to_uuid);
-
-  base::RecordAction(
-      base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
+  listener_.ConnectToLocalTabGroup(saved_group, opened_web_contents_to_uuid);
 
   return tab_group_id;
 }

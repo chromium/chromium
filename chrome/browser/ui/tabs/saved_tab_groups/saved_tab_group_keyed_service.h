@@ -104,6 +104,15 @@ class SavedTabGroupKeyedService : public KeyedService,
       const SavedTabGroup* const saved_group,
       const base::Uuid& saved_group_guid);
 
+  // Helper function that adds the opened tabs obtained from calling
+  // `GetWebContentsToTabGuidMappingForOpening` into a new tab group in the
+  // TabStrip.
+  tab_groups::TabGroupId AddOpenedTabsToGroup(
+      TabStripModel* const tab_strip_model_for_creation,
+      const std::map<content::WebContents*, base::Uuid>&
+          opened_web_contents_to_uuid,
+      const SavedTabGroup& saved_group);
+
   // Activates the first tab in saved group that is already opened when its
   // button is pressed, If active tab exists in saved group, only activates
   // window.

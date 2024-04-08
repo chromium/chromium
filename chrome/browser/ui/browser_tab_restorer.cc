@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_set>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -28,12 +29,14 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "content/public/browser/navigation_entry.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -134,10 +137,35 @@ std::unordered_set<std::string> GetUrlsInSavedTabGroup(
   return saved_urls;
 }
 
+content::WebContents* OpenTabWithNavigationStack(
+    Browser* browser,
+    const sessions::TabRestoreService::Tab& restored_tab) {
+  const sessions::SerializedNavigationEntry& entry =
+      restored_tab.navigations.at(restored_tab.normalized_navigation_index());
+  const GURL tab_url = entry.virtual_url();
+
+  content::WebContents* created_contents = created_contents =
+      tab_groups::SavedTabGroupUtils::OpenTabInBrowser(
+          tab_url, browser, browser->profile(),
+          WindowOpenDisposition::NEW_BACKGROUND_TAB);
+
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
+      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+          restored_tab.navigations, browser->profile());
+  created_contents->GetController().Restore(
+      restored_tab.normalized_navigation_index(),
+      content::RestoreType::kRestored, &entries);
+  CHECK_EQ(0u, entries.size());
+
+  return created_contents;
+}
+
+// Adds a restored tab to the saved group if its URL does not exist in the
+// group.
 void AddMissingTabToGroup(
+    Browser* const browser,
     tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
     const base::Uuid& saved_id,
-    const tab_groups::TabGroupId& group_id,
     const sessions::TabRestoreService::Tab& restored_tab,
     std::unordered_set<std::string>* const saved_urls) {
   const tab_groups::SavedTabGroup* const saved_group =
@@ -148,12 +176,15 @@ void AddMissingTabToGroup(
       restored_tab.navigations.at(restored_tab.normalized_navigation_index());
   const GURL tab_url = entry.virtual_url();
   if (!saved_urls->contains(tab_url.spec())) {
-    // Add the missing tab to the saved group if it doesn't exist.
-    tab_groups::SavedTabGroupTab saved_tab_group_tab(
-        entry.virtual_url(), entry.title(), saved_id, std::nullopt);
-    // TODO(dljames): Find a way to load favicons and set it here.
-    saved_tab_group_service.model()->AddTabToGroupLocally(
-        saved_id, std::move(saved_tab_group_tab));
+    // Restore the tab with is navigation stack.
+    content::WebContents* created_contents =
+        OpenTabWithNavigationStack(browser, restored_tab);
+
+    // Add the tab to the correct group.
+    int index =
+        browser->tab_strip_model()->GetIndexOfWebContents(created_contents);
+    browser->tab_strip_model()->AddToGroupForRestore(
+        {index}, saved_group->local_group_id().value());
     saved_urls->emplace(tab_url.spec());
   }
 }
@@ -194,8 +225,13 @@ void OpenSavedTabGroup(sessions::TabRestoreService& tab_restore_service,
   }
 
   const SessionID& session_id = group.id;
-  const tab_groups::TabGroupId& group_id = group.group_id;
   const tab_groups::TabGroupVisualData& visual_data = group.visual_data;
+
+  // Open the group.
+  std::optional<tab_groups::TabGroupId> new_group_id =
+      saved_tab_group_service->OpenSavedTabGroupInBrowser(browser,
+                                                          saved_id.value());
+  CHECK(new_group_id.has_value());
 
   // It could be the case that the current state of the saved group has deviated
   // from what is represented in TabRestoreService. Make sure any tabs that are
@@ -204,15 +240,10 @@ void OpenSavedTabGroup(sessions::TabRestoreService& tab_restore_service,
       GetUrlsInSavedTabGroup(*saved_tab_group_service, saved_id.value());
   for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
        group.tabs) {
-    AddMissingTabToGroup(*saved_tab_group_service, saved_id.value(), group_id,
+    AddMissingTabToGroup(browser, *saved_tab_group_service, saved_id.value(),
                          *tab.get(), &urls_in_saved_group);
   }
 
-  // Open the group.
-  std::optional<tab_groups::TabGroupId> new_group_id =
-      saved_tab_group_service->OpenSavedTabGroupInBrowser(browser,
-                                                          saved_id.value());
-  CHECK(new_group_id.has_value());
   UpdateGroupVisualData(new_group_id.value(), visual_data);
 
   // Clean up TabRestoreService.
@@ -279,19 +310,20 @@ void OpenSavedTabGroupTab(sessions::TabRestoreService& tab_restore_service,
     return;
   }
 
-  // It could be the case that the current state of the saved group has deviated
-  // from what is represented in TabRestoreService. Make sure any tabs that are
-  // not in the saved group are added to it.
-  std::unordered_set<std::string> urls_in_saved_group =
-      GetUrlsInSavedTabGroup(*saved_tab_group_service, saved_id.value());
-  AddMissingTabToGroup(*saved_tab_group_service, saved_id.value(),
-                       group_id.value(), tab, &urls_in_saved_group);
-
   // Open the group.
   std::optional<tab_groups::TabGroupId> new_group_id =
       saved_tab_group_service->OpenSavedTabGroupInBrowser(browser,
                                                           saved_id.value());
   CHECK(new_group_id.has_value());
+
+  // It could be the case that the current state of the saved group has deviated
+  // from what is represented in TabRestoreService. Make sure any tabs that are
+  // not in the saved group are added to it.
+  std::unordered_set<std::string> urls_in_saved_group =
+      GetUrlsInSavedTabGroup(*saved_tab_group_service, saved_id.value());
+  AddMissingTabToGroup(browser, *saved_tab_group_service, saved_id.value(), tab,
+                       &urls_in_saved_group);
+
   if (visual_data.has_value()) {
     UpdateGroupVisualData(new_group_id.value(), visual_data.value());
   }
