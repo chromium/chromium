@@ -152,8 +152,8 @@
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
-#include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
@@ -1273,8 +1273,8 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if (IsDriveModuleEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<drive::mojom::DriveHandler,
-                                           NewTabPageUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        file_suggestion::mojom::FileSuggestionHandler, NewTabPageUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule)) {

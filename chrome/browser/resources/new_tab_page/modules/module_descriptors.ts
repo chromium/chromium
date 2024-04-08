@@ -18,10 +18,10 @@ import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
-import {driveDescriptor as driveV2Descriptor} from './v2/drive/module.js';
 // <if expr="not is_official_build">
 import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
+import {fileSuggestionDescriptor} from './v2/file_suggestion/module.js';
 import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
 import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 
@@ -31,7 +31,7 @@ export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(recipeTasksDescriptor);
 descriptors.push(chromeCartDescriptor);
 descriptors.push(
-    modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);
+    modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
 descriptors.push(photosDescriptor);
 descriptors.push(feedDescriptor);
 descriptors.push(

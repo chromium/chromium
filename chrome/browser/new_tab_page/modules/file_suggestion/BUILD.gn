@@ -7,7 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(!is_android)
 
 mojom("mojo_bindings") {
-  sources = [ "drive.mojom" ]
+  sources = [ "file_suggestion.mojom" ]
   webui_module_path = "/"
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }

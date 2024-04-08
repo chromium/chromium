@@ -53,8 +53,8 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/cart:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings_ts__generator",
@@ -68,7 +68,7 @@ build_webui("build") {
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom-webui.ts",

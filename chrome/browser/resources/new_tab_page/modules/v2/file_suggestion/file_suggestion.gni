@@ -3,4 +3,4 @@
 # found in the LICENSE file.
 
 # List of files that should be passed to html_to_wrapper().
-drive_v2_web_component_files = [ "modules/v2/drive/module.ts" ]
+file_suggestion_v2_web_component_files = [ "modules/v2/file_suggestion/module.ts" ]

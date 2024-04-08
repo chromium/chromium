@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # List of files that don't need to be passed to html_to_wrapper().
-drive_non_web_component_files = [ "modules/drive/drive_module_proxy.ts" ]
+drive_non_web_component_files = [ "modules/drive/file_module_proxy.ts" ]
 
 # List of files that should be passed to html_to_wrapper().
 drive_web_component_files = [ "modules/drive/module.ts" ]

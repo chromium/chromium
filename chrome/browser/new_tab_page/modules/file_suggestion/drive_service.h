@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_DRIVE_DRIVE_SERVICE_H_
-#define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_DRIVE_DRIVE_SERVICE_H_
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_FILE_SUGGESTION_DRIVE_SERVICE_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_FILE_SUGGESTION_DRIVE_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/segmentation_platform/public/result.h"
@@ -58,7 +58,7 @@ class DriveService : public KeyedService {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  using GetFilesCallback = drive::mojom::DriveHandler::GetFilesCallback;
+  using GetFilesCallback = file_suggestion::mojom::FileSuggestionHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveFiles(GetFilesCallback get_files_callback);
   // Retrieves classification result from segmentation platform before
@@ -97,4 +97,4 @@ class DriveService : public KeyedService {
   base::WeakPtrFactory<DriveService> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_DRIVE_DRIVE_SERVICE_H_
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_FILE_SUGGESTION_DRIVE_SERVICE_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
-import type {DisableModuleEvent, DismissModuleEvent, DriveV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {FileSuggestionHandlerRemote} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
+import type {DisableModuleEvent, DismissModuleEvent, FileSuggestionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {FileProxy, fileSuggestionDescriptor} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,12 +13,12 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
-suite('DriveV2Module', () => {
-  let handler: TestMock<DriveHandlerRemote>;
+suite('FileSuggestionV2Module', () => {
+  let handler: TestMock<FileSuggestionHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    handler = installMock(DriveHandlerRemote, DriveProxy.setHandler);
+    handler = installMock(FileSuggestionHandlerRemote, FileProxy.setHandler);
   });
 
   test('shows all retrieved files on render', async () => {
@@ -71,7 +71,7 @@ suite('DriveV2Module', () => {
     handler.setResultFor('getFiles', Promise.resolve(data));
 
     const module =
-        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
@@ -104,7 +104,7 @@ suite('DriveV2Module', () => {
     handler.setResultFor('getFiles', Promise.resolve(data));
 
     const module =
-        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
@@ -134,7 +134,7 @@ suite('DriveV2Module', () => {
   test('module does not render if there are no files', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await driveV2Descriptor.initialize(0);
+    const module = await fileSuggestionDescriptor.initialize(0);
     await handler.whenCalled('getFiles');
     assertFalse(!!module);
   });
@@ -154,7 +154,7 @@ suite('DriveV2Module', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const driveModule =
-        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!driveModule);
     document.body.append(driveModule);
 
@@ -183,7 +183,7 @@ suite('DriveV2Module', () => {
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
         const driveModule =
-            await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+            await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
         document.body.append(driveModule);
 
         // Act.
@@ -213,7 +213,7 @@ suite('DriveV2Module', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const moduleElement =
-        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
 

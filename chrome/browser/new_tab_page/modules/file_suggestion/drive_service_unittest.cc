@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/new_tab_page/modules/drive/drive_service.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
+
 #include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/json/json_reader.h"
@@ -59,14 +60,14 @@ class DriveServiceTest : public testing::Test {
 };
 
 TEST_F(DriveServiceTest, PassesDataOnSuccess) {
-  std::vector<drive::mojom::FilePtr> actual_documents;
+  std::vector<file_suggestion::mojom::FilePtr> actual_documents;
   auto quit_closure = task_environment_.QuitClosure();
   base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
             quit_closure.Run();
           }));
@@ -170,10 +171,10 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   auto quit_closure = task_environment_.QuitClosure();
   auto barrier_closure = base::BarrierClosure(4, quit_closure);
 
-  std::vector<drive::mojom::FilePtr> response1;
-  std::vector<drive::mojom::FilePtr> response2;
-  std::vector<drive::mojom::FilePtr> response3;
-  std::vector<drive::mojom::FilePtr> response4;
+  std::vector<file_suggestion::mojom::FilePtr> response1;
+  std::vector<file_suggestion::mojom::FilePtr> response2;
+  std::vector<file_suggestion::mojom::FilePtr> response3;
+  std::vector<file_suggestion::mojom::FilePtr> response4;
 
   base::MockCallback<DriveService::GetFilesCallback> callback1;
   base::MockCallback<DriveService::GetFilesCallback> callback2;
@@ -182,28 +183,28 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response1 = std::move(documents);
             barrier_closure.Run();
           }));
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response2 = std::move(documents);
             barrier_closure.Run();
           }));
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response3 = std::move(documents);
             barrier_closure.Run();
           }));
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response4 = std::move(documents);
             barrier_closure.Run();
           }));
@@ -302,13 +303,13 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
           ]
         }
       )";
-  std::vector<drive::mojom::FilePtr> response;
+  std::vector<file_suggestion::mojom::FilePtr> response;
   base::MockCallback<DriveService::GetFilesCallback> callback;
 
   auto quit_closure = task_environment_.QuitClosure();
   EXPECT_CALL(callback, Run(testing::_))
       .WillRepeatedly(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response = std::move(documents);
             quit_closure.Run();
           }));
@@ -405,14 +406,14 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
       GetClassificationResult(testing::_, testing::_, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<3>(result));
 
-  std::vector<drive::mojom::FilePtr> actual_documents;
+  std::vector<file_suggestion::mojom::FilePtr> actual_documents;
   auto quit_closure = task_environment_.QuitClosure();
   base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
             quit_closure.Run();
           }));
@@ -499,7 +500,7 @@ TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&passed_no_data](std::vector<drive::mojom::FilePtr> suggestions) {
+          [&passed_no_data](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
             passed_no_data = suggestions.empty();
           }));
 
@@ -517,7 +518,7 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&token_is_valid](std::vector<drive::mojom::FilePtr> suggestions) {
+          [&token_is_valid](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
             token_is_valid = !suggestions.empty();
           }));
 
@@ -540,7 +541,7 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> suggestions) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
             empty_response = suggestions.empty();
             quit_closure.Run();
           }));
@@ -581,7 +582,7 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> suggestions) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
             empty_response = suggestions.empty();
             quit_closure.Run();
           }));
@@ -607,13 +608,13 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
 
 TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
   auto quit_closure = task_environment_.QuitClosure();
-  std::vector<drive::mojom::FilePtr> actual_documents;
+  std::vector<file_suggestion::mojom::FilePtr> actual_documents;
   base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
             quit_closure.Run();
           }));
@@ -665,12 +666,12 @@ class DriveServiceFakeDataTest : public DriveServiceTest {
 };
 
 TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
-  std::vector<drive::mojom::FilePtr> fake_documents;
+  std::vector<file_suggestion::mojom::FilePtr> fake_documents;
   base::MockCallback<DriveService::GetFilesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(
-          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             fake_documents = std::move(documents);
           }));
 

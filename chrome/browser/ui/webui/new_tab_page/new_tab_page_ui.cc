@@ -22,8 +22,8 @@
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
-#include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -881,9 +881,10 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver) {
-  drive_handler_ =
-      std::make_unique<DriveHandler>(std::move(pending_receiver), profile_);
+    mojo::PendingReceiver<file_suggestion::mojom::FileSuggestionHandler>
+        pending_receiver) {
+  file_handler_ = std::make_unique<FileSuggestionHandler>(
+      std::move(pending_receiver), profile_);
 }
 
 void NewTabPageUI::BindInterface(

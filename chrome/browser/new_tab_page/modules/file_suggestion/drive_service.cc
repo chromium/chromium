@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/new_tab_page/modules/drive/drive_service.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -283,7 +283,7 @@ void DriveService::GetDriveFilesInternal() {
       base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
           kDismissDuration) {
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
@@ -328,7 +328,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
@@ -400,7 +400,7 @@ void DriveService::OnJsonReceived(const std::string& token,
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kNetworkError);
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
@@ -419,7 +419,7 @@ void DriveService::OnJsonParsed(
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kJsonParseError);
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
@@ -429,13 +429,13 @@ void DriveService::OnJsonParsed(
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kContentError);
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
   }
   ItemSuggestRequestResult request_result = ItemSuggestRequestResult::kSuccess;
-  std::vector<drive::mojom::FilePtr> document_list;
+  std::vector<file_suggestion::mojom::FilePtr> document_list;
   for (const auto& item : *items) {
     const auto& item_dict = item.GetDict();
     auto* title = item_dict.FindStringByDottedPath("driveItem.title");
@@ -463,7 +463,7 @@ void DriveService::OnJsonParsed(
       request_result = ItemSuggestRequestResult::kContentError;
       continue;
     }
-    auto mojo_drive_doc = drive::mojom::File::New();
+    auto mojo_drive_doc = file_suggestion::mojom::File::New();
     mojo_drive_doc->title = *title;
     mojo_drive_doc->mime_type = *mime_type;
     mojo_drive_doc->justification_text = justification_text;

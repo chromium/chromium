@@ -9,16 +9,16 @@ import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_r
 import type {DomRepeat, DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {File} from '../../../drive.mojom-webui.js';
+import type {File} from '../../../file_suggestion.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
-import {DriveProxy} from '../../drive/drive_module_proxy.js';
+import {FileProxy} from '../../drive/file_module_proxy.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 
-export interface DriveModuleElement {
+export interface FileSuggestionModuleElement {
   $: {
     fileRepeat: DomRepeat,
     files: HTMLElement,
@@ -28,13 +28,13 @@ export interface DriveModuleElement {
 }
 
 /**
- * The Drive module, which serves as an inside look in to recent activity within
- * a user's Google Drive.
+ * The File module, which serves as an inside look in to recent activity within
+ * a user's Google Drive or Microsoft Sharepoint.
  */
-export class DriveModuleElement extends I18nMixin
+export class FileSuggestionModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
-    return 'ntp-drive-module-redesigned';
+    return 'ntp-file-module-redesigned';
   }
 
   static get template() {
@@ -96,7 +96,7 @@ export class DriveModuleElement extends I18nMixin
   }
 
   private onDismissButtonClick_() {
-    DriveProxy.getHandler().dismissModule();
+    FileProxy.getHandler().dismissModule();
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
       composed: true,
@@ -104,7 +104,7 @@ export class DriveModuleElement extends I18nMixin
         message: loadTimeData.getStringF(
             'dismissModuleToastMessage',
             loadTimeData.getString('modulesDriveFilesSentence')),
-        restoreCallback: () => DriveProxy.getHandler().restoreModule(),
+        restoreCallback: () => FileProxy.getHandler().restoreModule(),
       },
     }));
   }
@@ -125,17 +125,17 @@ export class DriveModuleElement extends I18nMixin
   }
 }
 
-customElements.define(DriveModuleElement.is, DriveModuleElement);
+customElements.define(FileSuggestionModuleElement.is, FileSuggestionModuleElement);
 
-async function createDriveElement(): Promise<DriveModuleElement|null> {
-  const {files} = await DriveProxy.getHandler().getFiles();
+async function createFileElement(): Promise<FileSuggestionModuleElement|null> {
+  const {files} = await FileProxy.getHandler().getFiles();
   if (files.length === 0) {
     return null;
   }
-  const element = new DriveModuleElement();
+  const element = new FileSuggestionModuleElement();
   element.files = files;
   return element;
 }
 
-export const driveDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id*/ 'drive', createDriveElement);
+export const fileSuggestionDescriptor: ModuleDescriptor = new ModuleDescriptor(
+    /*id*/ 'file_suggestion', createFileElement);

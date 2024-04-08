@@ -123,7 +123,7 @@ missing_new_fields,chrome/browser/nearby_sharing/instantmessaging/receive_messag
 missing_new_fields,chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc
 missing_new_fields,chrome/browser/nearby_sharing/network_traversal_ice_config_fetcher.cc
 missing_new_fields,chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.cc
-missing_new_fields,chrome/browser/new_tab_page/modules/drive/drive_service.cc
+missing_new_fields,chrome/browser/new_tab_page/modules/file_suggestion/drive_service.cc
 missing_new_fields,chrome/browser/new_tab_page/modules/photos/photos_service.cc
 missing_new_fields,chrome/browser/new_tab_page/modules/recipes/recipes_service.cc
 missing_new_fields,chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.cc

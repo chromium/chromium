@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
-#include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
@@ -80,7 +80,7 @@ class BrowserCommandHandler;
 class RealboxHandler;
 class RecipesHandler;
 class CartHandler;
-class DriveHandler;
+class FileSuggestionHandler;
 class PhotosHandler;
 namespace ntp {
 class FeedHandler;
@@ -162,10 +162,12 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<recipes::mojom::RecipesHandler> pending_receiver);
 
-  // Instantiates the implementor of drive::mojom::DriveHandler mojo interface
-  // passing the pending receiver that will be internally bound.
+  // Instantiates the implementor of
+  // file_suggestion::mojom::FileSuggestionHandler mojo interface passing the
+  // pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver);
+      mojo::PendingReceiver<file_suggestion::mojom::FileSuggestionHandler>
+          pending_receiver);
 
   // Instantiates the implementor of photos::mojom::PhotosHandler mojo interface
   // passing the pending receiver that will be internally bound.
@@ -309,7 +311,7 @@ class NewTabPageUI
 
   // Mojo implementations for modules:
   std::unique_ptr<RecipesHandler> recipes_handler_;
-  std::unique_ptr<DriveHandler> drive_handler_;
+  std::unique_ptr<FileSuggestionHandler> file_handler_;
   std::unique_ptr<PhotosHandler> photos_handler_;
   std::unique_ptr<ntp::FeedHandler> feed_handler_;
 

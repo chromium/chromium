@@ -28,7 +28,7 @@ export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 export {DiscountConsentCard, DiscountConsentVariation} from './modules/cart/discount_consent_card.js';
 export {DiscountConsentDialog} from './modules/cart/discount_consent_dialog.js';
 export {chromeCartDescriptor, ChromeCartModuleElement} from './modules/cart/module.js';
-export {DriveProxy} from './modules/drive/drive_module_proxy.js';
+export {FileProxy} from './modules/drive/file_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
 export {FeedProxy} from './modules/feed/feed_module_proxy.js';
 export {feedDescriptor, FeedModuleElement} from './modules/feed/module.js';
@@ -48,11 +48,11 @@ export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js'
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
 export {RecipesModuleElement, recipeTasksDescriptor} from './modules/recipes/module.js';
 export {RecipesHandlerProxy} from './modules/recipes/recipes_handler_proxy.js';
-export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2ModuleElement} from './modules/v2/drive/module.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.js';
 // </if>
+export {fileSuggestionDescriptor, FileSuggestionModuleElement} from './modules/v2/file_suggestion/module.js';
 export {CartTileModuleElementV2} from './modules/v2/history_clusters/cart/cart_tile.js';
 export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/v2/history_clusters/history_clusters_proxy.js';
 export {HistoryClusterImageDisplayState as HistoryClusterV2ImageDisplayState, historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
