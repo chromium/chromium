@@ -295,8 +295,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         ClientSideDetectionFeatureCache::CreateForWebContents(web_contents_);
         ClientSideDetectionFeatureCache* feature_cache_map =
             ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
-        feature_cache_map->GetOrCreateDebuggingMetadataForURL(url_)
-            ->set_preclassification_check_result(reason);
+        // TODO(andysjlim): Investigate why this is null sometimes.
+        LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+            feature_cache_map->GetOrCreateDebuggingMetadataForURL(url_);
+        if (debugging_metadata) {
+          debugging_metadata->set_preclassification_check_result(reason);
+        }
       }
       std::move(start_phishing_classification_cb_).Run(false);
     }
@@ -318,9 +322,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     if (!database_manager_.get()) {
       // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
-      OnAllowlistCheckDone(url,
-                           /*phishing_reason=*/NO_CLASSIFY_NO_DATABASE_MANAGER,
-                           /*match_allowlist=*/false);
+      OnAllowlistCheckDone(
+          url,
+          /*phishing_reason=*/
+          PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER,
+          /*match_allowlist=*/false);
       return;
     }
 
@@ -373,7 +379,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
                                       ClientSideDetectionType::TRIGGER_MODELS,
                                       url_, is_phishing,
                                       /*response_code=*/std::nullopt);
-      DontClassifyForPhishing(safe_browsing::NO_CLASSIFY_RESULT_FROM_CACHE);
+      DontClassifyForPhishing(
+          PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
     }
 
     // We want to limit the number of requests, though we will ignore the
@@ -407,7 +414,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         ClientSideDetectionFeatureCache* feature_cache_map =
             ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
         feature_cache_map->GetOrCreateDebuggingMetadataForURL(url_)
-            ->set_preclassification_check_result(safe_browsing::CLASSIFY);
+            ->set_preclassification_check_result(
+                PreClassificationCheckResult::CLASSIFY);
       }
       std::move(start_phishing_classification_cb_).Run(true);
       // Reset the callback to make sure ShouldClassifyForPhishing()
