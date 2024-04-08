@@ -300,7 +300,7 @@ class SimplePolicyPrefMappingTest {
       if (policy_settings) {
         base::Value::Dict value_policy_settings_dict;
         value_policy_settings_dict.Set(policy_name, policy_settings->Clone());
-        value_test_dict.Set("policy_settings",
+        value_test_dict.Set("policies_settings",
                             std::move(value_policy_settings_dict));
       }
       value_pref_dict.Set("value", value_to_test.Clone());
