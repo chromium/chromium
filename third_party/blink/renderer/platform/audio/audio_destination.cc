@@ -407,9 +407,6 @@ AudioDestination::AudioDestination(
     }
   }
 
-  // Check if the requested buffer size is too large.
-  DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
-
   double scale_factor = 1.0;
 
   if (context_sample_rate_ != web_audio_device_->SampleRate()) {
