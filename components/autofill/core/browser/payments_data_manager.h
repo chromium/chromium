@@ -356,6 +356,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool ShouldShowPaymentMethodsMandatoryReauthPromo();
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 
+  // Returns true if the user pref to store CVC is enabled.
+  virtual bool IsPaymentCvcStorageEnabled();
+
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
@@ -364,6 +367,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
+
+  // Logs the fact that the server card link was clicked including information
+  // about the current sync state.
+  void LogServerCardLinkClicked() const;
+
+  // Logs the fact that the server IBAN link was clicked including information
+  // about the current sync state.
+  void LogServerIbanLinkClicked() const;
 
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;

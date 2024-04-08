@@ -577,7 +577,7 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  personal_data->LogServerCardLinkClicked();
+  personal_data->payments_data_manager().LogServerCardLinkClicked();
   return RespondNow(NoArguments());
 }
 
@@ -600,7 +600,7 @@ AutofillPrivateLogServerIbanLinkClickedFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
-  personal_data->LogServerIbanLinkClicked();
+  personal_data->payments_data_manager().LogServerIbanLinkClicked();
   return RespondNow(NoArguments());
 }
 

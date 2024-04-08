@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
@@ -279,10 +280,17 @@ PaymentsDataManager::PaymentsDataManager(
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
   SetPrefService(pref_service);
-  if (pref_service_ && IsAutofillPaymentMethodsEnabled() &&
-      IsCardBenefitsFeatureEnabled()) {
-    autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
-        prefs::IsPaymentCardBenefitsEnabled(pref_service_));
+  if (pref_service_) {
+    AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
+        IsAutofillPaymentMethodsEnabled());
+    if (IsAutofillPaymentMethodsEnabled()) {
+      autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
+          IsPaymentCvcStorageEnabled());
+      if (IsCardBenefitsFeatureEnabled()) {
+        autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
+            prefs::IsPaymentCardBenefitsEnabled(pref_service_));
+      }
+    }
   }
 }
 
@@ -1100,6 +1108,12 @@ void PaymentsDataManager::
   prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
+bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableCvcStorageAndFilling) &&
+         prefs::IsPaymentCvcStorageEnabled(pref_service_);
+}
+
 std::vector<VirtualCardUsageData*>
 PaymentsDataManager::GetVirtualCardUsageData() const {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
@@ -1740,6 +1754,15 @@ void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
   autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
   autofill_metrics::LogStoredVirtualCardUsageCount(
       autofill_virtual_card_usage_data_.size());
+}
+
+void PaymentsDataManager::LogServerCardLinkClicked() const {
+  AutofillMetrics::LogServerCardLinkClicked(GetPaymentsSigninStateForMetrics());
+}
+
+void PaymentsDataManager::LogServerIbanLinkClicked() const {
+  autofill_metrics::LogServerIbanLinkClicked(
+      GetPaymentsSigninStateForMetrics());
 }
 
 bool PaymentsDataManager::HasPendingPaymentQueries() const {

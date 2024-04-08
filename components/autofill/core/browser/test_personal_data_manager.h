@@ -61,7 +61,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
-  bool IsPaymentCvcStorageEnabled() override;
 
   // Unique to TestPersonalDataManager:
   void SetPrefService(PrefService* pref_service);
@@ -129,10 +128,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     account_info_ = account_info;
   }
 
-  void SetIsPaymentCvcStorageEnabled(bool enabled) {
-    payments_cvc_storage_enabled_ = enabled;
-  }
-
   void ClearCreditCardArtImages() {
     payments_data_manager_->credit_card_art_images_.clear();
   }
@@ -141,7 +136,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string default_country_code_;
   std::optional<bool> eligible_for_account_storage_;
   CoreAccountInfo account_info_;
-  std::optional<bool> payments_cvc_storage_enabled_;
 };
 
 }  // namespace autofill

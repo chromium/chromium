@@ -70,6 +70,12 @@ AddressDataManager::AddressDataManager(
   }
   SetPrefService(pref_service);
   SetStrikeDatabase(strike_database);
+  // `IsAutofillProfileEnabled()` relies on the `pref_service_`, which is only
+  // null when the `TestAddressDataManager` is used.
+  if (pref_service_) {
+    AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
+        IsAutofillProfileEnabled());
+  }
 }
 
 AddressDataManager::~AddressDataManager() {

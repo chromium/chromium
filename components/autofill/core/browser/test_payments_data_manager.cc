@@ -240,6 +240,13 @@ void TestPaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
+bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() {
+  if (payments_cvc_storage_enabled_.has_value()) {
+    return payments_cvc_storage_enabled_.value();
+  }
+  return PaymentsDataManager::IsPaymentCvcStorageEnabled();
+}
+
 void TestPaymentsDataManager::ClearCreditCards() {
   local_credit_cards_.clear();
   server_credit_cards_.clear();

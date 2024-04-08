@@ -62,13 +62,6 @@ CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
   return account_info_;
 }
 
-bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
-  if (payments_cvc_storage_enabled_.has_value()) {
-    return payments_cvc_storage_enabled_.value();
-  }
-  return PersonalDataManager::IsPaymentCvcStorageEnabled();
-}
-
 void TestPersonalDataManager::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
   test_address_data_manager().SetPrefService(pref_service);

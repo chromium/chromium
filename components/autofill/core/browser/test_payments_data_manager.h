@@ -52,6 +52,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
+  bool IsPaymentCvcStorageEnabled() override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();
@@ -71,6 +72,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
     payments_wallet_sync_transport_enabled_ = enabled;
   }
 
+  void SetIsPaymentCvcStorageEnabled(bool enabled) {
+    payments_cvc_storage_enabled_ = enabled;
+  }
+
  private:
   void RemoveCardWithoutNotification(const CreditCard& card);
 
@@ -78,6 +83,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
+  std::optional<bool> payments_cvc_storage_enabled_;
 };
 
 }  // namespace autofill

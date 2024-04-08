@@ -48,7 +48,8 @@ TEST_F(CvcStorageMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
-  personal_data().SetIsPaymentCvcStorageEnabled(true);
+  personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
+      true);
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
@@ -79,7 +80,8 @@ TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
 
-  personal_data().SetIsPaymentCvcStorageEnabled(true);
+  personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
+      true);
 
   // Simulate selecting the suggestion with CVC.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
@@ -119,7 +121,8 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
 
-  personal_data().SetIsPaymentCvcStorageEnabled(true);
+  personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
+      true);
 
   // Simulate filling the suggestion with CVC.
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -159,7 +162,8 @@ TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
 
-  personal_data().SetIsPaymentCvcStorageEnabled(true);
+  personal_data().test_payments_data_manager().SetIsPaymentCvcStorageEnabled(
+      true);
 
   // Simulate filling and then submitting the card with CVC.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());

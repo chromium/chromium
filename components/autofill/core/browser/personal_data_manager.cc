@@ -19,14 +19,10 @@
 #include "base/i18n/timezone.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/uuid.h"
-#include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -35,8 +31,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
-#include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -44,25 +38,11 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
-#include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
-#include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
-#include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -82,32 +62,10 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/version_info/version_info.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace autofill {
-
-namespace {
-
-using ::i18n::addressinput::AddressField;
-using ::i18n::addressinput::GetStreetAddressLinesAsSingleLine;
-using ::i18n::addressinput::STREET_ADDRESS;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MigrateUserOptedInWalletSyncType {
-  kNotMigrated = 0,
-  kMigratedFromCanonicalEmail = 1,
-  kMigratedFromNonCanonicalEmail = 2,
-  kNotMigratedUnexpectedPrimaryAccountIdWithEmail = 3,
-  kMaxValue = kNotMigratedUnexpectedPrimaryAccountIdWithEmail,
-};
-
-}  // namespace
 
 PersonalDataManager::PersonalDataManager(
     const std::string& app_locale,
@@ -162,14 +120,6 @@ void PersonalDataManager::Init(
   SetSyncService(sync_service);
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
-  AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
-      address_data_manager_->IsAutofillProfileEnabled());
-  AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
-      payments_data_manager_->IsAutofillPaymentMethodsEnabled());
-  if (payments_data_manager_->IsAutofillPaymentMethodsEnabled()) {
-    autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
-        IsPaymentCvcStorageEnabled());
-  }
 
   // WebDataService may not be available in tests.
   if (!profile_database) {
@@ -639,12 +589,6 @@ bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
 }
 
-bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableCvcStorageAndFilling) &&
-         prefs::IsPaymentCvcStorageEnabled(pref_service_);
-}
-
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
   return payments_data_manager_->image_fetcher_;
 }
@@ -732,16 +676,6 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   // production (as we no longer re-mask cards in this method), but tests may
   // depend on it still. Investigate and remove if possible.
   OnStateChanged(sync_service_);
-}
-
-void PersonalDataManager::LogServerCardLinkClicked() const {
-  AutofillMetrics::LogServerCardLinkClicked(
-      payments_data_manager_->GetPaymentsSigninStateForMetrics());
-}
-
-void PersonalDataManager::LogServerIbanLinkClicked() const {
-  autofill_metrics::LogServerIbanLinkClicked(
-      payments_data_manager_->GetPaymentsSigninStateForMetrics());
 }
 
 void PersonalDataManager::OnUserAcceptedUpstreamOffer() {

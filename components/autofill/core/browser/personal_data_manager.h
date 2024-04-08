@@ -481,14 +481,6 @@ class PersonalDataManager : public KeyedService,
     payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
   }
 
-  // Logs the fact that the server card link was clicked including information
-  // about the current sync state.
-  void LogServerCardLinkClicked() const;
-
-  // Logs the fact that the server IBAN link was clicked including information
-  // about the current sync state.
-  void LogServerIbanLinkClicked() const;
-
   // Records the sync transport consent if the user is in sync transport mode.
   virtual void OnUserAcceptedUpstreamOffer();
 
@@ -524,9 +516,6 @@ class PersonalDataManager : public KeyedService,
   // `payments_data_manager()` instead. Some callers on iOS still rely on this.
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
   bool IsPaymentMethodsMandatoryReauthEnabled();
-
-  // Returns true if the user pref to store CVC is enabled.
-  virtual bool IsPaymentCvcStorageEnabled();
 
   // Get pointer to the image fetcher.
   AutofillImageFetcherBase* GetImageFetcher() const;

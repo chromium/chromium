@@ -134,7 +134,8 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
     FormDataImporter::CreditCardImportType credit_card_import_type,
     bool is_credit_card_upstream_enabled) {
   // Only offer CVC save if CVC storage is enabled.
-  if (!personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+  if (!personal_data_manager_->payments_data_manager()
+           .IsPaymentCvcStorageEnabled()) {
     return false;
   }
 
@@ -181,7 +182,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
 
   // If card upload is not allowed, we check if CVC save should be offer and
   // attempt to offer CVC save.
-  if (personal_data_manager_->IsPaymentCvcStorageEnabled() &&
+  if (personal_data_manager_->payments_data_manager()
+          .IsPaymentCvcStorageEnabled() &&
       !card.cvc().empty()) {
     // We will only offer CVC-only save if the card is known to Autofill.
     CreditCard* existing_credit_card = nullptr;
@@ -363,7 +365,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   // Check if the CVC is being uploaded and CVC storage is enabled on the
   // client.
   if (!upload_request_.card.cvc().empty() &&
-      personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+      personal_data_manager_->payments_data_manager()
+          .IsPaymentCvcStorageEnabled()) {
     upload_request_.client_behavior_signals.push_back(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
@@ -434,7 +437,8 @@ void CreditCardSaveManager::OnDidUploadCard(
     GetCreditCardSaveStrikeDatabase()->ClearStrikes(
         base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
 
-    if (personal_data_manager_->IsPaymentCvcStorageEnabled() &&
+    if (personal_data_manager_->payments_data_manager()
+            .IsPaymentCvcStorageEnabled() &&
         !upload_request_.card.cvc().empty() &&
         upload_card_response_details.instrument_id.has_value()) {
       // After a card is successfully saved to server, if CVC storage is
@@ -693,7 +697,8 @@ void CreditCardSaveManager::OfferCardLocalSave() {
         AutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!card_save_candidate_.cvc().empty() &&
-        personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+        personal_data_manager_->payments_data_manager()
+            .IsPaymentCvcStorageEnabled()) {
       card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->ConfirmSaveCreditCardLocally(
@@ -749,7 +754,8 @@ void CreditCardSaveManager::OfferCardUploadSave() {
         AutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!upload_request_.card.cvc().empty() &&
-        personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+        personal_data_manager_->payments_data_manager()
+            .IsPaymentCvcStorageEnabled()) {
       card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->ConfirmSaveCreditCardToCloud(
