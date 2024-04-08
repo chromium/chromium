@@ -25,6 +25,10 @@ class PermissionPromptPreviewsCoordinator {
 
   void UpdateDevicePreferenceRanking();
 
+  MediaCoordinator::ViewType GetViewTypeForTesting() const {
+    return view_type_;
+  }
+
  private:
   const MediaCoordinator::ViewType view_type_;
   std::optional<MediaCoordinator> media_preview_coordinator_;
