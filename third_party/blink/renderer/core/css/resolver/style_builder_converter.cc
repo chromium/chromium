@@ -1644,7 +1644,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
 }
 
 StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
-    StyleResolverState&,
+    StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(ident->GetValueID(), CSSValueID::kAuto);
@@ -1657,8 +1657,10 @@ StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
   for (const Member<const CSSValue>& item : list) {
     if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(item.Get())) {
       DCHECK(primitive->IsInteger());
-      DCHECK_GE(primitive->GetIntValue(), 1);
-      values.push_back(primitive->GetIntValue());
+      DCHECK_GE(primitive->ComputeInteger(state.CssToLengthConversionData()),
+                1);
+      values.push_back(
+          primitive->ComputeInteger(state.CssToLengthConversionData()));
       continue;
     }
     if (const auto* ident = DynamicTo<CSSIdentifierValue>(item.Get())) {
