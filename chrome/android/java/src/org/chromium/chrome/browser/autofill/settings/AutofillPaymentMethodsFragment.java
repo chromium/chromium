@@ -288,6 +288,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // Display local IBANs.
         for (Iban iban : personalDataManager.getLocalIbansForSettings()) {
             Preference iban_pref = new Preference(getStyledContext());
+            iban_pref.setIcon(R.drawable.iban_icon);
             iban_pref.setSingleLineTitle(false);
             iban_pref.setTitle(iban.getLabel());
             iban_pref.setSummary(iban.getNickname());
