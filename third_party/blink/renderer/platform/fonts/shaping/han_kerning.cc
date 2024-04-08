@@ -72,7 +72,11 @@ HanKerning::CharType CharTypeFromBounds(
     base::span<SkRect> bounds,
     unsigned index,
     bool is_horizontal) {
-  const float advance = GetAdvance(glyphs[index], is_horizontal);
+  const HarfBuzzShaper::GlyphData& glyph = glyphs[index];
+  if (UNLIKELY(!glyph.glyph)) {
+    return HanKerning::CharType::kOther;
+  }
+  const float advance = GetAdvance(glyph, is_horizontal);
   return CharTypeFromBounds(advance / 2, bounds[index], is_horizontal);
 }
 
@@ -80,21 +84,44 @@ HanKerning::CharType CharTypeFromBounds(
     base::span<HarfBuzzShaper::GlyphData> glyphs,
     base::span<SkRect> bounds,
     bool is_horizontal) {
-  // If advances are not the same, `kOther`.
-  const float advance = GetAdvance(glyphs.front(), is_horizontal);
-  for (const HarfBuzzShaper::GlyphData& glyph : glyphs.subspan(1)) {
-    if (advance != GetAdvance(glyph, is_horizontal)) {
+  DCHECK_EQ(glyphs.size(), bounds.size());
+
+  // Find the data from the first glyph.
+  float advance0;
+  float half_advance0;
+  HanKerning::CharType type0 = HanKerning::CharType::kOther;
+  unsigned i = 0;
+  for (;; ++i) {
+    if (UNLIKELY(i >= glyphs.size())) {
       return HanKerning::CharType::kOther;
     }
+    const HarfBuzzShaper::GlyphData& glyph = glyphs[i];
+    if (UNLIKELY(!glyph.glyph)) {
+      continue;
+    }
+
+    advance0 = GetAdvance(glyph, is_horizontal);
+    half_advance0 = advance0 / 2;
+    type0 = CharTypeFromBounds(half_advance0, bounds[i], is_horizontal);
+    break;
   }
 
-  // Return the type if all glyphs have the same type. Otherwise `kOther`.
-  const float half_advance = advance / 2;
-  const HanKerning::CharType type0 =
-      CharTypeFromBounds(half_advance, bounds.front(), is_horizontal);
-  for (const SkRect& bound : bounds.subspan(1)) {
+  // Check if all other glyphs have the same advances and types.
+  for (++i; i < glyphs.size(); ++i) {
+    const HarfBuzzShaper::GlyphData& glyph = glyphs[i];
+    if (UNLIKELY(!glyph.glyph)) {
+      continue;
+    }
+
+    // If advances are not the same, `kOther`.
+    const float advance = GetAdvance(glyph, is_horizontal);
+    if (advance != advance0) {
+      return HanKerning::CharType::kOther;
+    }
+
+    // If types are not the same, `kOther`.
     const HanKerning::CharType type =
-        CharTypeFromBounds(half_advance, bound, is_horizontal);
+        CharTypeFromBounds(half_advance0, bounds[i], is_horizontal);
     if (type != type0) {
       return HanKerning::CharType::kOther;
     }
@@ -336,7 +363,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   Vector<Glyph, 256> glyphs;
   unsigned cluster = 0;
   for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
-    if (!glyph_data.glyph || glyph_data.cluster != cluster) {
+    if (UNLIKELY(glyph_data.cluster != cluster)) {
       has_alternate_spacing = false;
       return;
     }
