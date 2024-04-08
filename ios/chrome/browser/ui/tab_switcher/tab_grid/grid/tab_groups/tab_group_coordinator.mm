@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -15,6 +16,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_transition_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
+#import "ios/web/public/web_state_id.h"
+
+@interface TabGroupCoordinator () <GridViewControllerDelegate>
+@end
 
 @implementation TabGroupCoordinator {
   // Mediator for tab groups.
@@ -57,6 +62,8 @@
            lightTheme:!self.browser->GetBrowserState()->IsOffTheRecord()
              tabGroup:_tabGroup];
 
+  _viewController.gridViewController.delegate = self;
+
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
                   tabGroup:_tabGroup
@@ -82,6 +89,99 @@
   // TODO(crbug.com/1501837): Make the hide tab group animation.
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
+}
+
+#pragma mark - GridViewControllerDelegate
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+       didSelectItemWithID:(web::WebStateID)itemID {
+  BOOL incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  if ([_mediator isItemWithIDSelected:itemID]) {
+    if (incognito) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridIncognitoTabGroupOpenCurrentTab"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridRegularTabGroupOpenCurrentTab"));
+    }
+  } else {
+    if (incognito) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabIncognitoGridTabGroupOpenTab"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabRegularGridTabGroupOpenTab"));
+    }
+    [_mediator selectItemWithID:itemID pinned:NO];
+  }
+
+  id<TabGroupsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+
+  [handler hideTabGroup];
+  [handler showActiveTab];
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group {
+  NOTREACHED_NORETURN();
+}
+
+// TODO(crbug.com/1457146): Remove once inactive tabs do not depends on it
+// anymore.
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+        didCloseItemWithID:(web::WebStateID)itemID {
+  NOTREACHED_NORETURN();
+}
+
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+        didChangeItemCount:(NSUInteger)count {
+  // No-op.
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+       didRemoveItemWIthID:(web::WebStateID)itemID {
+  // No-op.
+}
+
+- (void)gridViewControllerDragSessionWillBegin:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerDragSessionDidEnd:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerScrollViewDidScroll:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerDropAnimationWillBegin:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerDropAnimationDidEnd:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)didTapInactiveTabsButtonInGridViewController:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED_NORETURN();
+}
+
+- (void)didTapInactiveTabsSettingsLinkInGridViewController:
+    (BaseGridViewController*)gridViewController {
+  NOTREACHED_NORETURN();
 }
 
 @end

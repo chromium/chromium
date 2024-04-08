@@ -1912,14 +1912,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 }
 
-- (void)didChangeLastItemVisibilityInGridViewController:
-    (BaseGridViewController*)gridViewController {
-}
-
-- (void)gridViewControllerWillBeginDragging:
-    (BaseGridViewController*)gridViewController {
-}
-
 - (void)gridViewControllerDragSessionWillBegin:
     (BaseGridViewController*)gridViewController {
   self.dragSessionInProgress = YES;

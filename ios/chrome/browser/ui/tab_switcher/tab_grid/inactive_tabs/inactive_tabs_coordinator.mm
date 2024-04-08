@@ -346,16 +346,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // No op.
 }
 
-- (void)didChangeLastItemVisibilityInGridViewController:
-    (BaseGridViewController*)gridViewController {
-  // No op.
-}
-
-- (void)gridViewControllerWillBeginDragging:
-    (BaseGridViewController*)gridViewController {
-  // No op.
-}
-
 - (void)gridViewControllerDragSessionWillBegin:
     (BaseGridViewController*)gridViewController {
   // No op.

@@ -55,14 +55,6 @@ class WebStateID;
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID;
 
-// Tells the delegate that the visibility of the last item of the grid changed.
-- (void)didChangeLastItemVisibilityInGridViewController:
-    (BaseGridViewController*)gridViewController;
-
-// Tells the delegate that the grid view controller's scroll view will begin
-// dragging.
-- (void)gridViewControllerWillBeginDragging:
-    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the grid view controller cells will begin dragging.
 - (void)gridViewControllerDragSessionWillBegin:
     (BaseGridViewController*)gridViewController;

@@ -56,14 +56,6 @@
        didRemoveItemWIthID:(web::WebStateID)itemID {
   // No-op for unittests. This is only called when an item has been removed.
 }
-- (void)didChangeLastItemVisibilityInGridViewController:
-    (BaseGridViewController*)gridViewController {
-  // No-op for unittests.
-}
-- (void)gridViewControllerWillBeginDragging:
-    (BaseGridViewController*)gridViewController {
-  // No-op for unittests.
-}
 
 - (void)gridViewControllerDragSessionWillBegin:
     (BaseGridViewController*)gridViewController {

@@ -1005,7 +1005,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
-  [self.delegate gridViewControllerWillBeginDragging:self];
   base::RecordAction(base::UserMetricsAction("MobileTabGridUserScrolled"));
   _scopedScrollingTimeLogger = ScopedScrollingTimeLogger();
 }

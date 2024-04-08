@@ -24125,6 +24125,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridIncognitoTabGroupOpenCurrentTab">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the currently active tab from an incognito Tab Group in the Tab
+    Grid.
+  </description>
+</action>
+
 <action name="MobileTabGridMoveToExistingTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -24254,6 +24263,15 @@ should be able to be added at any place in this file.
   <owner>ewannpv@chromium.org</owner>
   <description>
     User selected a tab in the iOS tab grid pinned tabs section.
+  </description>
+</action>
+
+<action name="MobileTabGridRegularTabGroupOpenCurrentTab">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the currently active tab from a regular Tab Group in the Tab
+    Grid.
   </description>
 </action>
 
@@ -24449,6 +24467,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabIncognitoGridTabGroupOpenTab">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened an unselected tab from an incognito Tab Group in the Tab Grid.
+  </description>
+</action>
+
 <action name="MobileTabNewTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -24480,6 +24506,14 @@ should be able to be added at any place in this file.
   <description>
     User pins a Tab. This includes pinning a tab from the tab strip, tab grid
     and overflow menu.
+  </description>
+</action>
+
+<action name="MobileTabRegularGridTabGroupOpenTab">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened an unselected tab from a regular Tab Group in the Tab Grid.
   </description>
 </action>
 
