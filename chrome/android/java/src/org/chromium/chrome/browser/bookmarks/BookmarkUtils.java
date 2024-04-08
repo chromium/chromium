@@ -162,8 +162,10 @@ public class BookmarkUtils {
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(activity, profile, new Handler(Looper.myLooper()));
+        // Redirect the original profile when getting the identity manager, it's not done
+        // automatically in native.
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
+                IdentityServicesProvider.get().getIdentityManager(profile.getOriginalProfile());
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(
