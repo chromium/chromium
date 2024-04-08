@@ -1325,6 +1325,32 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                      << metric_name << " in " << entry_name;
   }
 
+  void ExpectUkmValue(const std::string& metric_name, int expected_value) {
+    ExpectUkmValueInEntry(metric_name, FedCmEntry::kEntryName, expected_value);
+    ExpectUkmValueInEntry(metric_name, FedCmIdpEntry::kEntryName,
+                          expected_value);
+  }
+
+  void ExpectUkmValueInEntry(const std::string& metric_name,
+                             const char* entry_name,
+                             int expected_value,
+                             bool other_values_allowed = false) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
+    int count = 0;
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
+      const int64_t* value = ukm_recorder()->GetEntryMetric(entry, metric_name);
+      if (!value) {
+        continue;
+      }
+      ++count;
+      if (!other_values_allowed) {
+        EXPECT_EQ(*value, expected_value);
+      }
+    }
+    EXPECT_GT(count, 0) << "Did not find " << metric_name << " in "
+                        << entry_name;
+  }
+
   void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
     ExpectSignInStateMatchStatusUKMInternal(status, FedCmEntry::kEntryName);
     ExpectSignInStateMatchStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
@@ -4176,6 +4202,9 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+
+  ExpectUkmValue("NumIdpsRequested", 2);
+  ExpectUkmValue("NumIdpsMismatch", 0);
 }
 
 // Test successful multi IDP FedCM request.
@@ -4197,6 +4226,17 @@ TEST_F(FederatedAuthRequestImplTest,
                                      1);
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
+
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kSuccess));
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kSuccess),
+                        /*other_values_allowed=*/true);
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kOtherIdpChosen),
+                        /*other_values_allowed=*/true);
+  ExpectUkmValue("NumIdpsRequested", 2);
+  ExpectUkmValue("NumIdpsMismatch", 0);
 }
 
 // Test fetching information for the 1st IdP failing, and succeeding for the
@@ -4404,6 +4444,11 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
   ExpectUKMCount("Timing.MismatchDialogShownDuration",
                  FedCmIdpEntry::kEntryName, 2);
   CheckAllFedCmSessionIDs();
+
+  ExpectUkmValue("Status.RequestIdToken",
+                 static_cast<int>(TokenStatus::kShouldEmbargo));
+  ExpectUkmValue("NumIdpsRequested", 2);
+  ExpectUkmValue("NumIdpsMismatch", 2);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
@@ -4454,6 +4499,17 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
                                      0);
   ExpectUKMCount("MismatchDialogShown", FedCmEntry::kEntryName, 0);
   ExpectUKMCount("MismatchDialogShown", FedCmIdpEntry::kEntryName, 1);
+
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kSuccess));
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kSuccess),
+                        /*other_values_allowed=*/true);
+  ExpectUkmValueInEntry("Status.RequestIdToken", FedCmIdpEntry::kEntryName,
+                        static_cast<int>(TokenStatus::kOtherIdpChosen),
+                        /*other_values_allowed=*/true);
+  ExpectUkmValue("NumIdpsRequested", 2);
+  ExpectUkmValue("NumIdpsMismatch", 1);
 }
 
 // Test that API can succeed with multiple IdPs, if silent mediation is used but

@@ -246,8 +246,12 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
                                 turnaround_time);
 }
 
-void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
-                                            MediationRequirement requirement) {
+void FedCmMetrics::RecordRequestTokenStatus(
+    FedCmRequestIdTokenStatus status,
+    MediationRequirement requirement,
+    const std::vector<GURL>& requested_providers,
+    int num_idps_mismatch,
+    const std::optional<GURL>& selected_idp_config_url) {
   // If the request has failed but we have not yet rejected the promise,
   // e.g. when the user has declined the permission or the API is disabled
   // etc., we have already recorded a RequestTokenStatus. i.e.
@@ -258,17 +262,39 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
   }
   request_token_status_recorded_ = true;
 
-  auto RecordUkm = [&](auto& ukm_builder) {
-    ukm_builder.SetStatus_RequestIdToken(static_cast<int>(status));
+  // Use exponential bucketing to log these numbers.
+  num_idps_mismatch =
+      ukm::GetExponentialBucketMinForCounts1000(num_idps_mismatch);
+  int num_idps_requested =
+      ukm::GetExponentialBucketMinForCounts1000(requested_providers.size());
+
+  auto RecordUkm = [&](auto& ukm_builder,
+                       FedCmRequestIdTokenStatus ukm_status) {
+    ukm_builder.SetStatus_RequestIdToken(static_cast<int>(ukm_status));
     ukm_builder.SetStatus_MediationRequirement(static_cast<int>(requirement));
+    ukm_builder.SetNumIdpsRequested(num_idps_requested);
+    ukm_builder.SetNumIdpsMismatch(num_idps_mismatch);
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
-  RecordUkm(fedcm_builder);
+  RecordUkm(fedcm_builder, status);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
+  for (const auto& provider : requested_providers) {
+    ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+        GetOrCreateProviderSourceId(provider));
+    if (status == FedCmRequestIdTokenStatus::kSuccess) {
+      CHECK(selected_idp_config_url);
+      if (provider == *selected_idp_config_url) {
+        RecordUkm(fedcm_idp_builder, status);
+      } else {
+        RecordUkm(fedcm_idp_builder,
+                  FedCmRequestIdTokenStatus::kOtherIdpChosen);
+      }
+    } else {
+      RecordUkm(fedcm_idp_builder, status);
+    }
+  }
 
   base::UmaHistogramEnumeration("Blink.FedCm.Status.RequestIdToken", status);
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",

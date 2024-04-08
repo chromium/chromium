@@ -66,8 +66,9 @@ enum class FedCmRequestIdTokenStatus {
   kSilentMediationFailure,
   kIdTokenIdpErrorResponse,
   kIdTokenCrossSiteIdpErrorResponse,
+  kOtherIdpChosen,
 
-  kMaxValue = kIdTokenCrossSiteIdpErrorResponse
+  kMaxValue = kOtherIdpChosen
 };
 
 // This enum describes whether user sign-in states between IDP and browser
@@ -251,9 +252,16 @@ class CONTENT_EXPORT FedCmMetrics {
                                             base::TimeDelta token_response_time,
                                             base::TimeDelta turnaround_time);
 
-  // Records the status of the |RequestToken| call.
-  void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
-                                MediationRequirement requirement);
+  // Records the status of the |RequestToken| call. Also records the number of
+  // IDPs requested and the number of IDPs for which a mismatch was found.
+  // |requested_providers| contains all IDPs that were requested in the get()
+  // call.
+  void RecordRequestTokenStatus(
+      FedCmRequestIdTokenStatus status,
+      MediationRequirement requirement,
+      const std::vector<GURL>& requested_providers,
+      int num_idps_mismatch,
+      const std::optional<GURL>& selected_idp_config_url);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

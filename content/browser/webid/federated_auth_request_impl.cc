@@ -743,6 +743,12 @@ void FederatedAuthRequestImpl::RequestToken(
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
 
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    for (auto& idp_ptr : idp_get_params_ptr->providers) {
+      idp_order_.push_back(idp_ptr->config->config_url);
+    }
+  }
+
   if (HasPendingRequest()) {
     FederatedAuthRequestImpl* pending_request =
         GetPageData(&render_frame_host())->PendingWebIdentityRequest();
@@ -759,8 +765,10 @@ void FederatedAuthRequestImpl::RequestToken(
     // 2. how often a button flow is triggered while a button flow is pending
     // 3. how often a widget flow is triggered while a button flow is pending
     if (!can_replace_pending_request) {
-      fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
-                                               requirement);
+      fedcm_metrics_->RecordRequestTokenStatus(
+          TokenStatus::kTooManyRequests, requirement, idp_order_,
+          /*num_idps_mismatch=*/0,
+          /*selected_idp_config_url=*/std::nullopt);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
@@ -786,12 +794,16 @@ void FederatedAuthRequestImpl::RequestToken(
         /*should_delay_callback=*/false);
     CHECK(!auth_request_token_callback_);
 
-    // This was reset to false during CleanUp when replacing a widget flow
-    // from the same frame so we need to change it back to true.
+    // Some members were reset to false during CleanUp when replacing a widget
+    // flow from the same frame so we need to set them again.
     had_transient_user_activation_ = true;
-    // This was also possibly reset during cleanup.
     MaybeCreateFedCmMetrics(
         idp_get_params_ptrs[0]->providers[0]->config->config_url);
+    for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+      for (auto& idp_ptr : idp_get_params_ptr->providers) {
+        idp_order_.push_back(idp_ptr->config->config_url);
+      }
+    }
   }
 
   bool intercept = false;
@@ -891,8 +903,6 @@ void FederatedAuthRequestImpl::RequestToken(
 
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
-      idp_order_.push_back(idp_ptr->config->config_url);
-
       bool has_failing_idp_signin_status =
           webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
               render_frame_host(), idp_ptr->config->config_url,
@@ -2504,8 +2514,12 @@ void FederatedAuthRequestImpl::CompleteRequest(
   }
 
   if (token_status) {
-    fedcm_metrics_->RecordRequestTokenStatus(*token_status,
-                                             mediation_requirement_);
+    int num_idps_mismatch = std::count_if(
+        idp_data_for_display_.begin(), idp_data_for_display_.end(),
+        [](auto& provider) { return provider.has_login_status_mismatch; });
+    fedcm_metrics_->RecordRequestTokenStatus(
+        *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
+        selected_idp_config_url);
   }
 
   if (!errors_logged_to_console_ &&
