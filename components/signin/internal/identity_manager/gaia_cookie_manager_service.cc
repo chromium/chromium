@@ -569,7 +569,7 @@ void GaiaCookieManagerService::ForceOnCookieChangeProcessing() {
           "." + google_url.host(), "/", base::Time(), base::Time(),
           base::Time(), true /* secure */, false /* httponly */,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          std::nullopt /* cookie_partition_key */);
+          std::nullopt /* cookie_partition_key */, /*status=*/nullptr);
   OnCookieChange(
       net::CookieChangeInfo(*cookie, net::CookieAccessResult(),
                             net::CookieChangeCause::UNKNOWN_DELETION));

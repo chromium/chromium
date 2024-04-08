@@ -68,7 +68,7 @@ void CreateCookies(
             url.path(), base::Time::Now(), base::Time::Max(), base::Time::Now(),
             url.SchemeIsCryptographic(), false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            std::nullopt);
+            std::nullopt, /*status=*/nullptr);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(

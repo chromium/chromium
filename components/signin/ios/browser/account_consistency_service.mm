@@ -492,7 +492,8 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_DEFAULT,
-          /*partition_key=*/std::nullopt);
+          /*partition_key=*/std::nullopt,
+          /*status=*/nullptr);
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(

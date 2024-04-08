@@ -24,7 +24,7 @@ net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
       /*last_access_time=*/base::Time::Now(), /*secure=*/true,
       /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
       net::CookiePriority::COOKIE_PRIORITY_HIGH,
-      /*partition_key=*/std::nullopt);
+      /*partition_key=*/std::nullopt, /*status=*/nullptr);
 }
 
 size_t BoundSessionTestCookieManager::GetNumberOfDeleteCookiesCallbacks() {

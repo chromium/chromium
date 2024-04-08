@@ -119,13 +119,13 @@ static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
           resolution_data.url, "test_name", "test_value", "test.com", "/",
           base::Time(), base::Time(), base::Time(), false, true,
           net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_DEFAULT,
-          std::nullopt));
+          std::nullopt, /*status=*/nullptr));
   resolution_data.cookies.push_back(
       *net::CanonicalCookie::CreateSanitizedCookie(
           resolution_data.url, "test_name2", "test_value2", "test.com", "/",
           base::Time(), base::Time(), base::Time(), false, false,
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
-          std::nullopt));
+          std::nullopt, /*status=*/nullptr));
   return resolution_data;
 }
 

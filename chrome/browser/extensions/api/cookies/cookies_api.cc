@@ -494,14 +494,15 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           parsed_args_->details.value.value_or(std::string()),   //
           parsed_args_->details.domain.value_or(std::string()),  //
           parsed_args_->details.path.value_or(std::string()),    //
-          base::Time(),                                          //
+          /*creation_time=*/base::Time(),                        //
           expiration_time,                                       //
-          base::Time(),                                          //
+          /*last_access_time=*/base::Time(),                     //
           parsed_args_->details.secure.value_or(false),          //
           parsed_args_->details.http_only.value_or(false),       //
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
-          partition_key));
+          partition_key,                                         //
+          /*status=*/nullptr));
   if (!cc) {
     // Return error through callbacks so that the proper error message
     // is generated.
