@@ -2689,6 +2689,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithPasswordsTest,
   filter->SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://notcookie.com"))));
+  filter->SetPartitionedCookiesOnly(true);
   EXPECT_CALL(*profile_password_store(), DisableAutoSignInForOrigins).Times(0);
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               content::BrowsingDataRemover::DATA_TYPE_COOKIES,

@@ -291,6 +291,10 @@ class BrowsingDataRemoverBrowserTest
       const std::optional<net::CookiePartitionKey>& cookie_partition_key,
       const std::optional<blink::StorageKey>& storage_key,
       const std::set<std::string>& storage_buckets_to_remove) {
+    bool partitioned_state_allowed_only =
+        cookie_partition_key.has_value() &&
+        !origin.DomainIs(cookie_partition_key->site()
+                             .registrable_domain_or_host_for_testing());
     base::RunLoop loop;
     content::ClearSiteData(
         GetBrowser()->profile()->GetWeakPtr(),
@@ -300,7 +304,7 @@ class BrowsingDataRemoverBrowserTest
         /*avoid_closing_connections=*/true,
         /*cookie_partition_key=*/cookie_partition_key,
         /*storage_key=*/storage_key,
-        /*partitioned_state_allowed_only=*/false,
+        /*partitioned_state_allowed_only=*/partitioned_state_allowed_only,
         /*callback=*/loop.QuitClosure());
     loop.Run();
   }

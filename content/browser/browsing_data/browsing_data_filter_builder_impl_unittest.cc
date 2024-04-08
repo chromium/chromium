@@ -471,64 +471,6 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
   }
 }
 
-TEST(BrowsingDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
-  struct TestCase {
-    const std::string desc;
-    const net::CookiePartitionKeyCollection cookie_partition_key_collection;
-    bool expected;
-  } test_cases[] = {
-      {"Empty keychain", net::CookiePartitionKeyCollection(), false},
-      {"Keychain contains all keys",
-       net::CookiePartitionKeyCollection::ContainsAll(), false},
-      {"Contains secure cookie domain",
-       net::CookiePartitionKeyCollection(
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("http://cookie.com"))),
-       false},
-      {"Contains insecure cookie domain",
-       net::CookiePartitionKeyCollection(
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://cookie.com"))),
-       false},
-      {"Does not include cookie domain (secure)",
-       net::CookiePartitionKeyCollection(
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://notcookie.com"))),
-       true},
-      {"Does not include cookie domain (insecure)",
-       net::CookiePartitionKeyCollection(
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("http://notcookie.com"))),
-       true},
-      {"Multiple keys, contains cookie domain",
-       net::CookiePartitionKeyCollection({
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://cookie.com")),
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://notcookie.com")),
-       }),
-       false},
-      {"Multiple keys, does not contain cookie domain",
-       net::CookiePartitionKeyCollection({
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://notcookie.com")),
-           net::CookiePartitionKey::FromURLForTesting(
-               GURL("https://alsonotcookie.com")),
-       }),
-       true},
-  };
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.desc);
-    BrowsingDataFilterBuilderImpl builder(
-        BrowsingDataFilterBuilderImpl::Mode::kDelete);
-    builder.AddRegisterableDomain("cookie.com");
-    builder.SetCookiePartitionKeyCollection(
-        test_case.cookie_partition_key_collection);
-    EXPECT_EQ(test_case.expected, builder.IsCrossSiteClearSiteDataForCookies());
-  }
-}
-
 TEST(BrowsingDataFilterBuilderImplTest, StorageKey_PreserveNoOrigins) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
@@ -1153,7 +1095,7 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   BrowsingDataFilterBuilderImpl builder(
       BrowsingDataFilterBuilderImpl::Mode::kPreserve);
 
-  builder.SetPartitionedStateAllowedOnly(true);
+  builder.SetPartitionedCookiesOnly(true);
 
   CookieDeletionInfo delete_info =
       network::DeletionFilterToInfo(builder.BuildCookieDeletionFilter());
@@ -1208,7 +1150,7 @@ TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {
       blink::StorageKey::CreateFromStringForTesting("https://foo.com"));
   builder.SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
       net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
-  builder.SetPartitionedStateAllowedOnly(true);
+  builder.SetPartitionedCookiesOnly(true);
   builder.SetStoragePartitionConfig(StoragePartitionConfig::Create(
       &browser_context, "domain", "name", /*in_memory=*/false));
 

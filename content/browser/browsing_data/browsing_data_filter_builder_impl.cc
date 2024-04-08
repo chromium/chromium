@@ -90,11 +90,11 @@ bool MatchesURL(const std::set<url::Origin>& origins,
                 const std::set<std::string>& registerable_domains,
                 BrowsingDataFilterBuilder::Mode mode,
                 BrowsingDataFilterBuilder::OriginMatchingMode origin_mode,
-                bool is_cross_site_clear_site_data,
+                bool partitioned_cookies_only,
                 const GURL& url) {
   // TODO(https://crbug.com/1420402): Re-enable this check when it is actually
   // a valid precondition.
-  // DCHECK(!is_cross_site_clear_site_data);
+  // DCHECK(!partitioned_cookies_only);
   return MatchesStorageKey(
       origins, registerable_domains, mode, origin_mode,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
@@ -203,28 +203,6 @@ void BrowsingDataFilterBuilderImpl::SetCookiePartitionKeyCollection(
   cookie_partition_key_collection_ = cookie_partition_key_collection;
 }
 
-bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
-  if (domains_.empty() || cookie_partition_key_collection_.IsEmpty() ||
-      cookie_partition_key_collection_.ContainsAllKeys()) {
-    return false;
-  }
-  // Assumes that there is only a single domain in the filter, since C-S-D
-  // requests only have one. If this method needs to be used with more than one
-  // domain, the code below needs to be modified.
-  DCHECK_EQ(1U, domains_.size());
-  for (const auto& domain : domains_) {
-    auto secure_site =
-        net::SchemefulSite(url::Origin::Create(GURL("https://" + domain)));
-    auto insecure_site =
-        net::SchemefulSite(url::Origin::Create(GURL("http://" + domain)));
-    for (const auto& key : cookie_partition_key_collection_.PartitionKeys()) {
-      if (key.site() == secure_site || key.site() == insecure_site)
-        return false;
-    }
-  }
-  return true;
-}
-
 void BrowsingDataFilterBuilderImpl::SetStorageKey(
     const std::optional<blink::StorageKey>& storage_key) {
   storage_key_ = storage_key;
@@ -242,7 +220,7 @@ bool BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey(
 
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty() &&
-         !partitioned_state_only_ &&
+         !partitioned_cookies_only_ &&
          cookie_partition_key_collection_.ContainsAllKeys() && !HasStorageKey();
 }
 
@@ -250,8 +228,12 @@ bool BrowsingDataFilterBuilderImpl::MatchesNothing() {
   return mode_ == Mode::kDelete && origins_.empty() && domains_.empty();
 }
 
-void BrowsingDataFilterBuilderImpl::SetPartitionedStateAllowedOnly(bool value) {
-  partitioned_state_only_ = value;
+void BrowsingDataFilterBuilderImpl::SetPartitionedCookiesOnly(bool value) {
+  partitioned_cookies_only_ = value;
+}
+
+bool BrowsingDataFilterBuilderImpl::PartitionedCookiesOnly() const {
+  return partitioned_cookies_only_;
 }
 
 void BrowsingDataFilterBuilderImpl::SetStoragePartitionConfig(
@@ -269,8 +251,7 @@ BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
   if (MatchesAllOriginsAndDomains())
     return base::BindRepeating([](const GURL&) { return true; });
   return base::BindRepeating(&MatchesURL, origins_, domains_, mode_,
-                             origin_mode_,
-                             IsCrossSiteClearSiteDataForCookies());
+                             origin_mode_, PartitionedCookiesOnly());
 }
 
 content::StoragePartition::StorageKeyMatcherFunction
@@ -324,7 +305,7 @@ BrowsingDataFilterBuilderImpl::BuildCookieDeletionFilter() {
   deletion_filter->cookie_partition_key_collection =
       cookie_partition_key_collection_;
 
-  deletion_filter->partitioned_state_only = partitioned_state_only_;
+  deletion_filter->partitioned_state_only = partitioned_cookies_only_;
 
   switch (mode_) {
     case Mode::kDelete:
@@ -373,12 +354,6 @@ BrowsingDataFilterBuilderImpl::GetCookiePartitionKeyCollectionForTesting()
     const {
   return cookie_partition_key_collection_;
 }
-
-bool BrowsingDataFilterBuilderImpl::PartitionedStateAllowedOnlyForTesting()
-    const {
-  return partitioned_state_only_;
-}
-
 std::unique_ptr<BrowsingDataFilterBuilder>
 BrowsingDataFilterBuilderImpl::Copy() {
   std::unique_ptr<BrowsingDataFilterBuilderImpl> copy =
@@ -388,7 +363,7 @@ BrowsingDataFilterBuilderImpl::Copy() {
   copy->domains_ = domains_;
   copy->cookie_partition_key_collection_ = cookie_partition_key_collection_;
   copy->storage_key_ = storage_key_;
-  copy->partitioned_state_only_ = partitioned_state_only_;
+  copy->partitioned_cookies_only_ = partitioned_cookies_only_;
   copy->storage_partition_config_ = storage_partition_config_;
   return std::move(copy);
 }
@@ -406,7 +381,7 @@ bool BrowsingDataFilterBuilderImpl::IsEqual(
          cookie_partition_key_collection_ ==
              other_impl->cookie_partition_key_collection_ &&
          storage_key_ == other_impl->storage_key_ &&
-         partitioned_state_only_ == other_impl->partitioned_state_only_ &&
+         partitioned_cookies_only_ == other_impl->partitioned_cookies_only_ &&
          storage_partition_config_ == other_impl->storage_partition_config_;
 }
 

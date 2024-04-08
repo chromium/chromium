@@ -165,8 +165,7 @@ std::ostream& operator<<(
               filter_builder->GetCookiePartitionKeyCollectionForTesting())
        << "\n";
     os << "    partitioned cookies only: "
-       << (filter_builder->PartitionedStateAllowedOnlyForTesting() ? "true\n"
-                                                                   : "false\n");
+       << (filter_builder->PartitionedCookiesOnly() ? "true\n" : "false\n");
 
     auto config = p.filter_builder_->GetStoragePartitionConfig();
     os << "    StoragePartition: ";

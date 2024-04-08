@@ -89,19 +89,12 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
 
   // Set the CookiePartitionKeyCollection for a CookieDeletionFilter.
   // Partitioned cookies will be not be deleted if their partition key is not in
-  // the keychain. If this method is not invoked, then by default this clears
-  // all partitioned cookies that match the other criteria.
+  // the collection. If this method is not invoked, then by default this clears
+  // all partitioned cookies that match the other criteria. Passing an empty
+  // collection will prevent every partitioned cookie from being deleted.
   virtual void SetCookiePartitionKeyCollection(
       const net::CookiePartitionKeyCollection&
           cookie_partition_key_collection) = 0;
-
-  // Returns true if this filter is handling a Clear-Site-Data header sent in a
-  // cross-site context. Only works for processing the Clear-Site-Data header
-  // (which means the filter contains a single domain) when partitioned cookies
-  // are enabled.
-  // TODO(crbug.com/1416655): Remove this method in favor of
-  //    SetPartitionedStateAllowedOnly.
-  virtual bool IsCrossSiteClearSiteDataForCookies() const = 0;
 
   // Set the StorageKey for the filter.
   // If the key is set, then only the StoragePartition that matches the key
@@ -126,8 +119,15 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
 
   // When true, this filter will exclude unpartitioned cookies, i.e. cookies
   // whose partition key is null. By default, the value is false.
-  // Partitioned cookies are unaffected by this setting.
-  virtual void SetPartitionedStateAllowedOnly(bool value) = 0;
+  // Setting this will NOT ensure that all partitioned cookies will match, only
+  // that unpartitioned cookies will not match. Partitioned cookie matching is
+  // governed by SetCookiePartitionKeyCollection() and AddRegisterableDomain().
+  virtual void SetPartitionedCookiesOnly(bool value) = 0;
+
+  // Returns true if this filter is restricted to partitioned cookies (by the
+  // method above). Note that partitioned cookies may be deleted whether this
+  // returns true or false.
+  virtual bool PartitionedCookiesOnly() const = 0;
 
   // When set, only data from the given StoragePartition will be removed.
   // By default, data from non-default StoragePartitions will not be removed.

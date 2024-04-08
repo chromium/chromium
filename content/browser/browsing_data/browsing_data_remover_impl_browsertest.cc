@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
-                       ClearSiteData_PartitionedStateAllowedOnly) {
+                       ClearSiteData_PartitionedCookiesOnly) {
   // Unpartitioned cookie should not be removed when third-party cookie blocking
   // applies to the request that sent Clear-Site-Data.
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure;",
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
   builder->AddRegisterableDomain("a.com");
-  builder->SetPartitionedStateAllowedOnly(true);
+  builder->SetPartitionedCookiesOnly(true);
 
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(builder));
@@ -644,9 +644,9 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
-                       ClearSiteData_AllDomainsPartitionedStateAllowedOnly) {
+                       ClearSiteData_AllDomainsPartitionedCookiesOnly) {
   // Unpartitioned cookies should not be removed when
-  // SetPartitionedStateAllowedOnly(true)
+  // SetPartitionedCookiesOnly(true)
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure;",
                         /*cookie_partition_key=*/std::nullopt));
   // All partitioned cookies should be removed.
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve));
   // Mode::kPreserve + no origins/domains = delete everything.
-  builder->SetPartitionedStateAllowedOnly(true);
+  builder->SetPartitionedCookiesOnly(true);
 
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(builder));
