@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/picker/views/picker_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,8 +25,6 @@
 
 namespace ash {
 namespace {
-
-constexpr int kScrollViewGradientHeight = 16;
 
 constexpr auto kScrollViewContentsBorderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
 
@@ -53,24 +50,13 @@ class PickerScrollView : public views::ScrollView {
         .SetBackgroundColor(std::nullopt)
         .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
         .BuildChildren();
-
-    // Paint to layer so that we can apply a gradient mask.
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
-        this, kScrollViewGradientHeight);
   }
   PickerScrollView(const PickerScrollView&) = delete;
   PickerScrollView& operator=(const PickerScrollView&) = delete;
   ~PickerScrollView() override = default;
 
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    gradient_helper_->UpdateGradientMask();
-  }
-
- private:
-  // Applies fade in / fade out gradients at the top and bottom of the scroll
-  // view to indicate when the contents can be scrolled.
-  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
+  // TODO: b/330785264 - Add back gradient helper once the flickering issue is
+  // resolved.
 };
 
 BEGIN_METADATA(PickerScrollView)
