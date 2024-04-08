@@ -76,7 +76,6 @@ chromium/try/lacros-arm-generic-rel
 chromium/try/lacros-arm-generic-rel-skylab
 chromium/try/lacros-arm64-generic-rel-skylab
 chromium/try/layout_test_leak_detection
-chromium/try/linux-arm64-cast-rel
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
 chromium/try/linux-asan-media-v8-arm-rel
