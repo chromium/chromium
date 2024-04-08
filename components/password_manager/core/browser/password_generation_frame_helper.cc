@@ -122,6 +122,16 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
     return false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (client_->GetPasswordFeatureManager()->ShouldUpdateGmsCore()) {
+    if (logger) {
+      logger->LogMessage(
+          Logger::STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS);
+    }
+    return false;
+  }
+#endif
+
   if (client_->GetPasswordFeatureManager()->IsGenerationEnabled())
     return true;
   if (logger)

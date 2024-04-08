@@ -242,6 +242,19 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
   EXPECT_FALSE(IsGenerationEnabled());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordGenerationFrameHelperTest,
+       GenerationDisabledDueToOutdatedGMSCore) {
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), ShouldUpdateGmsCore())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_FALSE(IsGenerationEnabled());
+}
+#endif
+
 // Verify that password requirements received from the autofill server are
 // stored and that domain-wide password requirements are fetched as well.
 TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
