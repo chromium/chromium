@@ -8,6 +8,7 @@
 #include "base/types/strong_alias.h"
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
+#include "components/performance_manager/public/resource_attribution/origin_in_page_context.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
@@ -44,11 +45,24 @@ namespace resource_attribution {
 // should never be passed to other renderers to prevent data leaks.
 
 // Contexts for PerformanceManager nodes. There is one *Context type for each
-// node type.
+// node type:
+//
+// * FrameContext -> FrameNode
+// * PageContext -> PageNode
+// * ProcessContext -> ProcessNode
+// * WorkerContext -> WorkerNode
+
+// Variations of another context:
+//
+// * OriginInPageContext: a subset of PageContext covering only frames and
+//                        workers with a specific url::Origin.
 
 // A variant holding any type of resource context.
-using ResourceContext =
-    absl::variant<FrameContext, PageContext, ProcessContext, WorkerContext>;
+using ResourceContext = absl::variant<FrameContext,
+                                      PageContext,
+                                      ProcessContext,
+                                      WorkerContext,
+                                      OriginInPageContext>;
 
 // Returns true iff `context` currently holds a resource context of type T.
 template <typename T,

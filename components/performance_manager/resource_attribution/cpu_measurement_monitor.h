@@ -25,6 +25,8 @@
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
+class GURL;
+
 namespace resource_attribution {
 
 // Periodically collect CPU usage from process nodes.
@@ -67,6 +69,8 @@ class CPUMeasurementMonitor
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnURLChanged(const FrameNode* frame_node,
+                    const GURL& previous_value) override;
 
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
@@ -84,6 +88,7 @@ class CPUMeasurementMonitor
   void OnBeforeClientWorkerRemoved(
       const WorkerNode* worker_node,
       const WorkerNode* client_worker_node) override;
+  void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override;
 
   // NodeDataDescriber:
   base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
@@ -176,7 +181,7 @@ class CPUMeasurementMonitor
   // start before the result or end after it. Used for adding frame and worker
   // measurements to page contexts, since the frames and workers can be added in
   // any order.
-  void ApplyOverlappingDelta(const PageContext& context,
+  void ApplyOverlappingDelta(const ResourceContext& context,
                              const CPUTimeResult& delta);
 
   // Returns description of the most recent measurement of `context` for

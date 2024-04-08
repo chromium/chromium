@@ -21,8 +21,29 @@
 #include "components/performance_manager/resource_attribution/node_data_describers.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace resource_attribution {
+
+namespace {
+
+template <typename FrameOrWorkerNode>
+std::optional<OriginInPageContext> OriginInPageContextForNode(
+    const FrameOrWorkerNode* node,
+    const PageNode* page_node) {
+  const auto url = node->GetURL();
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+  // TODO(http://crbug.com/333248839): Instead of creating the Origin from an
+  // URL, which loses some information, should store it as a node property. See
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md.
+  return OriginInPageContext(url::Origin::Create(url),
+                             page_node->GetResourceContext());
+}
+
+}  // namespace
 
 MemoryMeasurementProvider::MemoryMeasurementProvider(Graph* graph)
     : graph_(graph) {
@@ -117,6 +138,12 @@ void MemoryMeasurementProvider::OnMemorySummary(
           CHECK(inserted);
           accumulate_summary(f->GetPageNode()->GetResourceContext(), summary,
                              MeasurementAlgorithm::kSum);
+          std::optional<OriginInPageContext> origin_in_page_context =
+              OriginInPageContextForNode(f, f->GetPageNode());
+          if (origin_in_page_context.has_value()) {
+            accumulate_summary(origin_in_page_context.value(), summary,
+                               MeasurementAlgorithm::kSum);
+          }
         },
         [&](const WorkerNode* w, MemorySummaryMeasurement summary) {
           bool inserted = accumulate_summary(w->GetResourceContext(), summary,
@@ -125,6 +152,12 @@ void MemoryMeasurementProvider::OnMemorySummary(
           for (const PageNode* page_node : GetWorkerClientPages(w)) {
             accumulate_summary(page_node->GetResourceContext(), summary,
                                MeasurementAlgorithm::kSum);
+            std::optional<OriginInPageContext> origin_in_page_context =
+                OriginInPageContextForNode(w, page_node);
+            if (origin_in_page_context.has_value()) {
+              accumulate_summary(origin_in_page_context.value(), summary,
+                                 MeasurementAlgorithm::kSum);
+            }
           }
         });
   }

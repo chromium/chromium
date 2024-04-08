@@ -8,6 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/gurl.h"
+
+namespace performance_manager {
+class Node;
+}
 
 namespace resource_attribution {
 
@@ -76,6 +81,17 @@ struct GraphChangeRemoveClientWorkerFromWorker {
   raw_ptr<const WorkerNode> client_worker_node;
 };
 
+// Not technically a graph change, but modifies the distribution of FrameNode
+// and WorkerNode measurements to OriginInPageContexts the same way graph
+// changes modify the distribution of measurements to PageContexts.
+struct GraphChangeUpdateURL {
+  GraphChangeUpdateURL(const performance_manager::Node* node, GURL previous_url)
+      : node(node), previous_url(std::move(previous_url)) {}
+
+  raw_ptr<const performance_manager::Node> node;
+  GURL previous_url;
+};
+
 using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeAddFrame,
                                   GraphChangeRemoveFrame,
@@ -84,7 +100,8 @@ using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeAddClientFrameToWorker,
                                   GraphChangeRemoveClientFrameFromWorker,
                                   GraphChangeAddClientWorkerToWorker,
-                                  GraphChangeRemoveClientWorkerFromWorker>;
+                                  GraphChangeRemoveClientWorkerFromWorker,
+                                  GraphChangeUpdateURL>;
 
 }  // namespace resource_attribution
 

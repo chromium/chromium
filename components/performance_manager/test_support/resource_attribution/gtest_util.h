@@ -203,6 +203,10 @@ inline void PrintTo(const WorkerContext& context, std::ostream* os) {
   *os << context.ToString();
 }
 
+inline void PrintTo(const OriginInPageContext& context, std::ostream* os) {
+  *os << context.ToString();
+}
+
 }  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_GTEST_UTIL_H_
