@@ -150,7 +150,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
@@ -382,10 +381,6 @@ enum class ToolbarKind {
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
     ContextMenuConfigurationProvider* contextMenuProvider;
-
-// Coordinator that manages the default browser promo modal.
-@property(nonatomic, strong)
-    DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
 
 // Coordinator that manages the presentation of Download Manager UI.
 @property(nonatomic, strong)
@@ -1425,9 +1420,6 @@ enum class ToolbarKind {
   [self.infobarModalOverlayContainerCoordinator stop];
   self.infobarModalOverlayContainerCoordinator = nil;
 
-  [self.defaultBrowserPromoCoordinator stop];
-  self.defaultBrowserPromoCoordinator = nil;
-
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
 
@@ -1985,8 +1977,6 @@ enum class ToolbarKind {
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
-  [self.defaultBrowserPromoCoordinator stop];
-  self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
   [self.defaultBrowserPromoManager stop];

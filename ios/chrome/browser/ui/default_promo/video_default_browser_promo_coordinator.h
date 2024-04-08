@@ -13,9 +13,6 @@
 // Handler for all actions of this coordinator.
 @property(nonatomic, weak) id<DefaultBrowserPromoCommands> handler;
 
-// Add halfscreen view
-@property(nonatomic, assign) BOOL isHalfScreen;
-
 // Whether or not to show the Remind Me Later button.
 @property(nonatomic, assign) BOOL showRemindMeLater;
 

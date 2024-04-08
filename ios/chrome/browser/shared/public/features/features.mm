@@ -98,10 +98,6 @@ constexpr base::FeatureParam<int>
         &kNonModalDefaultBrowserPromoCooldownRefactor,
         /*name=*/"cooldown-days", /*default_value=*/14};
 
-BASE_FEATURE(kDefaultBrowserVideoPromo,
-             "DefaultBrowserVideoPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
     "IOSEditMenuPartialTranslateNoIncognitoParam";
 

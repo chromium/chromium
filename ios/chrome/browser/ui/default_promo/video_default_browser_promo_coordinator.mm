@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
-#import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator.h"
-#import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_mediator.h"
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -28,8 +26,7 @@ using base::UserMetricsAction;
 
 @interface VideoDefaultBrowserPromoCoordinator () <
     UIAdaptivePresentationControllerDelegate,
-    ConfirmationAlertActionHandler,
-    HalfScreenPromoCoordinatorDelegate>
+    ConfirmationAlertActionHandler>
 
 // The mediator for the video default browser promo.
 @property(nonatomic, strong) VideoDefaultBrowserPromoMediator* mediator;
@@ -39,9 +36,6 @@ using base::UserMetricsAction;
 // Default browser promo command handler.
 @property(nonatomic, readonly) id<DefaultBrowserPromoCommands>
     defaultBrowserPromoHandler;
-// Half screen promo coordinator.
-@property(nonatomic, strong)
-    HalfScreenPromoCoordinator* halfScreenPromoCoordinator;
 
 @end
 
@@ -53,15 +47,7 @@ using base::UserMetricsAction;
   [self recordVideoDefaultBrowserPromoShown];
   self.mediator = [[VideoDefaultBrowserPromoMediator alloc] init];
 
-  if (self.isHalfScreen) {
-    self.halfScreenPromoCoordinator = [[HalfScreenPromoCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:self.browser];
-    self.halfScreenPromoCoordinator.delegate = self;
-    [self.halfScreenPromoCoordinator start];
-  } else {
-    [self showFullscreenVideoPromo];
-  }
+  [self showFullscreenVideoPromo];
 
   [super start];
 }
@@ -69,11 +55,6 @@ using base::UserMetricsAction;
 - (void)stop {
   LogUserInteractionWithFullscreenPromo();
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  if (self.halfScreenPromoCoordinator) {
-    [self.halfScreenPromoCoordinator stop];
-    self.halfScreenPromoCoordinator.delegate = nil;
-    self.halfScreenPromoCoordinator = nil;
-  }
   self.viewController = nil;
   self.mediator = nil;
 
@@ -130,28 +111,6 @@ using base::UserMetricsAction;
                                 IOSDefaultBrowserVideoPromoAction::kSwipeDown);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  [self.handler hidePromo];
-}
-
-#pragma mark - HalfScreenPromoCoordinatorDelegate
-
-- (void)handlePrimaryActionForHalfScreenPromoCoordinator:
-    (HalfScreenPromoCoordinator*)coordinator {
-  DCHECK(coordinator == self.halfScreenPromoCoordinator);
-  [self.halfScreenPromoCoordinator stop];
-  self.halfScreenPromoCoordinator.delegate = nil;
-  self.halfScreenPromoCoordinator = nil;
-
-  [self showFullscreenVideoPromo];
-}
-
-- (void)handleSecondaryActionForHalfScreenPromoCoordinator:
-    (HalfScreenPromoCoordinator*)coordinator {
-  [self.handler hidePromo];
-}
-
-- (void)handleDismissActionForHalfScreenPromoCoordinator:
-    (HalfScreenPromoCoordinator*)coordinator {
   [self.handler hidePromo];
 }
 

@@ -111,9 +111,6 @@ BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor);
 extern const base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam;
 
-// Feature flag that enables the default browser video promo.
-BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
-
 // Feature param under kIOSEditMenuPartialTranslate to disable on incognito.
 extern const char kIOSEditMenuPartialTranslateNoIncognitoParam[];
 // Feature flag to enable partial translate in the edit menu.

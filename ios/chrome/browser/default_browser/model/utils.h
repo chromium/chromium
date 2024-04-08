@@ -143,15 +143,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker,
     syncer::SyncService* syncService);
 
-// Returns true if the default browser video promo is enabled.
-bool IsDefaultBrowserVideoPromoEnabled();
-
-// Returns true if the default browser video promo full screen is enabled.
-bool IsDBVideoPromoFullscreenEnabled();
-
-// Returns true if the default browser video promo half screen is enabled.
-bool IsDBVideoPromoHalfscreenEnabled();
-
 // Returns true if the non-modal default browser promo cooldown refactor is
 // enabled.
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled();

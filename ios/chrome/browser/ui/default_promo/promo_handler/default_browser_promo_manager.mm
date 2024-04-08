@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
@@ -31,10 +30,6 @@
 // Coordinator for the video default browser promo.
 @property(nonatomic, strong)
     VideoDefaultBrowserPromoCoordinator* videoDefaultPromoCoordinator;
-
-// Coordinator that manages the generic default browser promo.
-@property(nonatomic, strong)
-    DefaultBrowserPromoCoordinator* genericDefaultPromoCoordinator;
 
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
@@ -74,12 +69,7 @@
   }
 
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    if (IsDefaultBrowserVideoPromoEnabled()) {
-      [self showPromo:DefaultPromoTypeVideo];
-      return;
-    }
-
-    [self showPromo:DefaultPromoTypeGeneral];
+    [self showPromo:DefaultPromoTypeVideo];
     return;
   }
 
@@ -97,15 +87,7 @@
     return;
   }
 
-  // When the default browser video promo is enabled, show the video promo.
-  BOOL isVideoPromoEnabled =
-      IsDBVideoPromoFullscreenEnabled() || IsDBVideoPromoHalfscreenEnabled();
-  if (isVideoPromoEnabled) {
-    [self showPromo:DefaultPromoTypeVideo];
-    return;
-  }
-
-  [self showPromo:DefaultPromoTypeGeneral];
+  [self showPromo:DefaultPromoTypeVideo];
 }
 
 - (void)stop {
@@ -115,9 +97,6 @@
         feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
   }
   self.videoDefaultPromoCoordinator = nil;
-
-  [self.genericDefaultPromoCoordinator stop];
-  self.genericDefaultPromoCoordinator = nil;
 
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
@@ -164,8 +143,6 @@
       [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
       break;
     case DefaultPromoTypeGeneral:
-      [self showGenericPromo];
-      break;
     case DefaultPromoTypeVideo:
       [self showVideoPromo];
       break;
@@ -181,22 +158,12 @@
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
   self.videoDefaultPromoCoordinator.handler = self;
-  self.videoDefaultPromoCoordinator.isHalfScreen =
-      IsDBVideoPromoHalfscreenEnabled();
   BOOL showRemindMeLater =
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
       !self.promoWasFromRemindMeLater;
   self.videoDefaultPromoCoordinator.showRemindMeLater = showRemindMeLater;
   [self.videoDefaultPromoCoordinator start];
-}
-
-- (void)showGenericPromo {
-  self.genericDefaultPromoCoordinator = [[DefaultBrowserPromoCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
-  self.genericDefaultPromoCoordinator.handler = self;
-  [self.genericDefaultPromoCoordinator start];
 }
 
 - (void)showTailoredPromoWithType:(DefaultPromoType)type {

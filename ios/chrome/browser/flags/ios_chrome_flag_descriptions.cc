@@ -312,12 +312,6 @@ const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
 
-const char kDefaultBrowserVideoPromoName[] =
-    "Enable default browser video promo";
-const char kDefaultBrowserVideoPromoDescription[] =
-    "When enabled, the user will be presented a video promo showing how to set "
-    "Chrome as default browser.";
-
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

@@ -441,18 +441,6 @@ void StoreCurrentTimestampForKey(NSString* key) {
   StoreTimestampsForKey(key, timestamps);
 }
 
-std::string GetVideoPromoVariant() {
-  if (!IsDefaultBrowserVideoPromoEnabled()) {
-    return "";
-  }
-  std::string variant = base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserVideoPromo, kDefaultBrowserVideoPromoVariant);
-  if (variant != "") {
-    return variant;
-  }
-  return kVideoFullscreenPromo;
-}
-
 }  // namespace
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
@@ -472,11 +460,6 @@ NSString* const kOmniboxUseCount = @"OmniboxUseCount";
 NSString* const kBookmarkUseCount = @"BookmarkUseCount";
 NSString* const kAutofillUseCount = @"AutofillUseCount";
 NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
-
-const char kVideoFullscreenPromo[] = "generic_conditions_fullscreen_promo";
-const char kVideoHalfscreenPromo[] = "generic_conditions_halfscreen_promo";
-const char kDefaultBrowserVideoPromoVariant[] =
-    "default_browser_video_promo_variant";
 
 // Migration to FET keys.
 NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
@@ -541,10 +524,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   return false;
 }
 
-bool IsDefaultBrowserVideoPromoEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserVideoPromo);
-}
-
 bool ShouldForceDefaultPromoType() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDefaultBrowserPromoForceShowPromo);
@@ -573,14 +552,6 @@ DefaultPromoType ForceDefaultPromoType() {
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
   return base::FeatureList::IsEnabled(
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
-}
-
-bool IsDBVideoPromoFullscreenEnabled() {
-  return GetVideoPromoVariant().compare(kVideoFullscreenPromo) == 0;
-}
-
-bool IsDBVideoPromoHalfscreenEnabled() {
-  return GetVideoPromoVariant().compare(kVideoHalfscreenPromo) == 0;
 }
 
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {

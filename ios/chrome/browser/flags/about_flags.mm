@@ -225,18 +225,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxCompanyEntityAdjustmentMostAggressive), nullptr},
 };
 
-const FeatureEntry::FeatureParam kDefaultBrowserVideoFullscreenPromo[] = {
-    {kDefaultBrowserVideoPromoVariant, kVideoFullscreenPromo}};
-const FeatureEntry::FeatureParam kDefaultBrowserVideoHalfscreenPromo[] = {
-    {kDefaultBrowserVideoPromoVariant, kVideoHalfscreenPromo}};
-
-const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
-    {"Show half screen ui", kDefaultBrowserVideoHalfscreenPromo,
-     std::size(kDefaultBrowserVideoHalfscreenPromo), nullptr},
-    {"Show full screen ui", kDefaultBrowserVideoFullscreenPromo,
-     std::size(kDefaultBrowserVideoFullscreenPromo), nullptr},
-};
-
 // Uses int values from SigninPromoViewStyle enum.
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoStandard[] = {
     {kDiscoverFeedTopSyncPromoStyle, "0"}};
@@ -1070,12 +1058,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
-    {"default-browser-video-promo",
-     flag_descriptions::kDefaultBrowserVideoPromoName,
-     flag_descriptions::kDefaultBrowserVideoPromoDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserVideoPromo,
-                                    kDefaultBrowserVideoPromoVariations,
-                                    "DefaultBrowserVideoPromoVariations")},
     {"default-browser-promo-force-show-promo",
      flag_descriptions::kDefaultBrowserPromoForceShowPromoName,
      flag_descriptions::kDefaultBrowserPromoForceShowPromoDescription,

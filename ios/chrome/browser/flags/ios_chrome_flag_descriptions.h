@@ -257,11 +257,6 @@ extern const char kDefaultBrowserPromoForceShowPromoDescription[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 
-// Title and description for the flag to enable the flag that skips the
-// triggering criteria default browser promo skip.
-extern const char kDefaultBrowserVideoPromoName[];
-extern const char kDefaultBrowserVideoPromoDescription[];
-
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
 extern const char kDetectMainThreadFreezeName[];
