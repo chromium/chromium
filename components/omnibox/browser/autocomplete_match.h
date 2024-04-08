@@ -660,7 +660,7 @@ struct AutocompleteMatch {
   // The "navigational intent" of this match. In other words, the likelihood
   // that the user intends to navigate to a specific place by making use of
   // this match.
-  omnibox::NavigationalIntent navigational_intent;
+  omnibox::NavigationalIntent navigational_intent{omnibox::NAV_INTENT_NONE};
 
   // How many times this result was typed in / selected from the omnibox.
   // Only set for some providers and result_types.  If it is not set,
