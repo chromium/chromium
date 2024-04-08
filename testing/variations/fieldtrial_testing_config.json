@@ -11004,6 +11004,21 @@
             ]
         }
     ],
+    "MagicStackRemoveGradientView": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MagicStackRemoveGradientView"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainThreadCompositingPriority": [
         {
             "platforms": [
