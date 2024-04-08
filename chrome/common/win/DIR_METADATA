@@ -1,6 +1,6 @@
 monorail: {
-  component: "Platform>Apps>API>Windows"
+  component: "Internals>PlatformIntegration"
 }
 buganizer_public: {
-  component_id: 1457117
+  component_id: 1457029
 }
