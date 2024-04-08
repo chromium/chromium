@@ -301305,6 +301305,16 @@
       "5cd863500a7729a8acf0eaab5883ca58cfcfb935",
       []
      ],
+     "parsing": {
+      "position-visibility-computed.tentative-expected.txt": [
+       "236fd0475a9a531b9215e5be8425e210b2a654c2",
+       []
+      ],
+      "position-visibility-parsing.tentative-expected.txt": [
+       "061cd6975aaf2a21ee471f7c5fc20121482356ec",
+       []
+      ]
+     },
      "position-anchor-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
       []
@@ -359888,7 +359898,7 @@
       []
      ],
      "META.yml": [
-      "dc7010880b61d455c7ecdc43cbc2a4e00081bd19",
+      "066fcc2081b0968d58a527fcfa5e47a9c8d30aa0",
       []
      ],
      "README.md": [
@@ -360258,7 +360268,7 @@
       []
      ],
      "META.yml": [
-      "b9d578d22f005fd46b503da335202abae340c54c",
+      "69c67da45955f2a2e1ace86cbdc208c425f8f3b1",
       []
      ],
      "README.md": [
@@ -647044,7 +647054,7 @@
        ]
       ],
       "SVGGraphicsElement.getScreenCTM.html": [
-       "92084c714280b9f9baa24a6f3e4df56b122bc729",
+       "d9de433ea33adb22d6b9f68c56f906cc958f3d0b",
        [
         null,
         {}
