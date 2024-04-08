@@ -3,17 +3,19 @@
 #version 450
 #extension GL_EXT_samplerless_texture_functions : require
 
-precision highp float;
-precision highp int;
+precision mediump float;
+precision mediump int;
 
 layout(location = 0) in vec2 intraTileX;
 layout(location = 1) in vec2 intraTileY;
-layout(location = 2) in flat ivec2 linearBase;
+
+layout(location = 2) in flat vec2 yOffset;
+layout(location = 3) in flat vec2 xOffset;
 
 layout(location = 0) out vec4 outColor;
 
 layout( push_constant ) uniform constants {
-  layout(offset = 16) vec2 planeStrides;
+  layout(offset = 24) vec2 planeStrides;
 } pushConstants;
 
 // Ideally we would just use a 1D texture, but Vulkan has very tight limits
@@ -31,13 +33,13 @@ const mat3 colorConversion = mat3(1.164, 1.164, 1.164,
           1.596, -0.813, 0.0);
 
 void main() {
-  // 0.5 is a fudge factor to make up for floating point errors.
   vec2 linearIdx = (floor(intraTileY) * vec2(16, 8)) +
-  		   floor(intraTileX) + vec2(linearBase) + 0.5;
+                   floor(intraTileX) + xOffset;
   // Like in the corresponding vertex shader, we really wanted integer
   // division and modulo, but floating point is faster.
   vec2 detiledY = floor(linearIdx / pushConstants.planeStrides);
   vec2 detiledX = linearIdx - (detiledY * pushConstants.planeStrides);
+  detiledY += yOffset;
 
   vec3 yuv;
   yuv.r = texelFetch(lumaTexture, ivec2(detiledX[0], detiledY[0]), 0).r;

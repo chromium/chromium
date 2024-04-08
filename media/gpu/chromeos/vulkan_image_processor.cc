@@ -957,7 +957,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
   auto convert_pipeline = VulkanPipeline::Create(
       binding_descriptions, attribute_descriptions, descriptor_bindings,
       std::move(convert_vert_shader), std::move(convert_frag_shader),
-      {2 * 2 * sizeof(float), 2 * sizeof(float)}, convert_render_pass->Get(),
+      {3 * 2 * sizeof(float), 2 * sizeof(float)}, convert_render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
   if (!convert_pipeline) {
     return nullptr;
@@ -1204,10 +1204,12 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
                             convert_pipeline_->GetPipelineLayout(), 0, 1,
                             convert_descriptor_pool_->Get().data(), 0, nullptr);
 
-    float convert_vert_constants[4] = {
+    float convert_vert_constants[6] = {
         static_cast<float>(input_coded_size.width() / kMM21TileWidth), 0.0,
         static_cast<float>(input_coded_size.width()),
-        static_cast<float>(input_coded_size.height())};
+        static_cast<float>(input_coded_size.height()),
+        static_cast<float>(input_coded_size.width()),
+        static_cast<float>(input_coded_size.width() / 2)};
     vkCmdPushConstants(record.handle(), convert_pipeline_->GetPipelineLayout(),
                        VK_SHADER_STAGE_VERTEX_BIT, 0,
                        sizeof(convert_vert_constants), convert_vert_constants);

@@ -3,17 +3,19 @@
 #version 450
 #extension GL_EXT_samplerless_texture_functions : require
 
-precision highp float;
-precision highp int;
+precision mediump float;
+precision mediump int;
 
 layout(location = 0) in vec2 intraTileX;
 layout(location = 1) in vec2 intraTileY;
-layout(location = 2) in flat ivec2 linearBase;
+
+layout(location = 2) in flat vec2 yOffset;
+layout(location = 3) in flat vec2 xOffset;
 
 layout(location = 0) out vec4 outColor;
 
 layout( push_constant ) uniform constants {
-  layout(offset = 16) vec2 planeStrides;
+  layout(offset = 24) highp vec2 planeStrides;
 } pushConstants;
 
 layout(binding = 0) uniform texture2D lumaTexture;
@@ -31,21 +33,23 @@ void main() {
   // before the current MSB. Every 64 pixel block starts with 16 bytes of LSB
   // data.
   vec2 msbLinearIdx = (floor(intraTileY) * vec2(16, 8)) +
-                      floor(intraTileX) + vec2(linearBase);
+                      floor(intraTileX) + xOffset;
   msbLinearIdx += (blockIdx + 1.0) * vec2(16, 8);
 
   // Likewise, we need to find the address of our LSB byte. Since each LSB byte
   // encodes the LSBs for a 1x4 mini-tile, we can compute a base address using
   // blockIdx * 16 bytes, and then offset it by the intra tile X coordinate.
-  vec2 lsbLinearIdx = linearBase + blockIdx * vec2(80, 40);
+  vec2 lsbLinearIdx = blockIdx * vec2(80, 40) + xOffset;
   lsbLinearIdx += floor(intraTileX);
 
   // 0.5 is a floating point issue fudge factor.
-  vec4 linearIdx = vec4(msbLinearIdx, lsbLinearIdx) + 0.5;
+  vec4 linearIdx = vec4(msbLinearIdx, lsbLinearIdx);
 
-  vec4 strides = vec4(pushConstants.planeStrides, pushConstants.planeStrides);
+  highp vec4 strides = vec4(pushConstants.planeStrides,
+                            pushConstants.planeStrides);
   vec4 detiledY = floor(linearIdx / strides);
   vec4 detiledX = linearIdx - (detiledY * strides);
+  detiledY += vec4(yOffset, yOffset);
 
   vec3 yuv;
   yuv.r = texelFetch(lumaTexture, ivec2(detiledX.r, detiledY.r), 0).r;
