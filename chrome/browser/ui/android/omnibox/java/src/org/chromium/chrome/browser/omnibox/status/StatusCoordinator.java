@@ -21,7 +21,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
@@ -126,11 +125,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setUrlMinWidth(
                 res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
                         + res.getDimensionPixelSize(R.dimen.location_bar_status_icon_bg_size)
-                        + res.getDimensionPixelSize(
-                                OmniboxFeatures.shouldShowModernizeVisualUpdate(
-                                                mStatusView.getContext())
-                                        ? R.dimen.location_bar_start_padding_modern
-                                        : R.dimen.location_bar_start_padding)
+                        + res.getDimensionPixelSize(R.dimen.location_bar_start_padding_modern)
                         + res.getDimensionPixelSize(R.dimen.location_bar_end_padding));
 
         mMediator.setSeparatorFieldMinWidth(

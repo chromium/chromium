@@ -33,7 +33,6 @@ import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -61,6 +60,7 @@ public class StatusView extends LinearLayout {
     private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
+    // The default value is 0, which matches R.dimen.location_bar_start_padding_modern.
     private int mTouchDelegateStartOffset;
     private int mTouchDelegateEndOffset;
 
@@ -565,11 +565,6 @@ public class StatusView extends LinearLayout {
         if (touchDelegateBounds.equals(new Rect())) return;
 
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        if (mTouchDelegateStartOffset == 0
-                && !OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            mTouchDelegateStartOffset =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding);
-        }
         if (mTouchDelegateEndOffset == 0) {
             mTouchDelegateEndOffset =
                     getResources().getDimensionPixelSize(R.dimen.location_bar_icon_margin_end);
