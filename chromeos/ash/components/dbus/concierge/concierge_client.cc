@@ -87,7 +87,7 @@ class ConciergeClientImpl : public ConciergeClient {
       const concierge::CreateDiskImageRequest& request,
       chromeos::DBusMethodCallback<concierge::CreateDiskImageResponse> callback)
       override {
-    CallMethodWithFds(concierge::kCreateDiskImage2Method, request,
+    CallMethodWithFds(concierge::kCreateDiskImageMethod, request,
                       std::vector<base::ScopedFD>(), std::move(callback));
   }
 
@@ -99,7 +99,7 @@ class ConciergeClientImpl : public ConciergeClient {
     std::vector<base::ScopedFD> fds;
     fds.emplace_back(std::move(fd));
 
-    CallMethodWithFds(concierge::kCreateDiskImage2Method, request,
+    CallMethodWithFds(concierge::kCreateDiskImageMethod, request,
                       std::move(fds), std::move(callback));
   }
 
