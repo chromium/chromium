@@ -1583,9 +1583,9 @@ namespace {
 void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
                                TabStrip* not_attached_tab_strip,
                                TabStrip* target_tab_strip) {
-  ASSERT_FALSE(not_attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
+  EXPECT_FALSE(not_attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
 
   // Test that after the tabs are detached from the source tabstrip (in this
   // case |not_attached_tab_strip|), the tab dragging info should be properly
@@ -1595,7 +1595,7 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
   EXPECT_EQ(3u, test->browser_list()->size());
   Browser* new_browser = test->browser_list()->get(2);
   TabStrip* new_tab_strip = GetTabStripForBrowser(new_browser);
-  ASSERT_TRUE(new_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(new_tab_strip->GetDragContext()->IsDragSessionActive());
   // Test that the tab dragging info should be correctly set on the new window.
   EXPECT_TRUE(
       test->IsTabDraggingInfoSet(new_tab_strip, not_attached_tab_strip));
@@ -1611,8 +1611,8 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
   const gfx::Rect target_bounds = target_tab_strip->GetBoundsInScreen();
   gfx::Point target_point = target_bounds.CenterPoint();
   target_point.set_x(std::max(target_point.x(), old_window_bounds.right() + 1));
-  ASSERT_TRUE(target_bounds.Contains(target_point));
-  ASSERT_TRUE(test->DragInputToAsync(target_point));
+  EXPECT_TRUE(target_bounds.Contains(target_point));
+  EXPECT_TRUE(test->DragInputToAsync(target_point));
 }
 
 }  // namespace
@@ -2353,9 +2353,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 namespace {
 
 void PressEscapeWhileDetachedStep2(DetachToBrowserTabDragControllerTest* test) {
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_EQ(2u, test->browser_list()->size());
   Browser* new_browser = test->browser_list()->get(1);
-  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       new_browser->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
       false, false));
 }
@@ -2492,10 +2492,10 @@ namespace {
 
 void DragAllStep2(DetachToBrowserTabDragControllerTest* test) {
   // Should only be one window.
-  ASSERT_EQ(1u, test->browser_list()->size());
+  EXPECT_EQ(1u, test->browser_list()->size());
 
   // Windows hangs if you use a sync mouse event here.
-  ASSERT_TRUE(test->ReleaseInput(0, true));
+  EXPECT_TRUE(test->ReleaseInput(0, true));
 }
 
 }  // namespace
@@ -2551,14 +2551,14 @@ namespace {
 void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
                                   TabStrip* attached_tab_strip,
                                   TabStrip* target_tab_strip) {
-  ASSERT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
 
   // Drag to target_tab_strip. This should stop the nested loop from dragging
   // the window.
-  ASSERT_TRUE(test->DragInputToCenterAsync(target_tab_strip));
+  EXPECT_TRUE(test->DragInputToCenterAsync(target_tab_strip));
 }
 
 }  // namespace
@@ -2614,12 +2614,12 @@ namespace {
 void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
                               TabStrip* attached_tab_strip,
                               TabStrip* target_tab_strip) {
-  ASSERT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_TRUE(
+  EXPECT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_TRUE(
       TabDragController::IsAttachedTo(attached_tab_strip->GetDragContext()));
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_EQ(2u, test->browser_list()->size());
 
   TabDragController* const drag_controller =
       attached_tab_strip->GetDragContext()->GetDragController();
@@ -2637,7 +2637,7 @@ void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
                         gfx::Vector2d(0, GetDetachY(target_tab_strip)));
 
   // Release input to ensure the nested run loop does actually exit.
-  test->ReleaseInput(0, /*async=*/true);
+  EXPECT_TRUE(test->ReleaseInput(0, /*async=*/true));
 }
 
 }  // namespace
@@ -2863,7 +2863,7 @@ void PressEscapeWhileDetachedHeaderStep2(
       GetTabStripForBrowser(new_browser)->group_header(new_browser_groups[0]);
   EXPECT_TRUE(new_group_header->dragging());
 
-  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       new_browser->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
       false, false));
 }
@@ -3378,14 +3378,14 @@ void DragAllToSeparateWindowAndCancelStep2(
     DetachToBrowserTabDragControllerTest* test,
     TabStrip* attached_tab_strip,
     TabStrip* target_tab_strip) {
-  ASSERT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
 
   // Drag to target_tab_strip. This should stop the nested loop from dragging
   // the window.
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       test->DragInputToAsync(GetCenterInScreenCoordinates(target_tab_strip)));
 }
 
@@ -3628,8 +3628,8 @@ void CancelOnNewTabWhenDraggingStep2(DetachToBrowserTabDragControllerTest* test,
                                      const Browser* default_browser,
                                      base::OnceClosure quit_closure,
                                      WebContents** contents_out) {
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
 
   // Finds the new browser opened by the test, and waits until it becomes
   // the last active one.
@@ -3783,21 +3783,21 @@ void DragInMaximizedWindowStep2(DetachToBrowserTabDragControllerTest* test,
                                 Browser* browser,
                                 TabStrip* tab_strip) {
   // There should be another browser.
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_EQ(2u, test->browser_list()->size());
   Browser* new_browser = test->browser_list()->get(1);
   EXPECT_NE(browser, new_browser);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  EXPECT_TRUE(new_browser->window()->IsActive());
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
 
-  ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 
   // Both windows should be visible.
   EXPECT_TRUE(tab_strip->GetWidget()->IsVisible());
   EXPECT_TRUE(tab_strip2->GetWidget()->IsVisible());
 
   // Stops dragging.
-  ASSERT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput());
 }
 
 }  // namespace
@@ -3851,7 +3851,7 @@ void NewBrowserWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
   EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
             ui::SHOW_STATE_DEFAULT);
 
-  ASSERT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput());
 }
 
 }  // namespace
@@ -3966,13 +3966,13 @@ void DoNotObserveDraggedWidgetAfterDragEndsStep2(
     DetachToBrowserTabDragControllerTest* test,
     DraggedWindowObserver* observer,
     TabStrip* attached_tab_strip) {
-  ASSERT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
+  EXPECT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
 
   // Start observe the dragged window.
   observer->StartObserving(attached_tab_strip->GetWidget()->GetNativeWindow());
 
-  ASSERT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput());
 }
 
 }  // namespace
@@ -4040,10 +4040,10 @@ void FastResizeDuringDraggingStep2(DetachToBrowserTabDragControllerTest* test,
 #endif
 
   // Now drag to target_tab_strip.
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       test->DragInputTo(GetCenterInScreenCoordinates(target_tab_strip)));
 
-  ASSERT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput());
 }
 
 }  // namespace
@@ -4209,13 +4209,13 @@ namespace {
 
 void DragSingleTabToSeparateWindowInSecondDisplayStep3(
     DetachToBrowserTabDragControllerTest* test) {
-  ASSERT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput());
 }
 
 void DragSingleTabToSeparateWindowInSecondDisplayStep2(
     DetachToBrowserTabDragControllerTest* test,
     const gfx::Point& target_point) {
-  ASSERT_TRUE(test->DragInputToNotifyWhenDone(
+  EXPECT_TRUE(test->DragInputToNotifyWhenDone(
       target_point,
       base::BindOnce(&DragSingleTabToSeparateWindowInSecondDisplayStep3,
                      test)));
@@ -4293,9 +4293,9 @@ void DragTabToWindowInSeparateDisplayStep2(
     DetachToBrowserTabDragControllerTest* test,
     TabStrip* not_attached_tab_strip,
     TabStrip* target_tab_strip) {
-  ASSERT_FALSE(not_attached_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
+  EXPECT_FALSE(not_attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
 
   // Drag to target_tab_strip. This should stop the nested loop from dragging
   // the window.
@@ -4304,7 +4304,7 @@ void DragTabToWindowInSeparateDisplayStep2(
 
   // Move it closer to the beginning of the tab so it will drop before that tab.
   target_point.Offset(-20, 0);
-  ASSERT_TRUE(test->DragInputToAsync(target_point));
+  EXPECT_TRUE(test->DragInputToAsync(target_point));
 }
 
 }  // namespace
@@ -4779,9 +4779,9 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
     TabStrip* tab_strip,
     Display current_display,
     gfx::Point final_destination) {
-  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
+  EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
 
   Browser* new_browser = test->browser_list()->get(1);
   EXPECT_EQ(
@@ -4790,7 +4790,7 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
           ->GetDisplayNearestWindow(new_browser->window()->GetNativeWindow())
           .id());
 
-  ASSERT_TRUE(test->DragInputToNotifyWhenDone(
+  EXPECT_TRUE(test->DragInputToNotifyWhenDone(
       final_destination,
       base::BindOnce(&CancelDragTabToWindowInSeparateDisplayStep3, test,
                      tab_strip)));
@@ -4915,24 +4915,24 @@ class DetachToBrowserTabDragControllerTestTouch
 namespace {
 void PressSecondFingerWhileDetachedStep3(
     DetachToBrowserTabDragControllerTest* test) {
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
-  ASSERT_TRUE(test->browser_list()->get(1)->window()->IsActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
+  EXPECT_TRUE(test->browser_list()->get(1)->window()->IsActive());
 
-  ASSERT_TRUE(test->ReleaseInput());
-  ASSERT_TRUE(test->ReleaseInput(1));
+  EXPECT_TRUE(test->ReleaseInput());
+  EXPECT_TRUE(test->ReleaseInput(1));
 }
 
 void PressSecondFingerWhileDetachedStep2(
     DetachToBrowserTabDragControllerTest* test,
     const gfx::Point& target_point) {
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(2u, test->browser_list()->size());
-  ASSERT_TRUE(test->browser_list()->get(1)->window()->IsActive());
+  EXPECT_TRUE(TabDragController::IsActive());
+  EXPECT_EQ(2u, test->browser_list()->size());
+  EXPECT_TRUE(test->browser_list()->get(1)->window()->IsActive());
 
   // Continue dragging after adding a second finger.
-  ASSERT_TRUE(test->PressInput(gfx::Point(), 1));
-  ASSERT_TRUE(test->DragInputToNotifyWhenDone(
+  EXPECT_TRUE(test->PressInput(gfx::Point(), 1));
+  EXPECT_TRUE(test->DragInputToNotifyWhenDone(
       target_point,
       base::BindOnce(&PressSecondFingerWhileDetachedStep3, test)));
 }
