@@ -207,9 +207,7 @@ public class CachedZeroSuggestionsManager {
                             postData,
                             groupId,
                             null,
-                            null,
                             false,
-                            null,
                             null);
             suggestions.add(suggestion);
         }

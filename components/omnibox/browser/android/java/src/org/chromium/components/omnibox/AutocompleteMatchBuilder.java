@@ -9,7 +9,6 @@ import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -41,10 +40,8 @@ public class AutocompleteMatchBuilder {
     private String mPostContentType;
     private byte[] mPostData;
     private int mGroupId;
-    private List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
-    private List<AutocompleteMatch.SuggestTile> mSuggestTiles;
     private List<OmniboxAction> mActions;
 
     /**
@@ -89,10 +86,8 @@ public class AutocompleteMatchBuilder {
         mPostContentType = null;
         mPostData = null;
         mGroupId = AutocompleteMatch.INVALID_GROUP;
-        mQueryTiles = null;
         mClipboardImageData = null;
         mHasTabMatch = false;
-        mSuggestTiles = null;
         mActions = null;
 
         mDisplayTextClassifications.add(
@@ -127,10 +122,8 @@ public class AutocompleteMatchBuilder {
                 mPostContentType,
                 mPostData,
                 mGroupId,
-                mQueryTiles,
                 mClipboardImageData,
                 mHasTabMatch,
-                mSuggestTiles,
                 mActions);
     }
 
@@ -275,15 +268,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder addSubtype(int subtype) {
         mSubtypes.add(subtype);
-        return this;
-    }
-
-    /**
-     * @param tiles Suggest tiles to associate with the suggestion.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setSuggestTiles(List<AutocompleteMatch.SuggestTile> tiles) {
-        mSuggestTiles = tiles;
         return this;
     }
 
