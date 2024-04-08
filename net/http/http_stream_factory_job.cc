@@ -194,6 +194,30 @@ HttpStreamFactory::Job::Job(
   } else {
     DCHECK(!origin_url_.SchemeIsWSOrWSS());
   }
+}
+
+HttpStreamFactory::Job::~Job() {
+  if (started_) {
+    net_log_.EndEvent(NetLogEventType::HTTP_STREAM_JOB);
+  }
+
+  // When we're in a partially constructed state, waiting for the user to
+  // provide certificate handling information or authentication, we can't reuse
+  // this stream at all.
+  if (next_state_ == STATE_WAITING_USER_ACTION) {
+    connection_->socket()->Disconnect();
+    connection_.reset();
+  }
+
+  // The stream could be in a partial state.  It is not reusable.
+  if (stream_.get() && next_state_ != STATE_DONE) {
+    stream_->Close(true /* not reusable */);
+  }
+}
+
+void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
+  started_ = true;
+  stream_type_ = stream_type;
 
   const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
   if (delegate_net_log) {
@@ -215,27 +239,7 @@ HttpStreamFactory::Job::Job(
     delegate_net_log->AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
   }
-}
 
-HttpStreamFactory::Job::~Job() {
-  net_log_.EndEvent(NetLogEventType::HTTP_STREAM_JOB);
-
-  // When we're in a partially constructed state, waiting for the user to
-  // provide certificate handling information or authentication, we can't reuse
-  // this stream at all.
-  if (next_state_ == STATE_WAITING_USER_ACTION) {
-    connection_->socket()->Disconnect();
-    connection_.reset();
-  }
-
-  // The stream could be in a partial state.  It is not reusable.
-  if (stream_.get() && next_state_ != STATE_DONE) {
-    stream_->Close(true /* not reusable */);
-  }
-}
-
-void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
-  stream_type_ = stream_type;
   StartInternal();
 }
 

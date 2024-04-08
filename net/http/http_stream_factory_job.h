@@ -391,6 +391,8 @@ class HttpStreamFactory::Job
 
   State next_state_ = STATE_NONE;
 
+  bool started_ = false;
+
   // The server we are trying to reach, could be that of the origin or of the
   // alternative service (after applying host mapping rules). The scheme of this
   // is always HTTP or HTTPS, even for websockets requests.
