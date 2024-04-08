@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 #include "content/public/browser/browser_thread.h"
@@ -172,10 +173,10 @@ class HttpRequest {
         return;
       }
 
-      result = socket_->Write(
-          request_.get(), request_->BytesRemaining(),
-          base::BindOnce(&HttpRequest::DoSendRequest, base::Unretained(this)),
-          kAndroidDeviceManagerTrafficAnnotation);
+      result = socket_->Write(request_.get(), request_->BytesRemaining(),
+                              base::BindOnce(&HttpRequest::DoSendRequest,
+                                             weak_ptr_factory_.GetWeakPtr()),
+                              kAndroidDeviceManagerTrafficAnnotation);
     }
   }
 
@@ -203,7 +204,10 @@ class HttpRequest {
     memcpy(base_buffer->data(), request.data(), request.size());
     request_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         std::move(base_buffer), request.size());
-
+    timeout_timer_.Start(
+        FROM_HERE, base::Seconds(1),
+        base::BindOnce(&HttpRequest::Die, weak_ptr_factory_.GetWeakPtr(),
+                       net::ERR_TIMED_OUT));
     DoSendRequest(net::OK);
   }
 
@@ -213,9 +217,9 @@ class HttpRequest {
 
     response_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
-    result = socket_->Read(
-        response_buffer_.get(), kBufferSize,
-        base::BindOnce(&HttpRequest::OnResponseData, base::Unretained(this)));
+    result = socket_->Read(response_buffer_.get(), kBufferSize,
+                           base::BindOnce(&HttpRequest::OnResponseData,
+                                          weak_ptr_factory_.GetWeakPtr()));
     if (result != net::ERR_IO_PENDING)
       OnResponseData(result);
   }
@@ -281,15 +285,13 @@ class HttpRequest {
         return;
       }
 
-      result = socket_->Read(
-          response_buffer_.get(), kBufferSize,
-          base::BindOnce(&HttpRequest::OnResponseData, base::Unretained(this)));
+      result = socket_->Read(response_buffer_.get(), kBufferSize,
+                             base::BindOnce(&HttpRequest::OnResponseData,
+                                            weak_ptr_factory_.GetWeakPtr()));
     } while (result != net::ERR_IO_PENDING);
   }
 
-  bool CheckNetResultOrDie(int result) {
-    if (result >= 0)
-      return true;
+  void Die(int result) {
     if (!command_callback_.is_null()) {
       std::move(command_callback_).Run(result, std::string());
     } else {
@@ -298,12 +300,25 @@ class HttpRequest {
                base::WrapUnique<net::StreamSocket>(nullptr));
     }
     delete this;
+  }
+
+  bool CheckNetResultOrDie(int result) {
+    if (result >= 0) {
+      // Reset the timer whenever a non-error is received from network.
+      // It means network is responsive for now, so we reset the timer
+      // and wait for a new result until the next timeout.
+      timeout_timer_.Reset();
+      return true;
+    }
+
+    Die(result);
     return false;
   }
 
   std::unique_ptr<net::StreamSocket> socket_;
   scoped_refptr<net::DrainableIOBuffer> request_;
   std::string response_;
+  base::OneShotTimer timeout_timer_;
   CommandCallback command_callback_;
   HttpUpgradeCallback http_upgrade_callback_;
 
@@ -316,6 +331,7 @@ class HttpRequest {
   // - Otherwise, this variable is set to the size of the header (including the
   //   last two CRLFs).
   size_t expected_total_size_;
+  base::WeakPtrFactory<HttpRequest> weak_ptr_factory_{this};
 };
 
 class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
