@@ -26,6 +26,7 @@ using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 struct TestCase {
   std::string story_name;
   AggregatableTriggerConfig config;
+  double rate;
 };
 
 const TestCase kTestCases[] = {
@@ -34,12 +35,14 @@ const TestCase kTestCases[] = {
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kInclude,
             /*trigger_context_id=*/std::nullopt),
+        0.008,
     },
     {
         "exclude_no_attributed_source_time_no_trigger_context_id",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kExclude,
             /*trigger_context_id=*/std::nullopt),
+        0.05,
     },
 };
 
@@ -47,31 +50,24 @@ class AggregatableUtilsPerfTest : public testing::Test,
                                   public testing::WithParamInterface<TestCase> {
 };
 
-// TODO(apaseltiner): This duplicates logic in
-// `content::AttributionStorageDelegateImpl`. We should refactor in order to
-// avoid this and make it clear that the production behavior is being
-// benchmarked properly.
-bool MaybeGenerateNullReport(int lookback_day,
-                             SourceRegistrationTimeConfig config) {
-  switch (config) {
-    case SourceRegistrationTimeConfig::kInclude:
-      return GenerateWithRate(0.008);
-    case SourceRegistrationTimeConfig::kExclude:
-      return GenerateWithRate(0.05);
-  }
-}
-
 TEST_P(AggregatableUtilsPerfTest, GetNullAggregatableReports) {
   const auto& test_case = GetParam();
 
   const base::Time trigger_time = base::Time::Now();
   const std::optional<base::Time> attributed_source_time;
 
+  // TODO(apaseltiner): This duplicates logic in
+  // `content::AttributionStorageDelegateImpl`. We should refactor in order to
+  // avoid this and make it clear that the production behavior is being
+  // benchmarked properly.
+  const auto generate = [&](int lookback_day) {
+    return GenerateWithRate(test_case.rate);
+  };
+
   base::LapTimer timer;
   do {
     auto result = GetNullAggregatableReports(test_case.config, trigger_time,
-                                             attributed_source_time,
-                                             &MaybeGenerateNullReport);
+                                             attributed_source_time, generate);
 
     ::benchmark::DoNotOptimize(result);
 

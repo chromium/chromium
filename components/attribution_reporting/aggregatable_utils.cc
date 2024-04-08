@@ -18,12 +18,10 @@ namespace attribution_reporting {
 
 namespace {
 
-// TODO(linnan): Consider adding a performance test.
 std::vector<NullAggregatableReport> GetNullAggregatableReportsForLookback(
     base::Time trigger_time,
     std::optional<base::Time> attributed_source_time,
     int days_lookback,
-    mojom::SourceRegistrationTimeConfig source_registration_time_config,
     GenerateNullAggregatableReportFunc generate_func) {
   std::vector<NullAggregatableReport> reports;
   for (int i = 0; i <= days_lookback; i++) {
@@ -34,10 +32,8 @@ std::vector<NullAggregatableReport> GetNullAggregatableReportsForLookback(
       continue;
     }
 
-    if (generate_func(i, source_registration_time_config)) {
-      reports.push_back(NullAggregatableReport{
-          .fake_source_time = fake_source_time,
-      });
+    if (generate_func(i)) {
+      reports.emplace_back(fake_source_time);
     }
   }
   return reports;
@@ -79,8 +75,7 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
       return GetNullAggregatableReportsForLookback(
           trigger_time, rounded_attributed_source_time,
           /*days_lookback=*/
-          kMaxSourceExpiry.InDays(), source_registration_time_config,
-          generate_func);
+          kMaxSourceExpiry.InDays(), generate_func);
     }
     case mojom::SourceRegistrationTimeConfig::kExclude: {
       const bool has_real_report = attributed_source_time.has_value();
@@ -98,7 +93,7 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
 
       return GetNullAggregatableReportsForLookback(
           trigger_time, attributed_source_time, /*days_lookback=*/0,
-          source_registration_time_config, generate_func);
+          generate_func);
     }
   }
 }

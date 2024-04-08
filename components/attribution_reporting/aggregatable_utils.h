@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom-forward.h"
 
 namespace attribution_reporting {
 
@@ -25,7 +24,7 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time);
 
 using GenerateNullAggregatableReportFunc =
-    base::FunctionRef<bool(int, mojom::SourceRegistrationTimeConfig)>;
+    base::FunctionRef<bool(int lookback_day)>;
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::vector<NullAggregatableReport> GetNullAggregatableReports(

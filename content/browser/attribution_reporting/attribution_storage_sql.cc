@@ -3140,13 +3140,13 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
             attribution_reporting::GetNullAggregatableReports(
                 trigger.registration().aggregatable_trigger_config,
                 attribution_info.time, attributed_source_time,
-                [&](int lookback_day,
-                    attribution_reporting::mojom::SourceRegistrationTimeConfig
-                        source_registration_time_config) {
+                [&](int lookback_day) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
                   return delegate_
                       ->GenerateNullAggregatableReportForLookbackDay(
-                          lookback_day, source_registration_time_config);
+                          lookback_day, trigger.registration()
+                                            .aggregatable_trigger_config
+                                            .source_registration_time_config());
                 });
     for (const auto& null_aggregatable_report : null_aggregatable_reports) {
       base::Time report_time =

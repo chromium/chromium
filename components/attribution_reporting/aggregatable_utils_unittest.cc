@@ -66,17 +66,11 @@ TEST(AggregatableUtilsTest,
                                          /*trigger_context_id=*/std::nullopt);
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, SourceRegistrationTimeConfig) {
-    return true;
-  };
+  const auto always_true = [](int) { return true; };
 
-  const auto always_false = [](int, SourceRegistrationTimeConfig) {
-    return false;
-  };
+  const auto always_false = [](int) { return false; };
 
-  const auto selective = [](int day, SourceRegistrationTimeConfig) {
-    return day == 0 || day == 5;
-  };
+  const auto selective = [](int day) { return day == 0 || day == 5; };
 
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
@@ -118,17 +112,11 @@ TEST(AggregatableUtilsTest,
                                          /*trigger_context_id=*/std::nullopt);
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, SourceRegistrationTimeConfig) {
-    return true;
-  };
+  const auto always_true = [](int) { return true; };
 
-  const auto always_false = [](int, SourceRegistrationTimeConfig) {
-    return false;
-  };
+  const auto always_false = [](int) { return false; };
 
-  const auto selective = [](int day, SourceRegistrationTimeConfig) {
-    return day == 0 || day == 5;
-  };
+  const auto selective = [](int day) { return day == 0 || day == 5; };
 
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
@@ -169,17 +157,11 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
                                          /*trigger_context_id=*/"");
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, SourceRegistrationTimeConfig) {
-    return true;
-  };
+  const auto always_true = [](int) { return true; };
 
-  const auto always_false = [](int, SourceRegistrationTimeConfig) {
-    return false;
-  };
+  const auto always_false = [](int) { return false; };
 
-  const auto selective = [](int day, SourceRegistrationTimeConfig) {
-    return day == 0 || day == 5;
-  };
+  const auto selective = [](int day) { return day == 0 || day == 5; };
 
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
@@ -214,15 +196,6 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
       IsEmpty());
 }
 
-double GetNullReportRate(SourceRegistrationTimeConfig config) {
-  switch (config) {
-    case SourceRegistrationTimeConfig::kInclude:
-      return 0.008;
-    case SourceRegistrationTimeConfig::kExclude:
-      return 0.05;
-  }
-}
-
 int GetNumLookbackDays(SourceRegistrationTimeConfig config) {
   switch (config) {
     case SourceRegistrationTimeConfig::kInclude:
@@ -232,14 +205,10 @@ int GetNumLookbackDays(SourceRegistrationTimeConfig config) {
   }
 }
 
-bool MaybeGenerateNullReport(int lookback_day,
-                             SourceRegistrationTimeConfig config) {
-  return GenerateWithRate(GetNullReportRate(config));
-}
-
 struct NullReportsTestCase {
   const char* desc;
   AggregatableTriggerConfig config;
+  double rate;
 };
 
 const NullReportsTestCase kNullReportsTestCases[] = {
@@ -248,12 +217,14 @@ const NullReportsTestCase kNullReportsTestCases[] = {
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kInclude,
             /*trigger_context_id=*/std::nullopt),
+        0.008,
     },
     {
         "exclude_no_attributed_source_time_no_trigger_context_id",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kExclude,
             /*trigger_context_id=*/std::nullopt),
+        0.05,
     },
 };
 
@@ -264,6 +235,10 @@ class AggregatableUtilsNullReportsTest
 TEST_P(AggregatableUtilsNullReportsTest, ExpectedDistribution) {
   const auto& test_case = GetParam();
 
+  const auto generate = [&](int lookback_day) {
+    return GenerateWithRate(test_case.rate);
+  };
+
   const base::Time trigger_time = base::Time::Now();
   const std::optional<base::Time> attributed_source_time;
   const int num_samples = 100'000;
@@ -271,8 +246,7 @@ TEST_P(AggregatableUtilsNullReportsTest, ExpectedDistribution) {
   int actual_count = 0;
   for (int i = 0; i < num_samples; i++) {
     auto result = GetNullAggregatableReports(test_case.config, trigger_time,
-                                             attributed_source_time,
-                                             &MaybeGenerateNullReport);
+                                             attributed_source_time, generate);
     actual_count += result.size();
   }
 
@@ -281,15 +255,15 @@ TEST_P(AggregatableUtilsNullReportsTest, ExpectedDistribution) {
 
   int num_total_samples =
       num_samples * GetNumLookbackDays(source_registration_time_config);
-  double rate = GetNullReportRate(source_registration_time_config);
 
-  int expected_count = num_total_samples * rate;
+  int expected_count = num_total_samples * test_case.rate;
 
   // The variance of the binomial distribution is np(1-p), and critical value z
   // = 2.575 is used for a test of significance at 0.01 level. The check will
   // fail with probability 0.01.
-  EXPECT_NEAR(actual_count, expected_count,
-              2.575 * sqrt(num_total_samples * rate * (1. - rate)));
+  EXPECT_NEAR(
+      actual_count, expected_count,
+      2.575 * sqrt(num_total_samples * test_case.rate * (1. - test_case.rate)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
