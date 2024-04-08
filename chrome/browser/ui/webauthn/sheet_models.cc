@@ -1887,3 +1887,55 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
 void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
   dialog_model()->OnGPMCreatePasskey();
 }
+
+// AuthenticatorGpmOnboardingSheetModel -------------------------------------
+
+AuthenticatorGpmOnboardingSheetModel::AuthenticatorGpmOnboardingSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
+  // TODO(rgod): Add correct illustration.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorGpmOnboardingSheetModel::~AuthenticatorGpmOnboardingSheetModel() =
+    default;
+
+std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepTitle() const {
+  return u"Start saving passkeys to Google Password Manager (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepDescription()
+    const {
+  return u"";
+}
+
+bool AuthenticatorGpmOnboardingSheetModel::IsCancelButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorGpmOnboardingSheetModel::GetCancelButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+void AuthenticatorGpmOnboardingSheetModel::OnCancel() {
+  dialog_model()->CancelAuthenticatorRequest();
+}
+
+bool AuthenticatorGpmOnboardingSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorGpmOnboardingSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorGpmOnboardingSheetModel::GetAcceptButtonLabel()
+    const {
+  return u"Get started (UT)";
+}
+
+void AuthenticatorGpmOnboardingSheetModel::OnAccept() {
+  dialog_model()->OnGPMOnboardingAccepted();
+}

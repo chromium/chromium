@@ -798,4 +798,26 @@ class AuthenticatorCreateGpmPasskeySheetModel
   void OnAccept() override;
 };
 
+// The sheet shown for the onboarding passkey flow in Google Password Manager.
+class AuthenticatorGpmOnboardingSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorGpmOnboardingSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  ~AuthenticatorGpmOnboardingSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  void OnCancel() override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

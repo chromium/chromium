@@ -406,7 +406,6 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
       return StepUIType::WINDOW;
 
     case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
-    case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
     case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
       return StepUIType::BUBBLE;
 

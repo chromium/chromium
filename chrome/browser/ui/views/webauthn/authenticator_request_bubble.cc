@@ -58,19 +58,6 @@ constexpr BubbleContents kGPMTouchID = {
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
-constexpr BubbleContents kGPMOnboardingContents = {
-    .illustration_light_id = IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT,
-    .title =
-        u"Start using passkeys with your Google Password Manager "
-        u"(UNTRANSLATED)",
-    .body =
-        u"We'll create a passkey for you to sign in to example.com "
-        u"(UNTRANSLATED)",
-    .show_footer = true,
-    .show_icon = true,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted,
-};
-
 // TODO(rgod): Add username row and correct footer when mocks are ready.
 constexpr BubbleContents kGPMPasskeySavedContents = {
     .buttons = ui::DIALOG_BUTTON_NONE,
@@ -125,8 +112,6 @@ class AuthenticatorRequestBubbleDelegate
     switch (step) {
       case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
         return &kGPMTouchID;
-      case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
-        return &kGPMOnboardingContents;
       case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
         return &kGPMPasskeySavedContents;
       default:
