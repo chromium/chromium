@@ -46,6 +46,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
     private Website mWebsite;
+    private boolean mTrackingProtectionUI;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
 
@@ -55,19 +56,27 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
+        mTrackingProtectionUI = delegate.showTrackingProtectionUI();
         mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
         mRowView = rowView;
         mFullUrl = mainController.getURL().getSpec();
-        mTitle = mRowView.getContext().getResources().getString(R.string.page_info_cookies_title);
+        mTitle =
+                mRowView.getContext()
+                        .getResources()
+                        .getString(
+                                mTrackingProtectionUI
+                                        ? R.string.page_info_tracking_protection_title
+                                        : R.string.page_info_cookies_title);
         mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
-        rowParams.iconResId = R.drawable.permission_cookie;
+        rowParams.iconResId =
+                mTrackingProtectionUI ? R.drawable.ic_eye_crossed : R.drawable.permission_cookie;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
@@ -102,10 +111,14 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
         params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
         params.onClearCallback = this::onClearCookiesClicked;
-        params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
+        params.onCookieSettingsLinkClicked =
+                mTrackingProtectionUI
+                        ? getDelegate()::showTrackingProtectionSettings
+                        : getDelegate()::showCookieSettings;
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
+        params.showTrackingProtectionUI = mTrackingProtectionUI;
         params.blockAll3PC = mBlockAll3PC;
         params.isIncognito = mIsIncognito;
         mSubPage.setParams(params);
@@ -225,6 +238,16 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         if (!mThirdPartyCookiesBlocked) {
             mRowView.updateSubtitle(
                     mRowView.getContext().getString(R.string.page_info_cookies_subtitle_allowed));
+            return;
+        }
+        if (mTrackingProtectionUI) {
+            mRowView.updateSubtitle(
+                    mRowView.getContext()
+                            .getString(
+                                    mBlockAll3PC
+                                            ? R.string.page_info_cookies_subtitle_blocked
+                                            : R.string
+                                                    .page_info_tracking_protection_subtitle_cookies_limited));
             return;
         }
         mRowView.updateSubtitle(
