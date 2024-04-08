@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -45,10 +46,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) override;
-  std::vector<NullAggregatableReport> GetNullAggregatableReports(
-      const AttributionTrigger&,
-      base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const override;
+  bool GenerateNullAggregatableReportForLookbackDay(
+      int lookback_day,
+      attribution_reporting::mojom::SourceRegistrationTimeConfig)
+      const override;
 
   void set_max_sources_per_origin(int max);
 
@@ -79,7 +80,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   void set_randomized_response(attribution_reporting::RandomizedResponse);
   void set_exceeds_channel_capacity_limit(bool);
 
-  void set_null_aggregatable_reports(std::vector<NullAggregatableReport>);
+  void set_null_aggregatable_reports_lookback_days(
+      base::flat_set<int> null_aggregatable_reports_lookback_days);
 
   void use_realistic_report_times();
 
@@ -118,7 +120,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   bool exceeds_channel_capacity_limit_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  std::vector<NullAggregatableReport> null_aggregatable_reports_
+  base::flat_set<int> null_aggregatable_reports_lookback_days_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

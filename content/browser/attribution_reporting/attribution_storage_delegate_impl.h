@@ -94,10 +94,10 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) override;
-  std::vector<NullAggregatableReport> GetNullAggregatableReports(
-      const AttributionTrigger&,
-      base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const override;
+  bool GenerateNullAggregatableReportForLookbackDay(
+      int lookback_day,
+      attribution_reporting::mojom::SourceRegistrationTimeConfig)
+      const override;
 
  protected:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
@@ -107,12 +107,6 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
  private:
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::vector<NullAggregatableReport> GetNullAggregatableReportsImpl(
-      const AttributionTrigger&,
-      base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
 };
 
 }  // namespace content

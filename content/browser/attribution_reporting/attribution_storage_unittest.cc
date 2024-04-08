@@ -3815,16 +3815,13 @@ TEST_F(AttributionStorageTest, NoEventTriggerData_NotRegisteredReturned) {
 
 TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
   base::Time now = base::Time::Now();
-  base::Time source_time = now - base::Days(1);
   base::Time report_time = now + kReportDelay;
+  base::Time fake_source_time = now;
 
-  delegate()->set_null_aggregatable_reports(
-      {AttributionStorageDelegate::NullAggregatableReport{
-          .fake_source_time = source_time,
-      }});
+  delegate()->set_null_aggregatable_reports_lookback_days({0});
   AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
   auto result = storage()->MaybeCreateAndStoreReport(trigger);
-  delegate()->set_null_aggregatable_reports({});
+  delegate()->set_null_aggregatable_reports_lookback_days({});
 
   ASSERT_TRUE(result.min_null_aggregatable_report_time().has_value());
   EXPECT_EQ(*result.min_null_aggregatable_report_time(), report_time);
@@ -3834,7 +3831,7 @@ TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
                         /*context_origin=*/trigger.destination_origin())
                         .SetTime(now)
                         .Build(),
-                    SourceBuilder(source_time).BuildStored())
+                    SourceBuilder(fake_source_time).BuildStored())
           .SetReportTime(report_time)
           .BuildNullAggregatable();
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
@@ -3842,12 +3839,9 @@ TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
 }
 
 TEST_F(AttributionStorageTest, NoAggregatableData_NoNullReport) {
-  delegate()->set_null_aggregatable_reports(
-      {AttributionStorageDelegate::NullAggregatableReport{
-          .fake_source_time = base::Time::Now(),
-      }});
+  delegate()->set_null_aggregatable_reports_lookback_days({0});
   auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
-  delegate()->set_null_aggregatable_reports({});
+  delegate()->set_null_aggregatable_reports_lookback_days({});
 
   EXPECT_FALSE(result.min_null_aggregatable_report_time().has_value());
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -3860,14 +3854,11 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
 
   storage()->StoreSource(builder.Build());
 
-  delegate()->set_null_aggregatable_reports(
-      {AttributionStorageDelegate::NullAggregatableReport{
-          .fake_source_time = now,
-      }});
+  delegate()->set_null_aggregatable_reports_lookback_days({1});
   AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build(
       /*generate_event_trigger_data=*/false);
   auto result = storage()->MaybeCreateAndStoreReport(trigger);
-  delegate()->set_null_aggregatable_reports({});
+  delegate()->set_null_aggregatable_reports_lookback_days({});
 
   EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
   EXPECT_EQ(result.aggregatable_status(),
@@ -3878,7 +3869,7 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
                         /*context_origin=*/trigger.destination_origin())
                         .SetTime(now)
                         .Build(),
-                    SourceBuilder(now).BuildStored())
+                    SourceBuilder(now - base::Days(1)).BuildStored())
           .SetReportTime(now + kReportDelay)
           .BuildNullAggregatable();
 
@@ -3894,16 +3885,14 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
 }
 
 TEST_F(AttributionStorageTest, SourceRegistrationTimeConfig_RoundTrip) {
-  delegate()->set_null_aggregatable_reports(
-      {AttributionStorageDelegate::NullAggregatableReport{
-          .fake_source_time = base::Time::Now(),
-      }});
   for (auto config :
        base::EnumSet<attribution_reporting::mojom::SourceRegistrationTimeConfig,
                      attribution_reporting::mojom::
                          SourceRegistrationTimeConfig::kMinValue,
                      attribution_reporting::mojom::
                          SourceRegistrationTimeConfig::kMaxValue>::All()) {
+    SCOPED_TRACE(config);
+
     storage()->StoreSource(
         TestAggregatableSourceProvider().GetBuilder().Build());
     EXPECT_THAT(
@@ -3915,18 +3904,7 @@ TEST_F(AttributionStorageTest, SourceRegistrationTimeConfig_RoundTrip) {
                   AttributionTrigger::AggregatableResult::kSuccess),
               NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                   SourceRegistrationTimeConfigIs(config))))));
-    EXPECT_THAT(
-        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
-        UnorderedElementsAre(
-            AggregatableAttributionDataIs(
-                SourceRegistrationTimeConfigIs(config)),
-            NullAggregatableDataIs(SourceRegistrationTimeConfigIs(config))));
-
-    storage()->ClearData(/*delete_begin=*/base::Time::Min(),
-                         /*delete_end=*/base::Time::Max(),
-                         /*filter=*/base::NullCallback());
   }
-  delegate()->set_null_aggregatable_reports({});
 }
 
 TEST_F(AttributionStorageTest, MaximumAggregatableReportsPerSource) {
@@ -4083,13 +4061,8 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest,
        NullAggregatableReportWithTriggerContextId_RoundTrip) {
   base::Time now = base::Time::Now();
-  base::Time source_time = now - base::Days(1);
   base::Time report_time = now;
 
-  delegate()->set_null_aggregatable_reports(
-      {AttributionStorageDelegate::NullAggregatableReport{
-          .fake_source_time = source_time,
-      }});
   auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
           .SetSourceRegistrationTimeConfig(
@@ -4097,7 +4070,6 @@ TEST_F(AttributionStorageTest,
                   kExclude)
           .SetTriggerContextId("123")
           .Build());
-  delegate()->set_null_aggregatable_reports({});
 
   ASSERT_TRUE(result.min_null_aggregatable_report_time().has_value());
   EXPECT_EQ(*result.min_null_aggregatable_report_time(), report_time);
@@ -4183,6 +4155,136 @@ TEST_F(
                         AttributionTrigger::EventLevelResult::kNotRegistered),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
+}
+
+TEST_F(AttributionStorageTest,
+       AttributedTriggerIncludeSourceRegistrationTime_NullAggregatableReports) {
+  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
+  storage()->StoreSource(builder.Build());
+
+  const base::Time now = base::Time::Now();
+
+  const auto trigger = DefaultAggregatableTriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kInclude)
+                           .Build(/*generate_event_trigger_data=*/false);
+  delegate()->set_null_aggregatable_reports_lookback_days({0, 1, 30, 31});
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports_lookback_days({});
+
+  EXPECT_THAT(result.min_null_aggregatable_report_time(),
+              Optional(now + kReportDelay));
+
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(
+          AggregatableAttributionDataIs(SourceRegistrationTimeConfigIs(
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kInclude)),
+          NullAggregatableDataIs(AllOf(
+              SourceRegistrationTimeConfigIs(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude),
+              Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                    now - base::Days(1)))),
+          NullAggregatableDataIs(AllOf(
+              SourceRegistrationTimeConfigIs(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude),
+              Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                    now - base::Days(30))))));
+}
+
+TEST_F(
+    AttributionStorageTest,
+    UnattributedTriggerIncludeSourceRegistrationTime_NullAggregatableReports) {
+  const base::Time now = base::Time::Now();
+
+  const auto trigger = DefaultAggregatableTriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kInclude)
+                           .Build(/*generate_event_trigger_data=*/false);
+  delegate()->set_null_aggregatable_reports_lookback_days({0, 1, 30, 31});
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports_lookback_days({});
+
+  EXPECT_THAT(result.min_null_aggregatable_report_time(),
+              Optional(now + kReportDelay));
+
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(
+          NullAggregatableDataIs(AllOf(
+              SourceRegistrationTimeConfigIs(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude),
+              Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                    now))),
+          NullAggregatableDataIs(AllOf(
+              SourceRegistrationTimeConfigIs(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude),
+              Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                    now - base::Days(1)))),
+          NullAggregatableDataIs(AllOf(
+              SourceRegistrationTimeConfigIs(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude),
+              Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                    now - base::Days(30))))));
+}
+
+TEST_F(
+    AttributionStorageTest,
+    AttributedTriggerExcludeSourceRegistrationTime_NoNullAggregatableReport) {
+  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
+  storage()->StoreSource(builder.Build());
+
+  const auto trigger = DefaultAggregatableTriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kExclude)
+                           .Build(/*generate_event_trigger_data=*/false);
+  delegate()->set_null_aggregatable_reports_lookback_days({0, 1, 30, 31});
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports_lookback_days({});
+
+  EXPECT_THAT(result.min_null_aggregatable_report_time(), Eq(std::nullopt));
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(
+                  AggregatableAttributionDataIs(SourceRegistrationTimeConfigIs(
+                      attribution_reporting::mojom::
+                          SourceRegistrationTimeConfig::kExclude))));
+}
+
+TEST_F(
+    AttributionStorageTest,
+    UnattributedTriggerExcludeSourceRegistrationTime_NullAggregatableReport) {
+  const base::Time now = base::Time::Now();
+
+  const auto trigger = DefaultAggregatableTriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kExclude)
+                           .Build(/*generate_event_trigger_data=*/false);
+  delegate()->set_null_aggregatable_reports_lookback_days({0, 1, 30, 31});
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports_lookback_days({});
+
+  EXPECT_THAT(result.min_null_aggregatable_report_time(),
+              Optional(now + kReportDelay));
+
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(NullAggregatableDataIs(AllOf(
+          SourceRegistrationTimeConfigIs(
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kExclude),
+          Field(&AttributionReport::NullAggregatableData::fake_source_time,
+                now)))));
 }
 
 }  // namespace content

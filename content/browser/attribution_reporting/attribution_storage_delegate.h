@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/privacy_math.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
@@ -38,7 +39,6 @@ class TriggerVerification;
 namespace content {
 
 class AttributionReport;
-class AttributionTrigger;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports. Users and subclasses must NOT assume
@@ -50,10 +50,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   struct OfflineReportDelayConfig {
     base::TimeDelta min;
     base::TimeDelta max;
-  };
-
-  struct NullAggregatableReport {
-    base::Time fake_source_time;
   };
 
   explicit AttributionStorageDelegate(const AttributionConfig& config);
@@ -166,11 +162,9 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
 
-  // Returns zero or more null aggregatable reports for the given trigger.
-  virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
-      const AttributionTrigger&,
-      base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const = 0;
+  virtual bool GenerateNullAggregatableReportForLookbackDay(
+      int lookback_day,
+      attribution_reporting::mojom::SourceRegistrationTimeConfig) const = 0;
 
  protected:
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);

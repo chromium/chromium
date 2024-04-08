@@ -119,6 +119,25 @@
             }
           }
         ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 123
+                },
+                "trigger_context_id": "654"
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -185,6 +204,18 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "5"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+            "key": "0x0",
+            "value": 0
+          } ],
+          "trigger_context_id": "654"
+        },
+        "report_time": "6",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ]
   }

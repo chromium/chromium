@@ -117,8 +117,8 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
     uint32_t value;
     CHECK(base::HexStringToUInt(base::HexEncode(value_byte_string), &value));
 
-    // Ignore the paddings.
-    if (bucket == 0 && value == 0) {
+    // Null reports have null-contribution as well, only ignore the paddings.
+    if (!list.empty() && bucket == 0 && value == 0) {
       continue;
     }
 

@@ -3323,10 +3323,7 @@ class AttributionManagerImplNullAggregatableReportTest
  protected:
   void ConfigureStorageDelegate(
       ConfigurableStorageDelegate& delegate) const override {
-    delegate.set_null_aggregatable_reports(
-        {AttributionStorageDelegate::NullAggregatableReport{
-            .fake_source_time = base::Time::Now(),
-        }});
+    delegate.set_null_aggregatable_reports_lookback_days({0});
   }
 };
 

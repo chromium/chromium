@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
@@ -44,7 +45,8 @@ namespace {
 std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
   // TODO(csharrison, linnan): Validate that `time` is valid (e.g. not null /
   // inf).
-  base::Time rounded = RoundDownToWholeDaySinceUnixEpoch(time);
+  base::Time rounded =
+      attribution_reporting::RoundDownToWholeDaySinceUnixEpoch(time);
   return base::NumberToString(rounded.InMillisecondsSinceUnixEpoch() /
                               base::Time::kMillisecondsPerSecond);
 }
@@ -202,11 +204,6 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
           AttributionReport::CommonAggregatableData::kVersion,
           AttributionReport::CommonAggregatableData::kApiIdentifier));
-}
-
-base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time time) {
-  return base::Time::UnixEpoch() +
-         (time - base::Time::UnixEpoch()).FloorToMultiple(base::Days(1));
 }
 
 }  // namespace content

@@ -40,6 +40,7 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
@@ -49,6 +50,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -3133,9 +3135,19 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
   }
 
   if (HasAggregatableData(trigger.registration())) {
-    std::vector<AttributionStorageDelegate::NullAggregatableReport>
-        null_aggregatable_reports = delegate_->GetNullAggregatableReports(
-            trigger, attribution_info.time, attributed_source_time);
+    std::vector<attribution_reporting::NullAggregatableReport>
+        null_aggregatable_reports =
+            attribution_reporting::GetNullAggregatableReports(
+                trigger.registration().aggregatable_trigger_config,
+                attribution_info.time, attributed_source_time,
+                [&](int lookback_day,
+                    attribution_reporting::mojom::SourceRegistrationTimeConfig
+                        source_registration_time_config) {
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+                  return delegate_
+                      ->GenerateNullAggregatableReportForLookbackDay(
+                          lookback_day, source_registration_time_config);
+                });
     for (const auto& null_aggregatable_report : null_aggregatable_reports) {
       base::Time report_time =
           GetAggregatableReportTime(trigger, attribution_info.time);

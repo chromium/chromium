@@ -52,8 +52,6 @@ enum class AssembleAggregatableReportStatus {
 CONTENT_EXPORT std::optional<AggregatableReportRequest>
 CreateAggregatableReportRequest(const AttributionReport& report);
 
-CONTENT_EXPORT base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_ATTRIBUTION_UTILS_H_
