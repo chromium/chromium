@@ -708,7 +708,8 @@ TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchAfterDelay) {
   task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 }
 
-TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
+TEST_F(PickerSearchControllerTest,
+       ShowsResultsFromGifSearchAfterDriveSearchFinishes) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -737,6 +738,9 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"drive")});
   std::move(client().gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
@@ -815,8 +819,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
   std::move(client().gif_search_callback())
       .Run({ash::PickerSearchResult::Text(u"gif")});
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::Text(u"omnibox")});
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"drive")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchRequest::kGifDebouncingDelay);
 }

@@ -57,6 +57,29 @@ PickerSearchAggregator::PickerSearchAggregator(
 
 PickerSearchAggregator::~PickerSearchAggregator() = default;
 
+void PickerSearchAggregator::HandleSearchSourceResults(
+    PickerSearchSource source,
+    std::vector<PickerSearchResult> results) {
+  // GIF results must appear later than Drive results. In the case where GIF
+  // search finishes before Drive search, store the GIF results for when Drive
+  // search finishes.
+  if (source == PickerSearchSource::kTenor && !drive_search_finished_) {
+    pending_gif_results_ = std::move(results);
+    return;
+  }
+
+  HandleSearchSourceResultsImpl(source, std::move(results));
+
+  if (source == PickerSearchSource::kDrive) {
+    drive_search_finished_ = true;
+    if (pending_gif_results_.has_value()) {
+      HandleSearchSourceResultsImpl(PickerSearchSource::kTenor,
+                                    std::move(*pending_gif_results_));
+      pending_gif_results_ = std::nullopt;
+    }
+  }
+}
+
 bool PickerSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
 }
@@ -93,7 +116,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
   current_callback_.Run(std::move(sections));
 }
 
-void PickerSearchAggregator::HandleSearchSourceResults(
+void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results) {
   // Suggested results have multiple sources, which we store in any order and

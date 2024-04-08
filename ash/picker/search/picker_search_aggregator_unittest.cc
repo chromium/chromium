@@ -57,6 +57,8 @@ class PickerSearchAggregatorTest : public testing::TestWithParam<TestCase> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
+// Gifs are tested separately since they have a special dependency on Drive
+// results.
 INSTANTIATE_TEST_SUITE_P(
     ,
     PickerSearchAggregatorTest,
@@ -64,10 +66,6 @@ INSTANTIATE_TEST_SUITE_P(
         TestCase{
             .source = PickerSearchSource::kOmnibox,
             .section_type = PickerSectionType::kLinks,
-        },
-        TestCase{
-            .source = PickerSearchSource::kTenor,
-            .section_type = PickerSectionType::kGifs,
         },
         TestCase{
             .source = PickerSearchSource::kEmoji,
@@ -440,6 +438,128 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        {PickerSearchResult::Text(u"local")});
   aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
                                        {PickerSearchResult::Text(u"math")});
+}
+
+class PickerSearchAggregatorGifTest : public testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsAreNotPublishedWithoutDriveResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsAreNotPublishedWithoutDriveResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")});
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsPublishedAfterDriveResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kDriveFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kGifs),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"tenor")))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsPublishedAfterDriveResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  // Suggested section do not appear post burn-in.
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kDriveFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"drive")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kGifs),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"tenor")))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")});
 }
 
 }  // namespace
