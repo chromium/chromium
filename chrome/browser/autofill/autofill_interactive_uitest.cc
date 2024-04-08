@@ -2744,15 +2744,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
                          ::testing::Values(FrameType::kFencedFrame,
                                            FrameType::kIFrame));
 
-// TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
-// TODO(crbug.com/41495558): Flaky on MSan.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
-#else
-#define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
-#endif
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       MAYBE_SimpleCrossSiteFill) {
+                       SimpleCrossSiteFill) {
   test_delegate()->SetIgnoreBackToBackMessages(
       ObservedUiEvents::kPreviewFormData, true);
   CreateTestProfile();
@@ -2808,15 +2801,8 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 
 // Tests that deleting the subframe that has opened the Autofill popup closes
 // the popup.
-// TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
-// TODO(crbug.com/41495632): Flaky on MSan.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_DeletingFrameClosesPopup DISABLED_DeletingFrameClosesPopup
-#else
-#define MAYBE_DeletingFrameClosesPopup DeletingFrameClosesPopup
-#endif
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       MAYBE_DeletingFrameClosesPopup) {
+                       DeletingFrameClosesPopup) {
   CreateTestProfile();
 
   // Main frame is on a.com, fenced frame is on b.com.
@@ -3086,16 +3072,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
-// TODO(crbug.com/1481004): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DynamicFormFill_FirstElementDisappears \
-  DISABLED_DynamicFormFill_FirstElementDisappears
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappears \
-  DynamicFormFill_FirstElementDisappears
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicFormFill_FirstElementDisappears) {
+                       DynamicFormFill_FirstElementDisappears) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid.html");
@@ -3116,16 +3094,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
-// TODO(crbug.com/1481004): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm \
-  DISABLED_DynamicFormFill_FirstElementDisappearsNoNameForm
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm \
-  DynamicFormFill_FirstElementDisappearsNoNameForm
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicFormFill_FirstElementDisappearsNoNameForm) {
+                       DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
@@ -3148,17 +3118,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-// TODO(crbug.com/1521229) flaky on win-asan
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
-  DISABLED_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
-  DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
-#endif
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
-    MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
+    DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com",
@@ -3183,17 +3145,8 @@ IN_PROC_BROWSER_TEST_F(
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-// TODO(crbug.com/1481004): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
-  DISABLED_DynamicFormFill_FirstElementDisappearsBadnameUnowned
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
-  DynamicFormFill_FirstElementDisappearsBadnameUnowned
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AutofillInteractiveTestDynamicForm,
-    MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
+                       DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned_badnames.html");
@@ -3216,17 +3169,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with no name.
-// TODO(crbug.com/1481004): Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms \
-  DISABLED_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms \
-  DynamicFormFill_FirstElementDisappearsMultipleNoNameForms
-#endif
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
-    MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
+    DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com",
@@ -3250,16 +3195,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the elements are unowned.
-// TODO(crbug.com/1481004): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
-  DISABLED_DynamicFormFill_FirstElementDisappearsUnowned
-#else
-#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
-  DynamicFormFill_FirstElementDisappearsUnowned
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicFormFill_FirstElementDisappearsUnowned) {
+                       DynamicFormFill_FirstElementDisappearsUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned.html");
@@ -3356,16 +3293,8 @@ void DoDynamicChangingFormFill_SelectUpdated(
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_SelectUpdated \
-    DISABLED_DynamicChangingFormFill_SelectUpdated
-#else
-#define MAYBE_DynamicChangingFormFill_SelectUpdated \
-    DynamicChangingFormFill_SelectUpdated
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicChangingFormFill_SelectUpdated) {
+                       DynamicChangingFormFill_SelectUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/false);
@@ -3373,16 +3302,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selectlists that have options
 // added and removed.
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_SelectListUpdated \
-    DISABLED_DynamicChangingFormFill_SelectListUpdated
-#else
-#define MAYBE_DynamicChangingFormFill_SelectListUpdated \
-    DynamicChangingFormFill_SelectListUpdated
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicChangingFormFill_SelectListUpdated) {
+                       DynamicChangingFormFill_SelectListUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/false);
@@ -3390,16 +3311,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed, when the updating occurs asynchronously.
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_SelectUpdatedAsync \
-    DISABLED_DynamicChangingFormFill_SelectUpdatedAsync
-#else
-#define MAYBE_DynamicChangingFormFill_SelectUpdatedAsync \
-    DynamicChangingFormFill_SelectUpdatedAsync
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicChangingFormFill_SelectUpdatedAsync) {
+                       DynamicChangingFormFill_SelectUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/false,
                                           /*should_test_async_update=*/true);
@@ -3407,16 +3320,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selectlists that have options
 // added and removed, when the updating occurs asynchronously.
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync \
-    DISABLED_DynamicChangingFormFill_SelectListUpdatedAsync
-#else
-#define MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync \
-    DynamicChangingFormFill_SelectListUpdatedAsync
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicChangingFormFill_SelectListUpdatedAsync) {
+                       DynamicChangingFormFill_SelectListUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
                                           /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/true);
@@ -3424,16 +3329,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
-  DISABLED_DynamicChangingFormFill_DoubleSelectUpdated
-#else
-#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
-  DynamicChangingFormFill_DoubleSelectUpdated
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_DynamicChangingFormFill_DoubleSelectUpdated) {
+                       DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
@@ -3531,17 +3428,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-// TODO(crbug.com/1481004) Flaky on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
-  DISABLED_DynamicChangingFormFill_SelectUpdated_SyntheticForm
-#else
-#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
-  DynamicChangingFormFill_SelectUpdated_SyntheticForm
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AutofillInteractiveTestDynamicForm,
-    MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
+                       DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_synthetic_form_select_options_change.html");
