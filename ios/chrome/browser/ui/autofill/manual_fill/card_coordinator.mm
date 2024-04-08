@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_card_mediator.h"
@@ -25,13 +27,17 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ui/base/device_form_factor.h"
 
-@interface CardCoordinator () <CardListDelegate, PersonalDataManagerObserver> {
+@interface CardCoordinator () <CardListDelegate,
+                               PersonalDataManagerObserver,
+                               BottomSheetLinkCoordinatorDelegate> {
   // Personal data manager to be observed.
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
+
+  BottomSheetLinkCoordinator* bottom_sheet_link_coordinator_;
 }
 
 // The view controller presented above the keyboard where the user can select
@@ -103,6 +109,13 @@
   return self.cardViewController;
 }
 
+- (void)stop {
+  [super stop];
+  if (bottom_sheet_link_coordinator_) {
+    [self dismissBottomSheetLinkCoordinator];
+  }
+}
+
 #pragma mark - CardListDelegate
 
 - (void)openCardSettings {
@@ -133,8 +146,21 @@
   }];
 }
 
-- (void)openURL:(CrURL*)url {
-  // TODO: b/322521955 Open the URL.
+- (void)openURL:(CrURL*)url withTitle:(NSString*)title {
+  bottom_sheet_link_coordinator_ = [[BottomSheetLinkCoordinator alloc]
+      initWithBaseViewController:self.cardViewController
+                         browser:super.browser
+                             url:url
+                           title:title];
+  bottom_sheet_link_coordinator_.delegate = self;
+  [bottom_sheet_link_coordinator_ start];
+}
+
+#pragma mark - BottomSheetLinkCoordinatorDelegate
+
+- (void)dismissBottomSheetLinkCoordinator {
+  [bottom_sheet_link_coordinator_ stop];
+  bottom_sheet_link_coordinator_ = nil;
 }
 
 #pragma mark - PersonalDataManagerObserver

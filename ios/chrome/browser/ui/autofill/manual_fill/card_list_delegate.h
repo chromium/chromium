@@ -21,8 +21,8 @@
 // Opens credit card unlock, through CVC, prompt.
 - (void)requestFullCreditCard:(ManualFillCreditCard*)card;
 
-// Opens URL when a link is tapped.
-- (void)openURL:(CrURL*)url;
+// Opens URL in a bottom sheet view with the given title.
+- (void)openURL:(CrURL*)url withTitle:(NSString*)title;
 
 @end
 

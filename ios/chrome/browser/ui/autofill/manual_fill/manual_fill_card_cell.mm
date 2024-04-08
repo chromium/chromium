@@ -574,9 +574,10 @@ using autofill::CreditCard::RecordType::kVirtualCard;
   if (textView == self.virtualCardInstructionTextView) {
     // The learn more link was clicked.
     [self.navigationDelegate
-        openURL:[[CrURL alloc]
-                    initWithGURL:autofill::payments::
-                                     GetVirtualCardEnrollmentSupportUrl()]];
+          openURL:[[CrURL alloc]
+                      initWithGURL:autofill::payments::
+                                       GetVirtualCardEnrollmentSupportUrl()]
+        withTitle:[textView.text substringWithRange:characterRange]];
   }
   return NO;
 }
