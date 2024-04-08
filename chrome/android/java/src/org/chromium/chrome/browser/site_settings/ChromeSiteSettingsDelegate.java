@@ -126,6 +126,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isBrowsingDataModelFeatureEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.BROWSING_DATA_MODEL);
+    }
+
+    @Override
     public boolean isCategoryVisible(@SiteSettingsCategory.Type int type) {
         switch (type) {
                 // TODO(csharrison): Remove this condition once the experimental UI lands. It is not

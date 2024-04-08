@@ -130,11 +130,9 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
                         mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
-        new WebsitePermissionsFetcher(mMainController.getBrowserContext())
+        new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate())
                 .fetchPreferencesForCategoryAndPopulateFpsInfo(
-                        getDelegate().getSiteSettingsDelegate(),
-                        storageCategory,
-                        this::onStorageFetched);
+                        storageCategory, this::onStorageFetched);
 
         return view;
     }

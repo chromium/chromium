@@ -119,10 +119,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     private void getInfoForOrigins() {
         WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(
-                        getSiteSettingsDelegate().getBrowserContextHandle(), false);
-        fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(
-                getSiteSettingsDelegate(), mCategory, new ResultsPopulator());
+                new WebsitePermissionsFetcher(getSiteSettingsDelegate(), false);
+        fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(mCategory, new ResultsPopulator());
     }
 
     @Override

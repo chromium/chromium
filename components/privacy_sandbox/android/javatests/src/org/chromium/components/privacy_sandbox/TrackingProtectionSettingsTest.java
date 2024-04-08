@@ -9,7 +9,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
 
 import androidx.test.filters.SmallTest;
 
@@ -27,6 +30,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -47,6 +51,8 @@ public class TrackingProtectionSettingsTest {
 
     @Mock private TrackingProtectionDelegate mDelegate;
 
+    @Mock private SiteSettingsDelegate mSiteSettingsDelegate;
+
     private TrackingProtectionSettings mFragment;
 
     @BeforeClass
@@ -61,6 +67,8 @@ public class TrackingProtectionSettingsTest {
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
 
         when(mDelegate.getBrowserContext()).thenReturn(mContextHandleMock);
+        when(mDelegate.getSiteSettingsDelegate(any(Context.class)))
+                .thenReturn(mSiteSettingsDelegate);
     }
 
     private void launchTrackingProtectionSettings() {

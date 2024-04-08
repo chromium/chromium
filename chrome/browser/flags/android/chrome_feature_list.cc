@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/photo_picker/android/features.h"
+#include "components/browsing_data/core/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
@@ -97,6 +98,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,
+    &browsing_data::features::kBrowsingDataModel,
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,
     &commerce::kShoppingList,

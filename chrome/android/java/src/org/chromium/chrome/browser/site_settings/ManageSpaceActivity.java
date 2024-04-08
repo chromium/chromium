@@ -191,7 +191,8 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     /** This refreshes the storage numbers by fetching all site permissions. */
     private void refreshStorageNumbers() {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile);
+        var siteSettingsDelegate = new ChromeSiteSettingsDelegate(this, profile);
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(siteSettingsDelegate);
         fetcher.fetchPreferencesForCategory(
                 SiteSettingsCategory.createFromType(profile, SiteSettingsCategory.Type.USE_STORAGE),
                 new SizeCalculator());
@@ -301,7 +302,10 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
          */
         public void clearData() {
             Profile profile = ProfileManager.getLastUsedRegularProfile();
-            WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile, true);
+            var siteSettingsDelegate =
+                    new ChromeSiteSettingsDelegate(getApplicationContext(), profile);
+            WebsitePermissionsFetcher fetcher =
+                    new WebsitePermissionsFetcher(siteSettingsDelegate, true);
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
                             profile, SiteSettingsCategory.Type.USE_STORAGE),

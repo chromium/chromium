@@ -319,8 +319,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             displaySitePermissions();
         } else if (extraSiteAddress != null && extraSite == null) {
             WebsitePermissionsFetcher fetcher =
-                    new WebsitePermissionsFetcher(
-                            getSiteSettingsDelegate().getBrowserContextHandle());
+                    new WebsitePermissionsFetcher(getSiteSettingsDelegate());
             fetcher.fetchAllPreferences(
                     new SingleWebsitePermissionsPopulator((WebsiteAddress) extraSiteAddress));
         } else {

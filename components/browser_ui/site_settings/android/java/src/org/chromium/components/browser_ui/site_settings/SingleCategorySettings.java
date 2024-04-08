@@ -311,8 +311,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
 
         WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(
-                        getSiteSettingsDelegate().getBrowserContextHandle(), false);
+                new WebsitePermissionsFetcher(getSiteSettingsDelegate(), false);
         fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 

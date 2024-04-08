@@ -229,11 +229,11 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     /**
      * Refreshes the list of sites with access to the object being examined.
      *
-     * resetList() is called to refresh the view when the data is ready.
+     * <p>resetList() is called to refresh the view when the data is ready.
      */
     private void getInfo() {
         WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(getSiteSettingsDelegate().getBrowserContextHandle());
+                new WebsitePermissionsFetcher(getSiteSettingsDelegate());
         fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 

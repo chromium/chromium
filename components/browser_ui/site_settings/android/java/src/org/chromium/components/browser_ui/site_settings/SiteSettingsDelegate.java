@@ -39,24 +39,39 @@ public interface SiteSettingsDelegate {
      *
      * @param faviconUrl The URL of the page to get the favicon for. If a favicon for the full URL
      *     can't be found, the favicon for its host will be used as a fallback.
-     * @param callback A callback that will be called with the favicon bitmap, or null if no
-     *     favicon could be found or generated.
+     * @param callback A callback that will be called with the favicon bitmap, or null if no favicon
+     *     could be found or generated.
      */
     void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback);
 
-    /** @return true if the given category type should be shown in the SiteSettings Fragment. */
+    /**
+     * @return true if the BrowsingDataModel Feature is enabled.
+     */
+    boolean isBrowsingDataModelFeatureEnabled();
+
+    /**
+     * @return true if the given category type should be shown in the SiteSettings Fragment.
+     */
     boolean isCategoryVisible(@SiteSettingsCategory.Type int type);
 
-    /** @return true if Incognito mode is enabled. */
+    /**
+     * @return true if Incognito mode is enabled.
+     */
     boolean isIncognitoModeEnabled();
 
-    /** @return true if the QuietNotificationPrompts Feature is enabled. */
+    /**
+     * @return true if the QuietNotificationPrompts Feature is enabled.
+     */
     boolean isQuietNotificationPromptsFeatureEnabled();
 
-    /** @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled. */
+    /**
+     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
+     */
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
-    /** @return The id of the notification channel associated with the given origin. */
+    /**
+     * @return The id of the notification channel associated with the given origin.
+     */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.
     String getChannelIdForOrigin(String origin);
 

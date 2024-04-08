@@ -178,7 +178,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                 SiteSettingsCategory.createFromType(
                         mDelegate.getBrowserContext(),
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        new WebsitePermissionsFetcher(mDelegate.getBrowserContext())
+        new WebsitePermissionsFetcher(mDelegate.getSiteSettingsDelegate(getContext()))
                 .fetchPreferencesForCategory(cookiesCategory, this::onExceptionsFetched);
     }
 

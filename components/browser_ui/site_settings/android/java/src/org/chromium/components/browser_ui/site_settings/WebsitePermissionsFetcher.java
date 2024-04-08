@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -21,6 +22,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +46,8 @@ public class WebsitePermissionsFetcher {
         CHOSEN_OBJECT_INFO
     }
 
-    private BrowserContextHandle mBrowserContextHandle;
+    private final SiteSettingsDelegate mSiteSettingsDelegate;
+    private final BrowserContextHandle mBrowserContextHandle;
     private WebsitePreferenceBridge mWebsitePreferenceBridge;
 
     private SiteSettingsCategory mSiteSettingsCategory;
@@ -98,7 +101,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.VR:
                 return WebsitePermissionsType.PERMISSION_INFO;
             case ContentSettingsType.STORAGE_ACCESS:
-                    return WebsitePermissionsType.EMBEDDED_PERMISSION;
+                return WebsitePermissionsType.EMBEDDED_PERMISSION;
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.USB_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;
@@ -133,14 +136,21 @@ public class WebsitePermissionsFetcher {
 
     private final boolean mFetchSiteImportantInfo;
 
-    public WebsitePermissionsFetcher(BrowserContextHandle browserContextHandle) {
-        this(browserContextHandle, false);
+    /**
+     * @param siteSettingsDelegate to help fetching websites information.
+     */
+    public WebsitePermissionsFetcher(SiteSettingsDelegate siteSettingsDelegate) {
+        this(siteSettingsDelegate, false);
     }
 
-    /** @param fetchSiteImportantInfo if the fetcher should query whether each site is 'important'. */
+    /**
+     * @param siteSettingsDelegate to help fetching websites information.
+     * @param fetchSiteImportantInfo if the fetcher should query whether each site is 'important'.
+     */
     public WebsitePermissionsFetcher(
-            BrowserContextHandle browserContextHandle, boolean fetchSiteImportantInfo) {
-        mBrowserContextHandle = browserContextHandle;
+            SiteSettingsDelegate siteSettingsDelegate, boolean fetchSiteImportantInfo) {
+        mSiteSettingsDelegate = siteSettingsDelegate;
+        mBrowserContextHandle = siteSettingsDelegate.getBrowserContextHandle();
         mFetchSiteImportantInfo = fetchSiteImportantInfo;
         mWebsitePreferenceBridge = new WebsitePreferenceBridge();
     }
@@ -173,17 +183,13 @@ public class WebsitePermissionsFetcher {
      * Fetches all preferences within a specific category and populates them with First Party Sets
      * info.
      *
-     * @param siteSettingsDelegate Delegate needed for fetching First Party Sets info.
      * @param category A category to fetch.
      * @param callback The callback to run when the fetch is complete.
      */
     public void fetchPreferencesForCategoryAndPopulateFpsInfo(
-            SiteSettingsDelegate siteSettingsDelegate,
-            SiteSettingsCategory category,
-            @NonNull WebsitePermissionsCallback callback) {
+            SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
-        fetcherInternal.fetchPreferencesForCategoryAndPopulateFpsInfo(
-                siteSettingsDelegate, category, callback);
+        fetcherInternal.fetchPreferencesForCategoryAndPopulateFpsInfo(category, callback);
     }
 
     /**
@@ -213,7 +219,9 @@ public class WebsitePermissionsFetcher {
 
         private void addAllFetchers(TaskQueue queue) {
             addFetcherForStorage(queue);
-            queue.add(new CookiesInfoFetcher());
+            if (!mSiteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+                queue.add(new CookiesInfoFetcher());
+            }
             for (@ContentSettingsType.EnumType int type = 0;
                     type <= ContentSettingsType.MAX_VALUE;
                     type++) {
@@ -258,28 +266,29 @@ public class WebsitePermissionsFetcher {
          * Fetches all preferences within a specific category and populates them with First Party
          * Sets info.
          *
-         * @param siteSettingsDelegate Delegate needed for fetching First Party Sets info.
          * @param category A category to fetch.
          * @param callback The callback to run when the fetch is complete.
          */
         public void fetchPreferencesForCategoryAndPopulateFpsInfo(
-                SiteSettingsDelegate siteSettingsDelegate,
-                SiteSettingsCategory category,
-                @NonNull WebsitePermissionsCallback callback) {
+                SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
-            queue.add(new FirstPartySetsInfoFetcher(siteSettingsDelegate));
+            queue.add(new FirstPartySetsInfoFetcher());
 
             queue.add(new PermissionsAvailableCallbackRunner(callback));
             queue.next();
         }
 
         private void addFetcherForStorage(TaskQueue queue) {
-            // Local storage info is per-origin.
-            queue.add(new LocalStorageInfoFetcher());
-            // Website storage is per-host.
-            queue.add(new WebStorageInfoFetcher());
-            // Shared Dictionary info is per {origin, top level site}.
-            queue.add(new SharedDictionaryInfoFetcher());
+            if (mSiteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+                queue.add(new BrowsingDataModelFetcher());
+            } else {
+                // Local storage info is per-origin.
+                queue.add(new LocalStorageInfoFetcher());
+                // Website storage is per-host.
+                queue.add(new WebStorageInfoFetcher());
+                // Shared Dictionary info is per {origin, top level site}.
+                queue.add(new SharedDictionaryInfoFetcher());
+            }
         }
 
         private void addFetcherForZoom(TaskQueue queue) {
@@ -624,12 +633,6 @@ public class WebsitePermissionsFetcher {
         }
 
         private class FirstPartySetsInfoFetcher extends Task {
-            final SiteSettingsDelegate mSiteSettingsDelegate;
-
-            public FirstPartySetsInfoFetcher(SiteSettingsDelegate siteSettingsDelegate) {
-                mSiteSettingsDelegate = siteSettingsDelegate;
-            }
-
             private boolean canDealWithFirstPartySetsInfo() {
                 return mSiteSettingsDelegate != null
                         && mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
@@ -685,6 +688,33 @@ public class WebsitePermissionsFetcher {
                 }
 
                 return fpsOwnerToMember;
+            }
+        }
+
+        private class BrowsingDataModelFetcher extends Task {
+            @Override
+            public void runAsync(final TaskQueue queue) {
+                mSiteSettingsDelegate.getBrowsingDataModel(
+                        (model) -> {
+                            Map<Origin, BrowsingDataInfo> result = model.getBrowsingDataInfo();
+                            for (var entry : result.entrySet()) {
+                                Origin origin = entry.getKey();
+                                if (origin == null) continue;
+
+                                var website =
+                                        findOrCreateSite(origin.toString(), /* embedder= */ null);
+                                var info = entry.getValue();
+
+                                var cookieInfo = new CookiesInfo(info.getCookieCount());
+                                website.setCookiesInfo(cookieInfo);
+                                website.addStorageInfo(
+                                        new StorageInfo(
+                                                origin.getHost(),
+                                                /* type= */ 0,
+                                                info.getStorageSize()));
+                            }
+                            queue.next();
+                        });
             }
         }
 
