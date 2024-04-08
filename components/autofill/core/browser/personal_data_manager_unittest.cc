@@ -35,18 +35,12 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
@@ -86,97 +80,10 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
   }
 
-  // Adds three local cards to the |personal_data_|. The three cards are
-  // different: two are from different companies and the third doesn't have a
-  // number. All three have different owners and credit card number. This allows
-  // to test the suggestions based on name as well as on credit card number.
-  void SetUpReferenceLocalCreditCards() {
-    ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-
-    CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
-                            test::kEmptyOrigin);
-    test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
-                            "378282246310005" /* American Express */, "04",
-                            "2999", "1");
-    credit_card0.set_use_count(3);
-    credit_card0.set_use_date(AutofillClock::Now() - base::Days(1));
-    personal_data_->AddCreditCard(credit_card0);
-
-    CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                            test::kEmptyOrigin);
-    credit_card1.set_use_count(300);
-    credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
-    test::SetCreditCardInfo(&credit_card1, "John Dillinger",
-                            "4234567890123456" /* Visa */, "01", "2999", "1");
-    personal_data_->AddCreditCard(credit_card1);
-
-    CreditCard credit_card2("002149C1-EE28-4213-A3B9-DA243FFF021B",
-                            test::kEmptyOrigin);
-    credit_card2.set_use_count(1);
-    credit_card2.set_use_date(AutofillClock::Now() - base::Days(1));
-    test::SetCreditCardInfo(&credit_card2, "Bonnie Parker",
-                            "5105105105105100" /* Mastercard */, "12", "2999",
-                            "1");
-    PersonalDataChangedWaiter waiter(*personal_data_);
-    personal_data_->AddCreditCard(credit_card2);
-    std::move(waiter).Wait();
-    ASSERT_EQ(3U, personal_data_->GetCreditCards().size());
-  }
-
-  // Add 2 credit cards. One local, one masked.
-  void SetUpTwoCardTypes() {
-    EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
-    CreditCard masked_server_card;
-    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley", "3456", "04",
-                            "2999", "1");
-    masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-    masked_server_card.set_record_type(
-        CreditCard::RecordType::kMaskedServerCard);
-    masked_server_card.set_server_id("masked_id");
-    masked_server_card.set_use_count(15);
-    masked_server_card.SetNetworkForMaskedCard(kVisaCard);
-    {
-      PersonalDataChangedWaiter waiter(*personal_data_);
-      test_api(personal_data_->payments_data_manager())
-          .AddServerCreditCard(masked_server_card);
-      std::move(waiter).Wait();
-    }
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-
-    CreditCard local_card;
-    test::SetCreditCardInfo(&local_card, "Freddy Mercury",
-                            "4234567890123463",  // Visa
-                            "08", "2999", "1");
-    local_card.set_guid("00000000-0000-0000-0000-000000000009");
-    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-    local_card.set_use_count(5);
-    {
-      PersonalDataChangedWaiter waiter(*personal_data_);
-      personal_data_->AddCreditCard(local_card);
-      std::move(waiter).Wait();
-    }
-    ASSERT_EQ(2U, personal_data_->GetCreditCards().size());
-  }
-
-  PaymentsAutofillTable* GetServerDataTable() {
-    return personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
-               ? profile_autofill_table_.get()
-               : account_autofill_table_.get();
-  }
-
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
     PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
     std::move(waiter).Wait();
-  }
-
-  void SetServerCards(const std::vector<CreditCard>& server_cards) {
-    test::SetServerCreditCards(GetServerDataTable(), server_cards);
-  }
-
-  void AddOfferDataForTest(AutofillOfferData offer_data) {
-    personal_data_->AddOfferDataForTest(
-        std::make_unique<AutofillOfferData>(offer_data));
   }
 
   std::unique_ptr<PersonalDataManager> personal_data_;
@@ -225,60 +132,6 @@ TEST_F(PersonalDataManagerTest, GetProfilesForSettings) {
               testing::ElementsAre(testing::Pointee(kLocalOrSyncableProfile),
                                    testing::Pointee(kAccountProfile)));
 }
-
-TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-
-  Iban iban;
-  iban.set_value(std::u16string(test::kIbanValue16));
-  Iban iban1;
-  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-
-  personal_data_->AddAsLocalIban(iban);
-  personal_data_->AddAsLocalIban(iban1);
-
-  EXPECT_EQ(0U, personal_data_->GetLocalIbans().size());
-}
-
-// Test that ensure local data is not lost on sign-in.
-// Clearing/changing the primary account is not supported on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
-  // Sign out.
-  identity_test_env_.ClearPrimaryAccount();
-  sync_service_.SetAccountInfo(CoreAccountInfo());
-  EXPECT_TRUE(sync_service_.GetAccountInfo().IsEmpty());
-  EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  // Add local card.
-  CreditCard local_card;
-  test::SetCreditCardInfo(&local_card, "Freddy Mercury",
-                          "4234567890123463",  // Visa
-                          "08", "2999", "1");
-  local_card.set_guid("00000000-0000-0000-0000-000000000009");
-  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-  local_card.set_use_count(5);
-  personal_data_->AddCreditCard(local_card);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // Sign in.
-  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
-                                                 signin::ConsentLevel::kSync);
-  sync_service_.SetAccountInfo(
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync));
-  sync_service_.SetHasSyncConsent(true);
-  EXPECT_TRUE(
-      sync_service_.IsSyncFeatureEnabled() &&
-      sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
-  ASSERT_TRUE(TurnOnSyncFeature());
-
-  // Check saved local card should be not lost.
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(0, local_card.Compare(*personal_data_->GetCreditCards()[0]));
-}
-#endif
 
 TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithNewCard) {
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -332,76 +185,6 @@ TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
   }
 
   EXPECT_THAT(saved_credit_cards, testing::ElementsAre(credit_card));
-}
-
-// Tests that GetAutofillOffers does not return any offers if
-// |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PersonalDataManagerTest, GetAutofillOffers_WalletImportDisabled) {
-  // Add a card-linked offer and a promo code offer.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
-  AddOfferDataForTest(test::GetPromoCodeOfferData());
-
-  ASSERT_EQ(2U, personal_data_->GetAutofillOffers().size());
-
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-
-  // Should return neither of them as the wallet import pref is disabled.
-  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
-}
-
-// Tests that GetAutofillOffers does not return any offers if
-// `IsAutofillPaymentMethodsEnabled()` returns `false`.
-TEST_F(PersonalDataManagerTest, GetAutofillOffers_AutofillCreditCardDisabled) {
-  // Add a card-linked offer and a promo code offer.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
-  AddOfferDataForTest(test::GetPromoCodeOfferData());
-
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-
-  // Should return neither of the offers as the autofill credit card import pref
-  // is disabled.
-  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
-}
-
-// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
-// promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PersonalDataManagerTest,
-       GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
-  // Add an active promo code offer.
-  AddOfferDataForTest(test::GetPromoCodeOfferData(
-      /*origin=*/GURL("http://www.example.com")));
-
-  ASSERT_EQ(1U, personal_data_
-                    ->GetActiveAutofillPromoCodeOffersForOrigin(
-                        GURL("http://www.example.com"))
-                    .size());
-
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-
-  // Should not return the offer as the wallet import pref is disabled.
-  EXPECT_EQ(0U, personal_data_
-                    ->GetActiveAutofillPromoCodeOffersForOrigin(
-                        GURL("http://www.example.com"))
-                    .size());
-}
-
-// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
-// promo code offers if `IsAutofillPaymentMethodsEnabled()` returns `false`.
-TEST_F(PersonalDataManagerTest,
-       GetActiveAutofillPromoCodeOffersForOrigin_AutofillCreditCardDisabled) {
-  // Add an active promo code offer.
-  AddOfferDataForTest(test::GetPromoCodeOfferData(
-      /*origin=*/GURL("http://www.example.com")));
-
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-
-  // Should not return the offer as the autofill credit card pref is disabled.
-  EXPECT_EQ(0U, personal_data_
-                    ->GetActiveAutofillPromoCodeOffersForOrigin(
-                        GURL("http://www.example.com"))
-                    .size());
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
@@ -539,108 +322,6 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
 }
 
-// Test that local and server cards are not shown if
-// |kAutofillCreditCardEnabled| is set to |false|.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardsToSuggest_CreditCardAutofillDisabled) {
-  SetUpReferenceLocalCreditCards();
-
-  // Add some server cards.
-  std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
-  test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
-                          "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
-  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b460");
-  test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
-                          "2999", "1");
-  server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
-  server_cards.back().SetNetworkForMaskedCard(kMasterCard);
-
-  SetServerCards(server_cards);
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Disable Credit card autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Check that profiles were saved.
-  EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
-  // Expect no autofilled values or suggestions.
-  EXPECT_EQ(0U, personal_data_->GetCreditCardsToSuggest().size());
-
-  std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest();
-  ASSERT_EQ(0U, card_to_suggest.size());
-}
-
-// Test that local and server cards are not loaded into memory on start-up if
-// |kAutofillCreditCardEnabled| is set to |false|.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardsToSuggest_NoCardsLoadedIfDisabled) {
-  SetUpReferenceLocalCreditCards();
-
-  // Add some server cards.
-  std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
-  test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
-                          "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
-  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b460");
-  test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
-                          "2999", "1");
-  server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
-  server_cards.back().SetNetworkForMaskedCard(kMasterCard);
-
-  SetServerCards(server_cards);
-
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Expect 5 autofilled values or suggestions.
-  EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
-
-  // Disable Credit card autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  // Reload the database.
-  ResetPersonalDataManager();
-
-  // Expect no credit card values or suggestions were loaded.
-  EXPECT_EQ(0U, personal_data_->GetCreditCardsToSuggest().size());
-
-  std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest();
-  ASSERT_EQ(0U, card_to_suggest.size());
-}
-
-// Test that local credit cards are not added if |kAutofillCreditCardEnabled| is
-// set to |false|.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled) {
-  // Disable Profile autofill.
-  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-
-  // Add a local credit card.
-  CreditCard credit_card("002149C1-EE28-4213-A3B9-DA243FFF021B",
-                         "https://www.example.com");
-  test::SetCreditCardInfo(&credit_card, "Bonnie Parker",
-                          "5105105105105100" /* Mastercard */, "04", "2999",
-                          "1");
-  personal_data_->AddCreditCard(credit_card);
-
-  // Expect no credit card values or suggestions were added.
-  EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
-}
-
 TEST_F(PersonalDataManagerTest, ClearAllLocalData) {
   // Add some local data.
   AddProfileToPersonalDataManager(test::GetFullProfile());
@@ -660,84 +341,9 @@ TEST_F(PersonalDataManagerTest, ClearAllLocalData) {
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
 }
 
-// Test that setting a null sync service returns only local credit cards.
-TEST_F(PersonalDataManagerTest, GetCreditCards_NoSyncService) {
-  base::HistogramTester histogram_tester;
-  SetUpTwoCardTypes();
-
-  // Set no sync service.
-  personal_data_->SetSyncServiceForTest(nullptr);
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // No sync service is the same as payments integration being disabled, i.e.
-  // IsAutofillWalletImportEnabled() returning false. Only local credit
-  // cards are shown.
-  EXPECT_EQ(0U, personal_data_->GetServerCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-}
-
 // Sync Transport mode is only for Win, Mac, and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_F(PersonalDataManagerSyncTransportModeTest,
-       ServerCardsShowInTransportMode) {
-  SetUpTwoCardTypes();
-
-  CoreAccountInfo active_info =
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-
-  // Opt-in to seeing server card in sync transport mode.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
-
-  // Check that the server card is available for suggestion.
-  EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(2U, personal_data_->GetCreditCardsToSuggest().size());
-  EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
-
-  // Stop Wallet sync.
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
-
-  // Check that server cards are unavailable.
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetCreditCardsToSuggest().size());
-  EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(0U, personal_data_->GetServerCreditCards().size());
-}
-
-// Make sure that the opt in is necessary to show server cards if the
-// appropriate feature is disabled.
-TEST_F(PersonalDataManagerSyncTransportModeTest,
-       ServerCardsShowInTransportMode_NeedOptIn) {
-  SetUpTwoCardTypes();
-
-  CoreAccountInfo active_info =
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-
-  // The server card should not be available at first. The user needs to
-  // accept the opt-in offer.
-  EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetCreditCardsToSuggest().size());
-  EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
-
-  // Opt-in to seeing server card in sync transport mode.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
-
-  // Check that the server card is available for suggestion.
-  EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(2U, personal_data_->GetCreditCardsToSuggest().size());
-  EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
-}
-
 TEST_F(PersonalDataManagerSyncTransportModeTest,
        AutofillSyncToggleAvailableInTransportMode) {
   base::test::ScopedFeatureList feature_list;
@@ -753,44 +359,8 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
   EXPECT_FALSE(personal_data_->IsAutofillSyncToggleAvailable());
 }
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-// Tests that all the non settings origins of autofill credit cards are cleared
-// even if sync is disabled.
-TEST_F(
-    PersonalDataManagerTest,
-    SyncServiceInitializedWithAutofillDisabled_ClearCreditCardNonSettingsOrigins) {
-  // Create a card with a non-settings, non-empty origin.
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         "https://www.example.com");
-  test::SetCreditCardInfo(&credit_card, "Bob0",
-                          "5105105105105100" /* Mastercard */, "04", "1999",
-                          "1");
-  personal_data_->AddCreditCard(credit_card);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Turn off payments sync.
-  syncer::UserSelectableTypeSet user_selectable_type_set =
-      sync_service_.GetUserSettings()->GetSelectedTypes();
-  user_selectable_type_set.Remove(syncer::UserSelectableType::kPayments);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/user_selectable_type_set);
-
-  // The credit card should still exist.
-  ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // Reload the personal data manager.
-  ResetPersonalDataManager();
-
-  // The credit card should still exist.
-  ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // The card's origin should be cleared
-  EXPECT_TRUE(personal_data_->GetCreditCards()[0]->origin().empty());
-}
 
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
