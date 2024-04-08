@@ -60,6 +60,8 @@ import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
+import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -71,6 +73,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
@@ -1800,18 +1803,34 @@ class TabImpl implements Tab {
             return false; // Autofill provider can't be prepared.
         }
         if (mAutofillProvider != null) {
+            // Provider already existed. Swapping contents suffices.
             mAutofillProvider.setWebContents(newWebContents);
-            return true; // Provider already existed. Swapping contents suffices.
+        } else {
+            mAutofillProvider =
+                    new AutofillProvider(
+                            getContext(),
+                            mContentView,
+                            newWebContents,
+                            getContext().getString(R.string.app_name));
+            TabImplJni.get().initializeAutofillIfNecessary(mNativeTabAndroid);
         }
-        // TODO(b/326233923): Call selectionController.setNonSelectionActionModeCallback?
-        mAutofillProvider =
-                new AutofillProvider(
-                        getContext(),
-                        mContentView,
-                        newWebContents,
-                        getContext().getString(R.string.app_name));
-        TabImplJni.get().initializeAutofillIfNecessary(mNativeTabAndroid);
+        addAutofillItemsToSelectionActionMenu(newWebContents);
         return true;
+    }
+
+    private void addAutofillItemsToSelectionActionMenu(WebContents webContents) {
+        assert webContents != null;
+        assert mAutofillProvider != null;
+        SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
+        if (controller == null) {
+            return;
+        }
+        AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
+                new AutofillSelectionActionMenuDelegate();
+        selectionActionMenuDelegate.setAutofillSelectionMenuItemHelper(
+                new AutofillSelectionMenuItemHelper(
+                        ContextUtils.getApplicationContext(), mAutofillProvider));
+        controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
     }
 
     @CalledByNative
