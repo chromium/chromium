@@ -177,9 +177,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
   settings.use_zero_copy = IsUIZeroCopyEnabled() && !features::IsUsingRawDraw();
 
-  settings.use_layer_lists =
-      command_line->HasSwitch(cc::switches::kUIEnableLayerLists);
-
   // UI compositor always uses partial raster if not using zero-copy. Zero copy
   // doesn't currently support partial raster.
   // RawDraw doesn't support partial raster.

@@ -97,9 +97,6 @@ const char kUIShowScreenSpaceRects[] = "ui-show-screenspace-rects";
 // be highlighted. See DebugColors::NonLCDTextHighlightColor() for the colors.
 const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
 
-// Switches the ui compositor to use layer lists instead of layer trees.
-const char kUIEnableLayerLists[] = "ui-enable-layer-lists";
-
 // Enables the resume method on animated images.
 const char kAnimatedImageResume[] = "animated-image-resume";
 
