@@ -465,6 +465,14 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
                                                  /*is_oobe=*/true));
 }
 
+TEST_F(WallpaperPrefManagerTest, ShouldNotSyncInIfLocalWallpaperIsSeaPen) {
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kSeaPen);
+  WallpaperInfo synced_info = InfoWithType(WallpaperType::kDaily);
+  local_info.location = "6868";
+  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
+                                                  /*is_oobe=*/false));
+}
+
 // Verifies that creating a wallpaper info from prefs with an invalid layout
 // enum fails.
 TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidLayoutEnum) {

@@ -581,6 +581,10 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
     // Time Of Day wallpapers cannot be overwritten by other wallpapers.
     return false;
   }
+  if (local_info.type == WallpaperType::kSeaPen) {
+    // SeaPen wallpapers cannot be overwritten by other wallpapers.
+    return false;
+  }
   return true;
 }
 
