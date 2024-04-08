@@ -362,6 +362,15 @@ extension-event based interface in M119. The interface is described in
 | button_type | VolumeButtonType | The volume button to be tested |
 | timeout_seconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
 
+### CreateRoutineArgumentsUnion
+This is a union type. Exactly one field is set.
+
+| Property Name | Type | Released in Chrome version | Description |
+------------ | ------- | ----------- | ----------- |
+| memory | CreateMemoryRoutineArguments | M125 | Arguments to create a memory routine |
+| volumeButton | CreateVolumeButtonRoutineArguments | M125 | Arguments to create a volume button routine |
+| fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine |
+
 ### CreateRoutineResponse
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
