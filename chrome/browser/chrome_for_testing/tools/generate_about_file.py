@@ -11,8 +11,6 @@ import argparse
 import datetime
 import sys
 
-print(sys.argv[1:])
-
 year = datetime.datetime.now().year
 contents = ("""
 Google Chrome
