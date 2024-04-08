@@ -144,7 +144,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPostDefaultAbandonmentPromoFeature,
     &kIPHiOSPromoGenericDefaultBrowserFeature,
     &kIPHiOSOverflowMenuCustomizationFeature,
-    &kIPHiOSPageInfoRevampFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)

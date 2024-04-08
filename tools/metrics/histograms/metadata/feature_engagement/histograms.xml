@@ -240,8 +240,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSOverflowMenuCustomization"
       summary="overflow menu customization"/>
   <variant name="IPH_iOSPageInfoRevamp"
-      summary="showing the Page Info Revamp new badge IPH on the overflow
-               menu carousel"/>
+      summary="(obsolete) showing the Page Info Revamp new badge IPH on the
+               overflow menu carousel"/>
   <variant name="IPH_iOSParcelTrackingFeature"
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"

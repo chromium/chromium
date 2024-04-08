@@ -71,7 +71,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
@@ -291,11 +290,6 @@ bool IsBookmarked(const GURL& url,
         _engagementTracker->Dismissed(
             feature_engagement::kIPHWhatsNewUpdatedFeature);
       }
-    }
-
-    if (self.siteInfoDestination.badge != BadgeTypeNone) {
-      _engagementTracker->Dismissed(
-          feature_engagement::kIPHiOSPageInfoRevampFeature);
     }
 
     _engagementTracker = nullptr;
@@ -1808,16 +1802,8 @@ bool IsBookmarked(const GURL& url,
     case overflow_menu::Destination::RecentTabs:
       return self.isIncognito ? nil : self.recentTabsDestination;
     case overflow_menu::Destination::SiteInfo:
-      if (![self currentWebPageSupportsSiteInfo]) {
-        return nil;
-      }
-      if (IsRevampPageInfoIosEnabled() && self.engagementTracker &&
-          self.engagementTracker->ShouldTriggerHelpUI(
-              feature_engagement::kIPHiOSPageInfoRevampFeature)) {
-        self.siteInfoDestination.badge = BadgeTypeNew;
-      }
-      return self.siteInfoDestination;
-
+      return ([self currentWebPageSupportsSiteInfo]) ? self.siteInfoDestination
+                                                     : nil;
     case overflow_menu::Destination::Settings:
       if ([self shouldIndicateIdentityError]) {
         self.settingsDestination.badge = BadgeTypeError;

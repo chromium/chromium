@@ -42084,7 +42084,7 @@ should be able to be added at any place in this file.
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSPageInfoRevamp"
-      label="For Page Info Revamp new badge IPH feature."/>
+      label="For Page Info Revamp new badge IPH feature. (obsolete)"/>
   <suffix name="iOSParcelTrackingFeature"
       label="For the iOSParcelTrackingFeature feature"/>
   <suffix name="iOSPasswordPromoDesktop"
