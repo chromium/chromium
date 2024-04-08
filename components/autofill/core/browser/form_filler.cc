@@ -404,7 +404,7 @@ FillingProduct FormFiller::UndoAutofill(
   }
 
   // Do not attempt a refill after an Undo operation.
-  if (FillingContext* filling_context = GetFillingContext(form.global_id())) {
+  if (GetFillingContext(form.global_id())) {
     SetFillingContext(form.global_id(), nullptr);
   }
 

@@ -942,8 +942,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
         NOTREACHED();
         return kNormalSlopeValue;
     }
-  } else if (const auto* system_font =
-                 DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+  } else if (IsA<cssvalue::CSSPendingSystemFontValue>(value)) {
     return kNormalSlopeValue;
   } else if (const auto* style_range_value =
                  DynamicTo<cssvalue::CSSFontStyleRangeValue>(value)) {
@@ -983,8 +982,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(
     }
   }
 
-  if (const auto* system_font =
-          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+  if (IsA<cssvalue::CSSPendingSystemFontValue>(value)) {
     return kNormalWeightValue;
   }
 

@@ -864,7 +864,7 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
     return;
   }
 
-  if (AXObject* owner = GetOrCreateAriaOwnerFor(node, obj)) {
+  if (GetOrCreateAriaOwnerFor(node, obj)) {
     // Ensure the aria-owns relation is processed, which in turn ensures that
     // both the owner and owned child exist, and that the parent-child
     // relations are correctly set on each.

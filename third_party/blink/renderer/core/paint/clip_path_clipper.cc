@@ -322,7 +322,7 @@ std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     return bounding_box;
   }
 
-  if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
+  if (IsA<GeometryBoxClipPathOperation>(clip_path)) {
     reference_box.Intersect(gfx::RectF(InfiniteIntRect()));
     return reference_box;
   }

@@ -1052,8 +1052,8 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
       throw_on_dynamic_markup_insertions;
   if (RuntimeEnabledFeatures::RunMicrotaskBeforeXmlCustomElementEnabled() &&
       !parsing_fragment_) {
-    if (auto* definition = HTMLConstructionSite::LookUpCustomElementDefinition(
-            *document_, q_name, is)) {
+    if (HTMLConstructionSite::LookUpCustomElementDefinition(*document_, q_name,
+                                                            is)) {
       throw_on_dynamic_markup_insertions.emplace(document_);
       document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
       reactions.emplace();

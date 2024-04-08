@@ -169,7 +169,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.StyleRef().Visibility() != EVisibility::kVisible)
     return false;
 
-  if (const auto* layout_text = DynamicTo<LayoutText>(object)) {
+  if (IsA<LayoutText>(object)) {
     if (!ContainingBlockScope::top_)
       return false;
     if (object.IsBR())

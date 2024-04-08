@@ -59,7 +59,7 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
     auto iterator = sql_database->MakeEmbeddingsIterator();
     EXPECT_TRUE(iterator);
     size_t count = 0;
-    while (auto* embedding = iterator->Next()) {
+    while (iterator->Next()) {
       count++;
     }
     return count;

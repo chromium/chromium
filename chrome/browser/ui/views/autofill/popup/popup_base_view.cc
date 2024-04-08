@@ -258,7 +258,7 @@ bool PopupBaseView::DoShow() {
     return false;
   }
 
-  if (content::WebContents* web_contents = GetWebContents()) {
+  if (GetWebContents()) {
     custom_cursor_suppressor_.Start(
         /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
   } else {
