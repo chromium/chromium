@@ -70,18 +70,16 @@ struct LogicalAnchorCenterPosition {
 };
 
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
+    const ComputedStyle& style,
     const LogicalAlignment& alignment,
     WritingDirectionMode writing_direction,
-    LogicalSize available_size,
-    AnchorEvaluatorImpl* anchor_evaluator);
+    LogicalSize available_size);
 
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        const LogicalAlignment&,
-                       WritingDirectionMode container_writing_direction,
-                       WritingDirectionMode self_writing_direction,
-                       AnchorEvaluatorImpl* anchor_evaluator);
+                       WritingDirectionMode self_writing_direction);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
   // The original containing block size that the insets refer to.

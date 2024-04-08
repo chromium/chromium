@@ -21,11 +21,32 @@ std::optional<LayoutUnit> ResultCachingAnchorEvaluator::Evaluate(
     return std::nullopt;
   }
   // Forward mode to inner evaluator.
-  AnchorScope anchor_scope(GetMode(), GetPositionAnchorName(), evaluator_);
+  AnchorScope anchor_scope(GetMode(), GetInsetAreaOffsets(),
+                           GetPositionAnchorName(), evaluator_);
   std::optional<LayoutUnit> result =
       evaluator_ ? evaluator_->Evaluate(query) : std::optional<LayoutUnit>();
   results_.Set(GetMode(), query, result);
   return result;
+}
+
+std::optional<InsetAreaOffsets>
+ResultCachingAnchorEvaluator::ComputeInsetAreaOffsetsForLayout(
+    const ScopedCSSName* position_anchor,
+    InsetArea inset_area) {
+  if (!evaluator_) {
+    return std::nullopt;
+  }
+  return evaluator_->ComputeInsetAreaOffsetsForLayout(position_anchor,
+                                                      inset_area);
+}
+
+std::optional<PhysicalOffset>
+ResultCachingAnchorEvaluator::ComputeAnchorCenterOffsets(
+    const ComputedStyleBuilder& builder) {
+  if (!evaluator_) {
+    return std::nullopt;
+  }
+  return evaluator_->ComputeAnchorCenterOffsets(builder);
 }
 
 }  // namespace blink

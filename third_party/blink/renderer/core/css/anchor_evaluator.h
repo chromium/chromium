@@ -6,8 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ANCHOR_EVALUATOR_H_
 
 #include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -58,25 +61,58 @@ class CORE_EXPORT AnchorEvaluator {
     kTop,
     kBottom,
 
+    // anchor() functions used for computing inset-area offsets before
+    // inset-area is modifying the containing block size. These are kept
+    // separately from the explicit anchor() functions for caching purposes in
+    // AnchorResults because anchor(left) yield a different result depending on
+    // whether the inset-area has modified the containing block size or not.
+    kBaseLeft,
+    kBaseRight,
+    kBaseTop,
+    kBaseBottom,
+
     // anchor-size()
     kSize
   };
+
+  static bool IsBaseMode(AnchorEvaluator::Mode mode) {
+    switch (mode) {
+      case Mode::kBaseLeft:
+      case Mode::kBaseRight:
+      case Mode::kBaseTop:
+      case Mode::kBaseBottom:
+        return true;
+      default:
+        return false;
+    }
+  }
 
   // Evaluates an anchor() or anchor-size() query.
   // Returns |nullopt| if the query is invalid (e.g., no targets or wrong
   // axis.), in which case the fallback should be used.
   virtual std::optional<LayoutUnit> Evaluate(const AnchorQuery&) = 0;
 
+  // Take the computed inset-area and position-anchor and compute the physical
+  // offsets to inset the containing block with.
+  virtual std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+      const ScopedCSSName* position_anchor,
+      InsetArea inset_area) = 0;
+
+  // Take the computed inset-area and position-anchor from the builder and
+  // compute the physical offset for anchor-center
+  virtual std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder&) = 0;
+
   virtual void Trace(Visitor*) const;
 
  protected:
-  explicit AnchorEvaluator(const ScopedCSSName* position_anchor_name)
-      : position_anchor_name_(position_anchor_name) {}
-
   const ScopedCSSName* GetPositionAnchorName() const {
     return position_anchor_name_;
   }
   Mode GetMode() const { return mode_; }
+  std::optional<InsetAreaOffsets> GetInsetAreaOffsets() const {
+    return inset_area_offsets_;
+  }
 
  private:
   friend class AnchorScope;
@@ -85,6 +121,8 @@ class CORE_EXPORT AnchorEvaluator {
   Member<const ScopedCSSName> position_anchor_name_;
   // The computed position-anchor in use for the current try option.
   Mode mode_ = Mode::kNone;
+  // The computed inset-area offsets in use for the current try option.
+  std::optional<InsetAreaOffsets> inset_area_offsets_;
 };
 
 // Temporarily changes Mode, default anchor (position-anchor), and apply the
@@ -104,6 +142,7 @@ class CORE_EXPORT AnchorScope {
   // Temporarily change Mode, applied inset-area and position-anchor.
   AnchorScope(Mode, const ComputedStyleBuilder&, AnchorEvaluator*);
   AnchorScope(Mode,
+              std::optional<InsetAreaOffsets>,
               const ScopedCSSName* position_anchor_name,
               AnchorEvaluator*);
   // Temporarily change Mode only. Applied inset-area and position-anchor stay
@@ -113,6 +152,7 @@ class CORE_EXPORT AnchorScope {
   ~AnchorScope() {
     if (anchor_evaluator_) {
       anchor_evaluator_->mode_ = original_mode_;
+      anchor_evaluator_->inset_area_offsets_ = original_inset_area_offsets_;
       anchor_evaluator_->position_anchor_name_ = original_position_anchor_name_;
     }
   }
@@ -121,7 +161,7 @@ class CORE_EXPORT AnchorScope {
   AnchorEvaluator* anchor_evaluator_ = nullptr;
   const ScopedCSSName* original_position_anchor_name_ = nullptr;
   Mode original_mode_ = Mode::kNone;
-  // TODO(329584105): Add inset-area
+  std::optional<InsetAreaOffsets> original_inset_area_offsets_;
 };
 
 }  // namespace blink

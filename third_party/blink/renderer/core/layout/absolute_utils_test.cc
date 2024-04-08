@@ -112,7 +112,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     LogicalAnchorQuery anchor_query;
     AnchorEvaluatorImpl anchor_evaluator(
         *node.GetLayoutBox(), anchor_query,
-        /* default_anchor_specifier */ nullptr,
         /* implicit_anchor */ nullptr, container_converter,
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -122,9 +121,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
-    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), LogicalAlignment(),
-        container_writing_direction, self_writing_direction, &anchor_evaluator);
+    const LogicalOofInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
+                               LogicalAlignment(), self_writing_direction);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), LogicalAlignment(), insets,
@@ -154,7 +153,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     LogicalAnchorQuery anchor_query;
     AnchorEvaluatorImpl anchor_evaluator(
         *node.GetLayoutBox(), anchor_query,
-        /* default_anchor_specifier */ nullptr,
         /* implicit_anchor */ nullptr, container_converter,
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -164,9 +162,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
-    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), LogicalAlignment(),
-        container_writing_direction, self_writing_direction, &anchor_evaluator);
+    const LogicalOofInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
+                               LogicalAlignment(), self_writing_direction);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), LogicalAlignment(), insets,

@@ -1206,5 +1206,23 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "InsetAreaOffsets",
+      field_template: "external",
+      field_group: "*",
+      include_paths: ["third_party/blink/renderer/core/style/inset_area.h"],
+      default_value: "std::nullopt",
+      type_name: "std::optional<blink::InsetAreaOffsets>",
+      custom_compare: true,
+    },
+    {
+      name: "AnchorCenterOffset",
+      field_template: "external",
+      field_group: "*",
+      include_paths: ["third_party/blink/renderer/core/layout/geometry/physical_offset.h"],
+      default_value: "std::nullopt",
+      type_name: "std::optional<PhysicalOffset>",
+      custom_compare: true,
+    },
   ],
 }

@@ -25,6 +25,8 @@
 
 namespace blink {
 
+class ComputedStyle;
+
 // An AnchorItem represents an anchor query in a give Mode, i.e. either
 // anchor(...) or anchor-size(). Its purpose is to act as the key for the hash
 // map in AnchorResults, which can answer anchor queries based on predefined
@@ -97,6 +99,11 @@ class CORE_EXPORT AnchorResults : public AnchorEvaluator {
 
  public:
   std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override;
+  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+      const ScopedCSSName* position_anchor,
+      InsetArea inset_area) override;
+  std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder&) override;
 
   void Set(AnchorEvaluator::Mode,
            const AnchorQuery&,
@@ -105,7 +112,7 @@ class CORE_EXPORT AnchorResults : public AnchorEvaluator {
 
   // Used for invalidation, see class comment.
   bool IsEmpty() const { return map_.empty(); }
-  bool IsAnyResultDifferent(AnchorEvaluator*) const;
+  bool IsAnyResultDifferent(const ComputedStyle&, AnchorEvaluator*) const;
 
   void Trace(Visitor*) const override;
 

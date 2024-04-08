@@ -34,6 +34,15 @@ class TestAnchorEvaluator : public AnchorEvaluator {
   std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override {
     return result_;
   }
+  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+      const ScopedCSSName*,
+      InsetArea) override {
+    return InsetAreaOffsets();
+  }
+  std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder&) override {
+    return std::nullopt;
+  }
 
  private:
   std::optional<LayoutUnit> result_;

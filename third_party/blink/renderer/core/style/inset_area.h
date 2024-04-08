@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -122,6 +123,22 @@ class CORE_EXPORT InsetArea {
   InsetAreaRegion span1_end_ = InsetAreaRegion::kNone;
   InsetAreaRegion span2_start_ = InsetAreaRegion::kNone;
   InsetAreaRegion span2_end_ = InsetAreaRegion::kNone;
+};
+
+// Used to store inset offsets on ComputedStyle for adjusting the
+// containing-block rectangle. All zeros means a span-all inset-area is applied.
+// Non-zero values refer to an anchor edge offset relative to the containing
+// block rectangle.
+struct InsetAreaOffsets {
+  LayoutUnit top_;
+  LayoutUnit bottom_;
+  LayoutUnit left_;
+  LayoutUnit right_;
+
+  bool operator==(const InsetAreaOffsets& other) const {
+    return top_ == other.top_ && bottom_ == other.bottom_ &&
+           left_ == other.left_ && right_ == other.right_;
+  }
 };
 
 }  // namespace blink

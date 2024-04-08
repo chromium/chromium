@@ -4528,6 +4528,40 @@ const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForInsetArea(style.GetInsetArea());
 }
 
+namespace {
+
+void ComputeAnchorEdgeOffsetsForInsetArea(StyleResolverState& state,
+                                          blink::InsetArea inset_area) {
+  if (AnchorEvaluator* evaluator =
+          state.CssToLengthConversionData().GetAnchorEvaluator()) {
+    state.StyleBuilder().SetInsetAreaOffsets(
+        evaluator->ComputeInsetAreaOffsetsForLayout(
+            state.StyleBuilder().PositionAnchor(), inset_area));
+  }
+  state.StyleBuilder().SetHasAnchorFunctions();
+}
+
+}  // namespace
+
+void InsetArea::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value,
+                           ValueMode) const {
+  blink::InsetArea inset_area =
+      StyleBuilderConverter::ConvertInsetArea(state, value);
+  state.StyleBuilder().SetInsetArea(inset_area);
+  if (!inset_area.IsNone()) {
+    ComputeAnchorEdgeOffsetsForInsetArea(state, inset_area);
+  }
+}
+
+void InsetArea::ApplyInherit(StyleResolverState& state) const {
+  blink::InsetArea inset_area = state.ParentStyle()->GetInsetArea();
+  state.StyleBuilder().SetInsetArea(inset_area);
+  if (!inset_area.IsNone()) {
+    ComputeAnchorEdgeOffsetsForInsetArea(state, inset_area);
+  }
+}
+
 const CSSValue* InsetBlockEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
+#include "third_party/blink/renderer/core/style/inset_area.h"
 
 namespace blink {
 
@@ -366,6 +368,8 @@ void AnchorEvaluatorImpl::ValidateDefaultAnchor() const {
     position_anchor_specifier_ = GetPositionAnchorName();
     default_anchor_.reset();
     default_anchor_scroll_container_layer_.reset();
+    // The effect of an applied inset-area depends on the position-anchor.
+    ApplyInsetAreaOffsets();
   }
 }
 
@@ -431,6 +435,10 @@ bool AnchorEvaluatorImpl::AllowAnchor() const {
     case Mode::kRight:
     case Mode::kTop:
     case Mode::kBottom:
+    case Mode::kBaseLeft:
+    case Mode::kBaseRight:
+    case Mode::kBaseTop:
+    case Mode::kBaseBottom:
       return true;
     case Mode::kNone:
     case Mode::kSize:
@@ -447,16 +455,22 @@ bool AnchorEvaluatorImpl::AllowAnchorSize() const {
     case Mode::kRight:
     case Mode::kTop:
     case Mode::kBottom:
+    case Mode::kBaseLeft:
+    case Mode::kBaseRight:
+    case Mode::kBaseTop:
+    case Mode::kBaseBottom:
       return false;
   }
 }
 
 bool AnchorEvaluatorImpl::IsYAxis() const {
-  return GetMode() == Mode::kTop || GetMode() == Mode::kBottom;
+  return GetMode() == Mode::kTop || GetMode() == Mode::kBottom ||
+         GetMode() == Mode::kBaseTop || GetMode() == Mode::kBaseBottom;
 }
 
 bool AnchorEvaluatorImpl::IsRightOrBottom() const {
-  return GetMode() == Mode::kRight || GetMode() == Mode::kBottom;
+  return GetMode() == Mode::kRight || GetMode() == Mode::kBottom ||
+         GetMode() == Mode::kBaseRight || GetMode() == Mode::kBaseBottom;
 }
 
 bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
@@ -486,13 +500,16 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     return std::nullopt;
   }
 
+  ValidateAppliedInsetAreaOffsets();
+
   const bool is_y_axis = IsYAxis();
 
   DCHECK(AnchorQuery());
   if (std::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
           *anchor_reference, anchor_value, percentage, AvailableSizeAlongAxis(),
-          container_converter_, self_writing_direction_, offset_to_padding_box_,
-          is_y_axis, IsRightOrBottom())) {
+          container_converter_, self_writing_direction_,
+          inset_area_modified_containing_block_rect_.offset, is_y_axis,
+          IsRightOrBottom())) {
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
@@ -546,14 +563,142 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
       container_converter_.ToPhysical(reference->rect));
 }
 
-std::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
-    bool is_y_axis) {
-  AnchorScope anchor_scope(
-      is_y_axis ? AnchorScope::Mode::kTop : AnchorScope::Mode::kLeft, this);
+std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(
+    const ComputedStyleBuilder& builder) {
+  AnchorScope outer_scope(AnchorScope::Mode::kNone, builder, this);
   // Parameter `percentage` is unused for any non-percentage anchor value.
   const double dummy_percentage = 0;
-  return EvaluateAnchor(*AnchorSpecifierValue::Default(),
-                        CSSAnchorValue::kCenter, dummy_percentage);
+
+  // Do not let the pre-computation of anchor-center offsets mark for needing
+  // scroll adjustments. It is not known at this point if anchor-center will be
+  // used at all, and allowing this marking could cause unnecessary work and
+  // paint invalidations.
+  base::AutoReset<bool> reset_adjust_x(&needs_scroll_adjustment_in_x_, true);
+  base::AutoReset<bool> reset_adjust_y(&needs_scroll_adjustment_in_y_, true);
+  std::optional<LayoutUnit> top;
+  std::optional<LayoutUnit> left;
+  {
+    AnchorScope anchor_scope(AnchorScope::Mode::kTop, this);
+    top = EvaluateAnchor(*AnchorSpecifierValue::Default(),
+                         CSSAnchorValue::kCenter, dummy_percentage);
+  }
+  {
+    AnchorScope anchor_scope(AnchorScope::Mode::kLeft, this);
+    left = EvaluateAnchor(*AnchorSpecifierValue::Default(),
+                          CSSAnchorValue::kCenter, dummy_percentage);
+  }
+  CHECK(top.has_value() == left.has_value());
+  if (top.has_value()) {
+    return PhysicalOffset(left.value(), top.value());
+  }
+  return std::nullopt;
+}
+
+std::optional<InsetAreaOffsets>
+AnchorEvaluatorImpl::ComputeInsetAreaOffsetsForLayout(
+    const ScopedCSSName* position_anchor,
+    InsetArea inset_area) {
+  CHECK(!inset_area.IsNone());
+
+  // Set up the computed position-anchor for the HasDefaultAnchor() call below
+  // to work correctly.
+  AnchorScope outer_scope(AnchorScope::Mode::kNone, std::nullopt,
+                          position_anchor, this);
+
+  if (!HasDefaultAnchor()) {
+    return std::nullopt;
+  }
+  InsetArea physical_inset_area = inset_area.ToPhysical(
+      container_converter_.GetWritingDirection(), self_writing_direction_);
+
+  LayoutUnit top;
+  LayoutUnit bottom;
+  LayoutUnit left;
+  LayoutUnit right;
+
+  // The InsetArea::Used*() methods returns either an anchor() function or
+  // nullopt (representing a 0px length), using top/left/right/bottom, to adjust
+  // the containing block to align with either of the physical edges of the
+  // default anchor.
+  //
+  // Note that the inset adjustment is already set to zero above, so there's
+  // nothing to do here for nullopt values.
+  if (std::optional<blink::AnchorQuery> query = physical_inset_area.UsedTop()) {
+    AnchorScope anchor_scope(AnchorScope::Mode::kBaseTop, this);
+    top = Evaluate(query.value()).value_or(LayoutUnit());
+  }
+  if (std::optional<blink::AnchorQuery> query =
+          physical_inset_area.UsedBottom()) {
+    AnchorScope anchor_scope(AnchorScope::Mode::kBaseBottom, this);
+    bottom = Evaluate(query.value()).value_or(LayoutUnit());
+  }
+  if (std::optional<blink::AnchorQuery> query =
+          physical_inset_area.UsedLeft()) {
+    AnchorScope anchor_scope(AnchorScope::Mode::kBaseLeft, this);
+    left = Evaluate(query.value()).value_or(LayoutUnit());
+  }
+  if (std::optional<blink::AnchorQuery> query =
+          physical_inset_area.UsedRight()) {
+    AnchorScope anchor_scope(AnchorScope::Mode::kBaseRight, this);
+    right = Evaluate(query.value()).value_or(LayoutUnit());
+  }
+  return InsetAreaOffsets(top, bottom, left, right);
+}
+
+void AnchorEvaluatorImpl::ValidateAppliedInsetAreaOffsets() const {
+  if (GetInsetAreaOffsets() == applied_inset_area_offsets_) {
+    return;
+  }
+  ApplyInsetAreaOffsets();
+}
+
+void AnchorEvaluatorImpl::ApplyInsetAreaOffsets() const {
+  inset_area_modified_containing_block_rect_ = containing_block_rect_;
+  applied_inset_area_offsets_ = GetInsetAreaOffsets();
+  if (!applied_inset_area_offsets_.has_value()) {
+    return;
+  }
+
+  LayoutUnit top = applied_inset_area_offsets_->top_;
+  LayoutUnit bottom = applied_inset_area_offsets_->bottom_;
+  LayoutUnit left = applied_inset_area_offsets_->left_;
+  LayoutUnit right = applied_inset_area_offsets_->right_;
+
+  // Reduce the container size and adjust the offset based on the inset-area.
+  inset_area_modified_containing_block_rect_.ContractEdges(top, right, bottom,
+                                                           left);
+
+  // For 'center' values (aligned with start and end anchor sides), the
+  // containing block is aligned and sized with the anchor, regardless of
+  // whether it's inside the original containing block or not. Otherwise,
+  // ContractEdges above might have created a negative size if the inset-area is
+  // aligned with an anchor side outside the containing block.
+  if (inset_area_modified_containing_block_rect_.size.width < LayoutUnit()) {
+    DCHECK(left == LayoutUnit() || right == LayoutUnit())
+        << "If aligned to both anchor edges, the size should never be "
+           "negative.";
+    // Collapse the inline size to 0 and align with the single anchor edge
+    // defined by the inset-area.
+    if (left == LayoutUnit()) {
+      DCHECK(right != LayoutUnit());
+      inset_area_modified_containing_block_rect_.offset.left +=
+          inset_area_modified_containing_block_rect_.size.width;
+    }
+    inset_area_modified_containing_block_rect_.size.width = LayoutUnit();
+  }
+  if (inset_area_modified_containing_block_rect_.size.height < LayoutUnit()) {
+    DCHECK(top == LayoutUnit() || bottom == LayoutUnit())
+        << "If aligned to both anchor edges, the size should never be "
+           "negative.";
+    // Collapse the block size to 0 and align with the single anchor edge
+    // defined by the inset-area.
+    if (top == LayoutUnit()) {
+      DCHECK(bottom != LayoutUnit());
+      inset_area_modified_containing_block_rect_.offset.top +=
+          inset_area_modified_containing_block_rect_.size.height;
+    }
+    inset_area_modified_containing_block_rect_.size.height = LayoutUnit();
+  }
 }
 
 void LogicalAnchorReference::Trace(Visitor* visitor) const {

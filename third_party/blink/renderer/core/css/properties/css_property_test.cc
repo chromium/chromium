@@ -43,6 +43,16 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
                                          : std::optional<LayoutUnit>();
   }
 
+  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+      const ScopedCSSName*,
+      InsetArea) override {
+    return std::nullopt;
+  }
+  std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder& builder) override {
+    return std::nullopt;
+  }
+
  private:
   AnchorScope::Mode required_mode_;
 };

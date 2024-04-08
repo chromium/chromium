@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/anchor_results.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -32,6 +33,19 @@ std::optional<LayoutUnit> AnchorResults::Evaluate(const AnchorQuery& query) {
   return std::nullopt;
 }
 
+std::optional<InsetAreaOffsets> AnchorResults::ComputeInsetAreaOffsetsForLayout(
+    const ScopedCSSName* position_anchor,
+    InsetArea inset_area) {
+  // Only relevant for interleaved anchors.
+  return std::nullopt;
+}
+
+std::optional<PhysicalOffset> AnchorResults::ComputeAnchorCenterOffsets(
+    const ComputedStyleBuilder& builder) {
+  // Only relevant for interleaved anchors.
+  return std::nullopt;
+}
+
 void AnchorResults::Set(AnchorEvaluator::Mode mode,
                         const AnchorQuery& query,
                         std::optional<LayoutUnit> result) {
@@ -42,9 +56,14 @@ void AnchorResults::Clear() {
   map_.clear();
 }
 
-bool AnchorResults::IsAnyResultDifferent(AnchorEvaluator* evaluator) const {
+bool AnchorResults::IsAnyResultDifferent(const ComputedStyle& style,
+                                         AnchorEvaluator* evaluator) const {
+  ScopedCSSName* position_anchor = style.PositionAnchor();
   for (const auto& [key, old_result] : map_) {
-    AnchorScope anchor_scope(key->GetMode(), evaluator);
+    Mode mode = key->GetMode();
+    std::optional<InsetAreaOffsets> inset_area =
+        IsBaseMode(mode) ? std::nullopt : style.InsetAreaOffsets();
+    AnchorScope anchor_scope(mode, inset_area, position_anchor, evaluator);
     std::optional<LayoutUnit> new_result =
         evaluator ? evaluator->Evaluate(key->Query())
                   : std::optional<LayoutUnit>();

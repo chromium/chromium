@@ -107,7 +107,7 @@
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
                 "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box",
                 "position-fallback-bounds", "position-try-options", "position-try-order",
-                "position-visibility"],
+                "position-visibility", "inset-area"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",

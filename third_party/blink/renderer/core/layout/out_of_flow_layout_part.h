@@ -113,12 +113,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // The writing direction of the container.
     WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
                                               TextDirection::kLtr};
-    // inset-area, aligned with an anchor edge, modified the rect
-    // which might require horizontal scroll adjustments.
-    bool needs_scroll_adjustment_in_x = false;
-    // inset-area, aligned with an anchor edge, modified the rect
-    // which might require vertical scroll adjustments.
-    bool needs_scroll_adjustment_in_y = false;
     // Size and offset of the container.
     LogicalRect rect;
     // The relative positioned offset to be applied after fragmentation is
@@ -151,7 +145,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
    public:
     BlockNode node;
     const LogicalStaticPosition static_position;
-    const ContainingBlockInfo container_info;
+    const ContainingBlockInfo base_container_info;
     const WritingDirectionMode default_writing_direction;
     const OofContainingBlock<LogicalOffset> containing_block;
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
@@ -161,7 +155,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
     NodeInfo(BlockNode node,
              const LogicalStaticPosition static_position,
-             const ContainingBlockInfo container_info,
+             const ContainingBlockInfo base_container_info,
              const WritingDirectionMode default_writing_direction,
              bool is_fragmentainer_descendant,
              const OofContainingBlock<LogicalOffset>& containing_block,
@@ -171,7 +165,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              bool is_hidden_for_paint)
         : node(node),
           static_position(static_position),
-          container_info(container_info),
+          base_container_info(base_container_info),
           default_writing_direction(default_writing_direction),
           containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
@@ -306,14 +300,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const BlockNode& candidate,
       const LogicalAnchorQueryMap* anchor_queries) const;
 
-  const ContainingBlockInfo ApplyInsetArea(
-      const InsetArea& inset_area,
-      const ContainingBlockInfo& container_info,
-      const BlockNode& candidate,
-      const LogicalAnchorQueryMap* anchor_queries);
+  ContainingBlockInfo ApplyInsetAreaOffsets(
+      const InsetAreaOffsets& offsets,
+      const ContainingBlockInfo& container_info) const;
 
-  NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node,
-                         const LogicalAnchorQueryMap* anchor_queries = nullptr);
+  NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);
 
   const LayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,

@@ -365,19 +365,12 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
     const LogicalAlignment& alignment,
-    WritingDirectionMode container_writing_direction,
-    WritingDirectionMode self_writing_direction,
-    AnchorEvaluatorImpl* anchor_evaluator) {
+    WritingDirectionMode self_writing_direction) {
   bool force_x_insets_to_zero = false;
   bool force_y_insets_to_zero = false;
-  if (!style.GetInsetArea().IsNone() && anchor_evaluator->HasDefaultAnchor()) {
-    // We only need to know if the inset-area is 'auto' or not below, but need
-    // to consider writing direction as the inset-area falls back to 'auto' if
-    // the axes are not orthogonal.
-    force_x_insets_to_zero = force_y_insets_to_zero =
-        !style.GetInsetArea()
-             .ToPhysical(container_writing_direction, self_writing_direction)
-             .IsNone();
+  std::optional<InsetAreaOffsets> offsets = style.InsetAreaOffsets();
+  if (offsets.has_value()) {
+    force_x_insets_to_zero = force_y_insets_to_zero = true;
   }
   if (alignment.inline_alignment.GetPosition() == ItemPosition::kAnchorCenter) {
     if (self_writing_direction.IsHorizontal()) {
@@ -456,10 +449,10 @@ LogicalAlignment ComputeAlignment(
 }
 
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
+    const ComputedStyle& style,
     const LogicalAlignment& alignment,
     WritingDirectionMode writing_direction,
-    LogicalSize available_logical_size,
-    AnchorEvaluatorImpl* anchor_evaluator) {
+    LogicalSize available_logical_size) {
   // Compute in physical, because anchors may be in different writing-mode.
   const ItemPosition inline_position = alignment.inline_alignment.GetPosition();
   const ItemPosition block_position = alignment.block_alignment.GetPosition();
@@ -476,24 +469,25 @@ LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, writing_direction.GetWritingMode());
   std::optional<LayoutUnit> left;
-  if (has_anchor_center_in_x) {
-    left =
-        anchor_evaluator->GetPhysicalAnchorCenterOffset(/* is_y_axis */ false);
-  }
   std::optional<LayoutUnit> top;
-  if (has_anchor_center_in_y) {
-    top = anchor_evaluator->GetPhysicalAnchorCenterOffset(/* is_y_axis */ true);
+  std::optional<LayoutUnit> right;
+  std::optional<LayoutUnit> bottom;
+  if (style.AnchorCenterOffset().has_value()) {
+    if (has_anchor_center_in_x) {
+      left = style.AnchorCenterOffset()->left;
+      if (left) {
+        right = available_size.width - *left;
+      }
+    }
+    if (has_anchor_center_in_y) {
+      top = style.AnchorCenterOffset()->top;
+      if (top) {
+        bottom = available_size.height - *top;
+      }
+    }
   }
 
   // Convert result back to logical against `writing_direction`.
-  std::optional<LayoutUnit> right;
-  if (left) {
-    right = available_size.width - *left;
-  }
-  std::optional<LayoutUnit> bottom;
-  if (top) {
-    bottom = available_size.height - *top;
-  }
   PhysicalToLogical converter(writing_direction, top, right, bottom, left);
   return LogicalAnchorCenterPosition{converter.InlineStart(),
                                      converter.BlockStart()};

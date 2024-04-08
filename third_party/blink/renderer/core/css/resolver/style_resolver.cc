@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -1118,6 +1119,8 @@ const ComputedStyle* StyleResolver::ResolveStyle(
         state, style_request.IsPseudoStyleRequest() ? nullptr : element);
   }
 
+  ApplyAnchorCenterOffset(state);
+
   IncrementResolvedStyleCounters(style_request, GetDocument());
 
   if (!style_request.IsPseudoStyleRequest()) {
@@ -2065,6 +2068,20 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       *animating_element, state.AnimationUpdate(), state.StyleBuilder());
 
   return apply;
+}
+
+void StyleResolver::ApplyAnchorCenterOffset(StyleResolverState& state) {
+  if (AnchorEvaluator* evaluator =
+          state.CssToLengthConversionData().GetAnchorEvaluator()) {
+    // Pre-compute anchor-center offset so that the OOF layout code does not
+    // need to set up an AnchorEvaluator but simply retrieve the offsets from
+    // the ComputedStyle.
+    if (std::optional<PhysicalOffset> offset =
+            evaluator->ComputeAnchorCenterOffsets(state.StyleBuilder());
+        offset.has_value()) {
+      state.StyleBuilder().SetAnchorCenterOffset(offset);
+    }
+  }
 }
 
 StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(

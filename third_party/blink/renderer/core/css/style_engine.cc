@@ -3498,11 +3498,19 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
         try_tactics_set);
     needs_update = true;
   }
+  if (element.ComputedStyleRef().PositionAnchor() ||
+      element.ImplicitAnchorElement()) {
+    // anchor-center offsets may need to be updated since the layout of the
+    // anchor may have changed. anchor-center offsets are computed when a
+    // default anchor is present.
+    needs_update = true;
+  }
   if (element.ComputedStyleRef().HasAnchorFunctions()) {
     AnchorResults& anchor_results =
         element.EnsureOutOfFlowData().GetAnchorResults();
     if (anchor_results.IsEmpty() ||
-        anchor_results.IsAnyResultDifferent(anchor_evaluator)) {
+        anchor_results.IsAnyResultDifferent(element.ComputedStyleRef(),
+                                            anchor_evaluator)) {
       needs_update = true;
     }
   }

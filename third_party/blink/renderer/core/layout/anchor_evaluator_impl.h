@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
@@ -258,21 +259,19 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   AnchorEvaluatorImpl(const LayoutObject& query_object,
                       const LogicalAnchorQuery& anchor_query,
-                      const ScopedCSSName* position_anchor_name,
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : AnchorEvaluator(position_anchor_name),
-        query_object_(&query_object),
+      : query_object_(&query_object),
         anchor_query_(&anchor_query),
-        position_anchor_specifier_(position_anchor_name),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box),
-        available_size_(available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size),
+        inset_area_modified_containing_block_rect_(offset_to_padding_box,
+                                                   available_size) {
     DCHECK(anchor_query_);
   }
 
@@ -280,23 +279,21 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // instead of |LogicalAnchorQuery|.
   AnchorEvaluatorImpl(const LayoutObject& query_object,
                       const LogicalAnchorQueryMap& anchor_queries,
-                      const ScopedCSSName* position_anchor_name,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : AnchorEvaluator(position_anchor_name),
-        query_object_(&query_object),
+      : query_object_(&query_object),
         anchor_queries_(&anchor_queries),
-        position_anchor_specifier_(position_anchor_name),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box),
-        available_size_(available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size),
+        inset_area_modified_containing_block_rect_(offset_to_padding_box,
+                                                   available_size) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -315,13 +312,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // (e.g., no target or wrong axis).
   std::optional<LayoutUnit> Evaluate(const class AnchorQuery&) override;
 
+  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+      const ScopedCSSName* position_anchor,
+      InsetArea inset_area) override;
+
+  std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder&) override;
+
   // Finds the rect of the element referenced by the `position-fallback-bounds`
   // property, or nullopt if there's no such element.
   std::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
-
-  // Returns the offset `anchor-center` aligns to in the current physical axis,
-  // or nullopt if there's no default anchor.
-  std::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(bool is_y_axis);
 
   bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
 
@@ -348,10 +348,13 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   bool IsRightOrBottom() const;
 
   LayoutUnit AvailableSizeAlongAxis() const {
-    return IsYAxis() ? available_size_.height : available_size_.width;
+    return IsYAxis() ? inset_area_modified_containing_block_rect_.Height()
+                     : inset_area_modified_containing_block_rect_.Width();
   }
 
   void ValidateDefaultAnchor() const;
+  void ValidateAppliedInsetAreaOffsets() const;
+  void ApplyInsetAreaOffsets() const;
 
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
@@ -364,10 +367,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   WritingDirectionMode self_writing_direction_{WritingMode::kHorizontalTb,
                                                TextDirection::kLtr};
 
-  PhysicalOffset offset_to_padding_box_;
-
   // Either width or height will be used, depending on IsYAxis().
-  PhysicalSize available_size_;
+  PhysicalRect containing_block_rect_;
+
+  // containing_block_rect_, further constrained by the current inset-area.
+  mutable PhysicalRect inset_area_modified_containing_block_rect_;
+
+  // The inset-area currently applied to the
+  // inset_area_modified_containing_block_rect_.
+  mutable std::optional<InsetAreaOffsets> applied_inset_area_offsets_;
 
   // These fields will be populated during `anchor()` evaluation if needed.
   mutable std::optional<const LayoutObject*> default_anchor_;
