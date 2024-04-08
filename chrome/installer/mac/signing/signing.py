@@ -12,6 +12,14 @@ import re
 from signing import commands, invoker
 
 
+class InvalidLipoArchCountException(ValueError):
+    pass
+
+
+class InvalidAppGeometryException(ValueError):
+    pass
+
+
 class Invoker(invoker.Base):
 
     def codesign(self, config, product, path, replace_existing_signature=False):
@@ -73,8 +81,8 @@ def _linker_signed_arm64_needs_force(path):
         return False
 
     # Yes, codesign --display puts all of this on stderr.
-    match = re.search(b'^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$', stderr,
-                      re.MULTILINE)
+    match = re.search(rb'^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$',
+                      stderr, re.MULTILINE)
     if not match:
         return False
 
@@ -85,6 +93,47 @@ def _linker_signed_arm64_needs_force(path):
     LINKER_SIGNED_FLAG = 0x20000
 
     return (flags & LINKER_SIGNED_FLAG) != 0
+
+
+def _binary_architectures_offsets(binary_path):
+    """Returns a tuple of architecture offset pairs.
+    Raises InvalidLipoArchCountException if the nfat_arch count does not match
+    the parsed architecture count.
+
+    Args:
+        binary_path: The path to the binary on disk.
+
+    Returns:
+        Returns a tuple of architecture offset pairs.
+        For example: (('x86_64', 16384), ('arm64', 294912))
+        or for non-universal: (('arm64', 0),)
+    """
+    command = ['lipo', '-detailed_info', binary_path]
+    output = commands.run_command_output(command)
+
+    # Find the architecture for a non-universal binary.
+    match = re.search(rb'^Non-fat file:.+architecture:\s(.+)$', output,
+                      re.MULTILINE)
+    if match is not None:
+        return tuple(((match.group(1).decode('ascii'), 0),))
+
+    # Get the expected number of architectures for a universal binary.
+    nfat_arch_count = int(
+        re.search(rb'^nfat_arch\s(\d+)$', output, re.MULTILINE).group(1))
+
+    # Find architecture-offset pairs for a universal binary.
+    arch_offsets = tuple(
+        (match.group(1).decode('ascii'), int(match.group(2)))
+        for match in re.finditer(
+            rb'^architecture\s(.+)\n(?:^[^\n]*\n)*?^\s+offset\s(\d+)$', output,
+            re.MULTILINE)
+    )
+
+    # Make sure nfat_arch matches the found number of pairs.
+    if nfat_arch_count != len(arch_offsets):
+        raise InvalidLipoArchCountException()
+
+    return arch_offsets
 
 
 def sign_part(paths, config, part):
@@ -134,3 +183,23 @@ def validate_app(paths, config, part):
     ])
     if config.run_spctl_assess:
         commands.run_command(['spctl', '--assess', '-vv', app_path])
+
+
+def validate_app_geometry(paths, config, part):
+    """Validates the architecture offsets in the main executable.
+
+    Args:
+        paths: A |model.Paths| object.
+        conifg: The |model.CodeSignConfig| object.
+        part: The |model.CodeSignedProduct| for the outer application bundle.
+    """
+    if config.main_executable_pinned_geometry is None:
+        return
+
+    app_binary_path = os.path.join(paths.work, config.app_dir, 'Contents',
+                                   'MacOS', config.app_product)
+    pinned_offsets = config.main_executable_pinned_geometry
+    offsets = _binary_architectures_offsets(app_binary_path)
+    if pinned_offsets != offsets:
+        raise InvalidAppGeometryException('Unexpected main executable geometry',
+                                          pinned_offsets, offsets)

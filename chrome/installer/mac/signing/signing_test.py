@@ -86,6 +86,139 @@ Internal requirements=none
         lenient_run_command_output.assert_not_called()
 
 
+@mock.patch('signing.commands.run_command_output')
+class TestBinaryArchitecturesOffsets(unittest.TestCase):
+
+    def test_none(self, run_command_output):
+        run_command_output.return_value = b''
+        self.assertRaises(AttributeError,
+                          lambda: signing._binary_architectures_offsets(None))
+        run_command_output.assert_called_once()
+
+    def test_non_universal(self, run_command_output):
+        run_command_output.return_value = b'''input file Test.app/Contents/MacOS/Test is not a fat file
+Non-fat file: Test.app/Contents/MacOS/Test is architecture: x86_64
+'''
+        self.assertEquals(
+            signing._binary_architectures_offsets(None), (('x86_64', 0),))
+        run_command_output.assert_called_once()
+
+    def test_universal(self, run_command_output):
+        run_command_output.return_value = b'''Fat header in: Test.app/Contents/MacOS/Test
+fat_magic 0xcafebabe
+nfat_arch 2
+architecture x86_64
+    cputype CPU_TYPE_X86_64
+    cpusubtype CPU_SUBTYPE_X86_64_ALL
+    capabilities CPU_SUBTYPE_LIB64
+    offset 16384
+    size 274080
+    align 2^14 (16384)
+architecture arm64
+    cputype CPU_TYPE_ARM64
+    cpusubtype CPU_SUBTYPE_ARM64_ALL
+    capabilities 0x0
+    offset 294912
+    size 208032
+    align 2^14 (16384)
+    '''
+        self.assertEquals(
+            signing._binary_architectures_offsets(None), (('x86_64', 16384),
+                                                          ('arm64', 294912)))
+        run_command_output.assert_called_once()
+
+    def test_universal_invalid_arch_count(self, run_command_output):
+        run_command_output.return_value = b'''Fat header in: Test.app/Contents/MacOS/Test
+fat_magic 0xcafebabe
+nfat_arch 2
+architecture x86_64
+    cputype CPU_TYPE_X86_64
+    cpusubtype CPU_SUBTYPE_X86_64_ALL
+    capabilities CPU_SUBTYPE_LIB64
+    offset 16384
+    size 274080
+    align 2^14 (16384)
+    '''
+        self.assertRaises(signing.InvalidLipoArchCountException,
+                          lambda: signing._binary_architectures_offsets(None))
+        run_command_output.assert_called_once()
+
+
+@mock.patch('signing.commands.run_command_output')
+class TestValidateAppGeometry(unittest.TestCase):
+
+    def setUp(self):
+        self.paths = model.Paths('/$I', '/$O', '/$W')
+        self.part = model.CodeSignedProduct('Test.app', 'test.signing.app')
+
+    def config_with_pinned_geometry(self, geometry):
+
+        class Config(test_config.TestConfig):
+
+            @property
+            def main_executable_pinned_geometry(self):
+                return geometry
+
+        return model.Distribution().to_config(Config())
+
+    def test_none(self, run_command_output):
+        config = self.config_with_pinned_geometry(None)
+        self.assertEquals(
+            signing.validate_app_geometry(self.paths, config, self.part), None)
+        run_command_output.assert_not_called()
+
+    def test_valid(self, run_command_output):
+        run_command_output.return_value = b'''Fat header in: Test.app/Contents/MacOS/Test
+fat_magic 0xcafebabe
+nfat_arch 2
+architecture x86_64
+    cputype CPU_TYPE_X86_64
+    cpusubtype CPU_SUBTYPE_X86_64_ALL
+    capabilities CPU_SUBTYPE_LIB64
+    offset 16384
+    size 274080
+    align 2^14 (16384)
+architecture arm64
+    cputype CPU_TYPE_ARM64
+    cpusubtype CPU_SUBTYPE_ARM64_ALL
+    capabilities 0x0
+    offset 294912
+    size 208032
+    align 2^14 (16384)
+    '''
+        pinned_geometry = (('x86_64', 16384), ('arm64', 294912))
+        config = self.config_with_pinned_geometry(pinned_geometry)
+        self.assertEquals(
+            signing.validate_app_geometry(self.paths, config, self.part), None)
+        run_command_output.assert_called_once()
+
+    def test_invalid(self, run_command_output):
+        run_command_output.return_value = b'''Fat header in: Test.app/Contents/MacOS/Test
+fat_magic 0xcafebabe
+nfat_arch 2
+architecture x86_64
+    cputype CPU_TYPE_X86_64
+    cpusubtype CPU_SUBTYPE_X86_64_ALL
+    capabilities CPU_SUBTYPE_LIB64
+    offset 16384
+    size 274080
+    align 2^14 (16384)
+architecture arm64
+    cputype CPU_TYPE_ARM64
+    cpusubtype CPU_SUBTYPE_ARM64_ALL
+    capabilities 0x0
+    offset 294912
+    size 208032
+    align 2^14 (16384)
+    '''
+        pinned_geometry = (('x86_64', 16384), ('arm64', 999999))
+        config = self.config_with_pinned_geometry(pinned_geometry)
+        self.assertRaises(
+            signing.InvalidAppGeometryException, lambda: signing.
+            validate_app_geometry(self.paths, config, self.part))
+        run_command_output.assert_called_once()
+
+
 @mock.patch(
     'signing.signing._linker_signed_arm64_needs_force', return_value=False)
 @mock.patch('signing.commands.run_command')
