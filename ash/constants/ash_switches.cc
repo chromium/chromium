@@ -712,6 +712,9 @@ const char kGlanceablesKeyExpectedHash[] =
     "\xe2\xcb";
 const char kGlanceablesKeySwitch[] = "glanceables-key";
 
+// Specifies campaigns to override for testing.
+const char kGrowthCampaigns[] = "growth-campaigns";
+
 // Path for which to load growth campaigns file for testing (instead of
 // downloading from Omaha).
 const char kGrowthCampaignsPath[] = "growth-campaigns-path";

@@ -5918,6 +5918,9 @@ const char kCampaignsComponentUpdaterTestTagName[] = "Campaigns test tag";
 const char kCampaignsComponentUpdaterTestTagDescription[] =
     "Tags used for component updater to selet Omaha cohort for Growth "
     "Campaigns.";
+const char kCampaignsOverrideName[] = "Campaigns override";
+const char kCampaignsOverrideDescription[] =
+    "Base64 encoded Growth campaigns used for testing.";
 #endif  // IS_CHROMEOS_ASH
 
 const char kComponentUpdaterTestRequestName[] =

@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "ash/constants/ash_switches.h"
+#include "base/base64.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -32,6 +35,18 @@ inline constexpr char kEventKey[] = "event_to_be_cleared";
 inline constexpr char kEventTemplate[] =
     "name:%s;comparator:any;window:365;storage:365";
 
+std::optional<base::Value::Dict> ParseCampaignsFile(
+    const std::string& campaigns_data) {
+  std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
+  if (!value || !value->is_dict()) {
+    LOG(ERROR) << "Failed to parse campaigns file: " << campaigns_data;
+    RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
+    return std::nullopt;
+  }
+
+  return std::move(value->GetDict());
+}
+
 std::optional<base::Value::Dict> ReadCampaignsFile(
     const base::FilePath& campaigns_component_path) {
   const auto campaigns_load_start_time = base::TimeTicks::Now();
@@ -47,18 +62,11 @@ std::optional<base::Value::Dict> ReadCampaignsFile(
     return std::nullopt;
   }
 
-  std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
-  if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse campaigns file.";
-    RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
-    RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
-                                         campaigns_load_start_time);
-    return std::nullopt;
-  }
+  auto parse_result = ParseCampaignsFile(campaigns_data);
 
   RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                        campaigns_load_start_time);
-  return std::move(value->GetDict());
+  return parse_result;
 }
 
 void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
@@ -132,6 +140,20 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
 
 void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                                      bool in_oobe) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kGrowthCampaigns)) {
+    const auto& value =
+        command_line->GetSwitchValueASCII(ash::switches::kGrowthCampaigns);
+    std::string decoded_str;
+    if (base::Base64Decode(value, &decoded_str)) {
+      OnCampaignsLoaded(std::move(load_callback),
+                        ParseCampaignsFile(decoded_str));
+      return;
+    } else {
+      LOG(ERROR) << "Failed decode base64 encoded campaigns string.";
+    }
+  }
+
   campaigns_download_start_time_ = base::TimeTicks::Now();
   client_->LoadCampaignsComponent(base::BindOnce(
       &CampaignsManager::OnCampaignsComponentLoaded, weak_factory_.GetWeakPtr(),

@@ -3156,6 +3156,8 @@ constexpr char kClipboardHistoryUrlTitlesInternalName[] =
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kSeaPenInternalName[] = "sea-pen";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
+constexpr char kGrowthCampaigns[] = "growth-campaigns";
+constexpr char kGrowthCampaignsTestTag[] = "campaigns-test-tag";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -9339,10 +9341,14 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kComponentUpdater,
                                  component_updater::kSwitchTestRequestParam)},
 
-    {"campaigns-test-tag",
+    {kGrowthCampaignsTestTag,
      flag_descriptions::kCampaignsComponentUpdaterTestTagName,
      flag_descriptions::kCampaignsComponentUpdaterTestTagDescription, kOsCrOS,
      STRING_VALUE_TYPE(switches::kCampaignsTestTag, "")},
+
+    {kGrowthCampaigns, flag_descriptions::kCampaignsOverrideName,
+     flag_descriptions::kCampaignsOverrideDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kGrowthCampaigns, "")},
 
     {"demo-mode-test-tag",
      flag_descriptions::kDemoModeComponentUpdaterTestTagName,
@@ -11448,6 +11454,24 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Only show Assistant Launcher search IPH flag if channel is one of
   // Beta/Dev/Canary/Unknown.
   if (!strcmp(kAssistantIphInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Only show Growth campaigns flag if channel is one of Beta/Dev/Canary/
+  // Unknown.
+  if (!strcmp(kGrowthCampaigns, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Only show Growth campaigns test tag flag if channel is one of
+  // Beta/Dev/Canary/ Unknown.
+  if (!strcmp(kGrowthCampaignsTestTag, entry.internal_name)) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&

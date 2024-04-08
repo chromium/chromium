@@ -103,6 +103,8 @@ extern const char kBackgroundResourceFetchDescription[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCampaignsComponentUpdaterTestTagName[];
 extern const char kCampaignsComponentUpdaterTestTagDescription[];
+extern const char kCampaignsOverrideName[];
+extern const char kCampaignsOverrideDescription[];
 #endif  // IS_CHROMEOS_ASH
 
 extern const char kCOLRV1FontsDescription[];
