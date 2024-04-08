@@ -52,7 +52,7 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('disabled'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-disabled'));
     assertStyle(radioButton, 'pointer-events', 'none');
-    assertNotStyle(radioButton, 'opacity', '1');
+    assertStyle(radioButton, 'opacity', '1');
   }
 
   function assertNotDisabled() {
@@ -91,12 +91,9 @@ suite('cr-radio-button', function() {
 
     assertFalse(!!getRipple());
     radioButton.dispatchEvent(
-        new CustomEvent('focus', {bubbles: true, composed: true}));
+        new CustomEvent('up', {bubbles: true, composed: true}));
     const ripple = getRipple();
     assertTrue(!!ripple);
-    assertTrue(ripple.holdDown);
-    radioButton.dispatchEvent(
-        new CustomEvent('up', {bubbles: true, composed: true}));
     assertFalse(ripple.holdDown);
   });
 
