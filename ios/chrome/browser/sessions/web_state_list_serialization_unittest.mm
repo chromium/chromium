@@ -119,28 +119,6 @@ std::unique_ptr<web::WebState> CreateWebStateFromProto(
   return CreateWebState();
 }
 
-// Creates a WebStateMetadataStorage for `web_state`.
-web::proto::WebStateMetadataStorage MetadataStorage(web::WebState* web_state) {
-  web::proto::WebStateMetadataStorage storage;
-  storage.set_navigation_item_count(web_state->GetNavigationItemCount());
-  web::SerializeTimeToProto(web_state->GetCreationTime(),
-                            *storage.mutable_creation_time());
-  web::SerializeTimeToProto(web_state->GetLastActiveTime(),
-                            *storage.mutable_last_active_time());
-
-  const std::u16string& title = web_state->GetTitle();
-  if (!title.empty()) {
-    storage.mutable_active_page()->set_page_title(base::UTF16ToUTF8(title));
-  }
-
-  const GURL& url = web_state->GetVisibleURL();
-  if (url.is_valid()) {
-    storage.mutable_active_page()->set_page_url(url.spec());
-  }
-
-  return storage;
-}
-
 // Helper wrapping SerializeWebStateList(...) with an auto-generated
 // WebStateMetadataMap.
 void SerializeWebStateList(const WebStateList& web_state_list,
@@ -150,8 +128,10 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   for (int index = 0; index < web_state_list.count(); ++index) {
     web::WebState* const web_state = web_state_list.GetWebStateAt(index);
     const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-    metadata_map.insert(
-        std::make_pair(web_state_id, MetadataStorage(web_state)));
+
+    web::proto::WebStateMetadataStorage metadata;
+    web_state->SerializeMetadataToProto(metadata);
+    metadata_map.insert(std::make_pair(web_state_id, std::move(metadata)));
   }
 
   SerializeWebStateList(web_state_list, metadata_map, storage);

@@ -385,6 +385,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/public/security",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_util",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",

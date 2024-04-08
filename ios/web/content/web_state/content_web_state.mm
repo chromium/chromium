@@ -175,6 +175,12 @@ void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
   [session_storage serializeToProto:storage];
 }
 
+void ContentWebState::SerializeMetadataToProto(
+    proto::WebStateMetadataStorage& storage) const {
+  CRWSessionStorage* session_storage = BuildSessionStorage();
+  [session_storage serializeMetadataToProto:storage];
+}
+
 WebStateDelegate* ContentWebState::GetDelegate() {
   return nullptr;
 }

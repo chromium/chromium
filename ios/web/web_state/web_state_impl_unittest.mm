@@ -26,9 +26,11 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
@@ -132,7 +134,14 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
 }  // namespace
 
 // Test fixture for web::WebStateImpl class.
-using WebStateImplTest = web::WebTest;
+class WebStateImplTest : public web::WebTest {
+ public:
+  void SetUp() override {
+    WebTest::SetUp();
+
+    IgnoreOverRealizationCheck();
+  }
+};
 
 // Tests WebState::GetWeakPtr.
 TEST_F(WebStateImplTest, GetWeakPtr) {
@@ -1146,6 +1155,60 @@ TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
     return web_state_ptr->GetVisibleURL() ==
            other_web_state_ptr->GetVisibleURL();
   }));
+}
+
+// Tests that SerializeMetadataToProto() can be called on an unrealized
+// or realized WebState.
+TEST_F(WebStateImplTest, SerializeMetadataToProto) {
+  const std::u16string title = u"Title";
+  const base::Time creation_time = base::Time::Now();
+  const GURL visible_url = GURL("testwebui://test/");
+
+  proto::WebStateStorage storage = CreateWebStateStorage(
+      NavigationManager::WebLoadParams(visible_url), title,
+      /*created_with_opener=*/false, UserAgentType::MOBILE, creation_time);
+  ASSERT_TRUE(storage.has_metadata());
+
+  proto::WebStateMetadataStorage original_metadata;
+  original_metadata.Swap(storage.mutable_metadata());
+
+  // Create an unrealized WebState.
+  web::WebStateImpl web_state =
+      WebStateImpl(GetBrowserState(), WebStateID::NewUnique(),
+                   original_metadata, base::ReturnValueOnce(std::move(storage)),
+                   base::ReturnValueOnce<NSData*>(nil));
+
+  // Check that the metadata can be fetched from the unrealized WebState.
+  {
+    proto::WebStateMetadataStorage metadata;
+    web_state.SerializeMetadataToProto(metadata);
+
+    EXPECT_EQ(metadata.navigation_item_count(), 1);
+    EXPECT_EQ(TimeFromProto(metadata.creation_time()), creation_time);
+    EXPECT_EQ(TimeFromProto(metadata.last_active_time()), creation_time);
+    EXPECT_EQ(metadata.active_page().page_title(), base::UTF16ToUTF8(title));
+    EXPECT_EQ(metadata.active_page().page_url(), visible_url.spec());
+  }
+
+  // Force realization of the WebState.
+  web_state.ForceRealized();
+  ASSERT_TRUE(web_state.IsRealized());
+
+  // Calling WasShown() will change the last active time for the WebState.
+  web_state.WasShown();
+  ASSERT_NE(web_state.GetLastActiveTime(), creation_time);
+
+  // Check that the metadata can be fetched from the WebState after realization.
+  {
+    proto::WebStateMetadataStorage metadata;
+    web_state.SerializeMetadataToProto(metadata);
+
+    EXPECT_EQ(metadata.navigation_item_count(), 1);
+    EXPECT_EQ(TimeFromProto(metadata.creation_time()), creation_time);
+    EXPECT_NE(TimeFromProto(metadata.last_active_time()), creation_time);
+    EXPECT_EQ(metadata.active_page().page_title(), base::UTF16ToUTF8(title));
+    EXPECT_EQ(metadata.active_page().page_url(), visible_url.spec());
+  }
 }
 
 }  // namespace web

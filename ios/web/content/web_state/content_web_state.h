@@ -63,6 +63,8 @@ class ContentWebState : public WebState,
 
   // WebState implementation.
   void SerializeToProto(proto::WebStateStorage& storage) const override;
+  void SerializeMetadataToProto(
+      proto::WebStateMetadataStorage& storage) const override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
   std::unique_ptr<WebState> Clone() const override;
