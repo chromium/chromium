@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+
+template("in_process_renderer_fuzzer") {
+  in_process_fuzzer(target_name) {
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_fuzzer_runner" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "deps",
+                             "testonly",
+                           ])
+  }
+}
+
+template("in_process_renderer_mojolpm_fuzzer") {
+  in_process_mojolpm_fuzzer(target_name) {
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_fuzzer_runner" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "deps",
+                             "testonly",
+                           ])
+  }
+}
+
+template("in_process_renderer_mojolpm_generated_fuzzer") {
+  in_process_mojolpm_generated_fuzzer(target_name) {
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_fuzzer_runner" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "deps",
+                             "testonly",
+                           ])
+  }
+}

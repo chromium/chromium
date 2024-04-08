@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/fuzzing/renderer_in_process_mojolpm_fuzzer.h"
+#include "chrome/test/fuzzing/renderer_fuzzing/renderer_in_process_mojolpm_fuzzer.h"
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
+#include "chrome/test/fuzzing/renderer_fuzzing/in_process_renderer_fuzzing.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/tools/fuzzers/mojolpm.h"
@@ -19,13 +21,8 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-mojolpm.h"
 #include "third_party/blink/public/web/web_testing_support.h"
 
-// TODO(paulsemel): As of now, browser process code and renderer process code
-// are mixed in this file. It would be nice to split this into multiple files.
-// This can be done by introducing an InProcessFuzzer template for interacting
-// with a renderer fuzzer. That way, the file would only contain the renderer
-// fuzzer code.
-
-// This class fuzzes the BlobRegistry mojo interface using MojoLPM.
+// This class fuzzes mojo interfaces exposed by the browser process to the
+// renderer process using MojoLPM.
 // It runs in the renderer process, and is fed testcases by the fuzzer
 // running in the browser process.
 // It currently uses MojoLPMGenerator in order to remove all the unnecessary
@@ -40,11 +37,11 @@ class RendererTestcase
           process_interface_broker_proxy);
   ~RendererTestcase() override;
 
+  scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() override;
   void SetUp(base::OnceClosure done_closure) override;
   void TearDown(base::OnceClosure done_closure) override;
   void HandleNewBlobRegistryAction(uint32_t id,
                                    base::OnceClosure done_closure) override;
-  scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() override;
 
  private:
   void SetUpOnFuzzerThread(base::OnceClosure done_closure);
@@ -167,11 +164,17 @@ void RendererTestcase::NewContextInterface(uint32_t id,
   std::move(done_closure).Run();
 }
 
-// This class is used to register a RendererFuzzer. It will be reachable from
-// the fuzzing IDL. It only purpose it to invoke RendererTestcase MojoLPM
-// fuzzer in order to fuzz the mojo interfaces.
-class MojoLPMRendererFuzzer : public RendererFuzzerBase {
+// `RendererFuzzingAdapter` will be allocated by the internal renderer fuzzing
+// mechanism. It is statically allocated, and will remain alive until the
+// fuzzing process shuts down.
+// Unfortunately, we cannot merge this class with `RendererTestcase`, because
+// the latter needs to have a different lifetime. Indeed, it needs to be
+// recreated for every fuzzing iteration, so that MojoLPM remains deterministic
+// across runs for a given testcase.
+class RendererFuzzingAdapter : public RendererFuzzerBase {
  public:
+  using FuzzCase = RendererTestcase::ProtoTestcase;
+  const char* Id() override { return "MojoLPMRendererFuzzer"; }
   void Run(
       const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
       blink::ThreadSafeBrowserInterfaceBrokerProxy*
@@ -197,51 +200,6 @@ class MojoLPMRendererFuzzer : public RendererFuzzerBase {
       std::move(done_closure).Run();
     }
   }
-
-  const char* Id() override { return "MojoLPMRendererFuzzer"; }
 };
 
-// MojoLPMInProcessFuzzer is the browser part of this fuzzer. It acts like any
-// other InProcessFuzzer, except that it doesn't directly make use of the
-// received testcase, but rather sends it to its renderer executed part.
-// We could base this on InProcessProtoFuzzer, but this fuzzer is a
-// little unusual in that it wants the proto as raw binary data to pass
-// over to the renderer process.
-class MojoLPMInProcessFuzzer : public InProcessFuzzer {
- public:
-  using FuzzCase = RendererTestcase::ProtoTestcase;
-  MojoLPMInProcessFuzzer()
-      : InProcessFuzzer({
-            RunLoopTimeoutBehavior::kDeclareInfiniteLoop,
-            base::Seconds(180),
-        }) {}
-
-  int Fuzz(const uint8_t* data, size_t size) override;
-};
-
-int MojoLPMInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
-  base::span<const uint8_t> proto_contents(data, size);
-
-  auto b64 = base::Base64Encode(proto_contents);
-  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  CHECK(content::ExecJs(contents, content::JsReplace(R"(
-      function base64ToArrayBuffer(base64) {
-        var binaryString = atob(base64);
-        var bytes = new Uint8Array(binaryString.length);
-        for (var i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes.buffer;
-      }
-      internals.runFuzzer('MojoLPMRendererFuzzer', base64ToArrayBuffer($1));
-      )",
-                                                     b64)));
-  return 0;
-}
-
-// This registers the InProcessFuzzer, the part that will be interacting with
-// the fuzzing engine.
-REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(MojoLPMInProcessFuzzer)
-// This registers the renderer fuzzer, the part that will be executed in the
-// renderer process.
-REGISTER_RENDERER_FUZZER(MojoLPMRendererFuzzer);
+REGISTER_IN_PROCESS_RENDERER_PROTO_FUZZER(RendererFuzzingAdapter);
