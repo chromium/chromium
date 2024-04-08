@@ -129,11 +129,6 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // WebContents, but rather an inner WebContents (e.g., for a guest view).
   const ui::AXTree& GetAXTreeForFrame(RenderFrameHostImpl* render_frame) const;
 
-  // Returns true if the accessibility tree for the owner of `render_frame` or
-  // the observed WebContents (if `render_frame` is null) is for the url
-  // "about:blank".
-  bool IsAboutBlank(RenderFrameHostImpl* render_frame);
-
   std::optional<ax::mojom::Event> event_to_wait_for_;
   std::optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
