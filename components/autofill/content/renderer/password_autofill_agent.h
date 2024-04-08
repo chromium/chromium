@@ -486,6 +486,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void NotifyPasswordManagerAboutClearedForm(
       const blink::WebFormElement& cleared_form);
 
+  // Notifies the PasswordManager about a field modification.
+  void NotifyPasswordManagerAboutFieldModification(
+      const blink::WebInputElement& element);
+
   FieldDataManager& field_data_manager() const {
     return autofill_agent_->field_data_manager();
   }

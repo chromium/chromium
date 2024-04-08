@@ -770,11 +770,8 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 
 // LINT.IfChange()
 
-void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
+void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
     const WebInputElement& element) {
-  InformBrowserAboutUserInput(
-      form_util::GetFormElementForPasswordInput(element), element);
-
   if (element.IsPasswordFieldForAutofill()) {
     auto iter = password_to_username_.find(element);
     if (iter != password_to_username_.end()) {
@@ -812,6 +809,14 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
       base::Contains(autocomplete_attribute,
                      password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
+}
+
+void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
+    const WebInputElement& element) {
+  NotifyPasswordManagerAboutFieldModification(element);
+
+  InformBrowserAboutUserInput(
+      form_util::GetFormElementForPasswordInput(element), element);
 }
 
 // LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
