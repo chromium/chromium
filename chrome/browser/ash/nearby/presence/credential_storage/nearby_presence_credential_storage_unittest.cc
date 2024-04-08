@@ -21,8 +21,6 @@ namespace {
 
 const std::vector<uint8_t> kSecretId_Local_1 = {0x11, 0x12, 0x13,
                                                 0x14, 0x15, 0x16};
-const std::vector<uint8_t> kSecretId_Shared_1 = {0x12, 0x13, 0x14,
-                                                 0x15, 0x16, 0x17};
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_1 = {
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e};
@@ -65,8 +63,6 @@ const base::flat_map<uint32_t, bool> kConsumedSalts_1 = {{0xb412, true},
 
 const std::vector<uint8_t> kSecretId_Local_2 = {0xA1, 0xA2, 0xA3,
                                                 0xA4, 0xA5, 0xA6};
-const std::vector<uint8_t> kSecretId_Shared_2 = {0xB1, 0xB2, 0xB3,
-                                                 0xB4, 0xB5, 0xB6};
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_2 = {
     0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
     0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
@@ -109,8 +105,6 @@ const base::flat_map<uint32_t, bool> kConsumedSalts_2 = {{0xb412, false},
 
 const std::vector<uint8_t> kSecretId_Local_3 = {0x04, 0x05, 0x06,
                                                 0x07, 0x08, 0x09};
-const std::vector<uint8_t> kSecretId_Shared_3 = {0x07, 0x06, 0x05,
-                                                 0x04, 0x03, 0x02};
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_3 = {
     0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
     0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A};
@@ -211,7 +205,6 @@ ash::nearby::presence::mojom::LocalCredentialPtr CreateLocalCredential(
 }
 
 ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredential(
-    const std::vector<uint8_t>& secret_id,
     const std::vector<uint8_t>& key_seed,
     const int64_t start_time_millis,
     const int64_t end_time_millis,
@@ -228,9 +221,8 @@ ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredential(
     const std::string& dusi,
     const std::vector<uint8_t>& signature_version) {
   return ash::nearby::presence::mojom::SharedCredential::New(
-      secret_id, key_seed, start_time_millis, end_time_millis,
-      encrypted_metadata_bytes_v0, metadata_encryption_key_tag_v0,
-      connection_signature_verification_key,
+      key_seed, start_time_millis, end_time_millis, encrypted_metadata_bytes_v0,
+      metadata_encryption_key_tag_v0, connection_signature_verification_key,
       advertisement_signature_verification_key, identity_type, version,
       credential_type, encrypted_metadata_bytes_v1,
       metadata_encryption_key_unsigned_adv_tag_v1, id, dusi, signature_version);
@@ -318,7 +310,7 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
                                   public_credential_type) {
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
         kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
@@ -327,7 +319,7 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
         kEncryptedMetadataBytesV1_1, kMetadataEncryptionKeyUnsignedAdvTagV1_1,
         kSharedCredentialId_1, kDusi_1, kSignatureVersion_1));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_2, kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
+        kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
         kEncryptedMetadataBytesV0_2, kMetadataEncryptionTag_2,
         kConnectionSignatureVerificationKey_2,
         kAdvertisementSignatureVerificationKey_2,
@@ -336,7 +328,7 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
         kEncryptedMetadataBytesV1_2, kMetadataEncryptionKeyUnsignedAdvTagV1_2,
         kSharedCredentialId_2, kDusi_2, kSignatureVersion_2));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_3, kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
+        kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
         kEncryptedMetadataBytesV0_3, kMetadataEncryptionTag_3,
         kConnectionSignatureVerificationKey_3,
         kAdvertisementSignatureVerificationKey_3,
@@ -527,7 +519,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
       kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
@@ -536,7 +528,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
       kMetadataEncryptionKeyUnsignedAdvTagV1_1, kSharedCredentialId_1, kDusi_1,
       kSignatureVersion_1));
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_2, kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
+      kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
       kEncryptedMetadataBytesV0_2, kMetadataEncryptionTag_2,
       kConnectionSignatureVerificationKey_2,
       kAdvertisementSignatureVerificationKey_2,
@@ -545,7 +537,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
       kMetadataEncryptionKeyUnsignedAdvTagV1_2, kSharedCredentialId_2, kDusi_2,
       kSignatureVersion_2));
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_3, kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
+      kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
       kEncryptedMetadataBytesV0_3, kMetadataEncryptionTag_3,
       kConnectionSignatureVerificationKey_3,
       kAdvertisementSignatureVerificationKey_3,
@@ -595,7 +587,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_PublicFails) {
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
       kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
@@ -646,7 +638,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
       kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
@@ -690,7 +682,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Remote_Success) {
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
         kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
@@ -730,7 +722,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
         kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
@@ -772,7 +764,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
         kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
         kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
         kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
@@ -801,7 +793,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
         kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,

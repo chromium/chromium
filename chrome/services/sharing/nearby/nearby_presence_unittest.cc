@@ -32,6 +32,10 @@ const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
 const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
 const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
 
+const long kSharedCredId1 = 111;
+const long kSharedCredId2 = 222;
+const long kSharedCredId3 = 333;
+
 ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
   ash::nearby::presence::mojom::MetadataPtr metadata =
       ash::nearby::presence::mojom::Metadata::New();
@@ -307,14 +311,11 @@ TEST_F(NearbyPresenceTest, RunUpdateLocalDeviceMetadata) {
 TEST_F(NearbyPresenceTest,
        UpdateLocalDeviceMetadataAndGenerateCredentials_Success) {
   ::nearby::internal::SharedCredential shared_credential1;
-  shared_credential1.set_secret_id(
-      std::string(kSecretId1.begin(), kSecretId1.end()));
+  shared_credential1.set_id(kSharedCredId1);
   ::nearby::internal::SharedCredential shared_credential2;
-  shared_credential2.set_secret_id(
-      std::string(kSecretId2.begin(), kSecretId2.end()));
+  shared_credential2.set_id(kSharedCredId2);
   ::nearby::internal::SharedCredential shared_credential3;
-  shared_credential3.set_secret_id(
-      std::string(kSecretId3.begin(), kSecretId3.end()));
+  shared_credential3.set_id(kSharedCredId3);
   fake_presence_service_->SetUpdateLocalDeviceMetadataResponse(
       absl::Status(/*response_code=*/absl::StatusCode::kOk,
                    /*msg=*/std::string()),
@@ -328,9 +329,9 @@ TEST_F(NearbyPresenceTest,
           [&](std::vector<mojom::SharedCredentialPtr> shared_credentials,
               mojo_base::mojom::AbslStatusCode status) {
             EXPECT_EQ(3u, shared_credentials.size());
-            EXPECT_EQ(kSecretId1, shared_credentials[0]->secret_id);
-            EXPECT_EQ(kSecretId2, shared_credentials[1]->secret_id);
-            EXPECT_EQ(kSecretId3, shared_credentials[2]->secret_id);
+            EXPECT_EQ(kSharedCredId1, shared_credentials[0]->id);
+            EXPECT_EQ(kSharedCredId2, shared_credentials[1]->id);
+            EXPECT_EQ(kSharedCredId3, shared_credentials[2]->id);
             EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kOk, status);
             run_loop.Quit();
           }));
@@ -361,15 +362,15 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Success) {
   std::vector<mojom::SharedCredentialPtr> remote_creds;
   mojom::SharedCredentialPtr shared_credential1 =
       mojom::SharedCredential::New();
-  shared_credential1->secret_id = kSecretId1;
+  shared_credential1->id = kSharedCredId1;
   remote_creds.push_back(std::move(shared_credential1));
   mojom::SharedCredentialPtr shared_credential2 =
       mojom::SharedCredential::New();
-  shared_credential2->secret_id = kSecretId2;
+  shared_credential2->id = kSharedCredId2;
   remote_creds.push_back(std::move(shared_credential2));
   mojom::SharedCredentialPtr shared_credential3 =
       mojom::SharedCredential::New();
-  shared_credential3->secret_id = kSecretId3;
+  shared_credential3->id = kSharedCredId3;
   remote_creds.push_back(std::move(shared_credential3));
 
   fake_presence_service_->SetUpdateRemoteSharedCredentialsResult(
@@ -387,27 +388,24 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Success) {
   auto creds = fake_presence_service_->GetRemoteSharedCredentials();
   EXPECT_FALSE(creds.empty());
   EXPECT_EQ(3u, creds.size());
-  EXPECT_EQ(std::string(kSecretId1.begin(), kSecretId1.end()),
-            creds[0].secret_id());
-  EXPECT_EQ(std::string(kSecretId2.begin(), kSecretId2.end()),
-            creds[1].secret_id());
-  EXPECT_EQ(std::string(kSecretId3.begin(), kSecretId3.end()),
-            creds[2].secret_id());
+  EXPECT_EQ(kSharedCredId1, creds[0].id());
+  EXPECT_EQ(kSharedCredId2, creds[1].id());
+  EXPECT_EQ(kSharedCredId3, creds[2].id());
 }
 
 TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Fail) {
   std::vector<mojom::SharedCredentialPtr> remote_creds;
   mojom::SharedCredentialPtr shared_credential1 =
       mojom::SharedCredential::New();
-  shared_credential1->secret_id = kSecretId1;
+  shared_credential1->id = kSharedCredId1;
   remote_creds.push_back(std::move(shared_credential1));
   mojom::SharedCredentialPtr shared_credential2 =
       mojom::SharedCredential::New();
-  shared_credential2->secret_id = kSecretId2;
+  shared_credential2->id = kSharedCredId2;
   remote_creds.push_back(std::move(shared_credential2));
   mojom::SharedCredentialPtr shared_credential3 =
       mojom::SharedCredential::New();
-  shared_credential3->secret_id = kSecretId3;
+  shared_credential3->id = kSharedCredId3;
   remote_creds.push_back(std::move(shared_credential3));
 
   fake_presence_service_->SetUpdateRemoteSharedCredentialsResult(
@@ -428,14 +426,11 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Fail) {
 
 TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Success) {
   ::nearby::internal::SharedCredential shared_credential1;
-  shared_credential1.set_secret_id(
-      std::string(kSecretId1.begin(), kSecretId1.end()));
+  shared_credential1.set_id(kSharedCredId1);
   ::nearby::internal::SharedCredential shared_credential2;
-  shared_credential2.set_secret_id(
-      std::string(kSecretId2.begin(), kSecretId2.end()));
+  shared_credential2.set_id(kSharedCredId2);
   ::nearby::internal::SharedCredential shared_credential3;
-  shared_credential3.set_secret_id(
-      std::string(kSecretId3.begin(), kSecretId3.end()));
+  shared_credential3.set_id(kSharedCredId3);
 
   fake_presence_service_->SetLocalPublicCredentialsResult(
       /*status_code=*/absl::Status(absl::StatusCode::kOk,
@@ -452,9 +447,9 @@ TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Success) {
             EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kOk, status);
             EXPECT_FALSE(shared_creds.empty());
             EXPECT_EQ(3u, shared_creds.size());
-            EXPECT_EQ(kSecretId1, shared_creds[0]->secret_id);
-            EXPECT_EQ(kSecretId2, shared_creds[1]->secret_id);
-            EXPECT_EQ(kSecretId3, shared_creds[2]->secret_id);
+            EXPECT_EQ(kSharedCredId1, shared_creds[0]->id);
+            EXPECT_EQ(kSharedCredId2, shared_creds[1]->id);
+            EXPECT_EQ(kSharedCredId3, shared_creds[2]->id);
             run_loop.Quit();
           }));
   run_loop.Run();

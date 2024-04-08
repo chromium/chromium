@@ -167,8 +167,6 @@ ash::nearby::presence::mojom::CredentialType CredentialTypeToMojom(
 ash::nearby::presence::mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential) {
   return ash::nearby::presence::mojom::SharedCredential::New(
-      std::vector<uint8_t>(shared_credential.secret_id().begin(),
-                           shared_credential.secret_id().end()),
       std::vector<uint8_t>(shared_credential.key_seed().begin(),
                            shared_credential.key_seed().end()),
       shared_credential.start_time_millis(),

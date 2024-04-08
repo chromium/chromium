@@ -141,7 +141,7 @@ TEST_F(ProtoConversionsTest, IdentityTypeFromMojom) {
 
 TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
   mojom::SharedCredentialPtr mojo_cred = mojom::SharedCredential::New(
-      kSecretId, kKeySeed, kStartTimeMillis_BeforeConversion,
+      kKeySeed, kStartTimeMillis_BeforeConversion,
       kEndTimeMillis_BeforeConversion, kEncryptedMetadataBytesV0,
       kMetadataEncryptionTag, kConnectionSignatureVerificationKey,
       kAdvertisementSignatureVerificationKey,
@@ -151,8 +151,6 @@ TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
       kSignatureVersion);
   ::nearby::internal::SharedCredential proto_cred =
       SharedCredentialFromMojom(mojo_cred.get());
-  EXPECT_EQ(std::string(kSecretId.begin(), kSecretId.end()),
-            proto_cred.secret_id());
   EXPECT_EQ(std::string(kKeySeed.begin(), kKeySeed.end()),
             proto_cred.key_seed());
   EXPECT_EQ(kStartTimeMillis_BeforeConversion, proto_cred.start_time_millis());
@@ -219,7 +217,6 @@ TEST_F(ProtoConversionsTest, SharedCredentialToMojom) {
       std::string(kSignatureVersion.begin(), kSignatureVersion.end()));
 
   mojom::SharedCredentialPtr mojo_cred = SharedCredentialToMojom(proto_cred);
-  EXPECT_EQ(kSecretId, mojo_cred->secret_id);
   EXPECT_EQ(kKeySeed, mojo_cred->key_seed);
   EXPECT_EQ(kStartTimeMillis_BeforeConversion, mojo_cred->start_time_millis);
   EXPECT_EQ(kEndTimeMillis_BeforeConversion, mojo_cred->end_time_millis);

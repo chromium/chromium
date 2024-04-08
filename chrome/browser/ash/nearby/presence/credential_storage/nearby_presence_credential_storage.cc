@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -121,8 +122,9 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
     auto shared_credential_proto =
         proto::SharedCredentialFromMojom(shared_credential.get());
 
-    credential_pairs_to_save->emplace_back(std::make_pair(
-        shared_credential_proto.secret_id(), shared_credential_proto));
+    credential_pairs_to_save->emplace_back(
+        std::make_pair(base::NumberToString(shared_credential_proto.id()),
+                       shared_credential_proto));
   }
 
   switch (public_credential_type) {

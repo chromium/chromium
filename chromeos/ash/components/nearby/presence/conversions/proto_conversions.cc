@@ -123,8 +123,6 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
     mojom::SharedCredential* shared_credential) {
   ::nearby::internal::SharedCredential proto;
-  proto.set_secret_id(std::string(shared_credential->secret_id.begin(),
-                                  shared_credential->secret_id.end()));
   proto.set_key_seed(std::string(shared_credential->key_seed.begin(),
                                  shared_credential->key_seed.end()));
   proto.set_start_time_millis(shared_credential->start_time_millis);
@@ -234,8 +232,6 @@ mojom::CredentialType CredentialTypeToMojom(
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential) {
   return mojom::SharedCredential::New(
-      std::vector<uint8_t>(shared_credential.secret_id().begin(),
-                           shared_credential.secret_id().end()),
       std::vector<uint8_t>(shared_credential.key_seed().begin(),
                            shared_credential.key_seed().end()),
       shared_credential.start_time_millis(),

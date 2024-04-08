@@ -161,7 +161,6 @@ constexpr int64_t kSharedCredentialId = 01000011;
 }
 
 ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredentialMojo(
-    const std::vector<uint8_t>& secret_id,
     const std::vector<uint8_t>& key_seed,
     const int64_t start_time_millis,
     const int64_t end_time_millis,
@@ -178,9 +177,8 @@ ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredentialMojo(
     const std::string& dusi,
     const std::vector<uint8_t>& signature_version) {
   return ash::nearby::presence::mojom::SharedCredential::New(
-      secret_id, key_seed, start_time_millis, end_time_millis,
-      encrypted_metadata_bytes_v0, metadata_encryption_key_tag_v0,
-      connection_signature_verification_key,
+      key_seed, start_time_millis, end_time_millis, encrypted_metadata_bytes_v0,
+      metadata_encryption_key_tag_v0, connection_signature_verification_key,
       advertisement_signature_verification_key, identity_type, version,
       credential_type, encrypted_metadata_bytes_v1,
       metadata_encryption_key_unsigned_adv_tag_v1, id, dusi, signature_version);
@@ -283,9 +281,8 @@ class FakeNearbyPresenceCredentialStorage
     std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
         shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredentialMojo(
-        kSecretId_Shared, kKeySeed, kStartTimeMillis, kEndtimeMillis,
-        kEncryptedMetadataBytesV0, kMetadataEncryptionTag,
-        kConnectionSignatureVerificationKey,
+        kKeySeed, kStartTimeMillis, kEndtimeMillis, kEncryptedMetadataBytesV0,
+        kMetadataEncryptionTag, kConnectionSignatureVerificationKey,
         kAdvertisementSignatureVerificationKey,
         ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate,
         kVersion,

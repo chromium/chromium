@@ -116,8 +116,6 @@ enum CredentialType {
 // nearby devices' advertisements. This struct represents
 // //third_party/nearby/src/internal/proto/credential.proto.
 struct SharedCredential {
-  // The randomly generated unique id of the public credential.
-  array<uint8> secret_id;
   // 32 bytes of secure random bytes used to derive any symmetric keys needed.
   array<uint8, 32> key_seed;
   // The time in millis from epoch when this credential becomes effective.

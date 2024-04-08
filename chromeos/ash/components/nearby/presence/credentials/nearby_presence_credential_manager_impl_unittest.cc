@@ -45,19 +45,19 @@ std::vector<base::TimeDelta> kUpdateCredentialCoolDownPeriods = {
     base::Seconds(0), base::Seconds(15), base::Seconds(30), base::Minutes(1),
     base::Minutes(2), base::Minutes(5),  base::Minutes(10)};
 constexpr int kServerCommunicationMaxAttempts = 5;
-const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
-const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
-const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
+const long kId1 = 111;
+const long kId2 = 222;
+const long kId3 = 333;
 const std::vector<uint8_t> kKeySeed = {
     0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
     0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
     0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44};
 
 ash::nearby::presence::mojom::SharedCredentialPtr BuildSharedCredential(
-    std::vector<uint8_t> secret_id) {
+    long id) {
   ash::nearby::presence::mojom::SharedCredentialPtr cred =
       ash::nearby::presence::mojom::SharedCredential::New();
-  cred->secret_id = secret_id;
+  cred->id = id;
   // To communicate across the wire this field on the mojo struct needs to be
   // set since the mojo wire checks for this array to be size 32.
   cred->key_seed = kKeySeed;
@@ -68,9 +68,9 @@ std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
 BuildSharedCredentials() {
   std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
       shared_credentials;
-  shared_credentials.push_back(BuildSharedCredential(kSecretId1));
-  shared_credentials.push_back(BuildSharedCredential(kSecretId2));
-  shared_credentials.push_back(BuildSharedCredential(kSecretId3));
+  shared_credentials.push_back(BuildSharedCredential(kId1));
+  shared_credentials.push_back(BuildSharedCredential(kId2));
+  shared_credentials.push_back(BuildSharedCredential(kId3));
   return shared_credentials;
 }
 
