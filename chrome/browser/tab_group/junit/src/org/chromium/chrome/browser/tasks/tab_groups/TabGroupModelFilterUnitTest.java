@@ -26,6 +26,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.MockitoHelper.doFunction;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -122,6 +125,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Mock Token.Natives mTokenJniMock;
     @Mock TabModel mTabModel;
+    @Mock TabList mComprehensiveModel;
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     @Mock Context mContext;
     @Mock SharedPreferences mSharedPreferencesTitle;
@@ -209,13 +213,7 @@ public class TabGroupModelFilterUnitTest {
                 .when(mTabModel)
                 .moveTab(anyInt(), anyInt());
 
-        doAnswer(
-                        invocation -> {
-                            int index = invocation.getArgument(0);
-                            return mTabs.get(index);
-                        })
-                .when(mTabModel)
-                .getTabAt(anyInt());
+        doFunction(mTabs::get).when(mTabModel).getTabAt(anyInt());
         doAnswer(
                         invocation -> {
                             int tabId = invocation.getArgument(0);
@@ -226,18 +224,17 @@ public class TabGroupModelFilterUnitTest {
                         })
                 .when(mTabModel)
                 .getTabById(anyInt());
-        doAnswer(
-                        invocation -> {
-                            Tab tab = invocation.getArgument(0);
-                            return mTabs.indexOf(tab);
-                        })
-                .when(mTabModel)
-                .indexOf(any(Tab.class));
+        doFunction(mTabs::indexOf).when(mTabModel).indexOf(any(Tab.class));
 
         doAnswer(invocation -> mTabs.size()).when(mTabModel).getCount();
 
         doReturn(0).when(mTabModel).index();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        doReturn(mComprehensiveModel).when(mTabModel).getComprehensiveModel();
+        doAnswer(invocation -> mTabs.size()).when(mComprehensiveModel).getCount();
+        doFunction(mTabs::get).when(mComprehensiveModel).getTabAt(anyInt());
+
         mTabModelInOrder = inOrder(mTabModel);
     }
 
@@ -595,9 +592,16 @@ public class TabGroupModelFilterUnitTest {
     public void testGroupMembershipOfTabAfterClose() {
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab2));
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab3));
+        assertEquals(TAB2_ID, mTab2.getRootId());
+        assertEquals(TAB2_ID, mTab3.getRootId());
+
         mTabGroupModelFilter.closeTab(mTab2);
+
         assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab2));
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab3));
+        assertEquals(TAB3_ID, mTab2.getRootId());
+        assertEquals(TAB3_ID, mTab3.getRootId());
+        verify(mTabGroupModelFilterObserver).didChangeGroupRootId(TAB2_ID, TAB3_ID);
     }
 
     @Test
@@ -605,6 +609,7 @@ public class TabGroupModelFilterUnitTest {
     public void testGroupMembershipOfTabAfterClose_NoTabGroupId() {
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab2));
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab3));
+
         mTabGroupModelFilter.closeTab(mTab2);
         assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab2));
         assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab3));

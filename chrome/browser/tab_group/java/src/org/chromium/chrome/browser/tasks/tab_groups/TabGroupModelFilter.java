@@ -768,6 +768,10 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void closeTab(Tab tab) {
+        closeTabInternal(tab, /* fixRootIds= */ true);
+    }
+
+    private void closeTabInternal(Tab tab, boolean fixRootIds) {
         int rootId = tab.getRootId();
         if (tab.isIncognito() != isIncognito()
                 || mRootIdToGroupMap.get(rootId) == null
@@ -777,6 +781,29 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         TabGroup group = mRootIdToGroupMap.get(rootId);
         group.removeTab(tab.getId());
+
+        // If the removed tab's id was the root id, we need to select a new root id.
+        if (fixRootIds && tab.getRootId() == tab.getId()) {
+            int nextRootId = group.getLastShownTabId();
+            if (nextRootId != INVALID_TAB_INDEX && nextRootId != rootId) {
+                // Use the comprehensive model to ensure undoable closures that happened before our
+                // current closure also get updated, so they'll restore into the same group.
+                TabList comprehensiveModel = getTabModel().getComprehensiveModel();
+                int comprehensiveCount = comprehensiveModel.getCount();
+                for (int i = 0; i < comprehensiveCount; ++i) {
+                    Tab comprehensiveTab = comprehensiveModel.getTabAt(i);
+                    if (comprehensiveTab.getRootId() == rootId) {
+                        comprehensiveTab.setRootId(nextRootId);
+                    }
+                }
+                mRootIdToGroupIndexMap.put(nextRootId, mRootIdToGroupIndexMap.remove(rootId));
+                mRootIdToGroupMap.put(nextRootId, mRootIdToGroupMap.remove(rootId));
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.didChangeGroupRootId(rootId, nextRootId);
+                }
+            }
+        }
+
         if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
             if (group.size() == 0) mActualGroupCount--;
         } else {
@@ -843,7 +870,9 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void removeTab(Tab tab) {
-        closeTab(tab);
+        // The tab is being reparented. Do not adjust the root id otherwise it will be lost on the
+        // other side.
+        closeTabInternal(tab, /* fixRootIds= */ false);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

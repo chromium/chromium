@@ -12,21 +12,23 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 
+import java.util.function.Function;
+
 /** Simplifies common interactions with Mockito. */
 public class MockitoHelper {
     /**
      * Syntactic sugar around creating an {@link Answer} to run something when a mock is invoked.
-     * Not recommend for use with non-mocked / production classes. In the example below the
-     * {@link Runnable} is stored in the test's member list.
+     * Not recommend for use with non-mocked / production classes. In the example below the {@link
+     * Runnable} is stored in the test's member list.
      *
-     * doCallback((Bar bar) -> bar.baz()).when(foo).onBar(Mockito.any());
+     * <p>doCallback((Bar bar) -> bar.baz()).when(foo).onBar(Mockito.any());
      *
-     * This often allows us to verify the functionality inside the provided object, trigger it
+     * <p>This often allows us to verify the functionality inside the provided object, trigger it
      * exactly when we want to, or verify that a sequences of events happen in the order we expect.
      * However this does not allow access to multiple arguments or to specify the return value, in
      * which case using the original doAnswer is likely better.
      *
-     * Note that users of this should be careful when invoking functionality directly in their
+     * <p>Note that users of this should be careful when invoking functionality directly in their
      * passed in methods. If the production code is performing operations asynchronously but the
      * tests run the same logic but synchronously, it can cause test conditions to differ.
      */
@@ -52,6 +54,16 @@ public class MockitoHelper {
                     runnable.run();
                     return null;
                 }));
+    }
+
+    /** Similar to {@link #doCallback(Callback)} but able to return a value as well. */
+    public static <T, R> Stubber doFunction(Function<T, R> function) {
+        return doFunction(function, 0);
+    }
+
+    /** Similar to {@link #doFunction(Function) but with an explicit index. */
+    public static <T, R> Stubber doFunction(Function<T, R> function, int index) {
+        return Mockito.doAnswer(invocation -> function.apply(invocation.getArgument(index)));
     }
 
     /** Mockito.verify but with a timeout to reduce flakes. */

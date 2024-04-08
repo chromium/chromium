@@ -2178,8 +2178,8 @@ public class TabSwitcherLayoutTest {
                 TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
-        // Temporarily save the rootID to check during closure.
-        int groupRootId = normalTabModel.getTabAt(1).getRootId();
+        // Temporarily save the tab to get the rootId later.
+        Tab tab2 = normalTabModel.getTabAt(1);
 
         closeFirstTabInTabSwitcher(cta);
         assertTrue(
@@ -2187,8 +2187,8 @@ public class TabSwitcherLayoutTest {
                         instanceof UndoBarController);
         verifyTabSwitcherCardCount(cta, 0);
 
-        // Assert default color still persists.
-        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(groupRootId));
+        // Default color should still persist, though the root id might change.
+        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
@@ -2236,7 +2236,8 @@ public class TabSwitcherLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Temporarily save the rootID to check during closure.
-        int groupRootId = normalTabModel.getTabAt(1).getRootId();
+        Tab tab2 = normalTabModel.getTabAt(1);
+        int groupRootId = tab2.getRootId();
 
         closeFirstTabInTabSwitcher(cta);
         assertTrue(
@@ -2244,13 +2245,14 @@ public class TabSwitcherLayoutTest {
                         instanceof UndoBarController);
         verifyTabSwitcherCardCount(cta, 0);
 
-        // Assert default color still persists.
-        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(groupRootId));
+        // Default color should still persist, though the root id might change.
+        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Assert default color is cleared.
         assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
+        assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
     }
 
     // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
