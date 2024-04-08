@@ -126,6 +126,9 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   bool operator==(const IdentifiableTokenBuilder&) const = delete;
   bool operator<(const IdentifiableTokenBuilder&) const = delete;
 
+  // A big random prime. It's also the digest returned for an empty block.
+  static constexpr uint64_t kChainingValueSeed = UINT64_C(6544625333304541877);
+
  private:
   // Block size. Must be a multiple of 64. Higher block sizes consume more
   // memory. The extra cost is unlikely to be worth it.

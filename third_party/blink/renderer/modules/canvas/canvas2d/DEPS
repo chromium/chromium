@@ -4,6 +4,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "identifiability_study_helper.cc" : [
+        "+base/hash",
+    ],
     # Additional allowed includes for tests.
     ".*_test(_.*)?\.(cc|h)" : [
         "+base/strings",

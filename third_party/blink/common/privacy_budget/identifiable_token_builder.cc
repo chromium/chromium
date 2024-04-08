@@ -14,15 +14,6 @@
 
 namespace blink {
 
-namespace {
-
-// A big random prime. It's also the digest returned for an empty block.
-constexpr uint64_t kChainingValueSeed = UINT64_C(6544625333304541877);
-
-}  // namespace
-
-const size_t IdentifiableTokenBuilder::kBlockSizeInBytes;
-
 IdentifiableTokenBuilder::IdentifiableTokenBuilder()
     : chaining_value_(kChainingValueSeed) {
   // Ensures that BlockBuffer iterators are random-access on all platforms.
