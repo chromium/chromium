@@ -277,7 +277,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
   bool allow_process_kill_for_testing_ = false;
 
-  mojo::SharedMemoryVersionController shared_memory_controller_;
+  std::optional<mojo::SharedMemoryVersionController> shared_memory_controller_;
 
   mojo::AssociatedReceiver<mojom::GpuChannel> receiver_{this};
 };
@@ -309,6 +309,11 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
   allow_process_kill_for_testing_ = gpu_channel->gpu_channel_manager()
                                         ->gpu_preferences()
                                         .enable_gpu_benchmarking_extension;
+
+  if (base::FeatureList::IsEnabled(
+          features::kConditionallySkipGpuChannelFlush)) {
+    shared_memory_controller_.emplace();
+  }
 }
 
 GpuChannelMessageFilter::~GpuChannelMessageFilter() {
@@ -413,8 +418,10 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
 
   scheduler_->ScheduleTasks(std::move(tasks));
 
-  // Update version shared with clients.
-  shared_memory_controller_.SetVersion(flushed_deferred_message_id);
+  if (shared_memory_controller_) {
+    // Update version shared with clients.
+    shared_memory_controller_->SetVersion(flushed_deferred_message_id);
+  }
 }
 
 bool GpuChannelMessageFilter::IsNativeBufferSupported(
@@ -548,7 +555,8 @@ void GpuChannelMessageFilter::GetChannelToken(
 
 void GpuChannelMessageFilter::GetSharedMemoryForFlushId(
     GetSharedMemoryForFlushIdCallback callback) {
-  std::move(callback).Run(shared_memory_controller_.GetSharedMemoryRegion());
+  CHECK(shared_memory_controller_);
+  std::move(callback).Run(shared_memory_controller_->GetSharedMemoryRegion());
 }
 
 void GpuChannelMessageFilter::Flush(FlushCallback callback) {
