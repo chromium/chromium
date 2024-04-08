@@ -337,8 +337,7 @@ using chrome_test_util::WindowWithNumber;
 
 // Tests that changing the options for clear browsing data is not saved if the
 // deletion doesn't go through, i.e. if the user dismisses CBD.
-// TODO(crbug.com/333308808) re-enable.
-- (void)DISABLE_testChangeOptionsAndDismiss {
+- (void)testChangeOptionsAndDismiss {
   [self openClearBrowsingDataDialog];
 
   // Check that CBD is presented.
@@ -360,6 +359,7 @@ using chrome_test_util::WindowWithNumber;
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Settings has been dismissed.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
