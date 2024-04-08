@@ -696,8 +696,10 @@ void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
 
-  map->Add<auth_token::mojom::RecordReplayAuthTokenStore>(
-      base::BindRepeating(&BindRecordReplayAuthTokenStore));
+  if (getenv("CHROMIUM_UI")) {
+    map->Add<auth_token::mojom::RecordReplayAuthTokenStore>(
+        base::BindRepeating(&BindRecordReplayAuthTokenStore));
+  }
 
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
@@ -884,8 +886,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxPageHandler,
                                          OmniboxUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<::mojom::RecordReplayManagerHandler,
-                                         RecordReplayUI>(map);
+  if (getenv("CHROMIUM_UI")) {
+    RegisterWebUIControllerInterfaceBinder<::mojom::RecordReplayManagerHandler,
+                                          RecordReplayUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       site_engagement::mojom::SiteEngagementDetailsProvider, SiteEngagementUI>(

@@ -73,7 +73,7 @@ class LocalWindowProxy final : public WindowProxy {
       v8::Context::AbortScriptExecutionCallback callback);
 
  private:
-  void SetupRecordReplayEventListener();
+  void SetupRecordReplayWebChannel();
 
   // LocalWindowProxy overrides:
   bool IsLocal() const override { return true; }
