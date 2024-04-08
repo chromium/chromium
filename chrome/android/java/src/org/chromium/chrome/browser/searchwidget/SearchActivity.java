@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -77,7 +76,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
@@ -707,19 +705,6 @@ public class SearchActivity extends AsyncInitializationActivity
                     }
                 });
 
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(this)) {
-            View toolbarView = contentView.findViewById(R.id.toolbar);
-            final int edgePadding = OmniboxResourceProvider.getToolbarSidePadding(this);
-            toolbarView.setPaddingRelative(
-                    edgePadding,
-                    toolbarView.getPaddingTop(),
-                    edgePadding,
-                    toolbarView.getPaddingBottom());
-            toolbarView.setBackground(
-                    new ColorDrawable(
-                            ChromeColors.getSurfaceColor(
-                                    this, R.dimen.omnibox_suggestion_dropdown_bg_elevation)));
-        }
         return contentView;
     }
 

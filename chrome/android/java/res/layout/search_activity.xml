@@ -24,7 +24,7 @@ found in the LICENSE file.
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_height_no_shadow_focused"
-            android:background="@macro/toolbar_background_primary"
+            android:background="@drawable/search_activity_bg"
             android:paddingStart="@dimen/toolbar_edge_padding"
             android:paddingEnd="@dimen/toolbar_edge_padding"
             android:clickable="true" >
