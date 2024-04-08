@@ -12951,27 +12951,6 @@
             ]
         }
     ],
-    "OpenDownloadDialog": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OpenDownloadDialog"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "OpenDownloadDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptionalToolbarButton": [
         {
             "platforms": [
