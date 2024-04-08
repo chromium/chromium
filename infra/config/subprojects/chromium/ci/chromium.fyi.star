@@ -1518,6 +1518,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 """,
     builderless = True,
     cores = None,
+    cpu = cpu.ARM64,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "ios|cq",
