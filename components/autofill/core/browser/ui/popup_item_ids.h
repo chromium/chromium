@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
 
+#include <ostream>
+
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
@@ -98,6 +100,8 @@ enum class PopupItemId : int {
 
   kMaxValue = kDevtoolsTestAddressEntry
 };
+
+std::ostream& operator<<(std::ostream& os, PopupItemId popup_item_id);
 
 // Set of `PopupItemId`s that trigger filling a value into an input element
 // when the user selects a suggestion with that id.

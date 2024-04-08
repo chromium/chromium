@@ -546,6 +546,7 @@ static_library("browser") {
     "ui/payments/virtual_card_enroll_ui_model.cc",
     "ui/payments/virtual_card_enroll_ui_model.h",
     "ui/popup_hiding_reasons.h",
+    "ui/popup_item_ids.cc",
     "ui/popup_item_ids.h",
     "ui/region_combobox_model.cc",
     "ui/region_combobox_model.h",
