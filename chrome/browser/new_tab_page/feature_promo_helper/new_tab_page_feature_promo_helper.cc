@@ -61,5 +61,8 @@ void NewTabPageFeaturePromoHelper::CloseFeaturePromo(
 bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
     content::WebContents* web_contents) {
   auto* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser->signin_view_controller()->ShowsModalDialog();
+  // `browser` might be NULL if the new tab is immediately dragged out of the
+  // window.
+  return browser ? browser->signin_view_controller()->ShowsModalDialog()
+                 : false;
 }
