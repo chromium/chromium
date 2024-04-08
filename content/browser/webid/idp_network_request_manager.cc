@@ -720,6 +720,20 @@ bool IsOkResponseCode(int response_code) {
   return response_code / 100 == 2;
 }
 
+ErrorDialogType GetErrorDialogTypeAndSetTokenError(int response_code,
+                                                   TokenResult& token_result) {
+  if (response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
+    token_result.error = TokenError{kServerError, GURL()};
+    return ErrorDialogType::kServerErrorWithoutUrl;
+  }
+  if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+    token_result.error = TokenError{kTemporarilyUnavailable, GURL()};
+    return ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
+  }
+  token_result.error = TokenError{kGenericEmpty, GURL()};
+  return ErrorDialogType::kGenericEmptyWithoutUrl;
+}
+
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
@@ -730,31 +744,25 @@ void OnTokenRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   TokenResult token_result;
 
-  if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    ErrorDialogType type;
-    if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
-      token_result.error = TokenError{kServerError, GURL()};
-      type = ErrorDialogType::kServerErrorWithoutUrl;
-    } else if (fetch_status.response_code == net::HTTP_SERVICE_UNAVAILABLE) {
-      token_result.error = TokenError{kTemporarilyUnavailable, GURL()};
-      type = ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
-    } else {
-      token_result.error = TokenError{kGenericEmpty, GURL()};
-      type = ErrorDialogType::kGenericEmptyWithoutUrl;
-    }
-    std::move(record_error_metrics_callback)
-        .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
-             /*error_url_type=*/std::nullopt);
-    std::move(callback).Run(fetch_status, token_result);
-    return;
-  }
+  bool parse_succeeded = fetch_status.parse_status == ParseStatus::kSuccess;
+  DCHECK(!parse_succeeded || result.has_value());
 
-  const base::Value::Dict& response = result->GetDict();
-  const std::string* token = IsOkResponseCode(fetch_status.response_code)
-                                 ? response.FindString(kTokenKey)
-                                 : nullptr;
-  const std::string* continue_on = response.FindString(kContinueOnKey);
-  const base::Value::Dict* response_error = response.FindDict(kErrorKey);
+  // We need to handle a number of cases, in order:
+  // 1) Result has a custom error field - return error
+  // 2) Parsing the result failed - return error
+  // 3) HTTP error code - return error
+  // 4) Result has token - return success
+  // 5) Result has continue_on URL - return success
+  // 6) Neither token nor continue_on nor HTTP error - return error
+
+  const base::Value::Dict* response =
+      parse_succeeded ? &result->GetDict() : nullptr;
+  const std::string* token =
+      response && IsOkResponseCode(fetch_status.response_code)
+          ? response->FindString(kTokenKey)
+          : nullptr;
+  const base::Value::Dict* response_error =
+      response ? response->FindDict(kErrorKey) : nullptr;
   TokenResponseType token_response_type =
       GetTokenResponseType(token, response_error);
 
@@ -773,6 +781,20 @@ void OnTokenRequestParsed(
     return;
   }
 
+  if (!parse_succeeded || !IsOkResponseCode(fetch_status.response_code)) {
+    ErrorDialogType type = GetErrorDialogTypeAndSetTokenError(
+        fetch_status.response_code, token_result);
+    std::move(record_error_metrics_callback)
+        .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
+             /*error_url_type=*/std::nullopt);
+    if (parse_succeeded) {
+      fetch_status.parse_status = ParseStatus::kInvalidResponseError;
+    }
+    std::move(callback).Run(fetch_status, token_result);
+    return;
+  }
+  DCHECK(response);
+
   if (token) {
     token_result.token = *token;
     std::move(record_error_metrics_callback)
@@ -783,6 +805,7 @@ void OnTokenRequestParsed(
     return;
   }
 
+  const std::string* continue_on = response->FindString(kContinueOnKey);
   if (IsFedCmAuthzEnabled() && continue_on) {
     GURL url = token_url.Resolve(*continue_on);
     if (url.is_valid()) {
@@ -793,9 +816,10 @@ void OnTokenRequestParsed(
     }
   }
 
+  ErrorDialogType type = GetErrorDialogTypeAndSetTokenError(
+      fetch_status.response_code, token_result);
   std::move(record_error_metrics_callback)
-      .Run(token_response_type, ErrorDialogType::kGenericEmptyWithoutUrl,
-           /*error_url_type=*/std::nullopt);
+      .Run(token_response_type, type, /*error_url_type=*/std::nullopt);
   std::move(callback).Run(
       {ParseStatus::kInvalidResponseError, fetch_status.response_code},
       token_result);

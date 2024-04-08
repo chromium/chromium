@@ -1706,7 +1706,9 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
       "account", "request", net::HTTP_FORBIDDEN);
 
   EXPECT_EQ("", token_result.token);
-  EXPECT_FALSE(token_result.error);
+  EXPECT_TRUE(token_result.error);
+  EXPECT_EQ("", token_result.error->code);
+  EXPECT_EQ("", token_result.error->url);
   EXPECT_EQ(net::HTTP_FORBIDDEN, fetch_status.response_code);
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
   EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
