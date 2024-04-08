@@ -977,6 +977,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cookie.ScriptAgeSinceLastUpdateInHoursGTOneWeek" units="hours"
+    expires_after="2025-04-08">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a non-session cookie written by a script and being
+    loaded for some context is (for values greater than one week). Recorded when
+    cookies are loaded from the store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.ScriptAgeSinceLastUpdateInHoursLTEOneWeek"
+    units="hours" expires_after="2025-04-08">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a non-session cookie written by a script and being
+    loaded for some context is (for values less than or equal to one week).
+    Recorded when cookies are loaded from the store.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ScriptExpirationInHoursGTOneWeek" units="hours"
     expires_after="2024-09-29">
   <owner>arichiv@chromium.org</owner>
