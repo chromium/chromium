@@ -108,16 +108,8 @@ class EnterpriseEnrollmentTest : public EnterpriseEnrollmentTestBase {
 // attribute prompt screen. Verifies the attribute prompt screen is displayed.
 // Verifies that the data the user enters into the attribute prompt screen is
 // received by the enrollment helper.
-// TODO(crbug.com/1454755): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestAttributePromptPageGetsLoaded \
-  DISABLED_TestAttributePromptPageGetsLoaded
-#else
-#define MAYBE_TestAttributePromptPageGetsLoaded \
-  TestAttributePromptPageGetsLoaded
-#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       MAYBE_TestAttributePromptPageGetsLoaded) {
+                       TestAttributePromptPageGetsLoaded) {
   ShowEnrollmentScreen();
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL);
