@@ -4,12 +4,17 @@
 
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
+#include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 
@@ -39,10 +44,21 @@ PasswordManualFallbackFlow::PasswordManualFallbackFlow(
       passwords_presenter_(std::move(passwords_presenter)) {
   passwords_presenter_observation_.Observe(passwords_presenter_.get());
   passwords_presenter_->Init();
+
+  const GURL origin_as_gurl = password_manager_driver_->GetLastCommittedURL();
+  password_manager::PasswordFormDigest form_digest(
+      password_manager::PasswordForm::Scheme::kHtml,
+      password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest, password_client, /*should_migrate_http_passwords=*/false);
+  form_fetcher_->set_filter_grouped_credentials(false);
+  form_fetcher_->AddConsumer(this);
+  form_fetcher_->Fetch();
 }
 
 PasswordManualFallbackFlow::~PasswordManualFallbackFlow() {
   CancelBiometricReauthIfOngoing();
+  form_fetcher_->RemoveConsumer(this);
 }
 
 // static
@@ -60,12 +76,26 @@ bool PasswordManualFallbackFlow::SupportsSuggestionType(
   }
 }
 
+void PasswordManualFallbackFlow::OnFetchCompleted() {
+  if (flow_state_ == FlowState::kCreated) {
+    flow_state_ = FlowState::kSuggestedPasswordsReady;
+  } else if (flow_state_ == FlowState::kAllUserPasswordsFetched) {
+    flow_state_ = FlowState::kFlowInitialized;
+    // The flow state transition to `FlowState::kFlowInitialized` can happen
+    // only once.
+    if (on_all_password_data_ready_) {
+      std::move(on_all_password_data_ready_).Run();
+    }
+  }
+}
+
 void PasswordManualFallbackFlow::OnSavedPasswordsChanged(
     const PasswordStoreChangeList& changes) {
-  FlowState old_state =
-      std::exchange(flow_state_, FlowState::kPasswordsRetrived);
-  if (old_state != FlowState::kPasswordsRetrived) {
-    // The flow state transition to `FlowState::kPasswordsRetrived` can happen
+  if (flow_state_ == FlowState::kCreated) {
+    flow_state_ = FlowState::kAllUserPasswordsFetched;
+  } else if (flow_state_ == FlowState::kSuggestedPasswordsReady) {
+    flow_state_ = FlowState::kFlowInitialized;
+    // The flow state transition to `FlowState::kFlowInitialized` can happen
     // only once.
     if (on_all_password_data_ready_) {
       std::move(on_all_password_data_ready_).Run();
@@ -78,7 +108,7 @@ void PasswordManualFallbackFlow::RunFlow(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
   saved_field_id_ = field_id;
-  if (flow_state_ != FlowState::kPasswordsRetrived) {
+  if (flow_state_ != FlowState::kFlowInitialized) {
     on_all_password_data_ready_ =
         base::BindOnce(&PasswordManualFallbackFlow::RunFlowImpl,
                        base::Unretained(this), bounds, text_direction);
@@ -198,7 +228,7 @@ void PasswordManualFallbackFlow::RunFlowImpl(
   // suggestion generator.
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
-          /*suggested_credentials=*/base::span<const PasswordForm>(),
+          form_fetcher_->GetBestMatches(),
           base::make_span(passwords_presenter_->GetSavedPasswords()),
           on_password_form);
   // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
