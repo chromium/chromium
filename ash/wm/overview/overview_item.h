@@ -156,6 +156,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
  private:
   friend class OverviewTestBase;
   friend class ScopedOverviewTransformWindow;
+  FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, DraggingOnMultipleDisplay);
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
 
   // Creates `item_widget_` with `OverviewItemView` as its contents view.

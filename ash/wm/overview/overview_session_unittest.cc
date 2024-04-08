@@ -872,9 +872,50 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
+// Test that we mirror the the correct widgets when dragging across displays.
+TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
+  UpdateDisplay("600x400,600x400");
+
+  // Create one normal window and one minimzied window.
+  auto normal_window = CreateAppWindow();
+  auto minimized_window = CreateAppWindow();
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  WindowState::Get(minimized_window.get())->OnWMEvent(&minimize_event);
+
+  ToggleOverview();
+  auto* generator = GetEventGenerator();
+  OverviewItem* normal_item =
+      static_cast<OverviewItem*>(GetOverviewItemForWindow(normal_window.get()));
+  OverviewItem* minimized_item = static_cast<OverviewItem*>(
+      GetOverviewItemForWindow(minimized_window.get()));
+
+  // Start dragging the normal window. We mirror both the overview item widget
+  // and the normal window.
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseBy(20, 20);
+  EXPECT_TRUE(normal_item->item_mirror_for_dragging_);
+  EXPECT_TRUE(normal_item->window_mirror_for_dragging_);
+  EXPECT_FALSE(minimized_item->item_mirror_for_dragging_);
+  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_);
+
+  // Start dragging the minimzed window. We don't mirror the original window,
+  // since the overview item widget already contains a mirror.
+  generator->ReleaseLeftButton();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(minimized_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseBy(20, 20);
+  EXPECT_FALSE(normal_item->item_mirror_for_dragging_);
+  EXPECT_FALSE(normal_item->window_mirror_for_dragging_);
+  EXPECT_TRUE(minimized_item->item_mirror_for_dragging_);
+  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_);
+}
+
 // Tests that dragging an overview item with multiple displays and then exiting
 // overview does not result in a u-a-f. Regression test for b/293867778.
-TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
+TEST_P(OverviewSessionTest, ExitOverviewWhileDraggingOnMultipleDisplay) {
   UpdateDisplay("600x400,600x400");
 
   auto window = CreateAppWindow();

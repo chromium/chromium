@@ -884,20 +884,17 @@ void OverviewItem::OnMovingItemToAnotherDesk() {
 }
 
 void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
-  DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
-  const bool minimized_or_tucked = transform_window_.IsMinimizedOrTucked();
+  CHECK_GT(Shell::GetAllRootWindows().size(), 1u);
 
-  if (minimized_or_tucked) {
-    if (!item_mirror_for_dragging_) {
-      item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
-          item_widget_->GetNativeWindow(), is_touch_dragging);
-    }
-    item_mirror_for_dragging_->Update();
+  if (!item_mirror_for_dragging_) {
+    item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+        item_widget_->GetNativeWindow(), is_touch_dragging);
   }
+  item_mirror_for_dragging_->Update();
 
   // Minimized or tucked windows don't need to mirror the source as its already
   // in `item_widget_`.
-  if (minimized_or_tucked) {
+  if (transform_window_.IsMinimizedOrTucked()) {
     return;
   }
 
