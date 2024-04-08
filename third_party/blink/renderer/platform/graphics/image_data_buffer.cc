@@ -145,10 +145,6 @@ bool ImageDataBuffer::EncodeImageInternal(const ImageEncodingMimeType mime_type,
                                           const SkPixmap& pixmap) const {
   DCHECK(is_valid_);
 
-  recordreplay::Assert(
-    "[RUN-2859-2941] ImageDataBuffer::EncodeImageInternal %d %f %zu",
-    mime_type, quality, encoded_image->size());
-
   if (mime_type == kMimeTypeJpeg) {
     SkJpegEncoder::Options options;
     options.fQuality = ImageEncoder::ComputeJpegQuality(quality);
@@ -180,6 +176,11 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
 
   if (!recordreplay::AreEventsUnavailable()) {
     // [TT-604] Avoid divergences caused by small differences in render output.
+    wtf_size_t numBytes = (wtf_size_t)recordreplay::RecordReplayValue(
+      "ImageDataBuffer::ToDataURL",
+      (uintptr_t)result.size()
+    );
+    result.resize(numBytes);
     recordreplay::RecordReplayBytes(
       "ImageDataBuffer::ToDataURL",
       (void*)&result[0],
