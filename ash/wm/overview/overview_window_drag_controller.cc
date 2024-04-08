@@ -31,7 +31,6 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -861,65 +860,6 @@ OverviewWindowDragController::CompleteNormalDrag(
 
 void OverviewWindowDragController::UpdateDragIndicatorsAndOverviewGrid(
     const gfx::PointF& location_in_screen) {
-  // Crash keys for helping debug http://b/300700394.
-  // OWDC_UDIAOG stands for
-  // `OverviewWindowDragController::UpdateDragIndicatorsAndOverviewGrid`. Here
-  // using the short version since the log method has a character count limit
-  // of 40.
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "is_touch_dragging_",
-                        is_touch_dragging_);
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "in_tablet_mode",
-                        Shell::Get()->IsInTabletMode());
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "item_", !!item_);
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "item_->root_window()",
-                        item_ && item_->root_window());
-  SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "initial_event_location_",
-                            initial_event_location_.ToString());
-  SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "initial_centerpoint_",
-                            initial_centerpoint_.ToString());
-  SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "location_in_screen",
-                            location_in_screen.ToString());
-
-  SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "display_count_", display_count_);
-  SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "current_display_count",
-                          Shell::GetAllRootWindows().size());
-
-  const display::Display& cursor_manager_display =
-      Shell::Get()->cursor_manager()->GetDisplay();
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "display_valid",
-                        cursor_manager_display.is_valid());
-  aura::Window* root_window_for_display =
-      cursor_manager_display.is_valid()
-          ? Shell::GetRootWindowForDisplayId(cursor_manager_display.id())
-          : nullptr;
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "root_window_for_display",
-                        !!root_window_for_display);
-
-  aura::Window* window = item_ ? item_->GetWindow() : nullptr;
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "item_->GetWindow()", !!window);
-  SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "window_type",
-                          window ? static_cast<int>(window->GetType()) : -1);
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "window->parent()",
-                        window ? !!window->parent() : false);
-  SCOPED_CRASH_KEY_BOOL(
-      "OWDC_UDIAOG", "activatable_parent",
-      window && window->parent()
-          ? IsActivatableShellWindowId(window->parent()->GetId())
-          : false);
-
-  auto* window_state = window ? WindowState::Get(window) : nullptr;
-  std::stringstream ss;
-  if (window_state) {
-    ss << WindowState::Get(window)->GetStateType();
-  } else {
-    ss << "No Window State";
-  }
-  SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "item_state_type", ss.str());
-
-  aura::Window* root_window_being_dragged_in = GetRootWindowBeingDraggedIn();
-  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "root_window_dragged_in()",
-                        !!root_window_being_dragged_in);
-
   CHECK(is_eligible_for_drag_to_snap_);
   snap_position_ = GetSnapPosition(location_in_screen);
   overview_session_->UpdateSplitViewDragIndicatorsWindowDraggingStates(
