@@ -436,7 +436,9 @@ void PaymentsDataManager::Refresh() {
   LoadPaymentsCustomerData();
   LoadAutofillOffers();
   LoadVirtualCardUsageData();
-  LoadCreditCardBenefits();
+  if (IsCardBenefitsPrefEnabled()) {
+    LoadCreditCardBenefits();
+  }
 }
 
 const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
@@ -812,6 +814,10 @@ bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
              features::kAutofillEnableCardBenefitsForAmericanExpress) ||
          base::FeatureList::IsEnabled(
              features::kAutofillEnableCardBenefitsForCapitalOne);
+}
+
+bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
+  return prefs::IsPaymentCardBenefitsEnabled(pref_service_);
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
@@ -1679,14 +1685,7 @@ void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
 }
 
 void PaymentsDataManager::ClearAllCreditCardBenefits() {
-  if (!GetServerDatabase()) {
-    return;
-  }
-  // Clear all the credit card benefits from the webdata database.
-  GetServerDatabase()->ClearAllCreditCardBenefits();
-
-  // Refresh the local cache and send notifications to observers.
-  Refresh();
+  credit_card_benefits_.clear();
 }
 
 void PaymentsDataManager::OnCardArtImagesFetched(

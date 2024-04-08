@@ -260,8 +260,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // present in the cache, this function will return a nullptr.
   gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
-  // Checks if the user is in an experiment for seeing credit card benefits.
+  // Checks if the user is in an experiment for seeing credit card benefits in
+  // Autofill suggestions.
   bool IsCardBenefitsFeatureEnabled();
+
+  // Returns the value of the PaymentsCardBenefits pref.
+  // `IsCardBenefitsPrefEnabled() == false` indicates the user does not see card
+  // benefits and will not have card benefit metrics logged.
+  bool IsCardBenefitsPrefEnabled() const;
 
   // Returns the value of the AutofillPaymentMethodsEnabled pref.
   virtual bool IsAutofillPaymentMethodsEnabled() const;
@@ -470,7 +476,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // preference is turned off.
   void OnAutofillPaymentsCardBenefitsPrefChange();
 
-  // Clears all the credit card benefits from the webdata database.
+  // Clears all credit card benefits in `credit_card_benefits_`.
   void ClearAllCreditCardBenefits();
 
   // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
