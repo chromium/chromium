@@ -1634,7 +1634,7 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
   }
 
   for (const CreditCardBenefit& credit_card_benefit : credit_card_benefits) {
-    if (!absl::visit([](const auto& a) { return a.IsValid(); },
+    if (!absl::visit([](const auto& a) { return a.IsValidForWriteFromSync(); },
                      credit_card_benefit)) {
       continue;
     }

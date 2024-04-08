@@ -75,7 +75,7 @@ class CreditCardBenefitBase {
   friend class CreditCardCategoryBenefit;
   friend class CreditCardMerchantBenefit;
 
-  bool IsValid() const;
+  bool IsValidForWriteFromSync() const;
 
   // Represents the unique identifier for this benefit. Generated in sync
   // server.
@@ -115,7 +115,7 @@ class CreditCardFlatRateBenefit : public CreditCardBenefitBase {
   friend auto operator<=>(const CreditCardFlatRateBenefit&,
                           const CreditCardFlatRateBenefit&) = default;
 
-  bool IsValid() const;
+  bool IsValidForWriteFromSync() const;
 };
 
 // Credit-card-linked benefit that users receive when making an online purchases
@@ -154,7 +154,7 @@ class CreditCardCategoryBenefit : public CreditCardBenefitBase {
   friend auto operator<=>(const CreditCardCategoryBenefit&,
                           const CreditCardCategoryBenefit&) = default;
 
-  bool IsValid() const;
+  bool IsValidForWriteFromSync() const;
 
   BenefitCategory benefit_category() const { return benefit_category_; }
 
@@ -186,7 +186,7 @@ class CreditCardMerchantBenefit : public CreditCardBenefitBase {
   friend auto operator<=>(const CreditCardMerchantBenefit&,
                           const CreditCardMerchantBenefit&) = default;
 
-  bool IsValid() const;
+  bool IsValidForWriteFromSync() const;
 
   const base::flat_set<url::Origin>& merchant_domains() const {
     return merchant_domains_;

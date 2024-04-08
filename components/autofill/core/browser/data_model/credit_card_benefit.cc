@@ -34,7 +34,7 @@ bool CreditCardBenefitBase::IsActiveBenefit() const {
   return current_time >= start_time_ && current_time < expiry_time_;
 }
 
-bool CreditCardBenefitBase::IsValid() const {
+bool CreditCardBenefitBase::IsValidForWriteFromSync() const {
   return linked_card_instrument_id_ && !benefit_id_->empty() &&
          !benefit_description_.empty() && AutofillClock::Now() < expiry_time_;
 }
@@ -61,8 +61,8 @@ CreditCardFlatRateBenefit& CreditCardFlatRateBenefit::operator=(
     CreditCardFlatRateBenefit&&) = default;
 CreditCardFlatRateBenefit::~CreditCardFlatRateBenefit() = default;
 
-bool CreditCardFlatRateBenefit::IsValid() const {
-  return CreditCardBenefitBase::IsValid();
+bool CreditCardFlatRateBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync();
 }
 
 CreditCardCategoryBenefit::CreditCardCategoryBenefit(
@@ -89,8 +89,8 @@ CreditCardCategoryBenefit& CreditCardCategoryBenefit::operator=(
     CreditCardCategoryBenefit&&) = default;
 CreditCardCategoryBenefit::~CreditCardCategoryBenefit() = default;
 
-bool CreditCardCategoryBenefit::IsValid() const {
-  return CreditCardBenefitBase::IsValid() &&
+bool CreditCardCategoryBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync() &&
          benefit_category_ != BenefitCategory::kUnknownBenefitCategory;
 }
 
@@ -118,8 +118,9 @@ CreditCardMerchantBenefit& CreditCardMerchantBenefit::operator=(
     CreditCardMerchantBenefit&&) = default;
 CreditCardMerchantBenefit::~CreditCardMerchantBenefit() = default;
 
-bool CreditCardMerchantBenefit::IsValid() const {
-  return CreditCardBenefitBase::IsValid() && !merchant_domains_.empty();
+bool CreditCardMerchantBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync() &&
+         !merchant_domains_.empty();
 }
 
 }  // namespace autofill

@@ -1730,7 +1730,7 @@ TEST_F(PaymentsAutofillTableTest, AddInactiveCreditCardBenefit) {
   CreditCardMerchantBenefit inactive_benefit =
       test::GetActiveCreditCardMerchantBenefit();
   test_api(inactive_benefit).SetStartTime(AutofillClock::Now() + base::Days(1));
-  EXPECT_TRUE(inactive_benefit.IsValid());
+  EXPECT_TRUE(inactive_benefit.IsValidForWriteFromSync());
   input_benefits.push_back(std::move(inactive_benefit));
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
@@ -1746,13 +1746,13 @@ TEST_F(PaymentsAutofillTableTest, AddInvalidCreditCardBenefit) {
   // valid benefit.
   CreditCardFlatRateBenefit valid_benefit =
       test::GetActiveCreditCardFlatRateBenefit();
-  ASSERT_TRUE(valid_benefit.IsValid());
+  ASSERT_TRUE(valid_benefit.IsValidForWriteFromSync());
   CreditCardCategoryBenefit invalid_benefit =
       test::GetActiveCreditCardCategoryBenefit();
   test_api(invalid_benefit)
       .SetBenefitCategory(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory);
-  ASSERT_FALSE(invalid_benefit.IsValid());
+  ASSERT_FALSE(invalid_benefit.IsValidForWriteFromSync());
 
   CreditCardBenefitBase::BenefitId valid_input_benefit_id =
       valid_benefit.benefit_id();

@@ -244,20 +244,20 @@ TEST(CreditCardBenefitTest, BenefitValidation_ValidBenefits) {
       CreditCardFlatRateBenefit(kArbitraryBenefitId, kArbitraryInstrumentId,
                                 kArbitraryDescription, kArbitraryPastTime,
                                 kArbitraryFutureTime)
-          .IsValid());
+          .IsValidForWriteFromSync());
 
   EXPECT_TRUE(CreditCardCategoryBenefit(
                   kArbitraryBenefitId, kArbitraryInstrumentId,
                   kArbitraryBenefitCategory, kArbitraryDescription,
                   kArbitraryPastTime, kArbitraryFutureTime)
-                  .IsValid());
+                  .IsValidForWriteFromSync());
 
   EXPECT_TRUE(CreditCardMerchantBenefit(
                   kArbitraryBenefitId, kArbitraryInstrumentId,
                   kArbitraryDescription,
                   {{url::Origin::Create(GURL("http://www.example.com"))}},
                   kArbitraryPastTime, kArbitraryFutureTime)
-                  .IsValid());
+                  .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for benefits without IDs.
@@ -268,19 +268,19 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyBenefitId) {
   EXPECT_FALSE(CreditCardFlatRateBenefit(
                    empty_id, kArbitraryInstrumentId, kArbitraryDescription,
                    kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardCategoryBenefit(
                    empty_id, kArbitraryInstrumentId, kArbitraryBenefitCategory,
                    kArbitraryDescription, kArbitraryPastTime,
                    kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardMerchantBenefit(
                    empty_id, kArbitraryInstrumentId, kArbitraryDescription,
                    {{url::Origin::Create(GURL("http://www.example.com"))}},
                    kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for benefits without instrument ID.
@@ -292,20 +292,20 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyInstrumentId) {
       CreditCardFlatRateBenefit(kArbitraryBenefitId, empty_instrument_id,
                                 kArbitraryDescription, kArbitraryPastTime,
                                 kArbitraryFutureTime)
-          .IsValid());
+          .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardCategoryBenefit(
                    kArbitraryBenefitId, empty_instrument_id,
                    kArbitraryBenefitCategory, kArbitraryDescription,
                    kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardMerchantBenefit(
                    kArbitraryBenefitId, empty_instrument_id,
                    kArbitraryDescription,
                    {{url::Origin::Create(GURL("http://www.example.com"))}},
                    kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for benefits with empty description.
@@ -315,20 +315,20 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyDescriptions) {
   EXPECT_FALSE(CreditCardFlatRateBenefit(
                    kArbitraryBenefitId, kArbitraryInstrumentId,
                    empty_description, kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(
       CreditCardCategoryBenefit(kArbitraryBenefitId, kArbitraryInstrumentId,
                                 kArbitraryBenefitCategory, empty_description,
                                 kArbitraryPastTime, kArbitraryFutureTime)
-          .IsValid());
+          .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardMerchantBenefit(
                    kArbitraryBenefitId, kArbitraryInstrumentId,
                    empty_description,
                    {{url::Origin::Create(GURL("http://www.example.com"))}},
                    kArbitraryPastTime, kArbitraryFutureTime)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for expired benefits.
@@ -338,20 +338,20 @@ TEST(CreditCardBenefitTest, BenefitValidation_InvalidEndDates) {
   EXPECT_FALSE(CreditCardFlatRateBenefit(
                    kArbitraryBenefitId, kArbitraryInstrumentId,
                    kArbitraryDescription, kArbitraryPastTime, expired_time)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardCategoryBenefit(
                    kArbitraryBenefitId, kArbitraryInstrumentId,
                    kArbitraryBenefitCategory, kArbitraryDescription,
                    kArbitraryPastTime, expired_time)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 
   EXPECT_FALSE(CreditCardMerchantBenefit(
                    kArbitraryBenefitId, kArbitraryInstrumentId,
                    kArbitraryDescription,
                    {{url::Origin::Create(GURL("http://www.example.com"))}},
                    kArbitraryPastTime, expired_time)
-                   .IsValid());
+                   .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for category benefit with unknown category.
@@ -361,7 +361,7 @@ TEST(CreditCardBenefitTest, BenefitValidation_UnknownCategory) {
           kArbitraryBenefitId, kArbitraryInstrumentId,
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory,
           kArbitraryDescription, kArbitraryPastTime, kArbitraryFutureTime)
-          .IsValid());
+          .IsValidForWriteFromSync());
 }
 
 // Test that `IsValid` returns false for merchant benefit with empty
@@ -371,7 +371,7 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyDomainList) {
       CreditCardMerchantBenefit(kArbitraryBenefitId, kArbitraryInstrumentId,
                                 kArbitraryDescription, {}, kArbitraryPastTime,
                                 kArbitraryFutureTime)
-          .IsValid());
+          .IsValidForWriteFromSync());
 }
 
 }  // namespace autofill
