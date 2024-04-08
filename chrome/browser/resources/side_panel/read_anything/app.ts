@@ -1445,7 +1445,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   getPreviousHighlightColorVar(colorSuffix: string) {
     if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
-      return 'var(--color-sys-on-surface-secondary)';
+      return 'var(--color-sys-on-surface-subtle)';
     }
     return `var(--color-read-anything-previous-read-aloud-highlight${
         colorSuffix})`;
