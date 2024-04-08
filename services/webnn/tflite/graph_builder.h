@@ -23,6 +23,8 @@
 
 namespace webnn::tflite {
 
+namespace internal {
+
 // Methods which take a generic numerical type as input (e.g. uint32_t) and
 // expect to serialize the data as a TFLite tensor (e.g.
 // ::tflite::TensorType_UINT32) may use the `IsSupportedTensorType` concept to
@@ -32,6 +34,8 @@ template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
 concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t>;
+
+}  // namespace internal
 
 // This class converts WebNN graph to tflite model and persist into FlatBuffer.
 // The schema_generated.h file defines the format for each data structure to
@@ -90,7 +94,7 @@ class GraphBuilder final {
   // Serializes `buffer` as a tensor with the given `dimensions` and `type `to
   // the flat buffer and returns the index in `tensors_` if it's successful.
   template <typename DataType>
-    requires IsSupportedTensorType<DataType>
+    requires internal::IsSupportedTensorType<DataType>
   int32_t SerializeTensorWithBuffer(base::span<const DataType> buffer,
                                     base::span<const int32_t> dimensions);
 

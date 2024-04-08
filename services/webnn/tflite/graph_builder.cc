@@ -32,7 +32,7 @@ namespace {
 //
 // Example: TensorTypeMap<uint32_t>::value -> ::tflite::TensorType_UINT32
 template <typename DataType>
-  requires IsSupportedTensorType<DataType>
+  requires internal::IsSupportedTensorType<DataType>
 struct TensorTypeMap;
 
 template <>
@@ -478,7 +478,7 @@ uint32_t GraphBuilder::SerializeBuffer(const mojo_base::BigBuffer& constant) {
 }
 
 template <typename DataType>
-  requires IsSupportedTensorType<DataType>
+  requires internal::IsSupportedTensorType<DataType>
 int32_t GraphBuilder::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
