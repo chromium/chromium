@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_internals_resources.h"
@@ -36,5 +38,21 @@ DataSharingInternalsUI::DataSharingInternalsUI(content::WebUI* web_ui)
 }
 
 DataSharingInternalsUI::~DataSharingInternalsUI() = default;
+
+void DataSharingInternalsUI::BindInterface(
+    mojo::PendingReceiver<data_sharing_internals::mojom::PageHandlerFactory>
+        receiver) {
+  data_sharing_internals_page_factory_receiver_.reset();
+  data_sharing_internals_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void DataSharingInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<data_sharing_internals::mojom::Page> page,
+    mojo::PendingReceiver<data_sharing_internals::mojom::PageHandler>
+        receiver) {
+  data_sharing_internals_page_handler_ =
+      std::make_unique<DataSharingInternalsPageHandlerImpl>(
+          std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DataSharingInternalsUI)
