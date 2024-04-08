@@ -23,6 +23,8 @@ public class ExecutionResult {
         ExecutionError.NOT_AVAILABLE,
         ExecutionError.BUSY,
         ExecutionError.FILTERED,
+        ExecutionError.INPUT_FILTERED,
+        ExecutionError.REQUEST_TOO_LARGE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExecutionError {
@@ -30,6 +32,8 @@ public class ExecutionResult {
         public static final int NOT_AVAILABLE = 1;
         public static final int BUSY = 2;
         public static final int FILTERED = 3;
+        public static final int INPUT_FILTERED = 4;
+        public static final int REQUEST_TOO_LARGE = 5;
     }
 
     /**
