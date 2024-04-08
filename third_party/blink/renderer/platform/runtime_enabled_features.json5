@@ -990,6 +990,12 @@
       status: "test",
     },
     {
+      // For scroll-markers pseudo elements for Carousel.
+      // https://github.com/flackr/carousel/tree/main/scroll-marker
+      name: "CSSPseudoScrollMarkers",
+      status: "experimental",
+    },
+    {
       // TODO(crbug.com/40932006): Non-standard 'reading-order-items' keyword
       // for CSS reading of grid and flex layout.
       // https://drafts.csswg.org/css-display-4/#reading-order-items

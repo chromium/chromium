@@ -2575,6 +2575,8 @@ domain DOM
       grammar-error
       highlight
       first-line-inherited
+      scroll-marker
+      scroll-markers
       scrollbar
       scrollbar-thumb
       scrollbar-button

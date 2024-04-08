@@ -70,6 +70,8 @@ enum PseudoId : uint8_t {
   kPseudoIdBackdrop,
   kPseudoIdSelection,
   kPseudoIdScrollbar,
+  kPseudoIdScrollMarker,
+  kPseudoIdScrollMarkers,
   kPseudoIdTargetText,
   kPseudoIdHighlight,
   kPseudoIdSpellingError,

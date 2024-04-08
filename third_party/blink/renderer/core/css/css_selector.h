@@ -371,6 +371,9 @@ class CORE_EXPORT CSSSelector {
     kPseudoViewTransitionImagePair,
     kPseudoViewTransitionNew,
     kPseudoViewTransitionOld,
+    // Scroll markers pseudos for Carousel
+    kPseudoScrollMarker,
+    kPseudoScrollMarkers,
   };
 
   enum class AttributeMatchType : int {
