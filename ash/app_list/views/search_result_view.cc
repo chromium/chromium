@@ -1387,7 +1387,10 @@ void SearchResultView::Layout(PassKey) {
 
         SetFlexBehaviorForTextContents(
             centered_text_bounds.width(),
-            result_text_separator_label_->GetPreferredSize().width(),
+            result_text_separator_label_
+                ->GetPreferredSize(views::SizeBounds(
+                    result_text_separator_label_->width(), {}))
+                .width(),
             non_elided_details_label_width_, title_container_,
             details_container_);
         break;

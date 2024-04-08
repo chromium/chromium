@@ -264,7 +264,8 @@ void TopIconAnimationView::Layout(PassKey) {
         gfx::Size(badge_container_diameter, badge_container_diameter)));
   }
   title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
-      grid_->app_list_config(), rect, title_->GetPreferredSize(),
+      grid_->app_list_config(), rect,
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})),
       /*icon_scale=*/1.0f));
 }
 

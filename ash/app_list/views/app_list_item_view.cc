@@ -1493,7 +1493,9 @@ void AppListItemView::Layout(PassKey) {
   SetBackgroundExtendedState(is_icon_extended_, /*animate=*/false);
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
-      app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
+      app_list_config_, rect,
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})),
+      icon_scale_);
   if (new_install_dot_ && new_install_dot_->GetVisible()) {
     // If the new install dot is showing, and the dot would extend outside the
     // left edge of the tile, inset the title bounds to make space for the dot.
@@ -1892,7 +1894,8 @@ void AppListItemView::SetContextMenuShownCallbackForTest(
 
 gfx::Rect AppListItemView::GetDefaultTitleBoundsForTest() {
   return GetTitleBoundsForTargetViewBounds(
-      app_list_config_, GetContentsBounds(), title_->GetPreferredSize(),
+      app_list_config_, GetContentsBounds(),
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})),
       icon_scale_);
 }
 
