@@ -15,8 +15,10 @@ SystemShadow::~SystemShadow() = default;
 
 // static
 std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnNinePatchLayer(
-    Type shadow_type) {
-  return base::WrapUnique(new SystemShadowOnNinePatchLayerImpl(shadow_type));
+    Type shadow_type,
+    const LayerRecreatedCallback& layer_recreated_callback) {
+  return base::WrapUnique(new SystemShadowOnNinePatchLayerImpl(
+      shadow_type, layer_recreated_callback));
 }
 
 // static

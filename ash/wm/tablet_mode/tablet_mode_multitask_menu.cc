@@ -127,7 +127,8 @@ class TabletModeMultitaskMenuView : public views::View {
     layer()->SetFillsBoundsOpaquely(false);
 
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-        SystemShadow::Type::kElevation12);
+        SystemShadow::Type::kElevation12,
+        SystemShadow::LayerRecreatedCallback());
     shadow_->SetRoundedCornerRadius(kCornerRadius);
     layer()->Add(shadow_->GetLayer());
   }

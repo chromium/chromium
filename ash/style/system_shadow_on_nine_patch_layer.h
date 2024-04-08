@@ -49,21 +49,31 @@ class SystemShadowOnNinePatchLayer : public SystemShadow {
 
 // An implementation of `SystemShadowOnNinePatchLayer`. It is directly based on
 // the ui::Shadow.
-class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
+class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer,
+                                         public ui::LayerOwner::Observer {
  public:
-  explicit SystemShadowOnNinePatchLayerImpl(SystemShadow::Type type);
+  SystemShadowOnNinePatchLayerImpl(
+      SystemShadow::Type type,
+      const LayerRecreatedCallback& layer_recreated_callback);
   SystemShadowOnNinePatchLayerImpl(const SystemShadowOnNinePatchLayerImpl&) =
       delete;
   SystemShadowOnNinePatchLayerImpl& operator=(
       const SystemShadowOnNinePatchLayerImpl&) = delete;
   ~SystemShadowOnNinePatchLayerImpl() override;
 
+  // ui::LayerOwner::Observer:
+  void OnLayerRecreated(ui::Layer* old_layer) override;
+
  private:
   // SystemShadowOnNinePatchLayer:
   ui::Shadow* shadow() override;
   const ui::Shadow* shadow() const override;
 
+  LayerRecreatedCallback layer_recreated_callback_;
   ui::Shadow shadow_;
+
+  base::ScopedObservation<ui::LayerOwner, SystemShadowOnNinePatchLayerImpl>
+      shadow_observation_{this};
 };
 
 // An implementation of `SystemShadowOnNinePatchLayer`. It is based on

@@ -134,6 +134,9 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Recalculates and updates the bounds of the folder `shadow_`  .
   void UpdateShadowBounds();
 
+  // Called when the  `shadow_` layer gets recreated.
+  void OnShadowLayerRecreated(ui::Layer* old_layer, ui::Layer* new_layer);
+
   // Returns true if this view's child views are in animation for opening or
   // closing the folder.
   bool IsAnimationRunning() const;

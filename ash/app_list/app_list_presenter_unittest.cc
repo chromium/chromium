@@ -2205,7 +2205,7 @@ TEST_P(AppListBubbleAndTabletTest,
   widget_close_waiter.Wait();
 }
 
-// Verifies that rotation the screen when launcher is shown does not crash.
+// Verifies that rotating the screen when launcher is shown does not crash.
 TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
   test::AppListTestModel* model = GetAppListModel();
   model->PopulateApps(15);
@@ -2223,6 +2223,63 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
   animator->Rotate(display::Display::ROTATE_90,
                    display::Display::RotationSource::USER,
                    DisplayConfigurationController::ANIMATION_SYNC);
+}
+
+// Verifies that rotating the screen and shutting down when the launcher is
+// shown does not crash.
+TEST_P(AppListBubbleAndTabletTest, ShutdownDuringRotationAnimationSmoke) {
+  test::AppListTestModel* model = GetAppListModel();
+  model->PopulateApps(1);
+  model->CreateAndPopulateFolderWithApps(3);
+  model->PopulateApps(1);
+
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenRotationAnimator* animator =
+      DisplayConfigurationControllerTestApi(
+          Shell::Get()->display_configuration_controller())
+          .GetScreenRotationAnimatorForDisplay(display.id());
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  animator->Rotate(display::Display::ROTATE_90,
+                   display::Display::RotationSource::USER,
+                   DisplayConfigurationController::ANIMATION_SYNC);
+}
+
+// Verifies that rotating the screen when launcher is shown does not crash.
+TEST_P(AppListBubbleAndTabletTest, RotationAnimationWithFolderSmoke) {
+  test::AppListTestModel* model = GetAppListModel();
+  model->PopulateApps(1);
+  model->CreateAndPopulateFolderWithApps(3);
+  model->PopulateApps(1);
+
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // Tap the folder item to show it.
+  GestureTapOn(apps_grid_view_->GetItemViewAt(1));
+  ASSERT_TRUE(AppListIsInFolderView());
+
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenRotationAnimator* animator =
+      DisplayConfigurationControllerTestApi(
+          Shell::Get()->display_configuration_controller())
+          .GetScreenRotationAnimatorForDisplay(display.id());
+  animator->Rotate(display::Display::ROTATE_90,
+                   display::Display::RotationSource::USER,
+                   DisplayConfigurationController::ANIMATION_SYNC);
+
+  // Close the folder view.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      GetFolderView()->GetBoundsInScreen().right_center() +
+      gfx::Vector2d(10, 0));
+  event_generator->ClickLeftButton();
+  ASSERT_FALSE(AppListIsInFolderView());
+
+  EXPECT_FALSE(GetFolderView()->shadow()->GetLayer()->visible());
 }
 
 TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {

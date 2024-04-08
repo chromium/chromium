@@ -242,7 +242,8 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
 }
 
 void OverviewItemBase::ConfigureTheShadow() {
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(kDefaultShadowType);
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
+      kDefaultShadowType, SystemShadow::LayerRecreatedCallback());
   auto* shadow_layer = shadow_->GetLayer();
   auto* widget_layer = item_widget_->GetLayer();
   widget_layer->Add(shadow_layer);
