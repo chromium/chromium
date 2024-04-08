@@ -196,9 +196,6 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private async fetchIntroductionDialogStatus() {
     await getShouldShowSeaPenIntroductionDialog(
         getSeaPenProvider(), this.getStore());
-    console.log(
-        'fetchIntroductionDialogStatus, should show? :',
-        this.showSeaPenIntroductionDialog_);
   }
 
   private async onCloseSeaPenIntroductionDialog_() {
