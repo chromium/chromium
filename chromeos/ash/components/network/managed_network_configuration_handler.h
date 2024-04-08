@@ -229,6 +229,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // ephemeral by device policy.
   virtual void TriggerEphemeralNetworkConfigActions() = 0;
 
+  // Return true if AllowAPNModification policy is enabled.
+  virtual bool AllowApnModification() const = 0;
+
   // Return true if AllowCellularSimLock policy is enabled.
   virtual bool AllowCellularSimLock() const = 0;
 

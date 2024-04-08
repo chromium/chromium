@@ -1,5 +1,6 @@
 {
   "GlobalNetworkConfiguration": {
+    "AllowAPNModification": false,
     "AllowCellularHotspot": true,
     "AllowCellularSimLock": true,
     "AllowOnlyPolicyCellularNetworks": false,

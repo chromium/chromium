@@ -152,6 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
 
   PolicyTextMessageSuppressionState GetAllowTextMessages() const override;
+  bool AllowApnModification() const override;
   bool AllowCellularSimLock() const override;
   bool AllowCellularHotspot() const override;
   bool AllowOnlyPolicyCellularNetworks() const override;

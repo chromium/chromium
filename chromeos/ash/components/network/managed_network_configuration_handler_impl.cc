@@ -1008,6 +1008,13 @@ ManagedNetworkConfigurationHandlerImpl::GetAllowTextMessages() const {
   return PolicyTextMessageSuppressionState::kUnset;
 }
 
+bool ManagedNetworkConfigurationHandlerImpl::AllowApnModification() const {
+  CHECK(ash::features::IsApnPoliciesEnabled());
+  return FindGlobalPolicyBool(
+             ::onc::global_network_config::kAllowAPNModification)
+      .value_or(true);
+}
+
 bool ManagedNetworkConfigurationHandlerImpl::AllowCellularSimLock() const {
   return FindGlobalPolicyBool(
              ::onc::global_network_config::kAllowCellularSimLock)

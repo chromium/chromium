@@ -104,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_METHOD0(TriggerEphemeralNetworkConfigActions, void());
   MOCK_METHOD1(OnCellularPoliciesApplied, void(const NetworkProfile& profile));
   MOCK_CONST_METHOD0(OnEnterpriseMonitoredWebPoliciesApplied, void());
+  MOCK_CONST_METHOD0(AllowApnModification, bool());
   MOCK_CONST_METHOD0(AllowCellularSimLock, bool());
   MOCK_CONST_METHOD0(AllowCellularHotspot, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyCellularNetworks, bool());
