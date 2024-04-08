@@ -22,10 +22,8 @@
 namespace ash::file_system_provider {
 
 // Callback type used when an FSP has been intiialized.
-using FileErrorOrContentCache =
-    base::FileErrorOr<std::unique_ptr<ContentCache>>;
 using FileErrorOrContentCacheCallback =
-    base::OnceCallback<void(FileErrorOrContentCache)>;
+    base::OnceCallback<void(base::FileErrorOr<std::unique_ptr<ContentCache>>)>;
 
 // The root directory name that houses all FSP content caches.
 inline constexpr char kFspContentCacheDirName[] = "FspContentCache";
