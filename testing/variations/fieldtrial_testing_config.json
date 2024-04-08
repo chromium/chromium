@@ -15742,6 +15742,21 @@
             ]
         }
     ],
+    "RegisterAppBoundEncryptionProvider": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RegisterAppBoundEncryptionProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
