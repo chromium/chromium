@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
+#include "chrome/browser/ui/tabs/tab_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -48,13 +49,18 @@ class WebUI;
 class LensOverlayController : public TabStripModelObserver,
                               public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
-                              public lens::mojom::LensSidePanelPageHandler {
+                              public lens::mojom::LensSidePanelPageHandler,
+                              public tabs::TabModelObserver {
  public:
   explicit LensOverlayController(tabs::TabModel* tab_model);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  // Returns whether the lens overlay feature is enabled. This value is
+  // guaranteed not to change over the lifetime of a LensOverlayController.
+  bool Enabled();
 
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground.
@@ -70,6 +76,12 @@ class LensOverlayController : public TabStripModelObserver,
   // is created by //content with no context or references to the owning
   // controller.
   static LensOverlayController* GetController(content::WebUI* web_ui);
+
+  // Given a `content::WebContents` associated with a tab, returns the
+  // associated controller. Returns `nullptr` if there is no controller (e.g.
+  // the WebContents is not a tab).
+  static LensOverlayController* GetController(
+      content::WebContents* tab_contents);
 
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
@@ -206,6 +218,12 @@ class LensOverlayController : public TabStripModelObserver,
   void HandleInteractionDataResponse(
       lens::proto::LensOverlayInteractionResponse response);
 
+  // tabs::TabModelObserver overrides:
+  void WillRemoveContents(tabs::TabModel* tab,
+                          content::WebContents* contents) override;
+  void DidAddContents(tabs::TabModel* tab,
+                      content::WebContents* contents) override;
+
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;
 
@@ -254,6 +272,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Query controller.
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
+
+  base::ScopedObservation<tabs::TabModel, tabs::TabModelObserver>
+      tab_model_observer_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

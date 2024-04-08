@@ -67,22 +67,59 @@ class LensOverlayControllerGlue
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerGlue);
 
+// Allows lookup of a LensOverlayController from a WebContents associated with a
+// tab.
+class LensOverlayControllerTabLookup
+    : public content::WebContentsUserData<LensOverlayControllerTabLookup> {
+ public:
+  ~LensOverlayControllerTabLookup() override = default;
+
+  LensOverlayController* controller() { return controller_; }
+
+ private:
+  friend WebContentsUserData;
+  LensOverlayControllerTabLookup(content::WebContents* contents,
+                                 LensOverlayController* controller)
+      : content::WebContentsUserData<LensOverlayControllerTabLookup>(*contents),
+        controller_(controller) {}
+
+  // Semantically owns this class.
+  raw_ptr<LensOverlayController> controller_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerTabLookup);
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
+  if (tab_model_->contents()) {
+    LensOverlayControllerTabLookup::CreateForWebContents(tab_model_->contents(),
+                                                         this);
+  }
+
   // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
+  tab_model_observer_.Observe(tab_model);
 }
 
 LensOverlayController::~LensOverlayController() {
   CloseUI();
   lens_overlay_query_controller_.reset();
+  if (tab_model_->contents()) {
+    tab_model_->contents()->RemoveUserData(
+        LensOverlayControllerTabLookup::UserDataKey());
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
                                       kOverlaySidePanelWebViewId);
+
+bool LensOverlayController::Enabled() {
+  return lens::features::IsLensOverlayEnabled();
+}
 
 void LensOverlayController::ShowUI() {
   // If UI is already showing or in the process of showing, do nothing.
@@ -196,6 +233,13 @@ LensOverlayController* LensOverlayController::GetController(
     content::WebUI* web_ui) {
   return LensOverlayControllerGlue::FromWebContents(web_ui->GetWebContents())
       ->controller();
+}
+
+// static
+LensOverlayController* LensOverlayController::GetController(
+    content::WebContents* tab_contents) {
+  auto* glue = LensOverlayControllerTabLookup::FromWebContents(tab_contents);
+  return glue ? glue->controller() : nullptr;
 }
 
 void LensOverlayController::BindOverlay(
@@ -532,3 +576,14 @@ void LensOverlayController::HandleInteractionURLResponse(
 
 void LensOverlayController::HandleInteractionDataResponse(
     lens::proto::LensOverlayInteractionResponse response) {}
+
+void LensOverlayController::WillRemoveContents(tabs::TabModel* tab,
+                                               content::WebContents* contents) {
+  contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
+  CloseUI();
+}
+
+void LensOverlayController::DidAddContents(tabs::TabModel* tab,
+                                           content::WebContents* contents) {
+  LensOverlayControllerTabLookup::CreateForWebContents(contents, this);
+}
