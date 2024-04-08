@@ -4,8 +4,14 @@
 
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,7 +20,8 @@ namespace password_manager {
 
 namespace {
 
-constexpr const char kUrl[] = "https://www.example.com";
+constexpr const char kUrl[] = "https://www.example.com/";
+constexpr const char kUnrelatedUrl[] = "https://www.foo.com/";
 
 class CredentialManagerPendingPreventSilentAccessTaskDelegateMock
     : public CredentialManagerPendingPreventSilentAccessTaskDelegate {
@@ -26,6 +33,35 @@ class CredentialManagerPendingPreventSilentAccessTaskDelegateMock
   MOCK_METHOD(PasswordStoreInterface*, GetProfilePasswordStore, (), (override));
   MOCK_METHOD(PasswordStoreInterface*, GetAccountPasswordStore, (), (override));
   MOCK_METHOD(void, DoneRequiringUserMediation, (), (override));
+};
+
+// Checks that `PasswordStore::GetLogins` returns expected number of password
+// forms and that the `PasswordForm::skip_zero_click` is populated correctly.
+class PasswordStoreLoginsUpdateHelper : public PasswordStoreConsumer {
+ public:
+  PasswordStoreLoginsUpdateHelper(size_t expected_logins_num,
+                                  bool skip_zero_click)
+      : expected_logins_num_(expected_logins_num),
+        skip_zero_click_(skip_zero_click) {}
+  ~PasswordStoreLoginsUpdateHelper() override = default;
+
+  base::WeakPtr<PasswordStoreLoginsUpdateHelper> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) override {
+    EXPECT_EQ(results.size(), expected_logins_num_);
+    for (const auto& form : results) {
+      EXPECT_EQ(form->skip_zero_click, skip_zero_click_);
+    }
+  }
+
+  const size_t expected_logins_num_;
+  const bool skip_zero_click_;
+
+  base::WeakPtrFactory<PasswordStoreLoginsUpdateHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -101,4 +137,54 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
   ProcessPasswordStoreUpdates();
 }
 
+// Verify that the `PasswordForm::skip_zero_click` is populated correctly for
+// the passwords with matching domain.
+TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
+       SameDomain_SetsSkipZeroClick) {
+  ON_CALL(delegate_mock_, GetProfilePasswordStore)
+      .WillByDefault(testing::Return(profile_store_.get()));
+  ON_CALL(delegate_mock_, GetAccountPasswordStore)
+      .WillByDefault(testing::Return(nullptr));
+
+  PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
+                                  PasswordForm::MatchType::kExact);
+  profile_store_->AddLogin(form);
+  ProcessPasswordStoreUpdates();
+
+  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
+  task.AddOrigin(PasswordFormDigest(form));
+  ProcessPasswordStoreUpdates();
+
+  PasswordStoreLoginsUpdateHelper helper(/*expected_logins_num=*/1,
+                                         /*silent_access_disabled=*/true);
+  profile_store_->GetLogins(PasswordFormDigest(form), helper.GetWeakPtr());
+  ProcessPasswordStoreUpdates();
+}
+
+// Verify that the `PasswordForm::skip_zero_click` is not populated for the
+// unrelated passwords.
+TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
+       DifferentDomain_NoFormUpdates) {
+  ON_CALL(delegate_mock_, GetProfilePasswordStore)
+      .WillByDefault(testing::Return(profile_store_.get()));
+  ON_CALL(delegate_mock_, GetAccountPasswordStore)
+      .WillByDefault(testing::Return(nullptr));
+
+  PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
+                                  PasswordForm::MatchType::kExact);
+  profile_store_->AddLogin(form);
+  ProcessPasswordStoreUpdates();
+
+  const GURL kDifferentDomainUrl = GURL(kUnrelatedUrl);
+  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    GetSignonRealm(kDifferentDomainUrl),
+                                    kDifferentDomainUrl));
+  ProcessPasswordStoreUpdates();
+
+  PasswordStoreLoginsUpdateHelper helper(/*expected_logins_num=*/1,
+                                         /*silent_access_disabled=*/false);
+  profile_store_->GetLogins(PasswordFormDigest(form), helper.GetWeakPtr());
+  ProcessPasswordStoreUpdates();
+}
 }  // namespace password_manager
