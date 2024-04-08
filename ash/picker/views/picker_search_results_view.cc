@@ -302,6 +302,8 @@ void PickerSearchResultsView::AddResultToSection(
                 std::move(select_result_callback));
             // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
+            item_view->SetLeadingIcon(
+                GetIconForPickerCategory(PickerCategory::kLocalFiles));
             section_view->AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::DriveFileData& data) {
@@ -309,6 +311,8 @@ void PickerSearchResultsView::AddResultToSection(
                 std::move(select_result_callback));
             // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
+            item_view->SetLeadingIcon(
+                GetIconForPickerCategory(PickerCategory::kDriveFiles));
             section_view->AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::CategoryData& data) {
