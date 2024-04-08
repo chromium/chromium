@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_ITERATOR_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
@@ -43,12 +45,13 @@ class ExecutionContext;
 //       // Do something with `value`.
 //     }
 //   }
+//
 //   // See documentation above.
 //   if (exception_state.HadException()) {
 //     return;
 //   }
 class CORE_EXPORT ScriptIterator {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
   // Creates a ScriptIterator out of an ES object that implements the iterable
@@ -77,7 +80,15 @@ class CORE_EXPORT ScriptIterator {
             ExceptionState& exception_state,
             v8::Local<v8::Value> value = v8::Local<v8::Value>());
 
-  v8::MaybeLocal<v8::Value> GetValue() { return value_; }
+  v8::MaybeLocal<v8::Value> GetValue() {
+    return value_.Get(ScriptState::From(isolate_->GetCurrentContext()));
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(iterator_);
+    visitor->Trace(next_method_);
+    visitor->Trace(value_);
+  }
 
  private:
   // Constructs a ScriptIterator from an ES object that implements the iterator
@@ -90,12 +101,12 @@ class CORE_EXPORT ScriptIterator {
   ScriptIterator() = default;
 
   v8::Isolate* isolate_ = nullptr;
-  v8::Local<v8::Object> iterator_;
-  v8::Local<v8::Value> next_method_;
+  WorldSafeV8Reference<v8::Object> iterator_;
+  WorldSafeV8Reference<v8::Value> next_method_;
   v8::Local<v8::String> done_key_;
   v8::Local<v8::String> value_key_;
   bool done_ = true;
-  v8::MaybeLocal<v8::Value> value_;
+  WorldSafeV8Reference<v8::Value> value_;
 };
 
 }  // namespace blink
