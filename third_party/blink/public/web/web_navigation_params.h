@@ -77,7 +77,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   WebURLRequest url_request;
 
   // The base url of the requestor. Only used for about:srcdoc and about:blank
-  // navigations, and if NewBaseUrlInheritanceBehavior is enabled.
+  // navigations.
   WebURL requestor_base_url;
 
   // The frame type. This must not be kNone. See RequestContextFrameType.
@@ -288,8 +288,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // If `url` is about:srcdoc or about:blank, this is the default base URL to
   // use for the new document. It corresponds to the initiator's base URL
-  // snapshotted when the navigation started. Note: this value is only used when
-  // the NewBaseUrlInheritanceBehavior feature is enabled in the embedder.
+  // snapshotted when the navigation started.
   WebURL fallback_base_url;
 
   // The net error code for failed navigation. Must be non-zero when

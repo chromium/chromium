@@ -3566,8 +3566,7 @@ void Document::open(LocalDOMWindow* entered_window,
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
-    if (new_url.IsAboutBlankURL() &&
-        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+    if (new_url.IsAboutBlankURL()) {
       // When updating the URL to about:blank due to a document.open() call,
       // the opened document should also end up with the same base URL as the
       // opener about:blank document. Propagate the fallback information here
@@ -4751,21 +4750,12 @@ KURL Document::FallbackBaseURL() const {
     // the srcdoc's initiator origin does not match the parent origin, which
     // should be removed in https://crbug.com/1169736).
     //
-    // In these cases, use the parent frame's base URL, because the srcdoc value
-    // and origin both come from the parent frame.
-    // In NewBaseUrlInheritanceBehavior mode, make this stricter by only using
-    // the parent frame if it is same-origin.
+    // In these cases, only use the parent frame's base URL if it is
+    // same-origin.
     // TODO(https://crbug.com/1169736): Enforce that the parent is same-origin,
     // which should already be true.
-    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-      if (same_origin_parent) {
-        return same_origin_parent->BaseURL();
-      }
-    } else if (ParentDocument()) {
-      // In legacy mode, use the parent without checking the origin.
-      // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
-      // ParentDocument() is not correct.
-      return ParentDocument()->BaseURL();
+    if (same_origin_parent) {
+      return same_origin_parent->BaseURL();
     }
   }
 
@@ -4777,19 +4767,12 @@ KURL Document::FallbackBaseURL() const {
       return execution_context_->BaseURL();
     }
 
-    if (!fallback_base_url_.IsEmpty() &&
-        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+    if (!fallback_base_url_.IsEmpty()) {
       // Note: if we get here, it's not worth worrying if
       // same_origin_parent->BaseURL() exists and matches fallback_base_url_,
       // since if the latter exists it's based on the initiator, which won't
       // always be the parent.
       return fallback_base_url_;
-    }
-
-    if (same_origin_parent &&
-        !blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-      // Only allow access to the parent in legacy mode.
-      return same_origin_parent->BaseURL();
     }
   }
 

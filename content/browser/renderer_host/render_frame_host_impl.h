@@ -840,9 +840,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // For about:blank and about:srcdoc documents, this tracks the inherited base
   // URL, snapshotted from the initiator's FrameLoadRequest. This is an empty
-  // URL for all other cases. This is currently only set if
-  // IsNewBaseUrlInheritanceBehaviorEnabled() returns true. See
-  // https://crbug.com/1356658.
+  // URL for all other cases.
   const GURL& GetInheritedBaseUrl() const;
 
   // The current URL of the document in the renderer process. Note that this
@@ -3639,8 +3637,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Stores a snapshot of the inherited base URL from the initiator's
   // FrameLoadRequest, if this document inherited one (e.g., about:srcdoc).
-  // This value is currently only set when the NewBaseUrlInheritanceBehavior
-  // feature is enabled.
   // TODO(1356658): about:blank frames will also need to inherit base URLs,
   // from the initiator rather than the parent. See
   // https://crbug.com/1356658#c7.
@@ -4264,9 +4260,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // For about:blank and about:srcdoc documents, this tracks the inherited base
   // URL, snapshotted from the initiator's FrameLoadRequest. This is an empty
-  // URL for all other cases. This is currently only set if
-  // IsNewBaseUrlInheritanceBehaviorEnabled() returns true. See
-  // https://crbug.com/1356658.
+  // URL for all other cases.
   GURL inherited_base_url_;
 
   // The storage key for the last committed document in this

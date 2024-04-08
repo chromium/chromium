@@ -101,16 +101,10 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 // static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
   // This feature is controlled by kIsolateSandboxedIframes, and depends on
-  // partial Site Isolation being enabled. It also requires new base URL
-  // behavior, so it implicitly causes
-  // blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() to return true,
-  // and can't be enabled if the new base URL behavior has been disabled by
-  // enterprise policy.
+  // partial Site Isolation being enabled.
   return base::FeatureList::IsEnabled(
              blink::features::kIsolateSandboxedIframes) &&
-         !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             blink::switches::kDisableNewBaseUrlInheritanceBehavior);
+         !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation);
 }
 
 // static

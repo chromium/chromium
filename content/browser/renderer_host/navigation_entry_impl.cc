@@ -89,8 +89,7 @@ void RecursivelyGenerateFrameEntries(
 
   if (!entry) {
     std::optional<GURL> initiator_base_url;
-    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-        state.initiator_base_url_string) {
+    if (state.initiator_base_url_string) {
       GURL initiator_base_url_from_state =
           GURL(UTF16ToUTF8(state.initiator_base_url_string.value()));
       // If `state.initiator_base_url_string` has a value, it should be

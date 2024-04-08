@@ -589,7 +589,6 @@ void FillNavigationParamsRequest(
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
   if (common_params.initiator_base_url) {
-    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
     CHECK(common_params.url.IsAboutSrcdoc() ||
           common_params.url.IsAboutBlank());
     navigation_params->fallback_base_url =
@@ -4930,8 +4929,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->url = GetLoadingUrl();
   // Note: since we get the security origin from the `frame_document`, we also
   // get the base url from it too.
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc())) {
+  if (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc()) {
     GURL base_url = frame_document.BaseURL();
     // Only pass the base URL if it is valid and can be serialized by Mojo.
     if (base_url.is_valid() &&

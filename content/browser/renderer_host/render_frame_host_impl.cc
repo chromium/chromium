@@ -4125,9 +4125,7 @@ void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
 }
 
 void RenderFrameHostImpl::SetInheritedBaseUrl(const GURL& inherited_base_url) {
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    inherited_base_url_ = inherited_base_url;
-  }
+  inherited_base_url_ = inherited_base_url;
 }
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(

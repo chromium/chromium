@@ -1962,9 +1962,6 @@ extern const char kTintCompositedContentDescription[];
 extern const char kTopChromeTouchUiName[];
 extern const char kTopChromeTouchUiDescription[];
 
-extern const char kNewBaseUrlInheritanceBehaviorName[];
-extern const char kNewBaseUrlInheritanceBehaviorDescription[];
-
 extern const char kTouchDragDropName[];
 extern const char kTouchDragDropDescription[];
 

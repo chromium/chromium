@@ -995,10 +995,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPredictorTrafficClientEnabledPercent;
 
-// Flag to control whether about:blank and srcdoc iframes use newly proposed
-// base url inheritance behavior from https://crbug.com/1356658.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewBaseUrlInheritanceBehavior);
-
 // Disables forced frame updates for web tests. Used by web test runner only.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 
@@ -1639,10 +1635,6 @@ BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 BLINK_COMMON_EXPORT bool IsEnableMojoJSProtectedMemoryEnabled();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
-
-// This function checks both kNewBaseUrlInheritanceBehavior and
-// kIsolateSandboxedIframes and returns true if either is enabled.
-BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();
 
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
 

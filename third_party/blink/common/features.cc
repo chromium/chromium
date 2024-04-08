@@ -1646,10 +1646,6 @@ const base::FeatureParam<int> kPredictorTrafficClientEnabledPercent{
 #endif
 };
 
-BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
-             "NewBaseUrlInheritanceBehavior",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2597,16 +2593,6 @@ bool IsEnableMojoJSProtectedMemoryEnabled() {
 
 bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
-}
-
-bool IsNewBaseUrlInheritanceBehaviorEnabled() {
-  // The kIsolateSandboxedIframes feature depends on the new base URL behavior,
-  // so it enables the new behavior even if kNewBaseUrlInheritanceBehavior
-  // isn't enabled.
-  return (base::FeatureList::IsEnabled(kNewBaseUrlInheritanceBehavior) ||
-          base::FeatureList::IsEnabled(kIsolateSandboxedIframes)) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableNewBaseUrlInheritanceBehavior);
 }
 
 bool IsParkableStringsToDiskEnabled() {

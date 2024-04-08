@@ -3956,11 +3956,6 @@ inline constexpr char kPrintingOAuth2AuthorizationServers[] =
     "printing.oauth2_authorization_servers";
 #endif
 
-// If true, the feature NewBaseUrlInheritanceBehavior will be allowed, otherwise
-// attempts to enable the feature will be disallowed.
-inline constexpr char kNewBaseUrlInheritanceBehaviorAllowed[] =
-    "new_base_url_inheritance_behavior_allowed";
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 // If this exists and is true, Chrome may run system DNS resolution out of the
 // network process. If false, Chrome will run system DNS resolution in the

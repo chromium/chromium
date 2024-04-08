@@ -262,8 +262,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   auto params = mojom::blink::OpenURLParams::New();
   params->url = url;
   params->initiator_origin = request.RequestorOrigin();
-  if (features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) &&
+  if ((url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) &&
       !frame_request.GetRequestorBaseURL().IsEmpty()) {
     params->initiator_base_url = frame_request.GetRequestorBaseURL();
   }

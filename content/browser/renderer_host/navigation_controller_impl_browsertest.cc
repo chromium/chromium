@@ -20125,52 +20125,29 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_TRUE(controller.GetLastCommittedEntry()->IsInitialEntry());
 
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    EXPECT_NE("about:blank",
-              EvalJs(new_root, "document.baseURI").ExtractString());
-  } else {
-    EXPECT_EQ("about:blank",
-              EvalJs(new_root, "document.baseURI").ExtractString());
-  }
+  EXPECT_NE("about:blank",
+            EvalJs(new_root, "document.baseURI").ExtractString());
 
   // Navigate the popup main frame to a same-document relative URL.
   FrameNavigateParamsCapturer capturer(new_root);
   EXPECT_TRUE(ExecJs(new_root, "location.href = '#foo';"));
   capturer.Wait();
 
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    // When an about:blank popup inherits its base url from the initiator,
-    // it will not be able to do same-document navigations without specifying an
-    // absolute url.
+  // When an about:blank popup inherits its base url from the initiator,
+  // it will not be able to do same-document navigations without specifying an
+  // absolute url.
 
-    EXPECT_EQ(embedded_test_server()->GetURL("/title1.html#foo"),
-              new_root->current_url());
-    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
-    EXPECT_FALSE(capturer.is_same_document());
+  EXPECT_EQ(embedded_test_server()->GetURL("/title1.html#foo"),
+            new_root->current_url());
+  EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
+  EXPECT_FALSE(capturer.is_same_document());
 
-    // The navigation is a cross-document navigation from the initial empty
-    // document, so we committed a new non-initial NavigationEntry that replaced
-    // the initial entry.
-    EXPECT_TRUE(capturer.did_replace_entry());
-    EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
-  } else {
-    // When the new inheritance behavior is disabled, an about:blank popup will
-    // have about:blank for the baseURI also, and so relative URLs can be used
-    // for same document navigations.
-
-    EXPECT_EQ(GURL("about:blank#foo"), new_root->current_url());
-    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
-              capturer.navigation_type());
-    EXPECT_TRUE(capturer.is_same_document());
-
-    // The navigation is a same-document navigation from the initial empty
-    // document, so we committed a new initial NavigationEntry that replaced the
-    // previous initial NavigationEntry.
-    EXPECT_TRUE(capturer.did_replace_entry());
-    EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_TRUE(controller.GetLastCommittedEntry()->IsInitialEntry());
-  }
+  // The navigation is a cross-document navigation from the initial empty
+  // document, so we committed a new non-initial NavigationEntry that replaced
+  // the initial entry.
+  EXPECT_TRUE(capturer.did_replace_entry());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
 }
 
 // Tests that committing iframes and doing same-document navigations with the

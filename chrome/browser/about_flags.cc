@@ -9021,12 +9021,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAlignWakeUpsDescription, kOsAll,
      FEATURE_VALUE_TYPE(base::kAlignWakeUps)},
 
-    {"enable-new-base-url-inheritance-behavior",
-     flag_descriptions::kNewBaseUrlInheritanceBehaviorName,
-     flag_descriptions::kNewBaseUrlInheritanceBehaviorDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kNewBaseUrlInheritanceBehavior)},
-
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
     {"use-passthrough-command-decoder",
      flag_descriptions::kUsePassthroughCommandDecoderName,

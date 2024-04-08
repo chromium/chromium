@@ -2387,10 +2387,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
         std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                           std::move(policy_container_data));
 
-    KURL creator_base_url;
-    if (features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-      creator_base_url = owner_element->GetDocument().BaseURL();
-    }
+    KURL creator_base_url(owner_element->GetDocument().BaseURL());
     To<WebLocalFrameImpl>(new_child_frame)
         ->InitializeCoreFrameInternal(
             *GetFrame()->GetPage(), owner_element, this, LastChild(),
@@ -2669,8 +2666,7 @@ void WebLocalFrameImpl::CommitNavigation(
     if (navigation_params->is_synchronous_commit_for_bug_778318 &&
         // Explicitly check for about:blank or about:srcdoc to prevent things
         // like about:mumble propagating the base url.
-        (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) &&
-        features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+        (url.IsAboutBlankURL() || url.IsAboutSrcdocURL())) {
       navigation_params->fallback_base_url =
           GetFrame()->GetDocument()->BaseURL();
     }

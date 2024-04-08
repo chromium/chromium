@@ -658,10 +658,6 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.SPDY_HEADERS_TO_HTTP_RESPONSE_USE_BUILDER,
                 "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
                         + " change."),
-        Flag.baseFeature(
-                BlinkFeatures.NEW_BASE_URL_INHERITANCE_BEHAVIOR,
-                "Enables the new base-url inheritance behavior for about:blank and "
-                        + "about:srcdoc pages loaded in a webview."),
         Flag.baseFeature("MojoIpcz"),
         Flag.baseFeature(
                 TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,

@@ -1169,13 +1169,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 #endif
 
-  if (local_state->IsManagedPreference(
-          prefs::kNewBaseUrlInheritanceBehaviorAllowed) &&
-      !local_state->GetBoolean(prefs::kNewBaseUrlInheritanceBehaviorAllowed)) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        blink::switches::kDisableNewBaseUrlInheritanceBehavior);
-  }
-
   // ChromeOS needs ui::ResourceBundle::InitSharedInstance to be called before
   // this.
   browser_process_->PreCreateThreads();
