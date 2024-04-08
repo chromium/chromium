@@ -9,16 +9,16 @@ import '//resources/cr_components/managed_dialog/managed_dialog.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
-import {hexColorToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
+import {skColorToRgba} from '//resources/js/color_utils.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {BrowserColorVariant} from '//resources/mojo/ui/base/mojom/themes.mojom-webui.js';
+import type {BrowserColorVariant} from '//resources/mojo/ui/base/mojom/themes.mojom-webui.js';
 
 import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
 import {EMPTY_COLOR} from './color_utils.js';
 import type {Color, SelectedColor} from './color_utils.js';
-import {ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from './color_utils.js';
+import {ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR} from './color_utils.js';
 import type {ThemeColorElement} from './theme_color.js';
 import {getCss} from './theme_color_picker.css.js';
 import {getHtml} from './theme_color_picker.html.js';
@@ -31,7 +31,6 @@ export interface ThemeColorPickerElement {
   $: {
     customColorContainer: HTMLElement,
     customColor: ThemeColorElement,
-    colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
     hueSlider: ThemeHueSliderDialogElement,
   };
@@ -54,59 +53,34 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return {
       defaultColor_: {type: Object},
       greyDefaultColor_: {type: Object},
-      mainColor_: {type: Object},
       colors_: {type: Array},
       theme_: {type: Object},
       selectedColor_: {type: Object},
       isDefaultColorSelected_: {type: Boolean},
       isGreyDefaultColorSelected_: {type: Boolean},
-      isMainColorSelected_: {type: Boolean},
       isCustomColorSelected_: {type: Boolean},
       customColor_: {type: Object},
       showManagedDialog_: {type: Boolean},
-      showBackgroundColor_: {type: Boolean},
-      showCustomColorBackgroundColor_: {type: Boolean},
-      showMainColor_: {type: Boolean},
-      isChromeRefresh2023_: {type: Boolean},
       columns: {type: Number},
     };
   }
 
   protected defaultColor_: Color = EMPTY_COLOR;
-  protected mainColor_: SkColor|null = null;
   protected greyDefaultColor_: Color = EMPTY_COLOR;
   protected colors_: ChromeColor[] = [];
   private theme_?: Theme;
   protected selectedColor_: SelectedColor = {type: ColorType.NONE};
   protected isDefaultColorSelected_: boolean = false;
   protected isGreyDefaultColorSelected_: boolean = false;
-  protected isMainColorSelected_: boolean = false;
   protected isCustomColorSelected_: boolean = false;
-  protected customColor_: Color;
+  protected customColor_: Color = EMPTY_COLOR;
   private setThemeListenerId_: number|null = null;
 
   protected showManagedDialog_: boolean = false;
-  protected showBackgroundColor_: boolean = false;
-  protected showCustomColorBackgroundColor_: boolean = false;
-  protected showMainColor_: boolean = false;
-  protected isChromeRefresh2023_: boolean =
-      document.documentElement.hasAttribute('chrome-refresh-2023');
   protected columns: number = 4;
 
   private handler_: ThemeColorPickerHandlerRemote =
       ThemeColorPickerBrowserProxy.getInstance().handler;
-
-  constructor() {
-    super();
-
-    this.customColor_ =
-        document.documentElement.hasAttribute('chrome-refresh-2023') ?
-        EMPTY_COLOR :
-        {
-          background: {value: 0xffffffff},
-          foreground: {value: 0xfff1f3f4},
-        };
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -132,11 +106,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (changedPrivateProperties.has('theme_')) {
       this.defaultColor_ = this.computeDefaultColor_();
       this.greyDefaultColor_ = this.computeGreyDefaultColor_();
-      this.mainColor_ = this.computeMainColor_();
-      this.showBackgroundColor_ = this.computeShowBackgroundColor_();
-      this.showCustomColorBackgroundColor_ =
-          this.computeShowCustomColorBackgroundColor_();
-      this.showMainColor_ = this.computeShowMainColor_();
       this.updateColors_();
     }
 
@@ -149,7 +118,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       this.isDefaultColorSelected_ = this.computeIsDefaultColorSelected_();
       this.isGreyDefaultColorSelected_ =
           this.computeIsGreyDefaultColorSelected_();
-      this.isMainColorSelected_ = this.computeIsMainColorSelected_();
       this.isCustomColorSelected_ = this.computeIsCustomColorSelected_();
     }
   }
@@ -169,11 +137,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
   private computeDefaultColor_(): Color {
     assert(this.theme_);
-    if (this.isChromeRefresh2023_) {
       return this.theme_.isDarkMode ? DARK_BASELINE_BLUE_COLOR :
                                       LIGHT_BASELINE_BLUE_COLOR;
-    }
-    return this.theme_.isDarkMode ? DARK_DEFAULT_COLOR : LIGHT_DEFAULT_COLOR;
   }
 
   private computeGreyDefaultColor_(): Color {
@@ -182,16 +147,11 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
                                     LIGHT_BASELINE_GREY_COLOR;
   }
 
-  private computeMainColor_(): SkColor|null {
-    assert(this.theme_);
-    return this.theme_.backgroundImageMainColor || null;
-  }
-
   private computeSelectedColor_(): SelectedColor {
     if (!this.colors_ || !this.theme_) {
       return {type: ColorType.NONE};
     }
-    if (this.isChromeRefresh2023_ && this.theme_.isGreyBaseline) {
+    if (this.theme_.isGreyBaseline) {
       return {type: ColorType.GREY};
     }
     if (!this.theme_.foregroundColor) {
@@ -200,10 +160,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.theme_.backgroundImageMainColor &&
         this.theme_.backgroundImageMainColor!.value ===
             this.theme_.seedColor.value) {
-      if (this.isChromeRefresh2023_) {
         return {type: ColorType.CUSTOM};
-      }
-      return {type: ColorType.MAIN};
     }
     if (this.colors_.find(
             (color: ChromeColor) =>
@@ -224,10 +181,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
   private computeIsGreyDefaultColorSelected_(): boolean {
     return this.selectedColor_.type === ColorType.GREY;
-  }
-
-  private computeIsMainColorSelected_(): boolean {
-    return this.selectedColor_.type === ColorType.MAIN;
   }
 
   private computeIsCustomColorSelected_(): boolean {
@@ -254,23 +207,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return selected ? '0' : '-1';
   }
 
-  private themeHasBackgroundImage_(): boolean {
-    return !!this.theme_ && !!this.theme_.hasBackgroundImage;
-  }
-
-  private computeShowMainColor_(): boolean {
-    return !this.isChromeRefresh2023_ && !!this.theme_ &&
-        !!this.theme_.backgroundImageMainColor;
-  }
-
-  private computeShowBackgroundColor_(): boolean {
-    return this.isChromeRefresh2023_ || !this.themeHasBackgroundImage_();
-  }
-
-  private computeShowCustomColorBackgroundColor_(): boolean {
-    return !this.isChromeRefresh2023_ && !this.themeHasBackgroundImage_();
-  }
-
   protected onDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
@@ -283,14 +219,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return;
     }
     this.handler_.setGreyDefaultColor();
-  }
-
-  protected onMainColorClick_() {
-    if (this.handleClickForManagedColors_()) {
-      return;
-    }
-    this.handler_.setSeedColor(
-        this.theme_!.backgroundImageMainColor!, BrowserColorVariant.kTonalSpot);
   }
 
   protected onChromeColorClick_(e: Event) {
@@ -309,18 +237,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return;
     }
 
-    if (this.isChromeRefresh2023_) {
-      this.$.hueSlider.showAt(this.$.customColorContainer);
-    } else {
-      this.$.colorPicker.focus();
-      this.$.colorPicker.click();
-    }
-  }
-
-  protected onCustomColorChange_(e: Event) {
-    this.handler_.setSeedColor(
-        hexColorToSkColor((e.target as HTMLInputElement).value),
-        BrowserColorVariant.kTonalSpot);
+    this.$.hueSlider.showAt(this.$.customColorContainer);
   }
 
   protected onSelectedHueChanged_() {
@@ -346,9 +263,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
-    if (this.isChromeRefresh2023_) {
-      this.$.hueSlider.selectedHue = this.theme_.seedColorHue;
-    }
+    this.$.hueSlider.selectedHue = this.theme_.seedColorHue;
   }
 
   private async updateColors_() {

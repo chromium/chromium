@@ -33,21 +33,6 @@ cr-grid {
   position: relative;
 }
 
-/* colorPicker is placed on top of the theme icon to work around
-   https://crbug.com/1162053. */
-#colorPicker {
-  border: 0;
-  height: 50px;
-  left: 0;
-  margin: 0;
-  opacity: 0;
-  padding: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: 50px;
-}
-
 #colorPickerIcon {
   -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
   -webkit-mask-repeat: no-repeat;

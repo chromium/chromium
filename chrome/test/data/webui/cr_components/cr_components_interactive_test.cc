@@ -12,9 +12,3 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/most_visited_focus_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, ThemeColorPicker) {
-  set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
-  RunTest("cr_components/theme_color_picker/theme_color_picker_focus_test.js",
-          "mocha.run()");
-}

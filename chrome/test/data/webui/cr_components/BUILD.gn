@@ -26,7 +26,6 @@ build_webui_tests("build") {
             "most_visited_test_support.ts",
             "managed_footnote_test.ts",
             "theme_color_picker/check_mark_wrapper_test.ts",
-            "theme_color_picker/theme_color_picker_focus_test.ts",
             "theme_color_picker/theme_color_test.ts",
             "theme_color_picker/theme_color_picker_test.ts",
             "theme_color_picker/theme_hue_slider_dialog_test.ts",

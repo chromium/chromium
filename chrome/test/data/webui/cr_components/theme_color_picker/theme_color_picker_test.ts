@@ -8,16 +8,16 @@ import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.j
 import type {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
 import type {Color} from 'chrome://resources/cr_components/theme_color_picker/color_utils.js';
-import {DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://resources/cr_components/theme_color_picker/color_utils.js';
+import {DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR} from 'chrome://resources/cr_components/theme_color_picker/color_utils.js';
 import type {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import type {ThemeColorPickerElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import type {ChromeColor, Theme, ThemeColorPickerClientRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
 import {ThemeColorPickerClientCallbackRouter, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, eventToPromise, hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createTheme(isDarkMode = false): Theme {
   return {
@@ -45,7 +45,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 
   setup(() => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(ThemeColorPickerHandlerRemote);
     ThemeColorPickerBrowserProxy.setInstance(
@@ -62,18 +61,12 @@ suite('CrComponentsThemeColorPickerTest', () => {
   }
 
   ([
-    [true, DARK_DEFAULT_COLOR, false],
-    [false, LIGHT_DEFAULT_COLOR, false],
-    [true, DARK_BASELINE_BLUE_COLOR, true],
-    [false, LIGHT_BASELINE_BLUE_COLOR, true],
-  ] as Array<[boolean, Color, boolean]>)
-      .forEach(([isDarkMode, defaultColor, refreshFlagOn]) => {
+    [true, DARK_BASELINE_BLUE_COLOR],
+    [false, LIGHT_BASELINE_BLUE_COLOR],
+  ] as Array<[boolean, Color]>)
+      .forEach(([isDarkMode, defaultColor]) => {
         test(
-            `render GM3 ${refreshFlagOn} DarkMode ${isDarkMode} default color`,
-            async () => {
-              document.documentElement.toggleAttribute(
-                  'chrome-refresh-2023', refreshFlagOn);
-
+            `render DarkMode ${isDarkMode} default color`, async () => {
               initializeElement();
               const theme: Theme = createTheme(isDarkMode);
 
@@ -91,28 +84,12 @@ suite('CrComponentsThemeColorPickerTest', () => {
             });
       });
 
-  test('do not render grey default with ChromeRefresh disabled', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
-
-    initializeElement();
-    const theme: Theme = createTheme(false);
-
-    callbackRouter.setTheme(theme);
-    await callbackRouter.$.flushForTesting();
-
-    const greyDefaultColorElement =
-        $$<ThemeColorElement>(colorsElement, '#greyDefaultColor')!;
-    assertTrue(!greyDefaultColorElement);
-  });
-
   ([
     [true, DARK_BASELINE_GREY_COLOR],
     [false, LIGHT_BASELINE_GREY_COLOR],
   ] as Array<[boolean, Color]>)
       .forEach(([isDarkMode, greyDefaultColor]) => {
         test(`render DarkMode ${isDarkMode} grey default color`, async () => {
-          document.documentElement.toggleAttribute('chrome-refresh-2023', true);
-
           initializeElement();
           const theme: Theme = createTheme(isDarkMode);
 
@@ -145,7 +122,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
   });
 
   test('sets grey default color', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
     initializeElement();
     const theme = createTheme();
     theme.foregroundColor = null;
@@ -155,53 +131,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
     $$<HTMLElement>(colorsElement, '#greyDefaultColor')!.click();
 
     assertEquals(1, handler.getCallCount('setGreyDefaultColor'));
-  });
-
-  test('renders main color', async () => {
-    initializeElement();
-    const theme: Theme = createTheme();
-    theme.foregroundColor = {value: 7};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
-
-    callbackRouter.setTheme(theme);
-    await callbackRouter.$.flushForTesting();
-
-    assertEquals(
-        7,
-        $$<ThemeColorElement>(
-            colorsElement, '#mainColor')!.foregroundColor.value);
-  });
-
-  test('do not render main color in GM3', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
-    initializeElement();
-    const theme: Theme = createTheme();
-    theme.foregroundColor = {value: 7};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
-
-    callbackRouter.setTheme(theme);
-    await callbackRouter.$.flushForTesting();
-
-    assertTrue(!$$<ThemeColorElement>(colorsElement, '#mainColor'));
-  });
-
-  test('sets main color', async () => {
-    initializeElement();
-    const theme = createTheme();
-    theme.foregroundColor = {value: 7};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
-    callbackRouter.setTheme(theme);
-    await callbackRouter.$.flushForTesting();
-
-    $$<HTMLElement>(colorsElement, '#mainColor')!.click();
-
-    const args = handler.getArgs('setSeedColor')[0];
-    assertEquals(1, handler.getCallCount('setSeedColor'));
-    assertEquals(7, args[0].value);
-    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
   });
 
   test('renders chrome colors', async () => {
@@ -277,19 +206,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(BrowserColorVariant.kNeutral, args[1]);
   });
 
-  test('sets custom color from color input for non-CR2023', async () => {
-    initializeElement();
-    colorsElement.$.colorPicker.value = '#ff0000';
-    colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
-
-    const args = handler.getArgs('setSeedColor')[0];
-    assertEquals(2, args.length);
-    assertEquals(0xffff0000, args[0].value);
-    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
-  });
-
-  test('sets custom color from hue slider for CR2023', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+  test('sets custom color from hue slider', async () => {
     initializeElement();
     callbackRouter.setTheme(Object.assign(createTheme(), {seedColorHue: 10}));
     await callbackRouter.$.flushForTesting();
@@ -352,8 +269,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
         colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)'));
   });
 
-  test('update colorPicker value for theme in GM3', async () => {
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+  test('update colorPicker value for theme', async () => {
     initializeElement();
     const colors = {
       colors: [
@@ -442,28 +358,6 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(1, indexedColors.length);
     assertEquals(defaultColorElement, indexedColors[0]);
 
-    // Set main color.
-    theme.seedColor = {value: 7};
-    theme.foregroundColor = {value: 5};
-    theme.hasBackgroundImage = true;
-    theme.backgroundImageMainColor = {value: 7};
-    callbackRouter.setTheme(theme);
-    await callbackRouter.$.flushForTesting();
-
-    // Check main color selected.
-    const mainColorElement =
-        $$<ThemeColorElement>(colorsElement, '#mainColor')!;
-    checkedColors =
-        colorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
-            '[checked]');
-    assertEquals(1, checkedColors.length);
-    assertEquals(mainColorElement, checkedColors[0]);
-    assertEquals(mainColorElement.getAttribute('aria-checked'), 'true');
-    indexedColors =
-        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
-    assertEquals(1, indexedColors.length);
-    assertEquals(mainColorElement, indexedColors[0]);
-
     // Set Chrome color.
     theme.seedColor = {value: 5};
     theme.foregroundColor = {value: 2};
@@ -503,48 +397,34 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
   });
 
-  ([
-    [false, false],
-    [false, true],
-    [true, false],
-    [true, true],
-  ] as Array<[boolean, boolean]>)
-      .forEach(([hasBackgroundImage, isChromeRefresh2023]) => {
-        test(
-            `background color visible if theme has image ${
-                hasBackgroundImage} GM3 ${isChromeRefresh2023}`,
-            async () => {
-              document.documentElement.toggleAttribute(
-                  'chrome-refresh-2023', isChromeRefresh2023);
-              initializeElement();
-              const theme = createTheme();
-              theme.hasBackgroundImage = hasBackgroundImage;
-              callbackRouter.setTheme(theme);
-              await callbackRouter.$.flushForTesting();
+  [false, true].forEach(hasBackgroundImage => {
+    test(
+        `background color visible if theme has image ${hasBackgroundImage}`,
+        async () => {
+          initializeElement();
+          const theme = createTheme();
+          theme.hasBackgroundImage = hasBackgroundImage;
+          callbackRouter.setTheme(theme);
+          await callbackRouter.$.flushForTesting();
 
-              const colors =
-                  colorsElement.shadowRoot!.querySelectorAll('cr-theme-color');
-              for (const color of colors) {
-                if (color.id === 'customColor') {
-                  assertEquals(
-                      isChromeRefresh2023 || hasBackgroundImage,
-                      color.backgroundColorHidden);
-                } else {
-                  assertEquals(
-                      hasBackgroundImage && !isChromeRefresh2023,
-                      !!(color.backgroundColorHidden));
-                }
-              }
-            });
-      });
+          const colors =
+              colorsElement.shadowRoot!.querySelectorAll('cr-theme-color');
+          for (const color of colors) {
+            if (color.id === 'customColor') {
+              assertTrue(color.backgroundColorHidden);
+            } else {
+              assertFalse(color.backgroundColorHidden);
+            }
+          }
+        });
+  });
 
   ([
-    ['#defaultColor', null, null],
-    ['#mainColor', 7, 7],
-    ['.chrome-color', 3, null],
-    ['#customColor', 10, null],
-  ] as Array<[string, number?, number?]>)
-      .forEach(([selector, foregroundColor, mainColor]) => {
+    ['#defaultColor', null],
+    ['.chrome-color', 3],
+    ['#customColor', 10],
+  ] as Array<[string, number]>)
+      .forEach(([selector, foregroundColor]) => {
         test(`respects policy for ${selector}`, async () => {
           initializeElement();
           const colors = {
@@ -566,14 +446,9 @@ suite('CrComponentsThemeColorPickerTest', () => {
             theme.foregroundColor = {value: foregroundColor};
           }
           theme.hasBackgroundImage = true;
-          if (mainColor) {
-            theme.backgroundImageMainColor = {value: mainColor};
-          }
           theme.colorsManagedByPolicy = true;
           callbackRouter.setTheme(theme);
           await callbackRouter.$.flushForTesting();
-          eventToPromise('click', colorsElement.$.colorPicker)
-              .then(() => assertNotReached());
 
           $$<HTMLElement>(colorsElement, selector)!.click();
           await microtasksFinished();
