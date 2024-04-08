@@ -774,6 +774,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
   std::vector<struct v4l2_ext_control> ctrls;
   struct v4l2_ctrl_hevc_sps v4l2_sps;
+  struct v4l2_ctrl_vp9_frame v4l2_vp9_frame;
 #if BUILDFLAG(IS_CHROMEOS)
   struct v4l2_ctrl_av1_sequence v4l2_av1_sequence;
 #endif
@@ -798,6 +799,20 @@ CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
     ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
     ctrl.size = sizeof(v4l2_sps);
     ctrl.ptr = &v4l2_sps;
+
+    ctrls.push_back(ctrl);
+  } else if (input_format_fourcc_ == V4L2_PIX_FMT_VP9_FRAME) {
+    // VP9 requires the profile (only profile 2), bit depth , and flags
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit VP9.2";
+    memset(&v4l2_vp9_frame, 0, sizeof(v4l2_vp9_frame));
+    v4l2_vp9_frame.bit_depth = 10;
+    v4l2_vp9_frame.profile = 2;
+    v4l2_vp9_frame.flags =
+        V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING | V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING;
+
+    ctrl.id = V4L2_CID_STATELESS_VP9_FRAME;
+    ctrl.size = sizeof(v4l2_vp9_frame);
+    ctrl.ptr = &v4l2_vp9_frame;
 
     ctrls.push_back(ctrl);
 #if BUILDFLAG(IS_CHROMEOS)
