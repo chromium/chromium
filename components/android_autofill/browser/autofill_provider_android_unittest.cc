@@ -639,6 +639,9 @@ TEST_F(AutofillProviderAndroidTest, OnFormSubmittedWithKnownSuccess) {
 // Java when the `AutofillManager` of the tab is reset, even if the form
 // submission was not known to be a success.
 TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAndroidAutofillDirectFormSubmission);
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -648,12 +651,35 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager().SimulateOnFormSubmitted(
-      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
+      form, /*known_success=*/false,
+      mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
-  EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
+  EXPECT_CALL(
+      provider_bridge(),
+      OnFormSubmitted(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED));
   android_autofill_manager().Reset();
+}
+
+// Tests that a form submission of an ongoing Autofill session is propagated to
+// Java directly on submission, even if the form submission was not known to be
+// a success.
+TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensDirectly) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillDirectFormSubmission};
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  // Start an Autofill session.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+
+  EXPECT_CALL(
+      provider_bridge(),
+      OnFormSubmitted(mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED));
+  android_autofill_manager().SimulateOnFormSubmitted(
+      form, /*known_success=*/false,
+      mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to

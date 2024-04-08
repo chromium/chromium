@@ -452,7 +452,9 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
     return;
   }
 
-  if (known_success || source == SubmissionSource::FORM_SUBMISSION) {
+  if (known_success || source == SubmissionSource::FORM_SUBMISSION ||
+      base::FeatureList::IsEnabled(
+          features::kAndroidAutofillDirectFormSubmission)) {
     FireSuccessfulSubmission(source);
     return;
   }

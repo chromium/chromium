@@ -208,6 +208,10 @@ public final class ProductionSupportedFlagList {
                 "Enable cancelling autofill session on a new document navigation, same frame that"
                         + " has the form"),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION,
+                "When enabled, submission is directly fired to the provider upon receiving the "
+                        + "renderer's signal."),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
                 "When enabled, prefill requests are supported for login forms."),
         Flag.baseFeature(

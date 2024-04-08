@@ -38,6 +38,13 @@ BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
              "AndroidAutofillCancelSessionOnNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, we stop relying on `known_success` in FormSubmitted signal to
+// decide whether to defer submission on not, and instead we directly inform the
+// provider of submission.
+BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
+             "AndroidAutofillDirectFormSubmission",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
 // requests are sent at most once per WebView session and are limited to forms
