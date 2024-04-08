@@ -373,7 +373,6 @@ void VideoFrameSubmitter::DidReceiveCompositorFrameAck(
   // `waiting_for_compositor_ack_` may be set to zero during SubmitEmptyFrame()
   // or upon ContextLost().
   if (waiting_for_compositor_ack_ == 0) {
-    DCHECK(!last_frame_id_);
     return;
   }
 
