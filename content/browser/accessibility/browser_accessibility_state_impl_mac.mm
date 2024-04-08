@@ -8,17 +8,15 @@
 
 #include <memory>
 
-#import "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "ui/gfx/animation/animation.h"
 
 namespace content {
 
 namespace {
-void SetUpAccessibilityNotifications() {
+void SetupAccessibilityDisplayOptionsNotifier() {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -40,18 +38,6 @@ void SetUpAccessibilityNotifications() {
                   wc->OnWebPreferencesChanged();
                 }
               }];
-
-  if (base::mac::MacOSVersion() >= 14'00'00 &&
-      base::FeatureList::IsEnabled(
-          features::kSonomaAccessibilityActivationRefinements)) {
-    // Set up KVO monitoring of VoiceOver state changes.
-    [[NSWorkspace sharedWorkspace]
-        addObserver:NSApp
-         forKeyPath:@"voiceOverEnabled"
-            options:(NSKeyValueObservingOptionInitial |
-                     NSKeyValueObservingOptionNew)
-            context:nil];
-  }
 }
 }  // namespace
 
@@ -70,7 +56,7 @@ void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
   BrowserAccessibilityStateImpl::InitBackgroundTasks();
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SetUpAccessibilityNotifications));
+      FROM_HERE, base::BindOnce(&SetupAccessibilityDisplayOptionsNotifier));
 }
 
 void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
