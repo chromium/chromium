@@ -12,6 +12,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -1052,6 +1054,31 @@ TEST_F(BoxLayoutTest, MinimumChildSize) {
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 5, 20), v1->bounds());
   EXPECT_EQ(gfx::Rect(5, 0, 10, 20), v2->bounds());
+}
+
+// Regression test for crbug.com/331484014.
+// In a horizontal layout, a label's height should grow when it is wrapped into
+// multiple lines due to insufficient width.
+TEST_F(BoxLayoutTest, HeightIsAdjustedForInsufficientWidth) {
+  // A LayoutProvider must exist in scope in order to create a Label.
+  LayoutProvider layout_provider;
+
+  BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  Label* text = new Label(u"a very very very very very long text");
+  host_->AddChildView(text);
+  layout->SetFlexForView(text, 1);
+  const gfx::Size text_size = layout->GetPreferredSize(host_.get());
+
+  // Add a view next to the label. The label should wrap into multiple lines.
+  text->SetMultiLine(true);
+  StaticSizedView* v2 = new StaticSizedView(gfx::Size(20, text_size.height()));
+  host_->AddChildView(v2);
+
+  EXPECT_GT(
+      layout->GetPreferredSize(host_.get(), SizeBounds(text_size.width(), {}))
+          .height(),
+      text_size.height());
 }
 
 }  // namespace views
