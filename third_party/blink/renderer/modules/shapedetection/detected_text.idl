@@ -9,5 +9,5 @@ dictionary DetectedText {
     required DOMRectReadOnly boundingBox;
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
-    required FrozenArray<Point2D> cornerPoints;
+    required sequence<Point2D> cornerPoints;
 };

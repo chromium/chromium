@@ -7,5 +7,5 @@
 dictionary DetectedFace {
     // TODO(xianglu): Implement any other fields. https://crbug.com/646083
     required DOMRectReadOnly boundingBox;
-    required FrozenArray<Landmark> landmarks;
+    required sequence<Landmark> landmarks;
 };
