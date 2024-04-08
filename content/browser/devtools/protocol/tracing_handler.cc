@@ -200,6 +200,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
   data->SetString("frame", frame_host->devtools_frame_token().ToString());
   data->SetString("url", std::move(trimmed_url));
   data->SetString("name", frame_host->GetFrameName());
+  data->SetBoolean("isOutermostMainFrame", frame_host->IsOutermostMainFrame());
   if (frame_host->GetParent()) {
     data->SetString(
         "parent", frame_host->GetParent()->GetDevToolsFrameToken().ToString());

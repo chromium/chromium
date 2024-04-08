@@ -4,6 +4,7 @@ Tracing complete
 FrameCommittedInBrowser [
     [0] : {
         frame : <string>
+        isOutermostMainFrame : true
         name : 
         processId : <number>
         url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
