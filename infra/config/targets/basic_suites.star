@@ -1842,27 +1842,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "devtools_webkit_and_tab_target_isolated_scripts",
-    tests = {
-        "blink_web_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "blink_web_tests_dt_tab_target": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 7,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "devtools_webkit_isolated_scripts",
     tests = {
         "blink_web_tests": targets.legacy_test_config(
