@@ -5781,8 +5781,9 @@ void MathDepth::ApplyValue(StyleResolverState& state,
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 1U);
     const auto& relative_value = To<CSSPrimitiveValue>(list->Item(0));
-    builder.SetMathDepth(base::ClampAdd(state.ParentStyle()->MathDepth(),
-                                        relative_value.GetIntValue()));
+    builder.SetMathDepth(base::ClampAdd(
+        state.ParentStyle()->MathDepth(),
+        relative_value.ComputeInteger(state.CssToLengthConversionData())));
   } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kAutoAdd);
     int16_t depth = 0;
@@ -5793,7 +5794,8 @@ void MathDepth::ApplyValue(StyleResolverState& state,
         base::ClampAdd(state.ParentStyle()->MathDepth(), depth));
   } else if (DynamicTo<CSSPrimitiveValue>(value)) {
     builder.SetMathDepth(
-        ClampTo<int16_t>(To<CSSPrimitiveValue>(value).GetIntValue()));
+        ClampTo<int16_t>(To<CSSPrimitiveValue>(value).ComputeInteger(
+            state.CssToLengthConversionData())));
   }
 }
 
