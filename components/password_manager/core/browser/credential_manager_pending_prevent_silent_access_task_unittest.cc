@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,6 +13,8 @@
 namespace password_manager {
 
 namespace {
+
+constexpr const char kUrl[] = "https://www.example.com";
 
 class CredentialManagerPendingPreventSilentAccessTaskDelegateMock
     : public CredentialManagerPendingPreventSilentAccessTaskDelegate {
@@ -45,8 +48,10 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
     // It's needed to cleanup the password store asynchronously.
-    task_environment_.RunUntilIdle();
+    ProcessPasswordStoreUpdates();
   }
+
+  void ProcessPasswordStoreUpdates() { task_environment_.RunUntilIdle(); }
 
  protected:
   testing::NiceMock<CredentialManagerPendingPreventSilentAccessTaskDelegateMock>
@@ -55,49 +60,45 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
   scoped_refptr<TestPasswordStore> account_store_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest, ProfileStoreOnly) {
+// Verify that the delegate is notified when the credentials are fetched from
+// the password store.
+TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
+       NotifiesDelegate_ProfileStoreOnly) {
   ON_CALL(delegate_mock_, GetProfilePasswordStore)
       .WillByDefault(testing::Return(profile_store_.get()));
   ON_CALL(delegate_mock_, GetAccountPasswordStore)
       .WillByDefault(testing::Return(nullptr));
 
-  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
-
-  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
-                                    /*signon_realm=*/"www.example.com",
-                                    GURL("www.example.com")));
-
   // We are expecting results from only one store, delegate should be called
   // upon getting a response from the store.
   EXPECT_CALL(delegate_mock_, DoneRequiringUserMediation);
-  task.OnGetPasswordStoreResultsFrom(profile_store_.get(), {});
+
+  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    GetSignonRealm(GURL(kUrl)), GURL(kUrl)));
+  ProcessPasswordStoreUpdates();
 }
 
+// Verify that the delegate is nofitied only once when credentials are fetched
+// from both the profile and account password stores.
 TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
-       ProfileAndAccountStores) {
+       NotifiesDelegate_ProfileAndAccountStores) {
   ON_CALL(delegate_mock_, GetProfilePasswordStore)
       .WillByDefault(testing::Return(profile_store_.get()));
   ON_CALL(delegate_mock_, GetAccountPasswordStore)
       .WillByDefault(testing::Return(account_store_.get()));
 
-  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
-
-  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
-                                    /*signon_realm=*/"www.example.com",
-                                    GURL("www.example.com")));
-
-  // We are expecting results from 2 stores, the delegate shouldn't be called
-  // until both stores respond.
-  EXPECT_CALL(delegate_mock_, DoneRequiringUserMediation).Times(0);
-  task.OnGetPasswordStoreResultsFrom(profile_store_.get(), {});
-
-  testing::Mock::VerifyAndClearExpectations(&delegate_mock_);
-
+  // We are expecting results from 2 stores, the delegate should be called only
+  // once after both stores return logins.
   EXPECT_CALL(delegate_mock_, DoneRequiringUserMediation);
-  task.OnGetPasswordStoreResultsFrom(account_store_.get(), {});
+
+  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    GetSignonRealm(GURL(kUrl)), GURL(kUrl)));
+  ProcessPasswordStoreUpdates();
 }
 
 }  // namespace password_manager
