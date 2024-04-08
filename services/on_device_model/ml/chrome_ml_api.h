@@ -94,6 +94,7 @@ struct ChromeMLModelDescriptor {
   bool prefer_texture_weights;
   bool enable_host_mapped_pointer;
   bool use_low_power;
+  bool allow_fp16;
 };
 
 // Describes an adaptation for a model.

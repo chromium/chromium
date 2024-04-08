@@ -52,6 +52,10 @@ const base::FeatureParam<bool> kUseLowPower{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_use_low_power", false};
 
+const base::FeatureParam<bool> kAllowFp16{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_allow_fp16", true};
+
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
 std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
@@ -518,6 +522,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .prefer_texture_weights = kPreferTextureWeights.Get(),
       .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
       .use_low_power = kUseLowPower.Get(),
+      .allow_fp16 = kAllowFp16.Get(),
   };
   if (sentencepiece_model_proto_) {
     descriptor.sentencepiece_model_proto_data =
