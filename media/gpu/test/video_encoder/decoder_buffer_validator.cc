@@ -83,8 +83,10 @@ DecoderBufferValidator::~DecoderBufferValidator() = default;
 void DecoderBufferValidator::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  if (!Validate(*bitstream->buffer, bitstream->metadata))
+  CHECK(bitstream);
+  if (!Validate(bitstream->buffer.get(), bitstream->metadata)) {
     num_errors_++;
+  }
 }
 
 bool DecoderBufferValidator::WaitUntilDone() {
@@ -102,7 +104,7 @@ H264Validator::H264Validator(VideoCodecProfile profile,
 
 H264Validator::~H264Validator() = default;
 
-bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
+bool H264Validator::Validate(const DecoderBuffer* buffer,
                              const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
     LOG(ERROR)
@@ -115,6 +117,8 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  CHECK(buffer);
+  const DecoderBuffer& decoder_buffer = *buffer;
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size());
 
   if (num_temporal_layers_ > 1) {
@@ -302,7 +306,7 @@ VP8Validator::VP8Validator(const gfx::Rect& visible_rect,
 
 VP8Validator::~VP8Validator() = default;
 
-bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
+bool VP8Validator::Validate(const DecoderBuffer* buffer,
                             const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
     if (metadata.key_frame) {
@@ -320,6 +324,9 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     LOG(ERROR) << "end_of_picture must be true always in VP8";
     return false;
   }
+
+  CHECK(buffer);
+  const DecoderBuffer& decoder_buffer = *buffer;
 
   // TODO(hiroh): We could be getting more frames in the buffer, but there is
   // no simple way to detect this. We'd need to parse the frames and go through
@@ -453,7 +460,7 @@ VP9Validator::VP9Validator(VideoCodecProfile profile,
 
 VP9Validator::~VP9Validator() = default;
 
-bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
+bool VP9Validator::Validate(const DecoderBuffer* buffer,
                             const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
     if (metadata.key_frame) {
@@ -486,6 +493,9 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                << "frame on bottom spatial layers is dropped";
     return false;
   }
+
+  CHECK(buffer);
+  const DecoderBuffer& decoder_buffer = *buffer;
 
   // See Annex B "Superframes" in VP9 spec.
   constexpr uint8_t kSuperFrameMarkerMask = 0b11100000;
@@ -966,7 +976,7 @@ AV1Validator::AV1Validator(const gfx::Rect& visible_rect)
 // TODO(b/268487938): Add more robust testing here. Currently we only perform
 // the most basic validation that the bitstream parses correctly and has the
 // right dimensions.
-bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
+bool AV1Validator::Validate(const DecoderBuffer* buffer,
                             const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
     if (metadata.key_frame) {
@@ -984,6 +994,8 @@ bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  CHECK(buffer);
+  const DecoderBuffer& decoder_buffer = *buffer;
   libgav1::ObuParser av1_parser(decoder_buffer.data(),
                                 decoder_buffer.data_size(), 0, &buffer_pool_,
                                 &decoder_state_);

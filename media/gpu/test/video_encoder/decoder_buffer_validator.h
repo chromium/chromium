@@ -52,7 +52,7 @@ class DecoderBufferValidator : public BitstreamProcessor {
                          size_t num_temporal_layers);
 
   // Returns true if decoder_buffer is valid and expected, otherwise false.
-  virtual bool Validate(const DecoderBuffer& decoder_buffer,
+  virtual bool Validate(const DecoderBuffer* buffer,
                         const BitstreamBufferMetadata& metadata) = 0;
 
   // The expected visible rectangle that |decoder_buffer| has.
@@ -76,7 +76,7 @@ class H264Validator : public DecoderBufferValidator {
   ~H264Validator() override;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer,
+  bool Validate(const DecoderBuffer* buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
   // Returns whether the |slice_hdr| is the first slice of a new frame.
@@ -112,7 +112,7 @@ class VP8Validator : public DecoderBufferValidator {
   ~VP8Validator() override;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer,
+  bool Validate(const DecoderBuffer* buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
   Vp8Parser parser_;
@@ -137,7 +137,7 @@ class VP9Validator : public DecoderBufferValidator {
     uint8_t temporal_id = 0;
   };
 
-  bool Validate(const DecoderBuffer& decoder_buffer,
+  bool Validate(const DecoderBuffer* buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
   // Validate DecoderBuffer for a vanilla stream.
@@ -183,7 +183,7 @@ class AV1Validator : public DecoderBufferValidator {
   ~AV1Validator() override = default;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer,
+  bool Validate(const DecoderBuffer* buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
   libgav1::InternalFrameBufferList buffer_list_;
