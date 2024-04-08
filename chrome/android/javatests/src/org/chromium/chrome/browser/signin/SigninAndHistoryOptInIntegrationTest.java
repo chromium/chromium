@@ -331,9 +331,8 @@ public class SigninAndHistoryOptInIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
 
-        // TODO(crbug.com/41493769): Remove this after sign-in upon account selection will be
-        // implemented.
-        verifyBottomSheetAndSignin(accountInfo);
+        // Verify signed-in state.
+        mSigninTestRule.waitForSignin(accountInfo);
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
