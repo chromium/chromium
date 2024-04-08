@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -168,12 +169,20 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
     return;
   }
 
-  // TODO: b/330245035 - Notify button clicks to log metric.
+  auto button_index_value = button_index.value();
+  auto button_id = CampaignButtonId::kOthers;
+  if (button_index_value == 0) {
+    button_id = CampaignButtonId::kPrimary;
+  } else if (button_index_value == 1) {
+    button_id = CampaignButtonId::kSecondary;
+  }
+
+  NotifyButtonPressed(campaign_id, button_id, /*should_mark_dismissed=*/true);
 
   const auto* buttons_value = params->FindList(kButtonsPath);
   CHECK(buttons_value);
 
-  const auto& button_value = (*buttons_value)[button_index.value()];
+  const auto& button_value = (*buttons_value)[button_index_value];
   if (!button_value.is_dict()) {
     LOG(ERROR) << "Invalid button payload.";
   }

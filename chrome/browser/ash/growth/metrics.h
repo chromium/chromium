@@ -13,8 +13,12 @@
 enum class CampaignButtonId {
   kPrimary = 0,
   kSecondary = 1,
+  // Just in case that the button is neither primary nor secondary. For
+  // example, potentially notification can have more than 2 buttons although it
+  // is uncommon.
+  kOthers = 2,
 
-  kMaxValue = kSecondary,
+  kMaxValue = kOthers,
 };
 
 // Records how many times a button is pressed in the campaign UI.

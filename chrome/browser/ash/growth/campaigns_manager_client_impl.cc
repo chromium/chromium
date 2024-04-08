@@ -217,6 +217,8 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
       campaigns_manager_->NotifyEventForTargeting(
           growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
       break;
+    case CampaignButtonId::kOthers:
+      break;
   }
 }
 
