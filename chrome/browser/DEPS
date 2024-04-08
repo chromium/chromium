@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/install_static",
   "+chrome/installer/util",
   "+chrome/notification_helper/notification_helper_constants.h",
+  "+chrome/services/bundz_translation/public",
   "+chrome/services/cups_proxy",
   "+chrome/services/diagnosticsd/public",
   "+chrome/services/file_util/public",

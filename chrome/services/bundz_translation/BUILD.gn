@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bundz_translation_service") {
+  sources = [
+    "bundz_translation_service.cc",
+    "bundz_translation_service.h",
+    "mock_translator.cc",
+    "mock_translator.h",
+  ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//chrome/services/bundz_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "bundz_translation_service_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/services/bundz_translation:bundz_translation_service",
+    "//chrome/services/bundz_translation/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

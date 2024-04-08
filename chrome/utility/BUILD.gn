@@ -37,6 +37,7 @@ static_library("utility") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/bundz_translation:bundz_translation_service",
     "//chrome/services/speech/buildflags",
     "//components/heap_profiling/in_process",
     "//components/metrics:child_call_stack_profile_builder",

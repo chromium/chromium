@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module bundz_translation.mojom;
+
+import "chrome/services/bundz_translation/public/mojom/translator.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// The service that provides translation capabilities through
+// various implementation.
+// TODO(https://crbug.com/331733060): fix the sandbox type.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface BundzTranslationService {
+  // Binds the receiver to a `Translator` implementation that could
+  // do translation from `source_lang` to `target_lang`.
+  CreateTranslator(
+    string source_lang, string target_lang,
+    pending_receiver<Translator> receiver
+  ) => (bool is_sucessful);
+
+  // Returns if the service could translate text from `source_lang` to
+  // `target_lang`.
+  CanTranslate(string source_lang, string target_lang) => (bool can_stranslate);
+};

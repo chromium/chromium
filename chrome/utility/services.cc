@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/services/bundz_translation/bundz_translation_service.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -427,6 +428,13 @@ auto RunMahiContentExtractionServiceFactory(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+auto RunBundzTranslationService(
+    mojo::PendingReceiver<bundz_translation::mojom::BundzTranslationService>
+        receiver) {
+  return std::make_unique<bundz_translation::BundzTranslationService>(
+      std::move(receiver));
+}
+
 }  // namespace
 
 void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
@@ -533,6 +541,8 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQuickAnswersSpellCheckService);
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  services.Add(RunBundzTranslationService);
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {
