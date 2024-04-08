@@ -152,7 +152,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool is_silent_install,
                           const std::string& tag,
                           const std::string& child_window_text_to_find,
-                          bool always_launch_cmd);
+                          bool always_launch_cmd,
+                          bool verify_app_logo_loaded);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -379,7 +380,8 @@ void RunFakeLegacyUpdater(UpdaterScope scope);
 
 // Dismiss the installation completion dialog, then wait for the process
 // exit.
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find);
+void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+                                bool verify_app_logo_loaded = false);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

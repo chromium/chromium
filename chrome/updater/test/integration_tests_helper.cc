@@ -366,15 +366,18 @@ void AppTestHelper::FirstTaskRun() {
            WithSystemScope(Wrap(&InstallEulaRequired))},
           {"install_updater_and_app",
            WithSwitch(
-               "always_launch_cmd",
+               "verify_app_logo_loaded",
                WithSwitch(
-                   "child_window_text_to_find",
+                   "always_launch_cmd",
                    WithSwitch(
-                       "tag",
-                       WithSwitch("is_silent_install",
-                                  WithSwitch("app_id",
-                                             WithSystemScope(Wrap(
-                                                 &InstallUpdaterAndApp)))))))},
+                       "child_window_text_to_find",
+                       WithSwitch(
+                           "tag",
+                           WithSwitch(
+                               "is_silent_install",
+                               WithSwitch("app_id",
+                                          WithSystemScope(Wrap(
+                                              &InstallUpdaterAndApp))))))))},
           {"print_log", WithSystemScope(Wrap(&PrintLog))},
           {"run_wake",
            WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},

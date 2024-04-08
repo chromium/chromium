@@ -87,7 +87,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const bool is_silent_install,
                             const std::string& tag,
                             const std::string& child_window_text_to_find,
-                            const bool always_launch_cmd) const override {
+                            const bool always_launch_cmd,
+                            const bool verify_app_logo_loaded) const override {
     RunCommand(
         "install_updater_and_app",
         {
@@ -96,6 +97,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
             Param("tag", tag),
             Param("child_window_text_to_find", child_window_text_to_find),
             Param("always_launch_cmd", BoolToString(always_launch_cmd)),
+            Param("verify_app_logo_loaded",
+                  BoolToString(verify_app_logo_loaded)),
         });
   }
 

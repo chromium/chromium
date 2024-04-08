@@ -80,6 +80,7 @@
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/crx_file/crx_verifier.h"
@@ -1842,7 +1843,8 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
   }
 }
 
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
+void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+                                bool verify_app_logo_loaded) {
   const std::wstring window_title =
       GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE,
                           GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE));
@@ -1864,6 +1866,12 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
                     hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
                       if (!base::Contains(base::win::GetWindowTextString(hwnd),
                                           child_window_text_to_find)) {
+                        return false;
+                      }
+                      if (verify_app_logo_loaded &&
+                          !::SendDlgItemMessage(::GetParent(hwnd),
+                                                IDC_APP_BITMAP, STM_GETIMAGE,
+                                                IMAGE_BITMAP, 0)) {
                         return false;
                       }
                       found = true;

@@ -245,10 +245,11 @@ class IntegrationTest : public ::testing::Test {
                             const bool is_silent_install,
                             const std::string& tag,
                             const std::string& child_window_text_to_find = {},
-                            const bool always_launch_cmd = false) {
-    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install, tag,
-                                         child_window_text_to_find,
-                                         always_launch_cmd);
+                            const bool always_launch_cmd = false,
+                            const bool verify_app_logo_loaded = false) {
+    test_commands_->InstallUpdaterAndApp(
+        app_id, is_silent_install, tag, child_window_text_to_find,
+        always_launch_cmd, verify_app_logo_loaded);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -1631,23 +1632,30 @@ TEST_F(IntegrationTest, AppLogoUrl) {
                 test_update_server.device_management_url(),
                 test_logo_server.app_logo_url(), base::Minutes(5));
 
-  const std::string kAppId("test");
+  const std::string kAppId("googletest");
   const base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
 
+  std::string app_logo_bytes;
+  ASSERT_TRUE(base::ReadFileToString(
+      test::GetTestFilePath("app_logos")
+          .AppendASCII(base::StringPrintf("%s.bmp", kAppId.c_str())),
+      &app_logo_bytes));
   test_logo_server.ExpectOnce(
       {
           request::GetPathMatcher(base::StringPrintf(
               "%s%s.bmp\\?lang=%s", test_logo_server.app_logo_path().c_str(),
-              "test", base::WideToUTF8(GetPreferredLanguage()).c_str())),
+              kAppId.c_str(),
+              base::WideToUTF8(GetPreferredLanguage()).c_str())),
       },
-      {});
+      app_logo_bytes);
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/false, "usagestats=1",
       base::WideToUTF8(
-          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE))));
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
+      /*always_launch_cmd=*/false, /*verify_app_logo_loaded=*/true));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));

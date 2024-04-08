@@ -49,7 +49,8 @@ class IntegrationTestCommands
       bool is_silent_install,
       const std::string& tag,
       const std::string& child_window_text_to_find,
-      bool always_launch_cmd) const = 0;
+      bool always_launch_cmd,
+      bool verify_app_logo_loaded) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;

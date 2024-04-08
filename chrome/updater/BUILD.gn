@@ -820,6 +820,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     data = [
+      "test/data/app_logos/googletest.bmp",
       "test/data/signed.exe",  # Payload used by network tests.
       "test/data/signed.exe.gz",
       "test/data/tagged_encode_utf8.exe",
