@@ -4,16 +4,21 @@
 
 #include "components/attribution_reporting/aggregatable_utils.h"
 
+#include <math.h>
+
 #include <optional>
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace attribution_reporting {
 namespace {
+
+using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
@@ -56,20 +61,20 @@ TEST(AggregatableUtilsTest, RoundDownToWholeDaySinceUnixEpoch) {
 
 TEST(AggregatableUtilsTest,
      GetNullAggregatableReports_IncludeSourceRegistrationTime) {
-  auto config = *AggregatableTriggerConfig::Create(
-      mojom::SourceRegistrationTimeConfig::kInclude,
-      /*trigger_context_id=*/std::nullopt);
+  auto config =
+      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kInclude,
+                                         /*trigger_context_id=*/std::nullopt);
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_true = [](int, SourceRegistrationTimeConfig) {
     return true;
   };
 
-  const auto always_false = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_false = [](int, SourceRegistrationTimeConfig) {
     return false;
   };
 
-  const auto selective = [](int day, mojom::SourceRegistrationTimeConfig) {
+  const auto selective = [](int day, SourceRegistrationTimeConfig) {
     return day == 0 || day == 5;
   };
 
@@ -108,20 +113,20 @@ TEST(AggregatableUtilsTest,
 
 TEST(AggregatableUtilsTest,
      GetNullAggregatableReports_ExcludeSourceRegistrationTime) {
-  auto config = *AggregatableTriggerConfig::Create(
-      mojom::SourceRegistrationTimeConfig::kExclude,
-      /*trigger_context_id=*/std::nullopt);
+  auto config =
+      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kExclude,
+                                         /*trigger_context_id=*/std::nullopt);
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_true = [](int, SourceRegistrationTimeConfig) {
     return true;
   };
 
-  const auto always_false = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_false = [](int, SourceRegistrationTimeConfig) {
     return false;
   };
 
-  const auto selective = [](int day, mojom::SourceRegistrationTimeConfig) {
+  const auto selective = [](int day, SourceRegistrationTimeConfig) {
     return day == 0 || day == 5;
   };
 
@@ -159,20 +164,20 @@ TEST(AggregatableUtilsTest,
 }
 
 TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
-  auto config = *AggregatableTriggerConfig::Create(
-      mojom::SourceRegistrationTimeConfig::kExclude,
-      /*trigger_context_id=*/"");
+  auto config =
+      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kExclude,
+                                         /*trigger_context_id=*/"");
   base::Time now = base::Time::Now();
 
-  const auto always_true = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_true = [](int, SourceRegistrationTimeConfig) {
     return true;
   };
 
-  const auto always_false = [](int, mojom::SourceRegistrationTimeConfig) {
+  const auto always_false = [](int, SourceRegistrationTimeConfig) {
     return false;
   };
 
-  const auto selective = [](int day, mojom::SourceRegistrationTimeConfig) {
+  const auto selective = [](int day, SourceRegistrationTimeConfig) {
     return day == 0 || day == 5;
   };
 
@@ -208,6 +213,88 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
                                  /*attributed_source_time=*/now, selective),
       IsEmpty());
 }
+
+double GetNullReportRate(SourceRegistrationTimeConfig config) {
+  switch (config) {
+    case SourceRegistrationTimeConfig::kInclude:
+      return 0.008;
+    case SourceRegistrationTimeConfig::kExclude:
+      return 0.05;
+  }
+}
+
+int GetNumLookbackDays(SourceRegistrationTimeConfig config) {
+  switch (config) {
+    case SourceRegistrationTimeConfig::kInclude:
+      return 31;
+    case SourceRegistrationTimeConfig::kExclude:
+      return 1;
+  }
+}
+
+bool MaybeGenerateNullReport(int lookback_day,
+                             SourceRegistrationTimeConfig config) {
+  return GenerateWithRate(GetNullReportRate(config));
+}
+
+struct NullReportsTestCase {
+  const char* desc;
+  AggregatableTriggerConfig config;
+};
+
+const NullReportsTestCase kNullReportsTestCases[] = {
+    {
+        "include_no_attributed_source_time",
+        *AggregatableTriggerConfig::Create(
+            SourceRegistrationTimeConfig::kInclude,
+            /*trigger_context_id=*/std::nullopt),
+    },
+    {
+        "exclude_no_attributed_source_time_no_trigger_context_id",
+        *AggregatableTriggerConfig::Create(
+            SourceRegistrationTimeConfig::kExclude,
+            /*trigger_context_id=*/std::nullopt),
+    },
+};
+
+class AggregatableUtilsNullReportsTest
+    : public testing::Test,
+      public testing::WithParamInterface<NullReportsTestCase> {};
+
+TEST_P(AggregatableUtilsNullReportsTest, ExpectedDistribution) {
+  const auto& test_case = GetParam();
+
+  const base::Time trigger_time = base::Time::Now();
+  const std::optional<base::Time> attributed_source_time;
+  const int num_samples = 100'000;
+
+  int actual_count = 0;
+  for (int i = 0; i < num_samples; i++) {
+    auto result = GetNullAggregatableReports(test_case.config, trigger_time,
+                                             attributed_source_time,
+                                             &MaybeGenerateNullReport);
+    actual_count += result.size();
+  }
+
+  const auto source_registration_time_config =
+      test_case.config.source_registration_time_config();
+
+  int num_total_samples =
+      num_samples * GetNumLookbackDays(source_registration_time_config);
+  double rate = GetNullReportRate(source_registration_time_config);
+
+  int expected_count = num_total_samples * rate;
+
+  // The variance of the binomial distribution is np(1-p), and critical value z
+  // = 2.575 is used for a test of significance at 0.01 level. The check will
+  // fail with probability 0.01.
+  EXPECT_NEAR(actual_count, expected_count,
+              2.575 * sqrt(num_total_samples * rate * (1. - rate)));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AggregatableUtilsNullReportsTest,
+                         testing::ValuesIn(kNullReportsTestCases));
 
 }  // namespace
 }  // namespace attribution_reporting
