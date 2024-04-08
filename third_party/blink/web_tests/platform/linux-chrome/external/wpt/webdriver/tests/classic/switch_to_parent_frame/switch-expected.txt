@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_no_parent_browsing_context
-  webdriver.error.NoSuchElementException: no such element (404): no such element: Unable to locate element: {"method":"css selector","selector":"#remove-top"}
-Harness: the test ran to completion.

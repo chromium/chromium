@@ -305396,10 +305396,6 @@
        []
       ]
      },
-     "system-color-consistency-expected.txt": [
-      "e43d954261f3044af2d782bdcc98104ccf6e73cd",
-      []
-     ],
      "t31-color-currentColor-b-ref.html": [
       "3013c7050c3c6f057e295923d43c87da6c09751f",
       []
@@ -327324,6 +327320,14 @@
      ],
      "font-face-002-expected.txt": [
       "840e9666fff992ed3fc1232921dffe9bc1a19729",
+      []
+     ],
+     "font-face-003-expected.txt": [
+      "da2aa2a4f2185c058477a33d95562a338c288f08",
+      []
+     ],
+     "font-face-004-expected.txt": [
+      "865903ef9f20329ffb44d06ab19e3b08b5a142a3",
       []
      ],
      "font-face-005-expected.txt": [
@@ -394164,12 +394168,6 @@
          []
         ]
        },
-       "classic_interop": {
-        "__init__.py": [
-         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-         []
-        ]
-       },
        "close": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -394517,10 +394515,6 @@
         ]
        },
        "classic_interop": {
-        "__init__.py": [
-         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-         []
-        ],
         "window_reference-expected.txt": [
          "3de746da8b5970b7db3122ac1b17f8dde5992279",
          []
@@ -395076,6 +395070,12 @@
       "fe9f5cd268240662d0d7a6753e58a7fbedecad4e",
       []
      ],
+     "interop": {
+      "__init__.py": [
+       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       []
+      ]
+     },
      "support": {
       "__init__.py": [
        "0535edd2142e39aad37cc1a0ca58dca1fa01164a",
@@ -437543,7 +437543,7 @@
      ]
     ],
     "fedcm-token-returned-with-http-error.https.html": [
-     "2337829add9f283983c78d9617941c18e74acb46",
+     "7c7687f00f344dd42639a8be3590545a93adf882",
      [
       null,
       {
@@ -439555,6 +439555,13 @@
      ],
      "anchor-center-htb-vrl.html": [
       "099d9cd15b43ae33024fc1fb659563bb5141baa2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-center-offset-change.html": [
+      "fa383154da6f7c8a52a61f76333dedda7c309ef4",
       [
        null,
        {}
@@ -458402,14 +458409,14 @@
       ]
      ],
      "font-face-003.html": [
-      "4e8d8ff482d49e0ccfaf441f0d70829a3261269a",
+      "d3f83e4ec3720af544daac1640258e7e3324b3b5",
       [
        null,
        {}
       ]
      ],
      "font-face-004.html": [
-      "f68e70994fc2af078e92fa221374cd72da133f2e",
+      "6ac50bd4323339b0ab78a4777015227eaeda7b9a",
       [
        null,
        {}
@@ -569220,7 +569227,7 @@
        ]
       ],
       "event-propagate-disabled.tentative.html": [
-       "890270ebb606f504d6a58ae08443c818c44c7556",
+       "2be6dc72fe7261f7987b8babbc1628ed6e936423",
        [
         null,
         {
@@ -589438,14 +589445,14 @@
        ]
       ],
       "setinterval-cross-realm-callback-report-exception.html": [
-       "b06b9a56be370655b6f97a3bae787d1ff8e131fb",
+       "4a780fc93291b1561c23e0d15510bf6cb66fcd46",
        [
         null,
         {}
        ]
       ],
       "settimeout-cross-realm-callback-report-exception.html": [
-       "7dad4dc9ca1da8380b41e801b7660299ab8e478e",
+       "b4860151a6c39f9344129c1675071d4c75fb14bb",
        [
         null,
         {}
@@ -595730,6 +595737,13 @@
         {
          "timeout": "long"
         }
+       ]
+      ],
+      "size-and-position-of-stretchy-fences-with-default-font-001.html": [
+       "a5eb267c617375727c5e4e754ae9beb343a6a3cf",
+       [
+        null,
+        {}
        ]
       ],
       "stretchy-largeop-with-default-font-1.html": [
@@ -647987,7 +648001,7 @@
      ]
     ],
     "Element-setAttribute.html": [
-     "cd6617915bdd16343ff2499e09991fba50b444bc",
+     "9f6eec7da2f9ba35cb009d5deb845ec4aa4393f4",
      [
       null,
       {}
@@ -648008,7 +648022,7 @@
      ]
     ],
     "HTMLElement-generic.html": [
-     "8e54fa9c570fa9ff15002f38460ebb8565311abf",
+     "832411b5f56ca01ebf84c27726c205220823aa18",
      [
       null,
       {}
@@ -648043,7 +648057,7 @@
      ]
     ],
     "TrustedType-AttributeNodes.html": [
-     "6b0066570043cf320a9b3a58c30d6afa88cc1ec6",
+     "f4269a5d40d02d372c57dd09486f3ff8b3b499a9",
      [
       null,
       {}
@@ -648162,7 +648176,7 @@
      ]
     ],
     "TrustedTypePolicyFactory-getPropertyType.html": [
-     "84bcb8d8397ee6e15f0f659a18f3a18656f32427",
+     "a1039487a2433810ed274ade42ef124c6e820977",
      [
       null,
       {}
@@ -648262,14 +648276,14 @@
      ]
     ],
     "block-string-assignment-to-Element-setAttribute.html": [
-     "295890f319a482e18bd6a2c73a696cbcd9e9c9d6",
+     "4cc877efb2ffdaec32fc76a47c00ac9f55f1bfcb",
      [
       null,
       {}
      ]
     ],
     "block-string-assignment-to-Element-setAttributeNS.html": [
-     "b7f74be6b7dd22a58bb6e9bc8c0d10d3044dd176",
+     "78c8c0db9893802284093998b35df833b627e76b",
      [
       null,
       {}
@@ -648283,7 +648297,7 @@
      ]
     ],
     "block-string-assignment-to-HTMLElement-generic.html": [
-     "9e780c1ed23dccb92ea10eaa83613422a9e59a77",
+     "a9764c02584c16eb8119b8bddded2dc8a47a4be9",
      [
       null,
       {}
@@ -648304,7 +648318,7 @@
      ]
     ],
     "block-string-assignment-to-attribute-via-attribute-node.html": [
-     "b881e8cb37e2d020b7f07e63a39ecf157b65fb50",
+     "91ac9b6485ce9a70c9c7f131af898179507e571e",
      [
       null,
       {}
@@ -715333,15 +715347,6 @@
          ]
         ]
        },
-       "classic_interop": {
-        "window_handle.py": [
-         "4f36fba1973cd84e8fe2059741af677f6e6e0594",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
        "close": {
         "close.py": [
          "21bf7411e563c11179abfee8fd740edece1ea277",
@@ -716447,22 +716452,6 @@
         ],
         "user_activation.py": [
          "3c1b039981de20de037c0c2a24849f605b2dd0de",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
-       "classic_interop": {
-        "node_shared_id.py": [
-         "aeb2bc45978829877dbc554bc580151a341c5d44",
-         [
-          null,
-          {}
-         ]
-        ],
-        "window_reference.py": [
-         "1588303be010842069b1d069fe2a61a7b109d292",
          [
           null,
           {}
@@ -718337,7 +718326,7 @@
       },
       "switch_to_parent_frame": {
        "switch.py": [
-        "f777d6a767745466fa79705738b26b4c0d60570e",
+        "184dc4234e2020fba7198cd5ea438b35fcf72048",
         [
          null,
          {}
@@ -718410,6 +718399,29 @@
         ]
        ]
       }
+     },
+     "interop": {
+      "frames.py": [
+       "b2cafb498703ba24dac0bfe2a158e630f6aa50d5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shared_id_node.py": [
+       "aeb2bc45978829877dbc554bc580151a341c5d44",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shared_id_window.py": [
+       "d13262b4e5410ca3c8e2e1ce5be5093cba258207",
+       [
+        null,
+        {}
+       ]
+      ]
      }
     }
    }

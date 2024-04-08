@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_shadow_root_reference_created_in_classic[closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+Harness: the test ran to completion.

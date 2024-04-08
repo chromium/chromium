@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_web_window_reference_created_in_classic
+  webdriver.error.JavascriptErrorException: javascript error (500): javascript error: circular reference
+[FAIL] test_web_frame_reference_created_in_classic
+  webdriver.error.JavascriptErrorException: javascript error (500): javascript error: circular reference
+[FAIL] test_web_window_reference_created_in_bidi
+  AssertionError: assert None == 'bar'
+[FAIL] test_web_frame_reference_created_in_bidi
+  AssertionError: assert None == 'foo'
+Harness: the test ran to completion.
