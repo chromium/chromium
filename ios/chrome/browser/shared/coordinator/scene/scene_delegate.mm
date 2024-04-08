@@ -93,13 +93,16 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
-  self.sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
-  self.sceneState.currentOrigin = [self originFromSession:session
-                                                  options:connectionOptions];
-  self.sceneState.activationLevel = SceneActivationLevelBackground;
-  self.sceneState.connectionOptions = connectionOptions;
-  if (connectionOptions.URLContexts || connectionOptions.shortcutItem) {
-    self.sceneState.startupHadExternalIntent = YES;
+  SceneState* sceneState = self.sceneState;
+  sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
+  sceneState.currentOrigin = [self originFromSession:session
+                                             options:connectionOptions];
+  sceneState.activationLevel = SceneActivationLevelBackground;
+  sceneState.connectionOptions = connectionOptions;
+  if (connectionOptions.shortcutItem != nil ||
+      connectionOptions.URLContexts.count != 0 ||
+      connectionOptions.userActivities.count != 0) {
+    sceneState.startupHadExternalIntent = YES;
   }
 }
 
