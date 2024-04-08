@@ -9,9 +9,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -31,11 +28,6 @@ class DropdownItemViewInfoListManager {
     private @BrandedColorScheme int mBrandedColorScheme;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
 
-    private final int mListActiveOmniboxTopSmallMargin;
-    private final int mListActiveOmniboxTopBigMargin;
-    private final int mListNonActiveOmniboxTopSmallMargin;
-    private final int mListNonActiveOmniboxTopBigMargin;
-
     DropdownItemViewInfoListManager(@NonNull ModelList managedModel, @NonNull Context context) {
         assert managedModel != null : "Must specify a non-null model.";
         mContext = context;
@@ -43,21 +35,6 @@ class DropdownItemViewInfoListManager {
         mBrandedColorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
         mSourceViewInfoList = Collections.emptyList();
         mManagedModel = managedModel;
-
-        mListActiveOmniboxTopSmallMargin =
-                OmniboxResourceProvider.getActiveOmniboxTopSmallMargin(context);
-        mListActiveOmniboxTopBigMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_suggestion_list_active_top_big_margin);
-        mListNonActiveOmniboxTopSmallMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_suggestion_list_non_active_top_small_margin);
-        mListNonActiveOmniboxTopBigMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_suggestion_list_non_active_top_big_margin);
     }
 
     /**
@@ -115,8 +92,6 @@ class DropdownItemViewInfoListManager {
         DropdownItemViewInfo previousItem = null;
         GroupSection previousSection = null;
         GroupSection currentSection;
-        boolean shouldShowModernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
 
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
@@ -125,7 +100,7 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
-            if (shouldShowModernizeVisualUpdate && item.processor.allowBackgroundRounding()) {
+            if (item.processor.allowBackgroundRounding()) {
                 currentSection = item.groupConfig.getSection();
                 var applyRounding = currentSection != previousSection;
 

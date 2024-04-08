@@ -72,9 +72,6 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_list_padding_top">0dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
     <dimen name="omnibox_suggestion_list_active_top_small_margin">8dp</dimen>
-    <dimen name="omnibox_suggestion_list_active_top_big_margin">16dp</dimen>
-    <dimen name="omnibox_suggestion_list_non_active_top_small_margin">4dp</dimen>
-    <dimen name="omnibox_suggestion_list_non_active_top_big_margin">12dp</dimen>
     <dimen name="omnibox_suggestion_list_toolbar_overlap">0dp</dimen>
     <dimen name="omnibox_suggestion_list_elevation">6dp</dimen>
     <dimen name="omnibox_suggestion_list_animation_added_vertical_offset">12dp</dimen>
