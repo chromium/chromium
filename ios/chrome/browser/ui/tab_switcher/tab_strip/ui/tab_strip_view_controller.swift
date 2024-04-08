@@ -247,7 +247,9 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   func reconfigureItems(_ items: [TabStripItemIdentifier]) {
     var snapshot = dataSource.snapshot()
-    snapshot.reconfigureItems(items)
+    let itemsInSnapshot = Set(snapshot.itemIdentifiers)
+    let itemsToReconfigure = Set(items).intersection(itemsInSnapshot)
+    snapshot.reconfigureItems(Array(itemsToReconfigure))
     dataSource.apply(snapshot)
   }
 
