@@ -1495,6 +1495,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.TimeOfLongestAnimationStep" units="ms"
+    expires_after="2024-10-04">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records elapsed time between animation steps for the longest step in a side
+    panel open or close animation.
+  </summary>
+</histogram>
+
 <histogram name="SidePanel.{SidePanelEntry}.ResizedWidth" units="px"
     expires_after="2024-09-01">
   <owner>emshack@chromium.org</owner>

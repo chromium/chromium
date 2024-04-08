@@ -67,6 +67,8 @@ class SidePanelUtil {
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordComboboxShown();
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
+  static void RecordSidePanelAnimationMetrics(
+      base::TimeDelta largest_step_time);
 };
 
 extern const ui::ClassProperty<

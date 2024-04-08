@@ -84,6 +84,11 @@ class SidePanel : public views::AccessiblePaneView,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  // Timestamp of the last step in the side panel open/close animation. This is
+  // used for metrics purposes.
+  base::TimeTicks last_animation_step_timestamp_;
+  std::optional<base::TimeDelta> largest_animation_step_time_;
+
   raw_ptr<View> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<View> resize_area_ = nullptr;

@@ -399,12 +399,23 @@ void SidePanel::OnViewPropertyChanged(View* observed_view,
 }
 
 void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
+  base::TimeDelta step_time =
+      base::TimeTicks::Now() - last_animation_step_timestamp_;
+  last_animation_step_timestamp_ = base::TimeTicks::Now();
+  if (!largest_animation_step_time_.has_value() ||
+      largest_animation_step_time_ < step_time) {
+    largest_animation_step_time_ = step_time;
+  }
   InvalidateLayout();
 }
 
 void SidePanel::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0) {
     SetVisible(false);
+  }
+  if (largest_animation_step_time_.has_value()) {
+    SidePanelUtil::RecordSidePanelAnimationMetrics(
+        largest_animation_step_time_.value());
   }
   InvalidateLayout();
 }
@@ -502,11 +513,13 @@ void SidePanel::UpdateVisibility() {
         view->SetVisible(false);
       }
       SetVisible(should_be_open);
+      largest_animation_step_time_.reset();
+      last_animation_step_timestamp_ = base::TimeTicks::Now();
       animation_.Show();
-    } else {
-      if (GetVisible() && !IsClosing()) {
-        animation_.Hide();
-      }
+    } else if (GetVisible() && !IsClosing()) {
+      largest_animation_step_time_.reset();
+      last_animation_step_timestamp_ = base::TimeTicks::Now();
+      animation_.Hide();
     }
   } else {
     SetVisible(should_be_open);

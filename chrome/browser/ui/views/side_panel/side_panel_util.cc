@@ -243,6 +243,12 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
        is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
 }
 
+void SidePanelUtil::RecordSidePanelAnimationMetrics(
+    base::TimeDelta largest_step_time) {
+  base::UmaHistogramTimes("SidePanel.TimeOfLongestAnimationStep",
+                          largest_step_time);
+}
+
 actions::ActionItem::InvokeActionCallback
 SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
                                                    Browser* browser) {
