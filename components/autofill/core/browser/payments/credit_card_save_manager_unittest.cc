@@ -2903,7 +2903,9 @@ TEST_F(
   // submitting.
 #if !BUILDFLAG(IS_IOS)
   // Wallet Sync Transport is enabled.
-  personal_data().SetIsPaymentsWalletSyncTransportEnabled(true);
+  personal_data()
+      .test_payments_data_manager()
+      .SetIsPaymentsWalletSyncTransportEnabled(true);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -2942,7 +2944,9 @@ TEST_F(
   // submitting.
 #if !BUILDFLAG(IS_IOS)
   // Wallet Sync Transport is not enabled.
-  personal_data().SetIsPaymentsWalletSyncTransportEnabled(false);
+  personal_data()
+      .test_payments_data_manager()
+      .SetIsPaymentsWalletSyncTransportEnabled(false);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.

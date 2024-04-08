@@ -67,6 +67,8 @@ namespace autofill {
 
 namespace {
 
+constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
+
 using testing::Pointee;
 
 const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
@@ -1882,6 +1884,7 @@ TEST_F(PaymentsDataManagerTest,
       /*shared_storage_handler=*/nullptr,
       /*pref_service=*/nullptr,
       /*sync_service=*/nullptr,
+      /*identity_manager=*/nullptr,
       /*app-locale=*/"en-US", /*notify_pdm_observers=*/base::DoNothing());
 
   histogram_tester.ExpectTotalCount(
@@ -2131,6 +2134,209 @@ TEST_F(PaymentsDataManagerTest, IsServerCard_UniqueLocalCard) {
 
   ASSERT_FALSE(
       personal_data_->payments_data_manager().IsServerCard(&local_card));
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       ShouldShowCardsFromAccountOption) {
+  PaymentsDataManager& payments_data_manager =
+      personal_data_->payments_data_manager();
+  // The method should return false if one of these is not respected:
+  //   * The sync_service is not null
+  //   * The sync feature is not enabled
+  //   * The user has server cards
+  //   * The user has not opted-in to seeing their account cards
+  // Start by setting everything up, then making each of these conditions false
+  // independently, one by one.
+
+  // Set everything up so that the proposition should be shown.
+
+  // Set a server credit card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
+                          "0005" /* American Express */, "04", "2999", "1");
+  server_cards.back().SetNetworkForMaskedCard(kAmericanExpressCard);
+  SetServerCards(server_cards);
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Make sure the function returns true.
+  EXPECT_TRUE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user already opted-in. Check that the function now returns
+  // false.
+  CoreAccountId account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       true);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-opt the user out. Check that the function now returns true.
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       false);
+  EXPECT_TRUE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user has no server cards. Check that the function now returns
+  // false.
+  SetServerCards({});
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-set some server cards. Check that the function now returns true.
+  SetServerCards(server_cards);
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_TRUE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user enabled the sync feature. Check that the function now
+  // returns false.
+  sync_service_.SetHasSyncConsent(true);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-disable the sync feature. Check that the function now returns true.
+  sync_service_.SetHasSyncConsent(false);
+  EXPECT_TRUE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set a null sync service. Check that the function now returns false.
+  personal_data_->SetSyncServiceForTest(nullptr);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+}
+#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       ShouldShowCardsFromAccountOption) {
+  PaymentsDataManager& payments_data_manager =
+      personal_data_->payments_data_manager();
+  // The method should return false if one of these is not respected:
+  //   * The sync_service is not null
+  //   * The sync feature is not enabled
+  //   * The user has server cards
+  //   * The user has not opted-in to seeing their account cards
+  // Start by setting everything up, then making each of these conditions false
+  // independently, one by one.
+
+  // Set everything up so that the proposition should be shown on Desktop.
+
+  // Set a server credit card.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
+                          "0005" /* American Express */, "04", "2999", "1");
+  server_cards.back().SetNetworkForMaskedCard(kMasterCard);
+  SetServerCards(server_cards);
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Make sure the function returns false.
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user already opted-in. Check that the function still returns
+  // false.
+  CoreAccountId account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       true);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-opt the user out. Check that the function now returns true.
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
+                                                       false);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user has no server cards. Check that the function still
+  // returns false.
+  SetServerCards({});
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-set some server cards. Check that the function still returns false.
+  SetServerCards(server_cards);
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set that the user enabled the sync feature. Check that the function still
+  // returns false.
+  sync_service_.SetHasSyncConsent(true);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Re-disable the sync feature. Check that the function still returns false.
+  sync_service_.SetHasSyncConsent(false);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+
+  // Set a null sync service. Check that the function still returns false.
+  personal_data_->SetSyncServiceForTest(nullptr);
+  EXPECT_FALSE(payments_data_manager.ShouldShowCardsFromAccountOption());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       GetPaymentsSigninStateForMetrics) {
+  PaymentsDataManager& payments_data_manager =
+      personal_data_->payments_data_manager();
+  // Make sure a non-sync-consented account is available for the first tests.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(sync_service_.HasSyncConsent());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+
+  EXPECT_EQ(AutofillMetrics::PaymentsSigninState::
+                kSignedInAndWalletSyncTransportEnabled,
+            payments_data_manager.GetPaymentsSigninStateForMetrics());
+
+  // Check that the sync state is |SignedIn| if the sync service does not have
+  // wallet data active.
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          {syncer::UserSelectableType::kAutofill}));
+  EXPECT_EQ(AutofillMetrics::PaymentsSigninState::kSignedIn,
+            payments_data_manager.GetPaymentsSigninStateForMetrics());
+
+  // Nothing should change if |kAutofill| is also removed.
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  EXPECT_EQ(AutofillMetrics::PaymentsSigninState::kSignedIn,
+            payments_data_manager.GetPaymentsSigninStateForMetrics());
+
+// ClearPrimaryAccount is not supported on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Check that the sync state is |SignedOut| when the account info is empty.
+  {
+    identity_test_env_.ClearPrimaryAccount();
+    sync_service_.SetAccountInfo(CoreAccountInfo());
+    sync_service_.SetHasSyncConsent(false);
+    EXPECT_EQ(AutofillMetrics::PaymentsSigninState::kSignedOut,
+              payments_data_manager.GetPaymentsSigninStateForMetrics());
+  }
+#endif
+
+  // Simulate that the user has enabled the sync feature.
+  AccountInfo primary_account_info;
+  primary_account_info.email = kPrimaryAccountEmail;
+  sync_service_.SetAccountInfo(primary_account_info);
+  sync_service_.SetHasSyncConsent(true);
+// MakePrimaryAccountAvailable is not supported on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email,
+                                                 signin::ConsentLevel::kSync);
+#endif
+
+  // Check that the sync state is |SignedInAndSyncFeature| if the sync feature
+  // is enabled.
+  EXPECT_EQ(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled,
+      payments_data_manager.GetPaymentsSigninStateForMetrics());
 }
 
 #if BUILDFLAG(IS_ANDROID)

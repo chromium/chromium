@@ -22,10 +22,12 @@
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -54,6 +56,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
+      signin::IdentityManager* identity_manager,
       const std::string& app_locale,
       base::RepeatingClosure notify_pdm_observers);
 
@@ -281,6 +284,18 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 
+  // Returns true if wallet sync is running in transport mode (meaning that
+  // Sync-the-feature is disabled).
+  virtual bool IsPaymentsWalletSyncTransportEnabled() const;
+
+  // Returns whether credit card download is active (meaning that wallet sync is
+  // running at least in transport mode).
+  bool IsPaymentsDownloadActive() const;
+
+  // Returns the current sync status for the purpose of metrics only (do not
+  // guard actual logic behind this value).
+  AutofillMetrics::PaymentsSigninState GetPaymentsSigninStateForMetrics() const;
+
   // Check if `credit_card` has a duplicate card present in either Local or
   // Server card lists.
   bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
@@ -313,6 +328,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Check whether a card is a server card or has a duplicated server card.
   bool IsServerCard(const CreditCard* credit_card) const;
+
+  // Returns whether a row to give the option of showing cards from the user's
+  // account should be shown in the dropdown.
+  bool ShouldShowCardsFromAccountOption() const;
+
+  // Triggered when a user selects the option to see cards from their account.
+  // Records the sync transport consent.
+  void OnUserAcceptedCardsFromAccountOption();
 
   // The functions below are related to the payments mandatory re-auth feature.
   // All of this functionality is done through per-profile per-device prefs.
@@ -510,6 +533,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The sync service this instance uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+
+  // The identity manager that this instance uses. Must outlive this instance.
+  const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

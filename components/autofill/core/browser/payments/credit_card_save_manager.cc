@@ -323,7 +323,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   if ((should_request_name_from_user_ &&
        should_request_expiration_date_from_user_) ||
       (should_request_expiration_date_from_user_ &&
-       personal_data_manager_->IsPaymentsWalletSyncTransportEnabled())) {
+       personal_data_manager_->payments_data_manager()
+           .IsPaymentsWalletSyncTransportEnabled())) {
     LogCardUploadDecisions(upload_decision_metrics_);
     pending_upload_request_origin_ = url::Origin();
     return;
@@ -408,7 +409,8 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
       client_->GetSyncService(),
       personal_data_manager_->GetAccountInfoForPaymentsServer().email,
       personal_data_manager_->GetCountryCodeForExperimentGroup(),
-      personal_data_manager_->GetPaymentsSigninStateForMetrics(),
+      personal_data_manager_->payments_data_manager()
+          .GetPaymentsSigninStateForMetrics(),
       client_->GetLogManager());
 }
 

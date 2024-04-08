@@ -412,7 +412,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
         autofill_metrics::LogSaveCardPromptResultMetric(
             autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
             is_reshow_, options_, GetSecurityLevel(),
-            personal_data_manager_->GetPaymentsSigninStateForMetrics());
+            personal_data_manager_->payments_data_manager()
+                .GetPaymentsSigninStateForMetrics());
         autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
             /*is_shown=*/true);
         current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
@@ -521,7 +522,8 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
       autofill_metrics::LogSaveCardPromptResultMetric(
           get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
           GetSecurityLevel(),
-          personal_data_manager_->GetPaymentsSigninStateForMetrics());
+          personal_data_manager_->payments_data_manager()
+              .GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
@@ -620,7 +622,8 @@ bool SaveCardBubbleControllerImpl::
     IsPaymentsSyncTransportEnabledWithoutSyncFeature() const {
   // TODO(crbug.com/1464264): Migrate away from IsSyncFeatureEnabled() when the
   // API returns false on desktop.
-  return personal_data_manager_->IsPaymentsDownloadActive() &&
+  return personal_data_manager_->payments_data_manager()
+             .IsPaymentsDownloadActive() &&
          !sync_service_->IsSyncFeatureEnabled();
 }
 
@@ -743,7 +746,8 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_, GetSecurityLevel(),
-          personal_data_manager_->GetPaymentsSigninStateForMetrics());
+          personal_data_manager_->payments_data_manager()
+              .GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:
@@ -811,7 +815,8 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-          personal_data_manager_->GetPaymentsSigninStateForMetrics());
+          personal_data_manager_->payments_data_manager()
+              .GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:

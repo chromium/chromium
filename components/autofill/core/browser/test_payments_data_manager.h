@@ -46,6 +46,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void ClearLocalCvcs() override;
   bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
+  bool IsPaymentsWalletSyncTransportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
@@ -66,11 +67,16 @@ class TestPaymentsDataManager : public PaymentsDataManager {
     autofill_wallet_import_enabled_ = autofill_wallet_import_enabled;
   }
 
+  void SetIsPaymentsWalletSyncTransportEnabled(bool enabled) {
+    payments_wallet_sync_transport_enabled_ = enabled;
+  }
+
  private:
   void RemoveCardWithoutNotification(const CreditCard& card);
 
   std::optional<bool> autofill_payment_methods_enabled_;
   std::optional<bool> autofill_wallet_import_enabled_;
+  std::optional<bool> payments_wallet_sync_transport_enabled_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
 };
 

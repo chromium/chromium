@@ -50,7 +50,8 @@ void TestLocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
 }
 
 void TestLocalCardMigrationManager::EnablePaymentsWalletSyncInTransportMode() {
-  personal_data_manager_->SetIsPaymentsWalletSyncTransportEnabled(true);
+  personal_data_manager_->test_payments_data_manager()
+      .SetIsPaymentsWalletSyncTransportEnabled(true);
 }
 
 void TestLocalCardMigrationManager::OnDidGetUploadDetails(

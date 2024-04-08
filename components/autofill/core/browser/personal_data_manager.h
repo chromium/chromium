@@ -189,17 +189,10 @@ class PersonalDataManager : public KeyedService,
   // the user is not signed-in or the identity manager is not available.
   std::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
-  // Returns whether credit card download is active (meaning that wallet sync is
-  // running at least in transport mode).
-  bool IsPaymentsDownloadActive() const;
-
-  // Returns true if wallet sync is running in transport mode (meaning that
-  // Sync-the-feature is disabled).
-  virtual bool IsPaymentsWalletSyncTransportEnabled() const;
-
-  // Returns the current sync status for the purpose of metrics only (do not
-  // guard actual logic behind this value).
-  AutofillMetrics::PaymentsSigninState GetPaymentsSigninStateForMetrics() const;
+  // TODO(b/322170538): Update the remaining callers to use the PayDM.
+  bool IsPaymentsDownloadActive() const {
+    return payments_data_manager_->IsPaymentsDownloadActive();
+  }
 
   // Adds a listener to be notified of PersonalDataManager events.
   virtual void AddObserver(PersonalDataManagerObserver* observer);
@@ -487,14 +480,6 @@ class PersonalDataManager : public KeyedService,
   void SetSyncingForTest(bool is_syncing_for_test) {
     payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
   }
-
-  // Returns whether a row to give the option of showing cards from the user's
-  // account should be shown in the dropdown.
-  bool ShouldShowCardsFromAccountOption() const;
-
-  // Triggered when a user selects the option to see cards from their account.
-  // Records the sync transport consent.
-  void OnUserAcceptedCardsFromAccountOption();
 
   // Logs the fact that the server card link was clicked including information
   // about the current sync state.

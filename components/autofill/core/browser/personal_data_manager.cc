@@ -142,7 +142,7 @@ void PersonalDataManager::Init(
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
-      app_locale_, notify_observers);
+      identity_manager, app_locale_, notify_observers);
 
   pref_service_ = pref_service;
 
@@ -279,64 +279,6 @@ std::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
   }
 
   return std::nullopt;
-}
-
-bool PersonalDataManager::IsPaymentsDownloadActive() const {
-  if (!sync_service_ || !identity_manager_ ||
-      sync_service_->GetAccountInfo().IsEmpty() ||
-      sync_service_->GetTransportState() ==
-          syncer::SyncService::TransportState::PAUSED) {
-    return false;
-  }
-  // TODO(crbug.com/40066949): Simplify (merge with
-  // IsPaymentsWalletSyncTransportEnabled()) once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  return sync_service_->IsSyncFeatureEnabled() ||
-         sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
-}
-
-bool PersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
-  if (!sync_service_ || !identity_manager_ ||
-      sync_service_->GetAccountInfo().IsEmpty() ||
-      sync_service_->GetTransportState() ==
-          syncer::SyncService::TransportState::PAUSED) {
-    return false;
-  }
-  // TODO(crbug.com/40066949): Simplify (merge with IsPaymentsDownloadActive())
-  // once ConsentLevel::kSync and SyncService::IsSyncFeatureEnabled() are
-  // deleted from the codebase.
-  return !sync_service_->IsSyncFeatureEnabled() &&
-         sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
-}
-
-AutofillMetrics::PaymentsSigninState
-PersonalDataManager::GetPaymentsSigninStateForMetrics() const {
-  using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
-
-  // Check if the user is signed out.
-  if (!sync_service_ || !identity_manager_ ||
-      sync_service_->GetAccountInfo().IsEmpty()) {
-    return PaymentsSigninState::kSignedOut;
-  }
-
-  if (sync_service_->GetTransportState() ==
-      syncer::SyncService::TransportState::PAUSED) {
-    return PaymentsSigninState::kSyncPaused;
-  }
-
-  // Check if the user has turned on sync.
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  if (sync_service_->IsSyncFeatureEnabled()) {
-    return PaymentsSigninState::kSignedInAndSyncFeatureEnabled;
-  }
-
-  // Check if Wallet data types are supported.
-  if (sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
-    return PaymentsSigninState::kSignedInAndWalletSyncTransportEnabled;
-  }
-
-  return PaymentsSigninState::kSignedIn;
 }
 
 void PersonalDataManager::AddObserver(PersonalDataManagerObserver* observer) {
@@ -792,51 +734,19 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   OnStateChanged(sync_service_);
 }
 
-bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
-// The feature is only for Linux, Windows, Mac, and Fuchsia.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
-  // This option should only be shown for users that have not enabled the Sync
-  // Feature and that have server credit cards available.
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  if (!sync_service_ || sync_service_->IsSyncFeatureEnabled() ||
-      GetServerCreditCards().empty()) {
-    return false;
-  }
-
-  bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
-      pref_service_, sync_service_->GetAccountInfo().account_id);
-
-  // The option should only be shown if the user has not already opted-in.
-  return !is_opted_in;
-#else
-  return false;
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
-}
-
-void PersonalDataManager::OnUserAcceptedCardsFromAccountOption() {
-  DCHECK(IsPaymentsWalletSyncTransportEnabled());
-  prefs::SetUserOptedInWalletSyncTransport(
-      pref_service_, sync_service_->GetAccountInfo().account_id,
-      /*opted_in=*/true);
-}
-
 void PersonalDataManager::LogServerCardLinkClicked() const {
-  AutofillMetrics::LogServerCardLinkClicked(GetPaymentsSigninStateForMetrics());
+  AutofillMetrics::LogServerCardLinkClicked(
+      payments_data_manager_->GetPaymentsSigninStateForMetrics());
 }
 
 void PersonalDataManager::LogServerIbanLinkClicked() const {
   autofill_metrics::LogServerIbanLinkClicked(
-      GetPaymentsSigninStateForMetrics());
+      payments_data_manager_->GetPaymentsSigninStateForMetrics());
 }
 
 void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
   // If the user is in sync transport mode for Wallet, record an opt-in.
-  if (IsPaymentsWalletSyncTransportEnabled()) {
+  if (payments_data_manager_->IsPaymentsWalletSyncTransportEnabled()) {
     prefs::SetUserOptedInWalletSyncTransport(
         pref_service_, sync_service_->GetAccountInfo().account_id,
         /*opted_in=*/true);

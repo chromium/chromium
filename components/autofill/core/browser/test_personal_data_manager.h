@@ -55,7 +55,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // PersonalDataManager overrides.  These functions are overridden as needed
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
-  bool IsPaymentsWalletSyncTransportEnabled() const override;
   bool IsEligibleForAddressAccountStorage() const override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   void ClearAllLocalData() override;
@@ -126,10 +125,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     payments_data_manager_->payments_customer_data_ = std::move(customer_data);
   }
 
-  void SetIsPaymentsWalletSyncTransportEnabled(bool enabled) {
-    payments_wallet_sync_transport_enabled_ = enabled;
-  }
-
   void SetAccountInfoForPayments(const CoreAccountInfo& account_info) {
     account_info_ = account_info;
   }
@@ -145,7 +140,6 @@ class TestPersonalDataManager : public PersonalDataManager {
  private:
   std::string default_country_code_;
   std::optional<bool> eligible_for_account_storage_;
-  std::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;
   std::optional<bool> payments_cvc_storage_enabled_;
 };

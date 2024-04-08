@@ -28,13 +28,6 @@ TestPersonalDataManager::TestPersonalDataManager()
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
-bool TestPersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
-  if (payments_wallet_sync_transport_enabled_.has_value()) {
-    return *payments_wallet_sync_transport_enabled_;
-  }
-  return PersonalDataManager::IsPaymentsWalletSyncTransportEnabled();
-}
-
 bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
   return eligible_for_account_storage_.has_value()
              ? *eligible_for_account_storage_

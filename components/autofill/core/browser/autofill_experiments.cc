@@ -216,7 +216,8 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
           sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
           personal_data_manager->GetCountryCodeForExperimentGroup(),
-          personal_data_manager->GetPaymentsSigninStateForMetrics(),
+          personal_data_manager->payments_data_manager()
+              .GetPaymentsSigninStateForMetrics(),
           log_manager)) {
     return false;
   }
@@ -224,7 +225,8 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   if (!payments::HasGooglePaymentsAccount(personal_data_manager))
     return false;
 
-  return personal_data_manager->IsPaymentsDownloadActive();
+  return personal_data_manager->payments_data_manager()
+      .IsPaymentsDownloadActive();
 }
 
 bool IsInAutofillSuggestionsDisabledExperiment() {

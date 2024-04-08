@@ -667,11 +667,17 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     return false;
   }
 
-  return client().GetPersonalDataManager()->ShouldShowCardsFromAccountOption();
+  return client()
+      .GetPersonalDataManager()
+      ->payments_data_manager()
+      .ShouldShowCardsFromAccountOption();
 }
 
 void BrowserAutofillManager::OnUserAcceptedCardsFromAccountOption() {
-  client().GetPersonalDataManager()->OnUserAcceptedCardsFromAccountOption();
+  client()
+      .GetPersonalDataManager()
+      ->payments_data_manager()
+      .OnUserAcceptedCardsFromAccountOption();
 }
 
 void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
@@ -704,7 +710,8 @@ bool BrowserAutofillManager::ShouldParseForms() {
       client().GetPersonalDataManager()
           ? client()
                 .GetPersonalDataManager()
-                ->GetPaymentsSigninStateForMetrics()
+                ->payments_data_manager()
+                .GetPaymentsSigninStateForMetrics()
           : AutofillMetrics::PaymentsSigninState::kUnknown;
   if (!has_logged_autofill_enabled_) {
     AutofillMetrics::LogIsAutofillEnabledAtPageLoad(autofill_enabled,
@@ -2359,8 +2366,10 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
   has_parsed_forms_ = true;
 
   // Record the current sync state to be used for metrics on this page.
-  signin_state_for_metrics_ =
-      client().GetPersonalDataManager()->GetPaymentsSigninStateForMetrics();
+  signin_state_for_metrics_ = client()
+                                  .GetPersonalDataManager()
+                                  ->payments_data_manager()
+                                  .GetPaymentsSigninStateForMetrics();
 
   // Setup the url for metrics that we will collect for this form.
   form_interactions_ukm_logger()->OnFormsParsed(client().GetUkmSourceId());

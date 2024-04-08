@@ -137,7 +137,8 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
   if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
       IsIbanUploadEnabled(client_->GetSyncService(),
                           client_->GetPersonalDataManager()
-                              ->GetPaymentsSigninStateForMetrics())) {
+                              ->payments_data_manager()
+                              .GetPaymentsSigninStateForMetrics())) {
     return TypeOfOfferToSave::kOfferServerSave;
   } else if (import_candidate.record_type() != Iban::kLocalIban) {
     return TypeOfOfferToSave::kOfferLocalSave;

@@ -17,6 +17,7 @@ TestPaymentsDataManager::TestPaymentsDataManager(
                           /*shared_storage_handler=*/nullptr,
                           /*pref_service=*/nullptr,
                           /*sync_service=*/nullptr,
+                          /*identity_manager=*/nullptr,
                           app_locale,
                           std::move(notify_pdm_observers)) {}
 
@@ -213,6 +214,13 @@ bool TestPaymentsDataManager::IsAutofillWalletImportEnabled() const {
     return autofill_wallet_import_enabled_.value();
   }
   return PaymentsDataManager::IsAutofillWalletImportEnabled();
+}
+
+bool TestPaymentsDataManager::IsPaymentsWalletSyncTransportEnabled() const {
+  if (payments_wallet_sync_transport_enabled_.has_value()) {
+    return *payments_wallet_sync_transport_enabled_;
+  }
+  return PaymentsDataManager::IsPaymentsWalletSyncTransportEnabled();
 }
 
 bool TestPaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
