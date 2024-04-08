@@ -15,9 +15,13 @@ namespace autofill {
 // the pop-up bounds, text direction and container view.
 struct PopupControllerCommon {
  public:
-  PopupControllerCommon(const gfx::RectF& element_bounds,
+  PopupControllerCommon(gfx::RectF element_bounds,
                         base::i18n::TextDirection text_direction,
                         gfx::NativeView container_view);
+  PopupControllerCommon(const PopupControllerCommon&);
+  PopupControllerCommon(PopupControllerCommon&&);
+  PopupControllerCommon& operator=(const PopupControllerCommon&);
+  PopupControllerCommon& operator=(PopupControllerCommon&&);
 
   ~PopupControllerCommon();
 

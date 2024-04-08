@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -918,15 +919,17 @@ void ChromeAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   // Convert element_bounds to be in screen space.
-  gfx::Rect client_area = web_contents()->GetContainerBounds();
-  gfx::RectF element_bounds_in_screen_space =
+  const gfx::Rect client_area = web_contents()->GetContainerBounds();
+  const gfx::RectF element_bounds_in_screen_space =
       open_args.element_bounds + client_area.OffsetFromOrigin();
 
-  // Deletes or reuses the old |popup_controller_|.
+  // Deletes or reuses the old `popup_controller_`.
   popup_controller_ = AutofillPopupControllerImpl::GetOrCreate(
       popup_controller_, delegate, web_contents(),
-      web_contents()->GetNativeView(), element_bounds_in_screen_space,
-      open_args.text_direction, open_args.form_control_ax_id);
+      PopupControllerCommon(element_bounds_in_screen_space,
+                            open_args.text_direction,
+                            web_contents()->GetNativeView()),
+      open_args.form_control_ax_id);
 
   popup_controller_->Show(
       open_args.suggestions, open_args.trigger_source,

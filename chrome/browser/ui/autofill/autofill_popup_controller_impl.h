@@ -82,9 +82,7 @@ class AutofillPopupControllerImpl
       base::WeakPtr<AutofillPopupControllerImpl> previous,
       base::WeakPtr<AutofillPopupDelegate> delegate,
       content::WebContents* web_contents,
-      gfx::NativeView container_view,
-      const gfx::RectF& element_bounds,
-      base::i18n::TextDirection text_direction,
+      PopupControllerCommon controller_common,
       int32_t form_control_ax_id);
 
   // Shows the popup, or updates the existing popup with the given values.
@@ -159,9 +157,7 @@ class AutofillPopupControllerImpl
   AutofillPopupControllerImpl(
       base::WeakPtr<AutofillPopupDelegate> delegate,
       content::WebContents* web_contents,
-      gfx::NativeView container_view,
-      const gfx::RectF& element_bounds,
-      base::i18n::TextDirection text_direction,
+      PopupControllerCommon controller_common,
       int32_t form_control_ax_id,
       base::RepeatingCallback<void(
           gfx::NativeWindow,

@@ -26,6 +26,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -113,15 +114,13 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     WeakPtr<AutofillPopupControllerImpl> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
-    gfx::NativeView container_view,
-    const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction,
+    PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
   if (previous && previous->delegate_.get() == delegate.get() &&
-      previous->container_view() == container_view) {
+      previous->container_view() == controller_common.container_view) {
     if (previous->self_deletion_weak_ptr_factory_.HasWeakPtrs())
       previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
-    previous->controller_common_.element_bounds = element_bounds;
+    previous->controller_common_ = std::move(controller_common);
     previous->form_control_ax_id_ = form_control_ax_id;
     previous->ClearState();
     return previous;
@@ -132,14 +131,13 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
   }
 #if BUILDFLAG(IS_ANDROID)
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate, web_contents, container_view, element_bounds, text_direction,
-      form_control_ax_id,
+      delegate, web_contents, std::move(controller_common), form_control_ax_id,
       base::BindRepeating(&local_password_migration::ShowWarning),
       /*parent=*/std::nullopt);
 #else
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate, web_contents, container_view, element_bounds, text_direction,
-      form_control_ax_id, base::DoNothing(), /*parent=*/std::nullopt);
+      delegate, web_contents, std::move(controller_common), form_control_ax_id,
+      base::DoNothing(), /*parent=*/std::nullopt);
 #endif
   return controller->GetWeakPtr();
 }
@@ -148,9 +146,7 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
 AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     base::WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
-    gfx::NativeView container_view,
-    const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction,
+    PopupControllerCommon controller_common,
     int32_t form_control_ax_id,
     base::RepeatingCallback<
         void(gfx::NativeWindow,
@@ -159,7 +155,7 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
         show_pwd_migration_warning_callback,
     std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
     : web_contents_(web_contents->GetWeakPtr()),
-      controller_common_(element_bounds, text_direction, container_view),
+      controller_common_(std::move(controller_common)),
       delegate_(delegate),
       show_pwd_migration_warning_callback_(
           std::move(show_pwd_migration_warning_callback)),
@@ -541,9 +537,10 @@ AutofillPopupControllerImpl::OpenSubPopup(
     const gfx::RectF& anchor_bounds,
     std::vector<Suggestion> suggestions,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  PopupControllerCommon new_controller_common = controller_common_;
+  new_controller_common.element_bounds = anchor_bounds;
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate_, web_contents_.get(), controller_common_.container_view,
-      anchor_bounds, controller_common_.text_direction,
+      delegate_, web_contents_.get(), std::move(new_controller_common),
       /*form_control_ax_id=*/form_control_ax_id_, base::DoNothing(),
       /*parent=*/GetWeakPtr());
 

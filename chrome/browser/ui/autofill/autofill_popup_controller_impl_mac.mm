@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_mac.h"
 
+#import <utility>
+
+#import "chrome/browser/ui/autofill/popup_controller_common.h"
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -18,13 +21,11 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     WeakPtr<AutofillPopupControllerImpl> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
-    gfx::NativeView container_view,
-    const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction,
+    PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
   if (previous.get() && previous->delegate_.get() == delegate.get() &&
-      previous->container_view() == container_view) {
-    previous->controller_common_.element_bounds = element_bounds;
+      previous->container_view() == controller_common.container_view) {
+    previous->controller_common_ = std::move(controller_common);
     previous->form_control_ax_id_ = form_control_ax_id;
     previous->ClearState();
     return previous;
@@ -34,23 +35,18 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     previous->Hide(PopupHidingReason::kViewDestroyed);
 
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImplMac(
-      delegate, web_contents, container_view, element_bounds, text_direction,
-      form_control_ax_id);
+      delegate, web_contents, std::move(controller_common), form_control_ax_id);
   return controller->GetWeakPtr();
 }
 
 AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
     base::WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
-    gfx::NativeView container_view,
-    const gfx::RectF& element_bounds,
-    base::i18n::TextDirection text_direction,
+    PopupControllerCommon controller_common,
     int32_t form_control_ax_id)
     : AutofillPopupControllerImpl(delegate,
                                   web_contents,
-                                  container_view,
-                                  element_bounds,
-                                  text_direction,
+                                  std::move(controller_common),
                                   form_control_ax_id,
                                   base::DoNothing(),
                                   std::nullopt),
