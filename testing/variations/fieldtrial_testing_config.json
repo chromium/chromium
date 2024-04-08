@@ -9762,7 +9762,7 @@
             ]
         }
     ],
-    "IOSTabPickup": [
+    "IOSTabResumption": [
         {
             "platforms": [
                 "ios"
