@@ -38,6 +38,7 @@ int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
                                                int top_resize_corner_height,
                                                int resize_corner_width,
                                                bool can_resize) {
+  // If the point isnt within the resize boundaries, return nowhere.
   bool point_in_top = point.y() < resize_border.top();
   bool point_in_bottom = point.y() >= height() - resize_border.bottom();
   bool point_in_left = point.x() < resize_border.left();
@@ -46,37 +47,36 @@ int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
   if (!point_in_left && !point_in_right && !point_in_top && !point_in_bottom)
     return HTNOWHERE;
 
+  // If the window can't be resized, there are no resize boundaries, just
+  // window borders.
+  if (!can_resize) {
+    return HTBORDER;
+  }
+
+  // Shrink the resize boundaries
   point_in_top |= point.y() < top_resize_corner_height;
   point_in_left |= point.x() < resize_corner_width;
   point_in_right |= point.x() >= width() - resize_corner_width;
 
-  int component;
   if (point_in_top) {
     if (point_in_left) {
-      component = HTTOPLEFT;
+      return HTTOPLEFT;
     } else if (point_in_right) {
-      component = HTTOPRIGHT;
-    } else {
-      component = HTTOP;
+      return HTTOPRIGHT;
     }
+    return HTTOP;
   } else if (point_in_bottom) {
     if (point_in_left) {
-      component = HTBOTTOMLEFT;
+      return HTBOTTOMLEFT;
     } else if (point_in_right) {
-      component = HTBOTTOMRIGHT;
-    } else {
-      component = HTBOTTOM;
+      return HTBOTTOMRIGHT;
     }
+    return HTBOTTOM;
   } else if (point_in_left) {
-    component = HTLEFT;
-  } else {
-    CHECK(point_in_right);
-    component = HTRIGHT;
+    return HTLEFT;
   }
-
-  // If the window can't be resized, there are no resize boundaries, just
-  // window borders.
-  return can_resize ? component : HTBORDER;
+  CHECK(point_in_right);
+  return HTRIGHT;
 }
 
 gfx::Rect NonClientFrameView::GetBoundsForClientView() const {
