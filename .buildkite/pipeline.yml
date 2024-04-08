@@ -222,7 +222,6 @@ steps:
         RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 
   - label: "Trigger FE E2E Tests (macos-arm64) :hammer:"
-    soft_fail: true
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-mac-arm64"
