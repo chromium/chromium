@@ -376,15 +376,25 @@ gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   CheckValidSequenceOrLockAcquired();
 
-  if (raster_interface_)
+  if (raster_interface_) {
     return raster_interface_.get();
+  }
 
   if (!attributes_.enable_raster_interface) {
     return nullptr;
   }
 
-  if (!gles2_impl_.get())
+#if BUILDFLAG(IS_ANDROID)
+  // The last few usages of RasterImplementationGLES are removed from Android
+  // with switching to use RasterInterface in VideoResourceUpdater. Thus,
+  // Android should never need a RasterImplementationGLES through
+  // ContextProviderCommandBuffer. This DUMP_WILL_BE_CHECK helps validate it.
+  DUMP_WILL_BE_CHECK(false);
+#endif
+
+  if (!gles2_impl_.get()) {
     return nullptr;
+  }
 
   raster_interface_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
       gles2_impl_.get(), gles2_impl_.get(), ContextCapabilities());
