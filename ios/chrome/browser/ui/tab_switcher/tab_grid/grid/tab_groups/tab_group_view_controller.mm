@@ -341,29 +341,10 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   return fullTitleView;
 }
 
-// Returns the string with give the current number of tabs in the group.
-- (NSString*)numberOfTabsString {
-  // TODO(crbug.com/1501837): Configure the string with the real number of
-  // items.
-  return l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1);
-}
-
 // Returns the configured sub titles view.
 - (UIView*)configuredSubTitle {
   UIView* subTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   subTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UITraitCollection* interfaceStyleDarkTraitCollection = [UITraitCollection
-      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
-  UIColor* textColor = [[UIColor colorNamed:kTextSecondaryColor]
-      resolvedColorWithTraitCollection:interfaceStyleDarkTraitCollection];
-
-  UILabel* numberOfTabsLabel = [[UILabel alloc] init];
-  numberOfTabsLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  numberOfTabsLabel.textColor = textColor;
-  numberOfTabsLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  numberOfTabsLabel.text = [self numberOfTabsString];
 
   // TODO(crbug.com/1501837): Add action to the button.
   UIButton* menuButton = [[UIButton alloc] init];
@@ -375,22 +356,15 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
       forState:UIControlStateNormal];
   menuButton.tintColor = UIColor.whiteColor;
 
-  [subTitleView addSubview:numberOfTabsLabel];
   [subTitleView addSubview:menuButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    [numberOfTabsLabel.leadingAnchor
-        constraintEqualToAnchor:subTitleView.leadingAnchor
-                       constant:kSubTitleHorizontalPadding],
-    [numberOfTabsLabel.topAnchor
-        constraintEqualToAnchor:subTitleView.topAnchor],
-    [subTitleView.heightAnchor
-        constraintEqualToAnchor:numberOfTabsLabel.heightAnchor],
     [menuButton.trailingAnchor
         constraintEqualToAnchor:subTitleView.trailingAnchor
                        constant:-kSubTitleHorizontalPadding],
+    [subTitleView.heightAnchor constraintEqualToAnchor:menuButton.heightAnchor],
     [menuButton.centerYAnchor
-        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
+        constraintEqualToAnchor:subTitleView.centerYAnchor],
   ]];
 
   return subTitleView;
