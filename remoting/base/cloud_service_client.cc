@@ -28,7 +28,7 @@ void CloudServiceClient::ProvisionGceInstance(
     const std::string& owner_email,
     const std::string& display_name,
     const std::string& public_key,
-    const std::string& existing_directory_id,
+    const std::optional<std::string>& existing_directory_id,
     ProvisionGceInstanceCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -73,9 +73,9 @@ void CloudServiceClient::ProvisionGceInstance(
   provision_gce_instance_request->set_display_name(display_name);
   provision_gce_instance_request->set_public_key(public_key);
   provision_gce_instance_request->set_version(STRINGIZE(VERSION));
-  if (!existing_directory_id.empty()) {
+  if (existing_directory_id.has_value() && !existing_directory_id->empty()) {
     provision_gce_instance_request->set_existing_directory_id(
-        existing_directory_id);
+        *existing_directory_id);
   }
 
   ExecuteRequest(traffic_annotation, path,

@@ -31,7 +31,7 @@ void CorpServiceClient::ProvisionCorpMachine(
     const std::string& owner_email,
     const std::string& fqdn,
     const std::string& public_key,
-    std::optional<std::string> existing_host_id,
+    const std::optional<std::string>& existing_host_id,
     ProvisionCorpMachineCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("remoting_provision_corp_machine",

@@ -41,11 +41,12 @@ class CloudServiceClient {
   CloudServiceClient(const CloudServiceClient&) = delete;
   CloudServiceClient& operator=(const CloudServiceClient&) = delete;
 
-  void ProvisionGceInstance(const std::string& owner_email,
-                            const std::string& display_name,
-                            const std::string& public_key,
-                            const std::string& existing_directory_id,
-                            ProvisionGceInstanceCallback callback);
+  void ProvisionGceInstance(
+      const std::string& owner_email,
+      const std::string& display_name,
+      const std::string& public_key,
+      const std::optional<std::string>& existing_directory_id,
+      ProvisionGceInstanceCallback callback);
 
   void CancelPendingRequests();
 

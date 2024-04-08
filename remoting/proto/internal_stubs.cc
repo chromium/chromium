@@ -53,7 +53,7 @@ std::unique_ptr<ProvisionCorpMachineRequest> GetMachineProvisioningRequest(
     const std::string& fqdn,
     const std::string& public_key,
     const std::string& version,
-    std::optional<std::string> existing_host_id) {
+    const std::optional<std::string>& existing_host_id) {
   return std::make_unique<ProvisionCorpMachineRequest>();
 }
 

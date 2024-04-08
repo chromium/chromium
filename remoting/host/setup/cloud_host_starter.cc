@@ -75,8 +75,7 @@ void CloudHostStarter::RegisterNewHost(const std::string& access_token,
   DCHECK(!public_key.empty());
 
   cloud_service_client_->ProvisionGceInstance(
-      params().owner_email, params().name, public_key,
-      existing_host_id().value_or(std::string()),
+      params().owner_email, params().name, public_key, existing_host_id(),
       base::BindOnce(&CloudHostStarter::OnProvisionGceInstanceResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
