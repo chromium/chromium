@@ -245,21 +245,21 @@ object BuildCompat {
         ))
 
     /**
-     * Checks if the device is running on a pre-release version of Android VanillaIceCream.
+     * Checks if the device is running on a pre-release version of Android VanillaIceCream or a
+     * release version of Android VanillaIceCream or newer.
      *
      * **Note:** When Android VanillaIceCream is finalized for release, this method will
-     * be removed and all calls must be replaced with `Build.VERSION.SDK_INT >=
-     * Build.VERSION_CODES.VANILLA_ICE_CREAM`.
+     * be removed and all calls must be replaced with `Build.VERSION.SDK_INT >= 35`.
      *
      * @return `true` if VanillaIceCream APIs are available for use, `false` otherwise
      */
-    @PrereleaseSdkCheck
     @JvmStatic
-    @ChecksSdkIntAtLeast(codename = "VanillaIceCream")
-    fun isAtLeastV(): Boolean = Build.VERSION.SDK_INT >= 34 && isAtLeastPreReleaseCodename(
+    @ChecksSdkIntAtLeast(api = 35, codename = "VanillaIceCream")
+    fun isAtLeastV(): Boolean =
+        Build.VERSION.SDK_INT >= 35 || (Build.VERSION.SDK_INT >= 34 && isAtLeastPreReleaseCodename(
         "VanillaIceCream",
         Build.VERSION.CODENAME
-    )
+    ))
 
     /**
      * Experimental feature set for pre-release SDK checks.
