@@ -8,10 +8,10 @@
 
 #include "base/check.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -83,6 +83,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
       .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide);
 
   display_observer_.emplace(this);
+  window_observation_.Observe(parent_widget->GetNativeWindow());
 }
 
 MultitaskMenu::~MultitaskMenu() = default;
@@ -119,6 +120,18 @@ void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
 
   if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
     HideBubble();
+}
+
+void MultitaskMenu::OnWindowPropertyChanged(aura::Window* window,
+                                            const void* key,
+                                            intptr_t old) {
+  if (key == kIsShowingInOverviewKey) {
+    HideBubble();
+  }
+}
+
+void MultitaskMenu::OnWindowDestroying(aura::Window* window) {
+  window_observation_.Reset();
 }
 
 BEGIN_METADATA(MultitaskMenu)
