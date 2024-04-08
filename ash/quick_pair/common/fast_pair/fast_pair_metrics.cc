@@ -21,7 +21,7 @@ const char kDeviceTypeHeadphones[] = "HeadphonesDeviceType";
 const char kDeviceTypeSpeaker[] = "SpeakerDeviceType";
 const char kDeviceTypeTrueWirelessHeadphones[] =
     "TrueWirelessHeadphonesDeviceType";
-const char kDeviceTypeInputDevice[] = "InputDeviceDeviceType";
+const char kDeviceTypeMouse[] = "MouseDeviceType";
 const char kDeviceTypeUnspecified[] = "UnspecifiedDeviceType";
 
 const char kNotificationTypeFastPair[] = "FastPairNotificationType";
@@ -598,8 +598,8 @@ std::optional<std::string> GetFastPairDeviceType(
              nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES) {
     return kDeviceTypeTrueWirelessHeadphones;
   } else if (device_metadata.device_type() ==
-             nearby::fastpair::DeviceType::INPUT_DEVICE) {
-    return kDeviceTypeInputDevice;
+             nearby::fastpair::DeviceType::MOUSE) {
+    return kDeviceTypeMouse;
   } else if (device_metadata.device_type() ==
              nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED) {
     return kDeviceTypeUnspecified;

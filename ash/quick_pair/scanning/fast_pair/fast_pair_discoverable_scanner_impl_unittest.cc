@@ -377,8 +377,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, WrongInteractionType) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest,
-       InputDeviceDisallowedWhenHIDDisabled) {
+TEST_F(FastPairDiscoverableScannerImplTest, MouseDisallowedWhenHIDDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -387,7 +386,7 @@ TEST_F(FastPairDiscoverableScannerImplTest,
   nearby::fastpair::Status* status = metadata.mutable_status();
   status->set_status_type(nearby::fastpair::StatusType::PUBLISHED);
   metadata.set_trigger_distance(2);
-  metadata.set_device_type(nearby::fastpair::DeviceType::INPUT_DEVICE);
+  metadata.set_device_type(nearby::fastpair::DeviceType::MOUSE);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
@@ -396,7 +395,7 @@ TEST_F(FastPairDiscoverableScannerImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, InputDeviceAllowedWhenHIDEnabled) {
+TEST_F(FastPairDiscoverableScannerImplTest, MouseAllowedWhenHIDEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairHID,
@@ -406,7 +405,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, InputDeviceAllowedWhenHIDEnabled) {
   nearby::fastpair::Status* status = metadata.mutable_status();
   status->set_status_type(nearby::fastpair::StatusType::PUBLISHED);
   metadata.set_trigger_distance(2);
-  metadata.set_device_type(nearby::fastpair::DeviceType::INPUT_DEVICE);
+  metadata.set_device_type(nearby::fastpair::DeviceType::MOUSE);
   repository_->SetFakeMetadata(kValidModelId, metadata);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
