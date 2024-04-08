@@ -76,6 +76,18 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::BT2020_NCL,
                              gfx::ColorSpace::RangeID::LIMITED);
+    case kYCgCo_8bit_Full_SkYUVColorSpace:
+    case kYCgCo_10bit_Full_SkYUVColorSpace:
+    case kYCgCo_12bit_Full_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::YCOCG,
+                             gfx::ColorSpace::RangeID::FULL);
+    case kYCgCo_8bit_Limited_SkYUVColorSpace:
+    case kYCgCo_10bit_Limited_SkYUVColorSpace:
+    case kYCgCo_12bit_Limited_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::YCOCG,
+                             gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
     default:
       NOTREACHED();

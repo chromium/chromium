@@ -2524,7 +2524,7 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYCoCgYUVRect) {
       cc::FuzzyPixelComparator()
           .DiscardAlpha()
           .SetErrorPixelsPercentageLimit(100.f)
-          .SetAvgAbsErrorLimit(1.2f)
+          .SetAvgAbsErrorLimit(1.0f)
           .SetAbsErrorLimit(2)));
 }
 
