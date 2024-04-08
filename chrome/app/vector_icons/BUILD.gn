@@ -283,6 +283,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_dark.icon",
     "webauthn/windows_hello.icon",
+    "webid_globe.icon",
     "zoom_in.icon",
     "zoom_minus.icon",
     "zoom_minus_chrome_refresh.icon",

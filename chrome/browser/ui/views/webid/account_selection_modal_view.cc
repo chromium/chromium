@@ -582,7 +582,7 @@ AccountSelectionModalView::CreateBrandIconImageView(
                             /*should_circle_crop=*/false);
   } else {
     brand_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, gfx::kGoogleGrey700, kModalIdpIconSize));
+        kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
     brand_icon_image_view->SetVisible(true);
   }
 
