@@ -36,8 +36,10 @@ absl_source_set("status") {
     "//third_party/abseil-cpp/absl/types:span",
   ]
 
-  # TODO(crbug.com/331100926): Remove once fixed in upstream absl.
-  cflags_cc = [ "-Wno-deprecated-pragma" ]
+  if (!is_win || is_clang) {
+    # TODO(crbug.com/331100926): Remove once fixed in upstream absl.
+    cflags_cc = [ "-Wno-deprecated-pragma" ]
+  }
 }
 
 absl_test("status_test") {
