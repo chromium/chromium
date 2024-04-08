@@ -100,7 +100,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
       compute_resource_info.input_name_to_byte_length_map.size());
   for (auto const& [name, size] :
        compute_resource_info.input_name_to_byte_length_map) {
-    auto coreml_feature_info =
+    std::optional<GraphImpl::CoreMLFeatureInfo> coreml_feature_info =
         GetCoreMLFeatureInfo(graph_builder->FindInputOperandInfo(name));
     if (!coreml_feature_info.has_value()) {
       originating_sequence->PostTask(
@@ -230,10 +230,9 @@ MLFeatureValue* GraphImpl::CreateFeatureValue(
 
 // static
 std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
-    const GraphBuilder::OperandInfo* operand_info) {
-  CHECK(operand_info);
+    const GraphBuilder::OperandInfo& operand_info) {
   enum MLMultiArrayDataType data_type;
-  switch (operand_info->data_type) {
+  switch (operand_info.data_type) {
     case webnn::mojom::Operand_DataType::kFloat32:
       data_type = MLMultiArrayDataTypeFloat32;
       break;
@@ -252,11 +251,11 @@ std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
       return std::nullopt;
   }
   NSMutableArray* shape =
-      [[NSMutableArray alloc] initWithCapacity:operand_info->dimensions.size()];
+      [[NSMutableArray alloc] initWithCapacity:operand_info.dimensions.size()];
   NSMutableArray* stride =
-      [[NSMutableArray alloc] initWithCapacity:operand_info->dimensions.size()];
+      [[NSMutableArray alloc] initWithCapacity:operand_info.dimensions.size()];
   base::CheckedNumeric<uint32_t> expected_size = 1;
-  for (uint32_t dimension : operand_info->dimensions) {
+  for (uint32_t dimension : operand_info.dimensions) {
     expected_size *= dimension;
   }
   if (!expected_size.IsValid()) {
@@ -265,7 +264,7 @@ std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
     return std::nullopt;
   }
   uint32_t current_stride = expected_size.ValueOrDie();
-  for (uint32_t dimension : operand_info->dimensions) {
+  for (uint32_t dimension : operand_info.dimensions) {
     [shape addObject:@(dimension)];
     // since expected_size was computed by multiplying all dimensions together
     // current_stride has to be perfectly divisible by dimension.

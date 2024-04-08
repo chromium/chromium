@@ -39,16 +39,11 @@
 
 namespace webnn::coreml {
 
-using mojom::Operand;
-using mojom::Operation;
-
-//
 // Documentation for the CoreML MIL Ops:
 // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html
 // For the supported OS versions for any OP, the translation between iOS version
 // numbers and macOS version numbers is documented here:
 // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/_deployment_compatibility.py#L25
-//
 
 namespace {
 
@@ -481,7 +476,7 @@ GraphBuilder::BuildCoreMLModel() {
   }
 
   // Add inputs.
-  for (auto& input_id : graph_info_->input_operands) {
+  for (uint64_t input_id : graph_info_->input_operands) {
     RETURN_IF_ERROR(AddInput(input_id, main_function));
   }
 
@@ -497,7 +492,7 @@ GraphBuilder::BuildCoreMLModel() {
                              ml_weights_write_timer.Elapsed());
 
   // Add operations.
-  for (auto& operation : graph_info_->operations) {
+  for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {
       case mojom::Operation::Tag::kElementWiseBinary: {
         RETURN_IF_ERROR(AddOperationForBinary(
@@ -558,7 +553,7 @@ GraphBuilder::BuildCoreMLModel() {
   }
 
   // Add output.
-  for (auto& output_id : graph_info_->output_operands) {
+  for (uint64_t output_id : graph_info_->output_operands) {
     block.add_outputs(GetCoreMLNameFromOperand(output_id));
     RETURN_IF_ERROR(AddOutput(output_id));
   }
@@ -591,7 +586,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
   current_offset += sizeof(header);
 
   for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
-    const Operand& operand = GetOperand(key);
+    const mojom::Operand& operand = GetOperand(key);
     if (operand.dimensions.empty()) {
       AddConstantImmediateValue(key, block);
       continue;
@@ -630,13 +625,11 @@ const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
+const GraphBuilder::OperandInfo& GraphBuilder::FindInputOperandInfo(
     const std::string& input_name) const {
   auto id = input_name_to_id_map_.find(input_name);
-  if (id == input_name_to_id_map_.end()) {
-    return nullptr;
-  }
-  return &GetOperandInfo(id->second);
+  CHECK(id != input_name_to_id_map_.end());
+  return GetOperandInfo(id->second);
 }
 
 const base::FilePath& GraphBuilder::GetModelFilePath() {
@@ -703,8 +696,7 @@ void GraphBuilder::AddPlaceholderInput(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOutput(
     uint64_t output_id) {
-  const auto output_iterator = id_to_op_input_info_map_.find(output_id);
-  CHECK(output_iterator != id_to_op_input_info_map_.end());
+  CHECK(id_to_op_input_info_map_.contains(output_id));
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
   RETURN_IF_ERROR(PopulateFeatureDescription(output_id, *feature_description));
@@ -716,8 +708,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
-  auto input_lhs = id_to_op_input_info_map_.at(operation.lhs_operand_id);
-  auto input_rhs = id_to_op_input_info_map_.at(operation.rhs_operand_id);
+  const OperandInfo& lhs_operand_info =
+      GetOperandInfo(operation.lhs_operand_id);
+  const OperandInfo& rhs_operand_info = GetOperandInfo(
+      operation.rhs_operand_id);
   // Input keys (x, y) and supported types are defined in coremltools.
   // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/elementwise_binary.py#L33
   static constexpr auto kSupportedBinaryOpsTypes =
@@ -726,15 +720,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
            CoreML::Specification::MILSpec::DataType::FLOAT32,
            CoreML::Specification::MILSpec::DataType::INT32});
 
-  if (!kSupportedBinaryOpsTypes.contains(input_lhs.mil_data_type) ||
-      !kSupportedBinaryOpsTypes.contains(input_rhs.mil_data_type)) {
+  if (!kSupportedBinaryOpsTypes.contains(lhs_operand_info.mil_data_type) ||
+      !kSupportedBinaryOpsTypes.contains(rhs_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
   (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
-      input_lhs.coreml_name);
+      lhs_operand_info.coreml_name);
   (*op->mutable_inputs())[kOpParamY].add_arguments()->set_name(
-      input_rhs.coreml_name);
+      rhs_operand_info.coreml_name);
 
   bool is_logical_binary_operation = false;
   switch (operation.kind) {
@@ -870,8 +864,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
     const mojom::Transpose& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  OperandInfo input_operand =
-      id_to_op_input_info_map_.at(operation.input_operand_id);
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
   // Input keys (x, perm) and supported types are defined in coremltools.
   // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/tensor_transformation.py#L968-L975.
   static constexpr auto kSupportedTransposeOpsTypes =
@@ -880,7 +874,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
            CoreML::Specification::MILSpec::DataType::FLOAT32,
            CoreML::Specification::MILSpec::DataType::INT32,
            CoreML::Specification::MILSpec::DataType::BOOL});
-  if (!kSupportedTransposeOpsTypes.contains(input_operand.mil_data_type)) {
+  if (!kSupportedTransposeOpsTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -904,7 +898,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
   (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
-      input_operand.coreml_name);
+      input_operand_info.coreml_name);
 
   (*op->mutable_inputs())[kParamPerm].add_arguments()->set_name(
       perm_op_output_name);
@@ -1047,7 +1041,7 @@ void GraphBuilder::AddConstantImmediateValue(
 void GraphBuilder::AddConstantImmediateValue(
     uint32_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
-  auto& operand = GetOperand(constant_id);
+  const mojom::Operand& operand = GetOperand(constant_id);
 
   std::string name = GetCoreMLNameFromOperand(constant_id);
   base::span<const uint8_t> value(
@@ -1146,7 +1140,7 @@ void GraphBuilder::AddConstantFileValue(
   // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/load.py#L60.
   auto& attributes = *op->mutable_attributes();
   attributes["name"] =
-      CreateStringValue(id_to_op_input_info_map_.at(constant_id).coreml_name);
+      CreateStringValue(GetOperandInfo(constant_id).coreml_name);
   CoreML::Specification::MILSpec::Value blob_value{};
   const mojom::Operand& operand = GetOperand(constant_id);
   PopulateValueType(operand, *blob_value.mutable_type());
@@ -1165,7 +1159,7 @@ void GraphBuilder::AddConstantFileValue(
 base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
     uint64_t operand_id,
     ::CoreML::Specification::FeatureDescription& feature_description) {
-  auto& operand = GetOperand(operand_id);
+  const mojom::Operand& operand = GetOperand(operand_id);
   auto* feature_type = feature_description.mutable_type();
   auto* array_feature_type = feature_type->mutable_multiarraytype();
   switch (operand.data_type) {
@@ -1340,14 +1334,14 @@ std::string GraphBuilder::GetCoreMLNameFromOperand(uint64_t operand_id) {
   // CoreML doesn't allow op output names to start with numbers, so "var_"
   // prefixes are added.
   switch (operand.kind) {
-    case Operand::Kind::kInput:
+    case mojom::Operand::Kind::kInput:
       CHECK(operand.name.has_value());
       return GetCoreMLNameFromInput(operand.name.value());
-    case Operand::Kind::kConstant:
+    case mojom::Operand::Kind::kConstant:
       return base::JoinString(
           {kIntermediateOperandPrefix, base::NumberToString(operand_id)},
           kStringSeparator);
-    case Operand::Kind::kOutput:
+    case mojom::Operand::Kind::kOutput:
       if (operand.name.has_value()) {
         return GetCoreMLNameFromOutput(operand.name.value());
       } else {

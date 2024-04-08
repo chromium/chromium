@@ -85,7 +85,9 @@ class GraphBuilder {
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
-  const OperandInfo* FindInputOperandInfo(const std::string& input_name) const;
+  // This method must be called with an `input_name` which corresponds to some
+  // input, or else it will crash.
+  const OperandInfo& FindInputOperandInfo(const std::string& input_name) const;
   const base::FilePath& GetModelFilePath();
 
  private:
