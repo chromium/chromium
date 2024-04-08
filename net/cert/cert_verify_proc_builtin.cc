@@ -439,27 +439,29 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // confusing when there are multiple ChromeRootCertConstraints objects,
     // would need to clearly distinguish which set of constraints had errors.)
 
-    if (constraint.sct_not_after.has_value()) {
-      bool found_matching_sct = false;
-      for (const auto& sct : ValidScts(delegate_data->scts)) {
-        if (sct->timestamp <= constraint.sct_not_after.value()) {
-          found_matching_sct = true;
-          break;
+    if (ct_policy_enforcer_->IsCtEnabled()) {
+      if (constraint.sct_not_after.has_value()) {
+        bool found_matching_sct = false;
+        for (const auto& sct : ValidScts(delegate_data->scts)) {
+          if (sct->timestamp <= constraint.sct_not_after.value()) {
+            found_matching_sct = true;
+            break;
+          }
+        }
+        if (!found_matching_sct) {
+          return false;
         }
       }
-      if (!found_matching_sct) {
-        return false;
-      }
-    }
 
-    if (constraint.sct_all_after.has_value()) {
-      ct::SCTList valid_scts = ValidScts(delegate_data->scts);
-      if (valid_scts.empty()) {
-        return false;
-      }
-      for (const auto& sct : ValidScts(delegate_data->scts)) {
-        if (sct->timestamp <= constraint.sct_all_after.value()) {
+      if (constraint.sct_all_after.has_value()) {
+        ct::SCTList valid_scts = ValidScts(delegate_data->scts);
+        if (valid_scts.empty()) {
           return false;
+        }
+        for (const auto& sct : ValidScts(delegate_data->scts)) {
+          if (sct->timestamp <= constraint.sct_all_after.value()) {
+            return false;
+          }
         }
       }
     }

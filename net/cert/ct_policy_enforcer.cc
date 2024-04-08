@@ -20,4 +20,8 @@ std::optional<base::Time> DefaultCTPolicyEnforcer::GetLogDisqualificationTime(
   return std::nullopt;
 }
 
+bool DefaultCTPolicyEnforcer::IsCtEnabled() const {
+  return false;
+}
+
 }  // namespace net

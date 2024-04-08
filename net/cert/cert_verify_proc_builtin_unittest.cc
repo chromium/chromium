@@ -197,6 +197,7 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
                                             const NetLogWithSource&));
   MOCK_CONST_METHOD1(GetLogDisqualificationTime,
                      std::optional<base::Time>(std::string_view log_id));
+  MOCK_CONST_METHOD0(IsCtEnabled, bool());
 
  protected:
   ~MockCTPolicyEnforcer() override = default;
@@ -1101,6 +1102,53 @@ scoped_refptr<ct::SignedCertificateTimestamp> MakeSct(base::Time t,
   return sct;
 }
 
+// Test SCT constraints fail-open if CT is disabled.
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintSctConstraintsWithCtDisabled) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _)).Times(2);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints(
+      {{.sct_not_after = base::Time::Now() - base::Days(365)}});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 0u);
+  }
+
+  SetMockChromeRootConstraints(
+      {{.sct_all_after = base::Time::Now() + base::Days(365)}});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 0u);
+  }
+}
+
 // Test SctNotAfter constraint only requires 1 valid SCT that satisfies the
 // constraint.
 // Set a SctNotAfter constraint at time t1.
@@ -1127,6 +1175,8 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctNotAfter) {
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(std::nullopt));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
@@ -1191,6 +1241,8 @@ TEST_F(CertVerifyProcBuiltinTest,
                                    ct::SCT_STATUS_LOG_UNKNOWN);
   sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
       .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
 
@@ -1241,6 +1293,8 @@ TEST_F(
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(t2));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
@@ -1292,6 +1346,8 @@ TEST_F(
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(t1));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
@@ -1337,6 +1393,8 @@ TEST_F(CertVerifyProcBuiltinTest,
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(future_t));
 
@@ -1382,6 +1440,8 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctAllAfter) {
   // Set a SctAllAfter constraint before the timestamp of either SCT.
   SetMockChromeRootConstraints({{.sct_all_after = t0}});
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(std::nullopt));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
@@ -1449,6 +1509,8 @@ TEST_F(CertVerifyProcBuiltinTest,
   SignedCertificateTimestampAndStatusList sct_and_status_list;
   sct_and_status_list.emplace_back(MakeSct(t2, kLog1), ct::SCT_STATUS_OK);
 
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
       .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))

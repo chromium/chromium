@@ -52,6 +52,9 @@ class NET_EXPORT CTPolicyEnforcer
   virtual std::optional<base::Time> GetLogDisqualificationTime(
       std::string_view log_id) const = 0;
 
+  // Returns true if Certificate Transparency enforcement is enabled.
+  virtual bool IsCtEnabled() const = 0;
+
  protected:
   virtual ~CTPolicyEnforcer() = default;
 
@@ -74,6 +77,8 @@ class NET_EXPORT DefaultCTPolicyEnforcer : public net::CTPolicyEnforcer {
 
   std::optional<base::Time> GetLogDisqualificationTime(
       std::string_view log_id) const override;
+
+  bool IsCtEnabled() const override;
 
  protected:
   ~DefaultCTPolicyEnforcer() override = default;

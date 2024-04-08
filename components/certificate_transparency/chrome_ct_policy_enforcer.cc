@@ -112,6 +112,10 @@ std::optional<base::Time> ChromeCTPolicyEnforcer::GetLogDisqualificationTime(
   return p->second;
 }
 
+bool ChromeCTPolicyEnforcer::IsCtEnabled() const {
+  return true;
+}
+
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     std::string_view log_id,
     base::Time* out_disqualification_date) const {
