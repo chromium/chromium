@@ -170,4 +170,11 @@ bool CalculationValue::HasPercentOrStretch() const {
   return data_.expression->HasPercentOrStretch();
 }
 
+bool CalculationValue::HasStretch() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasStretch();
+}
+
 }  // namespace blink

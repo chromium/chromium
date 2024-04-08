@@ -281,6 +281,7 @@ class PLATFORM_EXPORT Length {
   // HasPercent() is false:  for example, calc-size(any, 20%).
   bool HasPercent() const;
   bool HasPercentOrStretch() const;
+  bool HasStretch() const;
 
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||

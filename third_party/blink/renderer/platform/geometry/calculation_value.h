@@ -72,6 +72,7 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   bool HasAutoOrContentOrIntrinsicSize() const;
   bool HasPercent() const;
   bool HasPercentOrStretch() const;
+  bool HasStretch() const;
 
   float Pixels() const {
     DCHECK(!IsExpression());
