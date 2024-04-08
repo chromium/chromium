@@ -106,8 +106,8 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
     pubKeyCredParams: [{type: "public-key", alg: -7}],
     challenge: new Uint8Array([0]),
     timeout: 10000,
-    userVerification: 'discouraged',
     authenticatorSelection: {
+      userVerification: 'discouraged',
       requireResidentKey: true,
     },
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
@@ -435,11 +435,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
                                  testing::_, testing::_))
         .WillOnce(
-            [&](const CoreAccountInfo&,
+            [result = std::move(result)](
+                const CoreAccountInfo&,
                 base::OnceCallback<void(
                     trusted_vault::
                         DownloadAuthenticationFactorsRegistrationStateResult)>
-                    callback) {
+                    callback) mutable {
               std::move(callback).Run(std::move(result));
               return std::make_unique<
                   trusted_vault::TrustedVaultConnection::Request>();
@@ -486,10 +487,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
    *       Platform UV unavailable
    * 1. Modal MakeCredential request invoked by RP
    * 2. Mechanism selection appears; test chooses enclave credential
-   * 2. UI for onboarding appears; test accepts it
-   * 3. Test selects a GPM PIN
-   * 4. Device registration with enclave succeeds
-   * 5. MakeCredential succeeds
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test selects a GPM PIN
+   * 5. Device registration with enclave succeeds
+   * 6. MakeCredential succeeds
    */
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
