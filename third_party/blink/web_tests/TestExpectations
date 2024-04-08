@@ -7042,7 +7042,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] images/color-profile-background-image-cover.html [ Failure ]
 [ Mac14-arm64 ] images/color-profile-drag-image.html [ Failure ]
 [ Mac14-arm64 ] images/color-profile-munsell-adobe-to-srgb-webgl.html [ Timeout ]
-[ Mac14-arm64 ] inspector-protocol/debugger/domdebugger-webgl-breakpoint.js [ Timeout ]
+[ Mac14-arm64 ] inspector-protocol/debugger/domdebugger-webgl-breakpoint.js [ Skip Timeout ]
 [ Mac14-arm64 ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
 [ Mac14-arm64 ] paint/markers/inline-spelling-markers-hidpi.html [ Failure ]
 [ Mac14-arm64 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
