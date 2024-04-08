@@ -756,7 +756,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(BrowserProcessor$1, "__esModule", { value: true });
 	BrowserProcessor$1.BrowserProcessor = void 0;
-	const protocol_js_1$m = protocol;
+	const protocol_js_1$n = protocol;
 	class BrowserProcessor {
 	    #browserCdpClient;
 	    constructor(browserCdpClient) {
@@ -784,7 +784,7 @@ var mapperTab = (function () {
 	    async removeUserContext(params) {
 	        const userContext = params.userContext;
 	        if (userContext === 'default') {
-	            throw new protocol_js_1$m.InvalidArgumentException('`default` user context cannot be removed');
+	            throw new protocol_js_1$n.InvalidArgumentException('`default` user context cannot be removed');
 	        }
 	        try {
 	            await this.#browserCdpClient.sendCommand('Target.disposeBrowserContext', {
@@ -794,7 +794,7 @@ var mapperTab = (function () {
 	        catch (err) {
 	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
 	            if (err.message.startsWith('Failed to find context with id')) {
-	                throw new protocol_js_1$m.NoSuchUserContextException(err.message);
+	                throw new protocol_js_1$n.NoSuchUserContextException(err.message);
 	            }
 	            throw err;
 	        }
@@ -838,7 +838,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(CdpProcessor$1, "__esModule", { value: true });
 	CdpProcessor$1.CdpProcessor = void 0;
-	const protocol_js_1$l = protocol;
+	const protocol_js_1$m = protocol;
 	class CdpProcessor {
 	    #browsingContextStorage;
 	    #realmStorage;
@@ -862,7 +862,7 @@ var mapperTab = (function () {
 	        const context = params.realm;
 	        const realm = this.#realmStorage.getRealm({ realmId: context });
 	        if (realm === undefined) {
-	            throw new protocol_js_1$l.UnknownErrorException(`Could not find realm ${params.realm}`);
+	            throw new protocol_js_1$m.UnknownErrorException(`Could not find realm ${params.realm}`);
 	        }
 	        return { executionContextId: realm.executionContextId };
 	    }
@@ -881,2732 +881,15 @@ var mapperTab = (function () {
 
 	var BrowsingContextProcessor$1 = {};
 
-	var WorkerRealm$1 = {};
-
-	var Realm$1 = {};
-
-	var uuid = {};
-
-	/**
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(uuid, "__esModule", { value: true });
-	uuid.uuidv4 = void 0;
-	/**
-	 * Generates a random v4 UUID, as specified in RFC4122.
-	 *
-	 * Uses the native Web Crypto API if available, otherwise falls back to a
-	 * polyfill.
-	 *
-	 * Example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
-	 */
-	function uuidv4() {
-	    // Available only in secure contexts
-	    // https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
-	    if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
-	        // Node with
-	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
-	        // secure browser context.
-	        return globalThis.crypto.randomUUID();
-	    }
-	    const randomValues = new Uint8Array(16);
-	    if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
-	        // Node with
-	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
-	        // browser.
-	        globalThis.crypto.getRandomValues(randomValues);
-	    }
-	    else {
-	        // Node without
-	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-	        // eslint-disable-next-line @typescript-eslint/no-var-requires
-	        require('crypto').webcrypto.getRandomValues(randomValues);
-	    }
-	    // Set version (4) and variant (RFC4122) bits.
-	    randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
-	    randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
-	    const bytesToHex = (bytes) => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
-	    return [
-	        bytesToHex(randomValues.subarray(0, 4)),
-	        bytesToHex(randomValues.subarray(4, 6)),
-	        bytesToHex(randomValues.subarray(6, 8)),
-	        bytesToHex(randomValues.subarray(8, 10)),
-	        bytesToHex(randomValues.subarray(10, 16)),
-	    ].join('-');
-	}
-	uuid.uuidv4 = uuidv4;
-
-	var ChannelProxy$1 = {};
-
-	/*
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 */
-	Object.defineProperty(ChannelProxy$1, "__esModule", { value: true });
-	ChannelProxy$1.ChannelProxy = void 0;
-	const protocol_js_1$k = protocol;
-	const log_js_1$c = log$1;
-	const uuid_js_1$3 = uuid;
-	/**
-	 * Used to send messages from realm to BiDi user.
-	 */
-	class ChannelProxy {
-	    #properties;
-	    #id = (0, uuid_js_1$3.uuidv4)();
-	    #logger;
-	    constructor(channel, logger) {
-	        this.#properties = channel;
-	        this.#logger = logger;
-	    }
-	    /**
-	     * Creates a channel proxy in the given realm, initialises listener and
-	     * returns a handle to `sendMessage` delegate.
-	     */
-	    async init(realm, eventManager) {
-	        const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
-	        const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(realm, channelHandle);
-	        void this.#startListener(realm, channelHandle, eventManager);
-	        return sendMessageHandle;
-	    }
-	    /** Gets a ChannelProxy from window and returns its handle. */
-	    async startListenerFromWindow(realm, eventManager) {
-	        try {
-	            const channelHandle = await this.#getHandleFromWindow(realm);
-	            void this.#startListener(realm, channelHandle, eventManager);
-	        }
-	        catch (error) {
-	            this.#logger?.(log_js_1$c.LogType.debugError, error);
-	        }
-	    }
-	    /**
-	     * Evaluation string which creates a ChannelProxy object on the client side.
-	     */
-	    static #createChannelProxyEvalStr() {
-	        const functionStr = String(() => {
-	            const queue = [];
-	            let queueNonEmptyResolver = null;
-	            return {
-	                /**
-	                 * Gets a promise, which is resolved as soon as a message occurs
-	                 * in the queue.
-	                 */
-	                async getMessage() {
-	                    const onMessage = queue.length > 0
-	                        ? Promise.resolve()
-	                        : new Promise((resolve) => {
-	                            queueNonEmptyResolver = resolve;
-	                        });
-	                    await onMessage;
-	                    return queue.shift();
-	                },
-	                /**
-	                 * Adds a message to the queue.
-	                 * Resolves the pending promise if needed.
-	                 */
-	                sendMessage(message) {
-	                    queue.push(message);
-	                    if (queueNonEmptyResolver !== null) {
-	                        queueNonEmptyResolver();
-	                        queueNonEmptyResolver = null;
-	                    }
-	                },
-	            };
-	        });
-	        return `(${functionStr})()`;
-	    }
-	    /** Creates a ChannelProxy in the given realm. */
-	    static async #createAndGetHandleInRealm(realm) {
-	        const createChannelHandleResult = await realm.cdpClient.sendCommand('Runtime.evaluate', {
-	            expression: this.#createChannelProxyEvalStr(),
-	            contextId: realm.executionContextId,
-	            serializationOptions: {
-	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
-	            },
-	        });
-	        if (createChannelHandleResult.exceptionDetails ||
-	            createChannelHandleResult.result.objectId === undefined) {
-	            throw new Error(`Cannot create channel`);
-	        }
-	        return createChannelHandleResult.result.objectId;
-	    }
-	    /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
-	    static async #createSendMessageHandle(realm, channelHandle) {
-	        const sendMessageArgResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	            functionDeclaration: String((channelHandle) => {
-	                return channelHandle.sendMessage;
-	            }),
-	            arguments: [{ objectId: channelHandle }],
-	            executionContextId: realm.executionContextId,
-	            serializationOptions: {
-	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
-	            },
-	        });
-	        // TODO: check for exceptionDetails.
-	        return sendMessageArgResult.result.objectId;
-	    }
-	    /** Starts listening for the channel events of the provided ChannelProxy. */
-	    async #startListener(realm, channelHandle, eventManager) {
-	        // noinspection InfiniteLoopJS
-	        for (;;) {
-	            try {
-	                const message = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                    functionDeclaration: String(async (channelHandle) => await channelHandle.getMessage()),
-	                    arguments: [
-	                        {
-	                            objectId: channelHandle,
-	                        },
-	                    ],
-	                    awaitPromise: true,
-	                    executionContextId: realm.executionContextId,
-	                    serializationOptions: {
-	                        serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
-	                        maxDepth: this.#properties.serializationOptions?.maxObjectDepth ??
-	                            undefined,
-	                    },
-	                });
-	                if (message.exceptionDetails) {
-	                    throw message.exceptionDetails;
-	                }
-	                for (const browsingContext of realm.associatedBrowsingContexts) {
-	                    eventManager.registerEvent({
-	                        type: 'event',
-	                        method: protocol_js_1$k.ChromiumBidi.Script.EventNames.Message,
-	                        params: {
-	                            channel: this.#properties.channel,
-	                            data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" /* Script.ResultOwnership.None */),
-	                            source: realm.source,
-	                        },
-	                    }, browsingContext.id);
-	                }
-	            }
-	            catch (error) {
-	                // If an error is thrown, then the channel is permanently broken, so we
-	                // exit the loop.
-	                this.#logger?.(log_js_1$c.LogType.debugError, error);
-	                break;
-	            }
-	        }
-	    }
-	    /**
-	     * Returns a handle of ChannelProxy from window's property which was set there
-	     * by `getEvalInWindowStr`. If window property is not set yet, sets a promise
-	     * resolver to the window property, so that `getEvalInWindowStr` can resolve
-	     * the promise later on with the channel.
-	     * This is needed because `getEvalInWindowStr` can be called before or
-	     * after this method.
-	     */
-	    async #getHandleFromWindow(realm) {
-	        const channelHandleResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	            functionDeclaration: String((id) => {
-	                const w = window;
-	                if (w[id] === undefined) {
-	                    // The channelProxy is not created yet. Create a promise, put the
-	                    // resolver to window property and return the promise.
-	                    // `getEvalInWindowStr` will resolve the promise later.
-	                    return new Promise((resolve) => (w[id] = resolve));
-	                }
-	                // The channelProxy is already created by `getEvalInWindowStr` and
-	                // is set into window property. Return it.
-	                const channelProxy = w[id];
-	                delete w[id];
-	                return channelProxy;
-	            }),
-	            arguments: [{ value: this.#id }],
-	            executionContextId: realm.executionContextId,
-	            awaitPromise: true,
-	            serializationOptions: {
-	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
-	            },
-	        });
-	        if (channelHandleResult.exceptionDetails !== undefined ||
-	            channelHandleResult.result.objectId === undefined) {
-	            throw new Error(`ChannelHandle not found in window["${this.#id}"]`);
-	        }
-	        return channelHandleResult.result.objectId;
-	    }
-	    /**
-	     * String to be evaluated to create a ProxyChannel and put it to window.
-	     * Returns the delegate `sendMessage`. Used to provide an argument for preload
-	     * script. Does the following:
-	     * 1. Creates a ChannelProxy.
-	     * 2. Puts the ChannelProxy to window['${this.#id}'] or resolves the promise
-	     *    by calling delegate stored in window['${this.#id}'].
-	     *    This is needed because `#getHandleFromWindow` can be called before or
-	     *    after this method.
-	     * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
-	     */
-	    getEvalInWindowStr() {
-	        const delegate = String((id, channelProxy) => {
-	            const w = window;
-	            if (w[id] === undefined) {
-	                // `#getHandleFromWindow` is not initialized yet, and will get the
-	                // channelProxy later.
-	                w[id] = channelProxy;
-	            }
-	            else {
-	                // `#getHandleFromWindow` is already set a delegate to window property
-	                // and is waiting for it to be called with the channelProxy.
-	                w[id](channelProxy);
-	                delete w[id];
-	            }
-	            return channelProxy.sendMessage;
-	        });
-	        const channelProxyEval = ChannelProxy.#createChannelProxyEvalStr();
-	        return `(${delegate})('${this.#id}',${channelProxyEval})`;
-	    }
-	}
-	ChannelProxy$1.ChannelProxy = ChannelProxy;
-
-	Object.defineProperty(Realm$1, "__esModule", { value: true });
-	Realm$1.Realm = void 0;
-	const protocol_js_1$j = protocol;
-	const log_js_1$b = log$1;
-	const uuid_js_1$2 = uuid;
-	const ChannelProxy_js_1$1 = ChannelProxy$1;
-	class Realm {
-	    #cdpClient;
-	    #eventManager;
-	    #executionContextId;
-	    #logger;
-	    #origin;
-	    #realmId;
-	    #realmStorage;
-	    constructor(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage) {
-	        this.#cdpClient = cdpClient;
-	        this.#eventManager = eventManager;
-	        this.#executionContextId = executionContextId;
-	        this.#logger = logger;
-	        this.#origin = origin;
-	        this.#realmId = realmId;
-	        this.#realmStorage = realmStorage;
-	        this.#realmStorage.addRealm(this);
-	    }
-	    cdpToBidiValue(cdpValue, resultOwnership) {
-	        const bidiValue = this.serializeForBiDi(cdpValue.result.deepSerializedValue, new Map());
-	        if (cdpValue.result.objectId) {
-	            const objectId = cdpValue.result.objectId;
-	            if (resultOwnership === "root" /* Script.ResultOwnership.Root */) {
-	                // Extend BiDi value with `handle` based on required `resultOwnership`
-	                // and  CDP response but not on the actual BiDi type.
-	                bidiValue.handle = objectId;
-	                // Remember all the handles sent to client.
-	                this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
-	            }
-	            else {
-	                // No need to await for the object to be released.
-	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$b.LogType.debugError, error));
-	            }
-	        }
-	        return bidiValue;
-	    }
-	    /**
-	     * Relies on the CDP to implement proper BiDi serialization, except:
-	     * * CDP integer property `backendNodeId` is replaced with `sharedId` of
-	     * `{documentId}_element_{backendNodeId}`;
-	     * * CDP integer property `weakLocalObjectReference` is replaced with UUID `internalId`
-	     * using unique-per serialization `internalIdMap`.
-	     * * CDP type `platformobject` is replaced with `object`.
-	     * @param deepSerializedValue - CDP value to be converted to BiDi.
-	     * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
-	     * `internalId`.
-	     */
-	    serializeForBiDi(deepSerializedValue, internalIdMap) {
-	        if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
-	            const weakLocalObjectReference = deepSerializedValue.weakLocalObjectReference;
-	            if (!internalIdMap.has(weakLocalObjectReference)) {
-	                internalIdMap.set(weakLocalObjectReference, (0, uuid_js_1$2.uuidv4)());
-	            }
-	            deepSerializedValue.internalId = internalIdMap.get(weakLocalObjectReference);
-	            delete deepSerializedValue['weakLocalObjectReference'];
-	        }
-	        // Platform object is a special case. It should have only `{type: object}`
-	        // without `value` field.
-	        if (deepSerializedValue.type === 'platformobject') {
-	            return { type: 'object' };
-	        }
-	        const bidiValue = deepSerializedValue.value;
-	        if (bidiValue === undefined) {
-	            return deepSerializedValue;
-	        }
-	        // Recursively update the nested values.
-	        if (['array', 'set', 'htmlcollection', 'nodelist'].includes(deepSerializedValue.type)) {
-	            for (const i in bidiValue) {
-	                bidiValue[i] = this.serializeForBiDi(bidiValue[i], internalIdMap);
-	            }
-	        }
-	        if (['object', 'map'].includes(deepSerializedValue.type)) {
-	            for (const i in bidiValue) {
-	                bidiValue[i] = [
-	                    this.serializeForBiDi(bidiValue[i][0], internalIdMap),
-	                    this.serializeForBiDi(bidiValue[i][1], internalIdMap),
-	                ];
-	            }
-	        }
-	        return deepSerializedValue;
-	    }
-	    get realmId() {
-	        return this.#realmId;
-	    }
-	    get executionContextId() {
-	        return this.#executionContextId;
-	    }
-	    get origin() {
-	        return this.#origin;
-	    }
-	    get source() {
-	        return {
-	            realm: this.realmId,
-	        };
-	    }
-	    get cdpClient() {
-	        return this.#cdpClient;
-	    }
-	    get baseInfo() {
-	        return {
-	            realm: this.realmId,
-	            origin: this.origin,
-	        };
-	    }
-	    async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
-	        const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
-	            contextId: this.executionContextId,
-	            expression,
-	            awaitPromise,
-	            serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
-	            userGesture: userActivation,
-	        });
-	        if (cdpEvaluateResult.exceptionDetails) {
-	            return await this.#getExceptionResult(cdpEvaluateResult.exceptionDetails, 0, resultOwnership);
-	        }
-	        return {
-	            realm: this.realmId,
-	            result: this.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
-	            type: 'success',
-	        };
-	    }
-	    #registerEvent(event) {
-	        if (this.associatedBrowsingContexts.length === 0) {
-	            this.#eventManager.registerEvent(event, null);
-	        }
-	        else {
-	            for (const browsingContext of this.associatedBrowsingContexts) {
-	                this.#eventManager.registerEvent(event, browsingContext.id);
-	            }
-	        }
-	    }
-	    initialize() {
-	        this.#registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$j.ChromiumBidi.Script.EventNames.RealmCreated,
-	            params: this.realmInfo,
-	        });
-	    }
-	    /**
-	     * Serializes a given CDP object into BiDi, keeping references in the
-	     * target's `globalThis`.
-	     */
-	    async serializeCdpObject(cdpRemoteObject, resultOwnership) {
-	        const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
-	        const cdpValue = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	            functionDeclaration: String((remoteObject) => remoteObject),
-	            awaitPromise: false,
-	            arguments: [argument],
-	            serializationOptions: {
-	                serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
-	            },
-	            executionContextId: this.executionContextId,
-	        });
-	        return this.cdpToBidiValue(cdpValue, resultOwnership);
-	    }
-	    static #cdpRemoteObjectToCallArgument(cdpRemoteObject) {
-	        if (cdpRemoteObject.objectId !== undefined) {
-	            return { objectId: cdpRemoteObject.objectId };
-	        }
-	        if (cdpRemoteObject.unserializableValue !== undefined) {
-	            return { unserializableValue: cdpRemoteObject.unserializableValue };
-	        }
-	        return { value: cdpRemoteObject.value };
-	    }
-	    /**
-	     * Gets the string representation of an object. This is equivalent to
-	     * calling `toString()` on the object value.
-	     */
-	    async stringifyObject(cdpRemoteObject) {
-	        const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	            functionDeclaration: String((remoteObject) => String(remoteObject)),
-	            awaitPromise: false,
-	            arguments: [cdpRemoteObject],
-	            returnByValue: true,
-	            executionContextId: this.executionContextId,
-	        });
-	        return result.value;
-	    }
-	    async #flattenKeyValuePairs(mappingLocalValue) {
-	        const keyValueArray = [];
-	        for (const [key, value] of mappingLocalValue) {
-	            let keyArg;
-	            if (typeof key === 'string') {
-	                // Key is a string.
-	                keyArg = { value: key };
-	            }
-	            else {
-	                // Key is a serialized value.
-	                keyArg = await this.deserializeForCdp(key);
-	            }
-	            const valueArg = await this.deserializeForCdp(value);
-	            keyValueArray.push(keyArg);
-	            keyValueArray.push(valueArg);
-	        }
-	        return keyValueArray;
-	    }
-	    async #flattenValueList(listLocalValue) {
-	        return await Promise.all(listLocalValue.map((localValue) => this.deserializeForCdp(localValue)));
-	    }
-	    async #serializeCdpExceptionDetails(cdpExceptionDetails, lineOffset, resultOwnership) {
-	        const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map((frame) => ({
-	            url: frame.url,
-	            functionName: frame.functionName,
-	            lineNumber: frame.lineNumber - lineOffset,
-	            columnNumber: frame.columnNumber,
-	        })) ?? [];
-	        // Exception should always be there.
-	        const exception = cdpExceptionDetails.exception;
-	        return {
-	            exception: await this.serializeCdpObject(exception, resultOwnership),
-	            columnNumber: cdpExceptionDetails.columnNumber,
-	            lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
-	            stackTrace: {
-	                callFrames,
-	            },
-	            text: (await this.stringifyObject(exception)) || cdpExceptionDetails.text,
-	        };
-	    }
-	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue = {
-	        type: 'undefined',
-	    }, argumentsLocalValues = [], resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
-	        const callFunctionAndSerializeScript = `(...args) => {
-      function callFunction(f, args) {
-        const deserializedThis = args.shift();
-        const deserializedArgs = args;
-        return f.apply(deserializedThis, deserializedArgs);
-      }
-      return callFunction((
-        ${functionDeclaration}
-      ), args);
-    }`;
-	        const thisAndArgumentsList = [
-	            await this.deserializeForCdp(thisLocalValue),
-	            ...(await Promise.all(argumentsLocalValues.map(async (argumentLocalValue) => await this.deserializeForCdp(argumentLocalValue)))),
-	        ];
-	        let cdpCallFunctionResult;
-	        try {
-	            cdpCallFunctionResult = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                functionDeclaration: callFunctionAndSerializeScript,
-	                awaitPromise,
-	                arguments: thisAndArgumentsList,
-	                serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
-	                executionContextId: this.executionContextId,
-	                userGesture: userActivation,
-	            });
-	        }
-	        catch (error) {
-	            // Heuristic to determine if the problem is in the argument.
-	            // The check can be done on the `deserialization` step, but this approach
-	            // helps to save round-trips.
-	            if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
-	                [
-	                    'Could not find object with given id',
-	                    'Argument should belong to the same JavaScript world as target object',
-	                    'Invalid remote object id',
-	                ].includes(error.message)) {
-	                throw new protocol_js_1$j.NoSuchHandleException('Handle was not found.');
-	            }
-	            throw error;
-	        }
-	        if (cdpCallFunctionResult.exceptionDetails) {
-	            return await this.#getExceptionResult(cdpCallFunctionResult.exceptionDetails, 1, resultOwnership);
-	        }
-	        return {
-	            type: 'success',
-	            result: this.cdpToBidiValue(cdpCallFunctionResult, resultOwnership),
-	            realm: this.realmId,
-	        };
-	    }
-	    async deserializeForCdp(localValue) {
-	        if ('handle' in localValue && localValue.handle) {
-	            return { objectId: localValue.handle };
-	            // We tried to find a handle value but failed
-	            // This allows us to have exhaustive switch on `localValue.type`
-	        }
-	        else if ('handle' in localValue || 'sharedId' in localValue) {
-	            throw new protocol_js_1$j.NoSuchHandleException('Handle was not found.');
-	        }
-	        switch (localValue.type) {
-	            case 'undefined':
-	                return { unserializableValue: 'undefined' };
-	            case 'null':
-	                return { unserializableValue: 'null' };
-	            case 'string':
-	                return { value: localValue.value };
-	            case 'number':
-	                if (localValue.value === 'NaN') {
-	                    return { unserializableValue: 'NaN' };
-	                }
-	                else if (localValue.value === '-0') {
-	                    return { unserializableValue: '-0' };
-	                }
-	                else if (localValue.value === 'Infinity') {
-	                    return { unserializableValue: 'Infinity' };
-	                }
-	                else if (localValue.value === '-Infinity') {
-	                    return { unserializableValue: '-Infinity' };
-	                }
-	                return {
-	                    value: localValue.value,
-	                };
-	            case 'boolean':
-	                return { value: Boolean(localValue.value) };
-	            case 'bigint':
-	                return {
-	                    unserializableValue: `BigInt(${JSON.stringify(localValue.value)})`,
-	                };
-	            case 'date':
-	                return {
-	                    unserializableValue: `new Date(Date.parse(${JSON.stringify(localValue.value)}))`,
-	                };
-	            case 'regexp':
-	                return {
-	                    unserializableValue: `new RegExp(${JSON.stringify(localValue.value.pattern)}, ${JSON.stringify(localValue.value.flags)})`,
-	                };
-	            case 'map': {
-	                // TODO: If none of the nested keys and values has a remote
-	                // reference, serialize to `unserializableValue` without CDP roundtrip.
-	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
-	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                    functionDeclaration: String((...args) => {
-	                        const result = new Map();
-	                        for (let i = 0; i < args.length; i += 2) {
-	                            result.set(args[i], args[i + 1]);
-	                        }
-	                        return result;
-	                    }),
-	                    awaitPromise: false,
-	                    arguments: keyValueArray,
-	                    returnByValue: false,
-	                    executionContextId: this.executionContextId,
-	                });
-	                // TODO(#375): Release `result.objectId` after using.
-	                return { objectId: result.objectId };
-	            }
-	            case 'object': {
-	                // TODO: If none of the nested keys and values has a remote
-	                // reference, serialize to `unserializableValue` without CDP roundtrip.
-	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
-	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                    functionDeclaration: String((...args) => {
-	                        const result = {};
-	                        for (let i = 0; i < args.length; i += 2) {
-	                            // Key should be either `string`, `number`, or `symbol`.
-	                            const key = args[i];
-	                            result[key] = args[i + 1];
-	                        }
-	                        return result;
-	                    }),
-	                    awaitPromise: false,
-	                    arguments: keyValueArray,
-	                    returnByValue: false,
-	                    executionContextId: this.executionContextId,
-	                });
-	                // TODO(#375): Release `result.objectId` after using.
-	                return { objectId: result.objectId };
-	            }
-	            case 'array': {
-	                // TODO: If none of the nested items has a remote reference,
-	                // serialize to `unserializableValue` without CDP roundtrip.
-	                const args = await this.#flattenValueList(localValue.value);
-	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                    functionDeclaration: String((...args) => args),
-	                    awaitPromise: false,
-	                    arguments: args,
-	                    returnByValue: false,
-	                    executionContextId: this.executionContextId,
-	                });
-	                // TODO(#375): Release `result.objectId` after using.
-	                return { objectId: result.objectId };
-	            }
-	            case 'set': {
-	                // TODO: if none of the nested items has a remote reference,
-	                // serialize to `unserializableValue` without CDP roundtrip.
-	                const args = await this.#flattenValueList(localValue.value);
-	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-	                    functionDeclaration: String((...args) => new Set(args)),
-	                    awaitPromise: false,
-	                    arguments: args,
-	                    returnByValue: false,
-	                    executionContextId: this.executionContextId,
-	                });
-	                // TODO(#375): Release `result.objectId` after using.
-	                return { objectId: result.objectId };
-	            }
-	            case 'channel': {
-	                const channelProxy = new ChannelProxy_js_1$1.ChannelProxy(localValue.value, this.#logger);
-	                const channelProxySendMessageHandle = await channelProxy.init(this, this.#eventManager);
-	                return { objectId: channelProxySendMessageHandle };
-	            }
-	            // TODO(#375): Dispose of nested objects.
-	        }
-	        // Intentionally outside to handle unknown types
-	        throw new Error(`Value ${JSON.stringify(localValue)} is not deserializable.`);
-	    }
-	    async #getExceptionResult(exceptionDetails, lineOffset, resultOwnership) {
-	        return {
-	            exceptionDetails: await this.#serializeCdpExceptionDetails(exceptionDetails, lineOffset, resultOwnership),
-	            realm: this.realmId,
-	            type: 'exception',
-	        };
-	    }
-	    static #getSerializationOptions(serialization, serializationOptions) {
-	        return {
-	            serialization,
-	            additionalParameters: Realm.#getAdditionalSerializationParameters(serializationOptions),
-	            ...Realm.#getMaxObjectDepth(serializationOptions),
-	        };
-	    }
-	    static #getAdditionalSerializationParameters(serializationOptions) {
-	        const additionalParameters = {};
-	        if (serializationOptions.maxDomDepth !== undefined) {
-	            additionalParameters['maxNodeDepth'] =
-	                serializationOptions.maxDomDepth === null
-	                    ? 1000
-	                    : serializationOptions.maxDomDepth;
-	        }
-	        if (serializationOptions.includeShadowTree !== undefined) {
-	            additionalParameters['includeShadowTree'] =
-	                serializationOptions.includeShadowTree;
-	        }
-	        return additionalParameters;
-	    }
-	    static #getMaxObjectDepth(serializationOptions) {
-	        return serializationOptions.maxObjectDepth === undefined ||
-	            serializationOptions.maxObjectDepth === null
-	            ? {}
-	            : { maxDepth: serializationOptions.maxObjectDepth };
-	    }
-	    async #releaseObject(handle) {
-	        try {
-	            await this.cdpClient.sendCommand('Runtime.releaseObject', {
-	                objectId: handle,
-	            });
-	        }
-	        catch (error) {
-	            // Heuristic to determine if the problem is in the unknown handler.
-	            // Ignore the error if so.
-	            if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
-	                error.message === 'Invalid remote object id')) {
-	                throw error;
-	            }
-	        }
-	    }
-	    async disown(handle) {
-	        // Disowning an object from different realm does nothing.
-	        if (this.#realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
-	            return;
-	        }
-	        await this.#releaseObject(handle);
-	        this.#realmStorage.knownHandlesToRealmMap.delete(handle);
-	    }
-	    dispose() {
-	        this.#registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$j.ChromiumBidi.Script.EventNames.RealmDestroyed,
-	            params: {
-	                realm: this.realmId,
-	            },
-	        });
-	    }
-	}
-	Realm$1.Realm = Realm;
-
-	/**
-	 * Copyright 2024 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(WorkerRealm$1, "__esModule", { value: true });
-	WorkerRealm$1.WorkerRealm = void 0;
-	const Realm_js_1$1 = Realm$1;
-	class WorkerRealm extends Realm_js_1$1.Realm {
-	    #realmType;
-	    #ownerRealms;
-	    constructor(cdpClient, eventManager, executionContextId, logger, origin, ownerRealms, realmId, realmStorage, realmType) {
-	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
-	        this.#ownerRealms = ownerRealms;
-	        this.#realmType = realmType;
-	        this.initialize();
-	    }
-	    get associatedBrowsingContexts() {
-	        return this.#ownerRealms.flatMap((realm) => realm.associatedBrowsingContexts);
-	    }
-	    get realmType() {
-	        return this.#realmType;
-	    }
-	    get source() {
-	        return {
-	            realm: this.realmId,
-	            // This is a hack to make Puppeteer able to track workers.
-	            // TODO: remove after Puppeteer tracks workers by owners and use the base version.
-	            context: this.associatedBrowsingContexts[0]?.id,
-	        };
-	    }
-	    get realmInfo() {
-	        const owners = this.#ownerRealms.map((realm) => realm.realmId);
-	        const { realmType } = this;
-	        switch (realmType) {
-	            case 'dedicated-worker': {
-	                const owner = owners[0];
-	                if (owner === undefined || owners.length !== 1) {
-	                    throw new Error('Dedicated worker must have exactly one owner');
-	                }
-	                return {
-	                    ...this.baseInfo,
-	                    type: realmType,
-	                    owners: [owner],
-	                };
-	            }
-	            case 'service-worker':
-	            case 'shared-worker': {
-	                return {
-	                    ...this.baseInfo,
-	                    type: realmType,
-	                };
-	            }
-	        }
-	    }
-	}
-	WorkerRealm$1.WorkerRealm = WorkerRealm;
-
-	var BrowsingContextImpl$1 = {};
-
-	var assert$1 = {};
-
-	Object.defineProperty(assert$1, "__esModule", { value: true });
-	assert$1.assert = void 0;
-	/**
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	function assert(predicate, message) {
-	    if (!predicate) {
-	        throw new Error(message ?? 'Internal assertion failed.');
-	    }
-	}
-	assert$1.assert = assert;
-
-	var Deferred$1 = {};
-
-	/**
-	 * Copyright 2022 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(Deferred$1, "__esModule", { value: true });
-	Deferred$1.Deferred = void 0;
-	class Deferred {
-	    #isFinished = false;
-	    #promise;
-	    #resolve;
-	    #reject;
-	    get isFinished() {
-	        return this.#isFinished;
-	    }
-	    constructor() {
-	        this.#promise = new Promise((resolve, reject) => {
-	            this.#resolve = resolve;
-	            this.#reject = reject;
-	        });
-	        // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
-	        // and `catch` will be rejected anyway.
-	        this.#promise.catch((_error) => {
-	            // Intentionally empty.
-	        });
-	    }
-	    then(onFulfilled, onRejected) {
-	        return this.#promise.then(onFulfilled, onRejected);
-	    }
-	    catch(onRejected) {
-	        return this.#promise.catch(onRejected);
-	    }
-	    resolve(value) {
-	        if (!this.#isFinished) {
-	            this.#isFinished = true;
-	            this.#resolve(value);
-	        }
-	    }
-	    reject(reason) {
-	        if (!this.#isFinished) {
-	            this.#isFinished = true;
-	            this.#reject(reason);
-	        }
-	    }
-	    finally(onFinally) {
-	        return this.#promise.finally(onFinally);
-	    }
-	    [Symbol.toStringTag] = 'Promise';
-	}
-	Deferred$1.Deferred = Deferred;
-
-	var unitConversions = {};
-
-	/**
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(unitConversions, "__esModule", { value: true });
-	unitConversions.inchesFromCm = void 0;
-	/** @return Given an input in cm, convert it to inches. */
-	function inchesFromCm(cm) {
-	    return cm / 2.54;
-	}
-	unitConversions.inchesFromCm = inchesFromCm;
-
-	var WindowRealm$1 = {};
-
-	var SharedId = {};
-
-	/*
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(SharedId, "__esModule", { value: true });
-	SharedId.parseSharedId = SharedId.getSharedId = void 0;
-	const SHARED_ID_DIVIDER = '_element_';
-	function getSharedId(frameId, documentId, backendNodeId) {
-	    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
-	}
-	SharedId.getSharedId = getSharedId;
-	function parseLegacySharedId(sharedId) {
-	    const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
-	    if (!match) {
-	        // SharedId is incorrectly formatted.
-	        return null;
-	    }
-	    const documentId = match[1];
-	    const elementId = match[2];
-	    if (documentId === undefined || elementId === undefined) {
-	        return null;
-	    }
-	    const backendNodeId = parseInt(elementId ?? '');
-	    if (isNaN(backendNodeId)) {
-	        return null;
-	    }
-	    return {
-	        documentId,
-	        backendNodeId,
-	    };
-	}
-	function parseSharedId(sharedId) {
-	    // TODO: remove legacy check once ChromeDriver provides sharedId in the new format.
-	    const legacyFormattedSharedId = parseLegacySharedId(sharedId);
-	    if (legacyFormattedSharedId !== null) {
-	        return { ...legacyFormattedSharedId, frameId: undefined };
-	    }
-	    const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
-	    if (!match) {
-	        // SharedId is incorrectly formatted.
-	        return null;
-	    }
-	    const frameId = match[1];
-	    const documentId = match[2];
-	    const elementId = match[3];
-	    if (frameId === undefined ||
-	        documentId === undefined ||
-	        elementId === undefined) {
-	        return null;
-	    }
-	    const backendNodeId = parseInt(elementId ?? '');
-	    if (isNaN(backendNodeId)) {
-	        return null;
-	    }
-	    return {
-	        frameId,
-	        documentId,
-	        backendNodeId,
-	    };
-	}
-	SharedId.parseSharedId = parseSharedId;
-
-	/**
-	 * Copyright 2024 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(WindowRealm$1, "__esModule", { value: true });
-	WindowRealm$1.WindowRealm = void 0;
-	const protocol_js_1$i = protocol;
-	const Realm_js_1 = Realm$1;
-	const SharedId_js_1 = SharedId;
-	class WindowRealm extends Realm_js_1.Realm {
-	    #browsingContextId;
-	    #browsingContextStorage;
-	    sandbox;
-	    constructor(browsingContextId, browsingContextStorage, cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage, sandbox) {
-	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
-	        this.#browsingContextId = browsingContextId;
-	        this.#browsingContextStorage = browsingContextStorage;
-	        this.sandbox = sandbox;
-	        this.initialize();
-	    }
-	    #getBrowsingContextId(navigableId) {
-	        const maybeBrowsingContext = this.#browsingContextStorage
-	            .getAllContexts()
-	            .find((context) => context.navigableId === navigableId);
-	        return maybeBrowsingContext?.id ?? 'UNKNOWN';
-	    }
-	    get browsingContext() {
-	        return this.#browsingContextStorage.getContext(this.#browsingContextId);
-	    }
-	    get associatedBrowsingContexts() {
-	        return [this.browsingContext];
-	    }
-	    get realmType() {
-	        return 'window';
-	    }
-	    get realmInfo() {
-	        return {
-	            ...this.baseInfo,
-	            type: this.realmType,
-	            context: this.#browsingContextId,
-	            sandbox: this.sandbox,
-	        };
-	    }
-	    get source() {
-	        return {
-	            realm: this.realmId,
-	            context: this.browsingContext.id,
-	        };
-	    }
-	    serializeForBiDi(deepSerializedValue, internalIdMap) {
-	        const bidiValue = deepSerializedValue.value;
-	        if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
-	            if (Object.hasOwn(bidiValue, 'backendNodeId')) {
-	                let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
-	                if (Object.hasOwn(bidiValue, 'loaderId')) {
-	                    // `loaderId` should be always there after ~2024-03-05, when
-	                    // https://crrev.com/c/5116240 reaches stable.
-	                    // TODO: remove the check after the date.
-	                    navigableId = bidiValue.loaderId;
-	                    delete bidiValue['loaderId'];
-	                }
-	                deepSerializedValue.sharedId =
-	                    (0, SharedId_js_1.getSharedId)(this.#getBrowsingContextId(navigableId), navigableId, bidiValue.backendNodeId);
-	                delete bidiValue['backendNodeId'];
-	            }
-	            if (Object.hasOwn(bidiValue, 'children')) {
-	                for (const i in bidiValue.children) {
-	                    bidiValue.children[i] = this.serializeForBiDi(bidiValue.children[i], internalIdMap);
-	                }
-	            }
-	            if (Object.hasOwn(bidiValue, 'shadowRoot') &&
-	                bidiValue.shadowRoot !== null) {
-	                bidiValue.shadowRoot = this.serializeForBiDi(bidiValue.shadowRoot, internalIdMap);
-	            }
-	            // `namespaceURI` can be is either `null` or non-empty string.
-	            if (bidiValue.namespaceURI === '') {
-	                bidiValue.namespaceURI = null;
-	            }
-	        }
-	        return super.serializeForBiDi(deepSerializedValue, internalIdMap);
-	    }
-	    async deserializeForCdp(localValue) {
-	        if ('sharedId' in localValue && localValue.sharedId) {
-	            const parsedSharedId = (0, SharedId_js_1.parseSharedId)(localValue.sharedId);
-	            if (parsedSharedId === null) {
-	                throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
-	            }
-	            const { documentId, backendNodeId } = parsedSharedId;
-	            // TODO: add proper validation if the element is accessible from the current realm.
-	            if (this.browsingContext.navigableId !== documentId) {
-	                throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`);
-	            }
-	            try {
-	                const { object } = await this.cdpClient.sendCommand('DOM.resolveNode', {
-	                    backendNodeId,
-	                    executionContextId: this.executionContextId,
-	                });
-	                // TODO(#375): Release `obj.object.objectId` after using.
-	                return { objectId: object.objectId };
-	            }
-	            catch (error) {
-	                // Heuristic to detect "no such node" exception. Based on the  specific
-	                // CDP implementation.
-	                if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
-	                    error.message === 'No node with given id found') {
-	                    throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
-	                }
-	                throw new protocol_js_1$i.UnknownErrorException(error.message, error.stack);
-	            }
-	        }
-	        return await super.deserializeForCdp(localValue);
-	    }
-	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation) {
-	        await this.#browsingContextStorage
-	            .getContext(this.#browsingContextId)
-	            .targetUnblockedOrThrow();
-	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation);
-	    }
-	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation) {
-	        await this.#browsingContextStorage
-	            .getContext(this.#browsingContextId)
-	            .targetUnblockedOrThrow();
-	        return await super.callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation);
-	    }
-	}
-	WindowRealm$1.WindowRealm = WindowRealm;
-
-	/**
-	 * Copyright 2022 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(BrowsingContextImpl$1, "__esModule", { value: true });
-	BrowsingContextImpl$1.serializeOrigin = BrowsingContextImpl$1.BrowsingContextImpl = void 0;
-	const chromium_bidi_js_1$1 = chromiumBidi;
-	const protocol_js_1$h = protocol;
-	const assert_js_1$6 = assert$1;
-	const Deferred_js_1$2 = Deferred$1;
-	const log_js_1$a = log$1;
-	const unitConversions_js_1 = unitConversions;
-	const WindowRealm_js_1$1 = WindowRealm$1;
-	class BrowsingContextImpl {
-	    static LOGGER_PREFIX = `${log_js_1$a.LogType.debug}:browsingContext`;
-	    /** The ID of this browsing context. */
-	    #id;
-	    userContext;
-	    /**
-	     * The ID of the parent browsing context.
-	     * If null, this is a top-level context.
-	     */
-	    #parentId;
-	    /** Direct children browsing contexts. */
-	    #children = new Set();
-	    #browsingContextStorage;
-	    #lifecycle = {
-	        DOMContentLoaded: new Deferred_js_1$2.Deferred(),
-	        load: new Deferred_js_1$2.Deferred(),
-	    };
-	    #navigation = {
-	        withinDocument: new Deferred_js_1$2.Deferred(),
-	    };
-	    #url = 'about:blank';
-	    #eventManager;
-	    #realmStorage;
-	    #loaderId;
-	    #cdpTarget;
-	    #maybeDefaultRealm;
-	    #logger;
-	    constructor(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger) {
-	        this.#cdpTarget = cdpTarget;
-	        this.#realmStorage = realmStorage;
-	        this.#id = id;
-	        this.#parentId = parentId;
-	        this.userContext = userContext;
-	        this.#eventManager = eventManager;
-	        this.#browsingContextStorage = browsingContextStorage;
-	        this.#logger = logger;
-	    }
-	    static create(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger) {
-	        const context = new BrowsingContextImpl(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger);
-	        context.#initListeners();
-	        browsingContextStorage.addContext(context);
-	        if (!context.isTopLevelContext()) {
-	            context.parent.addChild(context.id);
-	        }
-	        eventManager.registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-	            params: context.serializeToBidiValue(),
-	        }, context.id);
-	        return context;
-	    }
-	    static getTimestamp() {
-	        // `timestamp` from the event is MonotonicTime, not real time, so
-	        // the best Mapper can do is to set the timestamp to the epoch time
-	        // of the event arrived.
-	        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
-	        return new Date().getTime();
-	    }
-	    /**
-	     * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
-	     */
-	    get navigableId() {
-	        return this.#loaderId;
-	    }
-	    dispose() {
-	        this.#deleteAllChildren();
-	        this.#realmStorage.deleteRealms({
-	            browsingContextId: this.id,
-	        });
-	        // Remove context from the parent.
-	        if (!this.isTopLevelContext()) {
-	            this.parent.#children.delete(this.id);
-	        }
-	        // Fail all ongoing navigations.
-	        this.#failLifecycleIfNotFinished();
-	        this.#eventManager.registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-	            params: this.serializeToBidiValue(),
-	        }, this.id);
-	        this.#browsingContextStorage.deleteContextById(this.id);
-	    }
-	    /** Returns the ID of this context. */
-	    get id() {
-	        return this.#id;
-	    }
-	    /** Returns the parent context ID. */
-	    get parentId() {
-	        return this.#parentId;
-	    }
-	    /** Returns the parent context. */
-	    get parent() {
-	        if (this.parentId === null) {
-	            return null;
-	        }
-	        return this.#browsingContextStorage.getContext(this.parentId);
-	    }
-	    /** Returns all direct children contexts. */
-	    get directChildren() {
-	        return [...this.#children].map((id) => this.#browsingContextStorage.getContext(id));
-	    }
-	    /** Returns all children contexts, flattened. */
-	    get allChildren() {
-	        const children = this.directChildren;
-	        return children.concat(...children.map((child) => child.allChildren));
-	    }
-	    /**
-	     * Returns true if this is a top-level context.
-	     * This is the case whenever the parent context ID is null.
-	     */
-	    isTopLevelContext() {
-	        return this.#parentId === null;
-	    }
-	    get top() {
-	        // eslint-disable-next-line @typescript-eslint/no-this-alias
-	        let topContext = this;
-	        let parent = topContext.parent;
-	        while (parent) {
-	            topContext = parent;
-	            parent = topContext.parent;
-	        }
-	        return topContext;
-	    }
-	    addChild(childId) {
-	        this.#children.add(childId);
-	    }
-	    #deleteAllChildren() {
-	        this.directChildren.map((child) => child.dispose());
-	    }
-	    get #defaultRealm() {
-	        (0, assert_js_1$6.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
-	        return this.#maybeDefaultRealm;
-	    }
-	    get cdpTarget() {
-	        return this.#cdpTarget;
-	    }
-	    updateCdpTarget(cdpTarget) {
-	        this.#cdpTarget = cdpTarget;
-	        this.#initListeners();
-	    }
-	    get url() {
-	        return this.#url;
-	    }
-	    async lifecycleLoaded() {
-	        await this.#lifecycle.load;
-	    }
-	    async targetUnblockedOrThrow() {
-	        const result = await this.#cdpTarget.unblocked;
-	        if (result.kind === 'error') {
-	            throw result.error;
-	        }
-	    }
-	    async getOrCreateSandbox(sandbox) {
-	        if (sandbox === undefined || sandbox === '') {
-	            return this.#defaultRealm;
-	        }
-	        let maybeSandboxes = this.#realmStorage.findRealms({
-	            browsingContextId: this.id,
-	            sandbox,
-	        });
-	        if (maybeSandboxes.length === 0) {
-	            await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
-	                frameId: this.id,
-	                worldName: sandbox,
-	            });
-	            // `Runtime.executionContextCreated` should be emitted by the time the
-	            // previous command is done.
-	            maybeSandboxes = this.#realmStorage.findRealms({
-	                browsingContextId: this.id,
-	                sandbox,
-	            });
-	            (0, assert_js_1$6.assert)(maybeSandboxes.length !== 0);
-	        }
-	        // It's possible for more than one sandbox to be created due to provisional
-	        // frames. In this case, it's always the first one (i.e. the oldest one)
-	        // that is more relevant since the user may have set that one up already
-	        // through evaluation.
-	        return maybeSandboxes[0];
-	    }
-	    serializeToBidiValue(maxDepth = 0, addParentField = true) {
-	        return {
-	            context: this.#id,
-	            url: this.url,
-	            userContext: this.userContext,
-	            children: maxDepth > 0
-	                ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
-	                : null,
-	            ...(addParentField ? { parent: this.#parentId } : {}),
-	        };
-	    }
-	    onTargetInfoChanged(params) {
-	        this.#url = params.targetInfo.url;
-	    }
-	    #initListeners() {
-	        this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
-	            if (this.id !== params.frame.id) {
-	                return;
-	            }
-	            this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-	            // At the point the page is initialized, all the nested iframes from the
-	            // previous page are detached and realms are destroyed.
-	            // Remove children from context.
-	            this.#deleteAllChildren();
-	        });
-	        this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
-	            if (this.id !== params.frameId) {
-	                return;
-	            }
-	            const timestamp = BrowsingContextImpl.getTimestamp();
-	            this.#url = params.url;
-	            this.#navigation.withinDocument.resolve(params);
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-	                params: {
-	                    context: this.id,
-	                    navigation: null,
-	                    timestamp,
-	                    url: this.#url,
-	                },
-	            }, this.id);
-	        });
-	        this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
-	            if (this.id !== params.frameId) {
-	                return;
-	            }
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-	                params: {
-	                    context: this.id,
-	                    navigation: null,
-	                    timestamp: BrowsingContextImpl.getTimestamp(),
-	                    url: '',
-	                },
-	            }, this.id);
-	        });
-	        this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
-	            if (this.id !== params.frameId) {
-	                return;
-	            }
-	            if (params.name === 'init') {
-	                this.#documentChanged(params.loaderId);
-	                return;
-	            }
-	            if (params.name === 'commit') {
-	                this.#loaderId = params.loaderId;
-	                return;
-	            }
-	            // Ignore event from not current navigation.
-	            if (params.loaderId !== this.#loaderId) {
-	                return;
-	            }
-	            const timestamp = BrowsingContextImpl.getTimestamp();
-	            switch (params.name) {
-	                case 'DOMContentLoaded':
-	                    this.#eventManager.registerEvent({
-	                        type: 'event',
-	                        method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-	                        params: {
-	                            context: this.id,
-	                            navigation: this.#loaderId ?? null,
-	                            timestamp,
-	                            url: this.#url,
-	                        },
-	                    }, this.id);
-	                    this.#lifecycle.DOMContentLoaded.resolve(params);
-	                    break;
-	                case 'load':
-	                    this.#eventManager.registerEvent({
-	                        type: 'event',
-	                        method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.Load,
-	                        params: {
-	                            context: this.id,
-	                            navigation: this.#loaderId ?? null,
-	                            timestamp,
-	                            url: this.#url,
-	                        },
-	                    }, this.id);
-	                    this.#lifecycle.load.resolve(params);
-	                    break;
-	            }
-	        });
-	        this.#cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-	            const { auxData, name, uniqueId, id } = params.context;
-	            if (!auxData || auxData.frameId !== this.id) {
-	                return;
-	            }
-	            let origin;
-	            let sandbox;
-	            // Only these execution contexts are supported for now.
-	            switch (auxData.type) {
-	                case 'isolated':
-	                    sandbox = name;
-	                    // Sandbox should have the same origin as the context itself, but in CDP
-	                    // it has an empty one.
-	                    origin = this.#defaultRealm.origin;
-	                    break;
-	                case 'default':
-	                    origin = serializeOrigin(params.context.origin);
-	                    break;
-	                default:
-	                    return;
-	            }
-	            const realm = new WindowRealm_js_1$1.WindowRealm(this.id, this.#browsingContextStorage, this.#cdpTarget.cdpClient, this.#eventManager, id, this.#logger, origin, uniqueId, this.#realmStorage, sandbox);
-	            if (auxData.isDefault) {
-	                this.#maybeDefaultRealm = realm;
-	                // Initialize ChannelProxy listeners for all the channels of all the
-	                // preload scripts related to this BrowsingContext.
-	                // TODO: extend for not default realms by the sandbox name.
-	                void Promise.all(this.#cdpTarget
-	                    .getChannels()
-	                    .map((channel) => channel.startListenerFromWindow(realm, this.#eventManager)));
-	            }
-	        });
-	        this.#cdpTarget.cdpClient.on('Runtime.executionContextDestroyed', (params) => {
-	            this.#realmStorage.deleteRealms({
-	                cdpSessionId: this.#cdpTarget.cdpSessionId,
-	                executionContextId: params.executionContextId,
-	            });
-	        });
-	        this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
-	            this.#realmStorage.deleteRealms({
-	                cdpSessionId: this.#cdpTarget.cdpSessionId,
-	            });
-	        });
-	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
-	            const accepted = params.result;
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
-	                params: {
-	                    context: this.id,
-	                    accepted,
-	                    userText: accepted && params.userInput ? params.userInput : undefined,
-	                },
-	            }, this.id);
-	        });
-	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
-	                params: {
-	                    context: this.id,
-	                    type: params.type,
-	                    message: params.message,
-	                    // Don't set the value if empty string
-	                    defaultValue: params.defaultPrompt || undefined,
-	                },
-	            }, this.id);
-	        });
-	    }
-	    #documentChanged(loaderId) {
-	        // Same document navigation.
-	        if (loaderId === undefined || this.#loaderId === loaderId) {
-	            if (this.#navigation.withinDocument.isFinished) {
-	                this.#navigation.withinDocument =
-	                    new Deferred_js_1$2.Deferred();
-	            }
-	            else {
-	                this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (navigatedWithinDocument)');
-	            }
-	            return;
-	        }
-	        this.#resetLifecycleIfFinished();
-	        this.#loaderId = loaderId;
-	    }
-	    #resetLifecycleIfFinished() {
-	        if (this.#lifecycle.DOMContentLoaded.isFinished) {
-	            this.#lifecycle.DOMContentLoaded =
-	                new Deferred_js_1$2.Deferred();
-	        }
-	        else {
-	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (DOMContentLoaded)');
-	        }
-	        if (this.#lifecycle.load.isFinished) {
-	            this.#lifecycle.load = new Deferred_js_1$2.Deferred();
-	        }
-	        else {
-	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (load)');
-	        }
-	    }
-	    #failLifecycleIfNotFinished() {
-	        if (!this.#lifecycle.DOMContentLoaded.isFinished) {
-	            this.#lifecycle.DOMContentLoaded.reject(new protocol_js_1$h.UnknownErrorException('navigation canceled'));
-	        }
-	        if (!this.#lifecycle.load.isFinished) {
-	            this.#lifecycle.load.reject(new protocol_js_1$h.UnknownErrorException('navigation canceled'));
-	        }
-	    }
-	    async navigate(url, wait) {
-	        try {
-	            new URL(url);
-	        }
-	        catch {
-	            throw new protocol_js_1$h.InvalidArgumentException(`Invalid URL: ${url}`);
-	        }
-	        await this.targetUnblockedOrThrow();
-	        // TODO: handle loading errors.
-	        const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
-	            url,
-	            frameId: this.id,
-	        });
-	        if (cdpNavigateResult.errorText) {
-	            throw new protocol_js_1$h.UnknownErrorException(cdpNavigateResult.errorText);
-	        }
-	        this.#documentChanged(cdpNavigateResult.loaderId);
-	        switch (wait) {
-	            case "none" /* BrowsingContext.ReadinessState.None */:
-	                break;
-	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
-	                // No `loaderId` means same-document navigation.
-	                if (cdpNavigateResult.loaderId === undefined) {
-	                    await this.#navigation.withinDocument;
-	                }
-	                else {
-	                    await this.#lifecycle.DOMContentLoaded;
-	                }
-	                break;
-	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
-	                // No `loaderId` means same-document navigation.
-	                if (cdpNavigateResult.loaderId === undefined) {
-	                    await this.#navigation.withinDocument;
-	                }
-	                else {
-	                    await this.#lifecycle.load;
-	                }
-	                break;
-	        }
-	        return {
-	            navigation: cdpNavigateResult.loaderId ?? null,
-	            // Url can change due to redirect get the latest one.
-	            url: wait === "none" /* BrowsingContext.ReadinessState.None */ ? url : this.#url,
-	        };
-	    }
-	    async reload(ignoreCache, wait) {
-	        await this.targetUnblockedOrThrow();
-	        this.#resetLifecycleIfFinished();
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
-	            ignoreCache,
-	        });
-	        switch (wait) {
-	            case "none" /* BrowsingContext.ReadinessState.None */:
-	                break;
-	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
-	                await this.#lifecycle.DOMContentLoaded;
-	                break;
-	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
-	                await this.#lifecycle.load;
-	                break;
-	        }
-	        return {
-	            navigation: wait === "none" /* BrowsingContext.ReadinessState.None */
-	                ? null
-	                : this.navigableId ?? null,
-	            url: this.url,
-	        };
-	    }
-	    async setViewport(viewport, devicePixelRatio) {
-	        if (viewport === null && devicePixelRatio === null) {
-	            await this.#cdpTarget.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
-	        }
-	        else {
-	            try {
-	                await this.#cdpTarget.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-	                    width: viewport ? viewport.width : 0,
-	                    height: viewport ? viewport.height : 0,
-	                    deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-	                    mobile: false,
-	                    dontSetVisibleSize: true,
-	                });
-	            }
-	            catch (err) {
-	                if (err.message.startsWith(
-	                // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-	                'Width and height values must be positive')) {
-	                    throw new protocol_js_1$h.UnsupportedOperationException('Provided viewport dimensions are not supported');
-	                }
-	                throw err;
-	            }
-	        }
-	    }
-	    async handleUserPrompt(params) {
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-	            accept: params.accept ?? true,
-	            promptText: params.userText,
-	        });
-	    }
-	    async activate() {
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
-	    }
-	    async captureScreenshot(params) {
-	        if (!this.isTopLevelContext()) {
-	            throw new protocol_js_1$h.UnsupportedOperationException(`Non-top-level 'context' (${params.context}) is currently not supported`);
-	        }
-	        const formatParameters = getImageFormatParameters(params);
-	        // XXX: Focus the original tab after the screenshot is taken.
-	        // This is needed because the screenshot gets blocked until the active tab gets focus.
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
-	        let captureBeyondViewport = false;
-	        let script;
-	        params.origin ??= 'viewport';
-	        switch (params.origin) {
-	            case 'document': {
-	                script = String(() => {
-	                    const element = document.documentElement;
-	                    return {
-	                        x: 0,
-	                        y: 0,
-	                        width: element.scrollWidth,
-	                        height: element.scrollHeight,
-	                    };
-	                });
-	                captureBeyondViewport = true;
-	                break;
-	            }
-	            case 'viewport': {
-	                script = String(() => {
-	                    const viewport = window.visualViewport;
-	                    return {
-	                        x: viewport.pageLeft,
-	                        y: viewport.pageTop,
-	                        width: viewport.width,
-	                        height: viewport.height,
-	                    };
-	                });
-	                break;
-	            }
-	        }
-	        const realm = await this.getOrCreateSandbox(undefined);
-	        const originResult = await realm.callFunction(script, false);
-	        (0, assert_js_1$6.assert)(originResult.type === 'success');
-	        const origin = deserializeDOMRect(originResult.result);
-	        (0, assert_js_1$6.assert)(origin);
-	        const rect = params.clip
-	            ? getIntersectionRect(await this.#parseRect(params.clip), origin)
-	            : origin;
-	        if (rect.width === 0 || rect.height === 0) {
-	            throw new protocol_js_1$h.UnableToCaptureScreenException(`Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`);
-	        }
-	        return await this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {
-	            clip: { ...rect, scale: 1.0 },
-	            ...formatParameters,
-	            captureBeyondViewport,
-	        });
-	    }
-	    async print(params) {
-	        const cdpParams = {};
-	        if (params.background !== undefined) {
-	            cdpParams.printBackground = params.background;
-	        }
-	        if (params.margin?.bottom !== undefined) {
-	            cdpParams.marginBottom = (0, unitConversions_js_1.inchesFromCm)(params.margin.bottom);
-	        }
-	        if (params.margin?.left !== undefined) {
-	            cdpParams.marginLeft = (0, unitConversions_js_1.inchesFromCm)(params.margin.left);
-	        }
-	        if (params.margin?.right !== undefined) {
-	            cdpParams.marginRight = (0, unitConversions_js_1.inchesFromCm)(params.margin.right);
-	        }
-	        if (params.margin?.top !== undefined) {
-	            cdpParams.marginTop = (0, unitConversions_js_1.inchesFromCm)(params.margin.top);
-	        }
-	        if (params.orientation !== undefined) {
-	            cdpParams.landscape = params.orientation === 'landscape';
-	        }
-	        if (params.page?.height !== undefined) {
-	            cdpParams.paperHeight = (0, unitConversions_js_1.inchesFromCm)(params.page.height);
-	        }
-	        if (params.page?.width !== undefined) {
-	            cdpParams.paperWidth = (0, unitConversions_js_1.inchesFromCm)(params.page.width);
-	        }
-	        if (params.pageRanges !== undefined) {
-	            for (const range of params.pageRanges) {
-	                if (typeof range === 'number') {
-	                    continue;
-	                }
-	                const rangeParts = range.split('-');
-	                if (rangeParts.length < 1 || rangeParts.length > 2) {
-	                    throw new protocol_js_1$h.InvalidArgumentException(`Invalid page range: ${range} is not a valid integer range.`);
-	                }
-	                if (rangeParts.length === 1) {
-	                    void parseInteger(rangeParts[0] ?? '');
-	                    continue;
-	                }
-	                let lowerBound;
-	                let upperBound;
-	                const [rangeLowerPart = '', rangeUpperPart = ''] = rangeParts;
-	                if (rangeLowerPart === '') {
-	                    lowerBound = 1;
-	                }
-	                else {
-	                    lowerBound = parseInteger(rangeLowerPart);
-	                }
-	                if (rangeUpperPart === '') {
-	                    upperBound = Number.MAX_SAFE_INTEGER;
-	                }
-	                else {
-	                    upperBound = parseInteger(rangeUpperPart);
-	                }
-	                if (lowerBound > upperBound) {
-	                    throw new protocol_js_1$h.InvalidArgumentException(`Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`);
-	                }
-	            }
-	            cdpParams.pageRanges = params.pageRanges.join(',');
-	        }
-	        if (params.scale !== undefined) {
-	            cdpParams.scale = params.scale;
-	        }
-	        if (params.shrinkToFit !== undefined) {
-	            cdpParams.preferCSSPageSize = !params.shrinkToFit;
-	        }
-	        try {
-	            const result = await this.#cdpTarget.cdpClient.sendCommand('Page.printToPDF', cdpParams);
-	            return {
-	                data: result.data,
-	            };
-	        }
-	        catch (error) {
-	            // Effectively zero dimensions.
-	            if (error.message ===
-	                'invalid print parameters: content area is empty') {
-	                throw new protocol_js_1$h.UnsupportedOperationException(error.message);
-	            }
-	            throw error;
-	        }
-	    }
-	    /**
-	     * See
-	     * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
-	     */
-	    async #parseRect(clip) {
-	        switch (clip.type) {
-	            case 'box':
-	                return { x: clip.x, y: clip.y, width: clip.width, height: clip.height };
-	            case 'element': {
-	                // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
-	                const sandbox = await this.getOrCreateSandbox(undefined);
-	                const result = await sandbox.callFunction(String((element) => {
-	                    return element instanceof Element;
-	                }), false, { type: 'undefined' }, [clip.element]);
-	                if (result.type === 'exception') {
-	                    throw new protocol_js_1$h.NoSuchElementException(`Element '${clip.element.sharedId}' was not found`);
-	                }
-	                (0, assert_js_1$6.assert)(result.result.type === 'boolean');
-	                if (!result.result.value) {
-	                    throw new protocol_js_1$h.NoSuchElementException(`Node '${clip.element.sharedId}' is not an Element`);
-	                }
-	                {
-	                    const result = await sandbox.callFunction(String((element) => {
-	                        const rect = element.getBoundingClientRect();
-	                        return {
-	                            x: rect.x,
-	                            y: rect.y,
-	                            height: rect.height,
-	                            width: rect.width,
-	                        };
-	                    }), false, { type: 'undefined' }, [clip.element]);
-	                    (0, assert_js_1$6.assert)(result.type === 'success');
-	                    const rect = deserializeDOMRect(result.result);
-	                    if (!rect) {
-	                        throw new protocol_js_1$h.UnableToCaptureScreenException(`Could not get bounding box for Element '${clip.element.sharedId}'`);
-	                    }
-	                    return rect;
-	                }
-	            }
-	        }
-	    }
-	    async close() {
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.close');
-	    }
-	    async traverseHistory(delta) {
-	        if (delta === 0) {
-	            return;
-	        }
-	        const history = await this.#cdpTarget.cdpClient.sendCommand('Page.getNavigationHistory');
-	        const entry = history.entries[history.currentIndex + delta];
-	        if (!entry) {
-	            throw new protocol_js_1$h.NoSuchHistoryEntryException(`No history entry at delta ${delta}`);
-	        }
-	        await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
-	            entryId: entry.id,
-	        });
-	    }
-	    async toggleModulesIfNeeded() {
-	        const enableNetwork = this.#eventManager.subscriptionManager.isSubscribedTo(chromium_bidi_js_1$1.BiDiModule.Network, this.id);
-	        await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
-	    }
-	    async locateNodes(params) {
-	        // TODO: create a dedicated sandbox instead of `#defaultRealm`.
-	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
-	    }
-	    #getLocatorDelegate(locator, maxNodeCount, startNodes) {
-	        switch (locator.type) {
-	            case 'css':
-	                return {
-	                    functionDeclaration: String((cssSelector, maxNodeCount, ...startNodes) => {
-	                        const locateNodesUsingCss = (element) => {
-	                            if (!(element instanceof HTMLElement)) {
-	                                throw new Error('startNodes in css selector should be HTMLElement');
-	                            }
-	                            return [...element.querySelectorAll(cssSelector)];
-	                        };
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
-	                        const returnedNodes = startNodes
-	                            .map((startNode) => 
-	                        // TODO: stop search early if `maxNodeCount` is reached.
-	                        locateNodesUsingCss(startNode))
-	                            .flat(1);
-	                        return maxNodeCount === 0
-	                            ? returnedNodes
-	                            : returnedNodes.slice(0, maxNodeCount);
-	                    }),
-	                    argumentsLocalValues: [
-	                        // `cssSelector`
-	                        { type: 'string', value: locator.value },
-	                        // `maxNodeCount` with `0` means no limit.
-	                        { type: 'number', value: maxNodeCount ?? 0 },
-	                        // `startNodes`
-	                        ...startNodes,
-	                    ],
-	                };
-	            case 'xpath':
-	                return {
-	                    functionDeclaration: String((xPathSelector, maxNodeCount, ...startNodes) => {
-	                        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
-	                        const evaluator = new XPathEvaluator();
-	                        const expression = evaluator.createExpression(xPathSelector);
-	                        const locateNodesUsingXpath = (element) => {
-	                            const xPathResult = expression.evaluate(element, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-	                            const returnedNodes = [];
-	                            for (let i = 0; i < xPathResult.snapshotLength; i++) {
-	                                returnedNodes.push(xPathResult.snapshotItem(i));
-	                            }
-	                            return returnedNodes;
-	                        };
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
-	                        const returnedNodes = startNodes
-	                            .map((startNode) => 
-	                        // TODO: stop search early if `maxNodeCount` is reached.
-	                        locateNodesUsingXpath(startNode))
-	                            .flat(1);
-	                        return maxNodeCount === 0
-	                            ? returnedNodes
-	                            : returnedNodes.slice(0, maxNodeCount);
-	                    }),
-	                    argumentsLocalValues: [
-	                        // `xPathSelector`
-	                        { type: 'string', value: locator.value },
-	                        // `maxNodeCount` with `0` means no limit.
-	                        { type: 'number', value: maxNodeCount ?? 0 },
-	                        // `startNodes`
-	                        ...startNodes,
-	                    ],
-	                };
-	            case 'innerText':
-	                // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
-	                if (locator.value === '') {
-	                    throw new protocol_js_1$h.InvalidSelectorException('innerText locator cannot be empty');
-	                }
-	                return {
-	                    functionDeclaration: String((innerTextSelector, fullMatch, ignoreCase, maxNodeCount, maxDepth, ...startNodes) => {
-	                        const searchText = ignoreCase
-	                            ? innerTextSelector.toUpperCase()
-	                            : innerTextSelector;
-	                        const locateNodesUsingInnerText = (element, currentMaxDepth) => {
-	                            const returnedNodes = [];
-	                            const nodeInnerText = ignoreCase
-	                                ? element.innerText?.toUpperCase()
-	                                : element.innerText;
-	                            if (!nodeInnerText.includes(searchText)) {
-	                                return [];
-	                            }
-	                            const childNodes = [];
-	                            for (const child of element.children) {
-	                                if (child instanceof HTMLElement) {
-	                                    childNodes.push(child);
-	                                }
-	                            }
-	                            if (childNodes.length === 0) {
-	                                if (fullMatch && nodeInnerText === searchText) {
-	                                    returnedNodes.push(element);
-	                                }
-	                                else {
-	                                    if (!fullMatch) {
-	                                        // Note: `nodeInnerText.includes(searchText)` is already checked
-	                                        returnedNodes.push(element);
-	                                    }
-	                                }
-	                            }
-	                            else {
-	                                const childNodeMatches = 
-	                                // Don't search deeper if `maxDepth` is reached.
-	                                currentMaxDepth === 0
-	                                    ? []
-	                                    : childNodes
-	                                        .map((child) => locateNodesUsingInnerText(child, currentMaxDepth - 1))
-	                                        .flat(1);
-	                                if (childNodeMatches.length === 0) {
-	                                    // Note: `nodeInnerText.includes(searchText)` is already checked
-	                                    if (!fullMatch || nodeInnerText === searchText) {
-	                                        returnedNodes.push(element);
-	                                    }
-	                                }
-	                                else {
-	                                    returnedNodes.push(...childNodeMatches);
-	                                }
-	                            }
-	                            // TODO: stop search early if `maxNodeCount` is reached.
-	                            return returnedNodes;
-	                        };
-	                        // TODO: add maxDepth.
-	                        // TODO: stop search early if `maxNodeCount` is reached.
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
-	                        const returnedNodes = startNodes
-	                            .map((startNode) => 
-	                        // TODO: stop search early if `maxNodeCount` is reached.
-	                        locateNodesUsingInnerText(startNode, maxDepth))
-	                            .flat(1);
-	                        return maxNodeCount === 0
-	                            ? returnedNodes
-	                            : returnedNodes.slice(0, maxNodeCount);
-	                    }),
-	                    argumentsLocalValues: [
-	                        // `innerTextSelector`
-	                        { type: 'string', value: locator.value },
-	                        // `fullMatch` with default `true`.
-	                        { type: 'boolean', value: locator.matchType !== 'partial' },
-	                        // `ignoreCase` with default `false`.
-	                        { type: 'boolean', value: locator.ignoreCase === true },
-	                        // `maxNodeCount` with `0` means no limit.
-	                        { type: 'number', value: maxNodeCount ?? 0 },
-	                        // `maxDepth` with default `1000` (same as default full serialization depth).
-	                        { type: 'number', value: locator.maxDepth ?? 1000 },
-	                        // `startNodes`
-	                        ...startNodes,
-	                    ],
-	                };
-	        }
-	    }
-	    async #locateNodesByLocator(realm, locator, startNodes, maxNodeCount, serializationOptions) {
-	        const locatorDelegate = this.#getLocatorDelegate(locator, maxNodeCount, startNodes);
-	        serializationOptions = {
-	            ...serializationOptions,
-	            // The returned object is an array of nodes, so no need in deeper JS serialization.
-	            maxObjectDepth: 1,
-	        };
-	        const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, false, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, "none" /* Script.ResultOwnership.None */, serializationOptions);
-	        if (locatorResult.type !== 'success') {
-	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
-	            // Heuristic to detect invalid selector for different types of selectors.
-	            if (
-	            // CSS selector.
-	            locatorResult.exceptionDetails.text?.endsWith('is not a valid selector.') ||
-	                // XPath selector.
-	                locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
-	                throw new protocol_js_1$h.InvalidSelectorException(`Not valid selector ${locator.value}`);
-	            }
-	            // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
-	            if (locatorResult.exceptionDetails.text ===
-	                'Error: startNodes in css selector should be HTMLElement') {
-	                throw new protocol_js_1$h.InvalidArgumentException(`startNodes in css selector should be HTMLElement`);
-	            }
-	            throw new protocol_js_1$h.UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
-	        }
-	        if (locatorResult.result.type !== 'array') {
-	            throw new protocol_js_1$h.UnknownErrorException(`Unexpected selector script result type: ${locatorResult.result.type}`);
-	        }
-	        // Check there are no non-node elements in the result.
-	        const nodes = locatorResult.result.value.map((value) => {
-	            if (value.type !== 'node') {
-	                throw new protocol_js_1$h.UnknownErrorException(`Unexpected selector script result element: ${value.type}`);
-	            }
-	            return value;
-	        });
-	        return { nodes };
-	    }
-	}
-	BrowsingContextImpl$1.BrowsingContextImpl = BrowsingContextImpl;
-	function serializeOrigin(origin) {
-	    // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
-	    if (['://', ''].includes(origin)) {
-	        origin = 'null';
-	    }
-	    return origin;
-	}
-	BrowsingContextImpl$1.serializeOrigin = serializeOrigin;
-	function getImageFormatParameters(params) {
-	    const { quality, type } = params.format ?? {
-	        type: 'image/png',
-	    };
-	    switch (type) {
-	        case 'image/png': {
-	            return { format: 'png' };
-	        }
-	        case 'image/jpeg': {
-	            return {
-	                format: 'jpeg',
-	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
-	            };
-	        }
-	        case 'image/webp': {
-	            return {
-	                format: 'webp',
-	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
-	            };
-	        }
-	    }
-	    throw new protocol_js_1$h.InvalidArgumentException(`Image format '${type}' is not a supported format`);
-	}
-	function deserializeDOMRect(result) {
-	    if (result.type !== 'object' || result.value === undefined) {
-	        return;
-	    }
-	    const x = result.value.find(([key]) => {
-	        return key === 'x';
-	    })?.[1];
-	    const y = result.value.find(([key]) => {
-	        return key === 'y';
-	    })?.[1];
-	    const height = result.value.find(([key]) => {
-	        return key === 'height';
-	    })?.[1];
-	    const width = result.value.find(([key]) => {
-	        return key === 'width';
-	    })?.[1];
-	    if (x?.type !== 'number' ||
-	        y?.type !== 'number' ||
-	        height?.type !== 'number' ||
-	        width?.type !== 'number') {
-	        return;
-	    }
-	    return {
-	        x: x.value,
-	        y: y.value,
-	        width: width.value,
-	        height: height.value,
-	    };
-	}
-	/** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
-	function normalizeRect(box) {
-	    return {
-	        ...(box.width < 0
-	            ? {
-	                x: box.x + box.width,
-	                width: -box.width,
-	            }
-	            : {
-	                x: box.x,
-	                width: box.width,
-	            }),
-	        ...(box.height < 0
-	            ? {
-	                y: box.y + box.height,
-	                height: -box.height,
-	            }
-	            : {
-	                y: box.y,
-	                height: box.height,
-	            }),
-	    };
-	}
-	/** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
-	function getIntersectionRect(first, second) {
-	    first = normalizeRect(first);
-	    second = normalizeRect(second);
-	    const x = Math.max(first.x, second.x);
-	    const y = Math.max(first.y, second.y);
-	    return {
-	        x,
-	        y,
-	        width: Math.max(Math.min(first.x + first.width, second.x + second.width) - x, 0),
-	        height: Math.max(Math.min(first.y + first.height, second.y + second.height) - y, 0),
-	    };
-	}
-	function parseInteger(value) {
-	    value = value.trim();
-	    if (!/^[0-9]+$/.test(value)) {
-	        throw new protocol_js_1$h.InvalidArgumentException(`Invalid integer: ${value}`);
-	    }
-	    return parseInt(value);
-	}
-
-	var CdpTarget$1 = {};
-
-	var LogManager$1 = {};
-
-	var logHelper = {};
-
-	/**
-	 * Copyright 2022 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(logHelper, "__esModule", { value: true });
-	logHelper.getRemoteValuesText = logHelper.logMessageFormatter = void 0;
-	const assert_js_1$5 = assert$1;
-	const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
-	function isFormatSpecifier(str) {
-	    return specifiers.some((spec) => str.includes(spec));
-	}
-	/**
-	 * @param args input remote values to be format printed
-	 * @return parsed text of the remote values in specific format
-	 */
-	function logMessageFormatter(args) {
-	    let output = '';
-	    const argFormat = args[0].value.toString();
-	    const argValues = args.slice(1, undefined);
-	    const tokens = argFormat.split(new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g'));
-	    for (const token of tokens) {
-	        if (token === undefined || token === '') {
-	            continue;
-	        }
-	        if (isFormatSpecifier(token)) {
-	            const arg = argValues.shift();
-	            // raise an exception when less value is provided
-	            (0, assert_js_1$5.assert)(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
-	            if (token === '%s') {
-	                output += stringFromArg(arg);
-	            }
-	            else if (token === '%d' || token === '%i') {
-	                if (arg.type === 'bigint' ||
-	                    arg.type === 'number' ||
-	                    arg.type === 'string') {
-	                    output += parseInt(arg.value.toString(), 10);
-	                }
-	                else {
-	                    output += 'NaN';
-	                }
-	            }
-	            else if (token === '%f') {
-	                if (arg.type === 'bigint' ||
-	                    arg.type === 'number' ||
-	                    arg.type === 'string') {
-	                    output += parseFloat(arg.value.toString());
-	                }
-	                else {
-	                    output += 'NaN';
-	                }
-	            }
-	            else {
-	                // %o, %O, %c
-	                output += toJson(arg);
-	            }
-	        }
-	        else {
-	            output += token;
-	        }
-	    }
-	    // raise an exception when more value is provided
-	    if (argValues.length > 0) {
-	        throw new Error(`More value is provided: "${getRemoteValuesText(args, false)}"`);
-	    }
-	    return output;
-	}
-	logHelper.logMessageFormatter = logMessageFormatter;
-	/**
-	 * @param arg input remote value to be parsed
-	 * @return parsed text of the remote value
-	 *
-	 * input: {"type": "number", "value": 1}
-	 * output: 1
-	 *
-	 * input: {"type": "string", "value": "abc"}
-	 * output: "abc"
-	 *
-	 * input: {"type": "object",  "value": [["id", {"type": "number", "value": 1}]]}
-	 * output: '{"id": 1}'
-	 *
-	 * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
-	 * output: '{"font-size": "20px"}'
-	 */
-	function toJson(arg) {
-	    // arg type validation
-	    if (arg.type !== 'array' &&
-	        arg.type !== 'bigint' &&
-	        arg.type !== 'date' &&
-	        arg.type !== 'number' &&
-	        arg.type !== 'object' &&
-	        arg.type !== 'string') {
-	        return stringFromArg(arg);
-	    }
-	    if (arg.type === 'bigint') {
-	        return `${arg.value.toString()}n`;
-	    }
-	    if (arg.type === 'number') {
-	        return arg.value.toString();
-	    }
-	    if (['date', 'string'].includes(arg.type)) {
-	        return JSON.stringify(arg.value);
-	    }
-	    if (arg.type === 'object') {
-	        return `{${arg.value
-            .map((pair) => {
-            return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
-        })
-            .join(',')}}`;
-	    }
-	    if (arg.type === 'array') {
-	        return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
-	    }
-	    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-	    throw Error(`Invalid value type: ${arg}`);
-	}
-	function stringFromArg(arg) {
-	    if (!Object.hasOwn(arg, 'value')) {
-	        return arg.type;
-	    }
-	    switch (arg.type) {
-	        case 'string':
-	        case 'number':
-	        case 'boolean':
-	        case 'bigint':
-	            return String(arg.value);
-	        case 'regexp':
-	            return `/${arg.value.pattern}/${arg.value.flags ?? ''}`;
-	        case 'date':
-	            return new Date(arg.value).toString();
-	        case 'object':
-	            return `Object(${arg.value?.length ?? ''})`;
-	        case 'array':
-	            return `Array(${arg.value?.length ?? ''})`;
-	        case 'map':
-	            return `Map(${arg.value?.length})`;
-	        case 'set':
-	            return `Set(${arg.value?.length})`;
-	        default:
-	            return arg.type;
-	    }
-	}
-	function getRemoteValuesText(args, formatText) {
-	    const arg = args[0];
-	    if (!arg) {
-	        return '';
-	    }
-	    // if args[0] is a format specifier, format the args as output
-	    if (arg.type === 'string' &&
-	        isFormatSpecifier(arg.value.toString()) &&
-	        formatText) {
-	        return logMessageFormatter(args);
-	    }
-	    // if args[0] is not a format specifier, just join the args with \u0020 (unicode 'SPACE')
-	    return args
-	        .map((arg) => {
-	        return stringFromArg(arg);
-	    })
-	        .join('\u0020');
-	}
-	logHelper.getRemoteValuesText = getRemoteValuesText;
-
-	Object.defineProperty(LogManager$1, "__esModule", { value: true });
-	LogManager$1.LogManager = void 0;
-	const protocol_js_1$g = protocol;
-	const log_js_1$9 = log$1;
-	const logHelper_js_1 = logHelper;
-	/** Converts CDP StackTrace object to BiDi StackTrace object. */
-	function getBidiStackTrace(cdpStackTrace) {
-	    const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
-	        return {
-	            columnNumber: callFrame.columnNumber,
-	            functionName: callFrame.functionName,
-	            lineNumber: callFrame.lineNumber,
-	            url: callFrame.url,
-	        };
-	    });
-	    return stackFrames ? { callFrames: stackFrames } : undefined;
-	}
-	function getLogLevel(consoleApiType) {
-	    if (["error" /* Log.Level.Error */, 'assert'].includes(consoleApiType)) {
-	        return "error" /* Log.Level.Error */;
-	    }
-	    if (["debug" /* Log.Level.Debug */, 'trace'].includes(consoleApiType)) {
-	        return "debug" /* Log.Level.Debug */;
-	    }
-	    if (["warn" /* Log.Level.Warn */, 'warning'].includes(consoleApiType)) {
-	        return "warn" /* Log.Level.Warn */;
-	    }
-	    return "info" /* Log.Level.Info */;
-	}
-	class LogManager {
-	    #eventManager;
-	    #realmStorage;
-	    #cdpTarget;
-	    #logger;
-	    constructor(cdpTarget, realmStorage, eventManager, logger) {
-	        this.#cdpTarget = cdpTarget;
-	        this.#realmStorage = realmStorage;
-	        this.#eventManager = eventManager;
-	        this.#logger = logger;
-	    }
-	    static create(cdpTarget, realmStorage, eventManager, logger) {
-	        const logManager = new LogManager(cdpTarget, realmStorage, eventManager, logger);
-	        logManager.#initializeEntryAddedEventListener();
-	        return logManager;
-	    }
-	    #initializeEntryAddedEventListener() {
-	        this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
-	            // Try to find realm by `cdpSessionId` and `executionContextId`,
-	            // if provided.
-	            const realm = this.#realmStorage.findRealm({
-	                cdpSessionId: this.#cdpTarget.cdpSessionId,
-	                executionContextId: params.executionContextId,
-	            });
-	            if (realm === undefined) {
-	                // Ignore exceptions not attached to any realm.
-	                this.#logger?.(log_js_1$9.LogType.cdp, params);
-	                return;
-	            }
-	            const argsPromise = realm === undefined
-	                ? Promise.resolve(params.args)
-	                : // Properly serialize arguments if possible.
-	                    Promise.all(params.args.map((arg) => {
-	                        return realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
-	                    }));
-	            for (const browsingContext of realm.associatedBrowsingContexts) {
-	                this.#eventManager.registerPromiseEvent(argsPromise.then((args) => ({
-	                    kind: 'success',
-	                    value: {
-	                        type: 'event',
-	                        method: protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded,
-	                        params: {
-	                            level: getLogLevel(params.type),
-	                            source: realm.source,
-	                            text: (0, logHelper_js_1.getRemoteValuesText)(args, true),
-	                            timestamp: Math.round(params.timestamp),
-	                            stackTrace: getBidiStackTrace(params.stackTrace),
-	                            type: 'console',
-	                            // Console method is `warn`, not `warning`.
-	                            method: params.type === 'warning' ? 'warn' : params.type,
-	                            args,
-	                        },
-	                    },
-	                })), browsingContext.id, protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded);
-	            }
-	        });
-	        this.#cdpTarget.cdpClient.on('Runtime.exceptionThrown', (params) => {
-	            // Try to find realm by `cdpSessionId` and `executionContextId`,
-	            // if provided.
-	            const realm = this.#realmStorage.findRealm({
-	                cdpSessionId: this.#cdpTarget.cdpSessionId,
-	                executionContextId: params.exceptionDetails.executionContextId,
-	            });
-	            if (realm === undefined) {
-	                // Ignore exceptions not attached to any realm.
-	                this.#logger?.(log_js_1$9.LogType.cdp, params);
-	                return;
-	            }
-	            for (const browsingContext of realm.associatedBrowsingContexts) {
-	                this.#eventManager.registerPromiseEvent(LogManager.#getExceptionText(params, realm).then((text) => ({
-	                    kind: 'success',
-	                    value: {
-	                        type: 'event',
-	                        method: protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded,
-	                        params: {
-	                            level: "error" /* Log.Level.Error */,
-	                            source: realm.source,
-	                            text,
-	                            timestamp: Math.round(params.timestamp),
-	                            stackTrace: getBidiStackTrace(params.exceptionDetails.stackTrace),
-	                            type: 'javascript',
-	                        },
-	                    },
-	                })), browsingContext.id, protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded);
-	            }
-	        });
-	    }
-	    /**
-	     * Try the best to get the exception text.
-	     */
-	    static async #getExceptionText(params, realm) {
-	        if (!params.exceptionDetails.exception) {
-	            return params.exceptionDetails.text;
-	        }
-	        if (realm === undefined) {
-	            return JSON.stringify(params.exceptionDetails.exception);
-	        }
-	        return await realm.stringifyObject(params.exceptionDetails.exception);
-	    }
-	}
-	LogManager$1.LogManager = LogManager;
-
-	Object.defineProperty(CdpTarget$1, "__esModule", { value: true });
-	CdpTarget$1.CdpTarget = void 0;
-	const chromium_bidi_js_1 = chromiumBidi;
-	const Deferred_js_1$1 = Deferred$1;
-	const LogManager_js_1 = LogManager$1;
-	class CdpTarget {
-	    #id;
-	    #cdpClient;
-	    #browserCdpClient;
-	    #eventManager;
-	    #preloadScriptStorage;
-	    #networkStorage;
-	    #unblocked = new Deferred_js_1$1.Deferred();
-	    #acceptInsecureCerts;
-	    #networkDomainEnabled = false;
-	    #fetchDomainStages = {
-	        request: false,
-	        response: false,
-	        auth: false,
-	    };
-	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts, logger) {
-	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts);
-	        LogManager_js_1.LogManager.create(cdpTarget, realmStorage, eventManager, logger);
-	        cdpTarget.#setEventListeners();
-	        // No need to await.
-	        // Deferred will be resolved when the target is unblocked.
-	        void cdpTarget.#unblock();
-	        return cdpTarget;
-	    }
-	    constructor(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts) {
-	        this.#id = targetId;
-	        this.#cdpClient = cdpClient;
-	        this.#browserCdpClient = browserCdpClient;
-	        this.#eventManager = eventManager;
-	        this.#preloadScriptStorage = preloadScriptStorage;
-	        this.#networkStorage = networkStorage;
-	        this.#acceptInsecureCerts = acceptInsecureCerts;
-	    }
-	    /** Returns a deferred that resolves when the target is unblocked. */
-	    get unblocked() {
-	        return this.#unblocked;
-	    }
-	    get id() {
-	        return this.#id;
-	    }
-	    get cdpClient() {
-	        return this.#cdpClient;
-	    }
-	    get browserCdpClient() {
-	        return this.#browserCdpClient;
-	    }
-	    /** Needed for CDP escape path. */
-	    get cdpSessionId() {
-	        // SAFETY we got the client by it's id for creating
-	        return this.#cdpClient.sessionId;
-	    }
-	    /**
-	     * Enables all the required CDP domains and unblocks the target.
-	     */
-	    async #unblock() {
-	        // Check if the network domain is enabled globally.
-	        const enabledNetwork = this.isSubscribedTo(chromium_bidi_js_1.BiDiModule.Network);
-	        this.#networkDomainEnabled = enabledNetwork;
-	        try {
-	            await Promise.all([
-	                this.#cdpClient.sendCommand('Runtime.enable'),
-	                this.#cdpClient.sendCommand('Page.enable'),
-	                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-	                    enabled: true,
-	                }),
-	                // Set ignore certificate errors for each target.
-	                this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-	                    ignore: this.#acceptInsecureCerts,
-	                }),
-	                // TODO: enable Network domain for OOPiF targets.
-	                enabledNetwork
-	                    ? this.#cdpClient.sendCommand('Network.enable')
-	                    : undefined,
-	                this.toggleFetchIfNeeded(),
-	                this.#cdpClient.sendCommand('Target.setAutoAttach', {
-	                    autoAttach: true,
-	                    waitForDebuggerOnStart: true,
-	                    flatten: true,
-	                }),
-	                this.#initAndEvaluatePreloadScripts(),
-	                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-	            ]);
-	        }
-	        catch (error) {
-	            // The target might have been closed before the initialization finished.
-	            if (!this.#cdpClient.isCloseError(error)) {
-	                this.#unblocked.resolve({
-	                    kind: 'error',
-	                    error,
-	                });
-	                return;
-	            }
-	        }
-	        this.#unblocked.resolve({
-	            kind: 'success',
-	            value: undefined,
-	        });
-	    }
-	    async toggleFetchIfNeeded() {
-	        const stages = this.#networkStorage.getInterceptionStages(this.id);
-	        if (
-	        // Only toggle interception when Network is enabled
-	        !this.#networkDomainEnabled ||
-	            (this.#fetchDomainStages.request === stages.request &&
-	                this.#fetchDomainStages.response === stages.response &&
-	                this.#fetchDomainStages.auth === stages.auth)) {
-	            return;
-	        }
-	        const patterns = [];
-	        this.#fetchDomainStages = stages;
-	        if (stages.request || stages.auth) {
-	            // CDP quirk we need request interception when we intercept auth
-	            patterns.push({
-	                urlPattern: '*',
-	                requestStage: 'Request',
-	            });
-	        }
-	        if (stages.response) {
-	            patterns.push({
-	                urlPattern: '*',
-	                requestStage: 'Response',
-	            });
-	        }
-	        if (patterns.length) {
-	            await this.#cdpClient.sendCommand('Fetch.enable', {
-	                patterns,
-	                handleAuthRequests: stages.auth,
-	            });
-	        }
-	        else {
-	            await this.#cdpClient.sendCommand('Fetch.disable');
-	        }
-	    }
-	    async toggleNetworkIfNeeded(enabled) {
-	        if (enabled === this.#networkDomainEnabled) {
-	            return;
-	        }
-	        this.#networkDomainEnabled = enabled;
-	        try {
-	            await Promise.all([
-	                this.#cdpClient.sendCommand(enabled ? 'Network.enable' : 'Network.disable'),
-	                this.toggleFetchIfNeeded(),
-	            ]);
-	        }
-	        catch (err) {
-	            this.#networkDomainEnabled = !enabled;
-	        }
-	    }
-	    #setEventListeners() {
-	        this.#cdpClient.on('*', (event, params) => {
-	            // We may encounter uses for EventEmitter other than CDP events,
-	            // which we want to skip.
-	            if (typeof event !== 'string') {
-	                return;
-	            }
-	            this.#eventManager.registerEvent({
-	                type: 'event',
-	                method: `cdp.${event}`,
-	                params: {
-	                    event,
-	                    params,
-	                    session: this.cdpSessionId,
-	                },
-	            }, this.id);
-	        });
-	    }
-	    /**
-	     * All the ProxyChannels from all the preload scripts of the given
-	     * BrowsingContext.
-	     */
-	    getChannels() {
-	        return this.#preloadScriptStorage
-	            .find()
-	            .flatMap((script) => script.channels);
-	    }
-	    /** Loads all top-level preload scripts. */
-	    async #initAndEvaluatePreloadScripts() {
-	        for (const script of this.#preloadScriptStorage.find({
-	            global: true,
-	        })) {
-	            await script.initInTarget(this, true);
-	        }
-	    }
-	    isSubscribedTo(moduleOrEvent) {
-	        return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.id);
-	    }
-	}
-	CdpTarget$1.CdpTarget = CdpTarget;
-
 	Object.defineProperty(BrowsingContextProcessor$1, "__esModule", { value: true });
 	BrowsingContextProcessor$1.BrowsingContextProcessor = void 0;
-	const protocol_js_1$f = protocol;
-	const log_js_1$8 = log$1;
-	const WorkerRealm_js_1 = WorkerRealm$1;
-	const BrowsingContextImpl_js_1 = BrowsingContextImpl$1;
-	const CdpTarget_js_1 = CdpTarget$1;
-	const cdpToBidiTargetTypes = {
-	    service_worker: 'service-worker',
-	    shared_worker: 'shared-worker',
-	    worker: 'dedicated-worker',
-	};
+	const protocol_js_1$l = protocol;
 	class BrowsingContextProcessor {
 	    #browserCdpClient;
-	    #cdpConnection;
-	    #selfTargetId;
-	    #eventManager;
 	    #browsingContextStorage;
-	    #networkStorage;
-	    #acceptInsecureCerts;
-	    #preloadScriptStorage;
-	    #realmStorage;
-	    #defaultUserContextId;
-	    #logger;
-	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger) {
-	        this.#acceptInsecureCerts = acceptInsecureCerts;
-	        this.#cdpConnection = cdpConnection;
+	    constructor(browserCdpClient, browsingContextStorage) {
 	        this.#browserCdpClient = browserCdpClient;
-	        this.#selfTargetId = selfTargetId;
-	        this.#eventManager = eventManager;
 	        this.#browsingContextStorage = browsingContextStorage;
-	        this.#preloadScriptStorage = preloadScriptStorage;
-	        this.#networkStorage = networkStorage;
-	        this.#realmStorage = realmStorage;
-	        this.#defaultUserContextId = defaultUserContextId;
-	        this.#logger = logger;
-	        this.#setEventListeners(browserCdpClient);
 	    }
 	    getTree(params) {
 	        const resultContexts = params.root === undefined
@@ -3622,7 +905,7 @@ var mapperTab = (function () {
 	        if (params.referenceContext !== undefined) {
 	            referenceContext = this.#browsingContextStorage.getContext(params.referenceContext);
 	            if (!referenceContext.isTopLevelContext()) {
-	                throw new protocol_js_1$f.InvalidArgumentException(`referenceContext should be a top-level context`);
+	                throw new protocol_js_1$l.InvalidArgumentException(`referenceContext should be a top-level context`);
 	            }
 	            userContext = referenceContext.userContext;
 	        }
@@ -3662,7 +945,7 @@ var mapperTab = (function () {
 	            err.message.startsWith('Failed to find browser context with id') ||
 	                // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
 	                err.message === 'browserContextId') {
-	                throw new protocol_js_1$f.NoSuchUserContextException(`The context ${userContext} was not found`);
+	                throw new protocol_js_1$l.NoSuchUserContextException(`The context ${userContext} was not found`);
 	            }
 	            throw err;
 	        }
@@ -3687,7 +970,7 @@ var mapperTab = (function () {
 	    async activate(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$f.InvalidArgumentException('Activation is only supported on the top-level context');
+	            throw new protocol_js_1$l.InvalidArgumentException('Activation is only supported on the top-level context');
 	        }
 	        await context.activate();
 	        return {};
@@ -3703,7 +986,7 @@ var mapperTab = (function () {
 	    async setViewport(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$f.InvalidArgumentException('Emulating viewport is only supported on the top-level context');
+	            throw new protocol_js_1$l.InvalidArgumentException('Emulating viewport is only supported on the top-level context');
 	        }
 	        await context.setViewport(params.viewport, params.devicePixelRatio);
 	        return {};
@@ -3711,7 +994,7 @@ var mapperTab = (function () {
 	    async traverseHistory(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context) {
-	            throw new protocol_js_1$f.InvalidArgumentException(`No browsing context with id ${params.context}`);
+	            throw new protocol_js_1$l.InvalidArgumentException(`No browsing context with id ${params.context}`);
 	        }
 	        await context.traverseHistory(params.delta);
 	        return {};
@@ -3725,7 +1008,7 @@ var mapperTab = (function () {
 	            // Heuristically determine the error
 	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium
 	            if (error.message?.includes('No dialog is showing')) {
-	                throw new protocol_js_1$f.NoSuchAlertException('No dialog is showing');
+	                throw new protocol_js_1$l.NoSuchAlertException('No dialog is showing');
 	            }
 	            throw error;
 	        }
@@ -3734,7 +1017,7 @@ var mapperTab = (function () {
 	    async close(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$f.InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
+	            throw new protocol_js_1$l.InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
 	        }
 	        try {
 	            const detachedFromTargetPromise = new Promise((resolve) => {
@@ -3773,149 +1056,37 @@ var mapperTab = (function () {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        return await context.locateNodes(params);
 	    }
-	    /**
-	     * This method is called for each CDP session, since this class is responsible
-	     * for creating and destroying all targets and browsing contexts.
-	     */
-	    #setEventListeners(cdpClient) {
-	        cdpClient.on('Target.attachedToTarget', (params) => {
-	            this.#handleAttachedToTargetEvent(params, cdpClient);
-	        });
-	        cdpClient.on('Target.detachedFromTarget', (params) => {
-	            this.#handleDetachedFromTargetEvent(params);
-	        });
-	        cdpClient.on('Target.targetInfoChanged', (params) => {
-	            this.#handleTargetInfoChangedEvent(params);
-	        });
-	        cdpClient.on('Inspector.targetCrashed', () => {
-	            this.#handleTargetCrashedEvent(cdpClient);
-	        });
-	        cdpClient.on('Page.frameAttached', (params) => {
-	            this.#handleFrameAttachedEvent(params);
-	        });
-	        cdpClient.on('Page.frameDetached', (params) => {
-	            this.#handleFrameDetachedEvent(params);
-	        });
-	    }
-	    #handleFrameAttachedEvent(params) {
-	        const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
-	        if (parentBrowsingContext !== undefined) {
-	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(parentBrowsingContext.cdpTarget, this.#realmStorage, params.frameId, params.parentFrameId, parentBrowsingContext.userContext, this.#eventManager, this.#browsingContextStorage, this.#logger);
-	        }
-	    }
-	    #handleFrameDetachedEvent(params) {
-	        // In case of OOPiF no need in deleting BrowsingContext.
-	        if (params.reason === 'swap') {
-	            return;
-	        }
-	        this.#browsingContextStorage.findContext(params.frameId)?.dispose();
-	    }
-	    #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
-	        const { sessionId, targetInfo } = params;
-	        const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-	        this.#logger?.(log_js_1$8.LogType.debugInfo, 'AttachedToTarget event received:', params);
-	        switch (targetInfo.type) {
-	            case 'page':
-	            case 'iframe': {
-	                if (targetInfo.targetId === this.#selfTargetId) {
-	                    break;
-	                }
-	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-	                const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
-	                if (maybeContext) {
-	                    // OOPiF.
-	                    maybeContext.updateCdpTarget(cdpTarget);
-	                }
-	                else {
-	                    // New context.
-	                    BrowsingContextImpl_js_1.BrowsingContextImpl.create(cdpTarget, this.#realmStorage, targetInfo.targetId, null, targetInfo.browserContextId &&
-	                        targetInfo.browserContextId !== this.#defaultUserContextId
-	                        ? targetInfo.browserContextId
-	                        : 'default', this.#eventManager, this.#browsingContextStorage, this.#logger);
-	                }
-	                return;
-	            }
-	            case 'service_worker':
-	            case 'worker': {
-	                const realm = this.#realmStorage.findRealm({
-	                    cdpSessionId: parentSessionCdpClient.sessionId,
-	                });
-	                // If there is no browsing context, this worker is already terminated.
-	                if (!realm) {
-	                    break;
-	                }
-	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
-	                return;
-	            }
-	            // In CDP, we only emit shared workers on the browser and not the set of
-	            // frames that use the shared worker. If we change this in the future to
-	            // behave like service workers (emits on both browser and frame targets),
-	            // we can remove this block and merge service workers with the above one.
-	            case 'shared_worker': {
-	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
-	                return;
-	            }
-	        }
-	        // DevTools or some other not supported by BiDi target. Just release
-	        // debugger and ignore them.
-	        targetCdpClient
-	            .sendCommand('Runtime.runIfWaitingForDebugger')
-	            .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
-	            .catch((error) => this.#logger?.(log_js_1$8.LogType.debugError, error));
-	    }
-	    #createCdpTarget(targetCdpClient, targetInfo) {
-	        this.#setEventListeners(targetCdpClient);
-	        const target = CdpTarget_js_1.CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#networkStorage, this.#acceptInsecureCerts, this.#logger);
-	        this.#networkStorage.onCdpTargetCreated(target);
-	        return target;
-	    }
-	    #workers = new Map();
-	    #handleWorkerTarget(realmType, cdpTarget, ownerRealm) {
-	        cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-	            const { uniqueId, id, origin } = params.context;
-	            const workerRealm = new WorkerRealm_js_1.WorkerRealm(cdpTarget.cdpClient, this.#eventManager, id, this.#logger, (0, BrowsingContextImpl_js_1.serializeOrigin)(origin), ownerRealm ? [ownerRealm] : [], uniqueId, this.#realmStorage, realmType);
-	            this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
-	        });
-	    }
-	    #handleDetachedFromTargetEvent(params) {
-	        const context = this.#browsingContextStorage.findContextBySession(params.sessionId);
-	        if (context) {
-	            context.dispose();
-	            this.#preloadScriptStorage
-	                .find({ targetId: context.id })
-	                .map((preloadScript) => preloadScript.dispose(context.id));
-	            return;
-	        }
-	        const worker = this.#workers.get(params.sessionId);
-	        if (worker) {
-	            this.#realmStorage.deleteRealms({
-	                cdpSessionId: worker.cdpClient.sessionId,
-	            });
-	        }
-	    }
-	    #handleTargetInfoChangedEvent(params) {
-	        const context = this.#browsingContextStorage.findContext(params.targetInfo.targetId);
-	        if (context) {
-	            context.onTargetInfoChanged(params);
-	        }
-	    }
-	    #handleTargetCrashedEvent(cdpClient) {
-	        // This is primarily used for service and shared workers. CDP tends to not
-	        // signal they closed gracefully and instead says they crashed to signal
-	        // they are closed.
-	        const realms = this.#realmStorage.findRealms({
-	            cdpSessionId: cdpClient.sessionId,
-	        });
-	        for (const realm of realms) {
-	            realm.dispose();
-	        }
-	    }
 	}
 	BrowsingContextProcessor$1.BrowsingContextProcessor = BrowsingContextProcessor;
 
 	var InputProcessor$1 = {};
+
+	var assert$1 = {};
+
+	Object.defineProperty(assert$1, "__esModule", { value: true });
+	assert$1.assert = void 0;
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	function assert(predicate, message) {
+	    if (!predicate) {
+	        throw new Error(message ?? 'Internal assertion failed.');
+	    }
+	}
+	assert$1.assert = assert;
 
 	var ActionDispatcher$1 = {};
 
@@ -4838,8 +2009,8 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ActionDispatcher$1, "__esModule", { value: true });
 	ActionDispatcher$1.ActionDispatcher = void 0;
-	const protocol_js_1$e = protocol;
-	const assert_js_1$4 = assert$1;
+	const protocol_js_1$k = protocol;
+	const assert_js_1$6 = assert$1;
 	const InputSource_js_1$1 = InputSource;
 	const keyUtils_js_1 = keyUtils;
 	const USKeyboardLayout_js_1 = USKeyboardLayout;
@@ -4855,19 +2026,19 @@ var mapperTab = (function () {
 	    const sandbox = await context.getOrCreateSandbox(undefined);
 	    const result = await sandbox.callFunction(CALCULATE_IN_VIEW_CENTER_PT_DECL, false, { type: 'undefined' }, [element]);
 	    if (result.type === 'exception') {
-	        throw new protocol_js_1$e.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
+	        throw new protocol_js_1$k.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
 	    }
-	    (0, assert_js_1$4.assert)(result.result.type === 'array');
-	    (0, assert_js_1$4.assert)(result.result.value?.[0]?.type === 'number');
-	    (0, assert_js_1$4.assert)(result.result.value?.[1]?.type === 'number');
+	    (0, assert_js_1$6.assert)(result.result.type === 'array');
+	    (0, assert_js_1$6.assert)(result.result.value?.[0]?.type === 'number');
+	    (0, assert_js_1$6.assert)(result.result.value?.[1]?.type === 'number');
 	    const { result: { value: [{ value: x }, { value: y }], }, } = result;
 	    return { x: x, y: y };
 	}
 	class ActionDispatcher {
 	    static isMacOS = async (context) => {
 	        const result = await (await context.getOrCreateSandbox(undefined)).callFunction(IS_MAC_DECL, false);
-	        (0, assert_js_1$4.assert)(result.type !== 'exception');
-	        (0, assert_js_1$4.assert)(result.result.type === 'boolean');
+	        (0, assert_js_1$6.assert)(result.type !== 'exception');
+	        (0, assert_js_1$6.assert)(result.result.type === 'boolean');
 	        return result.result.value;
 	    };
 	    #tickStart = 0;
@@ -5055,7 +2226,7 @@ var mapperTab = (function () {
 	        const { tiltX, tiltY } = getTilt(action);
 	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY);
 	        if (targetX < 0 || targetY < 0) {
-	            throw new protocol_js_1$e.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	            throw new protocol_js_1$k.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
 	        }
 	        let last;
 	        do {
@@ -5166,11 +2337,11 @@ var mapperTab = (function () {
 	    async #dispatchScrollAction(_source, keyState, action) {
 	        const { deltaX: targetDeltaX, deltaY: targetDeltaY, x: offsetX, y: offsetY, origin = 'viewport', duration = this.#tickDuration, } = action;
 	        if (origin === 'pointer') {
-	            throw new protocol_js_1$e.InvalidArgumentException('"pointer" origin is invalid for scrolling.');
+	            throw new protocol_js_1$k.InvalidArgumentException('"pointer" origin is invalid for scrolling.');
 	        }
 	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, 0, 0);
 	        if (targetX < 0 || targetY < 0) {
-	            throw new protocol_js_1$e.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	            throw new protocol_js_1$k.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
 	        }
 	        let currentDeltaX = 0;
 	        let currentDeltaY = 0;
@@ -5207,7 +2378,7 @@ var mapperTab = (function () {
 	    }
 	    async #dispatchKeyDownAction(source, action) {
 	        if ([...action.value].length > 1) {
-	            throw new protocol_js_1$e.InvalidArgumentException(`Invalid key value: ${action.value}`);
+	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${action.value}`);
 	        }
 	        const rawKey = action.value;
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
@@ -5287,7 +2458,7 @@ var mapperTab = (function () {
 	    }
 	    #dispatchKeyUpAction(source, action) {
 	        if ([...action.value].length > 1) {
-	            throw new protocol_js_1$e.InvalidArgumentException(`Invalid key value: ${action.value}`);
+	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${action.value}`);
 	        }
 	        const rawKey = action.value;
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
@@ -5590,7 +2761,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(InputState$1, "__esModule", { value: true });
 	InputState$1.InputState = void 0;
-	const protocol_js_1$d = protocol;
+	const protocol_js_1$j = protocol;
 	const Mutex_js_1 = Mutex$1;
 	const InputSource_js_1 = InputSource;
 	class InputState {
@@ -5625,20 +2796,20 @@ var mapperTab = (function () {
 	                    source = new InputSource_js_1.WheelSource();
 	                    break;
 	                default:
-	                    throw new protocol_js_1$d.InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
+	                    throw new protocol_js_1$j.InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
 	            }
 	            this.#sources.set(id, source);
 	            return source;
 	        }
 	        if (source.type !== type) {
-	            throw new protocol_js_1$d.InvalidArgumentException(`Input source type of ${id} is ${source.type}, but received ${type}.`);
+	            throw new protocol_js_1$j.InvalidArgumentException(`Input source type of ${id} is ${source.type}, but received ${type}.`);
 	        }
 	        return source;
 	    }
 	    get(id) {
 	        const source = this.#sources.get(id);
 	        if (!source) {
-	            throw new protocol_js_1$d.UnknownErrorException(`Internal error.`);
+	            throw new protocol_js_1$j.UnknownErrorException(`Internal error.`);
 	        }
 	        return source;
 	    }
@@ -5682,13 +2853,13 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(InputStateManager$1, "__esModule", { value: true });
 	InputStateManager$1.InputStateManager = void 0;
-	const assert_js_1$3 = assert$1;
+	const assert_js_1$5 = assert$1;
 	const InputState_js_1 = InputState$1;
 	// We use a weak map here as specified here:
 	// https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
 	class InputStateManager extends WeakMap {
 	    get(context) {
-	        (0, assert_js_1$3.assert)(context.isTopLevelContext());
+	        (0, assert_js_1$5.assert)(context.isTopLevelContext());
 	        if (!this.has(context)) {
 	            this.set(context, new InputState_js_1.InputState());
 	        }
@@ -5715,8 +2886,8 @@ var mapperTab = (function () {
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const protocol_js_1$c = protocol;
-	const assert_js_1$2 = assert$1;
+	const protocol_js_1$i = protocol;
+	const assert_js_1$4 = assert$1;
 	const ActionDispatcher_js_1 = ActionDispatcher$1;
 	const InputStateManager_js_1 = InputStateManager$1;
 	class InputProcessor {
@@ -5766,22 +2937,22 @@ var mapperTab = (function () {
 	            }), false, params.element, [{ type: 'number', value: params.files.length }]);
 	        }
 	        catch {
-	            throw new protocol_js_1$c.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	            throw new protocol_js_1$i.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
 	        }
-	        (0, assert_js_1$2.assert)(result.type === 'success');
+	        (0, assert_js_1$4.assert)(result.type === 'success');
 	        if (result.result.type === 'number') {
 	            switch (result.result.value) {
 	                case 0 /* ErrorCode.Object */: {
-	                    throw new protocol_js_1$c.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	                    throw new protocol_js_1$i.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
 	                }
 	                case 1 /* ErrorCode.Type */: {
-	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a file input`);
+	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a file input`);
 	                }
 	                case 2 /* ErrorCode.Disabled */: {
-	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
+	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
 	                }
 	                case 3 /* ErrorCode.Multiple */: {
-	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
+	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
 	                }
 	            }
 	        }
@@ -5814,12 +2985,12 @@ var mapperTab = (function () {
 	            const result = await realm.callFunction(String(function getFiles(index) {
 	                return this.files?.item(index);
 	            }), false, params.element, [{ type: 'number', value: 0 }], "root" /* Script.ResultOwnership.Root */);
-	            (0, assert_js_1$2.assert)(result.type === 'success');
+	            (0, assert_js_1$4.assert)(result.type === 'success');
 	            if (result.result.type !== 'object') {
 	                break;
 	            }
 	            const { handle } = result.result;
-	            (0, assert_js_1$2.assert)(handle !== undefined);
+	            (0, assert_js_1$4.assert)(handle !== undefined);
 	            const { path } = await realm.cdpClient.sendCommand('DOM.getFileInfo', {
 	                objectId: handle,
 	            });
@@ -5836,7 +3007,7 @@ var mapperTab = (function () {
 	            })) {
 	            const { objectId } = await realm.deserializeForCdp(params.element);
 	            // This cannot throw since this was just used in `callFunction` above.
-	            (0, assert_js_1$2.assert)(objectId !== undefined);
+	            (0, assert_js_1$4.assert)(objectId !== undefined);
 	            await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {
 	                files: params.files,
 	                objectId,
@@ -5861,7 +3032,7 @@ var mapperTab = (function () {
 	                    action.parameters.pointerType ??= "mouse" /* Input.PointerType.Mouse */;
 	                    const source = inputState.getOrCreate(action.id, "pointer" /* SourceType.Pointer */, action.parameters.pointerType);
 	                    if (source.subtype !== action.parameters.pointerType) {
-	                        throw new protocol_js_1$c.InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
+	                        throw new protocol_js_1$i.InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
 	                    }
 	                    break;
 	                }
@@ -6205,7 +3376,7 @@ var mapperTab = (function () {
 
 	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
 	NetworkProcessor$1.NetworkProcessor = void 0;
-	const protocol_js_1$b = protocol;
+	const protocol_js_1$h = protocol;
 	const NetworkUtils_js_1$3 = NetworkUtils;
 	/** Dispatches Network domain commands. */
 	class NetworkProcessor {
@@ -6224,9 +3395,7 @@ var mapperTab = (function () {
 	            phases: params.phases,
 	            contexts: params.contexts,
 	        });
-	        await Promise.all(
-	        // TODO: We should to this for other CDP targets as well
-	        this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+	        await Promise.all(this.#browsingContextStorage.getAllContexts().map((context) => {
 	            return context.cdpTarget.toggleFetchIfNeeded();
 	        }));
 	        return {
@@ -6234,18 +3403,22 @@ var mapperTab = (function () {
 	        };
 	    }
 	    async continueRequest(params) {
-	        const { url, method, headers, request: networkId } = params;
+	        const { url, method, headers: commandHeaders, body, request: networkId, } = params;
 	        if (params.url !== undefined) {
 	            NetworkProcessor.parseUrlString(params.url);
 	        }
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	        ]);
-	        const requestHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
+	        const headers = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(commandHeaders);
 	        // TODO: Set / expand.
 	        // ; Step 9. cookies
-	        // ; Step 10. body
-	        await request.continueRequest(url, method, requestHeaders);
+	        await request.continueRequest({
+	            url,
+	            method,
+	            headers,
+	            postData: getCdpBodyFromBiDiBytesValue(body),
+	        });
 	        return {};
 	    }
 	    async continueResponse(params) {
@@ -6309,10 +3482,10 @@ var mapperTab = (function () {
 	    async failRequest({ request: networkId, }) {
 	        const request = this.#getRequestOrFail(networkId);
 	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
-	            throw new protocol_js_1$b.InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
+	            throw new protocol_js_1$h.InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
 	        }
 	        if (!request.interceptPhase) {
-	            throw new protocol_js_1$b.NoSuchRequestException(`No blocked request found for network id '${networkId}'`);
+	            throw new protocol_js_1$h.NoSuchRequestException(`No blocked request found for network id '${networkId}'`);
 	        }
 	        await request.failRequest('Failed');
 	        return {};
@@ -6347,26 +3520,17 @@ var mapperTab = (function () {
 	            return {};
 	        }
 	        const responseCode = statusCode ?? request.statusCode ?? 200;
-	        let parsedBody;
-	        if (body?.type === 'string') {
-	            parsedBody = btoa(body.value);
-	        }
-	        else if (body?.type === 'base64') {
-	            parsedBody = body.value;
-	        }
 	        await request.provideResponse({
 	            responseCode,
 	            responsePhrase,
 	            responseHeaders,
-	            body: parsedBody,
+	            body: getCdpBodyFromBiDiBytesValue(body),
 	        });
 	        return {};
 	    }
 	    async removeIntercept(params) {
 	        this.#networkStorage.removeIntercept(params.intercept);
-	        await Promise.all(
-	        // TODO: We should to this for other CDP targets as well
-	        this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+	        await Promise.all(this.#browsingContextStorage.getAllContexts().map((context) => {
 	            return context.cdpTarget.toggleFetchIfNeeded();
 	        }));
 	        return {};
@@ -6374,17 +3538,17 @@ var mapperTab = (function () {
 	    #getRequestOrFail(id) {
 	        const request = this.#networkStorage.getRequestById(id);
 	        if (!request) {
-	            throw new protocol_js_1$b.NoSuchRequestException(`Network request with ID '${id}' doesn't exist`);
+	            throw new protocol_js_1$h.NoSuchRequestException(`Network request with ID '${id}' doesn't exist`);
 	        }
 	        return request;
 	    }
 	    #getBlockedRequestOrFail(id, phases) {
 	        const request = this.#getRequestOrFail(id);
 	        if (!request.interceptPhase) {
-	            throw new protocol_js_1$b.NoSuchRequestException(`No blocked request found for network id '${id}'`);
+	            throw new protocol_js_1$h.NoSuchRequestException(`No blocked request found for network id '${id}'`);
 	        }
 	        if (request.interceptPhase && !phases.includes(request.interceptPhase)) {
-	            throw new protocol_js_1$b.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
+	            throw new protocol_js_1$h.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
 	        }
 	        return request;
 	    }
@@ -6397,7 +3561,7 @@ var mapperTab = (function () {
 	            return new URL(url);
 	        }
 	        catch (error) {
-	            throw new protocol_js_1$b.InvalidArgumentException(`Invalid URL '${url}': ${error}`);
+	            throw new protocol_js_1$h.InvalidArgumentException(`Invalid URL '${url}': ${error}`);
 	        }
 	    }
 	    static parseUrlPatterns(urlPatterns) {
@@ -6419,7 +3583,7 @@ var mapperTab = (function () {
 	                    if (urlPattern.protocol) {
 	                        urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
 	                        if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
-	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    if (urlPattern.hostname) {
@@ -6435,7 +3599,7 @@ var mapperTab = (function () {
 	                        }
 	                        if (urlPattern.pathname.includes('#') ||
 	                            urlPattern.pathname.includes('?')) {
-	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    else if (urlPattern.pathname === '') {
@@ -6447,31 +3611,31 @@ var mapperTab = (function () {
 	                            urlPattern.search = `?${urlPattern.search}`;
 	                        }
 	                        if (urlPattern.search.includes('#')) {
-	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    if (urlPattern.protocol === '') {
-	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a protocol`);
+	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a protocol`);
 	                    }
 	                    if (urlPattern.hostname === '') {
-	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a hostname`);
+	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a hostname`);
 	                    }
 	                    if ((urlPattern.hostname?.length ?? 0) > 0) {
 	                        if (urlPattern.protocol?.match(/^file/i)) {
-	                            throw new protocol_js_1$b.InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
+	                            throw new protocol_js_1$h.InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
 	                        }
 	                        if (urlPattern.hostname?.includes(':')) {
-	                            throw new protocol_js_1$b.InvalidArgumentException(`URL pattern hostname must not contain a colon`);
+	                            throw new protocol_js_1$h.InvalidArgumentException(`URL pattern hostname must not contain a colon`);
 	                        }
 	                    }
 	                    if (urlPattern.port === '') {
-	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a port`);
+	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a port`);
 	                    }
 	                    try {
 	                        new URLPattern(urlPattern);
 	                    }
 	                    catch (error) {
-	                        throw new protocol_js_1$b.InvalidArgumentException(`${error}`);
+	                        throw new protocol_js_1$h.InvalidArgumentException(`${error}`);
 	                    }
 	                    return urlPattern;
 	            }
@@ -6489,7 +3653,7 @@ var mapperTab = (function () {
 	    for (const c of pattern) {
 	        if (!isEscaped) {
 	            if (forbidden.has(c)) {
-	                throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
 	            }
 	            if (c === '\\') {
 	                isEscaped = true;
@@ -6501,729 +3665,16 @@ var mapperTab = (function () {
 	    }
 	    return result;
 	}
-
-	var NetworkStorage$1 = {};
-
-	var NetworkRequest$1 = {};
-
-	/*
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 */
-	Object.defineProperty(NetworkRequest$1, "__esModule", { value: true });
-	NetworkRequest$1.NetworkRequest = void 0;
-	const protocol_js_1$a = protocol;
-	const assert_js_1$1 = assert$1;
-	const Deferred_js_1 = Deferred$1;
-	const log_js_1$7 = log$1;
-	const NetworkUtils_js_1$2 = NetworkUtils;
-	const REALM_REGEX = /(?<=realm=").*(?=")/;
-	/** Abstracts one individual network request. */
-	class NetworkRequest {
-	    static unknownParameter = 'UNKNOWN';
-	    /**
-	     * Each network request has an associated request id, which is a string
-	     * uniquely identifying that request.
-	     *
-	     * The identifier for a request resulting from a redirect matches that of the
-	     * request that initiated it.
-	     */
-	    #id;
-	    #fetchId;
-	    /**
-	     * Indicates the network intercept phase, if the request is currently blocked.
-	     * Undefined necessarily implies that the request is not blocked.
-	     */
-	    #interceptPhase;
-	    #servedFromCache = false;
-	    #redirectCount;
-	    #request = {};
-	    #response = {};
-	    #eventManager;
-	    #networkStorage;
-	    #cdpTarget;
-	    #logger;
-	    #emittedEvents = {
-	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired]: false,
-	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent]: false,
-	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.FetchError]: false,
-	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
-	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted]: false,
-	    };
-	    waitNextPhase = new Deferred_js_1.Deferred();
-	    constructor(id, eventManager, networkStorage, cdpTarget, redirectCount = 0, logger) {
-	        this.#id = id;
-	        this.#eventManager = eventManager;
-	        this.#networkStorage = networkStorage;
-	        this.#cdpTarget = cdpTarget;
-	        this.#redirectCount = redirectCount;
-	        this.#logger = logger;
+	function getCdpBodyFromBiDiBytesValue(body) {
+	    let parsedBody;
+	    if (body?.type === 'string') {
+	        parsedBody = btoa(body.value);
 	    }
-	    get id() {
-	        return this.#id;
+	    else if (body?.type === 'base64') {
+	        parsedBody = body.value;
 	    }
-	    get fetchId() {
-	        return this.#fetchId;
-	    }
-	    /**
-	     * When blocked returns the phase for it
-	     */
-	    get interceptPhase() {
-	        return this.#interceptPhase;
-	    }
-	    get url() {
-	        return (this.#response.info?.url ??
-	            this.#response.paused?.request.url ??
-	            this.#request.auth?.request.url ??
-	            this.#request.info?.request.url ??
-	            this.#request.paused?.request.url ??
-	            NetworkRequest.unknownParameter);
-	    }
-	    get method() {
-	        return (this.#request.info?.request.method ??
-	            this.#request.paused?.request.method ??
-	            this.#request.auth?.request.method ??
-	            this.#response.paused?.request.method ??
-	            NetworkRequest.unknownParameter);
-	    }
-	    get redirectCount() {
-	        return this.#redirectCount;
-	    }
-	    get cdpTarget() {
-	        return this.#cdpTarget;
-	    }
-	    get cdpClient() {
-	        return this.#cdpTarget.cdpClient;
-	    }
-	    isRedirecting() {
-	        return Boolean(this.#request.info);
-	    }
-	    #phaseChanged() {
-	        this.waitNextPhase.resolve();
-	        this.waitNextPhase = new Deferred_js_1.Deferred();
-	    }
-	    #interceptsInPhase(phase) {
-	        if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
-	            return new Set();
-	        }
-	        return this.#networkStorage.getInterceptsForPhase(this, phase);
-	    }
-	    #isBlockedInPhase(phase) {
-	        return this.#interceptsInPhase(phase).size > 0;
-	    }
-	    handleRedirect(event) {
-	        this.#response.hasExtraInfo = event.redirectHasExtraInfo;
-	        this.#response.info = event.redirectResponse;
-	        this.#emitEventsIfReady({
-	            wasRedirected: true,
-	        });
-	    }
-	    #emitEventsIfReady(options = {}) {
-	        const requestExtraInfoCompleted = 
-	        // Flush redirects
-	        options.wasRedirected ||
-	            options.hasFailed ||
-	            Boolean(this.#request.extraInfo) ||
-	            // Requests from cache don't have extra info
-	            this.#servedFromCache ||
-	            // Sometimes there is no extra info and the response
-	            // is the only place we can find out
-	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
-	        const requestInterceptionExpected = this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
-	        const requestInterceptionCompleted = !requestInterceptionExpected ||
-	            (requestInterceptionExpected && Boolean(this.#request.paused));
-	        if (Boolean(this.#request.info) &&
-	            (requestInterceptionExpected
-	                ? requestInterceptionCompleted
-	                : requestExtraInfoCompleted)) {
-	            this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
-	        }
-	        const responseExtraInfoCompleted = Boolean(this.#response.extraInfo) ||
-	            // Response from cache don't have extra info
-	            this.#servedFromCache ||
-	            // Don't expect extra info if the flag is false
-	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
-	        const responseInterceptionExpected = this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
-	        if (this.#response.info ||
-	            (responseInterceptionExpected && Boolean(this.#response.paused))) {
-	            this.#emitEvent(this.#getResponseStartedEvent.bind(this));
-	        }
-	        const responseInterceptionCompleted = !responseInterceptionExpected ||
-	            (responseInterceptionExpected && Boolean(this.#response.paused));
-	        if (Boolean(this.#response.info) &&
-	            responseExtraInfoCompleted &&
-	            responseInterceptionCompleted) {
-	            this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
-	        }
-	    }
-	    onRequestWillBeSentEvent(event) {
-	        this.#request.info = event;
-	        this.#emitEventsIfReady();
-	    }
-	    onRequestWillBeSentExtraInfoEvent(event) {
-	        this.#request.extraInfo = event;
-	        this.#emitEventsIfReady();
-	    }
-	    onResponseReceivedExtraInfoEvent(event) {
-	        this.#response.extraInfo = event;
-	        this.#emitEventsIfReady();
-	    }
-	    onResponseReceivedEvent(event) {
-	        this.#response.hasExtraInfo = event.hasExtraInfo;
-	        this.#response.info = event.response;
-	        this.#emitEventsIfReady();
-	    }
-	    onServedFromCache() {
-	        this.#servedFromCache = true;
-	        this.#emitEventsIfReady();
-	    }
-	    onLoadingFailedEvent(event) {
-	        this.#emitEventsIfReady({
-	            hasFailed: true,
-	        });
-	        this.#emitEvent(() => {
-	            return {
-	                method: protocol_js_1$a.ChromiumBidi.Network.EventNames.FetchError,
-	                params: {
-	                    ...this.#getBaseEventParams(),
-	                    errorText: event.errorText,
-	                },
-	            };
-	        });
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
-	    async failRequest(errorReason) {
-	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.failRequest', {
-	            requestId: this.#fetchId,
-	            errorReason,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    onRequestPaused(event) {
-	        this.#fetchId = event.requestId;
-	        // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
-	        if (event.responseStatusCode || event.responseErrorReason) {
-	            this.#response.paused = event;
-	            if (this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */) &&
-	                // CDP may emit multiple events for a single request
-	                !this.#emittedEvents[protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted] &&
-	                // Continue all response that have not enabled Network domain
-	                this.#fetchId !== this.id) {
-	                this.#interceptPhase = "responseStarted" /* Network.InterceptPhase.ResponseStarted */;
-	            }
-	            else {
-	                void this.continueResponse();
-	            }
-	        }
-	        else {
-	            this.#request.paused = event;
-	            if (this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */) &&
-	                // CDP may emit multiple events for a single request
-	                !this.#emittedEvents[protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent] &&
-	                // Continue all requests that have not enabled Network domain
-	                this.#fetchId !== this.id) {
-	                this.#interceptPhase = "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */;
-	            }
-	            else {
-	                void this.continueRequest();
-	            }
-	        }
-	        this.#emitEventsIfReady();
-	    }
-	    onAuthRequired(event) {
-	        this.#fetchId = event.requestId;
-	        this.#request.auth = event;
-	        if (this.#isBlockedInPhase("authRequired" /* Network.InterceptPhase.AuthRequired */) &&
-	            // Continue all auth requests that have not enabled Network domain
-	            this.#fetchId !== this.id) {
-	            this.#interceptPhase = "authRequired" /* Network.InterceptPhase.AuthRequired */;
-	        }
-	        else {
-	            void this.continueWithAuth();
-	        }
-	        this.#emitEvent(() => {
-	            return {
-	                method: protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired,
-	                params: {
-	                    ...this.#getBaseEventParams("authRequired" /* Network.InterceptPhase.AuthRequired */),
-	                    response: this.#getResponseEventParams(),
-	                },
-	            };
-	        });
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
-	    async continueRequest(url, method, headers) {
-	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
-	            requestId: this.#fetchId,
-	            url,
-	            method,
-	            headers,
-	            // TODO: Set?
-	            // postData:,
-	            // interceptResponse:,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
-	    async continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
-	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.continueResponse', {
-	            requestId: this.#fetchId,
-	            responseCode,
-	            responsePhrase,
-	            responseHeaders,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
-	    async continueWithAuth(authChallengeResponse = {
-	        response: 'Default',
-	    }) {
-	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
-	            requestId: this.#fetchId,
-	            authChallengeResponse,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
-	    async provideResponse({ responseCode, responsePhrase, responseHeaders, body, }) {
-	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
-	            requestId: this.#fetchId,
-	            responseCode,
-	            responsePhrase,
-	            responseHeaders,
-	            body,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    get #context() {
-	        return (this.#response.paused?.frameId ??
-	            this.#request.info?.frameId ??
-	            this.#request.paused?.frameId ??
-	            this.#request.auth?.frameId ??
-	            null);
-	    }
-	    /** Returns the HTTP status code associated with this request if any. */
-	    get statusCode() {
-	        return (this.#response.paused?.responseStatusCode ??
-	            this.#response.extraInfo?.statusCode ??
-	            this.#response.info?.status);
-	    }
-	    #emitEvent(getEvent) {
-	        let event;
-	        try {
-	            event = getEvent();
-	        }
-	        catch (error) {
-	            this.#logger?.(log_js_1$7.LogType.debugError, error);
-	            return;
-	        }
-	        if (this.#isIgnoredEvent() ||
-	            (this.#emittedEvents[event.method] &&
-	                // Special case this event can be emitted multiple times
-	                event.method !== protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired)) {
-	            return;
-	        }
-	        this.#phaseChanged();
-	        this.#emittedEvents[event.method] = true;
-	        this.#eventManager.registerEvent(Object.assign(event, {
-	            type: 'event',
-	        }), this.#context);
-	    }
-	    #getBaseEventParams(phase) {
-	        const interceptProps = {
-	            isBlocked: false,
-	        };
-	        if (phase) {
-	            const blockedBy = this.#interceptsInPhase(phase);
-	            interceptProps.isBlocked = blockedBy.size > 0;
-	            if (interceptProps.isBlocked) {
-	                interceptProps.intercepts = [...blockedBy];
-	            }
-	        }
-	        return {
-	            context: this.#context,
-	            navigation: this.#getNavigationId(),
-	            redirectCount: this.#redirectCount,
-	            request: this.#getRequestData(),
-	            // Timestamp should be in milliseconds, while CDP provides it in seconds.
-	            timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
-	            // Contains isBlocked and intercepts
-	            ...interceptProps,
-	        };
-	    }
-	    #getResponseEventParams() {
-	        // Chromium sends wrong extraInfo events for responses served from cache.
-	        // See https://github.com/puppeteer/puppeteer/issues/9965 and
-	        // https://crbug.com/1340398.
-	        if (this.#response.info?.fromDiskCache) {
-	            this.#response.extraInfo = undefined;
-	        }
-	        // TODO: get headers from Fetch.requestPaused
-	        const headers = (0, NetworkUtils_js_1$2.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.info?.headers);
-	        const authChallenges = this.#authChallenges(this.#response.info?.headers ?? {});
-	        return {
-	            url: this.url,
-	            protocol: this.#response.info?.protocol ?? '',
-	            status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
-	            statusText: this.#response.info?.statusText ||
-	                this.#response.paused?.responseStatusText ||
-	                '',
-	            fromCache: this.#response.info?.fromDiskCache ||
-	                this.#response.info?.fromPrefetchCache ||
-	                this.#servedFromCache,
-	            headers,
-	            mimeType: this.#response.info?.mimeType || '',
-	            bytesReceived: this.#response.info?.encodedDataLength || 0,
-	            headersSize: (0, NetworkUtils_js_1$2.computeHeadersSize)(headers),
-	            // TODO: consider removing from spec.
-	            bodySize: 0,
-	            content: {
-	                // TODO: consider removing from spec.
-	                size: 0,
-	            },
-	            ...(authChallenges ? { authChallenges } : {}),
-	        };
-	    }
-	    #getNavigationId() {
-	        if (!this.#request.info ||
-	            !this.#request.info.loaderId ||
-	            // When we navigate all CDP network events have `loaderId`
-	            // CDP's `loaderId` and `requestId` match when
-	            // that request triggered the loading
-	            this.#request.info.loaderId !== this.#request.info.requestId) {
-	            return null;
-	        }
-	        return this.#request.info.loaderId;
-	    }
-	    #getRequestData() {
-	        const cookies = this.#request.extraInfo
-	            ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
-	            : [];
-	        const headers = (0, NetworkUtils_js_1$2.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers);
-	        return {
-	            request: this.#id,
-	            url: this.url,
-	            method: this.method,
-	            headers,
-	            cookies,
-	            headersSize: (0, NetworkUtils_js_1$2.computeHeadersSize)(headers),
-	            // TODO: implement.
-	            bodySize: 0,
-	            timings: this.#getTimings(),
-	        };
-	    }
-	    // TODO: implement.
-	    #getTimings() {
-	        return {
-	            timeOrigin: 0,
-	            requestTime: 0,
-	            redirectStart: 0,
-	            redirectEnd: 0,
-	            fetchStart: 0,
-	            dnsStart: 0,
-	            dnsEnd: 0,
-	            connectStart: 0,
-	            connectEnd: 0,
-	            tlsStart: 0,
-	            requestStart: 0,
-	            responseStart: 0,
-	            responseEnd: 0,
-	        };
-	    }
-	    #getBeforeRequestEvent() {
-	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
-	        return {
-	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent,
-	            params: {
-	                ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
-	                initiator: {
-	                    type: NetworkRequest.#getInitiatorType(this.#request.info.initiator.type),
-	                },
-	            },
-	        };
-	    }
-	    #getResponseStartedEvent() {
-	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
-	        (0, assert_js_1$1.assert)(
-	        // The response paused comes before any data for the response
-	        this.#response.paused || this.#response.info, 'ResponseReceivedEvent is not set');
-	        return {
-	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted,
-	            params: {
-	                ...this.#getBaseEventParams("responseStarted" /* Network.InterceptPhase.ResponseStarted */),
-	                response: this.#getResponseEventParams(),
-	            },
-	        };
-	    }
-	    #getResponseReceivedEvent() {
-	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
-	        (0, assert_js_1$1.assert)(this.#response.info, 'ResponseReceivedEvent is not set');
-	        return {
-	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseCompleted,
-	            params: {
-	                ...this.#getBaseEventParams(),
-	                response: this.#getResponseEventParams(),
-	            },
-	        };
-	    }
-	    #isIgnoredEvent() {
-	        const faviconUrl = '/favicon.ico';
-	        return (this.#request.paused?.request.url.endsWith(faviconUrl) ??
-	            this.#request.info?.request.url.endsWith(faviconUrl) ??
-	            false);
-	    }
-	    #authChallenges(headers) {
-	        if (!(this.statusCode === 401 || this.statusCode === 407)) {
-	            return undefined;
-	        }
-	        const headerName = this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
-	        const authChallenges = [];
-	        for (const [header, value] of Object.entries(headers)) {
-	            // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
-	            // Or verify this works
-	            if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
-	                authChallenges.push({
-	                    scheme: value.split(' ').at(0) ?? '',
-	                    realm: value.match(REALM_REGEX)?.at(0) ?? '',
-	                });
-	            }
-	        }
-	        return authChallenges;
-	    }
-	    static #getInitiatorType(initiatorType) {
-	        switch (initiatorType) {
-	            case 'parser':
-	            case 'script':
-	            case 'preflight':
-	                return initiatorType;
-	            default:
-	                return 'other';
-	        }
-	    }
-	    static #getCookies(associatedCookies) {
-	        return associatedCookies
-	            .filter(({ blockedReasons }) => {
-	            return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
-	        })
-	            .map(({ cookie }) => (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(cookie));
-	    }
+	    return parsedBody;
 	}
-	NetworkRequest$1.NetworkRequest = NetworkRequest;
-
-	Object.defineProperty(NetworkStorage$1, "__esModule", { value: true });
-	NetworkStorage$1.NetworkStorage = void 0;
-	const protocol_js_1$9 = protocol;
-	const uuid_js_1$1 = uuid;
-	const NetworkRequest_js_1 = NetworkRequest$1;
-	const NetworkUtils_js_1$1 = NetworkUtils;
-	/** Stores network and intercept maps. */
-	class NetworkStorage {
-	    #eventManager;
-	    #logger;
-	    /**
-	     * A map from network request ID to Network Request objects.
-	     * Needed as long as information about requests comes from different events.
-	     */
-	    #requests = new Map();
-	    /** A map from intercept ID to track active network intercepts. */
-	    #intercepts = new Map();
-	    constructor(eventManager, browserClient, logger) {
-	        this.#eventManager = eventManager;
-	        browserClient.on('Target.detachedFromTarget', ({ sessionId }) => {
-	            this.disposeRequestMap(sessionId);
-	        });
-	        this.#logger = logger;
-	    }
-	    /**
-	     * Gets the network request with the given ID, if any.
-	     * Otherwise, creates a new network request with the given ID and cdp target.
-	     */
-	    #getOrCreateNetworkRequest(id, cdpTarget, redirectCount) {
-	        let request = this.getRequestById(id);
-	        if (request) {
-	            return request;
-	        }
-	        request = new NetworkRequest_js_1.NetworkRequest(id, this.#eventManager, this, cdpTarget, redirectCount, this.#logger);
-	        this.addRequest(request);
-	        return request;
-	    }
-	    onCdpTargetCreated(cdpTarget) {
-	        const cdpClient = cdpTarget.cdpClient;
-	        // TODO: Wrap into object
-	        const listeners = [
-	            [
-	                'Network.requestWillBeSent',
-	                (params) => {
-	                    const request = this.getRequestById(params.requestId);
-	                    if (request && request.isRedirecting()) {
-	                        request.handleRedirect(params);
-	                        this.deleteRequest(params.requestId);
-	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget, request.redirectCount + 1).onRequestWillBeSentEvent(params);
-	                    }
-	                    else {
-	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentEvent(params);
-	                    }
-	                },
-	            ],
-	            [
-	                'Network.requestWillBeSentExtraInfo',
-	                (params) => {
-	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentExtraInfoEvent(params);
-	                },
-	            ],
-	            [
-	                'Network.responseReceived',
-	                (params) => {
-	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedEvent(params);
-	                },
-	            ],
-	            [
-	                'Network.responseReceivedExtraInfo',
-	                (params) => {
-	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedExtraInfoEvent(params);
-	                },
-	            ],
-	            [
-	                'Network.requestServedFromCache',
-	                (params) => {
-	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onServedFromCache();
-	                },
-	            ],
-	            [
-	                'Network.loadingFailed',
-	                (params) => {
-	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onLoadingFailedEvent(params);
-	                },
-	            ],
-	            [
-	                'Fetch.requestPaused',
-	                (event) => {
-	                    this.#getOrCreateNetworkRequest(
-	                    // CDP quirk if the Network domain is not present this is undefined
-	                    event.networkId ?? event.requestId, cdpTarget).onRequestPaused(event);
-	                },
-	            ],
-	            [
-	                'Fetch.authRequired',
-	                (event) => {
-	                    let request = this.getRequestByFetchId(event.requestId);
-	                    if (!request) {
-	                        request = this.#getOrCreateNetworkRequest(event.requestId, cdpTarget);
-	                    }
-	                    request.onAuthRequired(event);
-	                },
-	            ],
-	        ];
-	        for (const [event, listener] of listeners) {
-	            cdpClient.on(event, listener);
-	        }
-	    }
-	    getInterceptionStages(browsingContextId) {
-	        const stages = {
-	            request: false,
-	            response: false,
-	            auth: false,
-	        };
-	        for (const intercept of this.#intercepts.values()) {
-	            if (intercept.contexts &&
-	                !intercept.contexts.includes(browsingContextId)) {
-	                continue;
-	            }
-	            stages.request ||= intercept.phases.includes("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
-	            stages.response ||= intercept.phases.includes("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
-	            stages.auth ||= intercept.phases.includes("authRequired" /* Network.InterceptPhase.AuthRequired */);
-	        }
-	        return stages;
-	    }
-	    getInterceptsForPhase(request, phase) {
-	        if (request.url === NetworkRequest_js_1.NetworkRequest.unknownParameter) {
-	            return new Set();
-	        }
-	        const intercepts = new Set();
-	        for (const [interceptId, intercept] of this.#intercepts.entries()) {
-	            if (!intercept.phases.includes(phase) ||
-	                (intercept.contexts &&
-	                    !intercept.contexts.includes(request.cdpTarget.id))) {
-	                continue;
-	            }
-	            if (intercept.urlPatterns.length === 0) {
-	                intercepts.add(interceptId);
-	                continue;
-	            }
-	            for (const pattern of intercept.urlPatterns) {
-	                if ((0, NetworkUtils_js_1$1.matchUrlPattern)(pattern, request.url)) {
-	                    intercepts.add(interceptId);
-	                    break;
-	                }
-	            }
-	        }
-	        return intercepts;
-	    }
-	    disposeRequestMap(sessionId) {
-	        for (const request of this.#requests.values()) {
-	            if (request.cdpClient.sessionId === sessionId) {
-	                this.#requests.delete(request.id);
-	            }
-	        }
-	    }
-	    /**
-	     * Adds the given entry to the intercept map.
-	     * URL patterns are assumed to be parsed.
-	     *
-	     * @return The intercept ID.
-	     */
-	    addIntercept(value) {
-	        const interceptId = (0, uuid_js_1$1.uuidv4)();
-	        this.#intercepts.set(interceptId, value);
-	        return interceptId;
-	    }
-	    /**
-	     * Removes the given intercept from the intercept map.
-	     * Throws NoSuchInterceptException if the intercept does not exist.
-	     */
-	    removeIntercept(intercept) {
-	        if (!this.#intercepts.has(intercept)) {
-	            throw new protocol_js_1$9.NoSuchInterceptException(`Intercept '${intercept}' does not exist.`);
-	        }
-	        this.#intercepts.delete(intercept);
-	    }
-	    getRequestById(id) {
-	        return this.#requests.get(id);
-	    }
-	    getRequestByFetchId(fetchId) {
-	        for (const request of this.#requests.values()) {
-	            if (request.fetchId === fetchId) {
-	                return request;
-	            }
-	        }
-	        return;
-	    }
-	    addRequest(request) {
-	        this.#requests.set(request.id, request);
-	    }
-	    deleteRequest(id) {
-	        this.#requests.delete(id);
-	    }
-	}
-	NetworkStorage$1.NetworkStorage = NetworkStorage;
 
 	var PermissionsProcessor$1 = {};
 
@@ -7245,7 +3696,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(PermissionsProcessor$1, "__esModule", { value: true });
 	PermissionsProcessor$1.PermissionsProcessor = void 0;
-	const protocol_js_1$8 = protocol;
+	const protocol_js_1$g = protocol;
 	class PermissionsProcessor {
 	    #browserCdpClient;
 	    constructor(browserCdpClient) {
@@ -7273,61 +3724,314 @@ var mapperTab = (function () {
 	                // existing origins).
 	                return {};
 	            }
-	            throw new protocol_js_1$8.InvalidArgumentException(err.message);
+	            throw new protocol_js_1$g.InvalidArgumentException(err.message);
 	        }
 	        return {};
 	    }
 	}
 	PermissionsProcessor$1.PermissionsProcessor = PermissionsProcessor;
 
-	var PreloadScriptStorage$1 = {};
-
-	Object.defineProperty(PreloadScriptStorage$1, "__esModule", { value: true });
-	PreloadScriptStorage$1.PreloadScriptStorage = void 0;
-	/**
-	 * Container class for preload scripts.
-	 */
-	class PreloadScriptStorage {
-	    /** Tracks all BiDi preload scripts.  */
-	    #scripts = new Set();
-	    /** Finds all entries that match the given filter. */
-	    find(filter) {
-	        if (!filter) {
-	            return [...this.#scripts];
-	        }
-	        return [...this.#scripts].filter((script) => {
-	            if (filter.id !== undefined && filter.id !== script.id) {
-	                return false;
-	            }
-	            if (filter.targetId !== undefined &&
-	                !script.targetIds.has(filter.targetId)) {
-	                return false;
-	            }
-	            if (filter.global !== undefined &&
-	                // Global scripts have no contexts
-	                ((filter.global && script.contexts !== undefined) ||
-	                    // Non global scripts always have contexts
-	                    (!filter.global && script.contexts === undefined))) {
-	                return false;
-	            }
-	            return true;
-	        });
-	    }
-	    add(preloadScript) {
-	        this.#scripts.add(preloadScript);
-	    }
-	    /** Deletes all BiDi preload script entries that match the given filter. */
-	    remove(filter) {
-	        for (const preloadScript of this.find(filter)) {
-	            this.#scripts.delete(preloadScript);
-	        }
-	    }
-	}
-	PreloadScriptStorage$1.PreloadScriptStorage = PreloadScriptStorage;
-
 	var ScriptProcessor$1 = {};
 
 	var PreloadScript$1 = {};
+
+	var uuid = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(uuid, "__esModule", { value: true });
+	uuid.uuidv4 = void 0;
+	/**
+	 * Generates a random v4 UUID, as specified in RFC4122.
+	 *
+	 * Uses the native Web Crypto API if available, otherwise falls back to a
+	 * polyfill.
+	 *
+	 * Example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+	 */
+	function uuidv4() {
+	    // Available only in secure contexts
+	    // https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
+	    if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
+	        // Node with
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+	        // secure browser context.
+	        return globalThis.crypto.randomUUID();
+	    }
+	    const randomValues = new Uint8Array(16);
+	    if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
+	        // Node with
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+	        // browser.
+	        globalThis.crypto.getRandomValues(randomValues);
+	    }
+	    else {
+	        // Node without
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
+	        // eslint-disable-next-line @typescript-eslint/no-var-requires
+	        require('crypto').webcrypto.getRandomValues(randomValues);
+	    }
+	    // Set version (4) and variant (RFC4122) bits.
+	    randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
+	    randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
+	    const bytesToHex = (bytes) => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+	    return [
+	        bytesToHex(randomValues.subarray(0, 4)),
+	        bytesToHex(randomValues.subarray(4, 6)),
+	        bytesToHex(randomValues.subarray(6, 8)),
+	        bytesToHex(randomValues.subarray(8, 10)),
+	        bytesToHex(randomValues.subarray(10, 16)),
+	    ].join('-');
+	}
+	uuid.uuidv4 = uuidv4;
+
+	var ChannelProxy$1 = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(ChannelProxy$1, "__esModule", { value: true });
+	ChannelProxy$1.ChannelProxy = void 0;
+	const protocol_js_1$f = protocol;
+	const log_js_1$c = log$1;
+	const uuid_js_1$3 = uuid;
+	/**
+	 * Used to send messages from realm to BiDi user.
+	 */
+	class ChannelProxy {
+	    #properties;
+	    #id = (0, uuid_js_1$3.uuidv4)();
+	    #logger;
+	    constructor(channel, logger) {
+	        this.#properties = channel;
+	        this.#logger = logger;
+	    }
+	    /**
+	     * Creates a channel proxy in the given realm, initialises listener and
+	     * returns a handle to `sendMessage` delegate.
+	     */
+	    async init(realm, eventManager) {
+	        const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
+	        const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(realm, channelHandle);
+	        void this.#startListener(realm, channelHandle, eventManager);
+	        return sendMessageHandle;
+	    }
+	    /** Gets a ChannelProxy from window and returns its handle. */
+	    async startListenerFromWindow(realm, eventManager) {
+	        try {
+	            const channelHandle = await this.#getHandleFromWindow(realm);
+	            void this.#startListener(realm, channelHandle, eventManager);
+	        }
+	        catch (error) {
+	            this.#logger?.(log_js_1$c.LogType.debugError, error);
+	        }
+	    }
+	    /**
+	     * Evaluation string which creates a ChannelProxy object on the client side.
+	     */
+	    static #createChannelProxyEvalStr() {
+	        const functionStr = String(() => {
+	            const queue = [];
+	            let queueNonEmptyResolver = null;
+	            return {
+	                /**
+	                 * Gets a promise, which is resolved as soon as a message occurs
+	                 * in the queue.
+	                 */
+	                async getMessage() {
+	                    const onMessage = queue.length > 0
+	                        ? Promise.resolve()
+	                        : new Promise((resolve) => {
+	                            queueNonEmptyResolver = resolve;
+	                        });
+	                    await onMessage;
+	                    return queue.shift();
+	                },
+	                /**
+	                 * Adds a message to the queue.
+	                 * Resolves the pending promise if needed.
+	                 */
+	                sendMessage(message) {
+	                    queue.push(message);
+	                    if (queueNonEmptyResolver !== null) {
+	                        queueNonEmptyResolver();
+	                        queueNonEmptyResolver = null;
+	                    }
+	                },
+	            };
+	        });
+	        return `(${functionStr})()`;
+	    }
+	    /** Creates a ChannelProxy in the given realm. */
+	    static async #createAndGetHandleInRealm(realm) {
+	        const createChannelHandleResult = await realm.cdpClient.sendCommand('Runtime.evaluate', {
+	            expression: this.#createChannelProxyEvalStr(),
+	            contextId: realm.executionContextId,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        if (createChannelHandleResult.exceptionDetails ||
+	            createChannelHandleResult.result.objectId === undefined) {
+	            throw new Error(`Cannot create channel`);
+	        }
+	        return createChannelHandleResult.result.objectId;
+	    }
+	    /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
+	    static async #createSendMessageHandle(realm, channelHandle) {
+	        const sendMessageArgResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((channelHandle) => {
+	                return channelHandle.sendMessage;
+	            }),
+	            arguments: [{ objectId: channelHandle }],
+	            executionContextId: realm.executionContextId,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        // TODO: check for exceptionDetails.
+	        return sendMessageArgResult.result.objectId;
+	    }
+	    /** Starts listening for the channel events of the provided ChannelProxy. */
+	    async #startListener(realm, channelHandle, eventManager) {
+	        // noinspection InfiniteLoopJS
+	        for (;;) {
+	            try {
+	                const message = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String(async (channelHandle) => await channelHandle.getMessage()),
+	                    arguments: [
+	                        {
+	                            objectId: channelHandle,
+	                        },
+	                    ],
+	                    awaitPromise: true,
+	                    executionContextId: realm.executionContextId,
+	                    serializationOptions: {
+	                        serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+	                        maxDepth: this.#properties.serializationOptions?.maxObjectDepth ??
+	                            undefined,
+	                    },
+	                });
+	                if (message.exceptionDetails) {
+	                    throw message.exceptionDetails;
+	                }
+	                for (const browsingContext of realm.associatedBrowsingContexts) {
+	                    eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$f.ChromiumBidi.Script.EventNames.Message,
+	                        params: {
+	                            channel: this.#properties.channel,
+	                            data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" /* Script.ResultOwnership.None */),
+	                            source: realm.source,
+	                        },
+	                    }, browsingContext.id);
+	                }
+	            }
+	            catch (error) {
+	                // If an error is thrown, then the channel is permanently broken, so we
+	                // exit the loop.
+	                this.#logger?.(log_js_1$c.LogType.debugError, error);
+	                break;
+	            }
+	        }
+	    }
+	    /**
+	     * Returns a handle of ChannelProxy from window's property which was set there
+	     * by `getEvalInWindowStr`. If window property is not set yet, sets a promise
+	     * resolver to the window property, so that `getEvalInWindowStr` can resolve
+	     * the promise later on with the channel.
+	     * This is needed because `getEvalInWindowStr` can be called before or
+	     * after this method.
+	     */
+	    async #getHandleFromWindow(realm) {
+	        const channelHandleResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((id) => {
+	                const w = window;
+	                if (w[id] === undefined) {
+	                    // The channelProxy is not created yet. Create a promise, put the
+	                    // resolver to window property and return the promise.
+	                    // `getEvalInWindowStr` will resolve the promise later.
+	                    return new Promise((resolve) => (w[id] = resolve));
+	                }
+	                // The channelProxy is already created by `getEvalInWindowStr` and
+	                // is set into window property. Return it.
+	                const channelProxy = w[id];
+	                delete w[id];
+	                return channelProxy;
+	            }),
+	            arguments: [{ value: this.#id }],
+	            executionContextId: realm.executionContextId,
+	            awaitPromise: true,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        if (channelHandleResult.exceptionDetails !== undefined ||
+	            channelHandleResult.result.objectId === undefined) {
+	            throw new Error(`ChannelHandle not found in window["${this.#id}"]`);
+	        }
+	        return channelHandleResult.result.objectId;
+	    }
+	    /**
+	     * String to be evaluated to create a ProxyChannel and put it to window.
+	     * Returns the delegate `sendMessage`. Used to provide an argument for preload
+	     * script. Does the following:
+	     * 1. Creates a ChannelProxy.
+	     * 2. Puts the ChannelProxy to window['${this.#id}'] or resolves the promise
+	     *    by calling delegate stored in window['${this.#id}'].
+	     *    This is needed because `#getHandleFromWindow` can be called before or
+	     *    after this method.
+	     * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
+	     */
+	    getEvalInWindowStr() {
+	        const delegate = String((id, channelProxy) => {
+	            const w = window;
+	            if (w[id] === undefined) {
+	                // `#getHandleFromWindow` is not initialized yet, and will get the
+	                // channelProxy later.
+	                w[id] = channelProxy;
+	            }
+	            else {
+	                // `#getHandleFromWindow` is already set a delegate to window property
+	                // and is waiting for it to be called with the channelProxy.
+	                w[id](channelProxy);
+	                delete w[id];
+	            }
+	            return channelProxy.sendMessage;
+	        });
+	        const channelProxyEval = ChannelProxy.#createChannelProxyEvalStr();
+	        return `(${delegate})('${this.#id}',${channelProxyEval})`;
+	    }
+	}
+	ChannelProxy$1.ChannelProxy = ChannelProxy;
 
 	/*
 	 * Copyright 2023 Google LLC.
@@ -7348,8 +4052,8 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(PreloadScript$1, "__esModule", { value: true });
 	PreloadScript$1.PreloadScript = void 0;
-	const uuid_js_1 = uuid;
-	const ChannelProxy_js_1 = ChannelProxy$1;
+	const uuid_js_1$2 = uuid;
+	const ChannelProxy_js_1$1 = ChannelProxy$1;
 	/**
 	 * BiDi IDs are generated by the server and are unique within contexts.
 	 *
@@ -7362,7 +4066,7 @@ var mapperTab = (function () {
 	 */
 	class PreloadScript {
 	    /** BiDi ID, an automatically generated UUID. */
-	    #id = (0, uuid_js_1.uuidv4)();
+	    #id = (0, uuid_js_1$2.uuidv4)();
 	    /** CDP preload scripts. */
 	    #cdpPreloadScripts = [];
 	    /** The script itself, in a format expected by the spec i.e. a function. */
@@ -7383,7 +4087,7 @@ var mapperTab = (function () {
 	    }
 	    constructor(params, logger) {
 	        this.#channels =
-	            params.arguments?.map((a) => new ChannelProxy_js_1.ChannelProxy(a.value, logger)) ?? [];
+	            params.arguments?.map((a) => new ChannelProxy_js_1$1.ChannelProxy(a.value, logger)) ?? [];
 	        this.#functionDeclaration = params.functionDeclaration;
 	        this.#sandbox = params.sandbox;
 	        this.#contexts = params.contexts;
@@ -7436,13 +4140,15 @@ var mapperTab = (function () {
 	     * Removes this script from all CDP targets.
 	     */
 	    async remove() {
-	        for (const cdpPreloadScript of this.#cdpPreloadScripts) {
-	            const cdpTarget = cdpPreloadScript.target;
-	            const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
-	            await cdpTarget.cdpClient.sendCommand('Page.removeScriptToEvaluateOnNewDocument', {
-	                identifier: cdpPreloadScriptId,
-	            });
-	        }
+	        await Promise.all([
+	            this.#cdpPreloadScripts.map(async (cdpPreloadScript) => {
+	                const cdpTarget = cdpPreloadScript.target;
+	                const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
+	                return await cdpTarget.cdpClient.sendCommand('Page.removeScriptToEvaluateOnNewDocument', {
+	                    identifier: cdpPreloadScriptId,
+	                });
+	            }),
+	        ]);
 	    }
 	    /** Removes the provided cdp target from the list of cdp preload scripts. */
 	    dispose(cdpTargetId) {
@@ -7470,8 +4176,8 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ScriptProcessor$1, "__esModule", { value: true });
 	ScriptProcessor$1.ScriptProcessor = void 0;
-	const protocol_1 = protocol;
-	const PreloadScript_1 = PreloadScript$1;
+	const protocol_js_1$e = protocol;
+	const PreloadScript_js_1 = PreloadScript$1;
 	class ScriptProcessor {
 	    #browsingContextStorage;
 	    #realmStorage;
@@ -7485,7 +4191,7 @@ var mapperTab = (function () {
 	    }
 	    async addPreloadScript(params) {
 	        const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
-	        const preloadScript = new PreloadScript_1.PreloadScript(params, this.#logger);
+	        const preloadScript = new PreloadScript_js_1.PreloadScript(params, this.#logger);
 	        this.#preloadScriptStorage.add(preloadScript);
 	        const cdpTargets = contexts.size === 0
 	            ? new Set(this.#browsingContextStorage
@@ -7501,7 +4207,7 @@ var mapperTab = (function () {
 	        const { script: id } = params;
 	        const scripts = this.#preloadScriptStorage.find({ id });
 	        if (scripts.length === 0) {
-	            throw new protocol_1.NoSuchScriptException(`No preload script with id '${id}'`);
+	            throw new protocol_js_1$e.NoSuchScriptException(`No preload script with id '${id}'`);
 	        }
 	        await Promise.all(scripts.map((script) => script.remove()));
 	        this.#preloadScriptStorage.remove({ id });
@@ -7609,11 +4315,11 @@ var mapperTab = (function () {
 
 	Object.defineProperty(StorageProcessor$1, "__esModule", { value: true });
 	StorageProcessor$1.StorageProcessor = void 0;
-	const protocol_js_1$7 = protocol;
-	const assert_js_1 = assert$1;
-	const log_js_1$6 = log$1;
+	const protocol_js_1$d = protocol;
+	const assert_js_1$3 = assert$1;
+	const log_js_1$b = log$1;
 	const NetworkProcessor_js_1$1 = NetworkProcessor$1;
-	const NetworkUtils_js_1 = NetworkUtils;
+	const NetworkUtils_js_1$2 = NetworkUtils;
 	/**
 	 * Responsible for handling the `storage` domain.
 	 */
@@ -7637,7 +4343,7 @@ var mapperTab = (function () {
 	        catch (err) {
 	            if (this.#isNoSuchUserContextError(err)) {
 	                // If the user context is not found, special error is thrown.
-	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	                throw new protocol_js_1$d.NoSuchUserContextException(err.message);
 	            }
 	            throw err;
 	        }
@@ -7649,7 +4355,7 @@ var mapperTab = (function () {
 	        (c) => partitionKey.sourceOrigin === undefined ||
 	            c.partitionKey === partitionKey.sourceOrigin)
 	            .filter((cdpCookie) => {
-	            const bidiCookie = (0, NetworkUtils_js_1.cdpToBiDiCookie)(cdpCookie);
+	            const bidiCookie = (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(cdpCookie);
 	            return this.#matchCookie(bidiCookie, params.filter);
 	        })
 	            .map((cookie) => ({
@@ -7676,7 +4382,7 @@ var mapperTab = (function () {
 	        catch (err) {
 	            if (this.#isNoSuchUserContextError(err)) {
 	                // If the user context is not found, special error is thrown.
-	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	                throw new protocol_js_1$d.NoSuchUserContextException(err.message);
 	            }
 	            throw err;
 	        }
@@ -7687,7 +4393,7 @@ var mapperTab = (function () {
 	        // are returned.
 	        (c) => partitionKey.sourceOrigin === undefined ||
 	            c.partitionKey === partitionKey.sourceOrigin)
-	            .map((c) => (0, NetworkUtils_js_1.cdpToBiDiCookie)(c))
+	            .map((c) => (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(c))
 	            .filter((c) => this.#matchCookie(c, params.filter));
 	        return {
 	            cookies: filteredBiDiCookies,
@@ -7696,7 +4402,7 @@ var mapperTab = (function () {
 	    }
 	    async setCookie(params) {
 	        const partitionKey = this.#expandStoragePartitionSpec(params.partition);
-	        const cdpCookie = (0, NetworkUtils_js_1.bidiToCdpCookie)(params, partitionKey);
+	        const cdpCookie = (0, NetworkUtils_js_1$2.bidiToCdpCookie)(params, partitionKey);
 	        try {
 	            await this.#browserCdpClient.sendCommand('Storage.setCookies', {
 	                cookies: [cdpCookie],
@@ -7706,10 +4412,10 @@ var mapperTab = (function () {
 	        catch (err) {
 	            if (this.#isNoSuchUserContextError(err)) {
 	                // If the user context is not found, special error is thrown.
-	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	                throw new protocol_js_1$d.NoSuchUserContextException(err.message);
 	            }
-	            this.#logger?.(log_js_1$6.LogType.debugError, err);
-	            throw new protocol_js_1$7.UnableToSetCookieException(err.toString());
+	            this.#logger?.(log_js_1$b.LogType.debugError, err);
+	            throw new protocol_js_1$d.UnableToSetCookieException(err.toString());
 	        }
 	        return {
 	            partitionKey,
@@ -7759,7 +4465,7 @@ var mapperTab = (function () {
 	            }
 	        }
 	        if (unsupportedPartitionKeys.size > 0) {
-	            this.#logger?.(log_js_1$6.LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
+	            this.#logger?.(log_js_1$b.LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
 	        }
 	        // Set `userContext` to `default` if not provided, as it's required in Chromium.
 	        const userContext = descriptor.userContext ?? 'default';
@@ -7776,7 +4482,7 @@ var mapperTab = (function () {
 	        if (partitionSpec.type === 'context') {
 	            return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
 	        }
-	        (0, assert_js_1.assert)(partitionSpec.type === 'storageKey', 'Unknown partition type');
+	        (0, assert_js_1$3.assert)(partitionSpec.type === 'storageKey', 'Unknown partition type');
 	        // Partition spec is a storage partition.
 	        // Let partition key be partition spec.
 	        return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
@@ -7789,8 +4495,8 @@ var mapperTab = (function () {
 	            (filter.name === undefined || filter.name === cookie.name) &&
 	            // `value` contains fields `type` and `value`.
 	            (filter.value === undefined ||
-	                (0, NetworkUtils_js_1.deserializeByteValue)(filter.value) ===
-	                    (0, NetworkUtils_js_1.deserializeByteValue)(cookie.value)) &&
+	                (0, NetworkUtils_js_1$2.deserializeByteValue)(filter.value) ===
+	                    (0, NetworkUtils_js_1$2.deserializeByteValue)(cookie.value)) &&
 	            (filter.path === undefined || filter.path === cookie.path) &&
 	            (filter.size === undefined || filter.size === cookie.size) &&
 	            (filter.httpOnly === undefined || filter.httpOnly === cookie.httpOnly) &&
@@ -7872,18 +4578,16 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(CommandProcessor$1, "__esModule", { value: true });
 	CommandProcessor$1.CommandProcessor = void 0;
-	const protocol_js_1$6 = protocol;
+	const protocol_js_1$c = protocol;
 	const EventEmitter_js_1$3 = EventEmitter$1;
-	const log_js_1$5 = log$1;
+	const log_js_1$a = log$1;
 	const BidiNoOpParser_js_1 = BidiNoOpParser$1;
 	const BrowserProcessor_js_1 = BrowserProcessor$1;
 	const CdpProcessor_js_1 = CdpProcessor$1;
 	const BrowsingContextProcessor_js_1 = BrowsingContextProcessor$1;
 	const InputProcessor_js_1 = InputProcessor$1;
 	const NetworkProcessor_js_1 = NetworkProcessor$1;
-	const NetworkStorage_js_1 = NetworkStorage$1;
 	const PermissionsProcessor_js_1 = PermissionsProcessor$1;
-	const PreloadScriptStorage_js_1 = PreloadScriptStorage$1;
 	const ScriptProcessor_js_1 = ScriptProcessor$1;
 	const SessionProcessor_js_1 = SessionProcessor$1;
 	const StorageProcessor_js_1 = StorageProcessor$1;
@@ -7902,15 +4606,13 @@ var mapperTab = (function () {
 	    // keep-sorted end
 	    #parser;
 	    #logger;
-	    constructor(cdpConnection, browserCdpClient, eventManager, selfTargetId, defaultUserContextId, browsingContextStorage, realmStorage, acceptInsecureCerts, parser = new BidiNoOpParser_js_1.BidiNoOpParser(), logger) {
+	    constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, parser = new BidiNoOpParser_js_1.BidiNoOpParser(), logger) {
 	        super();
 	        this.#parser = parser;
 	        this.#logger = logger;
-	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(eventManager, browserCdpClient, logger);
-	        const preloadScriptStorage = new PreloadScriptStorage_js_1.PreloadScriptStorage();
 	        // keep-sorted start block=yes
 	        this.#browserProcessor = new BrowserProcessor_js_1.BrowserProcessor(browserCdpClient);
-	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger);
+	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(browserCdpClient, browsingContextStorage);
 	        this.#cdpProcessor = new CdpProcessor_js_1.CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
 	        this.#inputProcessor = new InputProcessor_js_1.InputProcessor(browsingContextStorage, realmStorage);
 	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
@@ -8042,7 +4744,7 @@ var mapperTab = (function () {
 	        // Intentionally kept outside the switch statement to ensure that
 	        // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
 	        // command is added.
-	        throw new protocol_js_1$6.UnknownCommandException(`Unknown command '${command.method}'.`);
+	        throw new protocol_js_1$c.UnknownCommandException(`Unknown command '${command.method}'.`);
 	    }
 	    // Workaround for as zod.union always take the first schema
 	    // https://github.com/w3c/webdriver-bidi/issues/635
@@ -8071,7 +4773,7 @@ var mapperTab = (function () {
 	            });
 	        }
 	        catch (e) {
-	            if (e instanceof protocol_js_1$6.Exception) {
+	            if (e instanceof protocol_js_1$c.Exception) {
 	                this.emit("response" /* CommandProcessorEvents.Response */, {
 	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(e.toErrorResponse(command.id), command.channel),
 	                    event: command.method,
@@ -8079,9 +4781,9 @@ var mapperTab = (function () {
 	            }
 	            else {
 	                const error = e;
-	                this.#logger?.(log_js_1$5.LogType.bidi, error);
+	                this.#logger?.(log_js_1$a.LogType.bidi, error);
 	                this.emit("response" /* CommandProcessorEvents.Response */, {
-	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(new protocol_js_1$6.UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
+	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(new protocol_js_1$c.UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
 	                    event: command.method,
 	                });
 	            }
@@ -8089,6 +4791,2553 @@ var mapperTab = (function () {
 	    }
 	}
 	CommandProcessor$1.CommandProcessor = CommandProcessor;
+
+	var CdpTargetManager$1 = {};
+
+	var BrowsingContextImpl$1 = {};
+
+	var Deferred$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Deferred$1, "__esModule", { value: true });
+	Deferred$1.Deferred = void 0;
+	class Deferred {
+	    #isFinished = false;
+	    #promise;
+	    #resolve;
+	    #reject;
+	    get isFinished() {
+	        return this.#isFinished;
+	    }
+	    constructor() {
+	        this.#promise = new Promise((resolve, reject) => {
+	            this.#resolve = resolve;
+	            this.#reject = reject;
+	        });
+	        // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
+	        // and `catch` will be rejected anyway.
+	        this.#promise.catch((_error) => {
+	            // Intentionally empty.
+	        });
+	    }
+	    then(onFulfilled, onRejected) {
+	        return this.#promise.then(onFulfilled, onRejected);
+	    }
+	    catch(onRejected) {
+	        return this.#promise.catch(onRejected);
+	    }
+	    resolve(value) {
+	        if (!this.#isFinished) {
+	            this.#isFinished = true;
+	            this.#resolve(value);
+	        }
+	    }
+	    reject(reason) {
+	        if (!this.#isFinished) {
+	            this.#isFinished = true;
+	            this.#reject(reason);
+	        }
+	    }
+	    finally(onFinally) {
+	        return this.#promise.finally(onFinally);
+	    }
+	    [Symbol.toStringTag] = 'Promise';
+	}
+	Deferred$1.Deferred = Deferred;
+
+	var unitConversions = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(unitConversions, "__esModule", { value: true });
+	unitConversions.inchesFromCm = void 0;
+	/** @return Given an input in cm, convert it to inches. */
+	function inchesFromCm(cm) {
+	    return cm / 2.54;
+	}
+	unitConversions.inchesFromCm = inchesFromCm;
+
+	var WindowRealm$1 = {};
+
+	var Realm$1 = {};
+
+	Object.defineProperty(Realm$1, "__esModule", { value: true });
+	Realm$1.Realm = void 0;
+	const protocol_js_1$b = protocol;
+	const log_js_1$9 = log$1;
+	const uuid_js_1$1 = uuid;
+	const ChannelProxy_js_1 = ChannelProxy$1;
+	class Realm {
+	    #cdpClient;
+	    #eventManager;
+	    #executionContextId;
+	    #logger;
+	    #origin;
+	    #realmId;
+	    #realmStorage;
+	    constructor(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage) {
+	        this.#cdpClient = cdpClient;
+	        this.#eventManager = eventManager;
+	        this.#executionContextId = executionContextId;
+	        this.#logger = logger;
+	        this.#origin = origin;
+	        this.#realmId = realmId;
+	        this.#realmStorage = realmStorage;
+	        this.#realmStorage.addRealm(this);
+	    }
+	    cdpToBidiValue(cdpValue, resultOwnership) {
+	        const bidiValue = this.serializeForBiDi(cdpValue.result.deepSerializedValue, new Map());
+	        if (cdpValue.result.objectId) {
+	            const objectId = cdpValue.result.objectId;
+	            if (resultOwnership === "root" /* Script.ResultOwnership.Root */) {
+	                // Extend BiDi value with `handle` based on required `resultOwnership`
+	                // and  CDP response but not on the actual BiDi type.
+	                bidiValue.handle = objectId;
+	                // Remember all the handles sent to client.
+	                this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
+	            }
+	            else {
+	                // No need to await for the object to be released.
+	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$9.LogType.debugError, error));
+	            }
+	        }
+	        return bidiValue;
+	    }
+	    /**
+	     * Relies on the CDP to implement proper BiDi serialization, except:
+	     * * CDP integer property `backendNodeId` is replaced with `sharedId` of
+	     * `{documentId}_element_{backendNodeId}`;
+	     * * CDP integer property `weakLocalObjectReference` is replaced with UUID `internalId`
+	     * using unique-per serialization `internalIdMap`.
+	     * * CDP type `platformobject` is replaced with `object`.
+	     * @param deepSerializedValue - CDP value to be converted to BiDi.
+	     * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
+	     * `internalId`.
+	     */
+	    serializeForBiDi(deepSerializedValue, internalIdMap) {
+	        if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
+	            const weakLocalObjectReference = deepSerializedValue.weakLocalObjectReference;
+	            if (!internalIdMap.has(weakLocalObjectReference)) {
+	                internalIdMap.set(weakLocalObjectReference, (0, uuid_js_1$1.uuidv4)());
+	            }
+	            deepSerializedValue.internalId = internalIdMap.get(weakLocalObjectReference);
+	            delete deepSerializedValue['weakLocalObjectReference'];
+	        }
+	        // Platform object is a special case. It should have only `{type: object}`
+	        // without `value` field.
+	        if (deepSerializedValue.type === 'platformobject') {
+	            return { type: 'object' };
+	        }
+	        const bidiValue = deepSerializedValue.value;
+	        if (bidiValue === undefined) {
+	            return deepSerializedValue;
+	        }
+	        // Recursively update the nested values.
+	        if (['array', 'set', 'htmlcollection', 'nodelist'].includes(deepSerializedValue.type)) {
+	            for (const i in bidiValue) {
+	                bidiValue[i] = this.serializeForBiDi(bidiValue[i], internalIdMap);
+	            }
+	        }
+	        if (['object', 'map'].includes(deepSerializedValue.type)) {
+	            for (const i in bidiValue) {
+	                bidiValue[i] = [
+	                    this.serializeForBiDi(bidiValue[i][0], internalIdMap),
+	                    this.serializeForBiDi(bidiValue[i][1], internalIdMap),
+	                ];
+	            }
+	        }
+	        return deepSerializedValue;
+	    }
+	    get realmId() {
+	        return this.#realmId;
+	    }
+	    get executionContextId() {
+	        return this.#executionContextId;
+	    }
+	    get origin() {
+	        return this.#origin;
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	        };
+	    }
+	    get cdpClient() {
+	        return this.#cdpClient;
+	    }
+	    get baseInfo() {
+	        return {
+	            realm: this.realmId,
+	            origin: this.origin,
+	        };
+	    }
+	    async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
+	        const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
+	            contextId: this.executionContextId,
+	            expression,
+	            awaitPromise,
+	            serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+	            userGesture: userActivation,
+	        });
+	        if (cdpEvaluateResult.exceptionDetails) {
+	            return await this.#getExceptionResult(cdpEvaluateResult.exceptionDetails, 0, resultOwnership);
+	        }
+	        return {
+	            realm: this.realmId,
+	            result: this.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
+	            type: 'success',
+	        };
+	    }
+	    #registerEvent(event) {
+	        if (this.associatedBrowsingContexts.length === 0) {
+	            this.#eventManager.registerEvent(event, null);
+	        }
+	        else {
+	            for (const browsingContext of this.associatedBrowsingContexts) {
+	                this.#eventManager.registerEvent(event, browsingContext.id);
+	            }
+	        }
+	    }
+	    initialize() {
+	        this.#registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$b.ChromiumBidi.Script.EventNames.RealmCreated,
+	            params: this.realmInfo,
+	        });
+	    }
+	    /**
+	     * Serializes a given CDP object into BiDi, keeping references in the
+	     * target's `globalThis`.
+	     */
+	    async serializeCdpObject(cdpRemoteObject, resultOwnership) {
+	        const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
+	        const cdpValue = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((remoteObject) => remoteObject),
+	            awaitPromise: false,
+	            arguments: [argument],
+	            serializationOptions: {
+	                serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+	            },
+	            executionContextId: this.executionContextId,
+	        });
+	        return this.cdpToBidiValue(cdpValue, resultOwnership);
+	    }
+	    static #cdpRemoteObjectToCallArgument(cdpRemoteObject) {
+	        if (cdpRemoteObject.objectId !== undefined) {
+	            return { objectId: cdpRemoteObject.objectId };
+	        }
+	        if (cdpRemoteObject.unserializableValue !== undefined) {
+	            return { unserializableValue: cdpRemoteObject.unserializableValue };
+	        }
+	        return { value: cdpRemoteObject.value };
+	    }
+	    /**
+	     * Gets the string representation of an object. This is equivalent to
+	     * calling `toString()` on the object value.
+	     */
+	    async stringifyObject(cdpRemoteObject) {
+	        const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((remoteObject) => String(remoteObject)),
+	            awaitPromise: false,
+	            arguments: [cdpRemoteObject],
+	            returnByValue: true,
+	            executionContextId: this.executionContextId,
+	        });
+	        return result.value;
+	    }
+	    async #flattenKeyValuePairs(mappingLocalValue) {
+	        const keyValueArray = await Promise.all(mappingLocalValue.map(async ([key, value]) => {
+	            let keyArg;
+	            if (typeof key === 'string') {
+	                // Key is a string.
+	                keyArg = { value: key };
+	            }
+	            else {
+	                // Key is a serialized value.
+	                keyArg = await this.deserializeForCdp(key);
+	            }
+	            const valueArg = await this.deserializeForCdp(value);
+	            return [keyArg, valueArg];
+	        }));
+	        return keyValueArray.flat();
+	    }
+	    async #flattenValueList(listLocalValue) {
+	        return await Promise.all(listLocalValue.map((localValue) => this.deserializeForCdp(localValue)));
+	    }
+	    async #serializeCdpExceptionDetails(cdpExceptionDetails, lineOffset, resultOwnership) {
+	        const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map((frame) => ({
+	            url: frame.url,
+	            functionName: frame.functionName,
+	            lineNumber: frame.lineNumber - lineOffset,
+	            columnNumber: frame.columnNumber,
+	        })) ?? [];
+	        // Exception should always be there.
+	        const exception = cdpExceptionDetails.exception;
+	        return {
+	            exception: await this.serializeCdpObject(exception, resultOwnership),
+	            columnNumber: cdpExceptionDetails.columnNumber,
+	            lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
+	            stackTrace: {
+	                callFrames,
+	            },
+	            text: (await this.stringifyObject(exception)) || cdpExceptionDetails.text,
+	        };
+	    }
+	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue = {
+	        type: 'undefined',
+	    }, argumentsLocalValues = [], resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
+	        const callFunctionAndSerializeScript = `(...args) => {
+      function callFunction(f, args) {
+        const deserializedThis = args.shift();
+        const deserializedArgs = args;
+        return f.apply(deserializedThis, deserializedArgs);
+      }
+      return callFunction((
+        ${functionDeclaration}
+      ), args);
+    }`;
+	        const thisAndArgumentsList = [
+	            await this.deserializeForCdp(thisLocalValue),
+	            ...(await Promise.all(argumentsLocalValues.map(async (argumentLocalValue) => await this.deserializeForCdp(argumentLocalValue)))),
+	        ];
+	        let cdpCallFunctionResult;
+	        try {
+	            cdpCallFunctionResult = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                functionDeclaration: callFunctionAndSerializeScript,
+	                awaitPromise,
+	                arguments: thisAndArgumentsList,
+	                serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+	                executionContextId: this.executionContextId,
+	                userGesture: userActivation,
+	            });
+	        }
+	        catch (error) {
+	            // Heuristic to determine if the problem is in the argument.
+	            // The check can be done on the `deserialization` step, but this approach
+	            // helps to save round-trips.
+	            if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                [
+	                    'Could not find object with given id',
+	                    'Argument should belong to the same JavaScript world as target object',
+	                    'Invalid remote object id',
+	                ].includes(error.message)) {
+	                throw new protocol_js_1$b.NoSuchHandleException('Handle was not found.');
+	            }
+	            throw error;
+	        }
+	        if (cdpCallFunctionResult.exceptionDetails) {
+	            return await this.#getExceptionResult(cdpCallFunctionResult.exceptionDetails, 1, resultOwnership);
+	        }
+	        return {
+	            type: 'success',
+	            result: this.cdpToBidiValue(cdpCallFunctionResult, resultOwnership),
+	            realm: this.realmId,
+	        };
+	    }
+	    async deserializeForCdp(localValue) {
+	        if ('handle' in localValue && localValue.handle) {
+	            return { objectId: localValue.handle };
+	            // We tried to find a handle value but failed
+	            // This allows us to have exhaustive switch on `localValue.type`
+	        }
+	        else if ('handle' in localValue || 'sharedId' in localValue) {
+	            throw new protocol_js_1$b.NoSuchHandleException('Handle was not found.');
+	        }
+	        switch (localValue.type) {
+	            case 'undefined':
+	                return { unserializableValue: 'undefined' };
+	            case 'null':
+	                return { unserializableValue: 'null' };
+	            case 'string':
+	                return { value: localValue.value };
+	            case 'number':
+	                if (localValue.value === 'NaN') {
+	                    return { unserializableValue: 'NaN' };
+	                }
+	                else if (localValue.value === '-0') {
+	                    return { unserializableValue: '-0' };
+	                }
+	                else if (localValue.value === 'Infinity') {
+	                    return { unserializableValue: 'Infinity' };
+	                }
+	                else if (localValue.value === '-Infinity') {
+	                    return { unserializableValue: '-Infinity' };
+	                }
+	                return {
+	                    value: localValue.value,
+	                };
+	            case 'boolean':
+	                return { value: Boolean(localValue.value) };
+	            case 'bigint':
+	                return {
+	                    unserializableValue: `BigInt(${JSON.stringify(localValue.value)})`,
+	                };
+	            case 'date':
+	                return {
+	                    unserializableValue: `new Date(Date.parse(${JSON.stringify(localValue.value)}))`,
+	                };
+	            case 'regexp':
+	                return {
+	                    unserializableValue: `new RegExp(${JSON.stringify(localValue.value.pattern)}, ${JSON.stringify(localValue.value.flags)})`,
+	                };
+	            case 'map': {
+	                // TODO: If none of the nested keys and values has a remote
+	                // reference, serialize to `unserializableValue` without CDP roundtrip.
+	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => {
+	                        const result = new Map();
+	                        for (let i = 0; i < args.length; i += 2) {
+	                            result.set(args[i], args[i + 1]);
+	                        }
+	                        return result;
+	                    }),
+	                    awaitPromise: false,
+	                    arguments: keyValueArray,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'object': {
+	                // TODO: If none of the nested keys and values has a remote
+	                // reference, serialize to `unserializableValue` without CDP roundtrip.
+	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => {
+	                        const result = {};
+	                        for (let i = 0; i < args.length; i += 2) {
+	                            // Key should be either `string`, `number`, or `symbol`.
+	                            const key = args[i];
+	                            result[key] = args[i + 1];
+	                        }
+	                        return result;
+	                    }),
+	                    awaitPromise: false,
+	                    arguments: keyValueArray,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'array': {
+	                // TODO: If none of the nested items has a remote reference,
+	                // serialize to `unserializableValue` without CDP roundtrip.
+	                const args = await this.#flattenValueList(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => args),
+	                    awaitPromise: false,
+	                    arguments: args,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'set': {
+	                // TODO: if none of the nested items has a remote reference,
+	                // serialize to `unserializableValue` without CDP roundtrip.
+	                const args = await this.#flattenValueList(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => new Set(args)),
+	                    awaitPromise: false,
+	                    arguments: args,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'channel': {
+	                const channelProxy = new ChannelProxy_js_1.ChannelProxy(localValue.value, this.#logger);
+	                const channelProxySendMessageHandle = await channelProxy.init(this, this.#eventManager);
+	                return { objectId: channelProxySendMessageHandle };
+	            }
+	            // TODO(#375): Dispose of nested objects.
+	        }
+	        // Intentionally outside to handle unknown types
+	        throw new Error(`Value ${JSON.stringify(localValue)} is not deserializable.`);
+	    }
+	    async #getExceptionResult(exceptionDetails, lineOffset, resultOwnership) {
+	        return {
+	            exceptionDetails: await this.#serializeCdpExceptionDetails(exceptionDetails, lineOffset, resultOwnership),
+	            realm: this.realmId,
+	            type: 'exception',
+	        };
+	    }
+	    static #getSerializationOptions(serialization, serializationOptions) {
+	        return {
+	            serialization,
+	            additionalParameters: Realm.#getAdditionalSerializationParameters(serializationOptions),
+	            ...Realm.#getMaxObjectDepth(serializationOptions),
+	        };
+	    }
+	    static #getAdditionalSerializationParameters(serializationOptions) {
+	        const additionalParameters = {};
+	        if (serializationOptions.maxDomDepth !== undefined) {
+	            additionalParameters['maxNodeDepth'] =
+	                serializationOptions.maxDomDepth === null
+	                    ? 1000
+	                    : serializationOptions.maxDomDepth;
+	        }
+	        if (serializationOptions.includeShadowTree !== undefined) {
+	            additionalParameters['includeShadowTree'] =
+	                serializationOptions.includeShadowTree;
+	        }
+	        return additionalParameters;
+	    }
+	    static #getMaxObjectDepth(serializationOptions) {
+	        return serializationOptions.maxObjectDepth === undefined ||
+	            serializationOptions.maxObjectDepth === null
+	            ? {}
+	            : { maxDepth: serializationOptions.maxObjectDepth };
+	    }
+	    async #releaseObject(handle) {
+	        try {
+	            await this.cdpClient.sendCommand('Runtime.releaseObject', {
+	                objectId: handle,
+	            });
+	        }
+	        catch (error) {
+	            // Heuristic to determine if the problem is in the unknown handler.
+	            // Ignore the error if so.
+	            if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                error.message === 'Invalid remote object id')) {
+	                throw error;
+	            }
+	        }
+	    }
+	    async disown(handle) {
+	        // Disowning an object from different realm does nothing.
+	        if (this.#realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
+	            return;
+	        }
+	        await this.#releaseObject(handle);
+	        this.#realmStorage.knownHandlesToRealmMap.delete(handle);
+	    }
+	    dispose() {
+	        this.#registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$b.ChromiumBidi.Script.EventNames.RealmDestroyed,
+	            params: {
+	                realm: this.realmId,
+	            },
+	        });
+	    }
+	}
+	Realm$1.Realm = Realm;
+
+	var SharedId = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(SharedId, "__esModule", { value: true });
+	SharedId.parseSharedId = SharedId.getSharedId = void 0;
+	const SHARED_ID_DIVIDER = '_element_';
+	function getSharedId(frameId, documentId, backendNodeId) {
+	    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
+	}
+	SharedId.getSharedId = getSharedId;
+	function parseLegacySharedId(sharedId) {
+	    const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
+	    if (!match) {
+	        // SharedId is incorrectly formatted.
+	        return null;
+	    }
+	    const documentId = match[1];
+	    const elementId = match[2];
+	    if (documentId === undefined || elementId === undefined) {
+	        return null;
+	    }
+	    const backendNodeId = parseInt(elementId ?? '');
+	    if (isNaN(backendNodeId)) {
+	        return null;
+	    }
+	    return {
+	        documentId,
+	        backendNodeId,
+	    };
+	}
+	function parseSharedId(sharedId) {
+	    // TODO: remove legacy check once ChromeDriver provides sharedId in the new format.
+	    const legacyFormattedSharedId = parseLegacySharedId(sharedId);
+	    if (legacyFormattedSharedId !== null) {
+	        return { ...legacyFormattedSharedId, frameId: undefined };
+	    }
+	    const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
+	    if (!match) {
+	        // SharedId is incorrectly formatted.
+	        return null;
+	    }
+	    const frameId = match[1];
+	    const documentId = match[2];
+	    const elementId = match[3];
+	    if (frameId === undefined ||
+	        documentId === undefined ||
+	        elementId === undefined) {
+	        return null;
+	    }
+	    const backendNodeId = parseInt(elementId ?? '');
+	    if (isNaN(backendNodeId)) {
+	        return null;
+	    }
+	    return {
+	        frameId,
+	        documentId,
+	        backendNodeId,
+	    };
+	}
+	SharedId.parseSharedId = parseSharedId;
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(WindowRealm$1, "__esModule", { value: true });
+	WindowRealm$1.WindowRealm = void 0;
+	const protocol_js_1$a = protocol;
+	const Realm_js_1$1 = Realm$1;
+	const SharedId_js_1 = SharedId;
+	class WindowRealm extends Realm_js_1$1.Realm {
+	    #browsingContextId;
+	    #browsingContextStorage;
+	    sandbox;
+	    constructor(browsingContextId, browsingContextStorage, cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage, sandbox) {
+	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
+	        this.#browsingContextId = browsingContextId;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.sandbox = sandbox;
+	        this.initialize();
+	    }
+	    #getBrowsingContextId(navigableId) {
+	        const maybeBrowsingContext = this.#browsingContextStorage
+	            .getAllContexts()
+	            .find((context) => context.navigableId === navigableId);
+	        return maybeBrowsingContext?.id ?? 'UNKNOWN';
+	    }
+	    get browsingContext() {
+	        return this.#browsingContextStorage.getContext(this.#browsingContextId);
+	    }
+	    get associatedBrowsingContexts() {
+	        return [this.browsingContext];
+	    }
+	    get realmType() {
+	        return 'window';
+	    }
+	    get realmInfo() {
+	        return {
+	            ...this.baseInfo,
+	            type: this.realmType,
+	            context: this.#browsingContextId,
+	            sandbox: this.sandbox,
+	        };
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	            context: this.browsingContext.id,
+	        };
+	    }
+	    serializeForBiDi(deepSerializedValue, internalIdMap) {
+	        const bidiValue = deepSerializedValue.value;
+	        if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
+	            if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+	                let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
+	                if (Object.hasOwn(bidiValue, 'loaderId')) {
+	                    // `loaderId` should be always there after ~2024-03-05, when
+	                    // https://crrev.com/c/5116240 reaches stable.
+	                    // TODO: remove the check after the date.
+	                    navigableId = bidiValue.loaderId;
+	                    delete bidiValue['loaderId'];
+	                }
+	                deepSerializedValue.sharedId =
+	                    (0, SharedId_js_1.getSharedId)(this.#getBrowsingContextId(navigableId), navigableId, bidiValue.backendNodeId);
+	                delete bidiValue['backendNodeId'];
+	            }
+	            if (Object.hasOwn(bidiValue, 'children')) {
+	                for (const i in bidiValue.children) {
+	                    bidiValue.children[i] = this.serializeForBiDi(bidiValue.children[i], internalIdMap);
+	                }
+	            }
+	            if (Object.hasOwn(bidiValue, 'shadowRoot') &&
+	                bidiValue.shadowRoot !== null) {
+	                bidiValue.shadowRoot = this.serializeForBiDi(bidiValue.shadowRoot, internalIdMap);
+	            }
+	            // `namespaceURI` can be is either `null` or non-empty string.
+	            if (bidiValue.namespaceURI === '') {
+	                bidiValue.namespaceURI = null;
+	            }
+	        }
+	        return super.serializeForBiDi(deepSerializedValue, internalIdMap);
+	    }
+	    async deserializeForCdp(localValue) {
+	        if ('sharedId' in localValue && localValue.sharedId) {
+	            const parsedSharedId = (0, SharedId_js_1.parseSharedId)(localValue.sharedId);
+	            if (parsedSharedId === null) {
+	                throw new protocol_js_1$a.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
+	            }
+	            const { documentId, backendNodeId } = parsedSharedId;
+	            // TODO: add proper validation if the element is accessible from the current realm.
+	            if (this.browsingContext.navigableId !== documentId) {
+	                throw new protocol_js_1$a.NoSuchNodeException(`SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`);
+	            }
+	            try {
+	                const { object } = await this.cdpClient.sendCommand('DOM.resolveNode', {
+	                    backendNodeId,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `obj.object.objectId` after using.
+	                return { objectId: object.objectId };
+	            }
+	            catch (error) {
+	                // Heuristic to detect "no such node" exception. Based on the  specific
+	                // CDP implementation.
+	                if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                    error.message === 'No node with given id found') {
+	                    throw new protocol_js_1$a.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
+	                }
+	                throw new protocol_js_1$a.UnknownErrorException(error.message, error.stack);
+	            }
+	        }
+	        return await super.deserializeForCdp(localValue);
+	    }
+	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation) {
+	        await this.#browsingContextStorage
+	            .getContext(this.#browsingContextId)
+	            .targetUnblockedOrThrow();
+	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation);
+	    }
+	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation) {
+	        await this.#browsingContextStorage
+	            .getContext(this.#browsingContextId)
+	            .targetUnblockedOrThrow();
+	        return await super.callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation);
+	    }
+	}
+	WindowRealm$1.WindowRealm = WindowRealm;
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BrowsingContextImpl$1, "__esModule", { value: true });
+	BrowsingContextImpl$1.serializeOrigin = BrowsingContextImpl$1.BrowsingContextImpl = void 0;
+	const protocol_js_1$9 = protocol;
+	const assert_js_1$2 = assert$1;
+	const Deferred_js_1$2 = Deferred$1;
+	const log_js_1$8 = log$1;
+	const unitConversions_js_1 = unitConversions;
+	const WindowRealm_js_1$1 = WindowRealm$1;
+	class BrowsingContextImpl {
+	    static LOGGER_PREFIX = `${log_js_1$8.LogType.debug}:browsingContext`;
+	    /** The ID of this browsing context. */
+	    #id;
+	    userContext;
+	    /**
+	     * The ID of the parent browsing context.
+	     * If null, this is a top-level context.
+	     */
+	    #parentId;
+	    /** Direct children browsing contexts. */
+	    #children = new Set();
+	    #browsingContextStorage;
+	    #lifecycle = {
+	        DOMContentLoaded: new Deferred_js_1$2.Deferred(),
+	        load: new Deferred_js_1$2.Deferred(),
+	    };
+	    #navigation = {
+	        withinDocument: new Deferred_js_1$2.Deferred(),
+	    };
+	    #url = 'about:blank';
+	    #eventManager;
+	    #realmStorage;
+	    #loaderId;
+	    #cdpTarget;
+	    #maybeDefaultRealm;
+	    #logger;
+	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#id = id;
+	        this.#parentId = parentId;
+	        this.userContext = userContext;
+	        this.#eventManager = eventManager;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#realmStorage = realmStorage;
+	        this.#logger = logger;
+	    }
+	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger) {
+	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger);
+	        context.#initListeners();
+	        browsingContextStorage.addContext(context);
+	        if (!context.isTopLevelContext()) {
+	            context.parent.addChild(context.id);
+	        }
+	        eventManager.registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+	            params: context.serializeToBidiValue(),
+	        }, context.id);
+	        return context;
+	    }
+	    static getTimestamp() {
+	        // `timestamp` from the event is MonotonicTime, not real time, so
+	        // the best Mapper can do is to set the timestamp to the epoch time
+	        // of the event arrived.
+	        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
+	        return new Date().getTime();
+	    }
+	    /**
+	     * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
+	     */
+	    get navigableId() {
+	        return this.#loaderId;
+	    }
+	    dispose() {
+	        this.#deleteAllChildren();
+	        this.#realmStorage.deleteRealms({
+	            browsingContextId: this.id,
+	        });
+	        // Remove context from the parent.
+	        if (!this.isTopLevelContext()) {
+	            this.parent.#children.delete(this.id);
+	        }
+	        // Fail all ongoing navigations.
+	        this.#failLifecycleIfNotFinished();
+	        this.#eventManager.registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+	            params: this.serializeToBidiValue(),
+	        }, this.id);
+	        this.#browsingContextStorage.deleteContextById(this.id);
+	    }
+	    /** Returns the ID of this context. */
+	    get id() {
+	        return this.#id;
+	    }
+	    /** Returns the parent context ID. */
+	    get parentId() {
+	        return this.#parentId;
+	    }
+	    /** Returns the parent context. */
+	    get parent() {
+	        if (this.parentId === null) {
+	            return null;
+	        }
+	        return this.#browsingContextStorage.getContext(this.parentId);
+	    }
+	    /** Returns all direct children contexts. */
+	    get directChildren() {
+	        return [...this.#children].map((id) => this.#browsingContextStorage.getContext(id));
+	    }
+	    /** Returns all children contexts, flattened. */
+	    get allChildren() {
+	        const children = this.directChildren;
+	        return children.concat(...children.map((child) => child.allChildren));
+	    }
+	    /**
+	     * Returns true if this is a top-level context.
+	     * This is the case whenever the parent context ID is null.
+	     */
+	    isTopLevelContext() {
+	        return this.#parentId === null;
+	    }
+	    get top() {
+	        // eslint-disable-next-line @typescript-eslint/no-this-alias
+	        let topContext = this;
+	        let parent = topContext.parent;
+	        while (parent) {
+	            topContext = parent;
+	            parent = topContext.parent;
+	        }
+	        return topContext;
+	    }
+	    addChild(childId) {
+	        this.#children.add(childId);
+	    }
+	    #deleteAllChildren() {
+	        this.directChildren.map((child) => child.dispose());
+	    }
+	    get #defaultRealm() {
+	        (0, assert_js_1$2.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
+	        return this.#maybeDefaultRealm;
+	    }
+	    get cdpTarget() {
+	        return this.#cdpTarget;
+	    }
+	    updateCdpTarget(cdpTarget) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#initListeners();
+	    }
+	    get url() {
+	        return this.#url;
+	    }
+	    async lifecycleLoaded() {
+	        await this.#lifecycle.load;
+	    }
+	    async targetUnblockedOrThrow() {
+	        const result = await this.#cdpTarget.unblocked;
+	        if (result.kind === 'error') {
+	            throw result.error;
+	        }
+	    }
+	    async getOrCreateSandbox(sandbox) {
+	        if (sandbox === undefined || sandbox === '') {
+	            return this.#defaultRealm;
+	        }
+	        let maybeSandboxes = this.#realmStorage.findRealms({
+	            browsingContextId: this.id,
+	            sandbox,
+	        });
+	        if (maybeSandboxes.length === 0) {
+	            await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
+	                frameId: this.id,
+	                worldName: sandbox,
+	            });
+	            // `Runtime.executionContextCreated` should be emitted by the time the
+	            // previous command is done.
+	            maybeSandboxes = this.#realmStorage.findRealms({
+	                browsingContextId: this.id,
+	                sandbox,
+	            });
+	            (0, assert_js_1$2.assert)(maybeSandboxes.length !== 0);
+	        }
+	        // It's possible for more than one sandbox to be created due to provisional
+	        // frames. In this case, it's always the first one (i.e. the oldest one)
+	        // that is more relevant since the user may have set that one up already
+	        // through evaluation.
+	        return maybeSandboxes[0];
+	    }
+	    serializeToBidiValue(maxDepth = 0, addParentField = true) {
+	        return {
+	            context: this.#id,
+	            url: this.url,
+	            userContext: this.userContext,
+	            children: maxDepth > 0
+	                ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
+	                : null,
+	            ...(addParentField ? { parent: this.#parentId } : {}),
+	        };
+	    }
+	    onTargetInfoChanged(params) {
+	        this.#url = params.targetInfo.url;
+	    }
+	    #initListeners() {
+	        this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
+	            if (this.id !== params.frame.id) {
+	                return;
+	            }
+	            this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+	            // At the point the page is initialized, all the nested iframes from the
+	            // previous page are detached and realms are destroyed.
+	            // Remove children from context.
+	            this.#deleteAllChildren();
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            const timestamp = BrowsingContextImpl.getTimestamp();
+	            this.#url = params.url;
+	            this.#navigation.withinDocument.resolve(params);
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+	                params: {
+	                    context: this.id,
+	                    navigation: null,
+	                    timestamp,
+	                    url: this.#url,
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+	                params: {
+	                    context: this.id,
+	                    navigation: null,
+	                    timestamp: BrowsingContextImpl.getTimestamp(),
+	                    url: '',
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            if (params.name === 'init') {
+	                this.#documentChanged(params.loaderId);
+	                return;
+	            }
+	            if (params.name === 'commit') {
+	                this.#loaderId = params.loaderId;
+	                return;
+	            }
+	            // If mapper attached to the page late, it might miss init and
+	            // commit events. In that case, save the first loaderId for this
+	            // frameId.
+	            if (!this.#loaderId) {
+	                this.#loaderId = params.loaderId;
+	            }
+	            // Ignore event from not current navigation.
+	            if (params.loaderId !== this.#loaderId) {
+	                return;
+	            }
+	            const timestamp = BrowsingContextImpl.getTimestamp();
+	            switch (params.name) {
+	                case 'DOMContentLoaded':
+	                    this.#eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+	                        params: {
+	                            context: this.id,
+	                            navigation: this.#loaderId ?? null,
+	                            timestamp,
+	                            url: this.#url,
+	                        },
+	                    }, this.id);
+	                    this.#lifecycle.DOMContentLoaded.resolve(params);
+	                    break;
+	                case 'load':
+	                    this.#eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.Load,
+	                        params: {
+	                            context: this.id,
+	                            navigation: this.#loaderId ?? null,
+	                            timestamp,
+	                            url: this.#url,
+	                        },
+	                    }, this.id);
+	                    this.#lifecycle.load.resolve(params);
+	                    break;
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+	            const { auxData, name, uniqueId, id } = params.context;
+	            if (!auxData || auxData.frameId !== this.id) {
+	                return;
+	            }
+	            let origin;
+	            let sandbox;
+	            // Only these execution contexts are supported for now.
+	            switch (auxData.type) {
+	                case 'isolated':
+	                    sandbox = name;
+	                    // Sandbox should have the same origin as the context itself, but in CDP
+	                    // it has an empty one.
+	                    origin = this.#defaultRealm.origin;
+	                    break;
+	                case 'default':
+	                    origin = serializeOrigin(params.context.origin);
+	                    break;
+	                default:
+	                    return;
+	            }
+	            const realm = new WindowRealm_js_1$1.WindowRealm(this.id, this.#browsingContextStorage, this.#cdpTarget.cdpClient, this.#eventManager, id, this.#logger, origin, uniqueId, this.#realmStorage, sandbox);
+	            if (auxData.isDefault) {
+	                this.#maybeDefaultRealm = realm;
+	                // Initialize ChannelProxy listeners for all the channels of all the
+	                // preload scripts related to this BrowsingContext.
+	                // TODO: extend for not default realms by the sandbox name.
+	                void Promise.all(this.#cdpTarget
+	                    .getChannels()
+	                    .map((channel) => channel.startListenerFromWindow(realm, this.#eventManager)));
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextDestroyed', (params) => {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.executionContextId,
+	            });
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	            });
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+	            const accepted = params.result;
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+	                params: {
+	                    context: this.id,
+	                    accepted,
+	                    userText: accepted && params.userInput ? params.userInput : undefined,
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
+	                params: {
+	                    context: this.id,
+	                    type: params.type,
+	                    message: params.message,
+	                    // Don't set the value if empty string
+	                    defaultValue: params.defaultPrompt || undefined,
+	                },
+	            }, this.id);
+	        });
+	    }
+	    #documentChanged(loaderId) {
+	        // Same document navigation.
+	        if (loaderId === undefined || this.#loaderId === loaderId) {
+	            if (this.#navigation.withinDocument.isFinished) {
+	                this.#navigation.withinDocument =
+	                    new Deferred_js_1$2.Deferred();
+	            }
+	            else {
+	                this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (navigatedWithinDocument)');
+	            }
+	            return;
+	        }
+	        this.#resetLifecycleIfFinished();
+	        this.#loaderId = loaderId;
+	    }
+	    #resetLifecycleIfFinished() {
+	        if (this.#lifecycle.DOMContentLoaded.isFinished) {
+	            this.#lifecycle.DOMContentLoaded =
+	                new Deferred_js_1$2.Deferred();
+	        }
+	        else {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (DOMContentLoaded)');
+	        }
+	        if (this.#lifecycle.load.isFinished) {
+	            this.#lifecycle.load = new Deferred_js_1$2.Deferred();
+	        }
+	        else {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (load)');
+	        }
+	    }
+	    #failLifecycleIfNotFinished() {
+	        if (!this.#lifecycle.DOMContentLoaded.isFinished) {
+	            this.#lifecycle.DOMContentLoaded.reject(new protocol_js_1$9.UnknownErrorException('navigation canceled'));
+	        }
+	        if (!this.#lifecycle.load.isFinished) {
+	            this.#lifecycle.load.reject(new protocol_js_1$9.UnknownErrorException('navigation canceled'));
+	        }
+	    }
+	    async navigate(url, wait) {
+	        try {
+	            new URL(url);
+	        }
+	        catch {
+	            throw new protocol_js_1$9.InvalidArgumentException(`Invalid URL: ${url}`);
+	        }
+	        await this.targetUnblockedOrThrow();
+	        // TODO: handle loading errors.
+	        const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
+	            url,
+	            frameId: this.id,
+	        });
+	        if (cdpNavigateResult.errorText) {
+	            throw new protocol_js_1$9.UnknownErrorException(cdpNavigateResult.errorText);
+	        }
+	        this.#documentChanged(cdpNavigateResult.loaderId);
+	        switch (wait) {
+	            case "none" /* BrowsingContext.ReadinessState.None */:
+	                break;
+	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
+	                // No `loaderId` means same-document navigation.
+	                if (cdpNavigateResult.loaderId === undefined) {
+	                    await this.#navigation.withinDocument;
+	                }
+	                else {
+	                    await this.#lifecycle.DOMContentLoaded;
+	                }
+	                break;
+	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
+	                // No `loaderId` means same-document navigation.
+	                if (cdpNavigateResult.loaderId === undefined) {
+	                    await this.#navigation.withinDocument;
+	                }
+	                else {
+	                    await this.#lifecycle.load;
+	                }
+	                break;
+	        }
+	        return {
+	            navigation: cdpNavigateResult.loaderId ?? null,
+	            // Url can change due to redirect get the latest one.
+	            url: wait === "none" /* BrowsingContext.ReadinessState.None */ ? url : this.#url,
+	        };
+	    }
+	    async reload(ignoreCache, wait) {
+	        await this.targetUnblockedOrThrow();
+	        this.#resetLifecycleIfFinished();
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+	            ignoreCache,
+	        });
+	        switch (wait) {
+	            case "none" /* BrowsingContext.ReadinessState.None */:
+	                break;
+	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
+	                await this.#lifecycle.DOMContentLoaded;
+	                break;
+	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
+	                await this.#lifecycle.load;
+	                break;
+	        }
+	        return {
+	            navigation: wait === "none" /* BrowsingContext.ReadinessState.None */
+	                ? null
+	                : this.navigableId ?? null,
+	            url: this.url,
+	        };
+	    }
+	    async setViewport(viewport, devicePixelRatio) {
+	        if (viewport === null && devicePixelRatio === null) {
+	            await this.#cdpTarget.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+	        }
+	        else {
+	            try {
+	                await this.#cdpTarget.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
+	                    width: viewport ? viewport.width : 0,
+	                    height: viewport ? viewport.height : 0,
+	                    deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
+	                    mobile: false,
+	                    dontSetVisibleSize: true,
+	                });
+	            }
+	            catch (err) {
+	                if (err.message.startsWith(
+	                // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
+	                'Width and height values must be positive')) {
+	                    throw new protocol_js_1$9.UnsupportedOperationException('Provided viewport dimensions are not supported');
+	                }
+	                throw err;
+	            }
+	        }
+	    }
+	    async handleUserPrompt(params) {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
+	            accept: params.accept ?? true,
+	            promptText: params.userText,
+	        });
+	    }
+	    async activate() {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+	    }
+	    async captureScreenshot(params) {
+	        if (!this.isTopLevelContext()) {
+	            throw new protocol_js_1$9.UnsupportedOperationException(`Non-top-level 'context' (${params.context}) is currently not supported`);
+	        }
+	        const formatParameters = getImageFormatParameters(params);
+	        // XXX: Focus the original tab after the screenshot is taken.
+	        // This is needed because the screenshot gets blocked until the active tab gets focus.
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+	        let captureBeyondViewport = false;
+	        let script;
+	        params.origin ??= 'viewport';
+	        switch (params.origin) {
+	            case 'document': {
+	                script = String(() => {
+	                    const element = document.documentElement;
+	                    return {
+	                        x: 0,
+	                        y: 0,
+	                        width: element.scrollWidth,
+	                        height: element.scrollHeight,
+	                    };
+	                });
+	                captureBeyondViewport = true;
+	                break;
+	            }
+	            case 'viewport': {
+	                script = String(() => {
+	                    const viewport = window.visualViewport;
+	                    return {
+	                        x: viewport.pageLeft,
+	                        y: viewport.pageTop,
+	                        width: viewport.width,
+	                        height: viewport.height,
+	                    };
+	                });
+	                break;
+	            }
+	        }
+	        const realm = await this.getOrCreateSandbox(undefined);
+	        const originResult = await realm.callFunction(script, false);
+	        (0, assert_js_1$2.assert)(originResult.type === 'success');
+	        const origin = deserializeDOMRect(originResult.result);
+	        (0, assert_js_1$2.assert)(origin);
+	        const rect = params.clip
+	            ? getIntersectionRect(await this.#parseRect(params.clip), origin)
+	            : origin;
+	        if (rect.width === 0 || rect.height === 0) {
+	            throw new protocol_js_1$9.UnableToCaptureScreenException(`Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`);
+	        }
+	        return await this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {
+	            clip: { ...rect, scale: 1.0 },
+	            ...formatParameters,
+	            captureBeyondViewport,
+	        });
+	    }
+	    async print(params) {
+	        const cdpParams = {};
+	        if (params.background !== undefined) {
+	            cdpParams.printBackground = params.background;
+	        }
+	        if (params.margin?.bottom !== undefined) {
+	            cdpParams.marginBottom = (0, unitConversions_js_1.inchesFromCm)(params.margin.bottom);
+	        }
+	        if (params.margin?.left !== undefined) {
+	            cdpParams.marginLeft = (0, unitConversions_js_1.inchesFromCm)(params.margin.left);
+	        }
+	        if (params.margin?.right !== undefined) {
+	            cdpParams.marginRight = (0, unitConversions_js_1.inchesFromCm)(params.margin.right);
+	        }
+	        if (params.margin?.top !== undefined) {
+	            cdpParams.marginTop = (0, unitConversions_js_1.inchesFromCm)(params.margin.top);
+	        }
+	        if (params.orientation !== undefined) {
+	            cdpParams.landscape = params.orientation === 'landscape';
+	        }
+	        if (params.page?.height !== undefined) {
+	            cdpParams.paperHeight = (0, unitConversions_js_1.inchesFromCm)(params.page.height);
+	        }
+	        if (params.page?.width !== undefined) {
+	            cdpParams.paperWidth = (0, unitConversions_js_1.inchesFromCm)(params.page.width);
+	        }
+	        if (params.pageRanges !== undefined) {
+	            for (const range of params.pageRanges) {
+	                if (typeof range === 'number') {
+	                    continue;
+	                }
+	                const rangeParts = range.split('-');
+	                if (rangeParts.length < 1 || rangeParts.length > 2) {
+	                    throw new protocol_js_1$9.InvalidArgumentException(`Invalid page range: ${range} is not a valid integer range.`);
+	                }
+	                if (rangeParts.length === 1) {
+	                    void parseInteger(rangeParts[0] ?? '');
+	                    continue;
+	                }
+	                let lowerBound;
+	                let upperBound;
+	                const [rangeLowerPart = '', rangeUpperPart = ''] = rangeParts;
+	                if (rangeLowerPart === '') {
+	                    lowerBound = 1;
+	                }
+	                else {
+	                    lowerBound = parseInteger(rangeLowerPart);
+	                }
+	                if (rangeUpperPart === '') {
+	                    upperBound = Number.MAX_SAFE_INTEGER;
+	                }
+	                else {
+	                    upperBound = parseInteger(rangeUpperPart);
+	                }
+	                if (lowerBound > upperBound) {
+	                    throw new protocol_js_1$9.InvalidArgumentException(`Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`);
+	                }
+	            }
+	            cdpParams.pageRanges = params.pageRanges.join(',');
+	        }
+	        if (params.scale !== undefined) {
+	            cdpParams.scale = params.scale;
+	        }
+	        if (params.shrinkToFit !== undefined) {
+	            cdpParams.preferCSSPageSize = !params.shrinkToFit;
+	        }
+	        try {
+	            const result = await this.#cdpTarget.cdpClient.sendCommand('Page.printToPDF', cdpParams);
+	            return {
+	                data: result.data,
+	            };
+	        }
+	        catch (error) {
+	            // Effectively zero dimensions.
+	            if (error.message ===
+	                'invalid print parameters: content area is empty') {
+	                throw new protocol_js_1$9.UnsupportedOperationException(error.message);
+	            }
+	            throw error;
+	        }
+	    }
+	    /**
+	     * See
+	     * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
+	     */
+	    async #parseRect(clip) {
+	        switch (clip.type) {
+	            case 'box':
+	                return { x: clip.x, y: clip.y, width: clip.width, height: clip.height };
+	            case 'element': {
+	                // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
+	                const sandbox = await this.getOrCreateSandbox(undefined);
+	                const result = await sandbox.callFunction(String((element) => {
+	                    return element instanceof Element;
+	                }), false, { type: 'undefined' }, [clip.element]);
+	                if (result.type === 'exception') {
+	                    throw new protocol_js_1$9.NoSuchElementException(`Element '${clip.element.sharedId}' was not found`);
+	                }
+	                (0, assert_js_1$2.assert)(result.result.type === 'boolean');
+	                if (!result.result.value) {
+	                    throw new protocol_js_1$9.NoSuchElementException(`Node '${clip.element.sharedId}' is not an Element`);
+	                }
+	                {
+	                    const result = await sandbox.callFunction(String((element) => {
+	                        const rect = element.getBoundingClientRect();
+	                        return {
+	                            x: rect.x,
+	                            y: rect.y,
+	                            height: rect.height,
+	                            width: rect.width,
+	                        };
+	                    }), false, { type: 'undefined' }, [clip.element]);
+	                    (0, assert_js_1$2.assert)(result.type === 'success');
+	                    const rect = deserializeDOMRect(result.result);
+	                    if (!rect) {
+	                        throw new protocol_js_1$9.UnableToCaptureScreenException(`Could not get bounding box for Element '${clip.element.sharedId}'`);
+	                    }
+	                    return rect;
+	                }
+	            }
+	        }
+	    }
+	    async close() {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.close');
+	    }
+	    async traverseHistory(delta) {
+	        if (delta === 0) {
+	            return;
+	        }
+	        const history = await this.#cdpTarget.cdpClient.sendCommand('Page.getNavigationHistory');
+	        const entry = history.entries[history.currentIndex + delta];
+	        if (!entry) {
+	            throw new protocol_js_1$9.NoSuchHistoryEntryException(`No history entry at delta ${delta}`);
+	        }
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
+	            entryId: entry.id,
+	        });
+	    }
+	    async toggleModulesIfNeeded() {
+	        await this.#cdpTarget.toggleNetworkIfNeeded();
+	    }
+	    async locateNodes(params) {
+	        // TODO: create a dedicated sandbox instead of `#defaultRealm`.
+	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
+	    }
+	    #getLocatorDelegate(locator, maxNodeCount, startNodes) {
+	        switch (locator.type) {
+	            case 'css':
+	                return {
+	                    functionDeclaration: String((cssSelector, maxNodeCount, ...startNodes) => {
+	                        const locateNodesUsingCss = (element) => {
+	                            if (!(element instanceof HTMLElement)) {
+	                                throw new Error('startNodes in css selector should be HTMLElement');
+	                            }
+	                            return [...element.querySelectorAll(cssSelector)];
+	                        };
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingCss(startNode))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `cssSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
+	            case 'xpath':
+	                return {
+	                    functionDeclaration: String((xPathSelector, maxNodeCount, ...startNodes) => {
+	                        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+	                        const evaluator = new XPathEvaluator();
+	                        const expression = evaluator.createExpression(xPathSelector);
+	                        const locateNodesUsingXpath = (element) => {
+	                            const xPathResult = expression.evaluate(element, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+	                            const returnedNodes = [];
+	                            for (let i = 0; i < xPathResult.snapshotLength; i++) {
+	                                returnedNodes.push(xPathResult.snapshotItem(i));
+	                            }
+	                            return returnedNodes;
+	                        };
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingXpath(startNode))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `xPathSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
+	            case 'innerText':
+	                // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
+	                if (locator.value === '') {
+	                    throw new protocol_js_1$9.InvalidSelectorException('innerText locator cannot be empty');
+	                }
+	                return {
+	                    functionDeclaration: String((innerTextSelector, fullMatch, ignoreCase, maxNodeCount, maxDepth, ...startNodes) => {
+	                        const searchText = ignoreCase
+	                            ? innerTextSelector.toUpperCase()
+	                            : innerTextSelector;
+	                        const locateNodesUsingInnerText = (element, currentMaxDepth) => {
+	                            const returnedNodes = [];
+	                            const nodeInnerText = ignoreCase
+	                                ? element.innerText?.toUpperCase()
+	                                : element.innerText;
+	                            if (!nodeInnerText.includes(searchText)) {
+	                                return [];
+	                            }
+	                            const childNodes = [];
+	                            for (const child of element.children) {
+	                                if (child instanceof HTMLElement) {
+	                                    childNodes.push(child);
+	                                }
+	                            }
+	                            if (childNodes.length === 0) {
+	                                if (fullMatch && nodeInnerText === searchText) {
+	                                    returnedNodes.push(element);
+	                                }
+	                                else {
+	                                    if (!fullMatch) {
+	                                        // Note: `nodeInnerText.includes(searchText)` is already checked
+	                                        returnedNodes.push(element);
+	                                    }
+	                                }
+	                            }
+	                            else {
+	                                const childNodeMatches = 
+	                                // Don't search deeper if `maxDepth` is reached.
+	                                currentMaxDepth === 0
+	                                    ? []
+	                                    : childNodes
+	                                        .map((child) => locateNodesUsingInnerText(child, currentMaxDepth - 1))
+	                                        .flat(1);
+	                                if (childNodeMatches.length === 0) {
+	                                    // Note: `nodeInnerText.includes(searchText)` is already checked
+	                                    if (!fullMatch || nodeInnerText === searchText) {
+	                                        returnedNodes.push(element);
+	                                    }
+	                                }
+	                                else {
+	                                    returnedNodes.push(...childNodeMatches);
+	                                }
+	                            }
+	                            // TODO: stop search early if `maxNodeCount` is reached.
+	                            return returnedNodes;
+	                        };
+	                        // TODO: add maxDepth.
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingInnerText(startNode, maxDepth))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `innerTextSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `fullMatch` with default `true`.
+	                        { type: 'boolean', value: locator.matchType !== 'partial' },
+	                        // `ignoreCase` with default `false`.
+	                        { type: 'boolean', value: locator.ignoreCase === true },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `maxDepth` with default `1000` (same as default full serialization depth).
+	                        { type: 'number', value: locator.maxDepth ?? 1000 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
+	        }
+	    }
+	    async #locateNodesByLocator(realm, locator, startNodes, maxNodeCount, serializationOptions) {
+	        const locatorDelegate = this.#getLocatorDelegate(locator, maxNodeCount, startNodes);
+	        serializationOptions = {
+	            ...serializationOptions,
+	            // The returned object is an array of nodes, so no need in deeper JS serialization.
+	            maxObjectDepth: 1,
+	        };
+	        const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, false, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, "none" /* Script.ResultOwnership.None */, serializationOptions);
+	        if (locatorResult.type !== 'success') {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
+	            // Heuristic to detect invalid selector for different types of selectors.
+	            if (
+	            // CSS selector.
+	            locatorResult.exceptionDetails.text?.endsWith('is not a valid selector.') ||
+	                // XPath selector.
+	                locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
+	                throw new protocol_js_1$9.InvalidSelectorException(`Not valid selector ${locator.value}`);
+	            }
+	            // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
+	            if (locatorResult.exceptionDetails.text ===
+	                'Error: startNodes in css selector should be HTMLElement') {
+	                throw new protocol_js_1$9.InvalidArgumentException(`startNodes in css selector should be HTMLElement`);
+	            }
+	            throw new protocol_js_1$9.UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
+	        }
+	        if (locatorResult.result.type !== 'array') {
+	            throw new protocol_js_1$9.UnknownErrorException(`Unexpected selector script result type: ${locatorResult.result.type}`);
+	        }
+	        // Check there are no non-node elements in the result.
+	        const nodes = locatorResult.result.value.map((value) => {
+	            if (value.type !== 'node') {
+	                throw new protocol_js_1$9.UnknownErrorException(`Unexpected selector script result element: ${value.type}`);
+	            }
+	            return value;
+	        });
+	        return { nodes };
+	    }
+	}
+	BrowsingContextImpl$1.BrowsingContextImpl = BrowsingContextImpl;
+	function serializeOrigin(origin) {
+	    // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
+	    if (['://', ''].includes(origin)) {
+	        origin = 'null';
+	    }
+	    return origin;
+	}
+	BrowsingContextImpl$1.serializeOrigin = serializeOrigin;
+	function getImageFormatParameters(params) {
+	    const { quality, type } = params.format ?? {
+	        type: 'image/png',
+	    };
+	    switch (type) {
+	        case 'image/png': {
+	            return { format: 'png' };
+	        }
+	        case 'image/jpeg': {
+	            return {
+	                format: 'jpeg',
+	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
+	            };
+	        }
+	        case 'image/webp': {
+	            return {
+	                format: 'webp',
+	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
+	            };
+	        }
+	    }
+	    throw new protocol_js_1$9.InvalidArgumentException(`Image format '${type}' is not a supported format`);
+	}
+	function deserializeDOMRect(result) {
+	    if (result.type !== 'object' || result.value === undefined) {
+	        return;
+	    }
+	    const x = result.value.find(([key]) => {
+	        return key === 'x';
+	    })?.[1];
+	    const y = result.value.find(([key]) => {
+	        return key === 'y';
+	    })?.[1];
+	    const height = result.value.find(([key]) => {
+	        return key === 'height';
+	    })?.[1];
+	    const width = result.value.find(([key]) => {
+	        return key === 'width';
+	    })?.[1];
+	    if (x?.type !== 'number' ||
+	        y?.type !== 'number' ||
+	        height?.type !== 'number' ||
+	        width?.type !== 'number') {
+	        return;
+	    }
+	    return {
+	        x: x.value,
+	        y: y.value,
+	        width: width.value,
+	        height: height.value,
+	    };
+	}
+	/** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
+	function normalizeRect(box) {
+	    return {
+	        ...(box.width < 0
+	            ? {
+	                x: box.x + box.width,
+	                width: -box.width,
+	            }
+	            : {
+	                x: box.x,
+	                width: box.width,
+	            }),
+	        ...(box.height < 0
+	            ? {
+	                y: box.y + box.height,
+	                height: -box.height,
+	            }
+	            : {
+	                y: box.y,
+	                height: box.height,
+	            }),
+	    };
+	}
+	/** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
+	function getIntersectionRect(first, second) {
+	    first = normalizeRect(first);
+	    second = normalizeRect(second);
+	    const x = Math.max(first.x, second.x);
+	    const y = Math.max(first.y, second.y);
+	    return {
+	        x,
+	        y,
+	        width: Math.max(Math.min(first.x + first.width, second.x + second.width) - x, 0),
+	        height: Math.max(Math.min(first.y + first.height, second.y + second.height) - y, 0),
+	    };
+	}
+	function parseInteger(value) {
+	    value = value.trim();
+	    if (!/^[0-9]+$/.test(value)) {
+	        throw new protocol_js_1$9.InvalidArgumentException(`Invalid integer: ${value}`);
+	    }
+	    return parseInt(value);
+	}
+
+	var WorkerRealm$1 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(WorkerRealm$1, "__esModule", { value: true });
+	WorkerRealm$1.WorkerRealm = void 0;
+	const Realm_js_1 = Realm$1;
+	class WorkerRealm extends Realm_js_1.Realm {
+	    #realmType;
+	    #ownerRealms;
+	    constructor(cdpClient, eventManager, executionContextId, logger, origin, ownerRealms, realmId, realmStorage, realmType) {
+	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
+	        this.#ownerRealms = ownerRealms;
+	        this.#realmType = realmType;
+	        this.initialize();
+	    }
+	    get associatedBrowsingContexts() {
+	        return this.#ownerRealms.flatMap((realm) => realm.associatedBrowsingContexts);
+	    }
+	    get realmType() {
+	        return this.#realmType;
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	            // This is a hack to make Puppeteer able to track workers.
+	            // TODO: remove after Puppeteer tracks workers by owners and use the base version.
+	            context: this.associatedBrowsingContexts[0]?.id,
+	        };
+	    }
+	    get realmInfo() {
+	        const owners = this.#ownerRealms.map((realm) => realm.realmId);
+	        const { realmType } = this;
+	        switch (realmType) {
+	            case 'dedicated-worker': {
+	                const owner = owners[0];
+	                if (owner === undefined || owners.length !== 1) {
+	                    throw new Error('Dedicated worker must have exactly one owner');
+	                }
+	                return {
+	                    ...this.baseInfo,
+	                    type: realmType,
+	                    owners: [owner],
+	                };
+	            }
+	            case 'service-worker':
+	            case 'shared-worker': {
+	                return {
+	                    ...this.baseInfo,
+	                    type: realmType,
+	                };
+	            }
+	        }
+	    }
+	}
+	WorkerRealm$1.WorkerRealm = WorkerRealm;
+
+	var CdpTarget$1 = {};
+
+	var LogManager$1 = {};
+
+	var logHelper = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(logHelper, "__esModule", { value: true });
+	logHelper.getRemoteValuesText = logHelper.logMessageFormatter = void 0;
+	const assert_js_1$1 = assert$1;
+	const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
+	function isFormatSpecifier(str) {
+	    return specifiers.some((spec) => str.includes(spec));
+	}
+	/**
+	 * @param args input remote values to be format printed
+	 * @return parsed text of the remote values in specific format
+	 */
+	function logMessageFormatter(args) {
+	    let output = '';
+	    const argFormat = args[0].value.toString();
+	    const argValues = args.slice(1, undefined);
+	    const tokens = argFormat.split(new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g'));
+	    for (const token of tokens) {
+	        if (token === undefined || token === '') {
+	            continue;
+	        }
+	        if (isFormatSpecifier(token)) {
+	            const arg = argValues.shift();
+	            // raise an exception when less value is provided
+	            (0, assert_js_1$1.assert)(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
+	            if (token === '%s') {
+	                output += stringFromArg(arg);
+	            }
+	            else if (token === '%d' || token === '%i') {
+	                if (arg.type === 'bigint' ||
+	                    arg.type === 'number' ||
+	                    arg.type === 'string') {
+	                    output += parseInt(arg.value.toString(), 10);
+	                }
+	                else {
+	                    output += 'NaN';
+	                }
+	            }
+	            else if (token === '%f') {
+	                if (arg.type === 'bigint' ||
+	                    arg.type === 'number' ||
+	                    arg.type === 'string') {
+	                    output += parseFloat(arg.value.toString());
+	                }
+	                else {
+	                    output += 'NaN';
+	                }
+	            }
+	            else {
+	                // %o, %O, %c
+	                output += toJson(arg);
+	            }
+	        }
+	        else {
+	            output += token;
+	        }
+	    }
+	    // raise an exception when more value is provided
+	    if (argValues.length > 0) {
+	        throw new Error(`More value is provided: "${getRemoteValuesText(args, false)}"`);
+	    }
+	    return output;
+	}
+	logHelper.logMessageFormatter = logMessageFormatter;
+	/**
+	 * @param arg input remote value to be parsed
+	 * @return parsed text of the remote value
+	 *
+	 * input: {"type": "number", "value": 1}
+	 * output: 1
+	 *
+	 * input: {"type": "string", "value": "abc"}
+	 * output: "abc"
+	 *
+	 * input: {"type": "object",  "value": [["id", {"type": "number", "value": 1}]]}
+	 * output: '{"id": 1}'
+	 *
+	 * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
+	 * output: '{"font-size": "20px"}'
+	 */
+	function toJson(arg) {
+	    // arg type validation
+	    if (arg.type !== 'array' &&
+	        arg.type !== 'bigint' &&
+	        arg.type !== 'date' &&
+	        arg.type !== 'number' &&
+	        arg.type !== 'object' &&
+	        arg.type !== 'string') {
+	        return stringFromArg(arg);
+	    }
+	    if (arg.type === 'bigint') {
+	        return `${arg.value.toString()}n`;
+	    }
+	    if (arg.type === 'number') {
+	        return arg.value.toString();
+	    }
+	    if (['date', 'string'].includes(arg.type)) {
+	        return JSON.stringify(arg.value);
+	    }
+	    if (arg.type === 'object') {
+	        return `{${arg.value
+            .map((pair) => {
+            return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
+        })
+            .join(',')}}`;
+	    }
+	    if (arg.type === 'array') {
+	        return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
+	    }
+	    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+	    throw Error(`Invalid value type: ${arg}`);
+	}
+	function stringFromArg(arg) {
+	    if (!Object.hasOwn(arg, 'value')) {
+	        return arg.type;
+	    }
+	    switch (arg.type) {
+	        case 'string':
+	        case 'number':
+	        case 'boolean':
+	        case 'bigint':
+	            return String(arg.value);
+	        case 'regexp':
+	            return `/${arg.value.pattern}/${arg.value.flags ?? ''}`;
+	        case 'date':
+	            return new Date(arg.value).toString();
+	        case 'object':
+	            return `Object(${arg.value?.length ?? ''})`;
+	        case 'array':
+	            return `Array(${arg.value?.length ?? ''})`;
+	        case 'map':
+	            return `Map(${arg.value?.length})`;
+	        case 'set':
+	            return `Set(${arg.value?.length})`;
+	        default:
+	            return arg.type;
+	    }
+	}
+	function getRemoteValuesText(args, formatText) {
+	    const arg = args[0];
+	    if (!arg) {
+	        return '';
+	    }
+	    // if args[0] is a format specifier, format the args as output
+	    if (arg.type === 'string' &&
+	        isFormatSpecifier(arg.value.toString()) &&
+	        formatText) {
+	        return logMessageFormatter(args);
+	    }
+	    // if args[0] is not a format specifier, just join the args with \u0020 (unicode 'SPACE')
+	    return args
+	        .map((arg) => {
+	        return stringFromArg(arg);
+	    })
+	        .join('\u0020');
+	}
+	logHelper.getRemoteValuesText = getRemoteValuesText;
+
+	Object.defineProperty(LogManager$1, "__esModule", { value: true });
+	LogManager$1.LogManager = void 0;
+	const protocol_js_1$8 = protocol;
+	const log_js_1$7 = log$1;
+	const logHelper_js_1 = logHelper;
+	/** Converts CDP StackTrace object to BiDi StackTrace object. */
+	function getBidiStackTrace(cdpStackTrace) {
+	    const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
+	        return {
+	            columnNumber: callFrame.columnNumber,
+	            functionName: callFrame.functionName,
+	            lineNumber: callFrame.lineNumber,
+	            url: callFrame.url,
+	        };
+	    });
+	    return stackFrames ? { callFrames: stackFrames } : undefined;
+	}
+	function getLogLevel(consoleApiType) {
+	    if (["error" /* Log.Level.Error */, 'assert'].includes(consoleApiType)) {
+	        return "error" /* Log.Level.Error */;
+	    }
+	    if (["debug" /* Log.Level.Debug */, 'trace'].includes(consoleApiType)) {
+	        return "debug" /* Log.Level.Debug */;
+	    }
+	    if (["warn" /* Log.Level.Warn */, 'warning'].includes(consoleApiType)) {
+	        return "warn" /* Log.Level.Warn */;
+	    }
+	    return "info" /* Log.Level.Info */;
+	}
+	class LogManager {
+	    #eventManager;
+	    #realmStorage;
+	    #cdpTarget;
+	    #logger;
+	    constructor(cdpTarget, realmStorage, eventManager, logger) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#realmStorage = realmStorage;
+	        this.#eventManager = eventManager;
+	        this.#logger = logger;
+	    }
+	    static create(cdpTarget, realmStorage, eventManager, logger) {
+	        const logManager = new LogManager(cdpTarget, realmStorage, eventManager, logger);
+	        logManager.#initializeEntryAddedEventListener();
+	        return logManager;
+	    }
+	    #initializeEntryAddedEventListener() {
+	        this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
+	            // Try to find realm by `cdpSessionId` and `executionContextId`,
+	            // if provided.
+	            const realm = this.#realmStorage.findRealm({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.executionContextId,
+	            });
+	            if (realm === undefined) {
+	                // Ignore exceptions not attached to any realm.
+	                this.#logger?.(log_js_1$7.LogType.cdp, params);
+	                return;
+	            }
+	            const argsPromise = realm === undefined
+	                ? Promise.resolve(params.args)
+	                : // Properly serialize arguments if possible.
+	                    Promise.all(params.args.map((arg) => {
+	                        return realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
+	                    }));
+	            for (const browsingContext of realm.associatedBrowsingContexts) {
+	                this.#eventManager.registerPromiseEvent(argsPromise.then((args) => ({
+	                    kind: 'success',
+	                    value: {
+	                        type: 'event',
+	                        method: protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded,
+	                        params: {
+	                            level: getLogLevel(params.type),
+	                            source: realm.source,
+	                            text: (0, logHelper_js_1.getRemoteValuesText)(args, true),
+	                            timestamp: Math.round(params.timestamp),
+	                            stackTrace: getBidiStackTrace(params.stackTrace),
+	                            type: 'console',
+	                            // Console method is `warn`, not `warning`.
+	                            method: params.type === 'warning' ? 'warn' : params.type,
+	                            args,
+	                        },
+	                    },
+	                })), browsingContext.id, protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded);
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.exceptionThrown', (params) => {
+	            // Try to find realm by `cdpSessionId` and `executionContextId`,
+	            // if provided.
+	            const realm = this.#realmStorage.findRealm({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.exceptionDetails.executionContextId,
+	            });
+	            if (realm === undefined) {
+	                // Ignore exceptions not attached to any realm.
+	                this.#logger?.(log_js_1$7.LogType.cdp, params);
+	                return;
+	            }
+	            for (const browsingContext of realm.associatedBrowsingContexts) {
+	                this.#eventManager.registerPromiseEvent(LogManager.#getExceptionText(params, realm).then((text) => ({
+	                    kind: 'success',
+	                    value: {
+	                        type: 'event',
+	                        method: protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded,
+	                        params: {
+	                            level: "error" /* Log.Level.Error */,
+	                            source: realm.source,
+	                            text,
+	                            timestamp: Math.round(params.timestamp),
+	                            stackTrace: getBidiStackTrace(params.exceptionDetails.stackTrace),
+	                            type: 'javascript',
+	                        },
+	                    },
+	                })), browsingContext.id, protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded);
+	            }
+	        });
+	    }
+	    /**
+	     * Try the best to get the exception text.
+	     */
+	    static async #getExceptionText(params, realm) {
+	        if (!params.exceptionDetails.exception) {
+	            return params.exceptionDetails.text;
+	        }
+	        if (realm === undefined) {
+	            return JSON.stringify(params.exceptionDetails.exception);
+	        }
+	        return await realm.stringifyObject(params.exceptionDetails.exception);
+	    }
+	}
+	LogManager$1.LogManager = LogManager;
+
+	Object.defineProperty(CdpTarget$1, "__esModule", { value: true });
+	CdpTarget$1.CdpTarget = void 0;
+	const chromium_bidi_js_1 = chromiumBidi;
+	const Deferred_js_1$1 = Deferred$1;
+	const LogManager_js_1 = LogManager$1;
+	class CdpTarget {
+	    #id;
+	    #cdpClient;
+	    #browserCdpClient;
+	    #eventManager;
+	    #preloadScriptStorage;
+	    #browsingContextStorage;
+	    #networkStorage;
+	    #unblocked = new Deferred_js_1$1.Deferred();
+	    #acceptInsecureCerts;
+	    #networkDomainEnabled = false;
+	    #fetchDomainStages = {
+	        request: false,
+	        response: false,
+	        auth: false,
+	    };
+	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger) {
+	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts);
+	        LogManager_js_1.LogManager.create(cdpTarget, realmStorage, eventManager, logger);
+	        cdpTarget.#setEventListeners();
+	        // No need to await.
+	        // Deferred will be resolved when the target is unblocked.
+	        void cdpTarget.#unblock();
+	        return cdpTarget;
+	    }
+	    constructor(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts) {
+	        this.#id = targetId;
+	        this.#cdpClient = cdpClient;
+	        this.#browserCdpClient = browserCdpClient;
+	        this.#eventManager = eventManager;
+	        this.#preloadScriptStorage = preloadScriptStorage;
+	        this.#networkStorage = networkStorage;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	    }
+	    /** Returns a deferred that resolves when the target is unblocked. */
+	    get unblocked() {
+	        return this.#unblocked;
+	    }
+	    get id() {
+	        return this.#id;
+	    }
+	    get cdpClient() {
+	        return this.#cdpClient;
+	    }
+	    get browserCdpClient() {
+	        return this.#browserCdpClient;
+	    }
+	    /** Needed for CDP escape path. */
+	    get cdpSessionId() {
+	        // SAFETY we got the client by it's id for creating
+	        return this.#cdpClient.sessionId;
+	    }
+	    /**
+	     * Enables all the required CDP domains and unblocks the target.
+	     */
+	    async #unblock() {
+	        try {
+	            await Promise.all([
+	                this.#cdpClient.sendCommand('Runtime.enable'),
+	                this.#cdpClient.sendCommand('Page.enable'),
+	                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+	                    enabled: true,
+	                }),
+	                // Set ignore certificate errors for each target.
+	                this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+	                    ignore: this.#acceptInsecureCerts,
+	                }),
+	                this.toggleNetworkIfNeeded(),
+	                this.#cdpClient.sendCommand('Target.setAutoAttach', {
+	                    autoAttach: true,
+	                    waitForDebuggerOnStart: true,
+	                    flatten: true,
+	                }),
+	                this.#initAndEvaluatePreloadScripts(),
+	                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+	            ]);
+	        }
+	        catch (error) {
+	            // The target might have been closed before the initialization finished.
+	            if (!this.#cdpClient.isCloseError(error)) {
+	                this.#unblocked.resolve({
+	                    kind: 'error',
+	                    error,
+	                });
+	                return;
+	            }
+	        }
+	        this.#unblocked.resolve({
+	            kind: 'success',
+	            value: undefined,
+	        });
+	    }
+	    async toggleFetchIfNeeded() {
+	        const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
+	        if (
+	        // Only toggle interception when Network is enabled
+	        !this.#networkDomainEnabled ||
+	            (this.#fetchDomainStages.request === stages.request &&
+	                this.#fetchDomainStages.response === stages.response &&
+	                this.#fetchDomainStages.auth === stages.auth)) {
+	            return;
+	        }
+	        const patterns = [];
+	        this.#fetchDomainStages = stages;
+	        if (stages.request || stages.auth) {
+	            // CDP quirk we need request interception when we intercept auth
+	            patterns.push({
+	                urlPattern: '*',
+	                requestStage: 'Request',
+	            });
+	        }
+	        if (stages.response) {
+	            patterns.push({
+	                urlPattern: '*',
+	                requestStage: 'Response',
+	            });
+	        }
+	        if (patterns.length) {
+	            await this.#cdpClient.sendCommand('Fetch.enable', {
+	                patterns,
+	                handleAuthRequests: stages.auth,
+	            });
+	        }
+	        else {
+	            await this.#cdpClient.sendCommand('Fetch.disable');
+	        }
+	    }
+	    /**
+	     * Toggles both Network and Fetch domains.
+	     */
+	    async toggleNetworkIfNeeded() {
+	        const enabled = this.isSubscribedTo(chromium_bidi_js_1.BiDiModule.Network);
+	        if (enabled === this.#networkDomainEnabled) {
+	            return;
+	        }
+	        this.#networkDomainEnabled = enabled;
+	        try {
+	            await Promise.all([
+	                this.#cdpClient.sendCommand(enabled ? 'Network.enable' : 'Network.disable'),
+	                this.toggleFetchIfNeeded(),
+	            ]);
+	        }
+	        catch (err) {
+	            this.#networkDomainEnabled = !enabled;
+	        }
+	    }
+	    #setEventListeners() {
+	        this.#cdpClient.on('*', (event, params) => {
+	            // We may encounter uses for EventEmitter other than CDP events,
+	            // which we want to skip.
+	            if (typeof event !== 'string') {
+	                return;
+	            }
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: `cdp.${event}`,
+	                params: {
+	                    event,
+	                    params,
+	                    session: this.cdpSessionId,
+	                },
+	            }, this.id);
+	        });
+	    }
+	    /**
+	     * All the ProxyChannels from all the preload scripts of the given
+	     * BrowsingContext.
+	     */
+	    getChannels() {
+	        return this.#preloadScriptStorage
+	            .find()
+	            .flatMap((script) => script.channels);
+	    }
+	    /** Loads all top-level preload scripts. */
+	    async #initAndEvaluatePreloadScripts() {
+	        await Promise.all(this.#preloadScriptStorage
+	            .find({
+	            // Needed for OOPIF
+	            targetId: this.topLevelId,
+	            global: true,
+	        })
+	            .map((script) => {
+	            return script.initInTarget(this, true);
+	        }));
+	    }
+	    get topLevelId() {
+	        return (this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id);
+	    }
+	    isSubscribedTo(moduleOrEvent) {
+	        return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
+	    }
+	}
+	CdpTarget$1.CdpTarget = CdpTarget;
+
+	Object.defineProperty(CdpTargetManager$1, "__esModule", { value: true });
+	CdpTargetManager$1.CdpTargetManager = void 0;
+	const log_js_1$6 = log$1;
+	const BrowsingContextImpl_js_1 = BrowsingContextImpl$1;
+	const WorkerRealm_js_1 = WorkerRealm$1;
+	const CdpTarget_js_1 = CdpTarget$1;
+	const cdpToBidiTargetTypes = {
+	    service_worker: 'service-worker',
+	    shared_worker: 'shared-worker',
+	    worker: 'dedicated-worker',
+	};
+	class CdpTargetManager {
+	    #browserCdpClient;
+	    #cdpConnection;
+	    #selfTargetId;
+	    #eventManager;
+	    #browsingContextStorage;
+	    #networkStorage;
+	    #acceptInsecureCerts;
+	    #preloadScriptStorage;
+	    #realmStorage;
+	    #defaultUserContextId;
+	    #logger;
+	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger) {
+	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	        this.#cdpConnection = cdpConnection;
+	        this.#browserCdpClient = browserCdpClient;
+	        this.#selfTargetId = selfTargetId;
+	        this.#eventManager = eventManager;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#preloadScriptStorage = preloadScriptStorage;
+	        this.#networkStorage = networkStorage;
+	        this.#realmStorage = realmStorage;
+	        this.#defaultUserContextId = defaultUserContextId;
+	        this.#logger = logger;
+	        this.#setEventListeners(browserCdpClient);
+	    }
+	    /**
+	     * This method is called for each CDP session, since this class is responsible
+	     * for creating and destroying all targets and browsing contexts.
+	     */
+	    #setEventListeners(cdpClient) {
+	        cdpClient.on('Target.attachedToTarget', (params) => {
+	            this.#handleAttachedToTargetEvent(params, cdpClient);
+	        });
+	        cdpClient.on('Target.detachedFromTarget', this.#handleDetachedFromTargetEvent.bind(this));
+	        cdpClient.on('Target.targetInfoChanged', this.#handleTargetInfoChangedEvent.bind(this));
+	        cdpClient.on('Inspector.targetCrashed', () => {
+	            this.#handleTargetCrashedEvent(cdpClient);
+	        });
+	        cdpClient.on('Page.frameAttached', this.#handleFrameAttachedEvent.bind(this));
+	        cdpClient.on('Page.frameDetached', this.#handleFrameDetachedEvent.bind(this));
+	    }
+	    #handleFrameAttachedEvent(params) {
+	        const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
+	        if (parentBrowsingContext !== undefined) {
+	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#logger);
+	        }
+	    }
+	    #handleFrameDetachedEvent(params) {
+	        // In case of OOPiF no need in deleting BrowsingContext.
+	        if (params.reason === 'swap') {
+	            return;
+	        }
+	        this.#browsingContextStorage.findContext(params.frameId)?.dispose();
+	    }
+	    #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
+	        const { sessionId, targetInfo } = params;
+	        const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+	        switch (targetInfo.type) {
+	            case 'page':
+	            case 'iframe': {
+	                if (targetInfo.targetId === this.#selfTargetId) {
+	                    break;
+	                }
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
+	                if (maybeContext) {
+	                    // OOPiF.
+	                    maybeContext.updateCdpTarget(cdpTarget);
+	                }
+	                else {
+	                    const userContext = targetInfo.browserContextId &&
+	                        targetInfo.browserContextId !== this.#defaultUserContextId
+	                        ? targetInfo.browserContextId
+	                        : 'default';
+	                    // New context.
+	                    BrowsingContextImpl_js_1.BrowsingContextImpl.create(targetInfo.targetId, null, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#logger);
+	                }
+	                return;
+	            }
+	            case 'service_worker':
+	            case 'worker': {
+	                const realm = this.#realmStorage.findRealm({
+	                    cdpSessionId: parentSessionCdpClient.sessionId,
+	                });
+	                // If there is no browsing context, this worker is already terminated.
+	                if (!realm) {
+	                    break;
+	                }
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
+	                return;
+	            }
+	            // In CDP, we only emit shared workers on the browser and not the set of
+	            // frames that use the shared worker. If we change this in the future to
+	            // behave like service workers (emits on both browser and frame targets),
+	            // we can remove this block and merge service workers with the above one.
+	            case 'shared_worker': {
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
+	                return;
+	            }
+	        }
+	        // DevTools or some other not supported by BiDi target. Just release
+	        // debugger and ignore them.
+	        targetCdpClient
+	            .sendCommand('Runtime.runIfWaitingForDebugger')
+	            .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
+	            .catch((error) => this.#logger?.(log_js_1$6.LogType.debugError, error));
+	    }
+	    #createCdpTarget(targetCdpClient, targetInfo) {
+	        this.#setEventListeners(targetCdpClient);
+	        const target = CdpTarget_js_1.CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#acceptInsecureCerts, this.#logger);
+	        this.#networkStorage.onCdpTargetCreated(target);
+	        return target;
+	    }
+	    #workers = new Map();
+	    #handleWorkerTarget(realmType, cdpTarget, ownerRealm) {
+	        cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+	            const { uniqueId, id, origin } = params.context;
+	            const workerRealm = new WorkerRealm_js_1.WorkerRealm(cdpTarget.cdpClient, this.#eventManager, id, this.#logger, (0, BrowsingContextImpl_js_1.serializeOrigin)(origin), ownerRealm ? [ownerRealm] : [], uniqueId, this.#realmStorage, realmType);
+	            this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
+	        });
+	    }
+	    #handleDetachedFromTargetEvent({ sessionId, targetId, }) {
+	        if (targetId) {
+	            this.#preloadScriptStorage.find({ targetId }).map((preloadScript) => {
+	                preloadScript.dispose(targetId);
+	            });
+	        }
+	        const context = this.#browsingContextStorage.findContextBySession(sessionId);
+	        if (context) {
+	            context.dispose();
+	            return;
+	        }
+	        const worker = this.#workers.get(sessionId);
+	        if (worker) {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: worker.cdpClient.sessionId,
+	            });
+	        }
+	    }
+	    #handleTargetInfoChangedEvent(params) {
+	        const context = this.#browsingContextStorage.findContext(params.targetInfo.targetId);
+	        if (context) {
+	            context.onTargetInfoChanged(params);
+	        }
+	    }
+	    #handleTargetCrashedEvent(cdpClient) {
+	        // This is primarily used for service and shared workers. CDP tends to not
+	        // signal they closed gracefully and instead says they crashed to signal
+	        // they are closed.
+	        const realms = this.#realmStorage.findRealms({
+	            cdpSessionId: cdpClient.sessionId,
+	        });
+	        for (const realm of realms) {
+	            realm.dispose();
+	        }
+	    }
+	}
+	CdpTargetManager$1.CdpTargetManager = CdpTargetManager;
 
 	var BrowsingContextStorage$1 = {};
 
@@ -8110,7 +7359,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(BrowsingContextStorage$1, "__esModule", { value: true });
 	BrowsingContextStorage$1.BrowsingContextStorage = void 0;
-	const protocol_js_1$5 = protocol;
+	const protocol_js_1$7 = protocol;
 	/** Container class for browsing contexts. */
 	class BrowsingContextStorage {
 	    /** Map from context ID to context implementation. */
@@ -8167,7 +7416,7 @@ var mapperTab = (function () {
 	    getContext(id) {
 	        const result = this.findContext(id);
 	        if (result === undefined) {
-	            throw new protocol_js_1$5.NoSuchFrameException(`Context ${id} not found`);
+	            throw new protocol_js_1$7.NoSuchFrameException(`Context ${id} not found`);
 	        }
 	        return result;
 	    }
@@ -8182,13 +7431,799 @@ var mapperTab = (function () {
 	                foundContexts.add(context);
 	            }
 	            else {
-	                throw new protocol_js_1$5.InvalidArgumentException(`Non top-level context '${contextId}' given.`);
+	                throw new protocol_js_1$7.InvalidArgumentException(`Non top-level context '${contextId}' given.`);
 	            }
 	        }
 	        return foundContexts;
 	    }
 	}
 	BrowsingContextStorage$1.BrowsingContextStorage = BrowsingContextStorage;
+
+	var NetworkStorage$1 = {};
+
+	var NetworkRequest$1 = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(NetworkRequest$1, "__esModule", { value: true });
+	NetworkRequest$1.NetworkRequest = void 0;
+	const protocol_js_1$6 = protocol;
+	const assert_js_1 = assert$1;
+	const Deferred_js_1 = Deferred$1;
+	const log_js_1$5 = log$1;
+	const NetworkUtils_js_1$1 = NetworkUtils;
+	const REALM_REGEX = /(?<=realm=").*(?=")/;
+	/** Abstracts one individual network request. */
+	class NetworkRequest {
+	    static unknownParameter = 'UNKNOWN';
+	    /**
+	     * Each network request has an associated request id, which is a string
+	     * uniquely identifying that request.
+	     *
+	     * The identifier for a request resulting from a redirect matches that of the
+	     * request that initiated it.
+	     */
+	    #id;
+	    #fetchId;
+	    /**
+	     * Indicates the network intercept phase, if the request is currently blocked.
+	     * Undefined necessarily implies that the request is not blocked.
+	     */
+	    #interceptPhase;
+	    #servedFromCache = false;
+	    #redirectCount;
+	    #request = {};
+	    #response = {};
+	    #eventManager;
+	    #networkStorage;
+	    #cdpTarget;
+	    #logger;
+	    #emittedEvents = {
+	        [protocol_js_1$6.ChromiumBidi.Network.EventNames.AuthRequired]: false,
+	        [protocol_js_1$6.ChromiumBidi.Network.EventNames.BeforeRequestSent]: false,
+	        [protocol_js_1$6.ChromiumBidi.Network.EventNames.FetchError]: false,
+	        [protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
+	        [protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseStarted]: false,
+	    };
+	    waitNextPhase = new Deferred_js_1.Deferred();
+	    constructor(id, eventManager, networkStorage, cdpTarget, redirectCount = 0, logger) {
+	        this.#id = id;
+	        this.#eventManager = eventManager;
+	        this.#networkStorage = networkStorage;
+	        this.#cdpTarget = cdpTarget;
+	        this.#redirectCount = redirectCount;
+	        this.#logger = logger;
+	    }
+	    get id() {
+	        return this.#id;
+	    }
+	    get fetchId() {
+	        return this.#fetchId;
+	    }
+	    /**
+	     * When blocked returns the phase for it
+	     */
+	    get interceptPhase() {
+	        return this.#interceptPhase;
+	    }
+	    get url() {
+	        const fragment = this.#request.info?.request.urlFragment ??
+	            this.#request.paused?.request.urlFragment ??
+	            '';
+	        const url = this.#response.info?.url ??
+	            this.#response.paused?.request.url ??
+	            this.#request.auth?.request.url ??
+	            this.#request.info?.request.url ??
+	            this.#request.paused?.request.url ??
+	            NetworkRequest.unknownParameter;
+	        return `${url}${fragment}`;
+	    }
+	    get method() {
+	        return (this.#request.info?.request.method ??
+	            this.#request.paused?.request.method ??
+	            this.#request.auth?.request.method ??
+	            this.#response.paused?.request.method ??
+	            NetworkRequest.unknownParameter);
+	    }
+	    get redirectCount() {
+	        return this.#redirectCount;
+	    }
+	    get cdpTarget() {
+	        return this.#cdpTarget;
+	    }
+	    get cdpClient() {
+	        return this.#cdpTarget.cdpClient;
+	    }
+	    isRedirecting() {
+	        return Boolean(this.#request.info);
+	    }
+	    isDataUrl() {
+	        return this.url.startsWith('data:');
+	    }
+	    #phaseChanged() {
+	        this.waitNextPhase.resolve();
+	        this.waitNextPhase = new Deferred_js_1.Deferred();
+	    }
+	    #interceptsInPhase(phase) {
+	        if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+	            return new Set();
+	        }
+	        return this.#networkStorage.getInterceptsForPhase(this, phase);
+	    }
+	    #isBlockedInPhase(phase) {
+	        return this.#interceptsInPhase(phase).size > 0;
+	    }
+	    handleRedirect(event) {
+	        // TODO: use event.redirectResponse;
+	        // Temporary workaround to emit ResponseCompleted event for redirects
+	        this.#response.hasExtraInfo = false;
+	        this.#response.info = event.redirectResponse;
+	        this.#emitEventsIfReady({
+	            wasRedirected: true,
+	        });
+	    }
+	    #emitEventsIfReady(options = {}) {
+	        const requestExtraInfoCompleted = 
+	        // Flush redirects
+	        options.wasRedirected ||
+	            options.hasFailed ||
+	            this.isDataUrl() ||
+	            Boolean(this.#request.extraInfo) ||
+	            // Requests from cache don't have extra info
+	            this.#servedFromCache ||
+	            // Sometimes there is no extra info and the response
+	            // is the only place we can find out
+	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
+	        const noInterceptionExpected = 
+	        // We can't intercept data urls from CDP
+	        this.isDataUrl() ||
+	            // Cached requests never hit the network
+	            this.#servedFromCache;
+	        const requestInterceptionExpected = !noInterceptionExpected &&
+	            this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
+	        const requestInterceptionCompleted = !requestInterceptionExpected ||
+	            (requestInterceptionExpected && Boolean(this.#request.paused));
+	        if (Boolean(this.#request.info) &&
+	            (requestInterceptionExpected
+	                ? requestInterceptionCompleted
+	                : requestExtraInfoCompleted)) {
+	            this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
+	        }
+	        const responseExtraInfoCompleted = Boolean(this.#response.extraInfo) ||
+	            // Response from cache don't have extra info
+	            this.#servedFromCache ||
+	            // Don't expect extra info if the flag is false
+	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
+	        const responseInterceptionExpected = !noInterceptionExpected &&
+	            this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
+	        if (this.#response.info ||
+	            (responseInterceptionExpected && Boolean(this.#response.paused))) {
+	            this.#emitEvent(this.#getResponseStartedEvent.bind(this));
+	        }
+	        const responseInterceptionCompleted = !responseInterceptionExpected ||
+	            (responseInterceptionExpected && Boolean(this.#response.paused));
+	        if (Boolean(this.#response.info) &&
+	            responseExtraInfoCompleted &&
+	            responseInterceptionCompleted) {
+	            this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
+	        }
+	    }
+	    onRequestWillBeSentEvent(event) {
+	        this.#request.info = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onRequestWillBeSentExtraInfoEvent(event) {
+	        this.#request.extraInfo = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onResponseReceivedExtraInfoEvent(event) {
+	        this.#response.extraInfo = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onResponseReceivedEvent(event) {
+	        this.#response.hasExtraInfo = event.hasExtraInfo;
+	        this.#response.info = event.response;
+	        this.#emitEventsIfReady();
+	    }
+	    onServedFromCache() {
+	        this.#servedFromCache = true;
+	        this.#emitEventsIfReady();
+	    }
+	    onLoadingFailedEvent(event) {
+	        this.#emitEventsIfReady({
+	            hasFailed: true,
+	        });
+	        this.#emitEvent(() => {
+	            return {
+	                method: protocol_js_1$6.ChromiumBidi.Network.EventNames.FetchError,
+	                params: {
+	                    ...this.#getBaseEventParams(),
+	                    errorText: event.errorText,
+	                },
+	            };
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
+	    async failRequest(errorReason) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        await this.cdpClient.sendCommand('Fetch.failRequest', {
+	            requestId: this.#fetchId,
+	            errorReason,
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    onRequestPaused(event) {
+	        this.#fetchId = event.requestId;
+	        // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
+	        if (event.responseStatusCode || event.responseErrorReason) {
+	            this.#response.paused = event;
+	            if (this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */) &&
+	                // CDP may emit multiple events for a single request
+	                !this.#emittedEvents[protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseStarted] &&
+	                // Continue all response that have not enabled Network domain
+	                this.#fetchId !== this.id) {
+	                this.#interceptPhase = "responseStarted" /* Network.InterceptPhase.ResponseStarted */;
+	            }
+	            else {
+	                void this.continueResponse();
+	            }
+	        }
+	        else {
+	            this.#request.paused = event;
+	            if (this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */) &&
+	                // CDP may emit multiple events for a single request
+	                !this.#emittedEvents[protocol_js_1$6.ChromiumBidi.Network.EventNames.BeforeRequestSent] &&
+	                // Continue all requests that have not enabled Network domain
+	                this.#fetchId !== this.id) {
+	                this.#interceptPhase = "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */;
+	            }
+	            else {
+	                void this.continueRequest();
+	            }
+	        }
+	        this.#emitEventsIfReady();
+	    }
+	    onAuthRequired(event) {
+	        this.#fetchId = event.requestId;
+	        this.#request.auth = event;
+	        if (this.#isBlockedInPhase("authRequired" /* Network.InterceptPhase.AuthRequired */) &&
+	            // Continue all auth requests that have not enabled Network domain
+	            this.#fetchId !== this.id) {
+	            this.#interceptPhase = "authRequired" /* Network.InterceptPhase.AuthRequired */;
+	        }
+	        else {
+	            void this.continueWithAuth();
+	        }
+	        this.#emitEvent(() => {
+	            return {
+	                method: protocol_js_1$6.ChromiumBidi.Network.EventNames.AuthRequired,
+	                params: {
+	                    ...this.#getBaseEventParams("authRequired" /* Network.InterceptPhase.AuthRequired */),
+	                    response: this.#getResponseEventParams(),
+	                },
+	            };
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
+	    async continueRequest({ url, method, headers, postData, } = {}) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
+	            requestId: this.#fetchId,
+	            url,
+	            method,
+	            headers,
+	            postData,
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
+	    async continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        await this.cdpClient.sendCommand('Fetch.continueResponse', {
+	            requestId: this.#fetchId,
+	            responseCode,
+	            responsePhrase,
+	            responseHeaders,
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
+	    async continueWithAuth(authChallengeResponse = {
+	        response: 'Default',
+	    }) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+	            requestId: this.#fetchId,
+	            authChallengeResponse,
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
+	    async provideResponse({ responseCode, responsePhrase, responseHeaders, body, }) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
+	            requestId: this.#fetchId,
+	            responseCode,
+	            responsePhrase,
+	            responseHeaders,
+	            body,
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    get #context() {
+	        return (this.#response.paused?.frameId ??
+	            this.#request.info?.frameId ??
+	            this.#request.paused?.frameId ??
+	            this.#request.auth?.frameId ??
+	            null);
+	    }
+	    /** Returns the HTTP status code associated with this request if any. */
+	    get statusCode() {
+	        return (this.#response.paused?.responseStatusCode ??
+	            this.#response.extraInfo?.statusCode ??
+	            this.#response.info?.status);
+	    }
+	    #emitEvent(getEvent) {
+	        let event;
+	        try {
+	            event = getEvent();
+	        }
+	        catch (error) {
+	            this.#logger?.(log_js_1$5.LogType.debugError, error);
+	            return;
+	        }
+	        if (this.#isIgnoredEvent() ||
+	            (this.#emittedEvents[event.method] &&
+	                // Special case this event can be emitted multiple times
+	                event.method !== protocol_js_1$6.ChromiumBidi.Network.EventNames.AuthRequired)) {
+	            return;
+	        }
+	        this.#phaseChanged();
+	        this.#emittedEvents[event.method] = true;
+	        this.#eventManager.registerEvent(Object.assign(event, {
+	            type: 'event',
+	        }), this.#context);
+	    }
+	    #getBaseEventParams(phase) {
+	        const interceptProps = {
+	            isBlocked: false,
+	        };
+	        if (phase) {
+	            const blockedBy = this.#interceptsInPhase(phase);
+	            interceptProps.isBlocked = blockedBy.size > 0;
+	            if (interceptProps.isBlocked) {
+	                interceptProps.intercepts = [...blockedBy];
+	            }
+	        }
+	        return {
+	            context: this.#context,
+	            navigation: this.#getNavigationId(),
+	            redirectCount: this.#redirectCount,
+	            request: this.#getRequestData(),
+	            // Timestamp should be in milliseconds, while CDP provides it in seconds.
+	            timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
+	            // Contains isBlocked and intercepts
+	            ...interceptProps,
+	        };
+	    }
+	    #getResponseEventParams() {
+	        // Chromium sends wrong extraInfo events for responses served from cache.
+	        // See https://github.com/puppeteer/puppeteer/issues/9965 and
+	        // https://crbug.com/1340398.
+	        if (this.#response.info?.fromDiskCache) {
+	            this.#response.extraInfo = undefined;
+	        }
+	        // TODO: get headers from Fetch.requestPaused
+	        const headers = (0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.info?.headers);
+	        // TODO: get headers from Fetch.requestPaused
+	        const authChallenges = this.#authChallenges(this.#response.info?.headers ?? {});
+	        return {
+	            url: this.url,
+	            protocol: this.#response.info?.protocol ?? '',
+	            status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
+	            statusText: this.#response.info?.statusText ||
+	                this.#response.paused?.responseStatusText ||
+	                '',
+	            fromCache: this.#response.info?.fromDiskCache ||
+	                this.#response.info?.fromPrefetchCache ||
+	                this.#servedFromCache,
+	            headers,
+	            mimeType: this.#response.info?.mimeType || '',
+	            bytesReceived: this.#response.info?.encodedDataLength || 0,
+	            headersSize: (0, NetworkUtils_js_1$1.computeHeadersSize)(headers),
+	            // TODO: consider removing from spec.
+	            bodySize: 0,
+	            content: {
+	                // TODO: consider removing from spec.
+	                size: 0,
+	            },
+	            ...(authChallenges ? { authChallenges } : {}),
+	        };
+	    }
+	    #getNavigationId() {
+	        if (!this.#request.info ||
+	            !this.#request.info.loaderId ||
+	            // When we navigate all CDP network events have `loaderId`
+	            // CDP's `loaderId` and `requestId` match when
+	            // that request triggered the loading
+	            this.#request.info.loaderId !== this.#request.info.requestId) {
+	            return null;
+	        }
+	        return this.#request.info.loaderId;
+	    }
+	    #getRequestData() {
+	        const cookies = this.#request.extraInfo
+	            ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
+	            : [];
+	        const headers = (0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers);
+	        return {
+	            request: this.#id,
+	            url: this.url,
+	            method: this.method,
+	            headers,
+	            cookies,
+	            headersSize: (0, NetworkUtils_js_1$1.computeHeadersSize)(headers),
+	            // TODO: implement.
+	            bodySize: 0,
+	            timings: this.#getTimings(),
+	        };
+	    }
+	    // TODO: implement.
+	    #getTimings() {
+	        return {
+	            timeOrigin: 0,
+	            requestTime: 0,
+	            redirectStart: 0,
+	            redirectEnd: 0,
+	            fetchStart: 0,
+	            dnsStart: 0,
+	            dnsEnd: 0,
+	            connectStart: 0,
+	            connectEnd: 0,
+	            tlsStart: 0,
+	            requestStart: 0,
+	            responseStart: 0,
+	            responseEnd: 0,
+	        };
+	    }
+	    #getBeforeRequestEvent() {
+	        (0, assert_js_1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        return {
+	            method: protocol_js_1$6.ChromiumBidi.Network.EventNames.BeforeRequestSent,
+	            params: {
+	                ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
+	                initiator: {
+	                    type: NetworkRequest.#getInitiatorType(this.#request.info.initiator.type),
+	                },
+	            },
+	        };
+	    }
+	    #getResponseStartedEvent() {
+	        (0, assert_js_1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        (0, assert_js_1.assert)(
+	        // The response paused comes before any data for the response
+	        this.#response.paused || this.#response.info, 'ResponseReceivedEvent is not set');
+	        return {
+	            method: protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseStarted,
+	            params: {
+	                ...this.#getBaseEventParams("responseStarted" /* Network.InterceptPhase.ResponseStarted */),
+	                response: this.#getResponseEventParams(),
+	            },
+	        };
+	    }
+	    #getResponseReceivedEvent() {
+	        (0, assert_js_1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        (0, assert_js_1.assert)(this.#response.info, 'ResponseReceivedEvent is not set');
+	        return {
+	            method: protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseCompleted,
+	            params: {
+	                ...this.#getBaseEventParams(),
+	                response: this.#getResponseEventParams(),
+	            },
+	        };
+	    }
+	    #isIgnoredEvent() {
+	        const faviconUrl = '/favicon.ico';
+	        return (this.#request.paused?.request.url.endsWith(faviconUrl) ??
+	            this.#request.info?.request.url.endsWith(faviconUrl) ??
+	            false);
+	    }
+	    #authChallenges(headers) {
+	        if (!(this.statusCode === 401 || this.statusCode === 407)) {
+	            return undefined;
+	        }
+	        const headerName = this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+	        const authChallenges = [];
+	        for (const [header, value] of Object.entries(headers)) {
+	            // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+	            // Or verify this works
+	            if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
+	                authChallenges.push({
+	                    scheme: value.split(' ').at(0) ?? '',
+	                    realm: value.match(REALM_REGEX)?.at(0) ?? '',
+	                });
+	            }
+	        }
+	        return authChallenges;
+	    }
+	    static #getInitiatorType(initiatorType) {
+	        switch (initiatorType) {
+	            case 'parser':
+	            case 'script':
+	            case 'preflight':
+	                return initiatorType;
+	            default:
+	                return 'other';
+	        }
+	    }
+	    static #getCookies(associatedCookies) {
+	        return associatedCookies
+	            .filter(({ blockedReasons }) => {
+	            return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+	        })
+	            .map(({ cookie }) => (0, NetworkUtils_js_1$1.cdpToBiDiCookie)(cookie));
+	    }
+	}
+	NetworkRequest$1.NetworkRequest = NetworkRequest;
+
+	Object.defineProperty(NetworkStorage$1, "__esModule", { value: true });
+	NetworkStorage$1.NetworkStorage = void 0;
+	const protocol_js_1$5 = protocol;
+	const uuid_js_1 = uuid;
+	const NetworkRequest_js_1 = NetworkRequest$1;
+	const NetworkUtils_js_1 = NetworkUtils;
+	/** Stores network and intercept maps. */
+	class NetworkStorage {
+	    #eventManager;
+	    #logger;
+	    /**
+	     * A map from network request ID to Network Request objects.
+	     * Needed as long as information about requests comes from different events.
+	     */
+	    #requests = new Map();
+	    /** A map from intercept ID to track active network intercepts. */
+	    #intercepts = new Map();
+	    constructor(eventManager, browserClient, logger) {
+	        this.#eventManager = eventManager;
+	        browserClient.on('Target.detachedFromTarget', ({ sessionId }) => {
+	            this.disposeRequestMap(sessionId);
+	        });
+	        this.#logger = logger;
+	    }
+	    /**
+	     * Gets the network request with the given ID, if any.
+	     * Otherwise, creates a new network request with the given ID and cdp target.
+	     */
+	    #getOrCreateNetworkRequest(id, cdpTarget, redirectCount) {
+	        let request = this.getRequestById(id);
+	        if (request) {
+	            return request;
+	        }
+	        request = new NetworkRequest_js_1.NetworkRequest(id, this.#eventManager, this, cdpTarget, redirectCount, this.#logger);
+	        this.addRequest(request);
+	        return request;
+	    }
+	    onCdpTargetCreated(cdpTarget) {
+	        const cdpClient = cdpTarget.cdpClient;
+	        // TODO: Wrap into object
+	        const listeners = [
+	            [
+	                'Network.requestWillBeSent',
+	                (params) => {
+	                    const request = this.getRequestById(params.requestId);
+	                    if (request && request.isRedirecting()) {
+	                        request.handleRedirect(params);
+	                        this.deleteRequest(params.requestId);
+	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget, request.redirectCount + 1).onRequestWillBeSentEvent(params);
+	                    }
+	                    else {
+	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentEvent(params);
+	                    }
+	                },
+	            ],
+	            [
+	                'Network.requestWillBeSentExtraInfo',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentExtraInfoEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.responseReceived',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.responseReceivedExtraInfo',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedExtraInfoEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.requestServedFromCache',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onServedFromCache();
+	                },
+	            ],
+	            [
+	                'Network.loadingFailed',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onLoadingFailedEvent(params);
+	                },
+	            ],
+	            [
+	                'Fetch.requestPaused',
+	                (event) => {
+	                    this.#getOrCreateNetworkRequest(
+	                    // CDP quirk if the Network domain is not present this is undefined
+	                    event.networkId ?? event.requestId, cdpTarget).onRequestPaused(event);
+	                },
+	            ],
+	            [
+	                'Fetch.authRequired',
+	                (event) => {
+	                    let request = this.getRequestByFetchId(event.requestId);
+	                    if (!request) {
+	                        request = this.#getOrCreateNetworkRequest(event.requestId, cdpTarget);
+	                    }
+	                    request.onAuthRequired(event);
+	                },
+	            ],
+	        ];
+	        for (const [event, listener] of listeners) {
+	            cdpClient.on(event, listener);
+	        }
+	    }
+	    getInterceptionStages(browsingContextId) {
+	        const stages = {
+	            request: false,
+	            response: false,
+	            auth: false,
+	        };
+	        for (const intercept of this.#intercepts.values()) {
+	            if (intercept.contexts &&
+	                !intercept.contexts.includes(browsingContextId)) {
+	                continue;
+	            }
+	            stages.request ||= intercept.phases.includes("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
+	            stages.response ||= intercept.phases.includes("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
+	            stages.auth ||= intercept.phases.includes("authRequired" /* Network.InterceptPhase.AuthRequired */);
+	        }
+	        return stages;
+	    }
+	    getInterceptsForPhase(request, phase) {
+	        if (request.url === NetworkRequest_js_1.NetworkRequest.unknownParameter) {
+	            return new Set();
+	        }
+	        const intercepts = new Set();
+	        for (const [interceptId, intercept] of this.#intercepts.entries()) {
+	            if (!intercept.phases.includes(phase) ||
+	                (intercept.contexts &&
+	                    !intercept.contexts.includes(request.cdpTarget.topLevelId))) {
+	                continue;
+	            }
+	            if (intercept.urlPatterns.length === 0) {
+	                intercepts.add(interceptId);
+	                continue;
+	            }
+	            for (const pattern of intercept.urlPatterns) {
+	                if ((0, NetworkUtils_js_1.matchUrlPattern)(pattern, request.url)) {
+	                    intercepts.add(interceptId);
+	                    break;
+	                }
+	            }
+	        }
+	        return intercepts;
+	    }
+	    disposeRequestMap(sessionId) {
+	        for (const request of this.#requests.values()) {
+	            if (request.cdpClient.sessionId === sessionId) {
+	                this.#requests.delete(request.id);
+	            }
+	        }
+	    }
+	    /**
+	     * Adds the given entry to the intercept map.
+	     * URL patterns are assumed to be parsed.
+	     *
+	     * @return The intercept ID.
+	     */
+	    addIntercept(value) {
+	        const interceptId = (0, uuid_js_1.uuidv4)();
+	        this.#intercepts.set(interceptId, value);
+	        return interceptId;
+	    }
+	    /**
+	     * Removes the given intercept from the intercept map.
+	     * Throws NoSuchInterceptException if the intercept does not exist.
+	     */
+	    removeIntercept(intercept) {
+	        if (!this.#intercepts.has(intercept)) {
+	            throw new protocol_js_1$5.NoSuchInterceptException(`Intercept '${intercept}' does not exist.`);
+	        }
+	        this.#intercepts.delete(intercept);
+	    }
+	    getRequestById(id) {
+	        return this.#requests.get(id);
+	    }
+	    getRequestByFetchId(fetchId) {
+	        for (const request of this.#requests.values()) {
+	            if (request.fetchId === fetchId) {
+	                return request;
+	            }
+	        }
+	        return;
+	    }
+	    addRequest(request) {
+	        this.#requests.set(request.id, request);
+	    }
+	    deleteRequest(id) {
+	        this.#requests.delete(id);
+	    }
+	}
+	NetworkStorage$1.NetworkStorage = NetworkStorage;
+
+	var PreloadScriptStorage$1 = {};
+
+	Object.defineProperty(PreloadScriptStorage$1, "__esModule", { value: true });
+	PreloadScriptStorage$1.PreloadScriptStorage = void 0;
+	/**
+	 * Container class for preload scripts.
+	 */
+	class PreloadScriptStorage {
+	    /** Tracks all BiDi preload scripts.  */
+	    #scripts = new Set();
+	    /**
+	     * Finds all entries that match the given filter (OR logic).
+	     */
+	    find(filter) {
+	        if (!filter) {
+	            return [...this.#scripts];
+	        }
+	        return [...this.#scripts].filter((script) => {
+	            if (filter.id !== undefined && filter.id === script.id) {
+	                return true;
+	            }
+	            if (filter.targetId !== undefined &&
+	                script.targetIds.has(filter.targetId)) {
+	                return true;
+	            }
+	            if (filter.global !== undefined &&
+	                // Global scripts have no contexts
+	                ((filter.global && script.contexts === undefined) ||
+	                    // Non global scripts always have contexts
+	                    (!filter.global && script.contexts !== undefined))) {
+	                return true;
+	            }
+	            return false;
+	        });
+	    }
+	    add(preloadScript) {
+	        this.#scripts.add(preloadScript);
+	    }
+	    /** Deletes all BiDi preload script entries that match the given filter. */
+	    remove(filter) {
+	        for (const preloadScript of this.find(filter)) {
+	            this.#scripts.delete(preloadScript);
+	        }
+	    }
+	}
+	PreloadScriptStorage$1.PreloadScriptStorage = PreloadScriptStorage;
 
 	var RealmStorage$1 = {};
 
@@ -8888,7 +8923,10 @@ var mapperTab = (function () {
 	const log_js_1$4 = log$1;
 	const ProcessingQueue_js_1 = ProcessingQueue$1;
 	const CommandProcessor_js_1 = CommandProcessor$1;
+	const CdpTargetManager_js_1 = CdpTargetManager$1;
 	const BrowsingContextStorage_js_1 = BrowsingContextStorage$1;
+	const NetworkStorage_js_1 = NetworkStorage$1;
+	const PreloadScriptStorage_js_1 = PreloadScriptStorage$1;
 	const RealmStorage_js_1 = RealmStorage$1;
 	const EventManager_js_1 = EventManager$1;
 	class BidiServer extends EventEmitter_js_1$1.EventEmitter {
@@ -8897,6 +8935,8 @@ var mapperTab = (function () {
 	    #commandProcessor;
 	    #eventManager;
 	    #browsingContextStorage = new BrowsingContextStorage_js_1.BrowsingContextStorage();
+	    #realmStorage = new RealmStorage_js_1.RealmStorage();
+	    #preloadScriptStorage = new PreloadScriptStorage_js_1.PreloadScriptStorage();
 	    #logger;
 	    #handleIncomingMessage = (message) => {
 	        void this.#commandProcessor.processCommand(message).catch((error) => {
@@ -8917,7 +8957,9 @@ var mapperTab = (function () {
 	        this.#transport = bidiTransport;
 	        this.#transport.setOnMessage(this.#handleIncomingMessage);
 	        this.#eventManager = new EventManager_js_1.EventManager(this.#browsingContextStorage);
-	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, selfTargetId, defaultUserContextId, this.#browsingContextStorage, new RealmStorage_js_1.RealmStorage(), options?.acceptInsecureCerts ?? false, parser, this.#logger);
+	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(this.#eventManager, browserCdpClient, logger);
+	        new CdpTargetManager_js_1.CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#preloadScriptStorage, options?.acceptInsecureCerts ?? false, defaultUserContextId, logger);
+	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, parser, this.#logger);
 	        this.#eventManager.on("event" /* EventManagerEvents.Event */, ({ message, event }) => {
 	            this.emitOutgoingMessage(message, event);
 	        });
