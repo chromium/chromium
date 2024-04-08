@@ -234,11 +234,6 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 
 }  // namespace
 
-// static
-BASE_FEATURE(kCertificateTransparencyEnforcement,
-             "CertificateTransparencyEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
@@ -320,10 +315,8 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
-  // If CT is emergency disabled, either through a component updater set flag or
-  // through the feature flag, we don't require CT for any host.
-  if (ct_emergency_disable_ ||
-      !base::FeatureList::IsEnabled(kCertificateTransparencyEnforcement)) {
+  // If CT is emergency disabled, we don't require CT for any host.
+  if (ct_emergency_disable_) {
     return CT_NOT_REQUIRED;
   }
 

@@ -40,11 +40,6 @@ enum class CTPolicyCompliance;
 class HostPortPair;
 class X509Certificate;
 
-// Feature that controls whether Certificate Transparency is enforced. This
-// feature is default enabled and meant only as an emergency killswitch. It
-// will not enable enforcement in platforms that otherwise have it disabled.
-NET_EXPORT BASE_DECLARE_FEATURE(kCertificateTransparencyEnforcement);
-
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
 

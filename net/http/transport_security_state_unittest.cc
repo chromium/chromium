@@ -898,41 +898,9 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
   }
 }
 
-enum class CTEmergencyDisableSwitchKind {
-  kFinchDrivenFeature,
-  kComponentUpdaterDrivenSwitch,
-};
-
-class CTEmergencyDisableTest
-    : public TransportSecurityStateTest,
-      public testing::WithParamInterface<CTEmergencyDisableSwitchKind> {
- public:
-  CTEmergencyDisableTest() {
-    if (GetParam() ==
-        CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
-      scoped_feature_list_.Init();
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kCertificateTransparencyEnforcement);
-    }
-  }
-  void SetUp() override {
-    if (GetParam() ==
-        CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
-      state_.SetCTEmergencyDisabled(true);
-    } else {
-      ASSERT_EQ(GetParam(), CTEmergencyDisableSwitchKind::kFinchDrivenFeature);
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  TransportSecurityState state_;
-};
-
 // Tests that the emergency disable flags cause CT to stop being required
 // regardless of host or delegate status.
-TEST_P(CTEmergencyDisableTest, CTEmergencyDisable) {
+TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
   using ::testing::_;
   using ::testing::Return;
   using CTRequirementLevel =
@@ -947,39 +915,36 @@ TEST_P(CTEmergencyDisableTest, CTEmergencyDisable) {
   hashes.push_back(
       HashValue(X509Certificate::CalculateFingerprint256(cert->cert_buffer())));
 
+  TransportSecurityState state;
+  state.SetCTEmergencyDisabled(true);
+
   MockRequireCTDelegate always_require_delegate;
   EXPECT_CALL(always_require_delegate, IsCTRequiredForHost(_, _, _))
       .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
-  state_.SetRequireCTDelegate(&always_require_delegate);
+  state.SetRequireCTDelegate(&always_require_delegate);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state_.CheckCTRequirements(
+            state.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state_.CheckCTRequirements(
+            state.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state_.CheckCTRequirements(
+            state.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state_.CheckCTRequirements(
+            state.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
-  state_.SetRequireCTDelegate(nullptr);
+  state.SetRequireCTDelegate(nullptr);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state_.CheckCTRequirements(
+            state.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    CTEmergencyDisable,
-    CTEmergencyDisableTest,
-    testing::Values(CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch,
-                    CTEmergencyDisableSwitchKind::kFinchDrivenFeature));
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 

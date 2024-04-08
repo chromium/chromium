@@ -39,6 +39,8 @@ BASE_FEATURE(kBookmarkTriggerForPrerender2,
 // Enabling CT enforcement requires maintaining a log policy, and the ability to
 // update the list of accepted logs. Embedders who are planning to enable this
 // should first reach out to chrome-certificate-transparency@google.com.
+// On builds where CT is enabled, this flag is also used as an emergency kill
+// switch.
 BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
              "CertificateTransparencyAskBeforeEnabling",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
