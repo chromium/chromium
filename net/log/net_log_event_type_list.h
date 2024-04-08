@@ -1817,6 +1817,14 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 // QuicSessionPool
 // ------------------------------------------------------------------------
 
+// This event is emitted when a session request ends up using an existing
+// session.
+//   {
+//     "destination": <The destination of the request>,
+//     "reason": <The reason for using the existing session>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_USE_EXISTING_SESSION)
+
 // This event is emitted whenever a platform notification is received that
 // could possibly trigger connection migration.
 //   {

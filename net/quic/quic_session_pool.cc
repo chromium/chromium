@@ -173,6 +173,15 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   return hosts;
 }
 
+base::Value::Dict NetLogParamsQuicSessionPoolUseExistingSession(
+    const url::SchemeHostPort& destination,
+    std::string_view reason) {
+  base::Value::Dict dict;
+  dict.Set("destination", destination.Serialize());
+  dict.Set("reason", reason);
+  return dict;
+}
+
 }  // namespace
 
 QuicSessionRequest::QuicSessionRequest(QuicSessionPool* pool) : pool_(pool) {}
@@ -545,6 +554,11 @@ int QuicSessionPool::RequestSession(
   // Use active session for |session_key| if such exists.
   auto active_session = active_sessions_.find(session_key);
   if (active_session != active_sessions_.end()) {
+    net_log.AddEvent(NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION,
+                     [&] {
+                       return NetLogParamsQuicSessionPoolUseExistingSession(
+                           destination, "session key match");
+                     });
     QuicChromiumClientSession* session = active_session->second;
     request->SetSession(session->CreateHandle(std::move(destination)));
     return OK;
@@ -570,6 +584,12 @@ int QuicSessionPool::RequestSession(
       QuicChromiumClientSession* session = key_value.second;
       if (destination == all_sessions_[session].destination() &&
           session->CanPool(session_key.server_id().host(), session_key)) {
+        net_log.AddEvent(
+            NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION, [&] {
+              return NetLogParamsQuicSessionPoolUseExistingSession(
+                  destination,
+                  "session key doesn't match but an existing session can pool");
+            });
         request->SetSession(session->CreateHandle(std::move(destination)));
         return OK;
       }
