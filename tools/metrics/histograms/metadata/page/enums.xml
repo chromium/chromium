@@ -166,6 +166,22 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OriginTrialStatusChange">
+  <int value="0"
+      label="kDisabled: Origin-specific origin trial token was disabled (i.e.
+             removed from the top-level site's partition)"/>
+  <int value="1"
+      label="kDisabled_MatchesSubdomains: Subdomain-matching origin trial
+             token was disabled (i.e. removed from the top-level site's
+             partition)"/>
+  <int value="2"
+      label="kEnabled: Origin-specific token was used to enable the origin
+             trial"/>
+  <int value="3"
+      label="kEnabled_MatchesSubdomains: Subdomain-matching token was used to
+             enable the origin trial"/>
+</enum>
+
 <enum name="PageActionCTREvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Clicked"/>

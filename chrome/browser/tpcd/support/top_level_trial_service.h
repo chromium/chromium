@@ -13,6 +13,20 @@
 
 namespace tpcd::trial {
 
+// StatusChange is basically the cross-product of the booleans indicating the
+// (new) status of the trial and if the token affecting it matches subdomains.
+// It's used in UMA enum histograms.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OriginTrialStatusChange {
+  kDisabled = 0,
+  kDisabled_MatchesSubdomains = 1,
+  kEnabled = 2,
+  kEnabled_MatchesSubdomains = 3,
+  kMaxValue = kEnabled_MatchesSubdomains,
+};
+
 // A profile-keyed service that maintains TPCD_TRIAL content settings based on
 // the state of the associated origin trial for a given
 // `origin`-`partition_site` pair.

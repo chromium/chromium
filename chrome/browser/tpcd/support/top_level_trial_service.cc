@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/support/top_level_trial_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/browser_context.h"
@@ -14,12 +15,43 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace tpcd::trial {
 namespace {
 
 const char kTrialName[] = "TopLevelTpcd";
+
+OriginTrialStatusChange ClassifyStatusChange(bool enabled,
+                                             bool matches_subdomains) {
+  if (enabled) {
+    return matches_subdomains
+               ? OriginTrialStatusChange::kEnabled_MatchesSubdomains
+               : OriginTrialStatusChange::kEnabled;
+  } else {
+    return matches_subdomains
+               ? OriginTrialStatusChange::kDisabled_MatchesSubdomains
+               : OriginTrialStatusChange::kDisabled;
+  }
+}
+
+inline void UmaHistogramCrossSiteChange(bool enabled, bool matches_subdomains) {
+  base::UmaHistogramEnumeration(
+      "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange",
+      ClassifyStatusChange(enabled, matches_subdomains));
+}
+
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  // We can't use SiteInstance::IsSameSiteWithURL() because both mainframe and
+  // subframe are under default SiteInstance on low-end Android environment, and
+  // it treats them as same-site even though the passed url is actually not a
+  // same-site.
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 }  // namespace
 
 TopLevelTrialService::TopLevelTrialService(
@@ -136,8 +168,16 @@ void TopLevelTrialService::OnStatusChanged(const url::Origin& origin,
                                            const std::string& partition_site,
                                            bool includes_subdomains,
                                            bool enabled) {
-  // TopLevelTpcd is a first-party trial, so the |partition_site| can be ignored
-  // (and should always be same-site with the |origin| anyway).
+  // TopLevelTpcd is a first-party trial that is only intended for use by
+  // top-level sites. However, since a cross-site iframe may enabled a
+  // first-party origin trial (for itself), so to ensure we only create settings
+  // for top-level sites, explicitly check that `origin` is same-site with
+  // `partition_site`.
+  if (!IsSameSite(origin.GetURL(), GURL(partition_site))) {
+    UmaHistogramCrossSiteChange(enabled, includes_subdomains);
+    return;
+  }
+
   UpdateTopLevelTrialSettings(origin, includes_subdomains, enabled);
 }
 

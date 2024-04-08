@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/tpcd/support/top_level_trial_service.h"
+
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -414,6 +416,160 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
                 GURL(), kTrialEnabledSite, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+}
+
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       NoSettingCreatedIfTrialEnabledCrossSite) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL embedding_site = https_server_->GetURL("a.test", "/iframe_blank.html");
+
+  // Verify third-party cookie access isn't permitted under |kTrialEnabledSite|.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(GetProfile()).get();
+  ASSERT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Navigate the top-level page to `embedding_site` and update it to have an
+  // `kTrialEnabledSite` iframe that returns its TopLevelTpcd origin trial token
+  // in its HTTP response headers.
+  {
+    ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+    const std::string kIframeId = "test";  // defined in iframe_blank.html
+    GURL iframe_url = GURL(kTrialEnabledSite.spec() + kTrialEnabledIframePath);
+    ASSERT_TRUE(
+        content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
+  }
+
+  // We can't deterministically wait for the `TopLevelTrialService` to not
+  // update content settings and then emit this UMA metric, which is why we need
+  // the `RunLoop` here:
+  base::RunLoop().RunUntilIdle();
+  ASSERT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
+      BucketsAre(
+          base::Bucket(OriginTrialStatusChange::kDisabled, 0),
+          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
+          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
+          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
+                       0)));
+
+  // Check the TopLevelTpcd origin trial itself is enabled for
+  // `kTrialEnabledSite` embedded under `embedding_site`.
+  content::OriginTrialsControllerDelegate* trial_delegate =
+      web_contents->GetBrowserContext()->GetOriginTrialsControllerDelegate();
+
+  EXPECT_TRUE(trial_delegate->IsFeaturePersistedForOrigin(
+      url::Origin::Create(kTrialEnabledSite),
+      url::Origin::Create(embedding_site),
+      blink::mojom::OriginTrialFeature::kTopLevelTpcd, base::Time::Now()));
+
+  // Verify that third-party cookie access is still NOT permitted under
+  // `kTrialEnabledSite`.
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+// Since the TopLevelTpcd origin trial itself can be enabled/disabled in a
+// cross-site context despite the trial only being intended to support top-level
+// sites, this test verifies that changes to the status of the trial for an
+// origin when in a cross-site context doesn't affect an existing content
+// setting created for it in a top-level context.
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       CrossSiteOriginTrialStateChangesIgnored) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetActiveWebContents();
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(GetProfile()).get();
+
+  // Verify third-party cookie access isn't already permitted under
+  // `kTrialEnabledSite`.
+  ASSERT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Enable the trial by navigating to a `kTrialEnabledSite` page that returns
+  // its origin trial token in the HTTP response headers.
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(kTrialEnabledSite);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, kTrialEnabledSite));
+    setting_observer.Wait();
+    EXPECT_EQ(
+        settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+        CONTENT_SETTING_ALLOW);
+  }
+
+  GURL embedding_site = https_server_->GetURL("a.test", "/iframe_blank.html");
+  const std::string kIframeId = "test";  // defined in iframe_blank.html
+
+  // Enable the origin trial for `kTrialEnabledSite` (under `embedding_site`)
+  // using a cross-site iframe embedded on `embedding_site`.
+  {
+    ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
+
+    GURL iframe_url = GURL(kTrialEnabledSite.spec() + kTrialEnabledIframePath);
+    ASSERT_TRUE(
+        content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
+  }
+
+  // We can't deterministically wait for the `TopLevelTrialService` to not
+  // update content settings and then emit this UMA metric, which is why we need
+  // the `RunLoop` here:
+  base::RunLoop().RunUntilIdle();
+  ASSERT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
+      BucketsAre(
+          base::Bucket(OriginTrialStatusChange::kDisabled, 0),
+          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
+          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
+          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
+                       0)));
+
+  // Check the TopLevelTpcd origin trial itself is enabled for
+  // `kTrialEnabledSite` embedded under `embedding_site`.
+  content::OriginTrialsControllerDelegate* trial_delegate =
+      web_contents->GetBrowserContext()->GetOriginTrialsControllerDelegate();
+
+  EXPECT_TRUE(trial_delegate->IsFeaturePersistedForOrigin(
+      url::Origin::Create(kTrialEnabledSite),
+      url::Origin::Create(embedding_site),
+      blink::mojom::OriginTrialFeature::kTopLevelTpcd, base::Time::Now()));
+
+  // Navigate the iframe to a `kTrialEnabledSite` page without the token to
+  // disable the origin trial for it (under `embedding_site`).
+  {
+    GURL iframe_url = GURL(kTrialEnabledSite.spec() + "?no_token");
+    ASSERT_TRUE(
+        content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
+  }
+
+  // We can't deterministically wait for the `TopLevelTrialService` to not
+  // update content settings and then emit this UMA metric, which is why we need
+  // the `RunLoop` here:
+  base::RunLoop().RunUntilIdle();
+  ASSERT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
+      BucketsAre(
+          base::Bucket(OriginTrialStatusChange::kDisabled, 1),
+          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
+          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
+          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
+                       0)));
+
+  // Check the TopLevelTpcd origin trial itself is now disabled for
+  // `kTrialEnabledSite` embedded under `embedding_site`.
+  EXPECT_FALSE(trial_delegate->IsFeaturePersistedForOrigin(
+      url::Origin::Create(kTrialEnabledSite),
+      url::Origin::Create(embedding_site),
+      blink::mojom::OriginTrialFeature::kTopLevelTpcd, base::Time::Now()));
+
+  // Verify that third-party cookie access is still permitted under
+  // `kTrialEnabledSite`.
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+            CONTENT_SETTING_ALLOW);
 }
 
 }  // namespace tpcd::trial
