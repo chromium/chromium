@@ -749,14 +749,10 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   // overflow, in which case check with |LocalRect()|. For 2, check with
   // |ScrollableOverflow()|, but this can be approximiated with
   // |ContentsInkOverflow()|.
-  // TODO(crbug.com/829028): Column boxes do not have |ContentsInkOverflow| atm,
-  // hence skip the optimization. If we were to have it, this should be enabled.
-  // Otherwise, if we're ok with the perf, we can remove this TODO.
-  if (box_fragment_.IsCSSBox()) {
-    PhysicalRect content_ink_rect = box_fragment_.LocalRect();
-    content_ink_rect.Unite(box_fragment_.ContentsInkOverflowRect());
-    if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset))
-      return;
+  PhysicalRect content_ink_rect = box_fragment_.LocalRect();
+  content_ink_rect.Unite(box_fragment_.ContentsInkOverflowRect());
+  if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset)) {
+    return;
   }
 
   DCHECK(items_);
