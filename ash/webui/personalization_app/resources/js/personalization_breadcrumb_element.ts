@@ -309,13 +309,6 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         this.goBackToRoute_(newPath as Paths);
       }
     }
-    // If the user clicks the last breadcrumb and the sea pen dropdown is
-    // present, open the dropdown.
-    const targetElement = e.currentTarget as HTMLElement;
-    if (index === this.breadcrumbs_.length - 1 &&
-        !!targetElement.querySelector('#seaPenDropdown')) {
-      this.onClickMenuIcon_(e);
-    }
   }
 
   private onClickMenuIcon_(e: Event) {

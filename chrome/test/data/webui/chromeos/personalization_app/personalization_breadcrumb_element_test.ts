@@ -43,10 +43,15 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       assertEquals(breadcrumbEl!.textContent, breadcrumb);
 
       if (i < breadcrumbs.length - 1) {
-        // Breadcrumbs are separated by a chevron icon.
-        const chevronEl = breadcrumbEl!.nextElementSibling;
-        assertEquals(chevronEl!.tagName, 'IRON-ICON');
-        assertEquals(chevronEl!.getAttribute('icon'), 'cr:chevron-right');
+        let nextSiblingEl = breadcrumbEl!.nextElementSibling;
+        while (nextSiblingEl &&
+               (nextSiblingEl as HTMLElement).style.display === 'none') {
+          nextSiblingEl = nextSiblingEl.nextElementSibling;
+        }
+        // The first visible sibling should be a chevron icon. Breadcrumbs are
+        // separated by a chevron icon.
+        assertEquals(nextSiblingEl!.tagName, 'IRON-ICON');
+        assertEquals(nextSiblingEl!.getAttribute('icon'), 'cr:chevron-right');
       }
     }
   }
@@ -575,7 +580,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertEquals('0', allBreadcrumbs[0]!.getAttribute('tabindex'));
     assertNotEquals('0', allBreadcrumbs[1]!.getAttribute('tabindex'));
     assertNotEquals('0', allBreadcrumbs[2]!.getAttribute('tabindex'));
-    assertNotEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
+    // The last breadcrumb which is a button to open the template menu dropdown
+    // list should have tabindex 0.
+    assertEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
 
     // Press 'left' to select the sea pen template breadcrumb.
     const homeBreadcrumb = allBreadcrumbs[0]!;
