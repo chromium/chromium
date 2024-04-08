@@ -947,6 +947,16 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetAllowApnModification(bool allow_apn_modification) {
+    base::Value::Dict global_config;
+    global_config.Set(::onc::global_network_config::kAllowAPNModification,
+                      allow_apn_modification);
+    managed_network_configuration_handler()->SetPolicy(
+        ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+        /*network_configs_onc=*/base::Value::List(), global_config);
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool CustomApnsInNetworkMetadataStoreMatch(
       const std::string& guid,
       const std::vector<TestApnData*>& expected_apns) {
@@ -3410,6 +3420,136 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   counts.num_disable_success++;
   counts.num_disable_type_default++;
   AssertApnHistogramCounts(counts);
+}
+
+TEST_F(CrosNetworkConfigTest,
+       ApnOperationsDisallowApnModificationFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
+                                       {features::kApnRevamp},
+                                       /*disabled_features=*/{
+                                           features::kApnPolicies});
+
+  // Register an observer to capture values sent to Shill.
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_FALSE(custom_apns);
+
+  // Set AllowAPNModification to false.
+  SetAllowApnModification(false);
+
+  // Create APN with kApnPolicies flag disabled should succeed.
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  const std::string apn_id =
+      *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  // Modifying the APN should succeed.
+  test_apn1.id = apn_id;
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Removing the APN should succeed.
+  RemoveCustomApn(kCellularGuid, apn_id);
+  EXPECT_EQ(3u, network_config_observer.GetOnConfigurationModifiedCallCount());
+}
+
+TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
+                                       {features::kApnRevamp,
+                                        features::kApnPolicies},
+                                       /*disabled_features=*/{});
+
+  // Register an observer to capture values sent to Shill.
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_FALSE(custom_apns);
+
+  // APN operations with AllowAPNModification unset should succeed.
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  std::string apn_id =
+      *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  // Modifying the APN should succeed.
+  test_apn1.id = apn_id;
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Removing the APN should succeed.
+  RemoveCustomApn(kCellularGuid, apn_id);
+  EXPECT_EQ(3u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Set AllowAPNModification to true. Operations should succeed.
+  SetAllowApnModification(true);
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  EXPECT_EQ(4u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  apn_id = *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  // Modifying the APN should succeed.
+  test_apn1.id = apn_id;
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(5u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Removing the APN should succeed.
+  RemoveCustomApn(kCellularGuid, apn_id);
+  EXPECT_EQ(6u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Add another custom APN.
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  EXPECT_EQ(7u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  apn_id = *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  // Set AllowAPNModification to false. Operations should not succeed.
+  SetAllowApnModification(false);
+  EXPECT_FALSE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  EXPECT_EQ(7u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Modifying the APN shouldn't succeed.
+  test_apn1.id = apn_id;
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(7u, network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  // Removing the APN shouldn't succeed.
+  RemoveCustomApn(kCellularGuid, apn_id);
+  EXPECT_EQ(7u, network_config_observer.GetOnConfigurationModifiedCallCount());
 }
 
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {

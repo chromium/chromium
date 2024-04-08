@@ -3558,6 +3558,14 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
     return;
   }
 
+  if (features::IsApnPoliciesEnabled() &&
+      !network_configuration_handler_->AllowApnModification()) {
+    NET_LOG(ERROR)
+        << "Cannot create custom APN if AllowAPNModification is false.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   const NetworkState* network =
       network_state_handler_->GetNetworkStateFromGuid(network_guid);
   if (!network || network->profile_path().empty()) {
@@ -3668,6 +3676,13 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
     return;
   }
 
+  if (features::IsApnPoliciesEnabled() &&
+      !network_configuration_handler_->AllowApnModification()) {
+    NET_LOG(ERROR)
+        << "Cannot remove custom APN if AllowAPNModification is false.";
+    return;
+  }
+
   const NetworkState* network =
       network_state_handler_->GetNetworkStateFromGuid(network_guid);
   if (!network || network->profile_path().empty()) {
@@ -3747,6 +3762,13 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     receivers_.ReportBadMessage(
         "ModifyCustomApn: Cannot be called if the APN Revamp feature flag is "
         "disabled.");
+    return;
+  }
+
+  if (features::IsApnPoliciesEnabled() &&
+      !network_configuration_handler_->AllowApnModification()) {
+    NET_LOG(ERROR)
+        << "Cannot modify custom APN if AllowAPNModification is false.";
     return;
   }
 
