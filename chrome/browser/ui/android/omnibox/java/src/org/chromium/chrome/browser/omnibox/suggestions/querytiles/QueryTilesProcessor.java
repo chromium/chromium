@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -27,13 +26,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** SuggestionProcessor for Query Tiles. */
 public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     private static final float LAST_ELEMENT_MIN_EXPOSURE_FRACTION = 0.3f;
     private static final float LAST_ELEMENT_MAX_EXPOSURE_FRACTION = 0.7f;
     private final @NonNull SuggestionHost mSuggestionHost;
-    private final @Nullable OmniboxImageSupplier mImageSupplier;
+    private final @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
@@ -49,7 +49,7 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     public QueryTilesProcessor(
             @NonNull Context context,
             @NonNull SuggestionHost host,
-            @Nullable OmniboxImageSupplier imageSupplier) {
+            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
         super(context);
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
@@ -69,7 +69,7 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
+    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch match, int matchIndex) {
         // This component only processes QueryTiles represented as a Carousel.
         // QueryTiles that are meant to show as a list are processed by the default processor: the
         // BasicSuggestionProcessor.
@@ -83,29 +83,35 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         var padding =
                 mContext.getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_query_tiles_carousel_vertical_padding);
-        return new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
-                .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
-                .with(
-                        BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
-                        mContext.getResources()
-                                .getString(R.string.accessibility_omnibox_query_tiles_list))
-                .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, padding)
-                .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, padding)
-                .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
-                .with(
-                        BaseCarouselSuggestionViewProperties.ITEM_DECORATION,
-                        new DynamicSpacingRecyclerViewItemDecoration(
-                                mInitialSpacing,
-                                mElementSpacing,
-                                mCarouselItemViewWidth,
-                                LAST_ELEMENT_MIN_EXPOSURE_FRACTION,
-                                LAST_ELEMENT_MAX_EXPOSURE_FRACTION))
-                .build();
+
+        @SuppressWarnings("null")
+        @NonNull
+        PropertyModel model =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
+                        .with(
+                                BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
+                                mContext.getResources()
+                                        .getString(R.string.accessibility_omnibox_query_tiles_list))
+                        .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, padding)
+                        .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, padding)
+                        .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
+                        .with(
+                                BaseCarouselSuggestionViewProperties.ITEM_DECORATION,
+                                new DynamicSpacingRecyclerViewItemDecoration(
+                                        mInitialSpacing,
+                                        mElementSpacing,
+                                        mCarouselItemViewWidth,
+                                        LAST_ELEMENT_MIN_EXPOSURE_FRACTION,
+                                        LAST_ELEMENT_MAX_EXPOSURE_FRACTION))
+                        .build();
+
+        return model;
     }
 
     @Override
@@ -118,7 +124,7 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
         super.populateModel(match, model, matchIndex);
 
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
-        var tileModel =
+        PropertyModel tileModel =
                 new PropertyModel.Builder(QueryTileViewProperties.ALL_UNIQUE_KEYS)
                         .with(QueryTileViewProperties.TITLE, match.getDisplayText())
                         .with(
@@ -135,13 +141,16 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
         tileList.add(
                 new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.QUERY_TILE, tileModel));
 
-        if (mImageSupplier != null && match.getImageUrl().isValid()) {
-            mImageSupplier.fetchImage(
-                    match.getImageUrl(),
-                    image ->
-                            tileModel.set(
-                                    QueryTileViewProperties.IMAGE,
-                                    new BitmapDrawable(mContext.getResources(), image)));
+        if (match.getImageUrl().isValid()) {
+            mImageSupplier.ifPresent(
+                    s ->
+                            s.fetchImage(
+                                    match.getImageUrl(),
+                                    image ->
+                                            tileModel.set(
+                                                    QueryTileViewProperties.IMAGE,
+                                                    new BitmapDrawable(
+                                                            mContext.getResources(), image))));
         }
     }
 }

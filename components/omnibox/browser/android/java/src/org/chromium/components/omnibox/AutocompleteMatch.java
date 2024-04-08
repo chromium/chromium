@@ -345,7 +345,7 @@ public class AutocompleteMatch {
         return mAnswer != null;
     }
 
-    public String getFillIntoEdit() {
+    public @NonNull String getFillIntoEdit() {
         return mFillIntoEdit;
     }
 
@@ -353,7 +353,8 @@ public class AutocompleteMatch {
         return mUrl;
     }
 
-    public GURL getImageUrl() {
+    public @NonNull GURL getImageUrl() {
+        assert mImageUrl != null;
         return mImageUrl;
     }
 

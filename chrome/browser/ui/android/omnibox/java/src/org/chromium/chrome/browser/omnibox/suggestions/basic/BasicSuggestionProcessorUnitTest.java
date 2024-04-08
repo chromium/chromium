@@ -52,6 +52,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /** Tests for {@link BasicSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -137,7 +138,7 @@ public class BasicSuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlBarText,
-                        mImageSupplier,
+                        Optional.of(mImageSupplier),
                         mIsBookmarked);
         OmniboxResourceProvider.disableCachesForTesting();
     }

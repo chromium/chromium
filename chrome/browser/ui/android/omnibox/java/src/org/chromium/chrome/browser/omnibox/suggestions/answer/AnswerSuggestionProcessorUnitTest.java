@@ -61,6 +61,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 /** Tests for {@link AnswerSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -98,8 +99,6 @@ public class AnswerSuggestionProcessorUnitTest {
         protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.
         protected final PropertyModel mModel;
-        // Stores Answer object associated with AutocompleteMatch (if any).
-        private final SuggestionAnswer mAnswer;
 
         private SuggestionTestHelper(
                 AutocompleteMatch suggestion,
@@ -107,7 +106,6 @@ public class AnswerSuggestionProcessorUnitTest {
                 PropertyModel model,
                 String userQuery) {
             mSuggestion = suggestion;
-            mAnswer = answer;
             mModel = model;
             when(mUrlStateProvider.getTextWithoutAutocomplete()).thenReturn(userQuery);
             mProcessor.populateModel(mSuggestion, mModel, 0);
@@ -218,7 +216,7 @@ public class AnswerSuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlStateProvider,
-                        mImageSupplier);
+                        Optional.of(mImageSupplier));
         mDefaultLocale = Locale.getDefault();
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -359,7 +357,7 @@ public class AnswerSuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlStateProvider,
-                        null);
+                        Optional.empty());
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.WEATHER, "", 1, "", 1, url);
         Assert.assertNotNull(suggHelper.getIcon());
@@ -447,7 +445,7 @@ public class AnswerSuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlStateProvider,
-                        /* imageSupplier= */ null);
+                        /* imageSupplier= */ Optional.empty());
 
         var suggHelper =
                 createAnswerSuggestion(

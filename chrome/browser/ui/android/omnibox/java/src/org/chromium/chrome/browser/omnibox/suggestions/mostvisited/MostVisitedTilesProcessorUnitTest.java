@@ -61,6 +61,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /** Tests for {@link MostVisitedTilesProcessor}. */
@@ -113,7 +114,9 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .when(mImageSupplier)
                 .generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
-        mProcessor = new MostVisitedTilesProcessor(mContext, mSuggestionHost, mImageSupplier);
+        mProcessor =
+                new MostVisitedTilesProcessor(
+                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
@@ -191,7 +194,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_navTileIcon_fallbackIcon() {
         mProcessor =
-                new MostVisitedTilesProcessor(mContext, mSuggestionHost, /* imageSupplier= */ null);
+                new MostVisitedTilesProcessor(
+                        mContext, mSuggestionHost, /* imageSupplier= */ Optional.empty());
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
 

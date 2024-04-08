@@ -17,14 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
-import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -48,7 +46,6 @@ public class ActionChipsProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
 
     private ActionChipsProcessor mProcessor;
-    private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private ModelList mActionModel;
 
@@ -56,8 +53,7 @@ public class ActionChipsProcessorUnitTest {
     public void setUp() {
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
 
-        mProcessor =
-                new ActionChipsProcessor(ContextUtils.getApplicationContext(), mSuggestionHost);
+        mProcessor = new ActionChipsProcessor(mSuggestionHost);
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
     }
 

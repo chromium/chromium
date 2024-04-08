@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.header;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemProcessor;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -18,7 +20,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
     /**
      * @param context An Android context.
      */
-    public HeaderProcessor(Context context) {
+    public HeaderProcessor(@NonNull Context context) {
         mMinimumHeight =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
@@ -35,7 +37,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(HeaderViewProperties.ALL_KEYS);
     }
 
@@ -45,7 +47,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
      * @param model The model to populate.
      * @param headerText Text to be displayed for this group header.
      */
-    public void populateModel(final PropertyModel model, final String headerText) {
+    public void populateModel(@NonNull PropertyModel model, @NonNull String headerText) {
         model.set(HeaderViewProperties.TITLE, headerText);
     }
 }

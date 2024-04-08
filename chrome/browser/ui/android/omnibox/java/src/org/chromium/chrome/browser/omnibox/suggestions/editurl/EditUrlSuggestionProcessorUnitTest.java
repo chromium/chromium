@@ -65,6 +65,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Optional;
+
 /** Unit tests for the "edit url" omnibox suggestion. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {EditUrlSuggestionProcessorUnitTest.ShadowSadTab.class})
@@ -136,7 +138,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
                 new EditUrlSuggestionProcessor(
                         mContext,
                         mSuggestionHost,
-                        mImageSupplier,
+                        Optional.of(mImageSupplier),
                         mTabSupplier,
                         mShareDelegateSupplier);
         mModel = mProcessor.createModel();

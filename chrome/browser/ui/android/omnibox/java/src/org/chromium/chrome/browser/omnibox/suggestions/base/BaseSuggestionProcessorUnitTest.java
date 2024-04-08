@@ -48,6 +48,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Optional;
+
 /** Tests for {@link BaseSuggestionViewProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -60,7 +62,7 @@ public class BaseSuggestionProcessorUnitTest {
         public TestBaseSuggestionProcessor(
                 Context context,
                 SuggestionHost suggestionHost,
-                OmniboxImageSupplier imageSupplier) {
+                Optional<OmniboxImageSupplier> imageSupplier) {
             super(context, suggestionHost, imageSupplier);
             mContext = context;
         }
@@ -104,7 +106,9 @@ public class BaseSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-        mProcessor = new TestBaseSuggestionProcessor(mContext, mSuggestionHost, mImageSupplier);
+        mProcessor =
+                new TestBaseSuggestionProcessor(
+                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
     }
 
     /** Create Suggestion for test. */

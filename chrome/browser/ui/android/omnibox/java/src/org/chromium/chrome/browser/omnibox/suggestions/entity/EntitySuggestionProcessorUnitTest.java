@@ -51,6 +51,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Optional;
+
 /** Tests for {@link EntitySuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -118,7 +120,7 @@ public class EntitySuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        mImageSupplier,
+                        Optional.of(mImageSupplier),
                         mBookmarkState);
         doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
@@ -208,7 +210,7 @@ public class EntitySuggestionProcessorUnitTest {
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mTextProvider,
-                        /* imageSupplier= */ null,
+                        /* imageSupplier= */ Optional.empty(),
                         mBookmarkState);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);

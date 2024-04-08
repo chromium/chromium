@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.LocaleUtils;
@@ -24,6 +25,8 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.Optional;
+
 /** A class that handles model and view creation for the most commonly used omnibox suggestion. */
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
@@ -32,10 +35,10 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private boolean mOmniBoxAnswerColorReversal;
 
     public AnswerSuggestionProcessor(
-            Context context,
-            SuggestionHost suggestionHost,
-            UrlBarEditingTextStateProvider editingTextProvider,
-            OmniboxImageSupplier imageSupplier) {
+            @NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
+            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
+            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
         super(context, suggestionHost, imageSupplier);
         mUrlBarEditingTextProvider = editingTextProvider;
     }
@@ -48,7 +51,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
         return suggestion.hasAnswer() || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
@@ -60,12 +63,13 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         setStateForSuggestion(model, suggestion, position);
     }
@@ -130,7 +134,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
+    public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
         int icon = 0;
 
         SuggestionAnswer answer = suggestion.getAnswer();

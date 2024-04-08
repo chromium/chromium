@@ -49,6 +49,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 
 /** Tests for {@link ClipboardSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -78,7 +79,9 @@ public class ClipboardSuggestionProcessorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 5, Bitmap.Config.ARGB_8888);
-        mProcessor = new ClipboardSuggestionProcessor(mContext, mSuggestionHost, mImageSupplier);
+        mProcessor =
+                new ClipboardSuggestionProcessor(
+                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);
         mTitleTextView.setId(R.id.line_1);

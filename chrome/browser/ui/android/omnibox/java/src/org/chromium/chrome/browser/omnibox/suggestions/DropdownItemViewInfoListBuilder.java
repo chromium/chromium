@@ -38,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
 class DropdownItemViewInfoListBuilder {
@@ -50,16 +51,17 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable GroupSeparatorProcessor mGroupSeparatorProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Nullable OmniboxImageSupplier mImageSupplier;
+    private @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     private @Px int mDropdownHeight;
     private boolean mUseNativeGrouping;
 
     DropdownItemViewInfoListBuilder(
-            @NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
+            @NonNull Supplier<Tab> tabSupplier, @NonNull BookmarkState bookmarkState) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
+        mImageSupplier = Optional.empty();
         mBookmarkState = bookmarkState;
     }
 
@@ -71,15 +73,18 @@ class DropdownItemViewInfoListBuilder {
      * @param textProvider Provider of querying/editing the Omnibox.
      */
     void initDefaultProcessors(
-            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
+            @NonNull Context context,
+            @NonNull SuggestionHost host,
+            @NonNull UrlBarEditingTextStateProvider textProvider) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
-        if (!OmniboxFeatures.isLowMemoryDevice()) {
-            mImageSupplier = new OmniboxImageSupplier(context);
-        }
+        mImageSupplier =
+                OmniboxFeatures.isLowMemoryDevice()
+                        ? Optional.empty()
+                        : Optional.of(new OmniboxImageSupplier(context));
 
         mGroupSeparatorProcessor = new GroupSeparatorProcessor(context);
         mHeaderProcessor = new HeaderProcessor(context);
@@ -102,10 +107,8 @@ class DropdownItemViewInfoListBuilder {
     }
 
     void destroy() {
-        if (mImageSupplier != null) {
-            mImageSupplier.destroy();
-            mImageSupplier = null;
-        }
+        mImageSupplier.ifPresent(s -> s.destroy());
+        mImageSupplier = Optional.empty();
     }
 
     /**
@@ -143,9 +146,7 @@ class DropdownItemViewInfoListBuilder {
      * @param profile Current user profile.
      */
     void setProfile(Profile profile) {
-        if (mImageSupplier != null) {
-            mImageSupplier.setProfile(profile);
-        }
+        mImageSupplier.ifPresent(s -> s.setProfile(profile));
     }
 
     /**
@@ -183,7 +184,7 @@ class DropdownItemViewInfoListBuilder {
      * @param activated Indicates whether omnibox session is activated.
      */
     void onOmniboxSessionStateChange(boolean activated) {
-        if (!activated && mImageSupplier != null) mImageSupplier.resetCache();
+        if (!activated) mImageSupplier.ifPresent(s -> s.resetCache());
 
         mHeaderProcessor.onOmniboxSessionStateChange(activated);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
@@ -194,9 +195,8 @@ class DropdownItemViewInfoListBuilder {
     /** Signals that native initialization has completed. */
     void onNativeInitialized() {
         mHeaderProcessor.onNativeInitialized();
-        if (mImageSupplier != null) {
-            mImageSupplier.onNativeInitialized();
-        }
+        mImageSupplier.ifPresent(s -> s.onNativeInitialized());
+
         mUseNativeGrouping =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS);
@@ -277,10 +277,11 @@ class DropdownItemViewInfoListBuilder {
             result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
         }
 
-
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
-            var match = groupMatches.get(indexInList);
+            @SuppressWarnings("null")
+            @NonNull
+            AutocompleteMatch match = groupMatches.get(indexInList);
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
             processor.populateModel(match, model, indexOnList);
@@ -331,7 +332,9 @@ class DropdownItemViewInfoListBuilder {
         var model = processor.createModel();
 
         for (int index = 0; index < numGroupMatches; index++) {
-            var match = groupMatches.get(index);
+            @SuppressWarnings("null") // The list should never include null elements.
+            @NonNull
+            AutocompleteMatch match = groupMatches.get(index);
             assert processor.doesProcessSuggestion(match, position);
             processor.populateModel(match, model, position);
         }
@@ -495,12 +498,14 @@ class DropdownItemViewInfoListBuilder {
      * @param suggestion The suggestion to be processed.
      * @param position Position of the suggestion in the list.
      */
-    private SuggestionProcessor getProcessorForSuggestion(
-            AutocompleteMatch suggestion, int position) {
+    private @NonNull SuggestionProcessor getProcessorForSuggestion(
+            @NonNull AutocompleteMatch suggestion, int position) {
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             SuggestionProcessor processor = mPriorityOrderedSuggestionProcessors.get(index);
             if (processor.doesProcessSuggestion(suggestion, position)) return processor;
         }
+
+        // Crash intentionally. This should never happen.
         assert false : "No default handler for suggestions";
         return null;
     }

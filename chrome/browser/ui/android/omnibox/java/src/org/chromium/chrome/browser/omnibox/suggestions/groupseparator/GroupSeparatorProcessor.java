@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -41,7 +43,7 @@ public class GroupSeparatorProcessor implements DropdownItemProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(SuggestionCommonProperties.ALL_KEYS);
     }
 }

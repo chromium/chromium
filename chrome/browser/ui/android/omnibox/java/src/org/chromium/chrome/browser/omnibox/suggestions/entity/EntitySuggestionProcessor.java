@@ -24,19 +24,21 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Optional;
+
 /** A class that handles model and view creation for the Entity suggestions. */
 public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
     public EntitySuggestionProcessor(
             @NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @Nullable OmniboxImageSupplier imageSupplier,
+            @NonNull Optional<OmniboxImageSupplier> imageSupplier,
             @NonNull BookmarkState bookmarkState) {
         super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
         // TODO(ender): Expand with Categorical Suggestions once these get their dedicated type:
         // - Confirm whether custom handling applicable to Entities should also be applied to
         //   Categorical Suggestions,
@@ -51,19 +53,20 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, false);
     }
 
     @VisibleForTesting
     @Override
-    public OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
+    public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch match) {
         var colorSpec = match.getImageDominantColor();
         if (TextUtils.isEmpty(colorSpec)) return super.getFallbackIcon(match);
 

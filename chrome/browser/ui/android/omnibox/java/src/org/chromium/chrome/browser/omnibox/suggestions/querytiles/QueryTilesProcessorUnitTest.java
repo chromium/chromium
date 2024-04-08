@@ -44,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Optional;
 
 /** Tests for {@link MostVisitedTilesProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,7 +63,8 @@ public class QueryTilesProcessorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mProcessor = new QueryTilesProcessor(mContext, mSuggestionHost, mImageSupplier);
+        mProcessor =
+                new QueryTilesProcessor(mContext, mSuggestionHost, Optional.of(mImageSupplier));
         mModel = mProcessor.createModel();
         mTiles = mModel.get(BaseCarouselSuggestionViewProperties.TILES);
         OmniboxResourceProvider.disableCachesForTesting();
@@ -218,7 +220,7 @@ public class QueryTilesProcessorUnitTest {
 
     @Test
     public void populateModel_noImageRequestsWhenImageSupplierIsNotSet() {
-        mProcessor = new QueryTilesProcessor(mContext, mSuggestionHost, null);
+        mProcessor = new QueryTilesProcessor(mContext, mSuggestionHost, Optional.empty());
         var imageUrl = new GURL("http://image.url");
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.TILE_SUGGESTION)
