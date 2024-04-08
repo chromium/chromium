@@ -57,6 +57,7 @@ patch -p1 --forward < chromium.patch
 patch -p1 --forward < iron_icon.patch
 patch -p1 --forward < iron_list.patch
 patch -p1 --forward < iron_overlay_backdrop.patch
+patch -p1 --forward < paper_color.patch
 patch -p1 --forward < paper_progress.patch
 patch -p1 --forward < paper_spinner.patch
 patch -p1 --forward < paper_tooltip.patch
@@ -113,10 +114,6 @@ fi
 
 echo 'Stripping unnecessary prefixed CSS rules...'
 python css_strip_prefixes.py --file_extension=js
-
-echo 'Generating -rgb versions of --google-* vars in paper-style/colors.js...'
-python rgbify_hex_vars.py --filter-prefix=google --replace \
-    components-chromium/paper-styles/color.js
 
 # TODO create components summary
 

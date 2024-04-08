@@ -4,7 +4,6 @@
 
 /* #css_wrapper_metadata_start
  * #type=vars
- * #import=//resources/polymer/v3_0/paper-styles/color.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -78,12 +77,16 @@ html {
   --google-purple-900-rgb: 104, 29, 168;  /* #681da8 */
   --google-purple-900: rgb(var(--google-purple-900-rgb));
 
+  --google-red-100-rgb: 244, 199, 195;  /* #f4c7c3 */
+  --google-red-100: rgb(var(--google-red-100-rgb));
   --google-red-300-rgb: 242, 139, 130;  /* #f28b82 */
   --google-red-300: rgb(var(--google-red-300-rgb));
   --google-red-500-rgb: 234, 67, 53;  /* #ea4335 */
   --google-red-500: rgb(var(--google-red-500-rgb));
   --google-red-600-rgb: 217, 48, 37;  /* #d93025 */
   --google-red-600: rgb(var(--google-red-600-rgb));
+  --google-red-700-rgb: 197, 57, 41;  /* #c53929 */
+  --google-red-700: rgb(var(--google-red-700-rgb));
 
   --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
   --google-yellow-50: rgb(var(--google-yellow-50-rgb));
@@ -97,6 +100,8 @@ html {
   --google-yellow-400: rgb(var(--google-yellow-400-rgb));
   --google-yellow-500-rgb: 251, 188, 4;  /* #fbbc04 */
   --google-yellow-500: rgb(var(--google-yellow-500-rgb));
+  --google-yellow-700-rgb: 240, 147, 0;  /* #f09300 */
+  --google-yellow-700: rgb(var(--google-yellow-700-rgb));
 
   --cr-card-background-color: white;
 
@@ -126,7 +131,7 @@ html {
   --cr-iph-anchor-highlight-color: rgba(var(--google-blue-600-rgb), 0.1);
   --cr-menu-background-color: white;
   --cr-menu-background-focus-color: var(--google-grey-400);
-  --cr-menu-shadow: 0 2px 6px var(--paper-grey-500);
+  --cr-menu-shadow: var(--cr-elevation-2);
   --cr-separator-color: rgba(0, 0, 0, .06);
   --cr-title-text-color: rgb(90, 90, 90);
 }

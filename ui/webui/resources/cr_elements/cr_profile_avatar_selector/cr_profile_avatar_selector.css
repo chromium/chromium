@@ -4,7 +4,6 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=//resources/polymer/v3_0/paper-styles/color.js
  * #import=../cr_shared_vars.css.js
  * #import=../cr_shared_style_lit.css.js
  * #scheme=relative
@@ -38,7 +37,7 @@
 
   background-position: center;
   background-repeat: no-repeat;
-  border: 1px solid var(--paper-grey-300);
+  border: 1px solid var(--google-grey-300);
   border-radius: 100%;
   display: flex;
   height: var(--avatar-size);
