@@ -18,6 +18,7 @@ D3D11VideoFrameMailboxReleaseHelper::D3D11VideoFrameMailboxReleaseHelper(
       get_helper_cb_(std::move(get_helper_cb)) {
   // May be called from any thread.
   DCHECK(get_helper_cb_);
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
 // Note: It doesn't matter which thread this is destructed on since `helper_`
