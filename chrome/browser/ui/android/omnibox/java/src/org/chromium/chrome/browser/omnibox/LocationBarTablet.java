@@ -120,7 +120,6 @@ class LocationBarTablet extends LocationBarLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = getMeasuredWidth();
-        setUrlActionContainerPadding();
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -128,19 +127,6 @@ class LocationBarTablet extends LocationBarLayout {
             setUnfocusedWidth(getMeasuredWidth());
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
-    }
-
-    private void setUrlActionContainerPadding() {
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) return;
-
-        int urlActionContainerPadding =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_padding_small);
-        boolean isRtl = mUrlActionContainer.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        mUrlActionContainer.setPadding(
-                isRtl ? urlActionContainerPadding : mUrlActionContainer.getPaddingLeft(),
-                mUrlActionContainer.getPaddingTop(),
-                isRtl ? mUrlActionContainer.getRight() : urlActionContainerPadding,
-                mUrlActionContainer.getPaddingBottom());
     }
 
     @Override
