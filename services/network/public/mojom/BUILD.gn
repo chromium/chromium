@@ -1412,6 +1412,7 @@ mojom("mojom") {
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
+    "//components/content_settings/core/common:mojo_bindings",
     "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

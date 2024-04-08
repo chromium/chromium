@@ -90,6 +90,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
 #include "services/network/restricted_cookie_manager.h"
+#include "services/network/tpcd/metadata/manager.h"
 #include "services/network/url_loader.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -472,6 +473,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   first_party_sets_manager_ =
       std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
+
+  tpcd_metadata_manager_ = std::make_unique<network::tpcd::metadata::Manager>();
 
   network_service_proxy_allow_list_ =
       std::make_unique<NetworkServiceProxyAllowList>(
@@ -1105,4 +1108,8 @@ NetworkService* NetworkService::GetNetworkServiceForTesting() {
   return g_network_service;
 }
 
+void NetworkService::SetTpcdMetadataGrants(
+    const std::vector<ContentSettingPatternSource>& settings) {
+  tpcd_metadata_manager_->SetGrants(settings);
+}
 }  // namespace network
