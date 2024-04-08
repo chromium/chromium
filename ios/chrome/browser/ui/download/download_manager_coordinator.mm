@@ -418,9 +418,11 @@
 // Attempts to start the current download task, either for the first time or
 // after one or several previously failed attempts.
 - (void)tryDownload {
+  DownloadManagerTabHelper* tabHelper =
+      DownloadManagerTabHelper::FromWebState(_downloadTask->GetWebState());
   if (_downloadTask->GetErrorCode() != net::OK) {
     base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
-  } else if (_mediator.GetUploadTask() != nullptr) {
+  } else if (tabHelper->WillDownloadTaskBeSavedToDrive()) {
     base::RecordAction(
         base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
   } else {

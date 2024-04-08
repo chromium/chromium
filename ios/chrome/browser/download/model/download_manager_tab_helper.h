@@ -52,6 +52,9 @@ class DownloadManagerTabHelper
   // Sets whether the Download toolbar should adapt to the fullscreen state.
   virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 
+  // Returns whether `task_` still needs to be saved to Drive.
+  bool WillDownloadTaskBeSavedToDrive() const;
+
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.
   explicit DownloadManagerTabHelper(web::WebState* web_state);
@@ -70,8 +73,6 @@ class DownloadManagerTabHelper
   // Assigns `task` to `task_`; replaces the current download if exists;
   // instructs the delegate that download has started.
   void DidCreateDownload(std::unique_ptr<web::DownloadTask> task);
-  // Returns whether `task_` still needs to be saved to Drive.
-  bool WillDownloadTaskBeSavedToDrive() const;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
