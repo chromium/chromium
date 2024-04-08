@@ -337,7 +337,8 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
     }
 
     // Remove cards that were successfully migrated from local storage.
-    personal_data_manager_->DeleteLocalCreditCards(migrated_cards);
+    personal_data_manager_->payments_data_manager().DeleteLocalCreditCards(
+        migrated_cards);
   }
 
   client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationResults(

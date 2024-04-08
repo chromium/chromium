@@ -685,7 +685,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   if (existing_iban->Compare(iban_to_write) != 0) {
     bool nickname_changed =
         existing_iban->nickname() != iban_to_write.nickname();
-    personal_data->UpdateIban(iban_to_write);
+    personal_data->payments_data_manager().UpdateIban(iban_to_write);
     base::RecordAction(base::UserMetricsAction("AutofillIbanEdited"));
     if (nickname_changed) {
       base::RecordAction(
@@ -1020,8 +1020,8 @@ AutofillPrivateBulkDeleteAllCvcsFunction::Run() {
   // Clear local and server CVCs from the webdata database. For server CVCs,
   // this will also clear them from the Chrome sync server and thus other
   // devices.
-  personal_data->ClearLocalCvcs();
-  personal_data->ClearServerCvcs();
+  personal_data->payments_data_manager().ClearLocalCvcs();
+  personal_data->payments_data_manager().ClearServerCvcs();
 
   return RespondNow(NoArguments());
 }

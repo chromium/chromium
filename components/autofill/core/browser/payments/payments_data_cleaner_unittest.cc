@@ -127,7 +127,8 @@ TEST_F(PaymentsDataCleanerTest,
   std::vector<CreditCard> server_cards;
   server_cards.push_back(credit_card5);
   SetServerCards(server_cards);
-  personal_data().UpdateServerCardsMetadata({credit_card5});
+  personal_data().payments_data_manager().UpdateServerCardsMetadata(
+      {credit_card5});
 
   PersonalDataChangedWaiter(personal_data()).Wait();
   EXPECT_EQ(5U, personal_data().GetCreditCards().size());

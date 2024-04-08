@@ -76,6 +76,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
     payments_cvc_storage_enabled_ = enabled;
   }
 
+  void AddIbanForTest(std::unique_ptr<Iban> iban) {
+    local_ibans_.push_back(std::move(iban));
+  }
+
  private:
   void RemoveCardWithoutNotification(const CreditCard& card);
 

@@ -103,7 +103,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_ExistingLocalIban) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -187,7 +188,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_LocalIbanNoProgressDialog) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -244,7 +246,8 @@ TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
   local_iban.set_use_count(kDefaultUseCount);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -400,7 +403,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Success) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -417,7 +421,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Fail) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -469,7 +474,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
 
   Iban local_iban = test::GetLocalIban();
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
@@ -514,7 +520,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Succcess) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 
@@ -546,7 +553,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Fail) {
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  personal_data().test_payments_data_manager().AddIbanForTest(
+      std::make_unique<Iban>(local_iban));
   suggestion.payload =
       Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
 

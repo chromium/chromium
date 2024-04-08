@@ -99,7 +99,7 @@ void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
 }
 
 void AutofillPaymentMethodsDelegate::DeleteSavedCvcs(JNIEnv* env) {
-  personal_data_manager_->ClearLocalCvcs();
-  personal_data_manager_->ClearServerCvcs();
+  personal_data_manager_->payments_data_manager().ClearLocalCvcs();
+  personal_data_manager_->payments_data_manager().ClearServerCvcs();
 }
 }  // namespace autofill

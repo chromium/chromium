@@ -292,21 +292,8 @@ std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
   return payments_data_manager_->AddAsLocalIban(std::move(iban));
 }
 
-std::string PersonalDataManager::UpdateIban(const Iban& iban) {
-  return payments_data_manager_->UpdateIban(iban);
-}
-
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   payments_data_manager_->AddCreditCard(credit_card);
-}
-
-void PersonalDataManager::DeleteLocalCreditCards(
-    const std::vector<CreditCard>& cards) {
-  payments_data_manager_->DeleteLocalCreditCards(cards);
-}
-
-void PersonalDataManager::DeleteAllLocalCreditCards() {
-  payments_data_manager_->DeleteAllLocalCreditCards();
 }
 
 void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
@@ -318,11 +305,6 @@ void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
   payments_data_manager_->UpdateLocalCvc(guid, cvc);
 }
 
-void PersonalDataManager::UpdateServerCardsMetadata(
-    const std::vector<CreditCard>& credit_cards) {
-  payments_data_manager_->UpdateServerCardsMetadata(credit_cards);
-}
-
 void PersonalDataManager::AddServerCvc(int64_t instrument_id,
                                        const std::u16string& cvc) {
   payments_data_manager_->AddServerCvc(instrument_id, cvc);
@@ -331,18 +313,6 @@ void PersonalDataManager::AddServerCvc(int64_t instrument_id,
 void PersonalDataManager::UpdateServerCvc(int64_t instrument_id,
                                           const std::u16string& cvc) {
   payments_data_manager_->UpdateServerCvc(instrument_id, cvc);
-}
-
-void PersonalDataManager::RemoveServerCvc(int64_t instrument_id) {
-  payments_data_manager_->RemoveServerCvc(instrument_id);
-}
-
-void PersonalDataManager::ClearServerCvcs() {
-  payments_data_manager_->ClearServerCvcs();
-}
-
-void PersonalDataManager::ClearLocalCvcs() {
-  payments_data_manager_->ClearLocalCvcs();
 }
 
 void PersonalDataManager::ClearAllServerDataForTesting() {
@@ -585,10 +555,6 @@ void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
 
 bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
-}
-
-AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
-  return payments_data_manager_->image_fetcher_;
 }
 
 bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {

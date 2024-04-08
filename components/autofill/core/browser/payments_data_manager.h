@@ -165,6 +165,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 
+  AutofillImageFetcherBase* GetImageFetcher() { return image_fetcher_; }
+
   // Return the URL for the card art image, if available.
   GURL GetCardArtURL(const CreditCard& credit_card) const;
 

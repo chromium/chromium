@@ -376,7 +376,8 @@ void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
   CreditCard card;
   PopulateNativeCreditCardFromJava(jcard, env, &card);
 
-  personal_data_manager_->UpdateServerCardsMetadata({card});
+  personal_data_manager_->payments_data_manager().UpdateServerCardsMetadata(
+      {card});
 }
 
 void PersonalDataManagerAndroid::AddServerCreditCardForTest(
@@ -410,7 +411,7 @@ void PersonalDataManagerAndroid::RemoveByGUID(
 }
 
 void PersonalDataManagerAndroid::DeleteAllLocalCreditCards(JNIEnv* env) {
-  personal_data_manager_->DeleteAllLocalCreditCards();
+  personal_data_manager_->payments_data_manager().DeleteAllLocalCreditCards();
 }
 
 void PersonalDataManagerAndroid::OnPersonalDataChanged() {
@@ -545,7 +546,7 @@ void PersonalDataManagerAndroid::SetSyncServiceForTesting(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobject>
 PersonalDataManagerAndroid::GetOrCreateJavaImageFetcher(JNIEnv* env) {
   return static_cast<AutofillImageFetcherImpl*>(
-             personal_data_manager_->GetImageFetcher())
+             personal_data_manager_->payments_data_manager().GetImageFetcher())
       ->GetOrCreateJavaImageFetcher();
 }
 
@@ -773,7 +774,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
   if (guid.empty()) {
     guid = personal_data_manager_->AddAsLocalIban(std::move(iban));
   } else {
-    guid = personal_data_manager_->UpdateIban(iban);
+    guid = personal_data_manager_->payments_data_manager().UpdateIban(iban);
   }
   return ConvertUTF8ToJavaString(env, guid);
 }

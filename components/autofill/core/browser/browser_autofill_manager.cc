@@ -1615,7 +1615,10 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
     bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
 
     if (allowed_to_delete) {
-      client().GetPersonalDataManager()->DeleteLocalCreditCards({*credit_card});
+      client()
+          .GetPersonalDataManager()
+          ->payments_data_manager()
+          .DeleteLocalCreditCards({*credit_card});
     }
 
     return allowed_to_delete;

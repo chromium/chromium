@@ -254,44 +254,21 @@ class PersonalDataManager : public KeyedService,
   // 3) Local database is available.
   virtual std::string AddAsLocalIban(Iban iban);
 
-  // Updates `iban` which already exists in the web database. This can only
-  // be used on local ibans. Returns the guid of `iban` if the update is
-  // successful, or an empty string otherwise.
-  // This method assumes an IBAN exists; if not, it will be handled gracefully
-  // by webdata backend.
-  virtual std::string UpdateIban(const Iban& iban);
-
   // Adds |credit_card| to the web database as a local card.
   virtual void AddCreditCard(const CreditCard& credit_card);
-
-  // Delete list of provided credit cards.
-  virtual void DeleteLocalCreditCards(const std::vector<CreditCard>& cards);
-
-  // Delete all local credit cards.
-  virtual void DeleteAllLocalCreditCards();
 
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);
 
-  // Updates a local CVC in the web database.
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `payments_data_manager()` instead. This only exists here because some tests
+  // mock these functions. Migrate those tests.
   virtual void UpdateLocalCvc(const std::string& guid,
                               const std::u16string& cvc);
-
-  // Updates the use stats and billing address id for the server |credit_cards|.
-  // Looks up the cards by server_id.
-  virtual void UpdateServerCardsMetadata(
-      const std::vector<CreditCard>& credit_cards);
-
-  // Methods to add, update, remove, or clear server CVC in the web database.
   virtual void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
   virtual void UpdateServerCvc(int64_t instrument_id,
                                const std::u16string& cvc);
-  void RemoveServerCvc(int64_t instrument_id);
-  virtual void ClearServerCvcs();
-
-  // Method to clear all local CVCs from the local web database.
-  virtual void ClearLocalCvcs();
 
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
@@ -305,10 +282,6 @@ class PersonalDataManager : public KeyedService,
   // directly which is not correct for the real PersonalDataManager. It should
   // be moved to TestPersonalDataManager, and unittests should switch to that.
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
-
-  void AddIbanForTest(std::unique_ptr<Iban> iban) {
-    payments_data_manager_->local_ibans_.push_back(std::move(iban));
-  }
 
   // Returns whether server credit cards are stored in account (i.e. ephemeral)
   // storage.
@@ -512,9 +485,6 @@ class PersonalDataManager : public KeyedService,
   // `payments_data_manager()` instead. Some callers on iOS still rely on this.
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
   bool IsPaymentMethodsMandatoryReauthEnabled();
-
-  // Get pointer to the image fetcher.
-  AutofillImageFetcherBase* GetImageFetcher() const;
 
   // Defines whether the Sync toggle on the Autofill Settings page is visible.
   // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
