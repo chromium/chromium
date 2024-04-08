@@ -30,8 +30,6 @@ export enum State {
   GRID_4x4 = 'grid-4x4',
   /* eslint-enable @typescript-eslint/naming-convention */
   GRID_GOLDEN = 'grid-golden',
-  HAS_BACK_CAMERA = 'has-back-camera',
-  HAS_FRONT_CAMERA = 'has-front-camera',
   HAS_PAN_SUPPORT = 'has-pan-support',
   HAS_TILT_SUPPORT = 'has-tilt-support',
   HAS_ZOOM_SUPPORT = 'has-zoom-support',
@@ -45,7 +43,6 @@ export enum State {
   MIC = 'mic',
   MIRROR = 'mirror',
   MULTI_CAMERA = 'multi-camera',
-  PLAYING_RESULT_VIDEO = 'playing-result-video',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
   RECORD_TYPE_TIME_LAPSE = 'record-type-time-lapse',
@@ -56,8 +53,6 @@ export enum State {
   // Controls appearance of paused/resumed UI.
   RECORDING_UI_PAUSED = 'recording-ui-paused',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
-  SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
-  SHUTTER_PROGRESSING = 'shutter-progressing',
   SNAPSHOTTING = 'snapshotting',
   STREAMING = 'streaming',
   SUSPEND = 'suspend',
