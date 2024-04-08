@@ -285,15 +285,11 @@ class DropdownItemViewInfoListBuilder {
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
 
-            if (indexInList == 0) {
-                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
-            }
-
-            if (indexInList == numGroupMatches - 1) {
-                model.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
-            } else {
-                model.set(DropdownCommonProperties.SHOW_DIVIDER, true);
-            }
+            model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, indexInList == 0);
+            model.set(
+                    DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED,
+                    indexInList == numGroupMatches - 1);
+            model.set(DropdownCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
 
             processor.populateModel(match, model, indexOnList);
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));
