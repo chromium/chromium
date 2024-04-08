@@ -657,6 +657,8 @@ chromium-metrics-reviews@google.com.
         summary="The device is capable of running an on-device model"/>
     <variant name="DiskSpace"
         summary="There is sufficient disk space to install"/>
+    <variant name="EnabledByEnterprisePolicy"
+        summary="model installation is enabled by enterprise policy"/>
     <variant name="EnabledByFeature"
         summary="model installation is enabled by feature"/>
     <variant name="FeatureUse"

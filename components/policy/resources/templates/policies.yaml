@@ -1243,6 +1243,13 @@ policies:
   1242: ''
   1243: ''
   1244: BoundSessionCredentialsEnabled
+  1245: ''
+  1246: ''
+  1247: ''
+  1248: ''
+  1249: ''
+  1250: ''
+  1251: GenAILocalFoundationalModelSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

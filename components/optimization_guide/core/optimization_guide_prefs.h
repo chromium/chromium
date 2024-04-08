@@ -45,6 +45,14 @@ enum class FeatureOptInState {
   kDisabled = 2
 };
 
+enum class GenAILocalFoundationalModelEnterprisePolicySettings {
+  kAllowed = 0,
+  kDisallowed = 1,
+
+  // Insert new values before this line.
+  kMaxValue = kDisallowed,
+};
+
 // Returns the name of the pref that stores the user's setting opt-in state for
 // the given `feature`.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -77,6 +85,11 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelQualityLogggingClientId[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern bool IsLocalFoundationalModelEnterprisePolicyAllowed();
 
 }  // namespace localstate
 

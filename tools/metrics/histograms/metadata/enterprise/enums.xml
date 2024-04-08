@@ -2081,6 +2081,8 @@ chromium-metrics-reviews@google.com.
   <int value="1239" label="ProfileLabel"/>
   <int value="1240" label="PrivacySandboxFingerprintingProtectionEnabled"/>
   <int value="1244" label="BoundSessionCredentialsEnabled"/>
+  <int value="1251"
+      label="GenAILocalFoundationalModelEnterprisePolicySettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -170,6 +170,26 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
   }
 }
 
+TEST_F(OnDeviceModelComponentTest,
+       DoesNotInstallWhenDisabledByEnterprisePolicy) {
+  // It should not install when disabled by enterprise policy.
+  base::HistogramTester histogram_tester;
+  local_state_.SetInteger(
+      prefs::localstate::kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(
+          prefs::GenAILocalFoundationalModelEnterprisePolicySettings::
+              kDisallowed));
+
+  on_device_component_state_manager_.Reset();
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByEnterprisePolicy",
+      false, 1);
+}
+
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(

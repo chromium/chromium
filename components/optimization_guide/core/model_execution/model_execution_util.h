@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
@@ -62,6 +63,12 @@ void SetExecutionRequest(proto::ModelExecutionFeature feature,
 void SetExecutionResponse(proto::ModelExecutionFeature feature,
                           proto::LogAiDataRequest& log_ai_request,
                           const proto::Any& response_metadata);
+
+// Returns the GenAILocalFoundationalModelEnterprisePolicySettings from the
+// `local_state`.
+prefs::GenAILocalFoundationalModelEnterprisePolicySettings
+GetGenAILocalFoundationalModelEnterprisePolicySettings(
+    PrefService* local_state);
 
 }  // namespace optimization_guide
 

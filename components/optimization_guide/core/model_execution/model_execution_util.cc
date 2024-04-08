@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
 
@@ -63,6 +64,16 @@ void SetExecutionResponse(proto::ModelExecutionFeature feature,
       NOTREACHED();
       return;
   }
+}
+
+prefs::GenAILocalFoundationalModelEnterprisePolicySettings
+GetGenAILocalFoundationalModelEnterprisePolicySettings(
+    PrefService* local_state) {
+  return static_cast<
+      prefs::GenAILocalFoundationalModelEnterprisePolicySettings>(
+      local_state->GetInteger(
+          prefs::localstate::
+              kGenAILocalFoundationalModelEnterprisePolicySettings));
 }
 
 }  // namespace optimization_guide

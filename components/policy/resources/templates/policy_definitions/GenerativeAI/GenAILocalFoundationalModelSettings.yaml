@@ -1,0 +1,36 @@
+caption: Settings for GenAI local foundational model
+
+desc: |-
+  Configure how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> downloads the foundational GenAI model and uses for inference locally. 
+
+  When the policy is set to Allowed (0) or not set, the model is downloaded automatically, and used for inference.
+
+  When the policy is set to Disabled (1), the model will not be downloaded.
+
+  Model downloading can also be disabled by <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph>.
+
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: Downloads model automatically
+  name: Allowed
+  value: 0
+- caption: Do not download model
+  name: Disabled
+  value: 1
+owners:
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+tags: []
+supported_on:
+- chrome.*:124-
+type: int-enum

@@ -41,6 +41,7 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* local_state,
       signin::IdentityManager* identity_manager,
       scoped_refptr<OnDeviceModelServiceController>
           on_device_model_service_controller,

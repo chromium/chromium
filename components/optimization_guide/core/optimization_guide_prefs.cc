@@ -160,6 +160,11 @@ const char kLastTimeEligibleForOnDeviceModelDownload[] =
 const char kModelQualityLogggingClientId[] =
     "optimization_guide.model_quality_logging_client_id";
 
+// An integer pref for the on-device GenAI foundational model enterprise policy
+// settings.
+const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
+    "optimization_guide.gen_ai_local_foundational_model_settings";
+
 }  // namespace localstate
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -207,6 +212,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
   registry->RegisterInt64Pref(localstate::kModelQualityLogggingClientId, 0,
                               PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(
+      localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
 }
 
 }  // namespace prefs
