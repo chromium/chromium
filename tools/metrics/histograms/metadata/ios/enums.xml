@@ -60,13 +60,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="DocumentDownloadState">
-  <int value="0" label="Complete"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="Failed Not Resumable"/>
-  <int value="3" label="Not Started"/>
-  <int value="4" label="In Progress"/>
-  <int value="5"
+  <int value="0" label="Not Started"/>
+  <int value="1" label="In Progress"/>
+  <int value="2"
       label="Cancelled (includes termination of tab and application)"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Failed Not Resumable"/>
 </enum>
 
 <enum name="ExperienceKitCalendarTypes">
