@@ -12,7 +12,9 @@
   </div>
 
   <template is="dom-if" route-path="/bluetoothDevices">
-    <os-settings-subpage page-title="$i18n{bluetoothPageTitle}">
+    <!-- TODO(b/332926512): remove hide-back-button once Bluetooth L1 page is reactivated -->
+    <os-settings-subpage page-title="$i18n{bluetoothPageTitle}"
+        hide-back-button="[[isRevampWayfindingEnabled_]]">
       <div slot="subpage-title-extra">
         <template is="dom-if"
             if="[[shouldShowPairNewDevice_(systemProperties_.*)]]" restamp>

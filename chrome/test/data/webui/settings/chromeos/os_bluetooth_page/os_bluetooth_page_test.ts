@@ -4,13 +4,15 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes, SettingsBluetoothPageElement} from 'chrome://os-settings/os_settings.js';
+import {OsSettingsSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrIconButtonElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes, SettingsBluetoothPageElement} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
 
@@ -19,7 +21,7 @@ suite('<os-settings-bluetooth-page>', () => {
   let bluetoothPage: SettingsBluetoothPageElement;
   let browserProxy: TestOsBluetoothDevicesSubpageBrowserProxy;
 
-  setup(() => {
+  async function init(): Promise<void> {
     browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
     OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
         browserProxy);
@@ -28,8 +30,8 @@ suite('<os-settings-bluetooth-page>', () => {
     setBluetoothConfigForTesting(bluetoothConfig);
     bluetoothPage = document.createElement('os-settings-bluetooth-page');
     document.body.appendChild(bluetoothPage);
-    flush();
-  });
+    await flushTasks();
+  }
 
   teardown(() => {
     bluetoothPage.remove();
@@ -38,6 +40,7 @@ suite('<os-settings-bluetooth-page>', () => {
   });
 
   test('Show bluetooth pairing UI', async () => {
+    await init();
     const getBluetoothPairingUi = () => bluetoothPage.shadowRoot!.querySelector(
         'os-settings-bluetooth-pairing-dialog');
     const bluetoothSummary = bluetoothPage.shadowRoot!.querySelector(
@@ -95,5 +98,47 @@ suite('<os-settings-bluetooth-page>', () => {
 
     await flushTasks();
     assertTrue(!!getBluetoothPairingUi());
+  });
+
+  suite('back button on the landing page', () => {
+    let backButton: CrIconButtonElement;
+    let bluetoothSubpage: OsSettingsSubpageElement;
+    const isRevampEnabled =
+        loadTimeData.getBoolean('isRevampWayfindingEnabled');
+
+    setup(async () => {
+      await init();
+
+      Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
+      await flushTasks();
+
+      const subpageElement =
+          bluetoothPage.shadowRoot!.querySelector<OsSettingsSubpageElement>(
+              'os-settings-subpage');
+      assertTrue(!!subpageElement);
+      bluetoothSubpage = subpageElement;
+
+      const iconButtonElement =
+          bluetoothSubpage.shadowRoot!.querySelector<CrIconButtonElement>(
+              '#backButton');
+      assertTrue(!!iconButtonElement);
+      backButton = iconButtonElement;
+    });
+
+    // TODO(b/332926512): once Bluetooth L1 page is reactivated, the back button
+    // should exist in both of the tests below.
+    if (isRevampEnabled) {
+      test(
+          'is hidden when OSSettingsRevampWayfinding feature is enabled',
+          () => {
+            assertFalse(isVisible(backButton));
+          });
+    } else {
+      test(
+          'is visible when OSSettingsRevampWayfinding feature is disabled',
+          () => {
+            assertTrue(isVisible(backButton));
+          });
+    }
   });
 });
