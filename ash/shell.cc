@@ -1499,7 +1499,7 @@ void Shell::Init(
 
   // ui::UserActivityDetector passes events to observers, so let them get
   // rewritten first.
-  user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
+  ui::UserActivityDetector::Get()->InitPlatformEventSourceObservation();
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
   AddPreTargetHandler(control_v_histogram_recorder_.get(),
@@ -1721,7 +1721,7 @@ void Shell::Init(
       fingerprint.InitWithNewPipeAndPassReceiver());
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
-          user_activity_detector_.get(), std::move(fingerprint));
+          ui::UserActivityDetector::Get(), std::move(fingerprint));
   video_activity_notifier_ =
       std::make_unique<VideoActivityNotifier>(video_detector_.get());
   bluetooth_state_cache_ = std::make_unique<BluetoothStateCache>();

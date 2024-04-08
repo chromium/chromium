@@ -71,7 +71,7 @@ class IdleEventNotifierTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     idle_event_notifier_ = std::make_unique<IdleEventNotifier>(
-        chromeos::PowerManagerClient::Get(), &user_activity_detector_,
+        chromeos::PowerManagerClient::Get(), ui::UserActivityDetector::Get(),
         observer.InitWithNewPipeAndPassReceiver());
     ac_power_.set_external_power(
         power_manager::PowerSupplyProperties_ExternalPower_AC);
@@ -90,7 +90,6 @@ class IdleEventNotifierTest : public testing::Test {
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   power_manager::PowerSupplyProperties ac_power_;
   power_manager::PowerSupplyProperties disconnected_power_;
-  ui::UserActivityDetector user_activity_detector_;
 };
 
 // After initialization, |external_power_| is not set up.

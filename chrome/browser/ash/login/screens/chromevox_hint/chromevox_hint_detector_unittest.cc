@@ -46,7 +46,6 @@ class ChromeVoxHintDetectorTest : public testing::Test {
   std::unique_ptr<ChromeVoxHintDetector> detector_;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       runner_handle_;
-  ui::UserActivityDetector user_activity_detector_;
 };
 
 ChromeVoxHintDetectorTest::ChromeVoxHintDetectorTest() {
@@ -70,7 +69,7 @@ void ChromeVoxHintDetectorTest::StartDetection() {
 }
 
 void ChromeVoxHintDetectorTest::SimulateUserActivity() {
-  user_activity_detector_.HandleExternalUserActivity();
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 }
 
 // Tests that the ChromeVox hint is given after idling for the proper duration.

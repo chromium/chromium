@@ -220,7 +220,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
+    user_activity_detector_ = ui::UserActivityDetector::Get();
     arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
@@ -339,8 +339,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   // when the job is created.
   std::string robot_account_id_ = "robot@account.com";
 
-  // Automatically installed as a singleton upon creation.
-  std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
+  raw_ptr<ui::UserActivityDetector> user_activity_detector_;
 
   FakeStartCrdSessionJobDelegate delegate_;
 

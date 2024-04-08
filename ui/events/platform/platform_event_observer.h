@@ -20,6 +20,10 @@ class EVENTS_EXPORT PlatformEventObserver {
   // This is called after the event has been dispatched to the dispatcher(s).
   virtual void DidProcessEvent(const PlatformEvent& event) = 0;
 
+  // Called shortly before the PlatformEventSource the observer belongs to is
+  // destroyed.
+  virtual void PlatformEventSourceDestroying() {}
+
  protected:
   virtual ~PlatformEventObserver() {}
 };

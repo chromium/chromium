@@ -6,6 +6,7 @@
 #define UI_BASE_USER_ACTIVITY_USER_ACTIVITY_DETECTOR_H_
 
 #include "base/component_export.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -26,15 +27,16 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   // is received that displays' power states are being changed.
   static const int kDisplayPowerChangeIgnoreMouseMs;
 
-  UserActivityDetector();
-
   UserActivityDetector(const UserActivityDetector&) = delete;
   UserActivityDetector& operator=(const UserActivityDetector&) = delete;
 
-  ~UserActivityDetector() override;
-
-  // Returns the UserActivityDetector instance if one was created.
+  // Returns the UserActivityDetector instance.
   static UserActivityDetector* Get();
+
+  // Sets up the observation over the PlatformEventSource. Must be called after
+  // the PlatformEventSource has been created for the main thread shared with
+  // the detector.
+  void InitPlatformEventSourceObservation();
 
   base::TimeTicks last_activity_time() const { return last_activity_time_; }
   std::string last_activity_name() const { return last_activity_name_; }
@@ -58,9 +60,14 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   // PlatformEventObserver:
   void WillProcessEvent(const PlatformEvent& platform_event) override {}
   void DidProcessEvent(const PlatformEvent& platform_event) override;
+  void PlatformEventSourceDestroying() override;
 
  private:
+  friend class base::NoDestructor<UserActivityDetector>;
   friend class UserActivityDetectorTest;
+
+  UserActivityDetector();
+  ~UserActivityDetector() override;
 
   // Returns |now_for_test_| if set or base::TimeTicks::Now() otherwise.
   base::TimeTicks GetCurrentTime() const;

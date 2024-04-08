@@ -109,7 +109,7 @@ class AdaptiveScreenBrightnessManagerTest
         task_environment()->GetMainThreadTaskRunner());
     screen_brightness_manager_ =
         std::make_unique<AdaptiveScreenBrightnessManager>(
-            std::move(logger), &user_activity_detector_,
+            std::move(logger), ui::UserActivityDetector::Get(),
             chromeos::FakePowerManagerClient::Get(), nullptr, nullptr,
             observer.InitWithNewPipeAndPassReceiver(),
             std::move(periodic_timer));
@@ -240,7 +240,6 @@ class AdaptiveScreenBrightnessManagerTest
  private:
   FakeChromeUserManager fake_user_manager_;
 
-  ui::UserActivityDetector user_activity_detector_;
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager_;
   raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger, DanglingUntriaged>
       ukm_logger_;

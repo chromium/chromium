@@ -208,7 +208,7 @@ class ModellerImplTest : public testing::Test {
                      double curve_error) {
     modeller_ = ModellerImpl::CreateForTesting(
         profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
-        &fake_model_config_loader_, &user_activity_detector_,
+        &fake_model_config_loader_, ui::UserActivityDetector::Get(),
         std::make_unique<FakeTrainer>(is_trainer_configured,
                                       is_personal_curve_valid, return_new_curve,
                                       curve_error),
@@ -273,8 +273,6 @@ class ModellerImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  ui::UserActivityDetector user_activity_detector_;
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;

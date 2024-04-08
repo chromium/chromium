@@ -125,7 +125,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     chromeos::PowerManagerClient::InitializeFake();
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     activity_logger_ = std::make_unique<UserActivityManager>(
-        &delegate_, &user_activity_detector_,
+        &delegate_, ui::UserActivityDetector::Get(),
         chromeos::PowerManagerClient::Get(), &session_manager_,
         observer.InitWithNewPipeAndPassReceiver(), &fake_user_manager_);
 
@@ -279,7 +279,6 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   const GURL url4_ = GURL("https://example4.com/");
 
  private:
-  ui::UserActivityDetector user_activity_detector_;
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<UserActivityManager> activity_logger_;

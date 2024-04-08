@@ -177,7 +177,6 @@ class StatusUploaderTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<MockDeviceStatusCollector> collector_;
   raw_ptr<MockDeviceStatusCollector, DanglingUntriaged> collector_ptr_;
-  ui::UserActivityDetector detector_;
   MockCloudPolicyClient client_;
   TestingPrefServiceSimple prefs_;
   // This property is required to instantiate the session manager, a singleton

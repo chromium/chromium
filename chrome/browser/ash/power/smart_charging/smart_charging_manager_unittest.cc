@@ -58,8 +58,9 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
     periodic_timer->SetTaskRunner(
         task_environment()->GetMainThreadTaskRunner());
     smart_charging_manager_ = std::make_unique<SmartChargingManager>(
-        &user_activity_detector_, observer.InitWithNewPipeAndPassReceiver(),
-        &session_manager_, std::move(periodic_timer));
+        ui::UserActivityDetector::Get(),
+        observer.InitWithNewPipeAndPassReceiver(), &session_manager_,
+        std::move(periodic_timer));
   }
 
   void TearDown() override {
@@ -185,7 +186,6 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
                                                     0);
 
  private:
-  ui::UserActivityDetector user_activity_detector_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<SmartChargingManager> smart_charging_manager_;
 };

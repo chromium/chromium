@@ -33,6 +33,9 @@ PlatformEventSource::PlatformEventSource()
 
 PlatformEventSource::~PlatformEventSource() {
   CHECK_EQ(this, event_source);
+  for (PlatformEventObserver& observer : observers_) {
+    observer.PlatformEventSourceDestroying();
+  }
 }
 
 PlatformEventSource* PlatformEventSource::GetInstance() {
