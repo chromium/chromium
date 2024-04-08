@@ -74,7 +74,6 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   layout->set_inside_border_insets(kButtonBorderInsets);
 
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kContainerCornerRadius));
   layer()->SetFillsBoundsOpaquely(false);
 
   ink_drop_container_ =
@@ -202,9 +201,10 @@ void GameDashboardButton::UpdateViews() {
                   kAlphaForButtonBorder)));
 
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateThemedSolidBackground(
+  SetBackground(views::CreateThemedRoundedRectBackground(
       enabled ? GetBackgroundEnabledColorId(is_recording_)
-              : cros_tokens::kCrosSysDisabledContainer));
+              : cros_tokens::kCrosSysDisabledContainer,
+      kContainerCornerRadius));
 
   const auto icon_and_label_color =
       enabled ? GetIconAndLabelEnabledColorId(is_recording_)
