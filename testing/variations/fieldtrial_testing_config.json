@@ -21156,10 +21156,12 @@
                     ],
                     "hardware_classes": [
                         "brya",
+                        "guybrush",
                         "nissa",
                         "rex",
                         "skyrim",
-                        "volteer"
+                        "volteer",
+                        "zork"
                     ]
                 }
             ]
