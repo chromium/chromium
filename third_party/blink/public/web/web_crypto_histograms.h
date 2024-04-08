@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_HISTOGRAMS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_HISTOGRAMS_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H_
 
 #include "third_party/blink/public/platform/web_crypto.h"
 
@@ -119,10 +119,10 @@ void HistogramAlgorithmAndKey(ExecutionContext*,
                               const WebCryptoAlgorithm&,
                               const WebCryptoKey&);
 
-void HistogramDeriveBitsTruncation(ExecutionContext*,
-                                   unsigned int,
-                                   WebCryptoWarningType);
-
+BLINK_EXPORT void
+HistogramDeriveBitsTruncation(ExecutionContext*,
+                              unsigned int,
+                              WebCryptoWarningType);
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_HISTOGRAMS_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H

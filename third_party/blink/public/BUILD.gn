@@ -295,6 +295,7 @@ source_set("blink_headers") {
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
+    "web/web_crypto_histograms.h",
     "web/web_crypto_normalize.h",
     "web/web_css_origin.h",
     "web/web_custom_element.h",

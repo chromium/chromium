@@ -24,6 +24,7 @@
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_crypto_histograms.h"
 
 namespace webcrypto {
 
@@ -580,7 +581,11 @@ void DoUnwrapKey(std::unique_ptr<UnwrapKeyState> passed_state) {
 void DoDeriveBitsReply(std::unique_ptr<DeriveBitsState> state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "DoDeriveBitsReply");
-  state->result.SetWarning(state->status.warning_type());
+  if (!state->status.IsError()) {
+    HistogramDeriveBitsTruncation(state->result.GetExecutionContext(),
+                                  state->length_bits,
+                                  state->status.warning_type());
+  }
   CompleteWithBufferOrError(state->status, state->derived_bytes,
                             &state->result);
 }

@@ -85,6 +85,9 @@ class MODULES_EXPORT CryptoResultImpl final
                            const WebCryptoKey& private_key) override;
   WebCryptoWarningType GetWarning() override { return warning_code_; }
   void SetWarning(WebCryptoWarningType code) override { warning_code_ = code; }
+  ExecutionContext* GetExecutionContext() const override {
+    return resolver_ ? resolver_->GetExecutionContext() : nullptr;
+  }
 
   void CompleteWithError(ExceptionState&);
 

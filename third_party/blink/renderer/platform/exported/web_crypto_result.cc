@@ -80,8 +80,8 @@ bool WebCryptoResult::Cancelled() const {
   return cancel_->Cancelled();
 }
 
-void WebCryptoResult::SetWarning(WebCryptoWarningType code) {
-  impl_->SetWarning(code);
+ExecutionContext* WebCryptoResult::GetExecutionContext() const {
+  return impl_->GetExecutionContext();
 }
 
 WebCryptoResult::WebCryptoResult(CryptoResult* impl,

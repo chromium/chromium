@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
+#include "third_party/blink/public/web/web_crypto_histograms.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_json_web_key.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
-#include "third_party/blink/renderer/modules/crypto/crypto_histograms.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_utilities.h"
@@ -695,8 +695,6 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::deriveBits(
       normalized_algorithm, base_key->Key(), length_bits, result->Result(),
       execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto));
 
-  HistogramDeriveBitsTruncation(execution_context, length_bits,
-                                result->GetWarning());
   return promise;
 }
 
