@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/channel_info.h"
@@ -22,9 +23,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-// The Safety Check should only be run once every 24 hours.
-constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 // The amount of time after which the last run timestamp is shown, instead of
 // displaying the last run "just now" text.
@@ -61,7 +59,6 @@ int UniqueWarningTypeCount(
 }  // namespace
 
 using password_manager::WarningType;
-using password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
 using password_manager::WarningType::kCompromisedPasswordsWarning;
 
 void HandleSafetyCheckUpdateChromeTap(
@@ -109,7 +106,9 @@ void HandleSafetyCheckPasswordTap(
         password_manager::GetWarningOfHighestPriority(compromised_credentials);
     [applicationHandler
         showPasswordIssuesWithWarningType:type
-                                 referrer:kSafetyCheckMagicStack];
+                                 referrer:password_manager::
+                                              PasswordCheckReferrer::
+                                                  kSafetyCheckMagicStack];
     return;
   }
 
@@ -120,7 +119,8 @@ void HandleSafetyCheckPasswordTap(
       base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
 
   [applicationHandler
-      showPasswordCheckupPageForReferrer:kSafetyCheckMagicStack];
+      showPasswordCheckupPageForReferrer:
+          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
 
 bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {
@@ -145,11 +145,7 @@ bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
 
   base::TimeDelta last_run_age = base::Time::Now() - last_run_time.value();
 
-  if (last_run_age > kSafetyCheckRunThreshold) {
-    return true;
-  }
-
-  return false;
+  return last_run_age > TimeDelayForSafetyCheckAutorun();
 }
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
