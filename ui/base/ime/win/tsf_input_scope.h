@@ -36,8 +36,7 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
 
 // A wrapper of the SetInputScope API exported by msctf.dll.
 COMPONENT_EXPORT(UI_BASE_IME_WIN)
-void SetPrivateInputScope(HWND window_handle);
-
+void SetInputScope(HWND window_handle, InputScope input_scope);
 }  // namespace tsf_inputscope
 }  // namespace ui
 

@@ -900,9 +900,10 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
     legacy_render_widget_host_HWND_->Hide();
   }
 
-  if (window_->GetHost() && GetInputMethod() && !ShouldDoLearning()) {
-    ui::tsf_inputscope::SetPrivateInputScope(
-        RenderWidgetHostViewAura::GetHostWindowHWND());
+  if (window_->GetHost() && GetInputMethod()) {
+    InputScope input_scope = ShouldDoLearning() ? IS_DEFAULT : IS_PRIVATE;
+    ui::tsf_inputscope::SetInputScope(
+        RenderWidgetHostViewAura::GetHostWindowHWND(), input_scope);
   }
 
 #endif  // BUILDFLAG(IS_WIN)
