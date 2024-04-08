@@ -19,7 +19,7 @@ class FontDescription;
 class FontFallbackList;
 class SimpleFontData;
 
-class FontFallbackIterator {
+class PLATFORM_EXPORT FontFallbackIterator {
   STACK_ALLOCATED();
 
  public:
@@ -29,6 +29,11 @@ class FontFallbackIterator {
   FontFallbackIterator(FontFallbackIterator&&) = default;
   FontFallbackIterator(const FontFallbackIterator&) = delete;
   FontFallbackIterator& operator=(const FontFallbackIterator&) = delete;
+
+  bool operator==(const FontFallbackIterator& other) const;
+  bool operator!=(const FontFallbackIterator& other) const {
+    return !(*this == other);
+  }
 
   bool HasNext() const { return fallback_stage_ != kOutOfLuck; }
   // Returns whether the next call to Next() needs a full hint list, or whether
@@ -43,6 +48,8 @@ class FontFallbackIterator {
   // portion of the string to be passed.  On Mac and Linux, we get a list of
   // fonts without passing in characters.
   FontDataForRangeSet* Next(const Vector<UChar32>& hint_list);
+
+  void Reset();
 
  private:
   bool RangeSetContributesForHint(const Vector<UChar32>& hint_list,

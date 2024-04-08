@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -22,6 +24,17 @@ FontFallbackIterator::FontFallbackIterator(
       segmented_face_index_(0),
       fallback_stage_(kFontGroupFonts),
       font_fallback_priority_(font_fallback_priority) {}
+
+void FontFallbackIterator::Reset() {
+  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
+  current_font_data_index_ = 0;
+  segmented_face_index_ = 0;
+  fallback_stage_ = kFontGroupFonts;
+  previously_asked_for_hint_.clear();
+  unique_font_data_for_range_sets_returned_.clear();
+  first_candidate_ = nullptr;
+  tracked_loading_range_sets_.clear();
+}
 
 bool FontFallbackIterator::AlreadyLoadingRangeForHintChar(UChar32 hint_char) {
   for (auto* it = tracked_loading_range_sets_.begin();
@@ -279,6 +292,18 @@ const SimpleFontData* FontFallbackIterator::UniqueSystemFontForHintList(
         hint, FontFallbackPriority::kText, font_description_, font_data);
   }
   return font_data;
+}
+
+bool FontFallbackIterator::operator==(const FontFallbackIterator& other) const {
+  return fallback_stage_ == other.fallback_stage_ &&
+         font_fallback_priority_ == other.font_fallback_priority_ &&
+         current_font_data_index_ == other.current_font_data_index_ &&
+         segmented_face_index_ == other.segmented_face_index_ &&
+         font_description_ == other.font_description_ &&
+         previously_asked_for_hint_ == other.previously_asked_for_hint_ &&
+         unique_font_data_for_range_sets_returned_ ==
+             other.unique_font_data_for_range_sets_returned_ &&
+         tracked_loading_range_sets_ == other.tracked_loading_range_sets_;
 }
 
 }  // namespace blink
