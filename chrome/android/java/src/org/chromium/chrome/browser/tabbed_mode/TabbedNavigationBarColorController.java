@@ -69,7 +69,7 @@ class TabbedNavigationBarColorController {
     private EdgeToEdgeController mEdgeToEdgeController;
     @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
 
-    private Tab mActiveTab;
+    private @Nullable Tab mActiveTab;
     private TabObserver mTabObserver;
 
     /**
@@ -220,13 +220,12 @@ class TabbedNavigationBarColorController {
     private void updateActiveTab() {
         if (!ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) return;
 
-        Tab activeTab = mTabModelSelector.getCurrentTab();
+        @Nullable Tab activeTab = mTabModelSelector.getCurrentTab();
         if (activeTab == mActiveTab) return;
 
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         mActiveTab = activeTab;
-        mActiveTab.addObserver(mTabObserver);
-
+        if (mActiveTab != null) mActiveTab.addObserver(mTabObserver);
         updateNavigationBarColor(getBottomInset());
     }
 
