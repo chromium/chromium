@@ -224,6 +224,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // final.
   bool first_restored_window_created_ = false;
 
+  // Whether ash is restarted (due to crash, or applying flags etc).
+  bool is_ash_restart_ = false;
+
   std::optional<base::TimeTicks> arc_opt_in_time_;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>

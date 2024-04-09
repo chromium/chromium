@@ -244,6 +244,7 @@ void LoginUnlockThroughputRecorder::OnAuthSuccess() {
 }
 
 void LoginUnlockThroughputRecorder::OnAshRestart() {
+  is_ash_restart_ = true;
   login_animation_finished_timer_.Stop();
   if (!post_login_deferred_task_runner_->Started()) {
     post_login_deferred_task_runner_->Start();
@@ -267,6 +268,20 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   if (logged_in_user != LoginState::LOGGED_IN_USER_OWNER &&
       logged_in_user != LoginState::LOGGED_IN_USER_REGULAR) {
     // Kiosk users fall here.
+    return;
+  }
+
+  // On ash restart, `SessionManager::CreateSessionForRestart` should happen
+  // and trigger `LoggedInStateChanged` here to set `user_logged_in_` flag
+  // before `OnAshRestart` is called. So `is_ash_restart_` should never be true
+  // here. Otherwise, we have unexpected sequence of events and login metrics
+  // would not be correctly reported.
+  //
+  // It seems somehow happening in b/333262357. Adding a DumpWithoutCrashing
+  // to capture the offending stack.
+  // TODO(b/333262357): Remove `DumpWithoutCrashing`.
+  if (is_ash_restart_) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
