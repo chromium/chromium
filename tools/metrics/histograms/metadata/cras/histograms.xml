@@ -387,7 +387,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.DlcStatus.{DlcType}"
-    enum="CrasDlcManagerDlcStatus" expires_after="2024-08-04">
+    enum="CrasDlcManagerDlcStatus" expires_after="2024-10-06">
   <owner>hunghsienchen@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -929,7 +929,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamCreateError" enum="CrasStreamCreateError"
-    expires_after="2024-05-26">
+    expires_after="2024-10-06">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Record the errors happen when CRAS server creats a stream.</summary>
