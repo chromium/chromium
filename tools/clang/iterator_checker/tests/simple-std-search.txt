@@ -1,0 +1,7 @@
+simple-std-search.cpp:11:7: error: [iterator-checker] Potentially invalid iterator comparison.
+  if (it != std::end(v)) {
+      ^
+simple-std-search.cpp:18:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;  // Invalid access.
+   ^
+2 errors generated.
