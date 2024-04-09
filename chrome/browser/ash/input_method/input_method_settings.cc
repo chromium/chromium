@@ -23,10 +23,6 @@ namespace {
 
 namespace mojom = ::ash::ime::mojom;
 
-// The Japanese engine. This is the key for the settings object which lets us
-// know where to store the settings info.
-constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
-
 // The values here should be kept in sync with
 // chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 // Although these strings look like UI strings, they are the actual internal
@@ -68,15 +64,6 @@ constexpr char kZhuyinPrefsSelectionKeys1234Qweras[] = "1234qweras";
 constexpr char kZhuyinPrefsPageSize10[] = "10";
 constexpr char kZhuyinPrefsPageSize9[] = "9";
 constexpr char kZhuyinPrefsPageSize8[] = "8";
-
-constexpr char kJapaneseMigrationCompleteKey[] = "is_migration_complete";
-
-const base::Value::Dict* GetJapaneseInputMethodSpecificSettings(
-    const PrefService& prefs) {
-  const base::Value::Dict& all_input_method_prefs =
-      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
-  return all_input_method_prefs.FindDict(kJapaneseEngineId);
-}
 
 std::string ValueOrEmpty(const std::string* str) {
   return str ? *str : "";
@@ -424,39 +411,6 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
-}
-
-bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs) {
-  const base::Value::Dict* input_method_specific_pref_or_null =
-      GetJapaneseInputMethodSpecificSettings(prefs);
-  const base::Value::Dict empty_value;
-  const base::Value::Dict& input_method_specific_pref =
-      input_method_specific_pref_or_null ? *input_method_specific_pref_or_null
-                                         : empty_value;
-  const std::optional<bool> value =
-      input_method_specific_pref.FindBool(kJapaneseMigrationCompleteKey);
-  return value.has_value() && *value;
-}
-
-void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value) {
-  // To set just the migration flag, this copies the whole prefs object
-  // to change one entry - is_migrated, then re-set the whole
-  // InputMethodSpecificPrefs object.  Maybe there is a better way to do this?
-  const base::Value::Dict* input_method_specific_pref_or_null =
-      GetJapaneseInputMethodSpecificSettings(prefs);
-
-  base::Value::Dict japanese_settings =
-      (input_method_specific_pref_or_null != nullptr)
-          ? input_method_specific_pref_or_null->Clone()
-          : base::Value::Dict();
-  japanese_settings.Set(kJapaneseMigrationCompleteKey, value);
-
-  base::Value::Dict all_input_method_prefs =
-      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings).Clone();
-  all_input_method_prefs.Set(kJapaneseEngineId, std::move(japanese_settings));
-
-  prefs.SetDict(::prefs::kLanguageInputMethodSpecificSettings,
-                std::move(all_input_method_prefs));
 }
 
 bool IsAutocorrectSupported(const std::string& engine_id) {

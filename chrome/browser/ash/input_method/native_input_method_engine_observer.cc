@@ -186,20 +186,6 @@ mojom::AutocorrectMode GetAutocorrectMode(
              : mojom::AutocorrectMode::kEnabled;
 }
 
-enum class JapaneseStartupAction {
-  kStillLegacy = 0,
-  kAlreadyMigrated = 1,
-  kPerformMigration = 2,
-  kUndoMigration = 3,
-  kMaxValue = kUndoMigration
-};
-
-void LogJapaneseStartupAction(JapaneseStartupAction japanese_startup_action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
-      japanese_startup_action);
-}
-
 // Not using a EnumTraits here because the mapping is not 1:1.
 mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
   switch (code) {
@@ -784,15 +770,6 @@ void NativeInputMethodEngineObserver::OnFocusAck(
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
-  if (!base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping) &&
-      base::StartsWith(engine_id, "nacl_mozc_")) {
-    if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
-      LogJapaneseStartupAction(JapaneseStartupAction::kUndoMigration);
-      SetJapaneseSettingsMigrationComplete(*prefs_, false);
-    } else {
-      LogJapaneseStartupAction(JapaneseStartupAction::kStillLegacy);
-    }
-  }
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
   UpdateCandidatesWindowSync(nullptr);

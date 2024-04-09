@@ -15,10 +15,6 @@ ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id);
 
-bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs);
-
-void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value);
-
 // Returns true if Autocorrect is supported for a given engine id.
 bool IsAutocorrectSupported(const std::string& engine_id);
 

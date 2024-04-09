@@ -28,8 +28,6 @@ constexpr char kKoreanEngineId[] = "ko-t-i0-und";
 constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
 constexpr char kZhuyinEngineId[] = "zh-hant-t-i0-und";
 
-constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
-
 constexpr char kVietnameseVniEngineId[] = "vkd_vi_vni";
 constexpr char kVietnameseTelexEngineId[] = "vkd_vi_telex";
 
@@ -53,40 +51,6 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
   EXPECT_FALSE(latin_settings.autocorrect);
   EXPECT_FALSE(latin_settings.predictive_writing);
 }
-
-class SetJapanesePrefsFromSettingsTest : public ::testing::Test {
- protected:
-  void SetUp() override { RegisterTestingPrefs(prefs, dict); }
-
- public:
-  const base::Value::Dict* GetJapaneseDict() {
-    return prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
-        .FindDict(kJapaneseEngineId);
-  }
-
-  base::Value::Dict dict;
-  TestingPrefServiceSimple prefs;
-};
-
-TEST_F(SetJapanesePrefsFromSettingsTest,
-       JapaneseMigrationIsNotCompleteByDefault) {
-  EXPECT_FALSE(IsJapaneseSettingsMigrationComplete(prefs));
-}
-
-TEST_F(SetJapanesePrefsFromSettingsTest, SetJapaneseMigrationDone) {
-  SetJapaneseSettingsMigrationComplete(prefs, true);
-
-  EXPECT_TRUE(IsJapaneseSettingsMigrationComplete(prefs));
-}
-
-TEST_F(SetJapanesePrefsFromSettingsTest, SetJapaneseMigrationToFalse) {
-  SetJapaneseSettingsMigrationComplete(prefs, true);
-  SetJapaneseSettingsMigrationComplete(prefs, false);
-
-  EXPECT_FALSE(IsJapaneseSettingsMigrationComplete(prefs));
-}
-
-// End of Japanese tests
 
 TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   base::test::ScopedFeatureList features;
