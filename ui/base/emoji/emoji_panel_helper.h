@@ -29,14 +29,23 @@ enum class COMPONENT_EXPORT(UI_BASE_EMOJI) EmojiPickerCategory {
   kGifs,
 };
 
+enum class COMPONENT_EXPORT(UI_BASE_EMOJI) EmojiPickerFocusBehavior {
+  kOnlyShowWhenFocused,
+  kAlwaysShow,
+};
+
+using EmojiKeyboardCallback =
+    base::RepeatingCallback<void(EmojiPickerCategory,
+                                 EmojiPickerFocusBehavior)>;
+
 // Show the emoji picker pre scrolled to a specific category
 COMPONENT_EXPORT(UI_BASE_EMOJI)
-void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category);
+void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category,
+                                  EmojiPickerFocusBehavior focus_behavior);
 
 // Sets a callback to show the emoji panel (ChromeOS only).
 COMPONENT_EXPORT(UI_BASE_EMOJI)
-void SetShowEmojiKeyboardCallback(
-    base::RepeatingCallback<void(EmojiPickerCategory)> callback);
+void SetShowEmojiKeyboardCallback(EmojiKeyboardCallback callback);
 
 // Sets a callback to show the emoji panel in tablet mode (ChromeOS only).
 COMPONENT_EXPORT(UI_BASE_EMOJI)

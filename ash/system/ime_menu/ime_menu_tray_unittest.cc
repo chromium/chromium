@@ -386,7 +386,9 @@ TEST_F(ImeMenuTrayTest, ImeBubbleAccelerator) {
 TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   int call_count = 0;
   ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
-      [&](ui::EmojiPickerCategory unused) { ++call_count; }));
+      [&](ui::EmojiPickerCategory unused, ui::EmojiPickerFocusBehavior) {
+        ++call_count;
+      }));
 
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(

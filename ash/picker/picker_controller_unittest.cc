@@ -296,15 +296,15 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
-  std::optional<ui::EmojiPickerCategory> emoji_category;
-  ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
-      [&emoji_category](ui::EmojiPickerCategory category) {
-        emoji_category = category;
-      }));
+  base::test::TestFuture<ui::EmojiPickerCategory, ui::EmojiPickerFocusBehavior>
+      future;
+  ui::SetShowEmojiKeyboardCallback(future.GetRepeatingCallback());
 
   controller.ShowEmojiPicker(ui::EmojiPickerCategory::kSymbols);
 
-  EXPECT_EQ(emoji_category, ui::EmojiPickerCategory::kSymbols);
+  const auto& [category, focus_behavior] = future.Get();
+  EXPECT_EQ(category, ui::EmojiPickerCategory::kSymbols);
+  EXPECT_EQ(focus_behavior, ui::EmojiPickerFocusBehavior::kAlwaysShow);
 }
 
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {

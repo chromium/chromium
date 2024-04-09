@@ -12,10 +12,8 @@ namespace ui {
 
 namespace {
 
-base::RepeatingCallback<void(EmojiPickerCategory)>&
-GetShowEmojiKeyboardCallback() {
-  static base::NoDestructor<base::RepeatingCallback<void(EmojiPickerCategory)>>
-      callback;
+EmojiKeyboardCallback& GetShowEmojiKeyboardCallback() {
+  static base::NoDestructor<EmojiKeyboardCallback> callback;
   return *callback;
 }
 
@@ -34,12 +32,15 @@ bool IsEmojiPanelSupported() {
 
 void ShowEmojiPanel() {
   DCHECK(GetShowEmojiKeyboardCallback());
-  GetShowEmojiKeyboardCallback().Run(EmojiPickerCategory::kEmojis);
+  GetShowEmojiKeyboardCallback().Run(
+      EmojiPickerCategory::kEmojis,
+      EmojiPickerFocusBehavior::kOnlyShowWhenFocused);
 }
 
-void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category) {
+void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category,
+                                  EmojiPickerFocusBehavior focus_behavior) {
   DCHECK(GetShowEmojiKeyboardCallback());
-  GetShowEmojiKeyboardCallback().Run(category);
+  GetShowEmojiKeyboardCallback().Run(category, focus_behavior);
 }
 
 void ShowTabletModeEmojiPanel() {
@@ -47,8 +48,7 @@ void ShowTabletModeEmojiPanel() {
   GetTabletModeShowEmojiKeyboardCallback().Run();
 }
 
-void SetShowEmojiKeyboardCallback(
-    base::RepeatingCallback<void(EmojiPickerCategory)> callback) {
+void SetShowEmojiKeyboardCallback(EmojiKeyboardCallback callback) {
   GetShowEmojiKeyboardCallback() = callback;
 }
 

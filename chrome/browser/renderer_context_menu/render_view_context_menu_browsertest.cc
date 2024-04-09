@@ -1072,7 +1072,9 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        ContextMenuForEmojiPanel_NullBrowserCrash) {
   ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
-      [](ui::EmojiPickerCategory unused) { ui::ShowTabletModeEmojiPanel(); }));
+      [](ui::EmojiPickerCategory unused, ui::EmojiPickerFocusBehavior) {
+        ui::ShowTabletModeEmojiPanel();
+      }));
   std::unique_ptr<content::WebContents> detached_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
@@ -1101,7 +1103,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        ContextMenuForEmojiPanel_NoCallback) {
   // Reset the emoji callback.
   ui::SetShowEmojiKeyboardCallback(
-      base::RepeatingCallback<void(ui::EmojiPickerCategory)>());
+      base::RepeatingCallback<void(ui::EmojiPickerCategory,
+                                   ui::EmojiPickerFocusBehavior)>());
 
   content::ContextMenuParams params;
   params.is_editable = true;

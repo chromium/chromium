@@ -350,7 +350,8 @@ void PickerController::InsertResultOnNextFocus(
 }
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
-  ui::ShowEmojiPanelInSpecificMode(category);
+  ui::ShowEmojiPanelInSpecificMode(category,
+                                   ui::EmojiPickerFocusBehavior::kAlwaysShow);
 }
 
 void PickerController::ShowEditor() {

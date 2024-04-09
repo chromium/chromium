@@ -30,6 +30,7 @@
 namespace ui {
 class ColorChangeHandler;
 enum class EmojiPickerCategory;
+enum class EmojiPickerFocusBehavior;
 }  // namespace ui
 
 namespace ash {
@@ -52,8 +53,10 @@ class EmojiUI : public TopChromeWebUIController,
   EmojiUI& operator=(const EmojiUI&) = delete;
   ~EmojiUI() override;
 
-  static bool ShouldShow(const ui::TextInputClient* input_client);
-  static void Show(ui::EmojiPickerCategory category);
+  static bool ShouldShow(const ui::TextInputClient* input_client,
+                         ui::EmojiPickerFocusBehavior focus_behavior);
+  static void Show(ui::EmojiPickerCategory category,
+                   ui::EmojiPickerFocusBehavior focus_behavior);
 
   // Instantiates the implementor of the mojom::PageHandler mojo interface
   // passing the pending receiver that will be internally bound.

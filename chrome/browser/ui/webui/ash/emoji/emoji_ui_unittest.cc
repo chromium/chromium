@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "emoji_ui.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/fake_text_input_client.h"
 
 class EmojiUITest : public testing::Test {
@@ -13,9 +15,20 @@ class EmojiUITest : public testing::Test {
 };
 
 TEST_F(EmojiUITest, ShouldShow) {
-  ASSERT_EQ(ash::EmojiUI::ShouldShow(none_input_client.get()), true);
+  ASSERT_EQ(ash::EmojiUI::ShouldShow(
+                none_input_client.get(),
+                ui::EmojiPickerFocusBehavior::kOnlyShowWhenFocused),
+            true);
 }
 
 TEST_F(EmojiUITest, ShouldNotShowWithoutInputClient) {
-  ASSERT_EQ(ash::EmojiUI::ShouldShow(nullptr), false);
+  ASSERT_EQ(ash::EmojiUI::ShouldShow(
+                nullptr, ui::EmojiPickerFocusBehavior::kOnlyShowWhenFocused),
+            false);
+}
+
+TEST_F(EmojiUITest, ShouldShowWithoutInputClient) {
+  ASSERT_EQ(ash::EmojiUI::ShouldShow(nullptr,
+                                     ui::EmojiPickerFocusBehavior::kAlwaysShow),
+            true);
 }

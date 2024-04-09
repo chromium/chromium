@@ -112,11 +112,18 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
 
 EmojiUI::~EmojiUI() = default;
 
-bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client) {
-  return input_client != nullptr;
+bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client,
+                         ui::EmojiPickerFocusBehavior focus_behavior) {
+  switch (focus_behavior) {
+    case ui::EmojiPickerFocusBehavior::kOnlyShowWhenFocused:
+      return input_client != nullptr;
+    case ui::EmojiPickerFocusBehavior::kAlwaysShow:
+      return true;
+  }
 }
 
-void EmojiUI::Show(ui::EmojiPickerCategory category) {
+void EmojiUI::Show(ui::EmojiPickerCategory category,
+                   ui::EmojiPickerFocusBehavior focus_behavior) {
   if (display::Screen::GetScreen()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
@@ -127,8 +134,7 @@ void EmojiUI::Show(ui::EmojiPickerCategory category) {
   ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
 
-  // Does not show emoji picker if there is no input client.
-  if (!ShouldShow(input_client)) {
+  if (!ShouldShow(input_client, focus_behavior)) {
     return;
   }
 
