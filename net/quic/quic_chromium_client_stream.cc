@@ -503,6 +503,14 @@ Idempotency QuicChromiumClientStream::Handle::GetRequestIdempotency() const {
   return idempotency_;
 }
 
+quic::QuicPacketLength
+QuicChromiumClientStream::Handle::GetGuaranteedLargestMessagePayload() const {
+  if (!stream_) {
+    return 0;
+  }
+  return stream_->GetGuaranteedLargestMessagePayload();
+}
+
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicStreamId id,
     quic::QuicSpdyClientSessionBase* session,
@@ -858,6 +866,14 @@ void QuicChromiumClientStream::NotifyHandleOfDataAvailable() {
 
 void QuicChromiumClientStream::DisableConnectionMigrationToCellularNetwork() {
   can_migrate_to_cellular_network_ = false;
+}
+
+quic::QuicPacketLength
+QuicChromiumClientStream::GetGuaranteedLargestMessagePayload() const {
+  if (!session()) {
+    return 0;
+  }
+  return session()->GetGuaranteedLargestMessagePayload();
 }
 
 bool QuicChromiumClientStream::IsFirstStream() {

@@ -96,7 +96,18 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   ASSERT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  EXPECT_TRUE(HasActiveSession(origin, NetworkAnonymizationKey(), proxy_chain));
+  QuicChromiumClientSession* session =
+      GetActiveSession(origin, NetworkAnonymizationKey(), proxy_chain);
+  ASSERT_TRUE(session);
+
+  // Max datagram size is limited by two layers of packet framing (38 bytes
+  // each), 1 byte for the quarter-stream-ID (which is always less than 64, thus
+  // one byte), and one byte for the CONNECT-UDP context.
+  quic::QuicByteCount largest_message_payload =
+      quic::kDefaultMaxPacketSize - 38 * 2 - 1 - 1;
+  EXPECT_EQ(session->GetGuaranteedLargestMessagePayload(),
+            largest_message_payload);
+
   stream.reset();
 
   // Ensure the session finishes creating before proceeding.

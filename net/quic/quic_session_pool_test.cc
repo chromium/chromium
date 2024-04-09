@@ -13902,6 +13902,7 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
 
   QuicChromiumClientSession* session =
       GetActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        /*require_dns_https_alpn=*/true);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
@@ -13944,6 +13945,7 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
 
   QuicChromiumClientSession* session =
       GetActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        /*require_dns_https_alpn=*/true);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();

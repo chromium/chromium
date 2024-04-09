@@ -3905,6 +3905,14 @@ QuicChromiumClientSession::GetDnsAliasesForSessionKey(
                        : *emptyset_result;
 }
 
+quic::QuicPacketLength
+QuicChromiumClientSession::Handle::GetGuaranteedLargestMessagePayload() const {
+  if (!session_) {
+    return 0;
+  }
+  return session_->GetGuaranteedLargestMessagePayload();
+}
+
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 std::unique_ptr<WebSocketQuicStreamAdapter>
 QuicChromiumClientSession::CreateWebSocketQuicStreamAdapterImpl(

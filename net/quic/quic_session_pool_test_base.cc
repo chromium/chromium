@@ -211,12 +211,13 @@ bool QuicSessionPoolTestBase::HasActiveSession(
     const url::SchemeHostPort& scheme_host_port,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
-    SessionUsage session_usage) {
+    SessionUsage session_usage,
+    bool require_dns_https_alpn) {
   quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
                                false);
-  return QuicSessionPoolPeer::HasActiveSession(factory_.get(), server_id,
-                                               network_anonymization_key,
-                                               proxy_chain, session_usage);
+  return QuicSessionPoolPeer::HasActiveSession(
+      factory_.get(), server_id, network_anonymization_key, proxy_chain,
+      session_usage, require_dns_https_alpn);
 }
 
 bool QuicSessionPoolTestBase::HasActiveJob(
@@ -241,12 +242,14 @@ QuicChromiumClientSession* QuicSessionPoolTestBase::GetPendingSession(
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
     const url::SchemeHostPort& scheme_host_port,
     const NetworkAnonymizationKey& network_anonymization_key,
+    const ProxyChain& proxy_chain,
+    SessionUsage session_usage,
     bool require_dns_https_alpn) {
   quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
                                false);
-  return QuicSessionPoolPeer::GetActiveSession(factory_.get(), server_id,
-                                               network_anonymization_key,
-                                               require_dns_https_alpn);
+  return QuicSessionPoolPeer::GetActiveSession(
+      factory_.get(), server_id, network_anonymization_key, proxy_chain,
+      session_usage, require_dns_https_alpn);
 }
 
 int QuicSessionPoolTestBase::GetSourcePortForNewSessionAndGoAway(

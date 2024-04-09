@@ -48,11 +48,12 @@ bool QuicSessionPoolPeer::HasActiveSession(
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
-    SessionUsage session_usage) {
+    SessionUsage session_usage,
+    bool require_dns_https_alpn) {
   return factory->HasActiveSession(
       QuicSessionKey(server_id, proxy_chain, session_usage, SocketTag(),
                      network_anonymization_key, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+                     require_dns_https_alpn));
 }
 
 bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
@@ -84,9 +85,10 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
+    const ProxyChain& proxy_chain,
+    SessionUsage session_usage,
     bool require_dns_https_alpn) {
-  QuicSessionKey session_key(server_id, ProxyChain::Direct(),
-                             SessionUsage::kDestination, SocketTag(),
+  QuicSessionKey session_key(server_id, proxy_chain, session_usage, SocketTag(),
                              network_anonymization_key, SecureDnsPolicy::kAllow,
                              require_dns_https_alpn);
   DCHECK(factory->HasActiveSession(session_key));

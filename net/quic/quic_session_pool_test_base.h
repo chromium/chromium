@@ -139,7 +139,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
-      SessionUsage session_usage = SessionUsage::kDestination);
+      SessionUsage session_usage = SessionUsage::kDestination,
+      bool require_dns_https_alpn = false);
   bool HasActiveJob(const url::SchemeHostPort& scheme_host_port,
                     const PrivacyMode privacy_mode,
                     bool require_dns_https_alpn = false);
@@ -151,6 +152,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
       const url::SchemeHostPort& scheme_host_port,
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
+      const ProxyChain& proxy_chain = ProxyChain::Direct(),
+      SessionUsage session_usage = SessionUsage::kDestination,
       bool require_dns_https_alpn = false);
 
   int GetSourcePortForNewSessionAndGoAway(

@@ -274,6 +274,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     const std::set<std::string>& GetDnsAliasesForSessionKey(
         const QuicSessionKey& key) const;
 
+    // Returns the largest payload that will fit into a single MESSAGE frame at
+    // any point during the connection.  This assumes the version and
+    // connection ID lengths do not change. Returns zero if the session is
+    // closed.
+    quic::QuicPacketLength GetGuaranteedLargestMessagePayload() const;
+
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
     // This method returns nullptr on failure, such as when a new bidirectional
     // stream could not be made.

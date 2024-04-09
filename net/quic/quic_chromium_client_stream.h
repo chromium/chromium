@@ -160,6 +160,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     // Returns the idempotency of the request.
     Idempotency GetRequestIdempotency() const;
 
+    // Returns the largest payload that will fit into a single MESSAGE frame at
+    // any point during the connection.  This assumes the version and
+    // connection ID lengths do not change. Returns zero if the stream or
+    // session are closed.
+    quic::QuicPacketLength GetGuaranteedLargestMessagePayload() const;
+
    private:
     friend class QuicChromiumClientStream;
 
@@ -303,6 +309,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
   // True if the underlying QUIC session supports HTTP/3 Datagrams.
   bool SupportsH3Datagram() const;
+
+  // Returns the largest payload that will fit into a single MESSAGE frame at
+  // any point during the connection.  This assumes the version and
+  // connection ID lengths do not change. Returns zero if the stream or
+  // session are closed.
+  quic::QuicPacketLength GetGuaranteedLargestMessagePayload() const;
 
   // True if this stream is the first data stream created on this session.
   bool IsFirstStream();
