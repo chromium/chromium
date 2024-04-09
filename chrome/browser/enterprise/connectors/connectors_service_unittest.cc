@@ -28,6 +28,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_test_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/strings/strcat.h"
 #include "extensions/common/constants.h"
@@ -226,6 +230,46 @@ TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
                  ->GetReportingConnectorsSettingsForTesting()
                  .empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(ConnectorsServiceReportingFeatureTest,
+       ChromeOsManagedGuestSessionFlagSetInMgs) {
+  // A fake Managed Guest Session that gets destroyed at the end of the test.
+  chromeos::FakeManagedGuestSession fake_mgs;
+
+  if (policy_value() != 0) {
+    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->SetInteger(scope_pref(),
+                                     policy::POLICY_SCOPE_MACHINE);
+  }
+
+  EXPECT_TRUE(ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                  ->BuildClientMetadata(/*is_cloud=*/true)
+                  ->is_chrome_os_managed_guest_session());
+
+  // The flag is currently not included for local content scanning.
+  EXPECT_FALSE(ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                   ->BuildClientMetadata(/*is_cloud=*/false)
+                   ->is_chrome_os_managed_guest_session());
+}
+
+TEST_P(ConnectorsServiceReportingFeatureTest,
+       ChromeOsManagedGuestSessionFlagNotSetInUserSession) {
+  if (policy_value() != 0) {
+    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->SetInteger(scope_pref(),
+                                     policy::POLICY_SCOPE_MACHINE);
+  }
+
+  EXPECT_FALSE(ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                   ->BuildClientMetadata(/*is_cloud=*/true)
+                   ->is_chrome_os_managed_guest_session());
+
+  EXPECT_FALSE(ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                   ->BuildClientMetadata(/*is_cloud=*/false)
+                   ->is_chrome_os_managed_guest_session());
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     ,

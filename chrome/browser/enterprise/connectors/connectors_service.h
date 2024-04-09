@@ -109,6 +109,10 @@ class ConnectorsService : public KeyedService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceReportingFeatureTest,
+                           ChromeOsManagedGuestSessionFlagSetInMgs);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceReportingFeatureTest,
+                           ChromeOsManagedGuestSessionFlagNotSetInUserSession);
 
   struct DmToken {
     DmToken(const std::string& value, policy::PolicyScope scope);

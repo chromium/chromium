@@ -7113,6 +7113,7 @@ test("unit_tests") {
 
     deps += [
       "//chromeos/components/kiosk:test_support",
+      "//chromeos/components/mgs:test_support",
       "//chromeos/dbus/tpm_manager:tpm_manager",
     ]
   }
