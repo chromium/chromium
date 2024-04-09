@@ -14,10 +14,10 @@ namespace {
 
 bool BlockingCopyHelper(
     ScopedDataPipeConsumerHandle source,
-    base::RepeatingCallback<size_t(const void*, uint32_t)> write_bytes) {
+    base::RepeatingCallback<size_t(const void*, size_t)> write_bytes) {
   for (;;) {
     const void* buffer;
-    uint32_t num_bytes;
+    size_t num_bytes;
     MojoResult result =
         source->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {
@@ -45,7 +45,7 @@ bool BlockingCopyHelper(
 
 size_t CopyToStringHelper(std::string* result,
                           const void* buffer,
-                          uint32_t num_bytes) {
+                          size_t num_bytes) {
   result->append(static_cast<const char*>(buffer), num_bytes);
   return num_bytes;
 }
@@ -67,12 +67,12 @@ BlockingCopyFromString(const std::string& source,
   auto it = source.begin();
   for (;;) {
     void* buffer = nullptr;
-    uint32_t buffer_num_bytes = static_cast<uint32_t>(source.end() - it);
+    size_t buffer_num_bytes = source.end() - it;
     MojoResult result = destination->BeginWriteData(&buffer, &buffer_num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {
       char* char_buffer = static_cast<char*>(buffer);
-      uint32_t byte_index = 0;
+      size_t byte_index = 0;
       while (it != source.end() && byte_index < buffer_num_bytes) {
         char_buffer[byte_index++] = *it++;
       }

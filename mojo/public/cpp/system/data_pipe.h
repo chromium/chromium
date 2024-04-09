@@ -12,8 +12,10 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -28,8 +30,45 @@ class DataPipeProducerHandle : public Handle {
   explicit DataPipeProducerHandle(MojoHandle value) : Handle(value) {}
 
   // Writes to a data pipe. See |MojoWriteData| for complete documentation.
+  //
+  // When
+  // 1) `MojoCreateDataPipeOptions::element_num_bytes` is not 1 and
+  // 2) `*num_bytes > std::numeric_limits<uint32_t>::max()` then
+  // 3) `MOJO_RESULT_INVALID_ARGUMENT` may be returned.
+  // When using such `element_num_bytes`, the caller is advised to write
+  // less than 2^32 bytes at a time, or to use `BeginWriteData` instead.
   MojoResult WriteData(const void* elements,
-                       uint32_t* num_bytes,
+                       size_t* num_bytes,
+                       MojoWriteDataFlags flags) const {
+    MojoWriteDataOptions options;
+    options.struct_size = sizeof(options);
+    options.flags = flags;
+
+    // Because of ABI-stability requirements, the C-level APIs take `uint32_t`.
+    // But, for compatibility with C++ containers, the C++ APIs take `size_t`.
+    //
+    // We use `saturated_cast` so that when `num_bytes` doesn't fit into
+    // `uint32_t`, then we will simply report that a smaller number of bytes was
+    // written.  We accept that `num_bytes_u32` may no longer being a multiple
+    // of `MojoCreateDataPipeOptions::element_num_bytes` and rely on the C layer
+    // to return `MOJO_RESULT_INVALID_ARGUMENT` in this case.
+    //
+    // TODO(crbug.com/40284755): `span`ify these C++ APIs.
+    uint32_t num_bytes_u32 = base::saturated_cast<uint32_t>(*num_bytes);
+
+    MojoResult result =
+        MojoWriteData(value(), elements, &num_bytes_u32, &options);
+    *num_bytes = size_t{num_bytes_u32};
+    return result;
+  }
+
+  // DEPRECATED: Please use the `size_t` overload instead.
+  // TODO(https://crbug.com/1201109): Remove once all the callers have been
+  // migrated over to the `size_t` overload.
+  template <std::same_as<uint32_t> UINT32_T>
+    requires(sizeof(size_t) != sizeof(uint32_t))
+  MojoResult WriteData(const void* elements,
+                       UINT32_T* num_bytes,
                        MojoWriteDataFlags flags) const {
     MojoWriteDataOptions options;
     options.struct_size = sizeof(options);
@@ -40,7 +79,35 @@ class DataPipeProducerHandle : public Handle {
   // Begins a two-phase write to a data pipe. See |MojoBeginWriteData()| for
   // complete documentation.
   MojoResult BeginWriteData(void** buffer,
-                            uint32_t* buffer_num_bytes,
+                            size_t* buffer_num_bytes,
+                            MojoBeginWriteDataFlags flags) const {
+    MojoBeginWriteDataOptions options;
+    options.struct_size = sizeof(options);
+    options.flags = flags;
+
+    // Because of ABI-stability requirements, the C-level APIs take `uint32_t`.
+    // But, for compatibility with C++ containers, the C++ APIs take `size_t`.
+    //
+    // As documented by MojoBeginWriteData, on input `*buffer_num_bytes` is
+    // merely a hint of how many bytes the producer is readily able to supply.
+    // Therefore we use a `saturated_cast` to gracefully handle big values.
+    //
+    // TODO(crbug.com/40284755): `span`ify these C++ APIs.
+    uint32_t buffer_num_bytes_u32 =
+        base::saturated_cast<uint32_t>(*buffer_num_bytes);
+    MojoResult result =
+        MojoBeginWriteData(value(), &options, buffer, &buffer_num_bytes_u32);
+    *buffer_num_bytes = size_t{buffer_num_bytes_u32};
+    return result;
+  }
+
+  // DEPRECATED: Please use the `size_t` overload instead.
+  // TODO(https://crbug.com/1201109): Remove once all the callers have been
+  // migrated over to the `size_t` overload.
+  template <std::same_as<uint32_t> UINT32_T>
+    requires(sizeof(size_t) != sizeof(uint32_t))
+  MojoResult BeginWriteData(void** buffer,
+                            UINT32_T* buffer_num_bytes,
                             MojoBeginWriteDataFlags flags) const {
     MojoBeginWriteDataOptions options;
     options.struct_size = sizeof(options);
@@ -50,8 +117,15 @@ class DataPipeProducerHandle : public Handle {
 
   // Completes a two-phase write to a data pipe. See |MojoEndWriteData()| for
   // complete documentation.
-  MojoResult EndWriteData(uint32_t num_bytes_written) const {
-    return MojoEndWriteData(value(), num_bytes_written, nullptr);
+  MojoResult EndWriteData(size_t num_bytes_written) const {
+    if (BASE_NUMERICS_UNLIKELY(
+            !base::IsValueInRangeForNumericType<uint32_t>(num_bytes_written))) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    uint32_t num_bytes_written_u32 =
+        base::checked_cast<uint32_t>(num_bytes_written);
+
+    return MojoEndWriteData(value(), num_bytes_written_u32, nullptr);
   }
 
   // Copying and assignment allowed.
@@ -74,8 +148,38 @@ class DataPipeConsumerHandle : public Handle {
 
   // Reads from a data pipe. See |MojoReadData()| for complete documentation.
   MojoResult ReadData(void* elements,
-                      uint32_t* num_bytes,
+                      size_t* num_bytes,
                       MojoReadDataFlags flags) const {
+    MojoReadDataOptions options;
+    options.struct_size = sizeof(options);
+    options.flags = flags;
+
+    // Because of ABI-stability requirements, the C-level APIs take `uint32_t`.
+    // But, for compatibility with C++ containers, the C++ APIs take `size_t`.
+    //
+    // Input value of `*num_bytes` is ignored in `MOJO_READ_DATA_FLAG_QUERY`
+    // mode and otherwise is an _upper_ bound on how many bytes will be read (or
+    // discarded in `MOJO_READ_DATA_FLAG_DISCARD`).  Therefore it is okay to use
+    // `saturated_cast` instead of `checked_cast` because the C-layer mojo code
+    // will anyway read only up to uin32_t max bytes.
+    //
+    // TODO(crbug.com/40284755): `span`ify these C++ APIs.
+    uint32_t num_bytes_u32 = base::saturated_cast<uint32_t>(*num_bytes);
+    MojoResult result =
+        MojoReadData(value(), &options, elements, &num_bytes_u32);
+    *num_bytes = size_t{num_bytes_u32};
+    return result;
+  }
+
+  // DEPRECATED: Please use the `size_t` overload instead.
+  // TODO(https://crbug.com/1201109): Remove once all the callers have been
+  // migrated over to the `size_t` overload.
+  template <typename UINT32_T>
+    requires(std::same_as<uint32_t, UINT32_T> &&
+             sizeof(size_t) != sizeof(uint32_t))
+  MojoResult ReadData(void* elements,
+                      UINT32_T* num_bytes,
+                      MojoBeginReadDataFlags flags) const {
     MojoReadDataOptions options;
     options.struct_size = sizeof(options);
     options.flags = flags;
@@ -85,7 +189,31 @@ class DataPipeConsumerHandle : public Handle {
   // Begins a two-phase read from a data pipe. See |MojoBeginReadData()| for
   // complete documentation.
   MojoResult BeginReadData(const void** buffer,
-                           uint32_t* buffer_num_bytes,
+                           size_t* buffer_num_bytes,
+                           MojoBeginReadDataFlags flags) const {
+    MojoBeginReadDataOptions options;
+    options.struct_size = sizeof(options);
+    options.flags = flags;
+
+    // Because of ABI-stability requirements, the C-level APIs take `uint32_t`.
+    // But, for compatibility with C++ containers, the C++ APIs take `size_t`.
+    //
+    // TODO(crbug.com/40284755): `span`ify these C++ APIs.
+    uint32_t buffer_num_bytes_u32 = 0;
+    MojoResult result =
+        MojoBeginReadData(value(), &options, buffer, &buffer_num_bytes_u32);
+    *buffer_num_bytes = size_t{buffer_num_bytes_u32};
+    return result;
+  }
+
+  // DEPRECATED: Please use the `size_t` overload instead.
+  // TODO(https://crbug.com/1201109): Remove once all the callers have been
+  // migrated over to the `size_t` overload.
+  template <typename UINT32_T>
+    requires(std::same_as<uint32_t, UINT32_T> &&
+             sizeof(size_t) != sizeof(uint32_t))
+  MojoResult BeginReadData(const void** buffer,
+                           UINT32_T* buffer_num_bytes,
                            MojoBeginReadDataFlags flags) const {
     MojoBeginReadDataOptions options;
     options.struct_size = sizeof(options);
@@ -95,8 +223,14 @@ class DataPipeConsumerHandle : public Handle {
 
   // Completes a two-phase read from a data pipe. See |MojoEndReadData()| for
   // complete documentation.
-  MojoResult EndReadData(uint32_t num_bytes_read) const {
-    return MojoEndReadData(value(), num_bytes_read, nullptr);
+  MojoResult EndReadData(size_t num_bytes_read) const {
+    if (BASE_NUMERICS_UNLIKELY(
+            !base::IsValueInRangeForNumericType<uint32_t>(num_bytes_read))) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    uint32_t num_bytes_read_u32 = base::checked_cast<uint32_t>(num_bytes_read);
+
+    return MojoEndReadData(value(), num_bytes_read_u32, nullptr);
   }
 
   // Copying and assignment allowed.

@@ -57,7 +57,7 @@ TEST_F(DataPipeDrainerTest, TestCompleteIsCalledOnce) {
     EXPECT_FALSE(had_data_complete);
     had_data_complete = true;
   });
-  uint32_t size = 5;
+  size_t size = 5;
   EXPECT_EQ(MOJO_RESULT_OK, producer_handle_->WriteData(
                                 "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
   base::RunLoop().RunUntilIdle();

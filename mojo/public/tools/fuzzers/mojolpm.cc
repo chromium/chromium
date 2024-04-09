@@ -349,7 +349,7 @@ void HandleDataPipeRead(const ::mojolpm::DataPipeRead& input) {
   }
 
   if (consumer_ptr) {
-    unsigned int size = input.size();
+    size_t size = size_t{input.size()};
     if (size > kPipeActionMaxSize) {
       size = kPipeActionMaxSize;
     }
@@ -387,7 +387,7 @@ void HandleDataPipeWrite(const ::mojolpm::DataPipeWrite& input) {
   }
 
   if (producer_ptr) {
-    unsigned int size = input.data().size();
+    size_t size = input.data().size();
     if (size > kPipeActionMaxSize) {
       size = kPipeActionMaxSize;
     }

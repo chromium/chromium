@@ -100,7 +100,7 @@ TEST_F(SimpleWatcherTest, WatchFailedPreconditionNoSpam) {
                       switch (result) {
                         case MOJO_RESULT_OK:
                           const void* begin;
-                          uint32_t num_bytes;
+                          size_t num_bytes;
                           consumer_handle->BeginReadData(
                               &begin, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
                           consumer_handle->EndReadData(num_bytes);
@@ -112,7 +112,7 @@ TEST_F(SimpleWatcherTest, WatchFailedPreconditionNoSpam) {
                     }));
   EXPECT_EQ(MOJO_RESULT_OK, rc);
 
-  uint32_t size = 5;
+  size_t size = 5;
   EXPECT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
   base::RunLoop().RunUntilIdle();

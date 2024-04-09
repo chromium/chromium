@@ -27,7 +27,7 @@ namespace {
 // No good reason not to attempt very large pipe transactions in case the data
 // pipe in use has a very large capacity available, so we default to trying
 // 64 MB chunks whenever a producer is writable.
-constexpr uint32_t kDefaultMaxReadSize = 64 * 1024 * 1024;
+constexpr size_t kDefaultMaxReadSize = 64 * 1024 * 1024;
 
 }  // namespace
 
@@ -110,7 +110,7 @@ class DataPipeProducer::SequenceState
     while (true) {
       // Lock as much of the pipe as we can.
       void* pipe_buffer;
-      uint32_t size = kDefaultMaxReadSize;
+      size_t size = kDefaultMaxReadSize;
 
       DCHECK_LE(bytes_transferred_, data_source_->GetLength());
       const uint64_t max_data_size =
@@ -122,7 +122,7 @@ class DataPipeProducer::SequenceState
       }
 
       if (static_cast<uint64_t>(size) > max_data_size)
-        size = static_cast<uint32_t>(max_data_size);
+        size = static_cast<size_t>(max_data_size);
 
       MojoResult mojo_result = producer_handle_->BeginWriteData(
           &pipe_buffer, &size, MOJO_WRITE_DATA_FLAG_NONE);

@@ -50,7 +50,7 @@ class DataPipeReader {
  private:
   void OnDataAvailable(MojoResult result, const HandleSignalsState& state) {
     if (result == MOJO_RESULT_OK) {
-      uint32_t size = 64;
+      size_t size = 64;
       std::vector<char> buffer(size, 0);
       MojoResult read_result;
       do {

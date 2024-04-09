@@ -57,7 +57,7 @@ class DataPipeReader {
  private:
   void OnDataAvailable(MojoResult result, const HandleSignalsState& state) {
     if (result == MOJO_RESULT_OK) {
-      uint32_t size = static_cast<uint32_t>(read_size_);
+      size_t size = read_size_;
       std::vector<char> buffer(size, 0);
       MojoResult read_result;
       do {
@@ -356,5 +356,6 @@ TEST_F(DataPipeProducerTest, WriteLengthGreaterThanFile) {
   EXPECT_EQ(test_string.size(), observer_data.bytes_read);
   EXPECT_EQ(1, observer_data.done_called);
 }
+
 }  // namespace
 }  // namespace mojo

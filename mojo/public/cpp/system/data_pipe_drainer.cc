@@ -30,7 +30,7 @@ DataPipeDrainer::~DataPipeDrainer() {}
 
 void DataPipeDrainer::ReadData() {
   const void* buffer = nullptr;
-  uint32_t num_bytes = 0;
+  size_t num_bytes = 0;
   MojoResult rv =
       source_->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
   if (rv == MOJO_RESULT_OK) {
