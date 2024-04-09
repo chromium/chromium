@@ -21,6 +21,8 @@ source_set("core") {
     "saved_tab_group_sync_bridge.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
+    "stats.cc",
+    "stats.h",
     "tab_group_sync_service.h",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",

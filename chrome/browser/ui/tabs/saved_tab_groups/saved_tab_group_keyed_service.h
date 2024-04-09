@@ -133,9 +133,6 @@ class SavedTabGroupKeyedService : public KeyedService,
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();
 
-  // Records the SavedTabGroup count and Tab count per SavedTabGroup.
-  void RecordSavedTabGroupMetrics();
-
   // Records the Unsaved TabGroup count and the Tab count per Unsaved TabGroup.
   void RecordTabGroupMetrics();
 

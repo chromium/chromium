@@ -31,6 +31,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/stats.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -523,47 +524,9 @@ void SavedTabGroupKeyedService::UpdateGroupVisualData(
 }
 
 void SavedTabGroupKeyedService::RecordMetrics() {
-  RecordSavedTabGroupMetrics();
+  stats::RecordSavedTabGroupMetrics(model());
   RecordTabGroupMetrics();
   metrics_timer_.Reset();
-}
-
-void SavedTabGroupKeyedService::RecordSavedTabGroupMetrics() {
-  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupCount",
-                                model()->Count());
-
-  const base::Time current_time = base::Time::Now();
-
-  for (const SavedTabGroup& group : model()->saved_tab_groups()) {
-    base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
-                                  group.saved_tabs().size());
-
-    const base::TimeDelta duration_saved =
-        current_time - group.creation_time_windows_epoch_micros();
-    if (!duration_saved.is_negative()) {
-      base::UmaHistogramCounts1M("TabGroups.SavedTabGroupAge",
-                                 duration_saved.InMinutes());
-    }
-
-    const base::TimeDelta duration_since_group_modification =
-        current_time - group.update_time_windows_epoch_micros();
-    if (!duration_since_group_modification.is_negative()) {
-      base::UmaHistogramCounts1M("TabGroups.SavedTabGroupTimeSinceModification",
-                                 duration_since_group_modification.InMinutes());
-    }
-
-    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-      const base::TimeDelta duration_since_tab_modification =
-          current_time - tab.update_time_windows_epoch_micros();
-      if (duration_since_tab_modification.is_negative()) {
-        continue;
-      }
-
-      base::UmaHistogramCounts1M(
-          "TabGroups.SavedTabGroupTabTimeSinceModification",
-          duration_since_tab_modification.InMinutes());
-    }
-  }
 }
 
 void SavedTabGroupKeyedService::RecordTabGroupMetrics() {
