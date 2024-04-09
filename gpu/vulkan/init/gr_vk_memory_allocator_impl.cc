@@ -73,12 +73,13 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
                                 GrVkBackendMemory* backend_memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
                  "GrVkMemoryAllocatorImpl::allocateMemoryForBuffer");
-    VmaAllocationCreateInfo info;
-    info.flags = 0;
-    info.usage = VMA_MEMORY_USAGE_UNKNOWN;
-    info.memoryTypeBits = 0;
-    info.pool = VK_NULL_HANDLE;
-    info.pUserData = nullptr;
+    VmaAllocationCreateInfo info = {
+        .flags = 0,
+        .usage = VMA_MEMORY_USAGE_UNKNOWN,
+        .memoryTypeBits = 0,
+        .pool = VK_NULL_HANDLE,
+        .pUserData = nullptr,
+    };
 
     switch (usage) {
       case BufferUsage::kGpuOnly:
