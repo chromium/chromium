@@ -16,6 +16,65 @@ namespace {
 
 constexpr UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
 
+// Build the source text for ShapeResultSpacing. This needs special handling
+// for text-combine items, ruby annotations, and hyphenations.
+String BuildJustificationText(const String& text_content,
+                              const InlineItemResults& results,
+                              unsigned line_text_start_offset,
+                              unsigned end_offset,
+                              bool may_have_text_combine) {
+  if (results.empty()) {
+    return String();
+  }
+
+  StringBuilder line_text_builder;
+  if (UNLIKELY(may_have_text_combine)) {
+    for (const InlineItemResult& item_result : results) {
+      if (item_result.StartOffset() >= end_offset) {
+        break;
+      }
+      if (item_result.item->IsTextCombine()) {
+        // To apply justification before and after the combined text, we put
+        // ideographic character to increment |ShapeResultSpacing::
+        // expansion_opportunity_count_| for legacy layout compatibility.
+        // See "fast/writing-mode/text-combine-justify.html".
+        // Note: The spec[1] says we should treat combined text as U+FFFC.
+        // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
+        line_text_builder.Append(kTextCombineItemMarker);
+        continue;
+      }
+      line_text_builder.Append(StringView(text_content,
+                                          item_result.StartOffset(),
+                                          item_result.Length()));
+    }
+  } else {
+    line_text_builder.Append(StringView(text_content,
+                                        line_text_start_offset,
+                                        end_offset - line_text_start_offset));
+  }
+
+  // Append a hyphen if the last word is hyphenated. The hyphen is in
+  // |ShapeResult|, but not in text. |ShapeResultSpacing| needs the text that
+  // matches to the |ShapeResult|.
+  DCHECK(!results.empty());
+  const InlineItemResult& last_item_result = results.back();
+  if (last_item_result.hyphen) {
+    line_text_builder.Append(last_item_result.hyphen.Text());
+  } else if (RuntimeEnabledFeatures::TextAlignLastJustifyNewLineEnabled()) {
+    // Remove the trailing \n.  See crbug.com/331729346.
+    wtf_size_t text_length = line_text_builder.length();
+    if (text_length > 0u &&
+        line_text_builder[text_length - 1] == kNewlineCharacter) {
+      if (text_length == 1u) {
+        return String();
+      }
+      line_text_builder.Resize(text_length - 1);
+    }
+  }
+
+  return line_text_builder.ReleaseString();
+}
+
 void JustifyResults(const String& line_text,
                     unsigned line_text_start_offset,
                     ShapeResultSpacing<String>& spacing,
@@ -89,56 +148,14 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
       line_info->Results().front().StartOffset();
 
   // Construct the line text to compute spacing for.
-  StringBuilder line_text_builder;
-  if (UNLIKELY(line_info->MayHaveTextCombineItem())) {
-    for (const InlineItemResult& item_result : line_info->Results()) {
-      if (item_result.StartOffset() >= end_offset) {
-        break;
-      }
-      if (item_result.item->IsTextCombine()) {
-        // To apply justification before and after the combined text, we put
-        // ideographic character to increment |ShapeResultSpacing::
-        // expansion_opportunity_count_| for legacy layout compatibility.
-        // See "fast/writing-mode/text-combine-justify.html".
-        // Note: The spec[1] says we should treat combined text as U+FFFC.
-        // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
-        line_text_builder.Append(kTextCombineItemMarker);
-        continue;
-      }
-      line_text_builder.Append(StringView(line_info->ItemsData().text_content,
-                                          item_result.StartOffset(),
-                                          item_result.Length()));
-    }
-  } else {
-    line_text_builder.Append(StringView(line_info->ItemsData().text_content,
-                                        line_text_start_offset,
-                                        end_offset - line_text_start_offset));
-  }
-
-  // Append a hyphen if the last word is hyphenated. The hyphen is in
-  // |ShapeResult|, but not in text. |ShapeResultSpacing| needs the text that
-  // matches to the |ShapeResult|.
-  DCHECK(!line_info->Results().empty());
-  const InlineItemResult& last_item_result = line_info->Results().back();
-  if (last_item_result.hyphen) {
-    line_text_builder.Append(last_item_result.hyphen.Text());
-  } else if (RuntimeEnabledFeatures::TextAlignLastJustifyNewLineEnabled()) {
-    // Remove the trailing \n.  See crbug.com/331729346.
-    wtf_size_t text_length = line_text_builder.length();
-    if (text_length > 0u &&
-        line_text_builder[text_length - 1] == kNewlineCharacter) {
-      if (text_length == 1u) {
-        return std::nullopt;
-      }
-      line_text_builder.Resize(text_length - 1);
-    }
+  String line_text = BuildJustificationText(
+      line_info->ItemsData().text_content, line_info->Results(),
+      line_text_start_offset, end_offset, line_info->MayHaveTextCombineItem());
+  if (line_text.empty()) {
+    return std::nullopt;
   }
 
   // Compute the spacing to justify.
-  // Releasing string, StringBuilder reset.
-  String line_text = line_text_builder.ReleaseString();
-  DCHECK_GT(line_text.length(), 0u);
-
   ShapeResultSpacing<String> spacing(line_text,
                                      target == JustificationTarget::kSvgText);
   spacing.SetExpansion(space, line_info->BaseDirection());
