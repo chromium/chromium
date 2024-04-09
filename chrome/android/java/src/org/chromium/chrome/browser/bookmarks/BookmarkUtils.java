@@ -869,22 +869,6 @@ public class BookmarkUtils {
         return true;
     }
 
-    /** Returns whether the given folder should display images. */
-    public static boolean shouldShowImagesForFolder(
-            BookmarkModel bookmarkModel, BookmarkId folder) {
-        BookmarkId rootNodeId = bookmarkModel.getRootFolderId();
-        BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
-        BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
-        BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
-
-        List<BookmarkId> specialFoldersIds = bookmarkModel.getTopLevelFolderIds();
-        return !Objects.equals(folder, rootNodeId)
-                && !Objects.equals(folder, desktopNodeId)
-                && !Objects.equals(folder, mobileNodeId)
-                && !Objects.equals(folder, othersNodeId)
-                && !specialFoldersIds.contains(folder);
-    }
-
     /** Returns whether the given id is a special folder. */
     public static boolean isSpecialFolder(BookmarkModel bookmarkModel, BookmarkItem item) {
         return item != null && Objects.equals(item.getParentId(), bookmarkModel.getRootFolderId());

@@ -1009,6 +1009,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBuildImprovedBookmarkRow_Folder_Visual() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
@@ -1017,8 +1018,6 @@ public class BookmarkManagerMediatorTest {
 
         ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
-
-        assertTrue(BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, mFolderItem2.getId()));
 
         PropertyModel model = item.model;
         assertNotNull(model);
@@ -1338,6 +1337,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testParentFolderUpdatedWhenChildDeleted() {
         finishLoading();
 
