@@ -162,12 +162,11 @@ UIColor* GetTouchBeginBackgroundColor() {
     // Add Chevron.
     _chevronButton = [[UIButton alloc] init];
     _chevronButton.translatesAutoresizingMaskIntoConstraints = NO;
-    UIButtonConfiguration* configuration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    configuration.image = DefaultSymbolTemplateWithPointSize(
-        kChevronDownSymbol, kSymbolAccessoryPointSize);
+    [_chevronButton setImage:DefaultSymbolTemplateWithPointSize(
+                                 kChevronDownSymbol, kSymbolAccessoryPointSize)
+                    forState:UIControlStateNormal];
+
     _chevronButton.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
-    _chevronButton.configuration = configuration;
     [_chevronButton addTarget:self
                        action:@selector(chevronToggleAction:)
              forControlEvents:UIControlEventTouchUpInside];
@@ -348,6 +347,17 @@ UIColor* GetTouchBeginBackgroundColor() {
   self.backgroundColor = nil;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  // To know if the chevron is needed, we need to compare
+  // `_snippetLabelExpanded` height and `_snippetLabelOneLine` height. To avoid
+  // any issues with float approximations, there is one pixel margin.
+  _chevronButton.enabled = _snippetLabelExpanded.frame.size.height -
+                               _snippetLabelOneLine.frame.size.height >
+                           1.;
+  _chevronButton.alpha = (_chevronButton.enabled) ? 1. : .4;
+}
+
 #pragma mark - Properties
 
 - (void)setChecked:(BOOL)checked {
@@ -442,7 +452,7 @@ UIColor* GetTouchBeginBackgroundColor() {
   _snippetButtonState = newSnippetButtonState;
   const float downRotation = 0;
   const float upRotation = downRotation + M_PI;
-  UIView* chevronButton = _chevronButton;
+  UIButton* chevronButton = _chevronButton;
   UILabel* snippetLabelOneLine = _snippetLabelOneLine;
   UILabel* snippetLabelExpanded = _snippetLabelExpanded;
   NSLayoutConstraint* snippetLabelOneLineConstraint =
@@ -525,6 +535,9 @@ UIColor* GetTouchBeginBackgroundColor() {
 }
 
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
+  if (!_chevronButton.enabled) {
+    return [super accessibilityCustomActions];
+  }
   NSString* actionName = nil;
   switch (_snippetButtonState) {
     case SnippetButtonState::kOneLine:
