@@ -42,6 +42,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -186,6 +187,11 @@ FullRestoreService::FullRestoreService(Profile* profile)
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &FullRestoreService::OnAppTerminating, base::Unretained(this)));
 
+  auto* full_restore_save_handler =
+      ::full_restore::FullRestoreSaveHandler::GetInstance();
+  full_restore_save_handler->InsertIgnoreApplicationId(
+      web_app::kOsFeedbackAppId);
+
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
@@ -205,8 +211,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
   // Set profile path before init the restore process to create
   // FullRestoreSaveHandler to observe restore windows.
   if (IsPrimaryUser(profile_)) {
-    ::full_restore::FullRestoreSaveHandler::GetInstance()
-        ->SetPrimaryProfilePath(profile_->GetPath());
+    full_restore_save_handler->SetPrimaryProfilePath(profile_->GetPath());
 
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.
@@ -222,7 +227,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
     // release. Restore browsers and web apps by the browser session restore.
     first_run_full_restore_ = true;
     SetDefaultRestorePrefIfNecessary(prefs);
-    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+    full_restore_save_handler->AllowSave();
     VLOG(1) << "No restore pref! First time to run full restore."
             << profile_->GetPath();
   }
