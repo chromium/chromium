@@ -441,17 +441,20 @@ void UsbDeviceHandleWin::ControlTransfer(
         recipient == UsbControlTransferRecipient::DEVICE &&
         request == USB_REQUEST_GET_DESCRIPTOR) {
       if ((value >> 8) == USB_DEVICE_DESCRIPTOR_TYPE) {
-        auto* node_connection_info = new USB_NODE_CONNECTION_INFORMATION_EX;
+        auto node_connection_info =
+            std::make_unique<USB_NODE_CONNECTION_INFORMATION_EX>();
         node_connection_info->ConnectionIndex = device_->port_number();
-
-        blocking_task_runner_->PostTaskAndReplyWithResult(
-            FROM_HERE,
+        auto task_callback =
             base::BindOnce(&DeviceIoControlBlocking, hub_handle_.Get(),
                            IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX,
-                           node_connection_info, sizeof(*node_connection_info)),
+                           node_connection_info.get(),
+                           sizeof(USB_NODE_CONNECTION_INFORMATION_EX));
+        auto reply_callback =
             base::BindOnce(&UsbDeviceHandleWin::GotNodeConnectionInformation,
                            weak_factory_.GetWeakPtr(), std::move(callback),
-                           base::Owned(node_connection_info), buffer));
+                           std::move(node_connection_info), buffer);
+        blocking_task_runner_->PostTaskAndReplyWithResult(
+            FROM_HERE, std::move(task_callback), std::move(reply_callback));
         return;
       } else if (((value >> 8) == USB_CONFIGURATION_DESCRIPTOR_TYPE) ||
                  ((value >> 8) == USB_STRING_DESCRIPTOR_TYPE) ||
@@ -1010,7 +1013,7 @@ std::unique_ptr<UsbDeviceHandleWin::Request> UsbDeviceHandleWin::UnlinkRequest(
 
 void UsbDeviceHandleWin::GotNodeConnectionInformation(
     TransferCallback callback,
-    void* node_connection_info_ptr,
+    std::unique_ptr<USB_NODE_CONNECTION_INFORMATION_EX> node_connection_info,
     scoped_refptr<base::RefCountedBytes> buffer,
     std::pair<DWORD, DWORD> result_and_bytes_transferred) {
   if (result_and_bytes_transferred.first != ERROR_SUCCESS) {
@@ -1022,9 +1025,6 @@ void UsbDeviceHandleWin::GotNodeConnectionInformation(
 
   DCHECK_EQ(result_and_bytes_transferred.second,
             sizeof(USB_NODE_CONNECTION_INFORMATION_EX));
-  USB_NODE_CONNECTION_INFORMATION_EX* node_connection_info =
-      static_cast<USB_NODE_CONNECTION_INFORMATION_EX*>(
-          node_connection_info_ptr);
 
   device_->ActiveConfigurationChanged(
       node_connection_info->CurrentConfigurationValue);
