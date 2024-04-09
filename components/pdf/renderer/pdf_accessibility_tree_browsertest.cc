@@ -2471,7 +2471,7 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   EXPECT_EQ(0u, inline_box->GetChildCount());
 }
 
-// TODO(crbug.com/1442928): Remove `CheckLiveRegionPoliteStatus` and
+// TODO(crbug.com/40064422): Remove `CheckLiveRegionPoliteStatus` and
 // `CheckLiveRegionNotSetWhenInBackground` below once PDF OCR is launched
 // on Windows, Linux, and macOS as these tests will be replaced with
 // `PdfOcrTest.CheckLiveRegionPoliteStatus` and

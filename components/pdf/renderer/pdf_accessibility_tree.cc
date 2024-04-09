@@ -620,8 +620,8 @@ std::unique_ptr<ui::AXNodeData> CreateStatusNode(ui::AXNodeID id,
   return node;
 }
 
-// TODO(crbug.com/1442928): May need to give it a proper name or title. Revisit
-// this banner node to understand why it is here besides navigation.
+// TODO(crbug.com/326131114): May need to give it a proper name or title.
+// Revisit this banner node to understand why it is here besides navigation.
 std::unique_ptr<ui::AXNodeData> CreateBannerNode(ui::AXNodeID id,
                                                  ui::AXNodeData* root_node) {
   // Create a banner node with an appropriate ARIA landmark for easy navigation.
