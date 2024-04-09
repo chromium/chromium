@@ -380,7 +380,7 @@ bool DOMDataStore::Set(v8::Isolate* isolate,
   // Wrap()/AssociateWithWrapper() that can run into the case of an existing
   // entry.
   if (UNLIKELY(!result.is_new_entry)) {
-    DCHECK(!result.stored_value->value.IsEmpty());
+    CHECK(!result.stored_value->value.IsEmpty());
     wrapper = result.stored_value->value.Get(isolate);
   }
   return result.is_new_entry;
