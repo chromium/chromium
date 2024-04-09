@@ -421,12 +421,8 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsInitialized()) {
-    Initialize(config_, /*low_delay=*/false, /*cdm_context=*/nullptr,
-               /*init_cb=*/base::DoNothing(), output_cb_,
-               /*waiting_cb=*/base::DoNothing());
-  }
   VLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
+  DCHECK(IsInitialized());
 
   if (buffer->end_of_stream()) {
     if (!event_task_runner_) {
@@ -538,26 +534,18 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
     std::move(media_decode_cb).Run(DecoderStatus::Codes::kAborted);
   }
 
-  // TODO(279980150): Remove the specific |is_mtk8173_| provision here and below
-  // once it's figured out why this device stalls after reset()ting the queues.
-  if (is_mtk8173_) {
-    if (OUTPUT_queue_ && !OUTPUT_queue_->Streamoff()) {
-      LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |OUTPUT_queue_|.";
-    }
-    if (CAPTURE_queue_ && !CAPTURE_queue_->Streamoff()) {
-      LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |CAPTURE_queue_|.";
-    }
+  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamoff()) {
+    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |OUTPUT_queue_|.";
+  }
+  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamoff()) {
+    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |CAPTURE_queue_|.";
+  }
 
-    if (OUTPUT_queue_ && !OUTPUT_queue_->Streamon()) {
-      LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |OUTPUT_queue_|.";
-    }
-    if (CAPTURE_queue_ && !CAPTURE_queue_->Streamon()) {
-      LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
-    }
-  } else {
-    CAPTURE_queue_.reset();
-    OUTPUT_queue_.reset();
-    num_decoder_instances_.Decrement();
+  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamon()) {
+    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |OUTPUT_queue_|.";
+  }
+  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamon()) {
+    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
   }
 
   encoding_timestamps_.clear();
@@ -566,13 +554,11 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
     std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
   }
 
-  if (is_mtk8173_) {
-    // There might be available resources for |CAPTURE_queue_| from previous
-    // cycles, i.e. from before Reset(); try and make them available for the
-    // driver.
-    if (CAPTURE_queue_) {
-      TryAndEnqueueCAPTUREQueueBuffers();
-    }
+  // There might be available resources for |CAPTURE_queue_| from previous
+  // cycles, i.e. from before Reset(); try and make them available for the
+  // driver.
+  if (CAPTURE_queue_) {
+    TryAndEnqueueCAPTUREQueueBuffers();
   }
 }
 
