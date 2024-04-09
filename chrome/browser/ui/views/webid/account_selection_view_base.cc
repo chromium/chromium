@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -561,6 +562,17 @@ AccountSelectionViewBase::CreateDisclosureLabel(
   }
 
   return disclosure_label;
+}
+
+void AccountSelectionViewBase::SendAccessibilityEvent(
+    views::Widget* widget,
+    std::u16string announcement) {
+  if (!widget) {
+    return;
+  }
+
+  views::View* const root_view = widget->GetRootView();
+  root_view->GetViewAccessibility().AnnounceText(announcement);
 }
 
 base::WeakPtr<views::Widget> AccountSelectionViewBase::GetDialogWidget() {

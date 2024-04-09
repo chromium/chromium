@@ -121,15 +121,6 @@ class ContinueButton : public views::MdTextButton {
 BEGIN_METADATA(ContinueButton)
 END_METADATA
 
-void SendAccessibilityEvent(views::Widget* widget,
-                            std::u16string announcement) {
-  if (!widget)
-    return;
-
-  views::View* const root_view = widget->GetRootView();
-  root_view->GetViewAccessibility().AnnounceText(announcement);
-}
-
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
     const std::optional<TokenError>& error,
     const std::u16string& top_frame_for_display,
@@ -303,7 +294,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
     continue_button_->RequestFocus();
   }
-  SendAccessibilityEvent(GetWidget(), std::u16string());
+  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
@@ -372,7 +363,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
   if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
     continue_button_->RequestFocus();
   }
-  SendAccessibilityEvent(GetWidget(), std::u16string());
+  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::ShowFailureDialog(

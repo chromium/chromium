@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/monogram_utils.h"
@@ -531,6 +532,14 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
           base::Unretained(observer_))));
 
   InitDialogWidget();
+
+  // Focusing `continue_button_` without screen reader on makes the UI look
+  // awkward, so we only want to do so when screen reader is enabled.
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    CHECK(continue_button_);
+    continue_button_->RequestFocus();
+  }
+  SendAccessibilityEvent(GetWidget());
 }
 
 std::unique_ptr<views::View>

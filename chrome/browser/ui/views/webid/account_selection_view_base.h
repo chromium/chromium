@@ -330,6 +330,12 @@ class AccountSelectionViewBase {
   void ConfigureBadgeIdp(AccountImageView& account_image_view,
                          const GURL& brand_icon_url);
 
+  // Sends an accessibility event to make an announcement of the passed in
+  // `announcement` if available, otherwise the text in the currently focused
+  // view is announced.
+  void SendAccessibilityEvent(views::Widget* widget,
+                              std::u16string announcement = std::u16string());
+
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
