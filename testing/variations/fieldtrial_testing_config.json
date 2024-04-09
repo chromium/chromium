@@ -9369,7 +9369,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240305",
+                    "name": "Enabled_FFR_20240409",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "24",
@@ -9380,7 +9380,16 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Beta_20240222",
+                    "name": "Enabled_FRE_20240409",
+                    "params": {
+                        "IOSDockingPromoExperimentType": "2"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromo"
+                    ]
+                },
+                {
+                    "name": "Enabled_Beta_FFR_20240409",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "12",
@@ -9391,11 +9400,29 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Canary_Dev_20240222",
+                    "name": "Enabled_Beta_FRE_20240409",
+                    "params": {
+                        "IOSDockingPromoExperimentType": "2"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromo"
+                    ]
+                },
+                {
+                    "name": "Enabled_Canary_Dev_FFR_20240409",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "6",
                         "IOSDockingPromoOldUserInactiveThresholdHours": "12"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromo"
+                    ]
+                },
+                {
+                    "name": "Enabled_Canary_Dev_FRE_20240409",
+                    "params": {
+                        "IOSDockingPromoExperimentType": "2"
                     },
                     "enable_features": [
                         "IOSDockingPromo"
