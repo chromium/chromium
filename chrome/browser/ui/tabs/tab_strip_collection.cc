@@ -93,6 +93,20 @@ std::optional<size_t> TabStripCollection::GetIndexOfTabRecursive(
   return std::nullopt;
 }
 
+std::unique_ptr<TabModel> TabStripCollection::RemoveTabAtIndexRecursive(
+    size_t index) {
+  TabModel* tab_to_be_removed = GetTabAtIndexRecursive(index);
+  CHECK(tab_to_be_removed);
+
+  TabCollection* parent_collection =
+      tab_to_be_removed->GetParentCollection(GetPassKey());
+  std::unique_ptr<TabModel> removed_tab =
+      parent_collection->MaybeRemoveTab(tab_to_be_removed);
+  CHECK(removed_tab);
+
+  return removed_tab;
+}
+
 std::optional<size_t> TabStripCollection::GetIndexOfCollection(
     TabCollection* collection) const {
   return impl_->GetIndexOfCollection(collection);

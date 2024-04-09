@@ -508,7 +508,7 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
     int index_at_time_of_removal,
     bool create_historical_tab,
     TabStripModelChange::RemoveReason reason) {
-  if (GetContentsDataAsVector().empty()) {
+  if (empty()) {
     return nullptr;
   }
   CHECK(ContainsIndex(index_at_time_of_removal));
@@ -534,10 +534,15 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
 
   UngroupTab(index_at_time_of_removal);
 
-  std::unique_ptr<tabs::TabModel> old_data =
-      std::move(GetContentsDataAsVector()[index_at_time_of_removal]);
-  GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
-                                  index_at_time_of_removal);
+  std::unique_ptr<tabs::TabModel> old_data;
+  if (IsContentsDataVector()) {
+    old_data = std::move(GetContentsDataAsVector()[index_at_time_of_removal]);
+    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
+                                    index_at_time_of_removal);
+  } else {
+    old_data = GetContentsDataAsCollection()->RemoveTabAtIndexRecursive(
+        index_at_time_of_removal);
+  }
 
   if (empty()) {
     selection_model_.Clear();
@@ -885,12 +890,13 @@ void TabStripModel::TabNavigating(WebContents* contents,
 
 void TabStripModel::SetTabBlocked(int index, bool blocked) {
   CHECK(ContainsIndex(index));
-  if (GetTabAtIndex(index)->blocked() == blocked) {
+  tabs::TabModel* tab_model = GetTabAtIndex(index);
+  if (tab_model->blocked() == blocked) {
     return;
   }
-  GetTabAtIndex(index)->set_blocked(blocked);
+  tab_model->set_blocked(blocked);
   for (auto& observer : observers_) {
-    observer.TabBlockedStateChanged(GetTabAtIndex(index)->contents(), index);
+    observer.TabBlockedStateChanged(tab_model->contents(), index);
   }
 }
 
@@ -2665,7 +2671,8 @@ void TabStripModel::DisconnectSavedTabGroups(
 
 int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
   CHECK(ContainsIndex(index));
-  if (GetTabAtIndex(index)->pinned() == pinned) {
+  tabs::TabModel* tab_model = GetTabAtIndex(index);
+  if (tab_model->pinned() == pinned) {
     return index;
   }
 
@@ -2675,7 +2682,7 @@ int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
 
   // The tab's position may have to change as the pinned tab state is changing.
   int non_pinned_tab_index = IndexOfFirstNonPinnedTab();
-  GetTabAtIndex(index)->set_pinned(pinned);
+  tab_model->set_pinned(pinned);
   if (pinned && index != non_pinned_tab_index) {
     MoveWebContentsAtImpl(index, non_pinned_tab_index, false);
     index = non_pinned_tab_index;
@@ -2684,9 +2691,9 @@ int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
     index = non_pinned_tab_index - 1;
   }
 
+  CHECK_EQ(GetTabAtIndex(index), tab_model);
   for (auto& observer : observers_) {
-    observer.TabPinnedStateChanged(this, GetTabAtIndex(index)->contents(),
-                                   index);
+    observer.TabPinnedStateChanged(this, tab_model->contents(), index);
   }
 
   return index;
@@ -2770,22 +2777,27 @@ void TabStripModel::FixOpeners(int index) {
   WebContents* old_contents = GetWebContentsAtImpl(index);
   WebContents* new_opener = GetOpenerOfWebContentsAt(index);
 
-  for (auto& data : GetContentsDataAsVector()) {
-    if (data->opener() != old_contents)
+  for (int i = 0; i < GetTabCount(); i++) {
+    tabs::TabModel* tab = GetTabAtIndex(i);
+    if (tab->opener() != old_contents) {
       continue;
+    }
 
     // Ensure a tab isn't its own opener.
-    data->set_opener(new_opener == data->contents() ? nullptr : new_opener);
+    tab->set_opener(new_opener == tab->contents() ? nullptr : new_opener);
   }
 
   // Sanity check that none of the tabs' openers refer |old_contents| or
   // themselves.
-  DCHECK(!base::ranges::any_of(
-      GetContentsDataAsVector(),
-      [old_contents](const std::unique_ptr<tabs::TabModel>& data) {
-        return data->opener() == old_contents ||
-               data->opener() == data->contents();
-      }));
+  DCHECK([&]() {
+    for (int i = 0; i < GetTabCount(); ++i) {
+      tabs::TabModel* tab = GetTabAtIndex(i);
+      if (tab->opener() == old_contents || tab->opener() == tab->contents()) {
+        return false;
+      }
+    }
+    return true;
+  }());
 }
 
 void TabStripModel::EnsureGroupContiguity(int index) {

@@ -722,6 +722,42 @@ TEST_F(TabStripCollectionTest, RecursiveTabIndexOperationTests) {
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 12ul);
 }
 
+TEST_F(TabStripCollectionTest, RecursiveRemoveTabAtIndex) {
+  // Setup for the main collections.
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+  tabs::PinnedTabCollection* pinned_collection =
+      tab_strip_collection->GetPinnedCollection();
+  tabs::UnpinnedTabCollection* unpinned_collection =
+      tab_strip_collection->GetUnpinnedCollection();
+
+  // Get the group collection from the basic setup.
+  tabs::TabGroupTabCollection* group_one_ptr =
+      static_cast<tabs::TabGroupTabCollection*>(
+          GetCollectionInCollectionStorage(
+              unpinned_collection->GetTabCollectionStorageForTesting(), 2ul));
+
+  // Remove a pinned tab.
+  tabs::TabModel* tab_to_check =
+      tab_strip_collection->GetTabAtIndexRecursive(2ul);
+  EXPECT_EQ(tab_to_check,
+            tab_strip_collection->RemoveTabAtIndexRecursive(2).get());
+  EXPECT_EQ(pinned_collection->TabCountRecursive(), 3ul);
+
+  // Remove an unpinned tab. Now there are 3 pinned tabs.
+  tab_to_check = tab_strip_collection->GetTabAtIndexRecursive(4ul);
+  EXPECT_EQ(tab_to_check,
+            tab_strip_collection->RemoveTabAtIndexRecursive(4ul).get());
+  EXPECT_EQ(unpinned_collection->TabCountRecursive(), 4ul);
+
+  // Remove a grouped tab. Now there are 3 pinned tabs and 1 unpinned tab
+  // before the group.
+  tab_to_check = tab_strip_collection->GetTabAtIndexRecursive(4ul);
+  EXPECT_EQ(tab_to_check,
+            tab_strip_collection->RemoveTabAtIndexRecursive(4ul).get());
+  EXPECT_EQ(group_one_ptr->TabCountRecursive(), 1ul);
+}
+
 // TODO(b/332586827): Re-enable death testing.
 TEST_F(TabStripCollectionTest, DISABLED_RecursiveTabAddBadInput) {
   // Setup for the main collections.

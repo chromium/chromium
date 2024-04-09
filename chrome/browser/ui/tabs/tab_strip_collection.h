@@ -51,6 +51,11 @@ class TabStripCollection : public TabCollection {
   // nullptr.
   tabs::TabModel* GetTabAtIndexRecursive(size_t index) const;
 
+  // Removes the tab present at a recursive index in the collection and
+  // returns the unique_ptr to the tab model. If there is no tab present
+  // due to bad input then CHECK.
+  std::unique_ptr<TabModel> RemoveTabAtIndexRecursive(size_t index);
+
   // TabCollection:
   // This will be false as this does not contain a tab as a direct child.
   bool ContainsTab(TabModel* tab_model) const override;
