@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
@@ -347,7 +348,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   subTitleView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // TODO(crbug.com/1501837): Add action to the button.
-  UIButton* menuButton = [[UIButton alloc] init];
+  UIButton* menuButton = [[ExtendedTouchTargetButton alloc] init];
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
   menuButton.menu = [self configuredTabGroupMenu];
   menuButton.showsMenuAsPrimaryAction = YES;
