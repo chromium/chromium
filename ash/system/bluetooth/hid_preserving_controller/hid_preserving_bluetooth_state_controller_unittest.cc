@@ -27,8 +27,38 @@ namespace {
 using bluetooth_config::ScopedBluetoothConfigTestHelper;
 using bluetooth_config::mojom::BluetoothSystemState;
 
+// Logitech Vendor ID
+const uint16_t kLogitechVID = 0x046d;
+
+// Logitech MX Master 3S Product ID (Bluetooth)
+const uint16_t KMousePID = 0xb034;
+
+// Logitech MX Keys Product ID (Bluetooth)
+const uint16_t KKeyboardPID = 0xb35b;
+
+const std::string kSampleMouseBluetooth = "kSampleMouseBluetooth";
+const std::string kSampleKeyboardBluetooth = "kSampleKeyboardBluetooth";
+
 const ui::KeyboardDevice GetSampleKeyboardBluetooth() {
-  return {10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
+  return {10,
+          ui::INPUT_DEVICE_BLUETOOTH,
+          kSampleKeyboardBluetooth,
+          /* phys= */ "",
+          base::FilePath(),
+          kLogitechVID,
+          KKeyboardPID,
+          /* version= */ 0};
+}
+
+const ui::InputDevice GetSampleMouseBluetoothDuplicate() {
+  return {110,
+          ui::INPUT_DEVICE_BLUETOOTH,
+          "kSampleMouseBluetoothDuplicate",
+          /* phys= */ "",
+          base::FilePath(),
+          kLogitechVID,
+          KKeyboardPID,
+          /* version= */ 0};
 }
 
 const ui::KeyboardDevice GetSampleKeyboardUsb() {
@@ -40,7 +70,25 @@ const ui::InputDevice GetSampleMouseUsb() {
 }
 
 const ui::InputDevice GetSampleMouseBluetooth() {
-  return {25, ui::INPUT_DEVICE_BLUETOOTH, "kSampleMouseBluetooth"};
+  return {25,
+          ui::INPUT_DEVICE_BLUETOOTH,
+          kSampleMouseBluetooth,
+          /* phys= */ "",
+          base::FilePath(),
+          kLogitechVID,
+          KMousePID,
+          /* version= */ 0};
+}
+
+const ui::KeyboardDevice GetSampleKeyboardBluetoothDuplicate() {
+  return {100,
+          ui::INPUT_DEVICE_BLUETOOTH,
+          "kSampleKeyboardBluetoothDuplicate",
+          /* phys= */ "",
+          base::FilePath(),
+          kLogitechVID,
+          KMousePID,
+          /* version= */ 0};
 }
 
 const ui::KeyboardDevice GetSampleMouseInternal() {
@@ -147,6 +195,11 @@ class HidPreservingBluetoothStateControllerTest : public AshTestBase {
         ->GetAdapterState();
   }
 
+  DisableBluetoothDialogController::DeviceNamesList* GetShownDevicesList() {
+    return hid_preserving_bluetooth_state_controller_
+        ->device_names_for_testing();
+  }
+
   void CheckHistogramState(const ExpectedHistogramState& state) {
     histogram_tester_.ExpectBucketCount(
         bluetooth::kPoweredDisableDialogBehavior,
@@ -235,6 +288,63 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
   expected_state.disabled_bluetooth_dialog_not_shown_count++;
   CheckHistogramState(expected_state);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothWithDuplicateMouseDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseBluetooth()});
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {GetSampleKeyboardBluetoothDuplicate()});
+
+  base::RunLoop().RunUntilIdle();
+
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_source_quick_settings_count++;
+  expected_state.disabled_bluetooth_dialog_shown_count++;
+  CheckHistogramState(expected_state);
+
+  DisableBluetoothDialogController::DeviceNamesList* device_names =
+      GetShownDevicesList();
+  EXPECT_EQ(1u, device_names->size());
+  EXPECT_EQ(device_names->front(), kSampleMouseBluetooth);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothWithDuplicateKeyboardDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {GetSampleMouseBluetoothDuplicate()});
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {GetSampleKeyboardBluetooth()});
+
+  base::RunLoop().RunUntilIdle();
+
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_source_quick_settings_count++;
+  expected_state.disabled_bluetooth_dialog_shown_count++;
+  CheckHistogramState(expected_state);
+
+  DisableBluetoothDialogController::DeviceNamesList* device_names =
+      GetShownDevicesList();
+  EXPECT_EQ(1u, device_names->size());
+  EXPECT_EQ(device_names->front(), kSampleKeyboardBluetooth);
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,

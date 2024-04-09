@@ -41,6 +41,11 @@ class ASH_EXPORT HidPreservingBluetoothStateController
       mojo::PendingReceiver<mojom::HidPreservingBluetoothStateController>
           pending_receiver);
 
+  DisableBluetoothDialogController::DeviceNamesList*
+  device_names_for_testing() {
+    return &device_names_;
+  }
+
  private:
   friend class HidPreservingBluetoothStateControllerTest;
 
@@ -68,6 +73,7 @@ class ASH_EXPORT HidPreservingBluetoothStateController
       std::unique_ptr<ash::DisableBluetoothDialogController> controller);
   DisableBluetoothDialogController* GetDisabledBluetoothDialogForTesting();
 
+  DisableBluetoothDialogController::DeviceNamesList device_names_;
   std::unique_ptr<ash::DisableBluetoothDialogController>
       disable_bluetooth_dialog_controller_;
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
