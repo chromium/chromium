@@ -146,13 +146,18 @@ class GraphBuilder {
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);
 
-  // Add constants as immediate values in the model file.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
-  void AddConstantImmediateValue(CoreML::Specification::MILSpec::Block& block,
-                                 std::string_view name,
-                                 base::span<const uint32_t> dimensions,
-                                 base::span<const DataType> value);
+  void AddScalarImmediateValue(CoreML::Specification::MILSpec::Block& block,
+                               std::string_view name,
+                               const DataType& value);
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
+  void AddTensorImmediateValue(CoreML::Specification::MILSpec::Block& block,
+                               std::string_view name,
+                               base::span<const uint32_t> dimensions,
+                               base::span<const DataType> value);
+  // Add constants as immediate values in the model file.
   void AddConstantImmediateValue(uint64_t constant_id,
                                  CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.

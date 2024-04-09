@@ -753,14 +753,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
   const std::string beta_op_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamBeta);
 
-  AddConstantImmediateValue<float>(
-      block, alpha_op_output_name,
-      /*dimensions=*/{},
-      /*value=*/base::make_span(&operation.min_value, 1u));
-  AddConstantImmediateValue<float>(
-      block, beta_op_output_name,
-      /*dimensions=*/{},
-      /*value=*/base::make_span(&operation.max_value, 1u));
+  AddScalarImmediateValue(block, alpha_op_output_name, operation.min_value);
+  AddScalarImmediateValue(block, beta_op_output_name, operation.max_value);
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
@@ -799,18 +793,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
 
   const std::string axis_op_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamAxis);
-  int32_t axis = base::checked_cast<int32_t>(operation.axis);
-  AddConstantImmediateValue<int32_t>(block, axis_op_output_name,
-                                     /*dimensions=*/{},
-                                     base::make_span(&axis, 1u));
+  AddScalarImmediateValue(block, axis_op_output_name,
+                          base::checked_cast<int32_t>(operation.axis));
 
   const std::string interleave_op_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamInterleave);
-  static constexpr bool kDefaultInterleaveValue = false;
-  AddConstantImmediateValue<bool>(
-      block, interleave_op_output_name,
-      /*dimensions=*/{},
-      /*value=*/base::make_span(&kDefaultInterleaveValue, 1u));
+  AddScalarImmediateValue(block, interleave_op_output_name, false);
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpConcatTypeName);
@@ -1042,7 +1030,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   base::ranges::transform(
       operation.permutation, std::back_inserter(permutation),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
-  AddConstantImmediateValue<int32_t>(
+  AddTensorImmediateValue<int32_t>(
       block, perm_op_output_name,
       base::span<const uint32_t>(
           {base::checked_cast<uint32_t>(permutation.size())}),
@@ -1105,16 +1093,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   std::array<int32_t, 2> strides = {
       base::checked_cast<int32_t>(operation.strides->height),
       base::checked_cast<int32_t>(operation.strides->width)};
-  AddConstantImmediateValue<int32_t>(
+  AddTensorImmediateValue<int32_t>(
       block, strides_output_name,
       base::span<const uint32_t>({static_cast<uint32_t>(strides.size())}),
       strides);
 
   const std::string pad_type_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamPadType);
-  AddConstantImmediateValue<char>(block, pad_type_output_name,
-                                  base::span<const uint32_t>(),
-                                  std::string_view(kParamPadTypeValue));
+  AddTensorImmediateValue<char>(block, pad_type_output_name, /*dimensions=*/{},
+                                kParamPadTypeValue);
 
   const std::string pad_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamPad);
@@ -1123,7 +1110,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
       base::checked_cast<int32_t>(operation.padding->ending->height),
       base::checked_cast<int32_t>(operation.padding->beginning->width),
       base::checked_cast<int32_t>(operation.padding->ending->width)};
-  AddConstantImmediateValue<int32_t>(
+  AddTensorImmediateValue<int32_t>(
       block, pad_output_name,
       base::span<const uint32_t>({static_cast<uint32_t>(pad.size())}), pad);
 
@@ -1132,16 +1119,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   std::array<int32_t, 2> dilations = {
       base::checked_cast<int32_t>(operation.dilations->height),
       base::checked_cast<int32_t>(operation.dilations->width)};
-  AddConstantImmediateValue<int32_t>(
+  AddTensorImmediateValue<int32_t>(
       block, dilations_output_name,
       base::span<const uint32_t>({static_cast<uint32_t>(dilations.size())}),
       dilations);
 
   const std::string groups_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamGroups);
-  AddConstantImmediateValue<int32_t>(
-      block, groups_output_name, base::span<const uint32_t>(),
-      base::span({base::checked_cast<int32_t>(operation.groups)}));
+  AddScalarImmediateValue(block, groups_output_name,
+                          base::checked_cast<int32_t>(operation.groups));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpConv2dTypeName);
@@ -1168,7 +1154,17 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
-void GraphBuilder::AddConstantImmediateValue(
+void GraphBuilder::AddScalarImmediateValue(
+    CoreML::Specification::MILSpec::Block& block,
+    std::string_view name,
+    const DataType& value) {
+  AddTensorImmediateValue(block, name, /*dimensions=*/{},
+                          base::make_span(&value, 1u));
+}
+
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+void GraphBuilder::AddTensorImmediateValue(
     CoreML::Specification::MILSpec::Block& block,
     std::string_view name,
     base::span<const uint32_t> dimensions,
@@ -1206,7 +1202,7 @@ void GraphBuilder::AddConstantImmediateValue(
         floats[i] = base::FloatFromNativeEndian(
             value.subspan(i * sizeof(float)).first<4u>());
       }
-      AddConstantImmediateValue<float>(block, name, operand.dimensions, floats);
+      AddTensorImmediateValue<float>(block, name, operand.dimensions, floats);
       break;
     }
     case mojom::Operand::DataType::kFloat16: {
@@ -1215,8 +1211,8 @@ void GraphBuilder::AddConstantImmediateValue(
         float16s[i].data = base::U16FromNativeEndian(
             value.subspan(i * sizeof(Float16)).first<2u>());
       }
-      AddConstantImmediateValue<Float16>(block, name, operand.dimensions,
-                                         float16s);
+      AddTensorImmediateValue<Float16>(block, name, operand.dimensions,
+                                       float16s);
       break;
     }
     case mojom::Operand::DataType::kInt32: {
@@ -1225,7 +1221,7 @@ void GraphBuilder::AddConstantImmediateValue(
         ints[i] = base::I32FromNativeEndian(
             value.subspan(i * sizeof(int32_t)).first<4u>());
       }
-      AddConstantImmediateValue<int32_t>(block, name, operand.dimensions, ints);
+      AddTensorImmediateValue<int32_t>(block, name, operand.dimensions, ints);
       break;
     }
     case mojom::Operand::DataType::kUint32: {
@@ -1234,8 +1230,7 @@ void GraphBuilder::AddConstantImmediateValue(
         uints[i] = base::U32FromNativeEndian(
             value.subspan(i * sizeof(uint32_t)).first<4u>());
       }
-      AddConstantImmediateValue<uint32_t>(block, name, operand.dimensions,
-                                          uints);
+      AddTensorImmediateValue<uint32_t>(block, name, operand.dimensions, uints);
       break;
     }
     case mojom::Operand::DataType::kInt64: {
@@ -1244,8 +1239,8 @@ void GraphBuilder::AddConstantImmediateValue(
         longints[i] = base::I64FromNativeEndian(
             value.subspan(i * sizeof(int64_t)).first<8u>());
       }
-      AddConstantImmediateValue<int64_t>(block, name, operand.dimensions,
-                                         longints);
+      AddTensorImmediateValue<int64_t>(block, name, operand.dimensions,
+                                       longints);
       break;
     }
     case mojom::Operand::DataType::kUint64: {
@@ -1254,8 +1249,8 @@ void GraphBuilder::AddConstantImmediateValue(
         ulongints[i] = base::U64FromNativeEndian(
             value.subspan(i * sizeof(uint64_t)).first<8u>());
       }
-      AddConstantImmediateValue<uint64_t>(block, name, operand.dimensions,
-                                          ulongints);
+      AddTensorImmediateValue<uint64_t>(block, name, operand.dimensions,
+                                        ulongints);
       break;
     }
     case mojom::Operand::DataType::kInt8: {
@@ -1264,7 +1259,7 @@ void GraphBuilder::AddConstantImmediateValue(
         int8s[i] = base::I8FromNativeEndian(
             value.subspan(i * sizeof(int8_t)).first<1u>());
       }
-      AddConstantImmediateValue<int8_t>(block, name, operand.dimensions, int8s);
+      AddTensorImmediateValue<int8_t>(block, name, operand.dimensions, int8s);
       break;
     }
     case mojom::Operand::DataType::kUint8: {
@@ -1273,8 +1268,7 @@ void GraphBuilder::AddConstantImmediateValue(
         uint8s[i] = base::U8FromNativeEndian(
             value.subspan(i * sizeof(uint8_t)).first<1u>());
       }
-      AddConstantImmediateValue<uint8_t>(block, name, operand.dimensions,
-                                         uint8s);
+      AddTensorImmediateValue<uint8_t>(block, name, operand.dimensions, uint8s);
       break;
     }
   }
