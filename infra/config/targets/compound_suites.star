@@ -28,6 +28,14 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "android_cronet_clang_coverage_gtests",
+    basic_suites = [
+        "cronet_clang_coverage_additional_gtests",
+        "cronet_gtests",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "android_marshmallow_gtests",
     basic_suites = [
         "android_smoke_tests",

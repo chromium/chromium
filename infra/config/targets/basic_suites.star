@@ -1708,6 +1708,24 @@ targets.legacy_basic_suite(
     },
 )
 
+# Unit tests of cronet dependencies in:
+# //components/cronet/android/dependencies.txt
+targets.legacy_basic_suite(
+    name = "cronet_clang_coverage_additional_gtests",
+    tests = {
+        "absl_hardening_tests": targets.legacy_test_config(),
+        "base_unittests": targets.legacy_test_config(),
+        "components_unittests": targets.legacy_test_config(
+            android_swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+        "crypto_unittests": targets.legacy_test_config(),
+        "url_unittests": targets.legacy_test_config(),
+        "zlib_unittests": targets.legacy_test_config(),
+    },
+)
+
 targets.legacy_basic_suite(
     name = "cronet_gtests",
     tests = {

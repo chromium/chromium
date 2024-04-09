@@ -2258,7 +2258,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'cronet_gtests',
+          'gtest_tests': 'android_cronet_clang_coverage_gtests',
         },
         'os_type': 'android',
       },

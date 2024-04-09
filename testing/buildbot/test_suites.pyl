@@ -1773,6 +1773,19 @@
       },
     },
 
+    'cronet_clang_coverage_additional_gtests': {
+      'absl_hardening_tests': {},
+      'base_unittests': {},
+      'components_unittests': {
+        'android_swarming': {
+          'shards': 6,
+        },
+      },
+      'crypto_unittests': {},
+      'url_unittests': {},
+      'zlib_unittests': {},
+    },
+
     'cronet_gtests': {
       'cronet_sample_test_apk': {},
       'cronet_smoketests_apk': {},
@@ -5869,6 +5882,11 @@
 
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
+    ],
+
+    'android_cronet_clang_coverage_gtests': [
+      'cronet_clang_coverage_additional_gtests',
+      'cronet_gtests',
     ],
 
     'android_marshmallow_gtests': [
