@@ -212,14 +212,21 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
-    const GURL& font_url) {
+    const GURL& font_url,
+    bool hit) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
   ++lcpp_data_inputs_->font_url_count;
+  if (hit) {
+    ++lcpp_data_inputs_->font_url_hit_count;
+  }
   if (lcpp_data_inputs_->font_urls.size() >=
       GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
     return;
+  }
+  if (hit) {
+    ++lcpp_data_inputs_->font_url_reenter_count;
   }
   lcpp_data_inputs_->font_urls.push_back(font_url);
 }

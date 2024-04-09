@@ -85,7 +85,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
       const std::vector<GURL>& lcp_influencer_scripts);
   void SetPreconnectOrigins(const std::vector<GURL>& origins);
   // Append fetched font URLs to the list to be passed to LCPP.
-  void AppendFetchedFontUrl(const GURL& font_url);
+  void AppendFetchedFontUrl(const GURL& font_url, bool hit);
   void AppendFetchedSubresourceUrl(
       const GURL& subresource_url,
       const base::TimeDelta& subresource_load_start);

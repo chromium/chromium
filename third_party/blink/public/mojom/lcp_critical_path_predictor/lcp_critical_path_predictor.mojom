@@ -30,7 +30,8 @@ interface LCPCriticalPathPredictorHost {
   // - the `kLCPPFontURLPredictor` feature is enabled,
   // - and the `font_url` scheme is HTTP or HTTPS,
   // Otherwise, the renderer will be killed.
-  NotifyFetchedFont(url.mojom.Url font_url);
+  // `hit` is true if `font_url` is within the list of predicted font URLs.
+  NotifyFetchedFont(url.mojom.Url font_url, bool hit);
 
   // This method is for letting the LCPP know the subresource URL.  This
   // method should be called under the following conditions:

@@ -64,6 +64,12 @@ struct LcppDataInputs {
   // This field keeps the number of font URLs without omitting due to
   // reaching `kLCPPFontURLPredictorMaxUrlCountPerOrigin` or deduplication.
   size_t font_url_count = 0;
+  // This field keeps the number of preloaded font hit. i.e. it is incremented
+  // if the fetched font URL is listed in the list of predicted fonts.
+  size_t font_url_hit_count = 0;
+  // This field keeps the number of preloaded font that is going to be recorded
+  // to the database again.
+  size_t font_url_reenter_count = 0;
   // This field keeps the subresource URLs as a key, and the TimeDelta as a
   // value. TimeDelta stores the duration from navigation start to resource
   // loading start time.

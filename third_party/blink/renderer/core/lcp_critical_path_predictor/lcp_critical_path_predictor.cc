@@ -273,7 +273,7 @@ void LCPCriticalPathPredictor::OnFontFetched(const KURL& url) {
   if (url.GetString().length() > GetLCPPFontURLPredictorMaxUrlLength()) {
     return;
   }
-  GetHost().NotifyFetchedFont(url);
+  GetHost().NotifyFetchedFont(url, fetched_fonts_.Contains(url));
 }
 
 void LCPCriticalPathPredictor::OnStartPreload(const KURL& url) {

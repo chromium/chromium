@@ -86,7 +86,8 @@ void LCPCriticalPathPredictorHost::SetPreconnectOrigins(
   }
 }
 
-void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
+void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url,
+                                                     bool hit) {
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
     ReportBadMessageAndDeleteThis(
         "NotifyFetchedFont can be called only if kLCPPFontURLPredictor is "
@@ -113,7 +114,7 @@ void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
     return;
   }
 
-  plmo->AppendFetchedFontUrl(font_url);
+  plmo->AppendFetchedFontUrl(font_url, hit);
 }
 
 void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
