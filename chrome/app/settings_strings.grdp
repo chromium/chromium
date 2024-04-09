@@ -123,7 +123,7 @@
     Extract text from PDF
   </message>
   <message name="IDS_SETTINGS_PDF_OCR_SUBTITLE" desc="Subtitle for screen reader pdf ocr feature.">
-    Scan PDF to extract text for the screen reader. Only supported on Chrome browser
+    Scan PDF to extract text for assistive technology
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
