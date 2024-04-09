@@ -228,15 +228,21 @@ OnDeviceModelServiceController::CreateSession(
   }
   CHECK_EQ(reason, OnDeviceModelEligibilityReason::kSuccess);
 
-  return std::make_unique<SessionImpl>(
+  SessionImpl::OnDeviceOptions opts;
+  opts.start_session_fn =
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
-                          weak_ptr_factory_.GetWeakPtr(), model_paths),
+                          weak_ptr_factory_.GetWeakPtr(), model_paths);
+  opts.classify_text_safety_fn =
       base::BindRepeating(&OnDeviceModelServiceController::ClassifyTextSafety,
-                          weak_ptr_factory_.GetWeakPtr(), model_paths),
-      feature, model_versions_, std::move(adapter),
-      weak_ptr_factory_.GetWeakPtr(), safety_config,
-      std::move(execute_remote_fn), optimization_guide_logger,
-      model_quality_uploader_service, config_params);
+                          weak_ptr_factory_.GetWeakPtr(), model_paths);
+  opts.model_versions.CopyFrom(model_versions_.value());
+  opts.adapter = std::move(adapter);
+  opts.controller = weak_ptr_factory_.GetWeakPtr();
+  opts.safety_config = safety_config;
+
+  return std::make_unique<SessionImpl>(
+      feature, std::move(opts), std::move(execute_remote_fn),
+      optimization_guide_logger, model_quality_uploader_service, config_params);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(

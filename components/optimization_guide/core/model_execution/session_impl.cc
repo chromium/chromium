@@ -164,24 +164,23 @@ class SessionImpl::ContextProcessor
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 
+SessionImpl::OnDeviceOptions::OnDeviceOptions() = default;
+SessionImpl::OnDeviceOptions::OnDeviceOptions(OnDeviceOptions&&) = default;
+SessionImpl::OnDeviceOptions::~OnDeviceOptions() = default;
+
+bool SessionImpl::OnDeviceOptions::ShouldUse() const {
+  return controller && controller->ShouldStartNewSession();
+}
+
 SessionImpl::SessionImpl(
-    StartSessionFn start_session_fn,
-    ClassifyTextSafetyFn classify_text_safety_fn,
     ModelBasedCapabilityKey feature,
-    std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
-    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
-    base::WeakPtr<OnDeviceModelServiceController> controller,
-    const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
+    std::optional<OnDeviceOptions> on_device_opts,
     ExecuteRemoteFn execute_remote_fn,
     base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params)
-    : controller_(controller),
-      feature_(feature),
-      on_device_model_versions_(on_device_model_versions),
-      safety_config_(safety_config),
-      classify_text_safety_fn_(std::move(classify_text_safety_fn)),
+    : feature_(feature),
       execute_remote_fn_(std::move(execute_remote_fn)),
       optimization_guide_logger_(optimization_guide_logger),
       model_quality_uploader_service_(model_quality_uploader_service),
@@ -193,9 +192,8 @@ SessionImpl::SessionImpl(
                   .temperature = static_cast<float>(
                       features::GetOnDeviceModelDefaultTemperature()),
               })) {
-  if (controller_ && controller_->ShouldStartNewSession()) {
-    on_device_state_.emplace(std::move(start_session_fn), this);
-    on_device_state_->adapter = std::move(adapter);
+  if (on_device_opts && on_device_opts->ShouldUse()) {
+    on_device_state_.emplace(std::move(*on_device_opts), this);
     // Prewarm the initial session to make sure the service is started.
     GetOrCreateSession();
   }
@@ -249,7 +247,7 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
   }
 
   on_device_state_->add_context_before_execute = false;
-  auto input = on_device_state_->adapter->ConstructInputString(
+  auto input = on_device_state_->opts.adapter->ConstructInputString(
       *context_, /*want_input_context=*/true);
   if (!input) {
     // Use server if can't construct input.
@@ -313,10 +311,9 @@ void SessionImpl::ExecuteModel(
     return;
   }
 
-  CHECK(on_device_model_versions_);
   *(log_ai_data_request->mutable_model_execution_info()
         ->mutable_on_device_model_execution_info()
-        ->mutable_model_versions()) = *on_device_model_versions_;
+        ->mutable_model_versions()) = on_device_state_->opts.model_versions;
 
   if (on_device_state_->add_context_before_execute) {
     CHECK(context_);
@@ -334,7 +331,7 @@ void SessionImpl::ExecuteModel(
   on_device_state_->histogram_logger = std::move(logger);
   on_device_state_->callback = std::move(callback);
 
-  auto input = on_device_state_->adapter->ConstructInputString(
+  auto input = on_device_state_->opts.adapter->ConstructInputString(
       *last_message_, /*want_input_context=*/false);
   if (!input) {
     // Use server if can't construct input.
@@ -405,7 +402,7 @@ void SessionImpl::ExecuteModel(
   options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
   options->top_k = sampling_params_.top_k;
   options->temperature = sampling_params_.temperature;
-  if (safety_config_) {
+  if (on_device_state_->opts.safety_config) {
     options->safety_interval =
         features::GetOnDeviceModelTextSafetyTokenInterval();
   }
@@ -416,15 +413,17 @@ void SessionImpl::ExecuteModel(
 void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
     on_device_model::mojom::InputOptionsPtr options,
     int request_check_idx) {
-  if (!safety_config_ ||
-      safety_config_->request_check_size() <= request_check_idx) {
+  if (!on_device_state_->opts.safety_config ||
+      on_device_state_->opts.safety_config->request_check_size() <=
+          request_check_idx) {
     // All check have passed.
     BeginRequestExecution(std::move(options));
     return;
   }
   auto check_input = CreateSubstitutions(
       *last_message_,
-      safety_config_->request_check(request_check_idx).input_template());
+      on_device_state_->opts.safety_config->request_check(request_check_idx)
+          .input_template());
   if (!check_input) {
     // This is mostly likely means a malformed safety config.
     DestroyOnDeviceStateAndFallbackToRemote(
@@ -434,7 +433,7 @@ void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
   proto::InternalOnDeviceModelExecutionInfo check_log;
   check_log.mutable_request()->mutable_text_safety_model_request()->set_text(
       check_input->input_string);
-  classify_text_safety_fn_.Run(
+  on_device_state_->opts.classify_text_safety_fn.Run(
       check_input->input_string,
       base::BindOnce(&SessionImpl::OnRequestSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
@@ -448,9 +447,9 @@ void SessionImpl::OnRequestSafetyResult(
     proto::InternalOnDeviceModelExecutionInfo check_log,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   // Evaluate the check.
-  const auto& check = safety_config_->request_check(request_check_idx);
+  const auto& check = on_device_state_->opts.safety_config->request_check(request_check_idx);
   const auto& thresholds = check.safety_category_thresholds().empty()
-                               ? safety_config_->safety_category_thresholds()
+                               ? on_device_state_->opts.safety_config->safety_category_thresholds()
                                : check.safety_category_thresholds();
   bool is_unsafe = IsTextInUnsupportedOrUndeterminedLanguage(safety_info) ||
                    HasUnsafeScores(thresholds, safety_info);
@@ -530,7 +529,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
   // Only proceed to send the response if we are not evaluating text safety or
   // if there are text safety scores to evaluate.
-  if (!safety_config_ || chunk_provided_safety_info) {
+  if (!on_device_state_->opts.safety_config || chunk_provided_safety_info) {
     SendResponse(ResponseType::kPartial);
   }
 }
@@ -546,11 +545,12 @@ void SessionImpl::OnComplete(
       time_to_completion);
   on_device_state_->MutableLoggedResponse()->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
-  if (controller_) {
-    controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
+  if (on_device_state_->opts.controller) {
+    on_device_state_->opts.controller->access_controller(/*pass_key=*/{})
+        ->OnResponseCompleted();
   }
 
-  if (safety_config_ && !summary->safety_info) {
+  if (on_device_state_->opts.safety_config && !summary->safety_info) {
     on_device_state_->receiver.ReportBadMessage(
         "Missing required safety scores on complete");
     CancelPendingResponse(
@@ -568,7 +568,7 @@ void SessionImpl::OnComplete(
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
   CHECK(ShouldUseOnDeviceModel());
   if (!on_device_state_->session) {
-    on_device_state_->start_session_fn.Run(
+    on_device_state_->opts.start_session_fn.Run(
         on_device_state_->session.BindNewPipeAndPassReceiver());
     on_device_state_->session.set_disconnect_handler(
         base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
@@ -638,7 +638,7 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   logged_response->set_output_string(current_response);
 
   auto redact_result =
-      on_device_state_->adapter->Redact(*last_message_, current_response);
+      on_device_state_->opts.adapter->Redact(*last_message_, current_response);
   if (redact_result == RedactResult::kReject) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
@@ -678,7 +678,7 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   }
 
   auto output =
-      on_device_state_->adapter->ConstructOutputMetadata(current_response);
+      on_device_state_->opts.adapter->ConstructOutputMetadata(current_response);
   if (!output) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
@@ -770,14 +770,15 @@ void SessionImpl::SendSuccessCompletionCallback(
 }
 
 bool SessionImpl::ShouldUseOnDeviceModel() const {
-  return controller_ && controller_->ShouldStartNewSession() &&
-         on_device_state_;
+  return on_device_state_ && on_device_state_->opts.ShouldUse();
 }
 
 void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
     ExecuteModelResult result) {
-  if (result == ExecuteModelResult::kTimedOut && controller_) {
-    controller_->access_controller(/*pass_key=*/{})->OnSessionTimedOut();
+  if (result == ExecuteModelResult::kTimedOut &&
+      on_device_state_->opts.controller) {
+    on_device_state_->opts.controller->access_controller(/*pass_key=*/{})
+        ->OnSessionTimedOut();
   }
   if (on_device_state_->histogram_logger) {
     on_device_state_->histogram_logger->set_result(result);
@@ -811,7 +812,7 @@ std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
 
 void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
     proto::Any success_response_metadata) {
-  auto ts_request = on_device_state_->adapter->ConstructTextSafetyRequest(
+  auto ts_request = on_device_state_->opts.adapter->ConstructTextSafetyRequest(
       *last_message_, on_device_state_->current_response);
   if (!ts_request) {
     CancelPendingResponse(
@@ -874,13 +875,13 @@ void SessionImpl::OnTextSafetyRemoteResponse(
 
 bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!safety_config_) {
+  if (!on_device_state_->opts.safety_config) {
     // No safety config, so no language requirements.
     return false;
   }
 
-  CHECK(safety_config_);
-  if (safety_config_->allowed_languages().empty()) {
+  CHECK(on_device_state_->opts.safety_config);
+  if (on_device_state_->opts.safety_config->allowed_languages().empty()) {
     // No language requirements.
     return false;
   }
@@ -892,7 +893,7 @@ bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
     return true;
   }
 
-  if (!base::Contains(safety_config_->allowed_languages(),
+  if (!base::Contains(on_device_state_->opts.safety_config->allowed_languages(),
                       safety_info->language->code)) {
     // Unsupported language.
     return true;
@@ -910,19 +911,20 @@ bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
 
 bool SessionImpl::IsUnsafeText(
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!safety_config_) {
+  if (!on_device_state_->opts.safety_config) {
     // If no safety config and we are allowed here, that means we don't care
     // about the safety scores so just mark the content as safe.
     return false;
   }
 
-  return HasUnsafeScores(safety_config_->safety_category_thresholds(),
-                         safety_info);
+  return HasUnsafeScores(
+      on_device_state_->opts.safety_config->safety_category_thresholds(),
+      safety_info);
 }
 
-SessionImpl::OnDeviceState::OnDeviceState(StartSessionFn start_session_fn,
+SessionImpl::OnDeviceState::OnDeviceState(OnDeviceOptions&& options,
                                           SessionImpl* session)
-    : start_session_fn(std::move(start_session_fn)),
+    : opts(std::move(options)),
       receiver(session),
       session_weak_ptr_factory_(session) {}
 

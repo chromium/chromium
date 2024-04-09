@@ -44,6 +44,27 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       const std::string&,
       on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback)>;
 
+  struct OnDeviceOptions final {
+    OnDeviceOptions();
+    OnDeviceOptions(OnDeviceOptions&&);
+    ~OnDeviceOptions();
+
+    using StartSessionFn = base::RepeatingCallback<void(
+        mojo::PendingReceiver<on_device_model::mojom::Session>)>;
+    using ClassifyTextSafetyFn = base::RepeatingCallback<void(
+        const std::string&,
+        on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback)>;
+    StartSessionFn start_session_fn;
+    ClassifyTextSafetyFn classify_text_safety_fn;
+    proto::OnDeviceModelVersions model_versions;
+    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
+    base::WeakPtr<OnDeviceModelServiceController> controller;
+    std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
+
+    // Returns true if the on-device model may be used.
+    bool ShouldUse() const;
+  };
+
   // Possible outcomes of AddContext(). Maps to histogram enum
   // "OptimizationGuideOnDeviceAddContextResult".
   // These values are persisted to logs. Entries should not be renumbered
@@ -105,19 +126,13 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kMaxValue = kRequestUnsafe,
   };
 
-  SessionImpl(
-      StartSessionFn start_session_fn,
-      ClassifyTextSafetyFn classify_text_safety_fn,
-      ModelBasedCapabilityKey feature,
-      std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
-      scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
-      base::WeakPtr<OnDeviceModelServiceController> controller,
-      const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
-      ExecuteRemoteFn execute_remote_fn,
-      base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-      base::WeakPtr<ModelQualityLogsUploaderService>
-          model_quality_uploader_service,
-      const std::optional<SessionConfigParams>& config_params);
+  SessionImpl(ModelBasedCapabilityKey feature,
+              std::optional<OnDeviceOptions> on_device_opts,
+              ExecuteRemoteFn execute_remote_fn,
+              base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
+              base::WeakPtr<ModelQualityLogsUploaderService>
+                  model_quality_uploader_service,
+              const std::optional<SessionConfigParams>& config_params);
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -166,7 +181,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Captures all state used for the on device model.
   struct OnDeviceState {
-    OnDeviceState(StartSessionFn start_session_fn, SessionImpl* session);
+    OnDeviceState(OnDeviceOptions&& opts, SessionImpl* session);
     ~OnDeviceState();
 
     // Returns true if ExecuteModel() was called and the complete response
@@ -184,9 +199,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Resets all state related to a request.
     void ResetRequestState();
 
+    OnDeviceOptions opts;
     mojo::Remote<on_device_model::mojom::Session> session;
-    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
-    StartSessionFn start_session_fn;
     std::unique_ptr<ContextProcessor> context_processor;
     mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver;
     std::string current_response;
@@ -285,13 +299,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void SendSuccessCompletionCallback(
       const proto::Any& success_response_metadata);
 
-  base::WeakPtr<OnDeviceModelServiceController> controller_;
   const ModelBasedCapabilityKey feature_;
-  const std::optional<proto::OnDeviceModelVersions> on_device_model_versions_;
-
-  std::optional<proto::FeatureTextSafetyConfiguration> safety_config_;
-
-  ClassifyTextSafetyFn classify_text_safety_fn_;
   ExecuteRemoteFn execute_remote_fn_;
 
   std::unique_ptr<google::protobuf::MessageLite> context_;
