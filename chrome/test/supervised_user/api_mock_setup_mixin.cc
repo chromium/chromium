@@ -41,7 +41,8 @@ constexpr base::StringPiece kKidsManagementServiceEndpoint{
 class FamilyFetchedLock {
  public:
   FamilyFetchedLock() = delete;
-  explicit FamilyFetchedLock(raw_ptr<InProcessBrowserTest> test_base)
+  FamilyFetchedLock(raw_ptr<InProcessBrowserTest> test_base,
+                    std::string_view custodian_pref)
       : test_base_(test_base) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -52,7 +53,7 @@ class FamilyFetchedLock {
                       "initialized too.";
     pref_change_registrar_.Init(GetPrefService());
     pref_change_registrar_.Add(
-        std::string(prefs::kSupervisedUserCustodianName),
+        std::string(custodian_pref),
         base::BindRepeating(&FamilyFetchedLock::OnPreferenceRegistered,
                             base::Unretained(this)));
   }
@@ -136,7 +137,27 @@ void KidsManagementApiMockSetupMixin::SetUpCommandLine(
 
 void KidsManagementApiMockSetupMixin::SetUpOnMainThread() {
   // If expected, halts test until initial fetch is completed.
-  FamilyFetchedLock conditional_lock(test_base_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+#else
+  Profile* profile = test_base_->browser()->profile();
+#endif
+  CHECK(profile);
+  // Waits for families to load until the requested preference
+  // (kSupervisedUserCustodianName) has been fetched, if it's
+  // not already present.
+  // Guarantees that when `SetUpOnMainThread` terminates all
+  // all preconditions have been fetched.
+  std::unique_ptr<FamilyFetchedLock> optional_conditional_lock;
+
+  if (test_base_->browser()
+          ->profile()
+          ->GetPrefs()
+          ->GetString(prefs::kSupervisedUserCustodianName)
+          .empty()) {
+    optional_conditional_lock = std::make_unique<FamilyFetchedLock>(
+        test_base_, prefs::kSupervisedUserCustodianName);
+  }
   embedded_test_server_.StartAcceptingConnections();
 }
 
