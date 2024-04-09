@@ -1470,6 +1470,9 @@ if (enable_java_templates) {
         deps += invoker.deps
       }
 
+      if (enable_java_asserts) {
+        args += [ "--enable-asserts" ]
+      }
       if (use_jacoco_coverage) {
         args += [
           "--classpath",
