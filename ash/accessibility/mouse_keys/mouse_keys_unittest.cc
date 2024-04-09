@@ -258,6 +258,13 @@ class MouseKeysTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetAcceleration(double acceleration) {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+    prefs->SetDouble(prefs::kAccessibilityMouseKeysAcceleration, acceleration);
+  }
+
   void SetMaxSpeed(double factor) {
     PrefService* prefs =
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -513,7 +520,7 @@ TEST_F(MouseKeysTest, MaxSpeed) {
   // No acceleration.
   constexpr int kMaxSpeed = 3;
   SetMaxSpeed(kMaxSpeed);
-  GetMouseKeysController()->set_acceleration(0);
+  SetAcceleration(0);
 
   // Move right.
   ClearEvents();
@@ -566,7 +573,7 @@ TEST_F(MouseKeysTest, Acceleration) {
       MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
       MouseKeysController::kUpdateFrequencyInSeconds;
   SetMaxSpeed(10);
-  GetMouseKeysController()->set_acceleration(kAcceleration);
+  SetAcceleration(kAcceleration);
 
   // Move down.
   ClearEvents();
@@ -624,7 +631,7 @@ TEST_F(MouseKeysTest, AccelerationAndMaxSpeed) {
       MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
       MouseKeysController::kUpdateFrequencyInSeconds;
   SetMaxSpeed(kMaxSpeedFactor);
-  GetMouseKeysController()->set_acceleration(kAcceleration);
+  SetAcceleration(kAcceleration);
 
   // Move right.
   ClearEvents();
