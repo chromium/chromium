@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/mahi/refresh_banner_view.h"
+
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
@@ -10,6 +11,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -116,14 +118,22 @@ RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
           .SetProperty(views::kMarginsKey, kTitleLabelMargin)
           .Build());
 
-  auto* icon_button = AddChildView(
-      IconButton::Builder()
-          .SetViewId(mahi_constants::ViewId::kRefreshButton)
-          .SetCallback(base::BindRepeating(&MahiUiController::RefreshContents,
-                                           base::Unretained(ui_controller)))
-          .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
-          .SetType(IconButton::Type::kSmallProminentFloating)
-          .Build());
+  auto* icon_button =
+      AddChildView(IconButton::Builder()
+                       .SetViewId(mahi_constants::ViewId::kRefreshButton)
+                       .SetCallback(base::BindRepeating(
+                           [](MahiUiController* ui_controller) {
+                             ui_controller->RefreshContents();
+                             base::UmaHistogramEnumeration(
+                                 mahi_constants::kMahiButtonClickHistogramName,
+                                 mahi_constants::PanelButton::kRefreshButton);
+                           },
+                           // Using `base::Unretained()` is safe here since
+                           // `ui_controller` outlives this `RefreshBannerView`.
+                           base::Unretained(ui_controller)))
+                       .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
+                       .SetType(IconButton::Type::kSmallProminentFloating)
+                       .Build());
   icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   icon_button->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }

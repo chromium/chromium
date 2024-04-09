@@ -51,8 +51,6 @@ inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
 
-inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
-
 // TODO(b/319264190): Replace the string here with the correct URL.
 inline constexpr char kLearnMorePage[] = "https://google.com";
 
@@ -63,6 +61,23 @@ inline constexpr int kPanelCornerRadius = 16;
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 1;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
+
+// Metrics
+// Contains the types of button existed in Mahi Panel widget. Note: this should
+// be kept in sync with `PanelButton` enum in
+// tools/metrics/histograms/metadata/ash/enums.xml
+enum class PanelButton {
+  kCloseButton = 0,
+  kLearnMoreLink = 1,
+  kAskQuestionSendButton = 2,
+  kBackButton = 3,
+  kRefreshButton = 4,
+  kMaxValue = kRefreshButton,
+};
+
+inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
+inline constexpr char kMahiButtonClickHistogramName[] =
+    "Ash.Mahi.ButtonClicked";
 
 }  // namespace ash::mahi_constants
 

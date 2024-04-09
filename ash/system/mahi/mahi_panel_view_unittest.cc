@@ -1133,4 +1133,66 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
       mahi_constants::ViewId::kQuestionAnswerErrorLabel));
 }
 
+TEST_F(MahiPanelViewTest, ClickMetrics) {
+  base::HistogramTester histogram;
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kCloseButton, 0);
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kLearnMoreLink, 0);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kAskQuestionSendButton, 0);
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kBackButton, 0);
+
+  // Learn more button.
+  LeftClickOn(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kLearnMoreLink, 1);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 1);
+
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const back_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  // Send question button.
+  // Should not send question when the question text is empty.
+  views::test::RunScheduledLayout(widget());
+  LeftClickOn(send_button);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kAskQuestionSendButton, 0);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 1);
+  // Should send question when the question text is not empty.
+  EXPECT_FALSE(back_button->GetVisible());
+  const std::u16string question(u"question text");
+  question_textfield->SetText(question);
+  LeftClickOn(send_button);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kAskQuestionSendButton, 1);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 2);
+
+  // Now the back button is visible.
+  EXPECT_TRUE(back_button->GetVisible());
+
+  // Back button.
+  views::test::RunScheduledLayout(widget());
+  LeftClickOn(back_button);
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kBackButton, 1);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 3);
+
+  // Close button.
+  views::test::RunScheduledLayout(widget());
+  LeftClickOn(panel_view()->GetViewByID(mahi_constants::ViewId::kCloseButton));
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kCloseButton, 1);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 4);
+}
+
 }  // namespace ash

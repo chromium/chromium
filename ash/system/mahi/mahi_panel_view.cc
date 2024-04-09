@@ -207,7 +207,13 @@ class BackButton : public IconButton, public MahiUiController::Observer {
   explicit BackButton(MahiUiController* ui_controller)
       : IconButton(
             /*callback=*/base::BindRepeating(
-                &MahiUiController::NavigateToSummaryOutlinesSection,
+                [](MahiUiController* ui_controller) {
+                  ui_controller->NavigateToSummaryOutlinesSection();
+
+                  base::UmaHistogramEnumeration(
+                      mahi_constants::kMahiButtonClickHistogramName,
+                      mahi_constants::PanelButton::kBackButton);
+                },
                 base::Unretained(ui_controller)),
             IconButton::Type::kSmallFloating,
             &kEcheArrowBackIcon,
@@ -601,6 +607,8 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
   CHECK(GetWidget());
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+  base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
+                                mahi_constants::PanelButton::kCloseButton);
 }
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
@@ -608,6 +616,8 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
       GURL(mahi_constants::kLearnMorePage),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+  base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
+                                mahi_constants::PanelButton::kLearnMoreLink);
 }
 
 void MahiPanelView::OnSendButtonPressed() {
@@ -618,6 +628,9 @@ void MahiPanelView::OnSendButtonPressed() {
     ui_controller_->SendQuestion(std::u16string(trimmed_text),
                                  /*current_panel_content=*/true);
     question_textfield_->SetText(std::u16string());
+    base::UmaHistogramEnumeration(
+        mahi_constants::kMahiButtonClickHistogramName,
+        mahi_constants::PanelButton::kAskQuestionSendButton);
   }
 }
 

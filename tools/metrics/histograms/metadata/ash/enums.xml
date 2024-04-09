@@ -1561,6 +1561,14 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="9" label="Enter capture mode"/>
 </enum>
 
+<enum name="PanelButton">
+  <int value="0" label="Close button"/>
+  <int value="1" label="Learn more link"/>
+  <int value="2" label="Send question button"/>
+  <int value="3" label="Back button"/>
+  <int value="4" label="Refresh button"/>
+</enum>
+
 <enum name="PeripheralConnectivityResult">
 <!-- This must be kept current with PeripheralConnectivityResults located in
 chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h

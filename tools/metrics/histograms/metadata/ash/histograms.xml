@@ -4795,6 +4795,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.ButtonClicked" enum="PanelButton"
+    expires_after="2025-04-04">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when any button in the web Mahi Penel widget is activated.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.Feedback" enum="BooleanThumbsUp"
     expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
