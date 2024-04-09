@@ -962,6 +962,15 @@ bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
   return IsSplitModifierKeyboard(keyboard);
 }
 
+bool KeyboardCapability::HasFunctionKey(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasFunctionKey(*keyboard);
+}
+
 bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
   return IsSplitModifierKeyboard(keyboard);
 }
