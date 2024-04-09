@@ -187,6 +187,7 @@ UIView* CreateInitialGestureIndicator() {
   gesture_indicator.layer.cornerRadius = kFadingGestureIndicatorRadius;
   gesture_indicator.backgroundColor = UIColor.whiteColor;
   gesture_indicator.alpha = 0;
+  gesture_indicator.userInteractionEnabled = NO;
   // Shadow.
   gesture_indicator.layer.shadowColor = UIColor.blackColor.CGColor;
   gesture_indicator.layer.shadowOffset = CGSizeMake(0, 4);
@@ -234,7 +235,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   // Button at the bottom that dismisses the IPH.
   UIButton* _dismissButton;
   // Gaussian blurred super view that creates a blur-filter effect.
-  UIImageView* _blurredSuperview;
+  UIView* _blurredSuperview;
   // Gesture recognizer of the view.
   GestureInProductHelpGestureRecognizer* _gestureRecognizer;
 
@@ -339,7 +340,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     self.alpha = 0;
     self.isAccessibilityElement = YES;
     self.accessibilityViewIsModal = YES;
-    self.clipsToBounds = YES;
   }
   return self;
 }
@@ -422,9 +422,10 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     [_animator startAnimation];
   }
 
-  if (self.superview && _blurredSuperview && !_blurringSuperview &&
+  UIView* blurredBackgroundImageView = _blurredSuperview.subviews.firstObject;
+  if (self.superview && blurredBackgroundImageView && !_blurringSuperview &&
       !CGSizeEqualToSize(self.superview.bounds.size,
-                         _blurredSuperview.bounds.size)) {
+                         blurredBackgroundImageView.bounds.size)) {
     _blurringSuperview = YES;
     [_blurredSuperview removeFromSuperview];
     _blurredSuperview = nil;
@@ -604,12 +605,20 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   self.hidden = NO;
   UIImage* blurredBackgroundImage =
       BlurredImageWithImage(backgroundImage, kBlurRadius);
-  _blurredSuperview =
+  UIImageView* blurredBackgroundImageView =
       [[UIImageView alloc] initWithImage:blurredBackgroundImage];
-  _blurredSuperview.contentMode = UIViewContentModeScaleAspectFill;
+  blurredBackgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+
+  // Create wrapper view to clip the blurred image to the edge of the superview.
+  _blurredSuperview = [[UIView alloc] initWithFrame:CGRectZero];
+  _blurredSuperview.translatesAutoresizingMaskIntoConstraints = NO;
+  _blurredSuperview.clipsToBounds = YES;
+  [_blurredSuperview addSubview:blurredBackgroundImageView];
+  blurredBackgroundImageView.frame =
+      [_blurredSuperview convertRect:superview.bounds fromView:superview];
+
   [self insertSubview:_blurredSuperview atIndex:0];
-  _blurredSuperview.frame = [self convertRect:superview.bounds
-                                     fromView:superview];
+  AddSameConstraints(_blurredSuperview, self);
   _blurringSuperview = NO;
 }
 
