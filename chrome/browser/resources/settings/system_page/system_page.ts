@@ -17,10 +17,10 @@ import '../controls/settings_toggle_button.js';
 import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './system_page.html.js';

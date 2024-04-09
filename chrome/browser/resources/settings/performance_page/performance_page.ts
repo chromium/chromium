@@ -12,11 +12,11 @@ import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getDiscardTimerOptions} from './discard_timer_options.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';

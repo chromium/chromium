@@ -14,8 +14,9 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
 
 import type {ExceptionAddInputElement} from './exception_add_input.js';
 import type {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';

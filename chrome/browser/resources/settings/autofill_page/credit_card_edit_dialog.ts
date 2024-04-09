@@ -16,7 +16,6 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import '../i18n_setup.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

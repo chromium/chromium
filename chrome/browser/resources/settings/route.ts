@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {pageVisibility} from './page_visibility.js';
 import type {SettingsRoutes} from './router.js';
 import {Route, Router} from './router.js';

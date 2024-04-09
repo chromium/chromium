@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 export function getDiscardTimerOptions(): DropdownMenuOptionList {
   return [
