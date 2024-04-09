@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -103,7 +104,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
         super(
                 activity,
                 tabModelOrchestratorSupplier,
@@ -112,6 +114,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 menuOrKeyboardActionController);
         mMaxInstances = MultiWindowUtils.getMaxInstances();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mDesktopWindowModeSupplier = desktopWindowModeSupplier;
     }
 
     @Override
@@ -987,12 +990,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      * @param instanceId Instance Id of the Chrome window that needs to be closed.
      */
     private boolean canCloseChromeWindow(int instanceId) {
-        // Close the source instance window after reparenting if permitted by the feature flag and
-        // the source instance is known.
+        // Close the source instance window after tab reparenting if permitted by the feature flag
+        // or if the app is in a desktop window, and the source instance is known.
         if (instanceId == INVALID_INSTANCE_ID) return false;
 
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
-                || TabUiFeatureUtilities.isTabTearingEnabled();
+                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier);
     }
 
     /**

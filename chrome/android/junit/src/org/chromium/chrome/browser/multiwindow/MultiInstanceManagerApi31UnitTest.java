@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -150,6 +151,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
 
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
@@ -205,14 +207,16 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-                MenuOrKeyboardActionController menuOrKeyboardActionController) {
+                MenuOrKeyboardActionController menuOrKeyboardActionController,
+                ObservableSupplier<Boolean> desktopWindowModeSupplier) {
             super(
                     activity,
                     tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher,
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
-                    menuOrKeyboardActionController);
+                    menuOrKeyboardActionController,
+                    desktopWindowModeSupplier);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -367,7 +371,8 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mMultiWindowModeStateDispatcher,
                                 mActivityLifecycleDispatcher,
                                 mModalDialogManagerSupplier,
-                                mMenuOrKeyboardActionController));
+                                mMenuOrKeyboardActionController,
+                                mDesktopWindowModeSupplier));
         ApplicationStatus.setCachingEnabled(true);
         ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
         ChromeSharedPreferences.getInstance()
@@ -648,7 +653,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher,
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
-                        mMenuOrKeyboardActionController);
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowModeSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -732,7 +738,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher,
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
-                        mMenuOrKeyboardActionController);
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowModeSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -816,7 +823,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher,
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
-                        mMenuOrKeyboardActionController);
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowModeSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -1003,7 +1011,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher,
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
-                        mMenuOrKeyboardActionController);
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowModeSupplier);
         multiInstanceManager.initialize(instanceId, taskId);
         multiInstanceManager.onTabStateInitialized();
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
@@ -1227,19 +1236,15 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-        ChromeFeatureList.DRAG_DROP_TAB_TEARING
-    })
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
-    public void testCloseChromeWindowIfEmpty_tabTearing() {
+    public void testCloseChromeWindowIfEmpty_inDesktopWindow() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
-        // Create an empty instance before asking it to close. The flag that provides permission to
-        // close is enabled.
+        // Create an empty instance before asking it to close.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
         assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        // Assume that Chrome is in a desktop window.
+        when(mDesktopWindowModeSupplier.get()).thenReturn(true);
 
         // Action
         mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
@@ -1249,22 +1254,19 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.DRAG_DROP_TAB_TEARING
-    })
     @Config(sdk = 31)
-    public void testCloseChromeWindowIfEmpty_notClosed() {
+    public void testCloseChromeWindowIfEmpty_notInDesktopWindow() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
-        // Create an empty instance before asking it to close. The flag that provides permission to
-        // close is disabled.
+        // Create an empty instance before asking it to close.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
         assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        // Assume that Chrome is not in a desktop window.
+        when(mDesktopWindowModeSupplier.get()).thenReturn(false);
 
         // Action
         mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
 
-        verify(mMultiInstanceManager, times(0)).closeInstance(anyInt(), anyInt());
+        verify(mMultiInstanceManager, never()).closeInstance(anyInt(), anyInt());
     }
 }

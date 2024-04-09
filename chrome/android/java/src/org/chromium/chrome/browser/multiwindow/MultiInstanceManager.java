@@ -88,6 +88,8 @@ public class MultiInstanceManager
 
     protected TabModelSelectorTabModelObserver mTabModelObserver;
 
+    protected ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
+
     private int mActivityTaskId;
     private boolean mNativeInitialized;
     private DisplayManager.DisplayListener mDisplayListener;
@@ -99,16 +101,19 @@ public class MultiInstanceManager
 
     /**
      * Create a new {@link MultiInstanceManager}.
+     *
      * @param activity The activity.
      * @param tabModelOrchestratorSupplier A supplier for the {@link TabModelOrchestrator} for the
-     *         associated activity.
+     *     associated activity.
      * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} for the
-     *         associated activity.
-     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the
-     *         associated activity.
+     *     associated activity.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the associated
+     *     activity.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
-     *         associated activity.
+     *     associated activity.
+     * @param desktopWindowModeSupplier A supplier to determine whether the app is in a desktop
+     *     window.
      * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
      */
     public @Nullable static MultiInstanceManager create(
@@ -117,7 +122,8 @@ public class MultiInstanceManager
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(
                     activity,
@@ -125,7 +131,8 @@ public class MultiInstanceManager
                     multiWindowModeStateDispatcher,
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
-                    menuOrKeyboardActionController);
+                    menuOrKeyboardActionController,
+                    desktopWindowModeSupplier);
         } else {
             return new MultiInstanceManager(
                     activity,
