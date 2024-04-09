@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/content_settings/core/browser/content_settings_registry.h"
+
 #include <string>
 
 #include "base/values.h"
@@ -9,7 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
-#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -161,6 +162,14 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
       // ALLOW-by-default settings are not affected by incognito_behavior, so
       // they should be marked as INHERIT_IN_INCOGNITO.
+      EXPECT_EQ(info->incognito_behavior(),
+                ContentSettingsInfo::INHERIT_IN_INCOGNITO);
+      continue;
+    }
+    // Tracking protection content setting should be inherited in incognito.
+    if (info->website_settings_info()->type() ==
+            ContentSettingsType::TRACKING_PROTECTION &&
+        info->GetInitialDefaultSetting() == CONTENT_SETTING_BLOCK) {
       EXPECT_EQ(info->incognito_behavior(),
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;

@@ -145,6 +145,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
     {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
+    {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting

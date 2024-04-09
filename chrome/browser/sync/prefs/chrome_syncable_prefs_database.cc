@@ -34,8 +34,8 @@
 #include "ui/events/ash/pref_names.h"
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/pref_names.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "extensions/browser/pref_names.h"
 #endif
 
 namespace browser_sync {
@@ -328,6 +328,9 @@ enum {
   kAccessibilityFaceGazeGesturesToMacros = 100270,
   kAccessibilityFaceGazeGesturesToConfidence = 100271,
   kShelfContainerAppPinRolls = 100272,
+  kProfileContentSettingsExceptionsTrackingProtection = 100273,
+  kProfileContentSettingsPartitionedExceptionsTrackingProtection = 100274,
+  kProfileDefaultContentSettingValuesTrackingProtection = 100275,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1282,6 +1285,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableDict}},
+    {"profile.content_settings.exceptions.tracking_protection",
+     {syncable_prefs_ids::kProfileContentSettingsExceptionsTrackingProtection,
+      syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.content_settings.exceptions.window_placement",
      {syncable_prefs_ids::kProfileContentSettingsExceptionsWindowPlacement,
       syncer::PREFERENCES,
@@ -1337,6 +1345,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableDict}},
+    {"profile.content_settings.partitioned_exceptions.tracking_protection",
+     {syncable_prefs_ids::
+          kProfileContentSettingsPartitionedExceptionsTrackingProtection,
+      syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.content_settings.partitioned_exceptions.window_placement",
      {syncable_prefs_ids::
           kProfileContentSettingsPartitionedExceptionsWindowPlacement,
@@ -1381,6 +1395,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kProfileDefaultContentSettingValuesPopups,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {"profile.default_content_setting_values.tracking_protection",
+     {syncable_prefs_ids::kProfileDefaultContentSettingValuesTrackingProtection,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.default_content_setting_values.window_placement",
      {syncable_prefs_ids::kProfileDefaultContentSettingValuesWindowPlacement,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,

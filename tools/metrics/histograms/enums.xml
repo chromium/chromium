@@ -3640,6 +3640,7 @@ Called by update_net_error_codes.py.-->
   <int value="120" label="Keyboard lock"/>
   <int value="121" label="Pointer lock"/>
   <int value="122" label="Abusive notification site permissions"/>
+  <int value="123" label="Tracking Protection"/>
 </enum>
 
 <enum name="ContextMenuOptionAndroid">
