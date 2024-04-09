@@ -5084,6 +5084,13 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 class ImmediateDeepScanTest : public DownloadProtectionServiceTest {
  public:
   ImmediateDeepScanTest() { EnableFeatures({kDeepScanningPromptRemoval}); }
+
+  void SetUp() override {
+    DownloadProtectionServiceTest::SetUp();
+
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
+  }
 };
 
 TEST_F(ImmediateDeepScanTest, ESBRequestScan) {

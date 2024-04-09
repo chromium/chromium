@@ -31,6 +31,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -104,6 +105,20 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
 
   // This function should always run |callback| and return before reaching this.
   CHECK(false);
+}
+
+void LogNoticeSeenMetrics(PrefService* prefs) {
+  bool has_seen =
+      prefs->GetBoolean(prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen);
+  if (prefs->GetBoolean(prefs::kDownloadBubblePartialViewEnabled)) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.AutomaticDeepScanNoticeSeen.PartialViewEnabled",
+        has_seen);
+  } else {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.AutomaticDeepScanNoticeSeen.PartialViewSuppressed",
+        has_seen);
+  }
 }
 
 }  // namespace
@@ -361,6 +376,12 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
   }
 
   if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+    return false;
+  }
+
+  LogNoticeSeenMetrics(profile->GetPrefs());
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen)) {
     return false;
   }
 
