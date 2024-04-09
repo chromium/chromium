@@ -235,6 +235,7 @@ def __step_config(ctx, step_config):
                     ],
                 })
                 remote = True
+        remote_wrapper = reproxy_config.get("remote_wrapper")
         step_config["rules"].extend([
             {
                 "name": "clang-cl/cxx",
@@ -246,7 +247,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
@@ -259,7 +260,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
@@ -273,7 +274,7 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
@@ -287,7 +288,7 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
         ])
