@@ -170,9 +170,8 @@ void PickerSearchRequest::HandleCrosSearchResults(
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
-      // TODO: b/333295235 - Check if Drive results were truncated.
       HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results),
-                                /*has_more_results=*/true);
+                                /*has_more_results=*/files_to_remove > 0);
       break;
     }
     case AppListSearchResultType::kFileSearch: {
@@ -184,9 +183,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
-      // TODO: b/333295235 - Check if File results were truncated.
       HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                std::move(results), /*has_more_results=*/true);
+                                std::move(results),
+                                /*has_more_results=*/files_to_remove > 0);
       break;
     }
     default:
@@ -237,10 +236,11 @@ void PickerSearchRequest::HandleEmojiSearchResults(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
   }
 
-  // TODO: b/333295235 - Check if Emoji results were truncated.
-  HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                            std::move(emoji_results),
-                            /*has_more_results=*/true);
+  const size_t full_results_count =
+      results.emojis.size() + results.symbols.size() + results.emoticons.size();
+  HandleSearchSourceResults(
+      PickerSearchSource::kEmoji, std::move(emoji_results),
+      /*has_more_results=*/emoji_results.size() < full_results_count);
 }
 
 void PickerSearchRequest::HandleDateSearchResults(

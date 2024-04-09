@@ -317,6 +317,9 @@ TEST_F(
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 1);
 }
 
+// TODO: b/333302795 - Add tests for searching emoji once EmojiSearch can be
+// easily faked.
+
 TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -327,7 +330,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
                        VariantWith<PickerSearchResult::TextData>(Field(
                            "text", &PickerSearchResult::TextData::primary_text,
                            u"monorail_cat.jpg")))),
-                   /*has_more_results=*/true))
+                   /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -338,6 +341,41 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
       {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
+}
+
+TEST_F(PickerSearchRequestTest, TruncatesResultsFromFileSearch) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kLocalFile,
+           ElementsAre(
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"1.jpg"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"2.jpg"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"3.jpg")))),
+           /*has_more_results=*/true))
+      .Times(AtLeast(1));
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kFileSearch,
+      {ash::PickerSearchResult::Text(u"1.jpg"),
+       ash::PickerSearchResult::Text(u"2.jpg"),
+       ash::PickerSearchResult::Text(u"3.jpg"),
+       ash::PickerSearchResult::Text(u"4.jpg")});
 }
 
 TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
@@ -444,7 +482,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
                        VariantWith<PickerSearchResult::TextData>(Field(
                            "text", &PickerSearchResult::TextData::primary_text,
                            u"catrbug_135117.jpg")))),
-                   /*has_more_results=*/true))
+                   /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -455,6 +493,41 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
       {ash::PickerSearchResult::Text(u"catrbug_135117.jpg")});
+}
+
+TEST_F(PickerSearchRequestTest, TruncatesResultsFromDriveSearch) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kDrive,
+           ElementsAre(
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"1.jpg"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"2.jpg"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"3.jpg")))),
+           /*has_more_results=*/true))
+      .Times(AtLeast(1));
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"1.jpg"),
+       ash::PickerSearchResult::Text(u"2.jpg"),
+       ash::PickerSearchResult::Text(u"3.jpg"),
+       ash::PickerSearchResult::Text(u"4.jpg")});
 }
 
 TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
