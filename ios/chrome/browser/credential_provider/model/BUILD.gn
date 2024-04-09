@@ -100,12 +100,12 @@ if (ios_enable_credential_provider_extension) {
       "//url",
     ]
   }
+}
 
-  source_set("features") {
-    sources = [
-      "features.h",
-      "features.mm",
-    ]
-    public_deps = [ "//base" ]
-  }
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }
