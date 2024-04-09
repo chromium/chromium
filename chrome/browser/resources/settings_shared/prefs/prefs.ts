@@ -81,45 +81,6 @@ function objectsEqual(
   return true;
 }
 
-/**
- * Returns a recursive copy of the value.
- * @param val Value to copy. Should be a primitive or only contain
- *     serializable data (primitives, serializable arrays and
- *     serializable objects).
- * @return A deep copy of the value.
- */
-function deepCopy(val: any): any {
-  if (!(val instanceof Object)) {
-    return val;
-  }
-  return Array.isArray(val) ? deepCopyArray(val) : deepCopyObject(val);
-}
-
-/**
- * @return Deep copy of the array.
- */
-function deepCopyArray(arr: any[]): any[] {
-  const copy = [];
-  for (let i = 0; i < arr.length; i++) {
-    copy.push(deepCopy(arr[i]));
-  }
-  return copy;
-}
-
-/**
- * @return Deep copy of the object.
- */
-function deepCopyObject(obj: {[key: string]: any}): {[key: string]: any} {
-  const copy: {[key: string]: any} = {};
-  const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    copy[key] = deepCopy(obj[key]);
-  }
-  return copy;
-}
-
-
 export class SettingsPrefsElement extends PolymerElement {
   static get is() {
     return 'settings-prefs';
@@ -287,7 +248,7 @@ export class SettingsPrefsElement extends PolymerElement {
     newPrefs.forEach((newPrefObj) => {
       // Use the PrefObject from settingsPrivate to create a copy in
       // lastPrefValues_ at the pref's key.
-      this.lastPrefValues_[newPrefObj.key] = deepCopy(newPrefObj.value);
+      this.lastPrefValues_[newPrefObj.key] = structuredClone(newPrefObj.value);
 
       if (!deepEqual(this.get(newPrefObj.key, prefs), newPrefObj)) {
         // Add the pref to |prefs|.
