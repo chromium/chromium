@@ -295,7 +295,11 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
   safe_browsing_check_state_ = state;
 
   // The safe browsing state changed, log a freshness signal for Safety Check.
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+  bool should_log_freshness = state != SafeBrowsingSafetyCheckState::kDefault;
+
+  if (should_log_freshness) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+  }
 
   local_pref_service_->SetString(
       prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
@@ -370,10 +374,15 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
 
   // Only log that there was a freshness signal if the new state has a different
   // end result (a password issue, safe).
-  if (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
-      state == PasswordSafetyCheckState::kReusedPasswords ||
-      state == PasswordSafetyCheckState::kWeakPasswords ||
-      state == PasswordSafetyCheckState::kSafe) {
+  bool should_log_freshness =
+      state != PasswordSafetyCheckState::kDefault &&
+      state != previous_password_check_state_ &&
+      (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
+       state == PasswordSafetyCheckState::kReusedPasswords ||
+       state == PasswordSafetyCheckState::kWeakPasswords ||
+       state == PasswordSafetyCheckState::kSafe);
+
+  if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
   }
 
@@ -424,8 +433,13 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   // Only log that there was a freshness signal if the new state has a different
   // end result (out of date, up to date).
-  if (state == UpdateChromeSafetyCheckState::kOutOfDate ||
-      state == UpdateChromeSafetyCheckState::kUpToDate) {
+  bool should_log_freshness =
+      state != UpdateChromeSafetyCheckState::kDefault &&
+      state != previous_update_chrome_check_state_ &&
+      (state == UpdateChromeSafetyCheckState::kOutOfDate ||
+       state == UpdateChromeSafetyCheckState::kUpToDate);
+
+  if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
   }
 
