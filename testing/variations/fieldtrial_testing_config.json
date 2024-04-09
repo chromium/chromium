@@ -18156,6 +18156,21 @@
             ]
         }
     ],
+    "SnapshotInSwift": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SnapshotInSwift"
+                    ]
+                }
+            ]
+        }
+    ],
     "SonomaAccessibilityActivationRefinements": [
         {
             "platforms": [
