@@ -88,6 +88,9 @@ class WebState;
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems;
 
+// Returns the active grid item identifier.
+- (GridItemIdentifier*)activeIdentifier;
+
 // Adds an observation to every non-pinned WebState. Subclasses can override
 // this to observe a different set of `WebState`s. It's not necessary to call
 // the parent class implementation if not desired.

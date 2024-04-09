@@ -136,16 +136,6 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
   return nullptr;
 }
 
-// Returns a grid item identifier for the currently active unpinned tab.
-GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
-  web::WebState* active_web_state =
-      GetActiveWebState(web_state_list, PinnedState::kNonPinned);
-  if (!active_web_state) {
-    return nil;
-  }
-  return [GridItemIdentifier tabIdentifier:active_web_state];
-}
-
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver, SnapshotStorageObserver>
@@ -312,7 +302,30 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return;
   }
   [self.consumer populateItems:CreateItems(self.webStateList)
-        selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
+        selectedItemIdentifier:[self activeIdentifier]];
+}
+
+- (GridItemIdentifier*)activeIdentifier {
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList) {
+    return nil;
+  }
+
+  int webStateIndex = webStateList->active_index();
+  if (webStateIndex == WebStateList::kInvalidIndex) {
+    return nil;
+  }
+
+  if (IsTabGroupInGridEnabled()) {
+    const TabGroup* group = webStateList->GetGroupOfWebStateAt(webStateIndex);
+    if (group) {
+      return [GridItemIdentifier groupIdentifier:group
+                                withWebStateList:webStateList];
+    }
+  }
+
+  return [GridItemIdentifier
+      tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
 }
 
 - (void)addWebStateObservations {
@@ -350,14 +363,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier tabIdentifier:detachedWebState];
 
-    // Get the selected identifier.
-    GridItemIdentifier* selectedIdentifier =
-        GetActiveNonPinnedIdentifier(webStateList);
-
     // If the WebState is pinned and it is not in the consumer's items list,
     // consumer will filter it out in the method's implementation.
     [self.consumer removeItemWithIdentifier:identifierToRemove
-                     selectedItemIdentifier:selectedIdentifier];
+                     selectedItemIdentifier:[self activeIdentifier]];
     [self removeFromSelectionItemID:identifierToRemove];
   }
 
@@ -398,10 +407,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           GridItemIdentifier* tabIdentifierToAddToGroup =
               [GridItemIdentifier tabIdentifier:currentWebState];
 
-          GridItemIdentifier* selectedIdentifier =
-              GetActiveNonPinnedIdentifier(webStateList);
           [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
-                           selectedItemIdentifier:selectedIdentifier];
+                           selectedItemIdentifier:[self activeIdentifier]];
         } else {
           GridItemIdentifier* oldGroupIdentifier =
               [GridItemIdentifier groupIdentifier:oldGroup
@@ -446,12 +453,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         }
         if (moveChange.new_group()) {
           if (!moveChange.old_group()) {
-            [self.consumer
-                removeItemWithIdentifier:
-                    [GridItemIdentifier
-                        tabIdentifier:moveChange.moved_web_state()]
-                  selectedItemIdentifier:GetActiveNonPinnedIdentifier(
-                                             webStateList)];
+            [self.consumer removeItemWithIdentifier:
+                               [GridItemIdentifier
+                                   tabIdentifier:moveChange.moved_web_state()]
+                             selectedItemIdentifier:[self activeIdentifier]];
           }
           [self updateCellGroup:moveChange.new_group()];
         } else {
@@ -483,8 +488,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       if ([self isPinnedWebState:insertChange.index()]) {
-        [self.consumer selectItemWithIdentifier:GetActiveNonPinnedIdentifier(
-                                                    webStateList)];
+        [self.consumer selectItemWithIdentifier:[self activeIdentifier]];
         break;
       }
 
@@ -540,25 +544,14 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       GridItemIdentifier* groupItemIdentifier =
           [GridItemIdentifier groupIdentifier:groupDeleteChange.deleted_group()
                              withWebStateList:_webStateList];
-      GridItemIdentifier* selectedIdentifier =
-          GetActiveNonPinnedIdentifier(webStateList);
       [self.consumer removeItemWithIdentifier:groupItemIdentifier
-                       selectedItemIdentifier:selectedIdentifier];
+                       selectedItemIdentifier:[self activeIdentifier]];
       break;
     }
   }
   [self updateToolbarAfterNumberOfItemsChanged];
   if (status.active_web_state_change()) {
-    // If the selected index changes as a result of the last webstate being
-    // detached, the active index will be kInvalidIndex.
-    if (webStateList->active_index() == WebStateList::kInvalidIndex) {
-      [self.consumer selectItemWithIdentifier:nil];
-      return;
-    }
-    [self.consumer
-        selectItemWithIdentifier:[GridItemIdentifier
-                                     tabIdentifier:status
-                                                       .new_active_web_state]];
+    [self.consumer selectItemWithIdentifier:[self activeIdentifier]];
   }
 }
 
@@ -1227,13 +1220,11 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 // Inserts/removes a non pinned item to/from the collection.
 - (void)changePinnedStateForWebState:(web::WebState*)webState
                              atIndex:(int)index {
-  GridItemIdentifier* selectedItemIdentifier =
-      GetActiveNonPinnedIdentifier(self.webStateList);
   if ([self isPinnedWebState:index]) {
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier tabIdentifier:webState];
     [self.consumer removeItemWithIdentifier:identifierToRemove
-                     selectedItemIdentifier:selectedItemIdentifier];
+                     selectedItemIdentifier:[self activeIdentifier]];
     [self removeObservationForWebState:webState];
   } else {
     [self insertItem:[GridItemIdentifier tabIdentifier:webState]
@@ -1430,7 +1421,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   }
   [self.consumer insertItem:item
                 beforeItemID:nextItemIdentifier
-      selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
+      selectedItemIdentifier:[self activeIdentifier]];
 }
 
 // Updates the cell of the given `group`.

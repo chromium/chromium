@@ -108,6 +108,26 @@
         selectedItemIdentifier:identifier];
 }
 
+// Override the parent to only show individual web state in the group.
+- (GridItemIdentifier*)activeIdentifier {
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList) {
+    return nil;
+  }
+
+  int webStateIndex = webStateList->active_index();
+  if (webStateIndex == WebStateList::kInvalidIndex) {
+    return nil;
+  }
+
+  if (!_tabGroup->range().contains(webStateIndex)) {
+    return nil;
+  }
+
+  return [GridItemIdentifier
+      tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
+}
+
 // Overrides the parent observations: only observe the group `WebState`s.
 - (void)addWebStateObservations {
   for (int index : _tabGroup->range()) {
