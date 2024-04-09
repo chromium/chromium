@@ -45,8 +45,6 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_extra_padding_check = true;
       } else if (arg == "disable-off-heap-collections-of-gced-check") {
         options_.enable_off_heap_collections_of_gced_check = false;
-      } else if (arg == "enable-raw-ref-of-gced-or-traceable-check") {
-        options_.enable_raw_ref_of_gced_or_traceable_check = true;
       } else if (arg == "enable-ptrs-to-traceable-check") {
         options_.enable_ptrs_to_traceable_check = true;
       } else {
