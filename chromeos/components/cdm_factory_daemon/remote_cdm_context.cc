@@ -174,7 +174,7 @@ void RemoteCdmContext::Decrypt(StreamType stream_type,
   mojo_sequence_state_->GetStableCdmContext()->DecryptVideoBuffer(
       encrypted,
       std::vector<uint8_t>(encrypted->data(),
-                           encrypted->data() + encrypted->data_size()),
+                           encrypted->data() + encrypted->size()),
       base::BindOnce(&RemoteCdmContext::OnDecryptVideoBufferDone,
                      base::Unretained(this), std::move(decrypt_cb)));
 }
@@ -185,7 +185,7 @@ void RemoteCdmContext::OnDecryptVideoBufferDone(
     const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
     const std::vector<uint8_t>& bytes) {
   if (decoder_buffer) {
-    CHECK_EQ(bytes.size(), decoder_buffer->data_size());
+    CHECK_EQ(bytes.size(), decoder_buffer->size());
     memcpy(decoder_buffer->writable_data(), bytes.data(), bytes.size());
   }
   std::move(decrypt_cb).Run(status, decoder_buffer);

@@ -428,7 +428,7 @@ bool FrameProcessor::ProcessFrames(
   for (const auto& frame : frames) {
     // Skip any 0-byte audio or video buffers, since they cannot produce any
     // valid decode output (and are rejected by FFmpeg A/V decode.)
-    if (!frame->data_size()) {
+    if (!frame->size()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log_, num_skipped_empty_frame_warnings_,
                         kMaxSkippedEmptyFrameWarnings)
           << "Discarding empty audio or video coded frame, PTS="

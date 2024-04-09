@@ -177,6 +177,8 @@ class MEDIA_EXPORT DecoderBuffer
     return size_;
   }
 
+  // Prefer writable_span(), though it should also be removed.
+  //
   // TODO(sandersd): Remove writable_data(). https://crbug.com/834088
   uint8_t* writable_data() const {
     DCHECK(!end_of_stream());
@@ -184,6 +186,13 @@ class MEDIA_EXPORT DecoderBuffer
     DCHECK(!writable_mapping_.IsValid());
     DCHECK(!external_memory_);
     return data_.get();
+  }
+
+  // TODO(sandersd): Remove writable_span(). https://crbug.com/834088
+  base::span<uint8_t> writable_span() const {
+    // TODO(crbug.com/40284755): `data_` should be converted to HeapArray, then
+    // it can give out a span safely.
+    return UNSAFE_BUFFERS(base::span(writable_data(), size()));
   }
 
   // Deprecated, use size().

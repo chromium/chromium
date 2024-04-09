@@ -4,10 +4,11 @@
 
 #include "media/audio/win/audio_low_latency_output_win.h"
 
+#include <windows.h>
+
 #include <mmsystem.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <memory>
 
@@ -16,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -129,7 +131,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
   void OnError(ErrorType type) override {}
 
-  int file_size() { return file_->data_size(); }
+  int file_size() { return base::checked_cast<int>(file_->size()); }
 
  private:
   scoped_refptr<DecoderBuffer> file_;

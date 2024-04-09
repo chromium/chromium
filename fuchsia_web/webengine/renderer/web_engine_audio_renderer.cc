@@ -83,7 +83,7 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
   static_assert(ARCH_CPU_LITTLE_ENDIAN,
                 "Only little-endian CPUs are supported.");
 
-  size_t samples = buffer->data_size() / 3;
+  size_t samples = buffer->size() / 3;
   scoped_refptr<media::DecoderBuffer> result =
       base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
   for (size_t i = 0; i < samples - 1; ++i) {
@@ -719,9 +719,9 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
   if (buffer->end_of_stream()) {
     is_at_end_of_stream_ = true;
   } else {
-    if (buffer->data_size() > kBufferSize) {
+    if (buffer->size() > kBufferSize) {
       DLOG(ERROR) << "Demuxer returned buffer that is too big: "
-                  << buffer->data_size();
+                  << buffer->size();
       OnError(media::AUDIO_RENDERER_ERROR);
       return;
     }

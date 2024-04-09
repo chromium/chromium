@@ -349,7 +349,7 @@ void ContentDecryptionModuleAdapter::Decrypt(
     DCHECK_EQ(stream_type, Decryptor::kVideo);
     cros_cdm_remote_->Decrypt(
         std::vector<uint8_t>(encrypted->data(),
-                             encrypted->data() + encrypted->data_size()),
+                             encrypted->data() + encrypted->size()),
         nullptr, true,
         encrypted->has_side_data() ? encrypted->side_data()->secure_handle : 0,
         base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,
@@ -363,7 +363,7 @@ void ContentDecryptionModuleAdapter::Decrypt(
   const std::vector<media::SubsampleEntry>& subsamples =
       decrypt_config->subsamples();
   if (!subsamples.empty() &&
-      !VerifySubsamplesMatchSize(subsamples, encrypted->data_size())) {
+      !VerifySubsamplesMatchSize(subsamples, encrypted->size())) {
     LOG(ERROR) << "Subsample sizes do not match input size";
     std::move(decrypt_cb).Run(kError, nullptr);
     return;
@@ -373,7 +373,7 @@ void ContentDecryptionModuleAdapter::Decrypt(
   // and see if want to use something like MojoDecoderBufferWriter instead.
   cros_cdm_remote_->Decrypt(
       std::vector<uint8_t>(encrypted->data(),
-                           encrypted->data() + encrypted->data_size()),
+                           encrypted->data() + encrypted->size()),
       decrypt_config->Clone(), stream_type == Decryptor::kVideo,
       encrypted->has_side_data() ? encrypted->side_data()->secure_handle : 0,
       base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,

@@ -586,8 +586,8 @@ HRESULT GenerateSampleFromDecoderBuffer(
   RETURN_IF_FAILED(mf_sample->SetSampleTime(sample_time));
 
   ComPtr<IMFMediaBuffer> mf_buffer;
-  size_t data_size = buffer->data_size();
-  RETURN_IF_FAILED(MFCreateMemoryBuffer(buffer->data_size(), &mf_buffer));
+  size_t data_size = buffer->size();
+  RETURN_IF_FAILED(MFCreateMemoryBuffer(buffer->size(), &mf_buffer));
 
   BYTE* mf_buffer_data = nullptr;
   DWORD max_length = 0;

@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -127,9 +128,8 @@ class CbcsDecryptorTest : public testing::Test {
 
     std::vector<uint8_t> decrypted_data;
     if (decrypted.get()) {
-      EXPECT_TRUE(decrypted->data_size());
-      decrypted_data.assign(decrypted->data(),
-                            decrypted->data() + decrypted->data_size());
+      EXPECT_TRUE(decrypted->size());
+      decrypted_data = base::ToVector(base::span(*decrypted));
     }
 
     return decrypted_data;

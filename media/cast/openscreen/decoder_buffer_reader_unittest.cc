@@ -75,11 +75,7 @@ class DecoderBufferReaderTest : public testing::Test {
   // DecoderBufferReader::Client overrides.
   void OnBufferReady(scoped_refptr<media::DecoderBuffer> buffer) {
     EXPECT_TRUE(buffer->MatchesMetadataForTesting(*populated_buffer_));
-
-    ASSERT_EQ(buffer->data_size(), serialized_data_.size());
-    EXPECT_TRUE(!memcmp(buffer->data(), serialized_data_.data(),
-                        serialized_data_.size()));
-
+    EXPECT_EQ(base::span(*buffer), base::span(serialized_data_));
     has_buffer_been_read_ = true;
   }
 

@@ -133,7 +133,7 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
   if (subsamples.empty()) {
     return true;
   }
-  return VerifySubsamplesMatchSize(subsamples, buffer.data_size());
+  return VerifySubsamplesMatchSize(subsamples, buffer.size());
 }
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
@@ -182,8 +182,7 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
     return true;
 
   DCHECK(!buffer.end_of_stream());
-  return data_size() == buffer.data_size() &&
-         memcmp(data(), buffer.data(), data_size()) == 0;
+  return base::span(*this) == base::span(buffer);
 }
 
 std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {

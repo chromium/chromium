@@ -121,7 +121,7 @@ void FakeVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
             max_parallel_decoding_requests_);
   DCHECK_NE(state_, STATE_END_OF_STREAM);
 
-  int buffer_size = buffer->end_of_stream() ? 0 : buffer->data_size();
+  int buffer_size = buffer->end_of_stream() ? 0 : buffer->size();
   DecodeCB wrapped_decode_cb = base::BindOnce(
       &FakeVideoDecoder::OnFrameDecoded, weak_factory_.GetWeakPtr(),
       buffer_size, base::BindPostTaskToCurrentDefault(std::move(decode_cb)));

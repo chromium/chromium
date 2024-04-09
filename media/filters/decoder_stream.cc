@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -530,7 +531,7 @@ void DecoderStream<StreamType>::DecodeInternal(
 
   ++pending_decode_requests_;
 
-  const int buffer_size = is_eos ? 0 : buffer->data_size();
+  const int buffer_size = is_eos ? 0 : base::checked_cast<int>(buffer->size());
   decoder_->Decode(
       std::move(buffer),
       base::BindOnce(&DecoderStream<StreamType>::OnDecodeDone,

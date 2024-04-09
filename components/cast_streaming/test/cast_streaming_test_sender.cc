@@ -49,7 +49,7 @@ openscreen::cast::EncodedFrame DecoderBufferToEncodedFrame(
   encoded_frame.reference_time = openscreen::Clock::time_point(timestamp);
 
   encoded_frame.data = openscreen::ByteView(decoder_buffer->writable_data(),
-                                            decoder_buffer->data_size());
+                                            decoder_buffer->size());
 
   return encoded_frame;
 }

@@ -109,7 +109,7 @@ static void EosOnReadDone(bool* got_eos_buffer,
   }
 
   EXPECT_TRUE(buffer->data());
-  EXPECT_GT(buffer->data_size(), 0u);
+  EXPECT_GT(buffer->size(), 0u);
   *got_eos_buffer = false;
 }
 
@@ -229,7 +229,7 @@ class FFmpegDemuxerTest : public testing::Test {
       DCHECK_EQ(buffers.size(), 1u);
       scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
       EXPECT_TRUE(buffer);
-      EXPECT_EQ(read_expectation.size, buffer->data_size());
+      EXPECT_EQ(read_expectation.size, buffer->size());
       EXPECT_EQ(read_expectation.timestamp_us,
                 buffer->timestamp().InMicroseconds());
       EXPECT_EQ(read_expectation.discard_front_padding,
@@ -1243,7 +1243,7 @@ static void ValidateAnnexB(DemuxerStream* stream,
     subsamples = buffer->decrypt_config()->subsamples();
 
   bool is_valid =
-      mp4::AVC::AnalyzeAnnexB(buffer->data(), buffer->data_size(), subsamples)
+      mp4::AVC::AnalyzeAnnexB(buffer->data(), buffer->size(), subsamples)
           .is_conformant.value_or(false);
   EXPECT_TRUE(is_valid);
 

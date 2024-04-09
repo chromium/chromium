@@ -139,7 +139,7 @@ class FakeVideoDecoderTest
       buffer = CreateFakeVideoBufferForTest(
           current_config_, base::Milliseconds(kDurationMs * num_input_buffers_),
           base::Milliseconds(kDurationMs));
-      total_bytes_in_buffers_ += buffer->data_size();
+      total_bytes_in_buffers_ += buffer->size();
     } else {
       buffer = DecoderBuffer::CreateEOSBuffer();
     }

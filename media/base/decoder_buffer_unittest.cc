@@ -20,14 +20,15 @@ namespace media {
 TEST(DecoderBufferTest, Constructors) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
   EXPECT_TRUE(buffer->data());
-  EXPECT_EQ(0u, buffer->data_size());
+  EXPECT_EQ(0u, buffer->size());
+  EXPECT_EQ(base::span(*buffer), base::span<const uint8_t>());
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 
   const size_t kTestSize = 10;
   scoped_refptr<DecoderBuffer> buffer3(new DecoderBuffer(kTestSize));
   ASSERT_TRUE(buffer3.get());
-  EXPECT_EQ(kTestSize, buffer3->data_size());
+  EXPECT_EQ(kTestSize, buffer3->size());
 }
 
 TEST(DecoderBufferTest, CreateEOSBuffer) {
@@ -43,8 +44,8 @@ TEST(DecoderBufferTest, CopyFrom) {
       reinterpret_cast<const uint8_t*>(&kData), kDataSize));
   ASSERT_TRUE(buffer2.get());
   EXPECT_NE(kData, buffer2->data());
-  EXPECT_EQ(buffer2->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer2->data(), kData, kDataSize));
+  EXPECT_EQ(buffer2->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer2), base::span(kData));
   EXPECT_FALSE(buffer2->end_of_stream());
   EXPECT_FALSE(buffer2->is_key_frame());
 }
@@ -58,8 +59,8 @@ TEST(DecoderBufferTest, FromArray) {
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromArray(std::move(ptr), kDataSize));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -76,8 +77,8 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, kDataSize));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -95,9 +96,8 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(region), kDataOffset, kDataSize - kDataOffset));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize - kDataOffset);
-  EXPECT_EQ(
-      0, memcmp(buffer->data(), kData + kDataOffset, kDataSize - kDataOffset));
+  EXPECT_EQ(buffer->size(), kDataSize - kDataOffset);
+  EXPECT_EQ(base::span(*buffer), base::span(kData).subspan(kDataOffset));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -127,8 +127,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, kDataSize));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -146,9 +146,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
       std::move(mapping_region.region), kDataOffset, kDataSize - kDataOffset));
 
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize - kDataOffset);
-  EXPECT_EQ(
-      0, memcmp(buffer->data(), kData + kDataOffset, kDataSize - kDataOffset));
+  EXPECT_EQ(buffer->size(), kDataSize - kDataOffset);
+  EXPECT_EQ(base::span(*buffer), base::span(kData).subspan(kDataOffset));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -173,14 +172,14 @@ TEST(DecoderBufferTest, FromExternalMemory) {
       base::make_span(kData, kDataSize));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
 TEST(DecoderBufferTest, ReadingWriting) {
-  const char kData[] = "hello";
+  const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(kDataSize));
@@ -188,11 +187,11 @@ TEST(DecoderBufferTest, ReadingWriting) {
 
   uint8_t* data = buffer->writable_data();
   ASSERT_TRUE(data);
-  ASSERT_EQ(kDataSize, buffer->data_size());
-  memcpy(data, kData, kDataSize);
+  ASSERT_EQ(kDataSize, buffer->size());
+  base::span(data, buffer->size()).copy_from(kData);
   const uint8_t* read_only_data = buffer->data();
   ASSERT_EQ(data, read_only_data);
-  ASSERT_EQ(0, memcmp(read_only_data, kData, kDataSize));
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
 }
 

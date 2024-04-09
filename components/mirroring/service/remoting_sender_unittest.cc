@@ -45,12 +45,8 @@ void AreEqualExceptKeyframeImpl(const media::cast::SenderEncodedFrame& frame,
   }
 
   scoped_refptr<media::DecoderBuffer> received_buffer =
-      media::cast::ByteArrayToDecoderBuffer(
-          base::as_bytes(base::make_span(frame.data)));
-  EXPECT_EQ(std::string(reinterpret_cast<const char*>(buffer.data()),
-                        buffer.data_size()),
-            std::string(reinterpret_cast<const char*>(received_buffer->data()),
-                        received_buffer->data_size()));
+      media::cast::ByteArrayToDecoderBuffer(base::as_byte_span(frame.data));
+  EXPECT_EQ(base::span(buffer), base::span(*received_buffer));
 
   // The reference time and encode completion time should be the same, and
   // is based on the clock time.
@@ -122,7 +118,7 @@ class MojoSenderWrapper {
     is_frame_in_flight_ = true;
 
     data_pipe_writer_.Write(
-        buffer->data(), buffer->data_size(),
+        buffer->data(), buffer->size(),
         base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
                        weak_factory_.GetWeakPtr()));
     stream_sender_->SendFrame(

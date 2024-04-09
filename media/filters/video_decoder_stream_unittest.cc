@@ -359,7 +359,7 @@ class VideoDecoderStreamTest
 
     DCHECK_EQ(stream_type, Decryptor::kVideo);
     scoped_refptr<DecoderBuffer> decrypted =
-        DecoderBuffer::CopyFrom(encrypted->data(), encrypted->data_size());
+        DecoderBuffer::CopyFrom(encrypted->data(), encrypted->size());
     if (encrypted->is_key_frame())
       decrypted->set_is_key_frame(true);
     decrypted->set_timestamp(encrypted->timestamp());

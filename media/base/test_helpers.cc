@@ -740,8 +740,7 @@ scoped_refptr<DecoderBuffer> CreateClearBuffer() {
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.
-  base::span<const uint8_t> span(buffer.data(), buffer.data_size());
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(span);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(buffer);
   base::PickleIterator iterator(pickle);
   std::string header;
   int width = 0;

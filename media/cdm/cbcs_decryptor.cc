@@ -121,7 +121,7 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
 scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key) {
-  size_t sample_size = input.data_size();
+  const size_t sample_size = input.size();
   DCHECK(sample_size) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
@@ -134,7 +134,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
 
   // Decrypted data will be the same size as |input| size.
   auto buffer = base::MakeRefCounted<DecoderBuffer>(sample_size);
-  uint8_t* output_data = buffer->writable_data();
+  base::span<uint8_t> output_data = buffer->writable_span();
   buffer->set_timestamp(input.timestamp());
   buffer->set_duration(input.duration());
   buffer->set_is_key_frame(input.is_key_frame());
@@ -143,9 +143,8 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
     // Assume the whole buffer is encrypted.
-    return DecryptWithPattern(
-               key, base::as_bytes(base::make_span(decrypt_config->iv())),
-               pattern, base::make_span(input.data(), sample_size), output_data)
+    return DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
+                              pattern, base::span(input), output_data.data())
                ? buffer
                : nullptr;
   }
@@ -155,27 +154,31 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
     return nullptr;
   }
 
-  const uint8_t* src = input.data();
-  uint8_t* dest = output_data;
+  auto src = base::span(input);
+  auto dest = output_data;
   for (const auto& subsample : subsamples) {
     if (subsample.clear_bytes) {
       DVLOG(4) << "Copying clear_bytes: " << subsample.clear_bytes;
-      memcpy(dest, src, subsample.clear_bytes);
-      src += subsample.clear_bytes;
-      dest += subsample.clear_bytes;
+      auto [src_copy, src_rem] = src.split_at(subsample.clear_bytes);
+      auto [dest_copy, dest_rem] = dest.split_at(subsample.clear_bytes);
+      src = src_rem;
+      dest = dest_rem;
+      dest_copy.copy_from(src_copy);
     }
 
     if (subsample.cypher_bytes) {
       DVLOG(4) << "Processing cypher_bytes: " << subsample.cypher_bytes
                << ", pattern(" << pattern.crypt_byte_block() << ","
                << pattern.skip_byte_block() << ")";
+      auto [src_cypher, src_rem] = src.split_at(subsample.cypher_bytes);
+      auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
+      src = src_rem;
+      dest = dest_rem;
       if (!DecryptWithPattern(
               key, base::as_bytes(base::make_span(decrypt_config->iv())),
-              pattern, base::make_span(src, subsample.cypher_bytes), dest)) {
+              pattern, src_cypher, dest_cypher.data())) {
         return nullptr;
       }
-      src += subsample.cypher_bytes;
-      dest += subsample.cypher_bytes;
     }
   }
 

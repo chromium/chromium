@@ -50,7 +50,7 @@ static const int kDefaultFramesPerSecond = 30;
 static const int kDefaultKeyframesPerSecond = 6;
 static const uint8_t kDataA = 0x11;
 static const uint8_t kDataB = 0x33;
-static const int kDataSize = 1;
+static const size_t kDataSize = 1u;
 
 // Matchers for verifying common media log entry strings.
 MATCHER_P(ContainsTrackBufferExhaustionSkipLog, skip_milliseconds, "") {
@@ -253,20 +253,21 @@ class SourceBufferStreamTest : public testing::Test {
 
   void CheckExpectedBuffers(
       int starting_position, int ending_position) {
-    CheckExpectedBuffers(starting_position, ending_position, false, NULL, 0);
+    CheckExpectedBuffers(starting_position, ending_position, false,
+                         std::nullopt);
   }
 
   void CheckExpectedBuffers(
       int starting_position, int ending_position, bool expect_keyframe) {
     CheckExpectedBuffers(starting_position, ending_position, expect_keyframe,
-                         NULL, 0);
+                         std::nullopt);
   }
 
   void CheckExpectedBuffers(int starting_position,
                             int ending_position,
                             const uint8_t* data) {
-    CheckExpectedBuffers(starting_position, ending_position, false, data,
-                         kDataSize);
+    CheckExpectedBuffers(starting_position, ending_position, false,
+                         UNSAFE_BUFFERS(base::span(data, kDataSize)));
   }
 
   void CheckExpectedBuffers(int starting_position,
@@ -274,14 +275,14 @@ class SourceBufferStreamTest : public testing::Test {
                             const uint8_t* data,
                             bool expect_keyframe) {
     CheckExpectedBuffers(starting_position, ending_position, expect_keyframe,
-                         data, kDataSize);
+                         UNSAFE_BUFFERS(base::span(data, kDataSize)));
   }
 
-  void CheckExpectedBuffers(int starting_position,
-                            int ending_position,
-                            bool expect_keyframe,
-                            const uint8_t* expected_data,
-                            int expected_size) {
+  void CheckExpectedBuffers(
+      int starting_position,
+      int ending_position,
+      bool expect_keyframe,
+      std::optional<base::span<const uint8_t>> expected_data) {
     int current_position = starting_position;
     for (; current_position <= ending_position; current_position++) {
       scoped_refptr<StreamParserBuffer> buffer;
@@ -294,12 +295,7 @@ class SourceBufferStreamTest : public testing::Test {
         EXPECT_TRUE(buffer->is_key_frame());
 
       if (expected_data) {
-        const uint8_t* actual_data = buffer->data();
-        const int actual_size = buffer->data_size();
-        EXPECT_EQ(expected_size, actual_size);
-        for (int i = 0; i < std::min(actual_size, expected_size); i++) {
-          EXPECT_EQ(expected_data[i], actual_data[i]);
-        }
+        EXPECT_EQ(base::span(*expected_data), base::span(*buffer));
       }
 
       EXPECT_EQ(

@@ -354,7 +354,7 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
     packet->size = 0;
   } else {
     packet->data = const_cast<uint8_t*>(buffer.data());
-    packet->size = buffer.data_size();
+    packet->size = buffer.size();
 
     DCHECK(packet->data);
     DCHECK_GT(packet->size, 0);

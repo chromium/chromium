@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -469,9 +470,8 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
     }
 
     std::vector<uint8_t> decrypted_text;
-    if (decrypted.get() && decrypted->data_size()) {
-      decrypted_text.assign(decrypted->data(),
-                            decrypted->data() + decrypted->data_size());
+    if (decrypted.get() && decrypted->size()) {
+      decrypted_text = base::ToVector(base::span(*decrypted));
     }
 
     switch (result) {

@@ -227,7 +227,7 @@ void DecryptingAudioDecoder::DecodePendingBuffer() {
 
   int buffer_size = 0;
   if (!pending_buffer_to_decode_->end_of_stream()) {
-    buffer_size = pending_buffer_to_decode_->data_size();
+    buffer_size = pending_buffer_to_decode_->size();
   }
 
   if (!DecoderBuffer::DoSubsamplesMatch(*pending_buffer_to_decode_)) {

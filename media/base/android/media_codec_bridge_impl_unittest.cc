@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/android/media_codec_bridge_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string>
 
+#include "base/containers/extend.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
-#include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
@@ -408,14 +411,12 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
   auto media_codec = MediaCodecBridgeImpl::CreateVideoDecoder(config);
   ASSERT_THAT(media_codec, NotNull());
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("vp8-I-frame-320x240");
-  DecodeMediaFrame(media_codec.get(), buffer->data(), buffer->data_size(),
+  DecodeMediaFrame(media_codec.get(), buffer->data(), buffer->size(),
                    base::TimeDelta(), base::TimeDelta());
 
   // Simulate a seek to 10 seconds, and each chunk has 2 I-frames.
-  std::vector<uint8_t> chunk(buffer->data(),
-                             buffer->data() + buffer->data_size());
-  chunk.insert(chunk.end(), buffer->data(),
-               buffer->data() + buffer->data_size());
+  std::vector<uint8_t> chunk = base::ToVector(base::span(*buffer));
+  base::Extend(chunk, base::span(*buffer));
   media_codec->Flush();
   DecodeMediaFrame(media_codec.get(), &chunk[0], chunk.size(),
                    base::Microseconds(10000000), base::Microseconds(9900000));

@@ -297,7 +297,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
   if (!buffer->end_of_stream()) {
     input_buffer.reset(new Dav1dData{0});
-    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->data_size(),
+    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
                         &ReleaseDecoderBuffer, buffer.get()) < 0) {
       return false;
     }

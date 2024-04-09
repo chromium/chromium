@@ -320,7 +320,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     TRACE_EVENT1("media", "vpx_codec_decode", "buffer",
                  buffer->AsHumanReadableString());
     vpx_codec_err_t status =
-        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->data_size(),
+        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->size(),
                          nullptr /* user_priv */, 0 /* deadline */);
     if (status != VPX_CODEC_OK) {
       DLOG(ERROR) << "vpx_codec_decode() error: "

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -223,7 +224,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
   void OnError(ErrorType type) override {}
 
-  int file_size() { return file_->data_size(); }
+  int file_size() { return base::checked_cast<int>(file_->size()); }
 
  private:
   raw_ptr<base::WaitableEvent> event_;
