@@ -7704,7 +7704,7 @@
   {
     "name": "smds-support",
     "owners": ["chadduffin@chromium.org", "cros-connectivity@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "smooth-scrolling",
