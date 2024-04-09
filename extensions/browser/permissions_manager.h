@@ -116,6 +116,9 @@ class PermissionsManager : public KeyedService {
                                                const PermissionSet& permissions,
                                                UpdateReason reason) {}
 
+    // Called when `extension` was granted active tab permission.
+    virtual void OnActiveTabPermissionGranted(const Extension& extension) {}
+
     // Called when an extension's ability to show site access requests in the
     // toolbar has been updated.
     virtual void OnShowAccessRequestsInToolbarChanged(
@@ -283,6 +286,10 @@ class PermissionsManager : public KeyedService {
   void NotifyExtensionPermissionsUpdated(const Extension& extension,
                                          const PermissionSet& permissions,
                                          UpdateReason reason);
+
+  // Notifies `observers_` that `extension` has been granted active tab
+  // permission.
+  void NotifyActiveTabPermisssionGranted(const Extension& extension);
 
   // Notifies `observers_`that show access requests in toolbar pref changed.
   void NotifyShowAccessRequestsInToolbarChanged(

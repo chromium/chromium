@@ -804,6 +804,13 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
   }
 }
 
+void PermissionsManager::NotifyActiveTabPermisssionGranted(
+    const Extension& extension) {
+  for (Observer& observer : observers_) {
+    observer.OnActiveTabPermissionGranted(extension);
+  }
+}
+
 void PermissionsManager::NotifyExtensionDismissedRequests(
     const extensions::ExtensionId& extension_id,
     const url::Origin& origin) {

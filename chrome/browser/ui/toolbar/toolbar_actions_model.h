@@ -159,6 +159,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
       const extensions::Extension& extension,
       const extensions::PermissionSet& permissions,
       extensions::PermissionsManager::UpdateReason reason) override;
+  void OnActiveTabPermissionGranted(
+      const extensions::Extension& extension) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -196,6 +198,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Gets a list of pinned action ids that only contains that only contains IDs
   // with a corresponding action in the model.
   std::vector<ActionId> GetFilteredPinnedActionIds() const;
+
+  // Notifies `observers_` that `action_id` has been updated.
+  void NotifyToolbarActionUpdated(const ActionId& action_id);
 
   // Our observers.
   base::ObserverList<Observer>::Unchecked observers_;

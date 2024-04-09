@@ -11,8 +11,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/network_permissions_updater.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -193,13 +194,15 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
           process, update_message);
 
-      // If more things ever need to know about this, we should consider making
-      // an observer class.
       // It's important that this comes after the Mojo message is sent to the
       // renderer, so that any tasks executing in the renderer occur after it
       // has the updated permissions.
       ExtensionActionRunner::GetForWebContents(web_contents())
           ->OnActiveTabPermissionGranted(extension);
+
+      auto* permissions_manager =
+          PermissionsManager::Get(web_contents()->GetBrowserContext());
+      permissions_manager->NotifyActiveTabPermisssionGranted(*extension);
     }
   }
 }

@@ -210,12 +210,6 @@ void ExtensionActionRunner::OnActiveTabPermissionGranted(
 
   if (WantsToRun(extension)) {
     RunBlockedActions(extension);
-  } else {
-    // TODO(emiliapaz): This is a slight abuse of this observer since it
-    // triggers OnExtensionActionUpdated(), but active tab being granted really
-    // isn't an extension action state change. Consider using the notification
-    // permissions observer.
-    NotifyChange(extension);
   }
 }
 
@@ -463,10 +457,6 @@ void ExtensionActionRunner::RunBlockedActions(const Extension* extension) {
 
   RunPendingScriptsForExtension(extension);
   web_request_blocked_.erase(extension->id());
-
-  // The extension ran, so we need to tell the ExtensionActionAPI that we no
-  // longer want to act.
-  NotifyChange(extension);
 }
 
 void ExtensionActionRunner::DidFinishNavigation(
