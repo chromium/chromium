@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1036,6 +1037,16 @@ TEST(SearchSuggestionParserTest, FuzzTestCaseFailsGracefully) {
       root_val->GetList(), input, scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
+
+  // Parsing should remain successful with kOmniboxSuggestionAnswer enabled.
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SuggestionAnswerMigration>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      root_val->GetList(), input, scheme_classifier,
+      /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
 }
 
 TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
@@ -1058,18 +1069,37 @@ TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
     R"(["",[""],[],[],{"google:suggestdetail":{}}])",
   };
   // clang-format on
-  for (std::string json_data : cases) {
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
-    ASSERT_TRUE(root_val);
-    ASSERT_TRUE(root_val.value().is_list());
-    TestSchemeClassifier scheme_classifier;
-    AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
-                            scheme_classifier);
-    SearchSuggestionParser::Results results;
-    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
-        /*default_result_relevance=*/400,
-        /*is_keyword_result=*/false, &results));
+
+  auto test = [](std::vector<std::string> cases) {
+    for (std::string json_data : cases) {
+      std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+      ASSERT_TRUE(root_val);
+      ASSERT_TRUE(root_val.value().is_list());
+      TestSchemeClassifier scheme_classifier;
+      AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                              scheme_classifier);
+      SearchSuggestionParser::Results results;
+      ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+          root_val->GetList(), input, scheme_classifier,
+          /*default_result_relevance=*/400,
+          /*is_keyword_result=*/false, &results));
+    }
+  };
+  {
+    SCOPED_TRACE(
+        "Attempting to parse suggest results and populate SuggestionAnswer");
+    test(cases);
+  }
+  {
+    SCOPED_TRACE(
+        "Attempting to parse suggest results and populate RichAnswerTemplate");
+    // Test with kOmniboxSuggestionAnswerMigration, which will attempt to
+    // populate omnibox::RichAnswerTemplate instead of SuggestionAnswer.
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestionAnswerMigration>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    test(cases);
   }
 }
 

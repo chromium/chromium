@@ -1477,6 +1477,9 @@ extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 extern const char kOmniboxLimitKeywordModeSuggestionsName[];
 extern const char kOmniboxLimitKeywordModeSuggestionsDescription[];
 
+extern const char kOmniboxSuggestionAnswerMigrationName[];
+extern const char kOmniboxSuggestionAnswerMigrationDescription[];
+
 extern const char kOmniboxShortcutBoostName[];
 extern const char kOmniboxShortcutBoostDescription[];
 

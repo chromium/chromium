@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -37,6 +38,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -130,6 +132,11 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     match.suggestion_group_id = suggestion.suggestion_group_id();
   }
   match.answer = suggestion.answer();
+  // Ensure RichAnswerTemplate has an answer.
+  if (suggestion.answer_template().has_value() &&
+      suggestion.answer_template()->answers_size() > 0) {
+    match.answer_template = suggestion.answer_template();
+  }
   match.suggest_type = suggestion.suggest_type();
   for (const int subtype : suggestion.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
@@ -579,6 +586,16 @@ void BaseSearchProvider::AddMatchToMap(
         existing_match.duplicate_matches.back();
     if (less_relevant_duplicate_match.answer && !existing_match.answer) {
       existing_match.answer = less_relevant_duplicate_match.answer;
+      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
+        existing_match.suggestion_group_id =
+            less_relevant_duplicate_match.suggestion_group_id;
+      }
+    }
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+        less_relevant_duplicate_match.answer_template &&
+        !existing_match.answer_template) {
+      existing_match.answer_template =
+          less_relevant_duplicate_match.answer_template;
       if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
         existing_match.suggestion_group_id =
             less_relevant_duplicate_match.suggestion_group_id;

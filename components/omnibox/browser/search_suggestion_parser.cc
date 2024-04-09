@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -383,6 +384,11 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
 void SearchSuggestionParser::SuggestResult::SetAnswer(
     const SuggestionAnswer& answer) {
   answer_ = answer;
+}
+
+void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
+    const omnibox::RichAnswerTemplate& answer_template) {
+  answer_template_ = answer_template;
 }
 
 void SearchSuggestionParser::SuggestResult::SetEntityInfo(
@@ -831,6 +837,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       bool answer_parsed_successfully = false;
       std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
+      omnibox::RichAnswerTemplate answer_template;
+      bool answer_template_parsed_successfully;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
@@ -859,6 +867,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
             suggestion_detail.FindDict("ansa");
         const std::string* answer_type = suggestion_detail.FindString("ansb");
         if (answer_json && answer_type) {
+          if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
+                  .enabled &&
+              omnibox::answer_data_parser::ParseJsonToAnswerData(
+                  *answer_json, base::UTF8ToUTF16(*answer_type),
+                  &answer_template)) {
+            answer_template_parsed_successfully = true;
+          }
           if (SuggestionAnswer::ParseAnswer(
                   *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
             base::UmaHistogramSparse("Omnibox.AnswerParseType", answer.type());
@@ -879,6 +894,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         nav_intent, relevance, relevances != nullptr,
                         should_prefetch, should_prerender, trimmed_input));
 
+      // TODO(b/327497146) Make use of RichAnswerTemplate instead of
+      // SuggestionAnswer when kOmniboxSuggestionAnswerMigration is enabled.
+      if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+          answer_template_parsed_successfully) {
+        results->suggest_results.back().SetRichAnswerTemplate(answer_template);
+      }
       if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);
       }

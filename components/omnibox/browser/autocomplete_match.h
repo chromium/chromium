@@ -31,6 +31,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
@@ -785,6 +786,8 @@ struct AutocompleteMatch {
 
   // A rich-format version of the display for the dropdown.
   std::optional<SuggestionAnswer> answer;
+
+  std::optional<omnibox::RichAnswerTemplate> answer_template;
 
   // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set

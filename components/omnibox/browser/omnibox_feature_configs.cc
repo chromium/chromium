@@ -138,6 +138,14 @@ ShortcutBoosting::ShortcutBoosting() {
 }
 
 // static
+BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
+             "OmniboxSuggestionAnswerMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+SuggestionAnswerMigration::SuggestionAnswerMigration() {
+  enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
+}
+
+// static
 BASE_FEATURE(VitalizeAutocompletedKeywords::kVitalizeAutocompletedKeywords,
              "OmniboxVitalizeAutocompletedKeywords",
              base::FEATURE_DISABLED_BY_DEFAULT);

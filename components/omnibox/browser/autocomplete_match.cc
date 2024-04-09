@@ -299,6 +299,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       suggestion_group_id(match.suggestion_group_id),
       swap_contents_and_description(match.swap_contents_and_description),
       answer(match.answer),
+      answer_template(match.answer_template),
       transition(match.transition),
       type(match.type),
       suggest_type(match.suggest_type),
@@ -364,6 +365,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   swap_contents_and_description =
       std::move(match.swap_contents_and_description);
   answer = std::move(match.answer);
+  answer_template = std::move(match.answer_template);
   transition = std::move(match.transition);
   type = std::move(match.type);
   suggest_type = std::move(match.suggest_type);
@@ -432,6 +434,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   suggestion_group_id = match.suggestion_group_id;
   swap_contents_and_description = match.swap_contents_and_description;
   answer = match.answer;
+  answer_template = match.answer_template;
   transition = match.transition;
   type = match.type;
   suggest_type = match.suggest_type;

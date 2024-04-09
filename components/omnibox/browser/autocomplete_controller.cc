@@ -1326,6 +1326,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // it along with a keyword hint. Prefer the keyword hint, and revert
       // to a typical search.
       match.answer.reset();
+      match.answer_template.reset();
       match.associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));

@@ -21,6 +21,7 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
@@ -192,6 +193,12 @@ class SearchSuggestionParser {
     void SetAnswer(const SuggestionAnswer& answer);
     const std::optional<SuggestionAnswer>& answer() const { return answer_; }
 
+    void SetRichAnswerTemplate(
+        const omnibox::RichAnswerTemplate& answer_template);
+    const std::optional<omnibox::RichAnswerTemplate>& answer_template() const {
+      return answer_template_;
+    }
+
     void SetEntityInfo(const omnibox::EntityInfo&);
     const omnibox::EntityInfo& entity_info() const { return entity_info_; }
 
@@ -230,6 +237,9 @@ class SearchSuggestionParser {
 
     // Optional short answer to the input that produced this suggestion.
     std::optional<SuggestionAnswer> answer_;
+
+    // Optional proto that contains answer info.
+    std::optional<omnibox::RichAnswerTemplate> answer_template_;
 
     // Proto containing various pieces of data related to entity suggestions.
     omnibox::EntityInfo entity_info_;

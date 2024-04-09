@@ -2532,6 +2532,11 @@ const char kOmniboxLimitKeywordModeSuggestionsName[] =
 const char kOmniboxLimitKeywordModeSuggestionsDescription[] =
     "Limit scope of suggestions in keyword mode";
 
+const char kOmniboxSuggestionAnswerMigrationName[] =
+    "Omnibox SuggestionAnswer Migration";
+const char kOmniboxSuggestionAnswerMigrationDescription[] =
+    "Uses protos instead of SuggestionAnswer to hold answer data.";
+
 const char kOmniboxShortcutBoostName[] = "Omnibox shortcut boosting";
 const char kOmniboxShortcutBoostDescription[] =
     "Promote shortcuts to be default when available.";

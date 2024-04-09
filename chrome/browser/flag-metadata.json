@@ -6370,6 +6370,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-suggestion-answer-migration",
+    "owners": ["jennserrano@google.com", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

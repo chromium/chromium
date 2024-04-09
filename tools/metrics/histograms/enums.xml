@@ -19868,6 +19868,7 @@ from previous Chrome versions.
   <int value="-539515670" label="CrOSLateBootArcVmmSwap:disabled"/>
   <int value="-538728016" label="ChromeCartDomBasedHeuristics:disabled"/>
   <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
+  <int value="-538323456" label="OmniboxSuggestionAnswerMigration:enabled"/>
   <int value="-538317834" label="ShimlessRMAComplianceCheck:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
   <int value="-538003236" label="OneTimePermission:disabled"/>
@@ -22746,6 +22747,7 @@ from previous Chrome versions.
   <int value="742083923" label="MimeHandlerViewInCrossProcessFrame:disabled"/>
   <int value="742363749" label="OSKResizesVisualViewportByDefault:disabled"/>
   <int value="742797916" label="TabStripRedesign:disabled"/>
+  <int value="743124458" label="OmniboxSuggestionAnswerMigration:disabled"/>
   <int value="743696247" label="RedInterstitialFacelift:enabled"/>
   <int value="743714331" label="HelpAppLauncherSearch:enabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>

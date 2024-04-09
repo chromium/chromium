@@ -170,6 +170,14 @@ struct RealboxContextualAndTrendingSuggestions
   size_t trending_suggestions_limit;
 };
 
+// If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display
+// answers.
+struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
+  DECLARE_FEATURE(kOmniboxSuggestionAnswerMigration);
+  SuggestionAnswerMigration();
+  bool enabled;
+};
+
 // If enabled, the shortcut provider is more aggressive in scoring.
 struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);
