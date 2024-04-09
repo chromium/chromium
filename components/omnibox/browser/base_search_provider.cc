@@ -194,6 +194,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.fill_into_edit = GetFillIntoEdit(suggestion, template_url);
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
+  match.search_terms_args->request_source = input.request_source();
   match.search_terms_args->original_query = original_query;
   match.search_terms_args->accepted_suggestion = accepted_suggestion;
   match.search_terms_args->additional_query_params =

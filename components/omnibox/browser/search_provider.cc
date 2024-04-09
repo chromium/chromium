@@ -904,6 +904,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   search_term_args.input_type = input.type();
   search_term_args.cursor_position = input.cursor_position();
   search_term_args.page_classification = input.current_page_classification();
+  search_term_args.request_source = input.request_source();
   // Session token and prefetch data required for answers.
   search_term_args.session_token =
       client()->GetTemplateURLService()->GetSessionToken();

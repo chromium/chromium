@@ -378,6 +378,7 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
+  search_terms_args.request_source = input.request_source();
   search_terms_args.focus_type = input.focus_type();
   search_terms_args.current_page_url = result_type == ResultType::kRemoteSendURL
                                            ? input.current_url().spec()
@@ -465,6 +466,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
+  search_terms_args.request_source = input.request_source();
   search_terms_args.focus_type = input.focus_type();
   search_terms_args.current_page_url =
       result_type_running_ == ResultType::kRemoteSendURL

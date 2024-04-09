@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "components/search_engines/search_terms_data.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -169,6 +170,22 @@ class AutocompleteInput {
   metrics::OmniboxEventProto::PageClassification current_page_classification()
       const {
     return current_page_classification_;
+  }
+
+  // The Suggest or Search request source. Determines the client= and source= or
+  // sourceid= in the Suggest and Search request URLs respectively.
+  SearchTermsData::RequestSource request_source() const {
+    switch (current_page_classification()) {
+      case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
+        return SearchTermsData::RequestSource::CONTEXTUAL_SEARCHBOX;
+      case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
+        return SearchTermsData::RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
+      case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
+        return SearchTermsData::RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
+      default:
+        break;
+    }
+    return SearchTermsData::RequestSource::SEARCHBOX;
   }
 
   // The type of input supplied.
