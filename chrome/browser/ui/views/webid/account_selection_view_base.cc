@@ -169,7 +169,8 @@ class AccountImageView : public views::ImageView {
 
   // Fetch image and set it on AccountImageView.
   void FetchAccountImage(const content::IdentityRequestAccount& account,
-                         image_fetcher::ImageFetcher& image_fetcher) {
+                         image_fetcher::ImageFetcher& image_fetcher,
+                         int image_size) {
     image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
                                              kImageFetcherUmaClient);
 
@@ -180,7 +181,8 @@ class AccountImageView : public views::ImageView {
         account.picture,
         base::BindOnce(&AccountImageView::OnAccountImageFetched,
                        weak_ptr_factory_.GetWeakPtr(),
-                       base::UTF8ToUTF16(account.name), &image_fetcher),
+                       base::UTF8ToUTF16(account.name), &image_fetcher,
+                       image_size),
         std::move(params));
   }
 
@@ -207,6 +209,7 @@ class AccountImageView : public views::ImageView {
  private:
   void OnAccountImageFetched(const std::u16string& account_name,
                              image_fetcher::ImageFetcher* image_fetcher,
+                             int image_size,
                              const gfx::Image& image,
                              const image_fetcher::RequestMetadata& metadata) {
     gfx::ImageSkia avatar;
@@ -216,11 +219,11 @@ class AccountImageView : public views::ImageView {
         letter = base::i18n::ToUpper(account_name.substr(0, 1));
       }
       avatar = gfx::CanvasImageSource::MakeImageSkia<
-          LetterCircleCroppedImageSkiaSource>(letter, kDesiredAvatarSize);
+          LetterCircleCroppedImageSkiaSource>(letter, image_size);
     } else {
       avatar =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              image.AsImageSkia(), std::nullopt, kDesiredAvatarSize);
+              image.AsImageSkia(), std::nullopt, image_size);
     }
     if (idp_image_) {
       SetBadgedImage(avatar, *idp_image_);
@@ -353,7 +356,7 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true));
+                               /*adjust_height_for_width=*/true));
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
@@ -379,7 +382,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       ConfigureBadgeIdp(*account_image_view,
                         idp_display_data.idp_metadata.brand_icon_url);
     }
-    account_image_view->FetchAccountImage(account, *image_fetcher_);
+    account_image_view->FetchAccountImage(account, *image_fetcher_,
+                                          avatar_size);
 
     std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
     if (is_modal_dialog) {
@@ -419,7 +423,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     }
     return row;
   }
-  account_image_view->FetchAccountImage(account, *image_fetcher_);
+  account_image_view->FetchAccountImage(account, *image_fetcher_, avatar_size);
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

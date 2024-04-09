@@ -217,11 +217,12 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
       .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets::VH(/*vertical=*/0,
-                          /*horizontal=*/layout_provider->GetDistanceMetric(
-                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/0, /*left=*/
+                                 layout_provider->GetDistanceMetric(
+                                     views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                      /*bottom=*/0, /*right=*/0))
       .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
                                            /*left=*/kDialogMargin,
                                            /*bottom=*/kDialogMargin,
@@ -431,8 +432,6 @@ AccountSelectionModalView::CreateSingleAccountChooser(
   }
 
   // Add account row.
-  // TODO(crbug.com/1518356): There should be an arrow to the right of the
-  // account when the account row is hoverable.
   row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover,
                                      /*should_include_idp=*/false,
                                      /*is_modal_dialog=*/true));
@@ -449,6 +448,8 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
     disclosure_label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+    disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0, /*right=*/0)));
     row->AddChildView(std::move(disclosure_label));
   }
   return row;
