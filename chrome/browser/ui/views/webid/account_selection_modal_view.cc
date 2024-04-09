@@ -87,8 +87,6 @@ AccountSelectionModalView::AccountSelectionModalView(
   title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/std::nullopt,
                     idp_title, rp_context);
   SetAccessibleTitle(title_);
-
-  // TODO(crbug.com/1518356): Add loading modal UI.
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
@@ -356,10 +354,8 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
-  RemoveChildViews();
+  RemoveNonHeaderChildViews();
 
-  header_view_ = AddChildView(
-      CreateAccountChooserHeader(idp_display_data_list[0].idp_metadata));
   account_chooser_ =
       AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
 
@@ -461,10 +457,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
-  RemoveChildViews();
+  RemoveNonHeaderChildViews();
 
-  header_view_ =
-      AddChildView(CreateAccountChooserHeader(idp_display_data.idp_metadata));
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/true,
@@ -515,39 +509,12 @@ void AccountSelectionModalView::ShowLoadingDialog() {
   InitDialogWidget();
 }
 
-std::unique_ptr<views::View>
-AccountSelectionModalView::CreateRequestPermissionHeader(
-    const GURL& brand_icon_url) {
-  std::unique_ptr<views::View> header = std::make_unique<views::View>();
-  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(/*top=*/kDialogMargin, /*left=*/kDialogMargin,
-                        /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin),
-      /*between_child_spacing=*/kVerticalPadding));
-
-  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
-  header->AddChildView(CreateBrandIconImageView(brand_icon_url));
-
-  // Add the title.
-  title_label_ = header->AddChildView(
-      std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
-                                     views::style::STYLE_HEADLINE_4));
-  SetLabelProperties(title_label_);
-
-  return header;
-}
-
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data) {
-  RemoveChildViews();
-  title_ = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONFIRM_ACCOUNT,
-                                      top_frame_for_display,
-                                      idp_display_data.idp_etld_plus_one);
-  SetAccessibleTitle(title_);
-  header_view_ = AddChildView(CreateRequestPermissionHeader(
-      idp_display_data.idp_metadata.brand_icon_url));
+  RemoveNonHeaderChildViews();
+
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,
@@ -645,16 +612,22 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
   return std::nullopt;
 }
 
-void AccountSelectionModalView::RemoveChildViews() {
+void AccountSelectionModalView::RemoveNonHeaderChildViews() {
   // Make sure not to keep dangling pointers around first.
-  header_view_ = nullptr;
   use_other_account_button_ = nullptr;
   back_button_ = nullptr;
   continue_button_ = nullptr;
   account_chooser_ = nullptr;
   title_label_ = nullptr;
 
-  RemoveAllChildViews();
+  const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+      children();
+  for (views::View* child_view : child_views) {
+    if (child_view != header_view_) {
+      RemoveChildView(child_view);
+      delete child_view;
+    }
+  }
 }
 
 BEGIN_METADATA(AccountSelectionModalView)

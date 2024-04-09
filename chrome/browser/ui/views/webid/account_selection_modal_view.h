@@ -87,12 +87,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateAccountChooserHeader(
       const content::IdentityProviderMetadata& idp_metadata);
 
-  // Returns a View for header of a request permission dialog. It contains text
-  // to prompt the user to confirm a sign in to an RP with an account from an
-  // IDP.
-  std::unique_ptr<views::View> CreateRequestPermissionHeader(
-      const GURL& brand_icon_url);
-
   // Returns a View for single account chooser. It contains a row of account
   // information. `The size of the `idp_display_data.accounts` vector must be 1.
   // `should_hover` determines whether the row is clickable.
@@ -135,7 +129,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   void UpdateModalPositionAndTitle();
 
   // Removes all child views and dangling pointers.
-  void RemoveChildViews();
+  void RemoveNonHeaderChildViews();
 
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
