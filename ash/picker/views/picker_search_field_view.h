@@ -65,7 +65,8 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   // Set the placeholder text to show when the textfield is empty.
   void SetPlaceholderText(std::u16string_view new_placeholder_text);
 
-  // Sets the current search query text.
+  // Gets or sets the current search query text.
+  std::u16string_view GetQueryText() const;
   void SetQueryText(std::u16string text);
 
   const views::Textfield& textfield_for_testing() const { return *textfield_; }

@@ -117,6 +117,10 @@ void PickerSearchFieldView::SetPlaceholderText(
   textfield_->SetPlaceholderText(std::u16string(new_placeholder_text));
 }
 
+std::u16string_view PickerSearchFieldView::GetQueryText() const {
+  return textfield_->GetText();
+}
+
 void PickerSearchFieldView::SetQueryText(std::u16string text) {
   textfield_->SetText(std::move(text));
 }

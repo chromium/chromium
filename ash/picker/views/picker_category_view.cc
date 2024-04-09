@@ -26,7 +26,7 @@ PickerCategoryView::PickerCategoryView(
 
   search_results_view_ = AddChildView(std::make_unique<PickerSearchResultsView>(
       picker_view_width, std::move(select_search_result_callback),
-      asset_fetcher));
+      base::DoNothing(), asset_fetcher));
 }
 
 PickerCategoryView::~PickerCategoryView() = default;

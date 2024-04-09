@@ -40,6 +40,8 @@ class ASH_EXPORT PickerSearchResultsSection {
 
   base::span<const PickerSearchResult> results() const;
 
+  bool has_more_results() const;
+
  private:
   PickerSectionType type_;
 

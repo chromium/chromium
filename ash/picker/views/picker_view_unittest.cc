@@ -908,5 +908,63 @@ TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
       u"");
 }
 
+TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  views::View* trailing_link = view->search_results_view_for_testing()
+                                   .section_views_for_testing()[0]
+                                   ->title_trailing_link_for_testing();
+
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(trailing_link);
+
+  // Should call search a second time.
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, KeepsSearchFieldQueryTextWhenClickingOnSeeMoreResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  views::View* trailing_link = view->search_results_view_for_testing()
+                                   .section_views_for_testing()[0]
+                                   ->title_trailing_link_for_testing();
+
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(trailing_link);
+
+  EXPECT_EQ(
+      view->search_field_view_for_testing().textfield_for_testing().GetText(),
+      u"a");
+}
+
 }  // namespace
 }  // namespace ash

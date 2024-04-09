@@ -40,4 +40,21 @@ base::span<const PickerSearchResult> PickerSearchResultsSection::results()
   return results_;
 }
 
+bool PickerSearchResultsSection::has_more_results() const {
+  // TODO: b/322081736 - Determine whether there are more results by passing an
+  // argument to `PickerSearchResultsSection`.
+  switch (type_) {
+    case PickerSectionType::kCategories:
+    case PickerSectionType::kSuggestions:
+    case PickerSectionType::kRecentlyUsed:
+      return false;
+    case PickerSectionType::kExpressions:
+    case PickerSectionType::kLinks:
+    case PickerSectionType::kFiles:
+    case PickerSectionType::kDriveFiles:
+    case PickerSectionType::kGifs:
+      return true;
+  }
+}
+
 }  // namespace ash

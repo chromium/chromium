@@ -36,7 +36,9 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
@@ -75,7 +77,8 @@ auto MatchesResultSectionWithOneItem(PickerSectionType section_type,
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(
       PickerSearchResultsSection(PickerSectionType::kExpressions,
@@ -94,7 +97,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
 
 TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
   view.AppendSearchResults(
       PickerSearchResultsSection(PickerSectionType::kExpressions,
                                  {{PickerSearchResult::Text(u"Result")}}));
@@ -106,7 +110,8 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kGifs,
@@ -123,7 +128,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
@@ -137,7 +143,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kFiles,
@@ -154,7 +161,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kFiles,
@@ -171,7 +179,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
 
 TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(
       PickerSearchResultsSection(PickerSectionType::kExpressions,
@@ -191,7 +200,8 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
 TEST_F(PickerSearchResultsViewTest,
        NoPseudoFocusedActionForEmptySearchResults) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
 
   EXPECT_FALSE(view.DoPseudoFocusedAction());
 }
@@ -200,7 +210,7 @@ TEST_F(PickerSearchResultsViewTest, PseudoFocusedActionDefaultsToFirstResult) {
   base::test::TestFuture<const PickerSearchResult&> future;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, future.GetCallback(),
-                               &asset_fetcher);
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
@@ -214,7 +224,7 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusRight) {
   base::test::TestFuture<const PickerSearchResult&> future;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, future.GetCallback(),
-                               &asset_fetcher);
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
@@ -229,7 +239,7 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
   base::test::TestFuture<const PickerSearchResult&> future;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, future.GetCallback(),
-                               &asset_fetcher);
+                               base::DoNothing(), &asset_fetcher);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
@@ -249,7 +259,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          kPickerWidth, future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), base::DoNothing(),
+          &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
@@ -272,7 +283,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          kPickerWidth, future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), base::DoNothing(),
+          &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
@@ -288,6 +300,62 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
 
   EXPECT_EQ(future.Get(),
             PickerSearchResult::Category(PickerCategory::kExpressions));
+}
+
+TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, base::DoNothing(), base::DoNothing(), &asset_fetcher));
+
+  view->AppendSearchResults(
+      PickerSearchResultsSection(PickerSectionType::kGifs, {}));
+
+  ASSERT_THAT(
+      view->section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "title_trailing_link_for_testing",
+          &PickerSectionView::title_trailing_link_for_testing, NotNull()))));
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       DoesNotShowSeeMoreLinkWhenThereAreNoMoreResults) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, base::DoNothing(), base::DoNothing(), &asset_fetcher));
+
+  view->AppendSearchResults(
+      PickerSearchResultsSection(PickerSectionType::kSuggestions, {}));
+
+  ASSERT_THAT(
+      view->section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "title_trailing_link_for_testing",
+          &PickerSectionView::title_trailing_link_for_testing, IsNull()))));
+}
+
+TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  MockPickerAssetFetcher asset_fetcher;
+  base::test::TestFuture<PickerSectionType> future;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, base::DoNothing(), future.GetRepeatingCallback(),
+          &asset_fetcher));
+  widget->Show();
+  view->AppendSearchResults(
+      PickerSearchResultsSection(PickerSectionType::kGifs, {}));
+
+  views::View* trailing_link =
+      view->section_views_for_testing()[0]->title_trailing_link_for_testing();
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(*trailing_link);
+
+  EXPECT_EQ(future.Get(), PickerSectionType::kGifs);
 }
 
 struct PickerSearchResultTestCase {
@@ -310,7 +378,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          kPickerWidth, future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), base::DoNothing(),
+          &asset_fetcher));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions, {{test_case.result}}));
@@ -335,7 +404,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest,
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          kPickerWidth, future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), base::DoNothing(),
+          &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions, {{test_case.result}}));
 

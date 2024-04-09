@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -81,6 +82,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   }
 
  private:
+  void OnSelectMoreResults(PickerSectionType type);
+
   // Starts a search with `query`, with search results being returned to
   // `PublishSearchResults`.
   void StartSearch(const std::u16string& query);
@@ -91,9 +94,15 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // Selects a search result.
   void SelectSearchResult(const PickerSearchResult& result);
 
-  // Selects a category. This shows the category view and fetches results for
-  // the category, which are returned to `PublishCategoryResults`.
+  // Selects a category. This shows the category view and fetches zero-state
+  // results for the category, which are returned to `PublishCategoryResults`.
   void SelectCategory(PickerCategory category);
+
+  // Selects a category. This shows the category view and fetches search
+  // results for the category based on `query`, which are returned to
+  // `PublishSearchResults`.
+  void SelectCategoryWithQuery(PickerCategory category,
+                               std::u16string_view query);
 
   // Displays `results` in the category view.
   void PublishCategoryResults(std::vector<PickerSearchResultsSection> results);

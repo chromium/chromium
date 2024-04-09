@@ -54,8 +54,10 @@ constexpr int kIconSize = 20;
 PickerSearchResultsView::PickerSearchResultsView(
     int picker_view_width,
     SelectSearchResultCallback select_search_result_callback,
+    SelectMoreResultsCallback select_more_results_callback,
     PickerAssetFetcher* asset_fetcher)
     : select_search_result_callback_(std::move(select_search_result_callback)),
+      select_more_results_callback_(std::move(select_more_results_callback)),
       asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -190,6 +192,12 @@ void PickerSearchResultsView::AppendSearchResults(
   auto* section_view = section_list_view_->AddSection();
   section_view->AddTitleLabel(
       GetSectionTitleForPickerSectionType(section.type()));
+  if (section.has_more_results()) {
+    section_view->AddTitleTrailingLink(
+        l10n_util::GetStringUTF16(IDS_PICKER_SEE_MORE_BUTTON_TEXT),
+        base::BindRepeating(&PickerSearchResultsView::OnTrailingLinkClicked,
+                            base::Unretained(this), section.type()));
+  }
   for (const auto& result : section.results()) {
     AddResultToSection(result, section_view);
   }
@@ -335,6 +343,12 @@ void PickerSearchResultsView::SetPseudoFocusedView(views::View* view) {
   pseudo_focused_view_ = view;
   ApplyPickerPseudoFocusToView(pseudo_focused_view_);
   ScrollPseudoFocusedViewToVisible();
+}
+
+void PickerSearchResultsView::OnTrailingLinkClicked(
+    PickerSectionType section_type,
+    const ui::Event& event) {
+  select_more_results_callback_.Run(section_type);
 }
 
 void PickerSearchResultsView::ScrollPseudoFocusedViewToVisible() {

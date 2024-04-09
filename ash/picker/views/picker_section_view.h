@@ -91,6 +91,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
   PickerItemView* GetItemRightOf(PickerItemView* item);
 
   const views::Label* title_label_for_testing() const { return title_label_; }
+  const views::Link* title_trailing_link_for_testing() const {
+    return title_trailing_link_;
+  }
+  views::Link* title_trailing_link_for_testing() {
+    return title_trailing_link_;
+  }
 
   // TODO: b/322900302 - Figure out a nice way to access the item views for
   // keyboard navigation (e.g. how to handle grid items).

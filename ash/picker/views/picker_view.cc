@@ -123,6 +123,25 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
   return picker_view_bounds;
 }
 
+PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
+  switch (type) {
+    case PickerSectionType::kCategories:
+    case PickerSectionType::kSuggestions:
+    case PickerSectionType::kRecentlyUsed:
+      NOTREACHED_NORETURN();
+    case PickerSectionType::kExpressions:
+      return PickerCategory::kExpressions;
+    case PickerSectionType::kLinks:
+      return PickerCategory::kLinks;
+    case PickerSectionType::kFiles:
+      return PickerCategory::kLocalFiles;
+    case PickerSectionType::kDriveFiles:
+      return PickerCategory::kDriveFiles;
+    case PickerSectionType::kGifs:
+      return PickerCategory::kExpressions;
+  }
+}
+
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
@@ -194,6 +213,11 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                              search_field_view_->bounds().CenterPoint().y());
 }
 
+void PickerView::OnSelectMoreResults(PickerSectionType type) {
+  SelectCategoryWithQuery(GetCategoryForMoreResults(type),
+                          search_field_view_->GetQueryText());
+}
+
 void PickerView::StartSearch(const std::u16string& query) {
   if (!query.empty()) {
     SetActivePage(search_results_view_);
@@ -233,6 +257,11 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 }
 
 void PickerView::SelectCategory(PickerCategory category) {
+  SelectCategoryWithQuery(category, /*query=*/u"");
+}
+
+void PickerView::SelectCategoryWithQuery(PickerCategory category,
+                                         std::u16string_view query) {
   selected_category_ = category;
 
   if (category == PickerCategory::kExpressions) {
@@ -259,11 +288,16 @@ void PickerView::SelectCategory(PickerCategory category) {
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
-  search_field_view_->SetQueryText(u"");
-  SetActivePage(category_view_);
-  delegate_->GetResultsForCategory(
-      category, base::BindRepeating(&PickerView::PublishCategoryResults,
-                                    weak_ptr_factory_.GetWeakPtr()));
+  search_field_view_->SetQueryText(std::u16string(query));
+
+  if (query.empty()) {
+    SetActivePage(category_view_);
+    delegate_->GetResultsForCategory(
+        category, base::BindRepeating(&PickerView::PublishCategoryResults,
+                                      weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    StartSearch(std::u16string(query));
+  }
 }
 
 void PickerView::PublishCategoryResults(
@@ -307,6 +341,8 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
           kPickerSize.width(),
           base::BindOnce(&PickerView::SelectSearchResult,
                          base::Unretained(this)),
+          base::BindRepeating(&PickerView::OnSelectMoreResults,
+                              base::Unretained(this)),
           delegate_->GetAssetFetcher()));
   SetActivePage(zero_state_view_);
 }
