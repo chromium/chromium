@@ -752,6 +752,9 @@ static_library("ui") {
 
   if (is_win || is_linux || is_mac || is_chromeos_ash) {
     sources += [
+      "passwords/password_cross_domain_confirmation_popup_controller.cc",
+      "passwords/password_cross_domain_confirmation_popup_controller.h",
+      "passwords/password_cross_domain_confirmation_popup_view.h",
       "webui/connectors_internals/connectors_internals_page_handler.cc",
       "webui/connectors_internals/connectors_internals_page_handler.h",
       "webui/connectors_internals/connectors_internals_ui.cc",
@@ -5700,6 +5703,8 @@ static_library("ui") {
       "views/passwords/password_auto_sign_in_view.h",
       "views/passwords/password_bubble_view_base.cc",
       "views/passwords/password_bubble_view_base.h",
+      "views/passwords/password_cross_domain_confirmation_popup_view_views.cc",
+      "views/passwords/password_cross_domain_confirmation_popup_view_views.h",
       "views/passwords/password_default_store_changed_view.cc",
       "views/passwords/password_default_store_changed_view.h",
       "views/passwords/password_generation_confirmation_view.cc",
