@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.RequestDuration.{IDBRequestType}" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2024-10-06">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Records end to end duration of an IndexedDB operation.</summary>
