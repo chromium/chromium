@@ -6,4 +6,7 @@ import("//build/config/features.gni")
 
 declare_args() {
   webnn_use_tflite = is_android || is_chromeos || is_linux
+
+  # Enable logging of TFLite profiling information on MLGraph destruction.
+  webnn_enable_tflite_profiler = false
 }

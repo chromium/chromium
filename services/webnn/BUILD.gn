@@ -9,7 +9,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "WEBNN_USE_TFLITE=$webnn_use_tflite" ]
+  flags = [
+    "WEBNN_USE_TFLITE=$webnn_use_tflite",
+    "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
+  ]
 }
 
 source_set("coreml_graph_builder") {

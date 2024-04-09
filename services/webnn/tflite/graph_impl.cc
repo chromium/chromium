@@ -14,6 +14,10 @@
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
 
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+#include "third_party/tflite/src/tensorflow/lite/profiling/profile_summarizer.h"
+#endif
+
 namespace webnn::tflite {
 
 namespace {
@@ -42,6 +46,35 @@ std::string_view TfLiteStatusToString(TfLiteStatus status) {
 }
 
 }  // namespace
+
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter& interpreter)
+    : profiler_(/*max_num_entries=*/1024), interpreter_(interpreter) {
+  interpreter_->SetProfiler(&profiler_);
+}
+
+ScopedTfLiteProfiler::~ScopedTfLiteProfiler() {
+  ::tflite::profiling::ProfileSummarizer profile_summarizer;
+  auto profile_events = profiler_.GetProfileEvents();
+  profile_summarizer.ProcessProfiles(profile_events, *interpreter_);
+  LOG(INFO) << profile_summarizer.GetOutputString();
+  interpreter_->SetProfiler(nullptr);
+}
+
+void ScopedTfLiteProfiler::Start() {
+  profiler_.StartProfiling();
+}
+
+void ScopedTfLiteProfiler::Stop() {
+  profiler_.StopProfiling();
+}
+#else
+ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter&) {}
+ScopedTfLiteProfiler::~ScopedTfLiteProfiler() = default;
+
+void ScopedTfLiteProfiler::Start() {}
+void ScopedTfLiteProfiler::Stop() {}
+#endif
 
 // static
 void GraphImpl::CreateAndBuild(
@@ -79,6 +112,9 @@ void GraphImpl::CreateAndBuild(
     return;
   }
 
+  // The profiler (if enabled) must be initialized before tensors are allocated.
+  ScopedTfLiteProfiler profiler(*interpreter);
+
   status = interpreter->AllocateTensors();
   if (status != kTfLiteOk) {
     std::move(callback).Run(ToError<mojom::CreateGraphResult>(
@@ -90,9 +126,9 @@ void GraphImpl::CreateAndBuild(
 
   mojo::PendingRemote<mojom::WebNNGraph> graph;
   mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(ComputeResourceInfo(graph_info),
-                                     std::move(model_content), std::move(model),
-                                     std::move(interpreter))),
+      base::WrapUnique(new GraphImpl(
+          ComputeResourceInfo(graph_info), std::move(model_content),
+          std::move(model), std::move(interpreter), std::move(profiler))),
       graph.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(
       mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
@@ -103,11 +139,13 @@ GraphImpl::~GraphImpl() = default;
 GraphImpl::GraphImpl(ComputeResourceInfo compute_resource_info,
                      flatbuffers::DetachedBuffer model_content,
                      std::unique_ptr<::tflite::FlatBufferModel> model,
-                     std::unique_ptr<::tflite::Interpreter> interpreter)
+                     std::unique_ptr<::tflite::Interpreter> interpreter,
+                     ScopedTfLiteProfiler profiler)
     : WebNNGraphImpl(std::move(compute_resource_info)),
       model_content_(std::move(model_content)),
       model_(std::move(model)),
-      interpreter_(std::move(interpreter)) {}
+      interpreter_(std::move(interpreter)),
+      profiler_(std::move(profiler)) {}
 
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
@@ -120,7 +158,9 @@ void GraphImpl::ComputeImpl(
     std::ranges::copy(base::make_span(it->second), tensor->data.raw);
   }
 
+  profiler_.Start();
   TfLiteStatus status = interpreter_->Invoke();
+  profiler_.Stop();
   if (status != kTfLiteOk) {
     std::move(callback).Run(ToError<mojom::ComputeResult>(
         mojom::Error::Code::kUnknownError,

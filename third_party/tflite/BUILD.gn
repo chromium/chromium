@@ -34,6 +34,7 @@ config("tflite_config") {
   include_dirs = [
     "shims",
     "src",
+    "src/third_party/xla",
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
@@ -664,6 +665,12 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/profiling/memory_usage_monitor.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
+    "src/tensorflow/lite/profiling/profile_buffer.cc",
+    "src/tensorflow/lite/profiling/profile_buffer.h",
+    "src/tensorflow/lite/profiling/profile_summarizer.cc",
+    "src/tensorflow/lite/profiling/profile_summarizer.h",
+    "src/tensorflow/lite/profiling/profile_summary_formatter.cc",
+    "src/tensorflow/lite/profiling/profile_summary_formatter.h",
     "src/tensorflow/lite/profiling/root_profiler.cc",
     "src/tensorflow/lite/profiling/root_profiler.h",
     "src/tensorflow/lite/profiling/telemetry/profiler.cc",
@@ -688,6 +695,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/type_to_tflitetype.h",
     "src/tensorflow/lite/util.cc",
     "src/tensorflow/lite/version.h",
+    "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
+    "src/third_party/xla/xla/tsl/util/stats_calculator.h",
   ]
 
   if (build_tflite_with_xnnpack) {

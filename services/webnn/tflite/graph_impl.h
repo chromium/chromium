@@ -5,14 +5,36 @@
 #ifndef SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
 
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/core/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+#include "third_party/tflite/src/tensorflow/lite/profiling/buffered_profiler.h"
+#endif
+
 namespace webnn::tflite {
 
+// When the WEBNN_ENABLE_TFLITE_PROFILER build flag is enabled this creates a
+// profiler which dumps a summary to the log when destroyed.
+class ScopedTfLiteProfiler {
+ public:
+  // `interpreter` must outlive this object.
+  explicit ScopedTfLiteProfiler(::tflite::Interpreter& interpreter);
+  ~ScopedTfLiteProfiler();
+
+  void Start();
+  void Stop();
+
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+ private:
+  ::tflite::profiling::BufferedProfiler profiler_;
+  raw_ref<::tflite::Interpreter> interpreter_;
+#endif
+};
 // GraphImpl inherits from WebNNGraphImpl to represent a TFLite graph
 // implementation. It is mainly responsible for building a TFLite flatbuffer
 // model from mojom::GraphInfo via tflite::GraphBuilder, then initializing and
@@ -30,7 +52,8 @@ class GraphImpl final : public WebNNGraphImpl {
   GraphImpl(ComputeResourceInfo compute_resource_info,
             flatbuffers::DetachedBuffer model_content,
             std::unique_ptr<::tflite::FlatBufferModel> model,
-            std::unique_ptr<::tflite::Interpreter> intepreter);
+            std::unique_ptr<::tflite::Interpreter> intepreter,
+            ScopedTfLiteProfiler profiler);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` were
   // validated in base class so we can use them to compute directly, the result
@@ -43,6 +66,7 @@ class GraphImpl final : public WebNNGraphImpl {
   flatbuffers::DetachedBuffer model_content_;
   std::unique_ptr<::tflite::FlatBufferModel> model_;
   std::unique_ptr<::tflite::Interpreter> interpreter_;
+  ScopedTfLiteProfiler profiler_;
 };
 
 }  // namespace webnn::tflite
