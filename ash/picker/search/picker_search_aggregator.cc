@@ -59,7 +59,8 @@ PickerSearchAggregator::~PickerSearchAggregator() = default;
 
 void PickerSearchAggregator::HandleSearchSourceResults(
     PickerSearchSource source,
-    std::vector<PickerSearchResult> results) {
+    std::vector<PickerSearchResult> results,
+    bool has_more_results) {
   // GIF results must appear later than Drive results. In the case where GIF
   // search finishes before Drive search, store the GIF results for when Drive
   // search finishes.
@@ -68,17 +69,34 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     return;
   }
 
-  HandleSearchSourceResultsImpl(source, std::move(results));
+  HandleSearchSourceResultsImpl(source, std::move(results), has_more_results);
 
   if (source == PickerSearchSource::kDrive) {
     drive_search_finished_ = true;
     if (pending_gif_results_.has_value()) {
       HandleSearchSourceResultsImpl(PickerSearchSource::kTenor,
-                                    std::move(*pending_gif_results_));
+                                    std::move(*pending_gif_results_),
+                                    /*has_more_results=*/true);
       pending_gif_results_ = std::nullopt;
     }
   }
 }
+
+PickerSearchAggregator::PickerSearchResults::PickerSearchResults() = default;
+
+PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
+    std::vector<PickerSearchResult> results,
+    bool has_more)
+    : results(std::move(results)), has_more(has_more) {}
+
+PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
+    PickerSearchResults&& other) = default;
+
+PickerSearchAggregator::PickerSearchResults&
+PickerSearchAggregator::PickerSearchResults::operator=(
+    PickerSearchResults&& other) = default;
+
+PickerSearchAggregator::PickerSearchResults::~PickerSearchResults() = default;
 
 bool PickerSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
@@ -96,8 +114,9 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kGifs,
        }) {
     if (auto it = results_.find(type);
-        it != results_.end() && !it->second.empty()) {
-      sections.emplace_back(type, std::move(it->second));
+        it != results_.end() && !it->second.results.empty()) {
+      sections.emplace_back(type, std::move(it->second.results),
+                            it->second.has_more);
     }
   }
   current_callback_.Run(std::move(sections));
@@ -105,14 +124,19 @@ void PickerSearchAggregator::PublishBurnInResults() {
 
 void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     PickerSearchSource source,
-    std::vector<PickerSearchResult> results) {
+    std::vector<PickerSearchResult> results,
+    bool has_more_results) {
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (source == PickerSearchSource::kDate ||
       source == PickerSearchSource::kMath ||
       source == PickerSearchSource::kClipboard) {
+    // Suggested results cannot have more results, since it's not a proper
+    // category.
+    CHECK(!has_more_results);
     base::ranges::move(
-        results, std::back_inserter(results_[PickerSectionType::kSuggestions]));
+        results,
+        std::back_inserter(results_[PickerSectionType::kSuggestions].results));
     return;
   }
 
@@ -121,14 +145,15 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     if (!results.empty()) {
       std::vector<PickerSearchResultsSection> sections;
       sections.emplace_back(SectionTypeFromSearchSource(source),
-                            std::move(results));
+                            std::move(results), has_more_results);
       current_callback_.Run(std::move(sections));
     }
     return;
   }
 
-  const auto& [unused, inserted] =
-      results_.emplace(SectionTypeFromSearchSource(source), std::move(results));
+  const auto& [unused, inserted] = results_.emplace(
+      SectionTypeFromSearchSource(source),
+      PickerSearchResults(std::move(results), has_more_results));
   CHECK(inserted);
 }
 

@@ -210,7 +210,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Text(u"result")}}),
+                    {{PickerSearchResult::Text(u"result")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -266,7 +267,8 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Category(PickerCategory::kLinks)}}),
+                    {{PickerSearchResult::Category(PickerCategory::kLinks)}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -396,7 +398,8 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   ASSERT_TRUE(search_called.Wait());
 
   search_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+      PickerSearchResultsSection(PickerSectionType::kExpressions, {},
+                                 /*has_more_results=*/false),
   });
 
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
@@ -417,7 +420,7 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
             if (!search1_called.IsReady()) {
               callback.Run({
                   PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                             {}),
+                                             {}, /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -456,7 +459,7 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
             if (!search1_called.IsReady()) {
               callback.Run({
                   PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                             {}),
+                                             {}, /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -476,7 +479,8 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search2_called.Wait());
   search2_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+      PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                 /*has_more_results=*/false),
   });
 
   // Results page should show the new results.
@@ -498,7 +502,8 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Text(u"result")}}),
+                    {{PickerSearchResult::Text(u"result")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -722,7 +727,8 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+                PickerSearchResultsSection(PickerSectionType::kExpressions, {},
+                                           /*has_more_results=*/false),
             });
           }),
   });
@@ -744,10 +750,10 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Emoji(u"😊"),
-                      PickerSearchResult::Symbol(u"♬")}}),
+                PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                           {{PickerSearchResult::Emoji(u"😊"),
+                                             PickerSearchResult::Symbol(u"♬")}},
+                                           /*has_more_results=*/false),
             });
           }),
   });
@@ -768,10 +774,10 @@ TEST_F(PickerViewTest, RightArrowKeyNavigatesSearchResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Emoji(u"😊"),
-                      PickerSearchResult::Symbol(u"♬")}}),
+                PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                           {{PickerSearchResult::Emoji(u"😊"),
+                                             PickerSearchResult::Symbol(u"♬")}},
+                                           /*has_more_results=*/false),
             });
           }),
   });
@@ -798,7 +804,8 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
                     {{PickerSearchResult::BrowsingHistory(
                           GURL("http://foo.com"), u"Foo", ui::ImageModel()),
                       PickerSearchResult::BrowsingHistory(
-                          GURL("http://bar.com"), u"Bar", ui::ImageModel())}}),
+                          GURL("http://bar.com"), u"Bar", ui::ImageModel())}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -825,7 +832,8 @@ TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
                     PickerSectionType::kExpressions,
                     {{PickerSearchResult::Emoji(u"😊"),
                       PickerSearchResult::Symbol(u"♬"),
-                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}}),
+                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -856,7 +864,8 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
                     PickerSectionType::kExpressions,
                     {{PickerSearchResult::Emoji(u"😊"),
                       PickerSearchResult::Symbol(u"♬"),
-                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}}),
+                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -886,7 +895,8 @@ TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kCategories,
-                    {{PickerSearchResult::Category(PickerCategory::kLinks)}}),
+                    {{PickerSearchResult::Category(PickerCategory::kLinks)}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -915,7 +925,8 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+                PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                           /*has_more_results=*/true),
             });
           }),
   });
@@ -944,7 +955,8 @@ TEST_F(PickerViewTest, KeepsSearchFieldQueryTextWhenClickingOnSeeMoreResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+                PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                           /*has_more_results=*/true),
             });
           }),
   });

@@ -121,7 +121,8 @@ void PickerSearchRequest::StartGifSearch(const std::string& query) {
 
 void PickerSearchRequest::HandleSearchSourceResults(
     PickerSearchSource source,
-    std::vector<PickerSearchResult> results) {
+    std::vector<PickerSearchResult> results,
+    bool has_more_results) {
   // This method is only called from `Handle*SearchResults` methods (one for
   // each search source), and the only time `current_callback_` is null is when
   // the search is stopped.
@@ -130,7 +131,7 @@ void PickerSearchRequest::HandleSearchSourceResults(
   // should - in theory - never be called after `current_callback_` is reset.
   CHECK(!current_callback_.is_null())
       << "Current callback is null in HandleSearchSourceResults";
-  current_callback_.Run(source, std::move(results));
+  current_callback_.Run(source, std::move(results), has_more_results);
 }
 
 void PickerSearchRequest::HandleCategorySearchResults(
@@ -141,7 +142,8 @@ void PickerSearchRequest::HandleCategorySearchResults(
                             elapsed);
   }
 
-  HandleSearchSourceResults(PickerSearchSource::kCategory, std::move(results));
+  HandleSearchSourceResults(PickerSearchSource::kCategory, std::move(results),
+                            /*has_more_results*/ false);
 }
 
 void PickerSearchRequest::HandleCrosSearchResults(
@@ -155,8 +157,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
                                 elapsed);
       }
 
+      // TODO: b/333295235 - Check if Omnibox results were truncated.
       HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                std::move(results));
+                                std::move(results), /*has_more_results=*/true);
       break;
     case AppListSearchResultType::kDriveSearch: {
       if (cros_search_start_.has_value()) {
@@ -167,7 +170,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
-      HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results));
+      // TODO: b/333295235 - Check if Drive results were truncated.
+      HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results),
+                                /*has_more_results=*/true);
       break;
     }
     case AppListSearchResultType::kFileSearch: {
@@ -179,8 +184,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
+      // TODO: b/333295235 - Check if File results were truncated.
       HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                std::move(results));
+                                std::move(results), /*has_more_results=*/true);
       break;
     }
     default:
@@ -198,7 +204,9 @@ void PickerSearchRequest::HandleGifSearchResults(
     base::UmaHistogramTimes("Ash.Picker.Search.GifProvider.QueryTime", elapsed);
   }
 
-  HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results));
+  // There are always more GIF results.
+  HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results),
+                            /*has_more_results=*/true);
 }
 
 void PickerSearchRequest::HandleEmojiSearchResults(
@@ -229,8 +237,10 @@ void PickerSearchRequest::HandleEmojiSearchResults(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
   }
 
+  // TODO: b/333295235 - Check if Emoji results were truncated.
   HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                            std::move(emoji_results));
+                            std::move(emoji_results),
+                            /*has_more_results=*/true);
 }
 
 void PickerSearchRequest::HandleDateSearchResults(
@@ -241,7 +251,9 @@ void PickerSearchRequest::HandleDateSearchResults(
                             elapsed);
   }
 
-  HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results));
+  // Date results are never truncated.
+  HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results),
+                            /*has_more_results=*/false);
 }
 
 void PickerSearchRequest::HandleMathSearchResults(
@@ -256,7 +268,10 @@ void PickerSearchRequest::HandleMathSearchResults(
   if (result.has_value()) {
     results.push_back(*std::move(result));
   }
-  HandleSearchSourceResults(PickerSearchSource::kMath, std::move(results));
+
+  // Math results are never truncated.
+  HandleSearchSourceResults(PickerSearchSource::kMath, std::move(results),
+                            /*has_more_results=*/false);
 }
 
 void PickerSearchRequest::HandleClipboardSearchResults(
@@ -266,7 +281,10 @@ void PickerSearchRequest::HandleClipboardSearchResults(
     base::UmaHistogramTimes("Ash.Picker.Search.ClipboardProvider.QueryTime",
                             elapsed);
   }
-  HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results));
+
+  // Clipboard results are never truncated.
+  HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results),
+                            /*has_more_results=*/false);
 }
 
 }  // namespace ash

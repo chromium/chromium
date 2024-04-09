@@ -14,8 +14,11 @@ namespace ash {
 
 PickerSearchResultsSection::PickerSearchResultsSection(
     PickerSectionType type,
-    std::vector<PickerSearchResult> results)
-    : type_(type), results_(std::move(results)) {}
+    std::vector<PickerSearchResult> results,
+    bool has_more_results)
+    : type_(type),
+      results_(std::move(results)),
+      has_more_results_(has_more_results) {}
 
 PickerSearchResultsSection::PickerSearchResultsSection(
     const PickerSearchResultsSection& other) = default;
@@ -41,20 +44,7 @@ base::span<const PickerSearchResult> PickerSearchResultsSection::results()
 }
 
 bool PickerSearchResultsSection::has_more_results() const {
-  // TODO: b/322081736 - Determine whether there are more results by passing an
-  // argument to `PickerSearchResultsSection`.
-  switch (type_) {
-    case PickerSectionType::kCategories:
-    case PickerSectionType::kSuggestions:
-    case PickerSectionType::kRecentlyUsed:
-      return false;
-    case PickerSectionType::kExpressions:
-    case PickerSectionType::kLinks:
-    case PickerSectionType::kFiles:
-    case PickerSectionType::kDriveFiles:
-    case PickerSectionType::kGifs:
-      return true;
-  }
+  return has_more_results_;
 }
 
 }  // namespace ash

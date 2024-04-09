@@ -108,7 +108,8 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
                VariantWith<PickerSearchResult::BrowsingHistoryData>(
                    Field("url", &PickerSearchResult::BrowsingHistoryData::url,
                          Property("spec", &GURL::spec,
-                                  "https://www.google.com/search?q=cat")))))))
+                                  "https://www.google.com/search?q=cat"))))),
+           /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -157,8 +158,9 @@ TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
   testing::Expectation after_start_search_call =
       EXPECT_CALL(after_start_search, Call).Times(1);
   EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(first_search_results_callback,
-              Call(PickerSearchSource::kOmnibox, IsEmpty()))
+  EXPECT_CALL(
+      first_search_results_callback,
+      Call(PickerSearchSource::kOmnibox, IsEmpty(), /*has_more_results=*/_))
       .Times(0)
       .After(after_start_search_call);
 
@@ -324,7 +326,8 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
                        "data", &PickerSearchResult::data,
                        VariantWith<PickerSearchResult::TextData>(Field(
                            "text", &PickerSearchResult::TextData::primary_text,
-                           u"monorail_cat.jpg"))))))
+                           u"monorail_cat.jpg")))),
+                   /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -440,7 +443,8 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
                        "data", &PickerSearchResult::data,
                        VariantWith<PickerSearchResult::TextData>(Field(
                            "text", &PickerSearchResult::TextData::primary_text,
-                           u"catrbug_135117.jpg"))))))
+                           u"catrbug_135117.jpg")))),
+                   /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -585,7 +589,8 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromGifSearch) {
                                   "plink-cat-plink.gif")),
                    Field("content_description",
                          &PickerSearchResult::GifData::content_description,
-                         u"cat blink")))))))
+                         u"cat blink"))))),
+           /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -620,7 +625,8 @@ TEST_F(PickerSearchRequestTest, StopsOldGifSearches) {
                                   "plink-cat-plink.gif")),
                    Field("content_description",
                          &PickerSearchResult::GifData::content_description,
-                         u"cat blink")))))))
+                         u"cat blink"))))),
+           /*has_more_results=*/_))
       .Times(0);
   ON_CALL(client(), StopGifSearch)
       .WillByDefault(
@@ -681,7 +687,8 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordGifMetricsIfNoResponse) {
 TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kDate, _))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDate, _, /*has_more_results=*/_))
       .Times(1);
   // Fast forward the clock to a Sunday (day_of_week = 0).
   base::Time::Exploded exploded;
@@ -768,7 +775,8 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
                "data", &PickerSearchResult::data,
                VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
                    _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                   u"cat", std::nullopt))))))
+                   u"cat", std::nullopt)))),
+           /*has_more_results=*/false))
       .Times(1);
 
   PickerSearchRequest request(

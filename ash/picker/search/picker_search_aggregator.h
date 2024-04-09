@@ -35,24 +35,37 @@ class ASH_EXPORT PickerSearchAggregator {
   ~PickerSearchAggregator();
 
   void HandleSearchSourceResults(PickerSearchSource source,
-                                 std::vector<PickerSearchResult> results);
+                                 std::vector<PickerSearchResult> results,
+                                 bool has_more_results);
 
   base::WeakPtr<PickerSearchAggregator> GetWeakPtr();
 
  private:
+  struct PickerSearchResults {
+    PickerSearchResults();
+    PickerSearchResults(std::vector<PickerSearchResult> results, bool has_more);
+    PickerSearchResults(PickerSearchResults&& other);
+    PickerSearchResults& operator=(PickerSearchResults&& other);
+    ~PickerSearchResults();
+
+    std::vector<PickerSearchResult> results;
+    bool has_more = false;
+  };
+
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 
   void PublishBurnInResults();
 
   void HandleSearchSourceResultsImpl(PickerSearchSource source,
-                                     std::vector<PickerSearchResult> results);
+                                     std::vector<PickerSearchResult> results,
+                                     bool has_more_results);
 
   base::OneShotTimer burn_in_timer_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
-  base::flat_map<PickerSectionType, std::vector<PickerSearchResult>> results_;
+  base::flat_map<PickerSectionType, PickerSearchResults> results_;
 
   // Whether the drive search has finished (either successfully or with an
   // error).

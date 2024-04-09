@@ -80,12 +80,14 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
                                base::DoNothing(), &asset_fetcher);
 
-  view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                 {{PickerSearchResult::Text(u"Result A")}}));
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kLinks, {{PickerSearchResult::Text(u"Result B"),
-                                   PickerSearchResult::Text(u"Result C")}}));
+      PickerSectionType::kExpressions,
+      {{PickerSearchResult::Text(u"Result A")}}, /*has_more_results=*/false));
+  view.AppendSearchResults(
+      PickerSearchResultsSection(PickerSectionType::kLinks,
+                                 {{PickerSearchResult::Text(u"Result B"),
+                                   PickerSearchResult::Text(u"Result C")}},
+                                 /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
   EXPECT_THAT(
@@ -99,9 +101,9 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
                                base::DoNothing(), &asset_fetcher);
-  view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                 {{PickerSearchResult::Text(u"Result")}}));
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kExpressions, {{PickerSearchResult::Text(u"Result")}},
+      /*has_more_results=*/false));
 
   view.ClearSearchResults();
 
@@ -118,7 +120,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
       {{PickerSearchResult::Gif(
           /*preview_url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
           /*full_url=*/GURL(), gfx::Size(),
-          /*content_description=*/u"")}}));
+          /*content_description=*/u"")}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(
@@ -133,7 +136,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kExpressions)}}));
+      {{PickerSearchResult::Category(PickerCategory::kExpressions)}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(view.section_views_for_testing(),
@@ -148,7 +152,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kFiles,
-      {{PickerSearchResult::LocalFile(u"local", base::FilePath())}}));
+      {{PickerSearchResult::LocalFile(u"local", base::FilePath())}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(
@@ -166,7 +171,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kFiles,
-      {{PickerSearchResult::DriveFile(u"drive", GURL())}}));
+      {{PickerSearchResult::DriveFile(u"drive", GURL())}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(
@@ -182,12 +188,13 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
                                base::DoNothing(), &asset_fetcher);
 
-  view.AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                 {{PickerSearchResult::Text(u"Result")}}));
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kExpressions, {{PickerSearchResult::Text(u"Result")}},
+      /*has_more_results=*/false));
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLinks,
-      {{PickerSearchResult::Text(u"Updated Result")}}));
+      {{PickerSearchResult::Text(u"Updated Result")}},
+      /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
   EXPECT_THAT(
@@ -214,7 +221,8 @@ TEST_F(PickerSearchResultsViewTest, PseudoFocusedActionDefaultsToFirstResult) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}}));
+      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
+      /*has_more_results=*/false));
 
   EXPECT_TRUE(view.DoPseudoFocusedAction());
   EXPECT_EQ(future.Get(), PickerSearchResult::Emoji(u"😊"));
@@ -228,7 +236,8 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusRight) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}}));
+      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
+      /*has_more_results=*/false));
 
   EXPECT_TRUE(view.MovePseudoFocusRight());
   EXPECT_TRUE(view.DoPseudoFocusedAction());
@@ -244,7 +253,8 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
-        PickerSearchResult::Category(PickerCategory::kClipboard)}}));
+        PickerSearchResult::Category(PickerCategory::kClipboard)}},
+      /*has_more_results=*/false));
 
   EXPECT_TRUE(view.MovePseudoFocusDown());
   EXPECT_TRUE(view.DoPseudoFocusedAction());
@@ -265,7 +275,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
         PickerSearchResult::Category(PickerCategory::kClipboard),
-        PickerSearchResult::Category(PickerCategory::kDriveFiles)}}));
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
+      /*has_more_results=*/false));
   ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
 
   view->AdvancePseudoFocus(
@@ -289,7 +300,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
         PickerSearchResult::Category(PickerCategory::kClipboard),
-        PickerSearchResult::Category(PickerCategory::kDriveFiles)}}));
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
+      /*has_more_results=*/false));
   ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
 
   view->AdvancePseudoFocus(
@@ -309,8 +321,8 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           kPickerWidth, base::DoNothing(), base::DoNothing(), &asset_fetcher));
 
-  view->AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kGifs, {}));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -327,8 +339,8 @@ TEST_F(PickerSearchResultsViewTest,
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           kPickerWidth, base::DoNothing(), base::DoNothing(), &asset_fetcher));
 
-  view->AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kSuggestions, {}));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kGifs, {}, /*has_more_results=*/false));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -347,8 +359,8 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
           kPickerWidth, base::DoNothing(), future.GetRepeatingCallback(),
           &asset_fetcher));
   widget->Show();
-  view->AppendSearchResults(
-      PickerSearchResultsSection(PickerSectionType::kGifs, {}));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
 
   views::View* trailing_link =
       view->section_views_for_testing()[0]->title_trailing_link_for_testing();
@@ -382,7 +394,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
           &asset_fetcher));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions, {{test_case.result}}));
+      PickerSectionType::kExpressions, {{test_case.result}},
+      /*has_more_results=*/false));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
@@ -407,7 +420,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest,
           kPickerWidth, future.GetCallback(), base::DoNothing(),
           &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions, {{test_case.result}}));
+      PickerSectionType::kExpressions, {{test_case.result}},
+      /*has_more_results=*/false));
 
   EXPECT_TRUE(view->DoPseudoFocusedAction());
   EXPECT_EQ(future.Get(), test_case.result);

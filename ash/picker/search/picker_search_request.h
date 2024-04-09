@@ -37,7 +37,8 @@ class ASH_EXPORT PickerSearchRequest {
  public:
   using SearchResultsCallback =
       base::RepeatingCallback<void(PickerSearchSource source,
-                                   std::vector<PickerSearchResult> results)>;
+                                   std::vector<PickerSearchResult> results,
+                                   bool has_more_results)>;
 
   explicit PickerSearchRequest(
       const std::u16string& query,
@@ -57,7 +58,8 @@ class ASH_EXPORT PickerSearchRequest {
   void StartGifSearch(const std::string& query);
 
   void HandleSearchSourceResults(PickerSearchSource source,
-                                 std::vector<PickerSearchResult> results);
+                                 std::vector<PickerSearchResult> results,
+                                 bool has_more_results);
 
   void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,

@@ -102,7 +102,8 @@ TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")});
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
 }
 
@@ -128,7 +129,8 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")});
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -153,7 +155,8 @@ TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")});
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -170,7 +173,8 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(GetParam().source, {});
+  aggregator.HandleSearchSourceResults(GetParam().source, {},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -188,7 +192,8 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBurnInPeriod);
 
-  aggregator.HandleSearchSourceResults(GetParam().source, {});
+  aggregator.HandleSearchSourceResults(GetParam().source, {},
+                                       /*has_more_results=*/false);
 }
 
 class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
@@ -224,14 +229,22 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive, {});
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive, {},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath, {},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -319,21 +332,29 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")});
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"tenor")});
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")});
+                                       {PickerSearchResult::Text(u"emoji")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
-                                       {PickerSearchResult::Text(u"date")});
+                                       {PickerSearchResult::Text(u"date")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
-                                       {PickerSearchResult::Text(u"category")});
+                                       {PickerSearchResult::Text(u"category")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")});
+                                       {PickerSearchResult::Text(u"local")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")});
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
-                                       {PickerSearchResult::Text(u"math")});
+                                       {PickerSearchResult::Text(u"math")},
+                                       /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -423,21 +444,94 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")});
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")});
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"tenor")});
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")});
+                                       {PickerSearchResult::Text(u"emoji")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
-                                       {PickerSearchResult::Text(u"date")});
+                                       {PickerSearchResult::Text(u"date")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
-                                       {PickerSearchResult::Text(u"category")});
+                                       {PickerSearchResult::Text(u"category")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")});
+                                       {PickerSearchResult::Text(u"local")},
+                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
-                                       {PickerSearchResult::Text(u"math")});
+                                       {PickerSearchResult::Text(u"math")},
+                                       /*has_more_results=*/false);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       CombinesSearchResultsRetainingHasMoreResultsBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback,
+              Call(Each(Property("has_more_results",
+                                 &PickerSearchResultsSection::has_more_results,
+                                 true))));
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
+                                       {PickerSearchResult::Text(u"emoji")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+                                       {PickerSearchResult::Text(u"local")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       AppendsSearchResultsRetainingSeeMoreResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Each(Property("has_more_results",
+                         &PickerSearchResultsSection::has_more_results, true))))
+      .Times(5);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
+                                       {PickerSearchResult::Text(u"emoji")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+                                       {PickerSearchResult::Text(u"local")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/true);
 }
 
 class PickerSearchAggregatorGifTest : public testing::Test {
@@ -462,7 +556,8 @@ TEST_F(PickerSearchAggregatorGifTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"test")});
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -478,7 +573,8 @@ TEST_F(PickerSearchAggregatorGifTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"test")});
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
 }
 
 TEST_F(PickerSearchAggregatorGifTest,
@@ -496,15 +592,18 @@ TEST_F(PickerSearchAggregatorGifTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"drive")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kGifs),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"tenor")))))))))
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kGifs),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::TextData>(Field(
+                               "primary_text",
+                               &PickerSearchResult::TextData::primary_text,
+                               u"tenor"))))),
+              Property("has_more_results",
+                       &PickerSearchResultsSection::has_more_results, true)))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -513,9 +612,11 @@ TEST_F(PickerSearchAggregatorGifTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"tenor")});
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")});
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -537,17 +638,20 @@ TEST_F(PickerSearchAggregatorGifTest,
                                    &PickerSearchResult::TextData::primary_text,
                                    u"drive")))))))))
       .Times(1);
-  EXPECT_CALL(search_results_callback,
-              Call(ElementsAre(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kGifs),
-                  Property("results", &PickerSearchResultsSection::results,
-                           ElementsAre(Property(
-                               "data", &PickerSearchResult::data,
-                               VariantWith<PickerSearchResult::TextData>(Field(
-                                   "primary_text",
-                                   &PickerSearchResult::TextData::primary_text,
-                                   u"tenor")))))))))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kGifs),
+          Property("results", &PickerSearchResultsSection::results,
+                   ElementsAre(
+                       Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "primary_text",
+                                    &PickerSearchResult::TextData::primary_text,
+                                    u"tenor"))))),
+          Property("has_more_results",
+                   &PickerSearchResultsSection::has_more_results, true)))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -557,9 +661,11 @@ TEST_F(PickerSearchAggregatorGifTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
-                                       {PickerSearchResult::Text(u"tenor")});
+                                       {PickerSearchResult::Text(u"tenor")},
+                                       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")});
+                                       {PickerSearchResult::Text(u"drive")},
+                                       /*has_more_results=*/true);
 }
 
 }  // namespace
