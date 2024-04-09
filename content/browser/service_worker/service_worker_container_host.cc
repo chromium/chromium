@@ -1542,6 +1542,15 @@ void ServiceWorkerContainerHost::UpdateController(
   scoped_refptr<ServiceWorkerVersion> previous_version = controller_;
   controller_ = version;
   if (version) {
+    // TODO(crbug.com/330928087): remove check when this issue resolved.
+    SCOPED_CRASH_KEY_NUMBER("SWV_RCFBCM", "client_type",
+                            static_cast<int32_t>(GetClientType()));
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_execution_ready",
+                          is_execution_ready());
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_blob_url",
+                          url() != GetUrlForScopeMatch());
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_inherited", is_inherited());
+    CHECK(!version->BFCacheContainsControllee(client_uuid()));
     version->AddControllee(this);
     if (IsBackForwardCacheEnabled() && IsInBackForwardCache()) {
       // |this| was not |version|'s controllee when |OnEnterBackForwardCache|
@@ -1958,6 +1967,7 @@ void ServiceWorkerContainerHost::InheritControllerFrom(
     SetControllerRegistration(creator_host.controller_registration(),
                               false /* notify_controllerchange */);
   }
+  creator_host.SetInherited();
 }
 
 mojo::PendingRemote<blink::mojom::CacheStorage>

@@ -535,6 +535,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   void SetContainerReady();
 
+  bool is_inherited() const { return is_inherited_; }
+  void SetInherited() { is_inherited_ = true; }
+
  private:
   class ServiceWorkerRunningStatusObserver;
   friend class ServiceWorkerContainerHostTest;
@@ -754,6 +757,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // The URL used for service worker scope matching. It is empty except in the
   // case of a service worker client with a blob URL.
   GURL scope_match_url_for_blob_client_;
+
+  // Become true if the container is inherited by other container.
+  bool is_inherited_ = false;
 
   // The observer for the running status change.
   // It is used for notifying the ServiceWorker running status change to

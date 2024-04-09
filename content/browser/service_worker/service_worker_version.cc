@@ -3092,6 +3092,11 @@ void ServiceWorkerVersion::GetAssociatedInterface(
   associated_registry_->TryBindInterface(name, &handle);
 }
 
+bool ServiceWorkerVersion::BFCacheContainsControllee(
+    const std::string& uuid) const {
+  return base::Contains(bfcached_controllee_map_, uuid);
+}
+
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

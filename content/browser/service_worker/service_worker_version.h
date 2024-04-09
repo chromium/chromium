@@ -452,6 +452,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   controllee_map() const {
     return controllee_map_;
   }
+  // Returns true if |uuid| is captured by BFCache.
+  bool BFCacheContainsControllee(const std::string& uuid) const;
 
   // BackForwardCache:
   // Evicts all the controllees from back-forward cache. The controllees in
