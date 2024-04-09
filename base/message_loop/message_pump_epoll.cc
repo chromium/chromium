@@ -108,16 +108,15 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
     if (run_state.should_quit) {
       break;
     }
-
     if (attempt_more_work) {
       continue;
     }
 
-    const bool did_idle_work = delegate->DoIdleWork();
+    attempt_more_work = delegate->DoIdleWork();
     if (run_state.should_quit) {
       break;
     }
-    if (did_idle_work) {
+    if (attempt_more_work) {
       continue;
     }
 
