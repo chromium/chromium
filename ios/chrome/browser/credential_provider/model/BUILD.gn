@@ -32,6 +32,7 @@ if (ios_enable_credential_provider_extension) {
     public_deps = [ "//base" ]
     deps = [
       ":buildflags",
+      ":features",
       "//base",
       "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/common",
@@ -98,5 +99,13 @@ if (ios_enable_credential_provider_extension) {
       "//testing/gtest",
       "//url",
     ]
+  }
+
+  source_set("features") {
+    sources = [
+      "features.h",
+      "features.mm",
+    ]
+    public_deps = [ "//base" ]
   }
 }

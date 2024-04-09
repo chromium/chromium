@@ -201,6 +201,11 @@ extern const char kContextualPanelForceShowEntrypointDescription[];
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];
 
+// Title and description for the flag to enable the Credential Provider
+// Improvements.
+extern const char kCredentialProviderPerformanceImprovementsName[];
+extern const char kCredentialProviderPerformanceImprovementsDescription[];
+
 // Title and description for the flag to enable experience kit apple calendar
 // events.
 extern const char kAppleCalendarExperienceKitName[];

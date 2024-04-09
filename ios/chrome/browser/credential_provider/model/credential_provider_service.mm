@@ -252,6 +252,7 @@ void CredentialProviderService::AddCredentials(
     // not take Android facet URI.
     if (form.url.is_valid()) {
       favicon_key = GetFaviconFileKey(form.url);
+
       // Fetch the favicon and save it to the storage.
       FetchFaviconForURLToPath(favicon_loader_, form.url, favicon_key,
                                should_skip_max_verification,

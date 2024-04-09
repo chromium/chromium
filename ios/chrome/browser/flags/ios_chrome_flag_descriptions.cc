@@ -234,6 +234,12 @@ const char kContextualPanelName[] = "Contextual Panel";
 const char kContextualPanelDescription[] =
     "Enables the contextual panel feature.";
 
+const char kCredentialProviderPerformanceImprovementsName[] =
+    "Credential Provider Performance Improvements";
+const char kCredentialProviderPerformanceImprovementsDescription[] =
+    "Enables a series of performance improvements for the Credential Provider "
+    "Extension.";
+
 extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "

@@ -62,6 +62,7 @@ source_set("flags") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/find_in_page/model:util",

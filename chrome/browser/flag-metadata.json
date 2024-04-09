@@ -1549,6 +1549,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "cpe-performance-improvements",
+    "owners": ["sebsg@chromium.org", "bling-transactions-eng@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cras-split-alsa-usb-internal",
     "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
     "expiry_milestone": 125

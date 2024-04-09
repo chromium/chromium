@@ -74,6 +74,7 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -1608,6 +1609,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedSafeBrowsingPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          security_interstitials::features::kEnhancedSafeBrowsingPromo)},
+    {"cpe-performance-improvements",
+     flag_descriptions::kCredentialProviderPerformanceImprovementsName,
+     flag_descriptions::kCredentialProviderPerformanceImprovementsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCredentialProviderPerformanceImprovements)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
