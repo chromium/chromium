@@ -187,6 +187,11 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
                                 kSyncEnableContactInfoDataTypeInTransportMode,
                             ::switches::kExplicitBrowserSigninUIOnDesktop},
       /*disabled_features=*/{});
+  const CoreAccountInfo& account = sync_service_.GetAccountInfo();
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name",
+      personal_data_->app_locale(), /*picture_url=*/"");
 
   prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
   EXPECT_TRUE(personal_data_->IsAutofillSyncToggleAvailable());
@@ -329,21 +334,6 @@ TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
 TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {
   EXPECT_TRUE(personal_data_->IsCountryEligibleForAccountStorage("AT"));
   EXPECT_FALSE(personal_data_->IsCountryEligibleForAccountStorage("IR"));
-}
-
-TEST_F(PersonalDataManagerTest, AccountStatusSyncRetrieval) {
-  EXPECT_NE(personal_data_->GetAccountStatusForTesting(), std::nullopt);
-
-  // Login with a non-enterprise account (the status is expected to be available
-  // immediately, with no async calls).
-  AccountInfo account = identity_test_env_.MakeAccountAvailable("ab@gmail.com");
-  sync_service_.SetAccountInfo(account);
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(personal_data_->GetAccountStatusForTesting(),
-            signin::AccountManagedStatusFinder::Outcome::kNonEnterprise);
-
-  personal_data_->SetSyncServiceForTest(nullptr);
-  EXPECT_EQ(personal_data_->GetAccountStatusForTesting(), std::nullopt);
 }
 
 TEST_F(PersonalDataManagerTest, ChangeCallbackIsTriggeredOnAddedProfile) {

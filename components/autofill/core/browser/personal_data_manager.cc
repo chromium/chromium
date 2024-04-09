@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -153,9 +154,10 @@ void PersonalDataManager::Shutdown() {
     identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
 
-  // Make sure that the `address_data_cleaner_` sync observer gets destroyed
-  // before the SyncService's `Shutdown()`.
+  // The following members register a sync observer, which needs to be
+  // unregistered before the SyncService's `Shutdown()`.
   address_data_cleaner_.reset();
+  contact_info_precondition_checker_.reset();
 }
 
 void PersonalDataManager::OnHistoryDeletions(
@@ -186,20 +188,6 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   payments_data_manager_->SetUseAccountStorageForServerData(
       sync_service && !sync_service->IsSyncFeatureEnabled());
-
-  if (identity_manager_ && sync_service_ &&
-      !sync_service_->GetAccountInfo().IsEmpty()) {
-    const CoreAccountInfo account = sync_service_->GetAccountInfo();
-    if (!account_status_finder_ ||
-        account_status_finder_->GetAccountInfo().account_id !=
-            account.account_id) {
-      account_status_finder_ =
-          std::make_unique<const signin::AccountManagedStatusFinder>(
-              identity_manager_, account, base::DoNothing());
-    }
-  } else {
-    account_status_finder_.reset();
-  }
 }
 
 CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
@@ -505,54 +493,18 @@ bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 }
 
 bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
-  auto is_unsupported_passphrase_user = [&] {
-    if (!sync_service_) {
-      return false;
-    }
-    return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
-           !base::FeatureList::IsEnabled(
-               syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
-  };
-  auto is_unsupported_dasher_user = [&] {
-    if (!account_status_finder_) {
-      return false;
-    }
-    using StatusOutcome = signin::AccountManagedStatusFinder::Outcome;
-    StatusOutcome outcome = account_status_finder_->GetOutcome();
-    return outcome == StatusOutcome::kEnterprise &&
-           !base::FeatureList::IsEnabled(
-               syncer::kSyncEnableContactInfoDataTypeForDasherUsers);
-  };
-  auto is_unsupported_child_account = [&] {
-    if (!sync_service_ || !identity_manager_ ||
-        !identity_manager_->AreRefreshTokensLoaded()) {
-      return false;
-    }
-    return identity_manager_
-                   ->FindExtendedAccountInfo(sync_service_->GetAccountInfo())
-                   .capabilities.is_subject_to_parental_controls() ==
-               signin::Tribool::kTrue &&
-           !base::FeatureList::IsEnabled(
-               syncer::kSyncEnableContactInfoDataTypeForChildUsers);
-  };
   return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
          !sync_service_->HasSyncConsent() &&
          !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
              syncer::UserSelectableType::kAutofill) &&
-         !is_unsupported_passphrase_user() && !is_unsupported_dasher_user() &&
-         !is_unsupported_child_account() &&
+         contact_info_precondition_checker_->GetPreconditionState() ==
+             syncer::ModelTypeController::PreconditionState::
+                 kPreconditionsMet &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
          ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
              ::switches::ExplicitBrowserSigninPhase::kFull) &&
          pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
-}
-
-std::optional<signin::AccountManagedStatusFinder::Outcome>
-PersonalDataManager::GetAccountStatusForTesting() const {
-  return account_status_finder_
-             ? account_status_finder_->GetOutcome()
-             : std::optional<signin::AccountManagedStatusFinder::Outcome>();
 }
 
 void PersonalDataManager::SetCreditCards(
@@ -566,6 +518,12 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
   if (sync_service_) {
     sync_service_->AddObserver(this);
+    if (identity_manager_) {
+      contact_info_precondition_checker_ =
+          std::make_unique<ContactInfoPreconditionChecker>(
+              sync_service, identity_manager_,
+              /*on_precondition_changed=*/base::DoNothing());
+    }
   }
 
   // TODO(crbug.com/1497734): This call is believed no longer necessary here for
