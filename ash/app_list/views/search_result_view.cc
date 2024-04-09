@@ -1447,6 +1447,11 @@ bool SearchResultView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
     case ui::VKEY_DELETE:
     case ui::VKEY_BROWSER_BACK:
+      if (!actions_view()->IsValidActionIndex(
+              SearchResultActionType::kRemove)) {
+        return false;
+      }
+
       // Allows alt+(back or delete) to trigger the 'remove result' dialog.
       OnSearchResultActionActivated(SearchResultActionType::kRemove);
       return true;

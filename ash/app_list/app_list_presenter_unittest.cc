@@ -139,15 +139,17 @@ void EnableTabletMode(bool enable) {
 }
 
 std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
-    const std::string& result_id) {
+    const std::string& result_id,
+    bool support_removal) {
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
   suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
-  SearchResultActions actions;
-  actions.emplace_back(SearchResultActionType::kRemove, u"Remove");
-  suggestion_result->SetActions(actions);
-
+  if (support_removal) {
+    SearchResultActions actions;
+    actions.emplace_back(SearchResultActionType::kRemove, u"Remove");
+    suggestion_result->SetActions(actions);
+  }
   // Give this item a name so that the accessibility paint checks pass.
   // (Focusable items should have accessible names.)
   suggestion_result->SetAccessibleName(base::UTF8ToUTF16(result_id));
@@ -1907,11 +1909,11 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
 
   // Add suggestion results - the result that will be tested is in
   // the second place.
-  GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult("Another suggestion"));
+  GetSearchModel()->results()->Add(CreateOmniboxSuggestionResult(
+      "Another suggestion", /*support_removal=*/true));
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult(kTestResultId));
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
   // The result list is updated asynchronously.
   base::RunLoop().RunUntilIdle();
 
@@ -2014,11 +2016,11 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
 
   // Add suggestion results - the result that will be tested is in
   // the second place.
-  GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult("Another suggestion"));
+  GetSearchModel()->results()->Add(CreateOmniboxSuggestionResult(
+      "Another suggestion", /*support_removal=*/true));
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult(kTestResultId));
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
   GetAppListTestHelper()->WaitUntilIdle();
 
   SearchResultBaseView* result_view =
@@ -2094,6 +2096,111 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
   EXPECT_EQ(expected_actions, invoked_actions);
 }
 
+TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingKeyboard) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Add suggestion results - the result that will be tested is in
+  // the second place.
+  GetSearchModel()->results()->Add(CreateOmniboxSuggestionResult(
+      "Another suggestion", /*support_removal=*/true));
+  const std::string kTestResultId = "Test suggestion";
+  GetSearchModel()->results()->Add(
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
+  GetAppListTestHelper()->WaitUntilIdle();
+
+  // Select a removable suggestion.
+  generator->PressKey(ui::VKEY_DOWN, 0);
+
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(1);
+  ASSERT_TRUE(result_view);
+  ASSERT_TRUE(result_view->result());
+  ASSERT_EQ(kTestResultId, result_view->result()->id());
+  ASSERT_TRUE(result_view->selected());
+  ASSERT_TRUE(result_view->actions_view());
+  EXPECT_EQ(1u, result_view->actions_view()->children().size());
+
+  // Press shortcut to delete the result.
+  generator->PressKey(ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN);
+
+  EXPECT_TRUE(GetAppListTestHelper()
+                  ->app_list_client()
+                  ->GetAndResetInvokedResultActions()
+                  .empty());
+  ASSERT_TRUE(GetSearchResultPageDialog());
+
+  // Expect the removal confirmation dialog - accept it.
+  ASSERT_TRUE(GetSearchResultPageDialog());
+  AcceptSearchResultPageDialog();
+
+  // The app list should remain showing search results, the dialog should be
+  // closed, and result removal action should be invoked.
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(GetSearchResultPageDialog());
+  EXPECT_FALSE(result_view->selected());
+
+  std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
+      {kTestResultId, SearchResultActionType::kRemove}};
+
+  std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
+      GetAppListTestHelper()
+          ->app_list_client()
+          ->GetAndResetInvokedResultActions();
+  EXPECT_EQ(expected_actions, invoked_actions);
+}
+
+TEST_P(AppListBubbleAndTabletTest,
+       SuggestionRemoveShortcutOnViewWithNoRemovalAction) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Add suggestion results.
+  GetSearchModel()->results()->Add(CreateOmniboxSuggestionResult(
+      "Another suggestion", /*support_removal=*/false));
+  const std::string kTestResultId = "Test suggestion";
+  GetSearchModel()->results()->Add(
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/false));
+  GetAppListTestHelper()->WaitUntilIdle();
+
+  generator->PressKey(ui::VKEY_DOWN, 0);
+
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(1);
+  ASSERT_TRUE(result_view);
+  ASSERT_TRUE(result_view->result());
+  ASSERT_EQ(kTestResultId, result_view->result()->id());
+  ASSERT_TRUE(result_view->selected());
+
+  // Press shortcut to delete the result.
+  generator->PressKey(ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN);
+
+  EXPECT_TRUE(GetAppListTestHelper()
+                  ->app_list_client()
+                  ->GetAndResetInvokedResultActions()
+                  .empty());
+  EXPECT_FALSE(GetSearchResultPageDialog());
+
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_EQ(u"a", GetSearchBoxView()->search_box()->GetText());
+
+  result_view = GetDefaultSearchResultListView()->GetResultViewAt(1);
+  ASSERT_TRUE(result_view);
+  ASSERT_TRUE(result_view->result());
+  EXPECT_EQ(kTestResultId, result_view->result()->id());
+  EXPECT_TRUE(result_view->selected());
+}
+
 TEST_P(AppListBubbleAndTabletTest,
        TransitionToAppsContainerClosesRemoveSuggestionDialog) {
   EnableTabletMode(tablet_mode_param());
@@ -2107,7 +2214,7 @@ TEST_P(AppListBubbleAndTabletTest,
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult(kTestResultId));
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
   GetAppListTestHelper()->WaitUntilIdle();
 
   SearchResultBaseView* result_view =
@@ -2158,7 +2265,7 @@ TEST_P(AppListBubbleAndTabletTest,
   // Add a suggestion result.
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult(kTestResultId));
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
   GetAppListTestHelper()->WaitUntilIdle();
 
   SearchResultBaseView* result_view =
@@ -2293,11 +2400,11 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
 
   // Add suggestion results - the result that will be tested is in
   // the second place.
-  GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult("Another suggestion"));
+  GetSearchModel()->results()->Add(CreateOmniboxSuggestionResult(
+      "Another suggestion", /*support_removal=*/true));
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
-      CreateOmniboxSuggestionResult(kTestResultId));
+      CreateOmniboxSuggestionResult(kTestResultId, /*support_removal=*/true));
   // The result list is updated asynchronously.
   base::RunLoop().RunUntilIdle();
 
@@ -3651,8 +3758,10 @@ TEST_F(AppListTabletTest,
 
   // Add some search results to the search model.
   SearchModel* search_model = GetSearchModel();
-  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
-  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
+  search_model->results()->Add(
+      CreateOmniboxSuggestionResult("Suggestion1", /*support_removal=*/true));
+  search_model->results()->Add(
+      CreateOmniboxSuggestionResult("Suggestion2", /*support_removal=*/true));
 
   EXPECT_TRUE(AppListSearchResultPageVisible());
 

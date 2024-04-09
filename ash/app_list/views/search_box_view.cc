@@ -1526,13 +1526,16 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     ui::KeyEvent event(key_event);
     SearchResultBaseView* selected_result =
         result_selection_controller_->selected_result();
-    if (selected_result && selected_result->result())
+    if (selected_result) {
       selected_result->OnKeyEvent(&event);
-    // Reset the selected result to the default result.
-    result_selection_controller_->ResetSelection(nullptr,
-                                                 true /* default_selection */);
-    search_box()->SetText(std::u16string());
-    return true;
+      if (event.handled()) {
+        // Reset the selected result to the default result.
+        result_selection_controller_->ResetSelection(
+            nullptr, true /* default_selection */);
+        search_box()->SetText(std::u16string());
+        return true;
+      }
+    }
   }
 
   // Do not handle keys intended for result selection traversal here - these
