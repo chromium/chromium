@@ -1276,6 +1276,10 @@ inline constexpr char kUsedPolicyCertificates[] =
 // visible on the toolbar.
 inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 
+// A boolean pref set to true if the Forward button should be visible on the
+// toolbar.
+inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
+
 // Boolean pref to define the default setting for "block offensive words".
 // The old key value is kept to avoid unnecessary migration code.
 inline constexpr char kSpeechRecognitionFilterProfanities[] =

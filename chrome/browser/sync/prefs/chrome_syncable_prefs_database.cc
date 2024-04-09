@@ -331,6 +331,7 @@ enum {
   kProfileContentSettingsExceptionsTrackingProtection = 100273,
   kProfileContentSettingsPartitionedExceptionsTrackingProtection = 100274,
   kProfileDefaultContentSettingValuesTrackingProtection = 100275,
+  kShowForwardButton = 100276,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -476,6 +477,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kShowHomeButton,
      {syncable_prefs_ids::kShowHomeButton, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShowForwardButton,
+     {syncable_prefs_ids::kShowForwardButton, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kSidePanelCompanionEntryPinnedToToolbar,

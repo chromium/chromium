@@ -520,6 +520,13 @@ void ToolbarView::Init() {
 
   location_bar_->Init();
 
+  show_forward_button_.Init(
+      prefs::kShowForwardButton, prefs,
+      base::BindRepeating(&ToolbarView::OnShowForwardButtonChanged,
+                          base::Unretained(this)));
+
+  forward_->SetVisible(show_forward_button_.GetValue());
+
   show_home_button_.Init(
       prefs::kShowHomeButton, prefs,
       base::BindRepeating(&ToolbarView::OnShowHomeButtonChanged,
@@ -1235,6 +1242,11 @@ void ToolbarView::LoadImages() {
 
   if (extensions_container_)
     extensions_container_->UpdateAllIcons();
+}
+
+void ToolbarView::OnShowForwardButtonChanged() {
+  forward_->SetVisible(show_forward_button_.GetValue());
+  InvalidateLayout();
 }
 
 void ToolbarView::OnShowHomeButtonChanged() {
