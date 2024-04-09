@@ -132,7 +132,7 @@ TEST_F(BytesUploaderTest, ReadEmpty) {
 
   checkpoint.Call(3);
   char buffer[20] = {};
-  uint32_t num_bytes = sizeof(buffer);
+  size_t num_bytes = sizeof(buffer);
   MojoResult rv =
       Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
   EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, rv);
@@ -172,7 +172,7 @@ TEST_F(BytesUploaderTest, ReadSmall) {
 
   checkpoint.Call(3);
   char buffer[20] = {};
-  uint32_t num_bytes = sizeof(buffer);
+  size_t num_bytes = sizeof(buffer);
   EXPECT_EQ(MOJO_RESULT_OK,
             Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE));
   EXPECT_EQ(6u, num_bytes);
@@ -232,7 +232,7 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
 
   checkpoint.Call(3);
   char buffer[20] = {};
-  uint32_t num_bytes = sizeof(buffer);
+  size_t num_bytes = sizeof(buffer);
   EXPECT_EQ(MOJO_RESULT_OK,
             Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE));
   EXPECT_EQ(10u, num_bytes);

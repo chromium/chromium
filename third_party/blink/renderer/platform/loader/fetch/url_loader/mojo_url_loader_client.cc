@@ -184,8 +184,7 @@ class MojoURLLoaderClient::BodyBuffer final
       // Write the chunk at the front of |buffered_body_|.
       const std::vector<char>& current_chunk = buffered_body_.front();
       DCHECK_LE(offset_in_current_chunk_, current_chunk.size());
-      uint32_t bytes_sent = base::saturated_cast<uint32_t>(
-          current_chunk.size() - offset_in_current_chunk_);
+      size_t bytes_sent = current_chunk.size() - offset_in_current_chunk_;
       MojoResult result =
           writable_->WriteData(current_chunk.data() + offset_in_current_chunk_,
                                &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
@@ -239,7 +238,7 @@ class MojoURLLoaderClient::BodyBuffer final
   // We save the received response body as a queue of chunks so that we can free
   // memory as soon as we finish sending a chunk completely.
   base::queue<std::vector<char>> buffered_body_;
-  uint32_t offset_in_current_chunk_ = 0;
+  size_t offset_in_current_chunk_ = 0;
   bool draining_ = true;
 };
 

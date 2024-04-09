@@ -325,9 +325,9 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
 
   Vector<uint8_t> ReadDataFromDataPipe(
       mojo::ScopedDataPipeConsumerHandle& readable,
-      uint32_t bytes_to_read) {
+      size_t bytes_to_read) {
     const void* buffer;
-    uint32_t num_bytes = bytes_to_read;
+    size_t num_bytes = bytes_to_read;
     const MojoResult begin_result =
         readable->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
 
@@ -833,7 +833,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveText) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 6;
+  size_t num_bytes = 6;
   ASSERT_EQ(MOJO_RESULT_OK, writable->WriteData("FOOBAR", &num_bytes,
                                                 MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 6u);
@@ -856,7 +856,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveTextContinuation) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 3;
+  size_t num_bytes = 3;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("BAZ", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 3u);
@@ -882,7 +882,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveTextNonLatin1) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 6;
+  size_t num_bytes = 6;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("\xe7\x8b\x90\xe0\xa4\x94", &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE));
@@ -907,7 +907,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveTextNonLatin1Continuation) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 6;
+  size_t num_bytes = 6;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("\xe7\x8b\x90\xe0\xa4\x94", &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE));
@@ -934,7 +934,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinary) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 3;
+  size_t num_bytes = 3;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("FOO", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 3u);
@@ -957,7 +957,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryContinuation) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 3;
+  size_t num_bytes = 3;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("BAZ", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 3u);
@@ -988,7 +988,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryWithNullBytes) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 12;
+  size_t num_bytes = 12;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("\0A3B\0ZQU\0\0\0\0", &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE));
@@ -1015,7 +1015,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonLatin1UTF8) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 6;
+  size_t num_bytes = 6;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("\xe7\x8b\x90\xe0\xa4\x94", &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE));
@@ -1040,7 +1040,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonLatin1UTF8Continuation) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 6;
+  size_t num_bytes = 6;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("\xe7\x8b\x90\xe0\xa4\x94", &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE));
@@ -1067,7 +1067,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonUTF8) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 2;
+  size_t num_bytes = 2;
   ASSERT_EQ(MOJO_RESULT_OK, writable->WriteData("\x80\xff", &num_bytes,
                                                 MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 2u);
@@ -1091,7 +1091,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveWithExplicitBackpressure) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  uint32_t num_bytes = 3;
+  size_t num_bytes = 3;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("abc", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 3u);
@@ -1138,7 +1138,7 @@ TEST_F(WebSocketChannelImplTest,
   test::RunPendingTasks();
 
   checkpoint.Call(1);
-  uint32_t num_bytes = 2;
+  size_t num_bytes = 2;
   ASSERT_EQ(MOJO_RESULT_OK,
             writable->WriteData("ab", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(num_bytes, 2u);

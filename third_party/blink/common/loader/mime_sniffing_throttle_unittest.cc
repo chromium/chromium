@@ -41,7 +41,7 @@ class MojoDataPipeSender {
   }
 
   void OnWritable(MojoResult) {
-    uint32_t sending_bytes = data_.size() - sent_bytes_;
+    size_t sending_bytes = data_.size() - sent_bytes_;
     MojoResult result = handle_->WriteData(
         data_.c_str() + sent_bytes_, &sending_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     switch (result) {
@@ -74,7 +74,7 @@ class MojoDataPipeSender {
   mojo::SimpleWatcher watcher_;
   base::OnceClosure done_callback_;
   std::string data_;
-  uint32_t sent_bytes_ = 0;
+  size_t sent_bytes_ = 0;
 };
 
 class MockDelegate : public blink::URLLoaderThrottle::Delegate {
@@ -143,7 +143,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     source_body_handle_.reset();
   }
 
-  uint32_t ReadResponseBody(uint32_t size) {
+  uint32_t ReadResponseBody(size_t size) {
     std::vector<uint8_t> buffer(size);
     MojoResult result = destination_loader_client_.response_body().ReadData(
         buffer.data(), &size, MOJO_READ_DATA_FLAG_NONE);

@@ -1764,7 +1764,7 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
   ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   const char data[] = "what";
-  uint32_t num_bytes = 4u;
+  size_t num_bytes = 4u;
 
   EXPECT_EQ(
       producer->WriteData(data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),

@@ -168,7 +168,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
                              /*cached_metadata=*/std::nullopt);
   loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
 
-  uint32_t num_bytes = 2;
+  size_t num_bytes = 2;
   result = producer->WriteData("he", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_EQ(num_bytes, 2u);

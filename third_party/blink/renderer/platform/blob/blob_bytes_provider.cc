@@ -53,8 +53,7 @@ class BlobBytesStreamer {
     DCHECK_EQ(result, MOJO_RESULT_OK);
 
     while (true) {
-      uint32_t num_bytes = base::saturated_cast<uint32_t>(
-          data_[current_item_]->length() - current_item_offset_);
+      size_t num_bytes = data_[current_item_]->length() - current_item_offset_;
       MojoResult write_result =
           pipe_->WriteData(data_[current_item_]->data() + current_item_offset_,
                            &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

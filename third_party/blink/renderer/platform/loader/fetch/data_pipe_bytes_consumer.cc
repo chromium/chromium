@@ -69,7 +69,7 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
   if (!data_pipe_.is_valid())
     return Result::kShouldWait;
 
-  uint32_t pipe_available = 0;
+  size_t pipe_available = 0;
   MojoResult rv =
       data_pipe_->BeginReadData(reinterpret_cast<const void**>(buffer),
                                 &pipe_available, MOJO_READ_DATA_FLAG_NONE);

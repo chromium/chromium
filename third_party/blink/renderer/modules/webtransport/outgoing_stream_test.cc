@@ -95,7 +95,7 @@ class StreamCreator {
   Vector<uint8_t> ReadAllPendingData() {
     Vector<uint8_t> data;
     const void* buffer = nullptr;
-    uint32_t buffer_num_bytes = 0;
+    size_t buffer_num_bytes = 0;
     MojoResult result = data_pipe_consumer_->BeginReadData(
         &buffer, &buffer_num_bytes, MOJO_BEGIN_READ_DATA_FLAG_NONE);
 

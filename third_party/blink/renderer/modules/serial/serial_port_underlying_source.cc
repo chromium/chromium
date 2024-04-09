@@ -150,7 +150,7 @@ void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
 
 void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
   const void* buffer = nullptr;
-  uint32_t length = 0;
+  size_t length = 0;
   MojoResult result =
       data_pipe_->BeginReadData(&buffer, &length, MOJO_READ_DATA_FLAG_NONE);
   switch (result) {
@@ -163,8 +163,7 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
 
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
-        length =
-            std::min(base::saturated_cast<uint32_t>(view.ByteLength()), length);
+        length = std::min(view.ByteLength(), length);
         memcpy(view.Data(), buffer, length);
         request->respond(script_state_, length, exception_state);
       } else {

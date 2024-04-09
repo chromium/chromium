@@ -93,7 +93,7 @@ void TCPReadableStreamWrapper::Pull() {
   DCHECK(data_pipe_);
 
   const void* data_buffer = nullptr;
-  uint32_t data_length = 0;
+  size_t data_length = 0;
   auto result = data_pipe_->BeginReadData(&data_buffer, &data_length,
                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {
@@ -109,8 +109,7 @@ void TCPReadableStreamWrapper::Pull() {
 
       if (ReadableStreamBYOBRequest* request = Controller()->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
-        data_length = std::min(
-            data_length, base::saturated_cast<uint32_t>(view.ByteLength()));
+        data_length = std::min(data_length, view.ByteLength());
         std::memcpy(view.Data(), data_buffer, data_length);
         request->respond(script_state, data_length, exception_state);
       } else {

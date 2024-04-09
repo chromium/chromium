@@ -195,7 +195,7 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   }
 
   while (true) {
-    uint32_t num_bytes;
+    size_t num_bytes;
     const void* buffer;
     MojoResult pipe_result = consumer_handle_->BeginReadData(
         &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
@@ -226,7 +226,8 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
 
     bytes_loaded_ += num_bytes;
 
-    if (auto err = client_->DidReceiveData(data, num_bytes);
+    if (auto err = client_->DidReceiveData(
+            data, base::checked_cast<unsigned>(num_bytes));
         err != FileErrorCode::kOK) {
       Failed(err);
       return;

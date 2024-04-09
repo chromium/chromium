@@ -72,7 +72,7 @@ constexpr size_t kDataPipeCapacity = 4096;
 
 std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
   char buffer[kDataPipeCapacity];
-  uint32_t read_bytes = kDataPipeCapacity;
+  size_t read_bytes = kDataPipeCapacity;
   MojoResult result =
       (*handle)->ReadData(buffer, &read_bytes, MOJO_READ_DATA_FLAG_NONE);
   if (result != MOJO_RESULT_OK) {

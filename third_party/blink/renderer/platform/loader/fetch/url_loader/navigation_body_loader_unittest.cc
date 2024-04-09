@@ -100,7 +100,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void Write(const std::string& buffer) {
-    uint32_t size = static_cast<uint32_t>(buffer.size());
+    size_t size = buffer.size();
     MojoResult result = writer_->WriteData(buffer.c_str(), &size, kNone);
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(buffer.size(), size);

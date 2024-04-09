@@ -265,7 +265,7 @@ void TestWrite(const V8TestingScope& scope,
   mojo::ScopedDataPipeConsumerHandle& output_consumer =
       scoped_web_transport->Stub()->OutputConsumer();
   const void* buffer = nullptr;
-  uint32_t buffer_num_bytes = 0;
+  size_t buffer_num_bytes = 0;
   MojoResult mojo_result = output_consumer->BeginReadData(
       &buffer, &buffer_num_bytes, MOJO_BEGIN_READ_DATA_FLAG_NONE);
 
@@ -306,7 +306,7 @@ void TestRead(V8TestingScope& scope,
   mojo::ScopedDataPipeProducerHandle& input_producer =
       scoped_web_transport->Stub()->InputProducer();
   constexpr char input[] = {'B'};
-  uint32_t input_num_bytes = sizeof(input);
+  size_t input_num_bytes = sizeof(input);
   MojoResult mojo_result = input_producer->WriteData(
       input, &input_num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
 

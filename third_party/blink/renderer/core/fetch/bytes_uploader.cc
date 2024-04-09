@@ -125,7 +125,7 @@ void BytesUploader::WriteDataOnPipe() {
         break;
     }
     DCHECK_EQ(consumer_result, BytesConsumer::Result::kOk);
-    uint32_t written_bytes = base::saturated_cast<uint32_t>(available);
+    size_t written_bytes = available;
     const MojoResult mojo_result = upload_pipe_->WriteData(
         buffer, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DVLOG(3) << "  upload_pipe_->WriteData()=" << mojo_result

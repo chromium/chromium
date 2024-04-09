@@ -74,7 +74,7 @@ class Receiver {
     // It isn't necessary to handle MojoResult here since BeginReadDataRaw()
     // returns an equivalent error.
     const void* buffer = nullptr;
-    uint32_t bytes_read = 0;
+    size_t bytes_read = 0;
     MojoResult rv =
         handle_->BeginReadData(&buffer, &bytes_read, MOJO_READ_DATA_FLAG_NONE);
     switch (rv) {
@@ -99,8 +99,10 @@ class Receiver {
         return;
     }
 
-    if (bytes_read > 0)
-      data_.Append(static_cast<const uint8_t*>(buffer), bytes_read);
+    if (bytes_read > 0) {
+      data_.Append(static_cast<const uint8_t*>(buffer),
+                   base::checked_cast<wtf_size_t>(bytes_read));
+    }
 
     rv = handle_->EndReadData(bytes_read);
     DCHECK_EQ(rv, MOJO_RESULT_OK);

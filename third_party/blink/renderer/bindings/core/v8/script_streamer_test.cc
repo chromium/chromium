@@ -151,7 +151,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 void AppendDataToDataPipe(const char* data,
                           mojo::ScopedDataPipeProducerHandle& producer_handle) {
-  uint32_t data_len = base::checked_cast<uint32_t>(strlen(data));
+  size_t data_len = strlen(data);
   MojoResult result = producer_handle->WriteData(
       data, &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   EXPECT_EQ(result, MOJO_RESULT_OK);

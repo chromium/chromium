@@ -199,7 +199,7 @@ void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
   DCHECK_EQ(State::kSniffing, state_);
 
   size_t start_size = buffered_body_.size();
-  uint32_t read_bytes = net::kMaxBytesToSniff;
+  size_t read_bytes = net::kMaxBytesToSniff;
   buffered_body_.resize(start_size + read_bytes);
   MojoResult result =
       body_consumer_handle_->ReadData(buffered_body_.data() + start_size,
@@ -303,7 +303,7 @@ void MimeSniffingURLLoader::SendReceivedBodyToClient() {
   // Send the buffered data first.
   DCHECK_GT(bytes_remaining_in_buffer_, 0u);
   size_t start_position = buffered_body_.size() - bytes_remaining_in_buffer_;
-  uint32_t bytes_sent = bytes_remaining_in_buffer_;
+  size_t bytes_sent = bytes_remaining_in_buffer_;
   MojoResult result =
       body_producer_handle_->WriteData(buffered_body_.data() + start_position,
                                        &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
@@ -330,7 +330,7 @@ void MimeSniffingURLLoader::ForwardBodyToClient() {
   DCHECK_EQ(0u, bytes_remaining_in_buffer_);
   // Send the body from the consumer to the producer.
   const void* buffer;
-  uint32_t buffer_size = 0;
+  size_t buffer_size = 0;
   MojoResult result = body_consumer_handle_->BeginReadData(
       &buffer, &buffer_size, MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {

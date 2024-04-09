@@ -222,7 +222,7 @@ void WorkerMainScriptLoader::OnReadable(MojoResult) {
   // It isn't necessary to handle MojoResult here since BeginReadDataRaw()
   // returns an equivalent error.
   const char* buffer = nullptr;
-  uint32_t bytes_read = 0;
+  size_t bytes_read = 0;
   MojoResult rv =
       data_pipe_->BeginReadData(reinterpret_cast<const void**>(&buffer),
                                 &bytes_read, MOJO_READ_DATA_FLAG_NONE);

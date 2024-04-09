@@ -353,7 +353,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  const uint32_t kMax = network::features::GetLoaderChunkSize();
+  const size_t kMax = network::features::GetLoaderChunkSize();
 
   consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
   consumer->Add(Command(Command::kData, std::string(2, 'b').data()));

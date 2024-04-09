@@ -629,7 +629,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         if (available == 0) {
           result = consumer_->EndRead(0);
         } else {
-          uint32_t num_bytes = base::checked_cast<uint32_t>(available);
+          size_t num_bytes = available;
           MojoResult mojo_result = out_data_pipe_->WriteData(
               buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
           if (mojo_result == MOJO_RESULT_OK) {

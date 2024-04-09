@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/state_transitions.h"
 #include "base/synchronization/lock.h"
@@ -134,7 +135,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     // Start a new two-phase read, blocking until data is available.
     while (true) {
       const void* buffer;
-      uint32_t num_bytes;
+      size_t num_bytes;
       MojoResult result = data_pipe_->BeginReadData(&buffer, &num_bytes,
                                                     MOJO_READ_DATA_FLAG_NONE);
 
@@ -154,7 +155,8 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
-          copy_for_decoder.Append(static_cast<const char*>(buffer), num_bytes);
+          copy_for_decoder.Append(static_cast<const char*>(buffer),
+                                  base::checked_cast<wtf_size_t>(num_bytes));
           if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
             absl::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));
@@ -828,7 +830,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
   CHECK(data_pipe_);
 
   const void* data;
-  uint32_t data_size;
+  size_t data_size;
   MojoReadDataFlags flags_to_pass = MOJO_READ_DATA_FLAG_NONE;
   MojoResult begin_read_result =
       data_pipe_->BeginReadData(&data, &data_size, flags_to_pass);
@@ -1463,8 +1465,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   }
   CHECK(state.readable());
   const void* data;
-  uint32_t data_size = 0;
-  constexpr uint32_t kMaximumLengthOfBOM = 4;
+  size_t data_size = 0;
+  constexpr size_t kMaximumLengthOfBOM = 4;
   MojoResult begin_read_result =
       body_->BeginReadData(&data, &data_size, MOJO_READ_DATA_FLAG_NONE);
   CHECK_EQ(begin_read_result, MOJO_RESULT_OK);

@@ -240,7 +240,7 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
   DCHECK(!read_pending_);
 
   const void* buffer = nullptr;
-  uint32_t buffer_num_bytes = 0;
+  size_t buffer_num_bytes = 0;
   auto result = data_pipe_->BeginReadData(&buffer, &buffer_num_bytes,
                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {
@@ -260,7 +260,7 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
       }
       // Casting back to `uint32_t` is safe because `read_bytes` cannot be
       // greater than `buffer_num_bytes`.
-      data_pipe_->EndReadData(static_cast<uint32_t>(read_bytes));
+      data_pipe_->EndReadData(read_bytes);
       in_two_phase_read_ = false;
       if (read_pending_) {
         read_pending_ = false;

@@ -352,7 +352,7 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
               return;
             }
 
-            uint32_t num_bytes = 0;
+            size_t num_bytes = 0;
             MojoResult query_result =
                 pipe.ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
             if (query_result == MOJO_RESULT_SHOULD_WAIT)

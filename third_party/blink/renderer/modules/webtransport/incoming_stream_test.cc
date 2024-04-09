@@ -63,7 +63,7 @@ class IncomingStreamTest : public ::testing::Test {
   }
 
   void WriteToPipe(Vector<uint8_t> data) {
-    uint32_t num_bytes = data.size();
+    size_t num_bytes = data.size();
     EXPECT_EQ(data_pipe_producer_->WriteData(data.data(), &num_bytes,
                                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
               MOJO_RESULT_OK);

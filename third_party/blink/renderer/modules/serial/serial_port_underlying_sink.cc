@@ -241,7 +241,7 @@ void SerialPortUnderlyingSink::WriteData() {
 
   DCHECK_LT(offset_, length);
   data += offset_;
-  uint32_t num_bytes = base::saturated_cast<uint32_t>(length - offset_);
+  size_t num_bytes = length - offset_;
 
   MojoResult result =
       data_pipe_->WriteData(data, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

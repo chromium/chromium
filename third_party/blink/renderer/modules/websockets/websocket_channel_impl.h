@@ -155,12 +155,12 @@ class MODULES_EXPORT WebSocketChannelImpl final
   struct DataFrame final {
     DataFrame(bool fin,
               network::mojom::blink::WebSocketMessageType type,
-              uint32_t data_length)
+              size_t data_length)
         : fin(fin), type(type), data_length(data_length) {}
 
     bool fin;
     network::mojom::blink::WebSocketMessageType type;
-    uint32_t data_length;
+    size_t data_length;
   };
 
   // Used by BlobLoader and Message, so defined here so that it can be shared.
