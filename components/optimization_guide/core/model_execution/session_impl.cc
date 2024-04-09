@@ -452,7 +452,8 @@ void SessionImpl::OnRequestSafetyResult(
   const auto& thresholds = check.safety_category_thresholds().empty()
                                ? safety_config_->safety_category_thresholds()
                                : check.safety_category_thresholds();
-  bool is_unsafe = HasUnsafeScores(thresholds, safety_info);
+  bool is_unsafe = IsTextInUnsupportedOrUndeterminedLanguage(safety_info) ||
+                   HasUnsafeScores(thresholds, safety_info);
 
   // Log the check execution.
   auto* response_log =

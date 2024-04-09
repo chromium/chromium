@@ -188,10 +188,17 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
 
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override {
+    auto safety_info = on_device_model::mojom::SafetyInfo::New();
+
     // Text is unsafe if it contains "unsafe".
     bool has_unsafe = text.find("unsafe") != std::string::npos;
-    auto safety_info = on_device_model::mojom::SafetyInfo::New();
     safety_info->class_scores.emplace_back(has_unsafe ? 0.8 : 0.2);
+
+    if (text.find("esperanto") != std::string::npos) {
+      safety_info->language =
+          on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
+    }
+
     std::move(callback).Run(std::move(safety_info));
   }
 
@@ -1413,6 +1420,80 @@ TEST_F(OnDeviceModelServiceControllerTest,
   const auto& response_log = check_log.response().text_safety_model_response();
   EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
   EXPECT_TRUE(response_log.is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       RequestCheckFailsWithUnmetRequiredLanguage) {
+  Initialize();
+
+  {
+    // Configure a request safety check on the PageUrl.
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->add_allowed_languages("eo");
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    auto* threshold1 = check->add_safety_category_thresholds();
+    threshold1->set_output_index(0);
+    threshold1->set_threshold(0.5);
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "safe_url");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(response_error_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       RequestCheckPassesWithMetRequiredLanguage) {
+  Initialize();
+
+  {
+    // Configure a request safety check on the PageUrl.
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->add_allowed_languages("eo");
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    auto* threshold1 = check->add_safety_category_thresholds();
+    threshold1->set_output_index(0);
+    threshold1->set_threshold(0.5);
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "safe_url in esperanto");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
