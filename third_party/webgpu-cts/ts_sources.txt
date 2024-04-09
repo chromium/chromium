@@ -779,6 +779,7 @@ src/webgpu/shader/validation/expression/call/builtin/shader_stage_utils.ts
 src/webgpu/shader/validation/expression/call/builtin/sign.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/smoothstep.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/step.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
