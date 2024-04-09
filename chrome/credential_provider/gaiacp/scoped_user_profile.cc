@@ -128,8 +128,8 @@ HRESULT SaveProcessedProfilePictureToDisk(
   if (file_attributes != INVALID_FILE_ATTRIBUTES) {
     if (!::SetFileAttributes(picture_path.value().c_str(),
                              file_attributes & ~FILE_ATTRIBUTE_HIDDEN)) {
-      LOGFN(ERROR) << "SetFileAttributes(remove hidden) err="
-                   << ::GetLastError();
+      DWORD saved_last_err = ::GetLastError();
+      LOGFN(ERROR) << "SetFileAttributes(remove hidden) err=" << saved_last_err;
     }
   }
 
@@ -140,8 +140,8 @@ HRESULT SaveProcessedProfilePictureToDisk(
     if (file_attributes != INVALID_FILE_ATTRIBUTES) {
       if (!::SetFileAttributes(picture_path.value().c_str(),
                                file_attributes | FILE_ATTRIBUTE_HIDDEN)) {
-        LOGFN(ERROR) << "SetFileAttributes(add hidden) err="
-                     << ::GetLastError();
+        DWORD saved_last_err = ::GetLastError();
+        LOGFN(ERROR) << "SetFileAttributes(add hidden) err=" << saved_last_err;
       }
     }
   }
@@ -155,8 +155,8 @@ HRESULT CreateDirectoryWithRestrictedAccess(const base::FilePath& path) {
 
   SECURITY_DESCRIPTOR sd;
   if (!::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION)) {
-    LOGFN(ERROR) << "Failed to initialize sd hr="
-                 << HRESULT_FROM_WIN32(::GetLastError());
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "Failed to initialize sd hr=" << hr;
     return E_FAIL;
   }
 

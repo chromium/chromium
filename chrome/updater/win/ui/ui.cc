@@ -185,8 +185,7 @@ void OmahaWnd::Show() {
   ::LockSetForegroundWindow(LSFW_UNLOCK);
 
   if (!::SetForegroundWindow(*this)) {
-    LOG(WARNING) << __func__
-                 << ": ::SetForegroundWindow failed: " << ::GetLastError();
+    PLOG(WARNING) << __func__ << ": ::SetForegroundWindow failed";
   }
 }
 

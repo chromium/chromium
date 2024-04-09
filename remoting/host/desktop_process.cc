@@ -84,7 +84,7 @@ void DesktopProcess::LockWorkstation() {
   }
 
   if (!::LockWorkStation()) {
-    LOG(ERROR) << "LockWorkStation() failed: " << ::GetLastError();
+    PLOG(ERROR) << "LockWorkStation() failed";
   }
 #else
   NOTREACHED();

@@ -29,9 +29,8 @@ bool LoadMediaFoundationLibraries() {
   static const bool kDidLoadSucceed = []() {
     for (const wchar_t* mfdll : {L"mf.dll", L"mfplat.dll"}) {
       if (!::LoadLibrary(mfdll)) {
-        LOG(ERROR) << kMediaFoundationLoadFailedMessage << "Could not load "
-                   << mfdll << ". "
-                   << logging::SystemErrorCodeToString(::GetLastError());
+        PLOG(ERROR) << kMediaFoundationLoadFailedMessage << "Could not load "
+                    << mfdll;
         return false;
       }
     }

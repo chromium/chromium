@@ -161,8 +161,8 @@ void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
   if (!base::CopyFile(prefs_source_path,
                       InitialPreferences::Path(installer_state.target_path(),
                                                /*for_read=*/false))) {
-    VLOG(1) << "Failed to copy initial preferences from:"
-            << prefs_source_path.value() << " gle: " << ::GetLastError();
+    VPLOG(1) << "Failed to copy initial preferences from \""
+             << prefs_source_path << "\"";
   }
 }
 
