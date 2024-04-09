@@ -30,7 +30,6 @@ public class HistorySyncCoordinator {
     private final boolean mUseLandscapeLayout;
     private HistorySyncView mView;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private boolean mIsDestroyed;
 
     /**
      * Creates an instance of {@link HistorySyncCoordinator} and shows the sign-in bottom sheet.
@@ -82,13 +81,11 @@ public class HistorySyncCoordinator {
     }
 
     public void destroy() {
-        assert !mIsDestroyed;
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
             mPropertyModelChangeProcessor = null;
         }
         mMediator.destroy();
-        mIsDestroyed = true;
     }
 
     public View getView() {

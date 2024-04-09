@@ -220,12 +220,27 @@ public final class UpgradePromoCoordinator
         return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
+    /**
+     * Removes existing views from the view switcher and re-inflates them with the correct layout
+     * after a configuration change.
+     */
+    public void recreateLayoutAfterConfigurationChange() {
+        mViewSwitcher.removeAllViews();
+        mViewSwitcher = null;
+        inflateViewSwitcher();
+        if (mSigninCoordinator != null) {
+            mViewSwitcher.setDisplayedChild(ViewSwitcherChild.SIGNIN);
+            mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
+            return;
+        }
+        advanceToNextPage();
+    }
+
     private void inflateViewSwitcher() {
         Configuration configuration = mContext.getResources().getConfiguration();
         boolean useLandscapeLayout =
                 configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
                         && !isLargeScreen();
-        // TODO(b/41493788): Add support for screen rotation while the promo is being displayed.
         mViewSwitcher =
                 (ViewSwitcher)
                         LayoutInflater.from(mContext)

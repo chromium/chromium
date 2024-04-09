@@ -191,7 +191,12 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        mCoordinator.switchHistorySyncLayout();
+        if (mCoordinator != null) {
+            mCoordinator.switchHistorySyncLayout();
+        } else {
+            mUpgradePromoCoordinator.recreateLayoutAfterConfigurationChange();
+            setContentView(mUpgradePromoCoordinator.getViewSwitcher());
+        }
     }
 
     @Override

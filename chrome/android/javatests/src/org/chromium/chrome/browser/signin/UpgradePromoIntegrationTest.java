@@ -16,6 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -32,15 +34,18 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Integration tests for the re-FRE. */
@@ -138,6 +143,58 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(org.chromium.chrome.test.R.id.history_sync)).check(matches(isDisplayed()));
+        onView(allOf(withId(org.chromium.chrome.test.R.id.button_primary), isCompletelyDisplayed()))
+                .perform(click());
+
+        SyncTestUtil.waitForHistorySyncEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    // There is an issue causing {@link Activity.setRequestedOrientation} to throw an exception in
+    // Android 8 which was fixed in Android 8.1. See b/70718000 for example.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
+    public void testScreenRotation() {
+        launchActivity();
+
+        // Rotate the screen.
+        ActivityTestUtils.rotateActivityToOrientation(
+                mActivity, Configuration.ORIENTATION_LANDSCAPE);
+
+        // Verify that the view switcher is displayed with the correct layout.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            onView(withId(org.chromium.chrome.test.R.id.upgrade_promo_portrait))
+                    .check(matches(isDisplayed()));
+        } else {
+            onView(withId(org.chromium.chrome.test.R.id.upgrade_promo_landscape))
+                    .check(matches(isDisplayed()));
+        }
+        onView(withId(org.chromium.chrome.test.R.id.fullscreen_signin))
+                .check(matches(isDisplayed()));
+
+        // Sign in.
+        onView(withId(org.chromium.chrome.test.R.id.signin_fre_continue_button)).perform(click());
+
+        // Verify that the view switcher is displayed with the correct layout.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            onView(withId(org.chromium.chrome.test.R.id.upgrade_promo_portrait))
+                    .check(matches(isDisplayed()));
+        } else {
+            onView(withId(org.chromium.chrome.test.R.id.upgrade_promo_landscape))
+                    .check(matches(isDisplayed()));
+        }
+        onView(withId(org.chromium.chrome.test.R.id.history_sync)).check(matches(isDisplayed()));
+
+        // Rotate the screen back.
+        ActivityTestUtils.rotateActivityToOrientation(
+                mActivity, Configuration.ORIENTATION_PORTRAIT);
+        onView(withId(org.chromium.chrome.test.R.id.upgrade_promo_portrait))
+                .check(matches(isDisplayed()));
+
+        // Accept history sync.
         onView(allOf(withId(org.chromium.chrome.test.R.id.button_primary), isCompletelyDisplayed()))
                 .perform(click());
 
