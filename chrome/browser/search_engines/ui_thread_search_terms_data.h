@@ -22,9 +22,6 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GetApplicationLocale() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
-  std::string GetSuggestClient(RequestSource request_source) const override;
-  std::string GetSuggestRequestIdentifier(
-      RequestSource request_source) const override;
   std::string GoogleImageSearchSource() const override;
 
 #if BUILDFLAG(IS_ANDROID)

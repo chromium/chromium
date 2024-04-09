@@ -19,7 +19,6 @@ class TestingSearchTermsData : public SearchTermsData {
   std::string GoogleBaseURLValue() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
-  std::string GetSuggestClient(RequestSource request_source) const override;
   std::string GoogleImageSearchSource() const override;
 
   // Estimates dynamic memory usage.
@@ -32,14 +31,10 @@ class TestingSearchTermsData : public SearchTermsData {
   void set_search_client(const std::string& search_client) {
     search_client_ = search_client;
   }
-  void set_suggest_client(const std::string& suggest_client) {
-    suggest_client_ = suggest_client;
-  }
 
  private:
   std::string google_base_url_;
   std::string search_client_;
-  std::string suggest_client_;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TESTING_SEARCH_TERMS_DATA_H_

@@ -150,16 +150,6 @@ std::string SearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string SearchTermsData::GetSuggestClient(
-    RequestSource request_source) const {
-  return std::string();
-}
-
-std::string SearchTermsData::GetSuggestRequestIdentifier(
-    RequestSource request_source) const {
-  return std::string();
-}
-
 std::string SearchTermsData::GoogleImageSearchSource() const {
   return std::string();
 }

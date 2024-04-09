@@ -80,45 +80,6 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 }
 #endif
 
-std::string UIThreadSearchTermsData::GetSuggestClient(
-    RequestSource request_source) const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
-  switch (request_source) {
-    case RequestSource::NTP_MODULE:
-      return "chrome-android-search-resumption-module";
-    case RequestSource::CONTEXTUAL_SEARCHBOX:
-      return "chrome-contextual-searchbox";
-    case RequestSource::SEARCHBOX:
-    case RequestSource::CROS_APP_LIST:
-#if BUILDFLAG(IS_ANDROID)
-      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-        return "chrome";
-      }
-#endif
-      return "chrome-omni";
-  }
-}
-
-std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
-    RequestSource request_source) const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
-  switch (request_source) {
-    case RequestSource::NTP_MODULE:
-    case RequestSource::CONTEXTUAL_SEARCHBOX:
-      return "";
-    case RequestSource::SEARCHBOX:
-    case RequestSource::CROS_APP_LIST:
-#if BUILDFLAG(IS_ANDROID)
-      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-        return "chrome-mobile-ext-ansg";
-      }
-#endif
-      return "chrome-ext-ansg";
-  }
-}
-
 // It's acutally OK to call this method on any thread, but it's currently placed
 // in UIThreadSearchTermsData since SearchTermsData cannot depend on src/chrome
 // as it is shared with iOS.

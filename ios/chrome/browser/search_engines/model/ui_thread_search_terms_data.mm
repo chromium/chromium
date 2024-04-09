@@ -72,33 +72,6 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string UIThreadSearchTermsData::GetSuggestClient(
-    RequestSource request_source) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  switch (request_source) {
-    case RequestSource::NTP_MODULE:
-      return "chrome-ios-ntp";
-    case RequestSource::CONTEXTUAL_SEARCHBOX:
-      return "";
-    case RequestSource::SEARCHBOX:
-    case RequestSource::CROS_APP_LIST:
-      return "chrome";
-  }
-}
-
-std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
-    RequestSource request_source) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  switch (request_source) {
-    case RequestSource::NTP_MODULE:
-    case RequestSource::CONTEXTUAL_SEARCHBOX:
-      return "";
-    case RequestSource::SEARCHBOX:
-    case RequestSource::CROS_APP_LIST:
-      return "chrome-ext-ansg";
-  }
-}
-
 std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   const std::string channel_name = GetChannelString();

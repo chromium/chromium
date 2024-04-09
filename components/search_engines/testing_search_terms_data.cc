@@ -27,11 +27,6 @@ std::string TestingSearchTermsData::GetSearchClient() const {
   return search_client_;
 }
 
-std::string TestingSearchTermsData::GetSuggestClient(
-    RequestSource request_source) const {
-  return suggest_client_;
-}
-
 std::string TestingSearchTermsData::GoogleImageSearchSource() const {
   return "google_image_search_source";
 }
