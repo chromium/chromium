@@ -36,6 +36,62 @@ void PostDelayedMemoryReductionTask(
     OnceCallback<void(MemoryReductionTaskContext)> task,
     base::TimeDelta delay);
 
+// Replacement for |OneShotTimer|, that allows the tasks to be run by
+// |OnPreFreeze| (see |PreFreezeBackgroundMemoryTrimmer| above).
+class BASE_EXPORT OneShotDelayedBackgroundTimer final {
+ public:
+  OneShotDelayedBackgroundTimer();
+  ~OneShotDelayedBackgroundTimer();
+
+  void Stop();
+
+  void Start(const Location& posted_from, TimeDelta delay, OnceClosure task) {
+    Start(posted_from, delay,
+          BindOnce(
+              [](OnceClosure task,
+                 MemoryReductionTaskContext called_from_prefreeze) {
+                std::move(task).Run();
+              },
+              std::move(task)));
+  }
+  void Start(const Location& posted_from,
+             TimeDelta delay,
+             OnceCallback<void(MemoryReductionTaskContext)> task);
+
+  bool IsRunning() const;
+
+  template <class Receiver>
+  void Start(const Location& posted_from,
+             TimeDelta delay,
+             Receiver* receiver,
+             void (Receiver::*method)()) {
+    Start(posted_from, delay, BindOnce(method, Unretained(receiver)));
+  }
+
+  void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
+
+ private:
+  class OneShotDelayedBackgroundTimerImpl {
+   public:
+    virtual ~OneShotDelayedBackgroundTimerImpl() = default;
+    virtual void Stop() = 0;
+    virtual void Start(const Location& posted_from,
+                       TimeDelta delay,
+                       OnceCallback<void(MemoryReductionTaskContext)> task) = 0;
+    virtual bool IsRunning() const = 0;
+    virtual void SetTaskRunner(
+        scoped_refptr<SequencedTaskRunner> task_runner) = 0;
+  };
+
+#if BUILDFLAG(IS_ANDROID)
+  friend class android::PreFreezeBackgroundMemoryTrimmer;
+#endif
+  class TimerImpl;
+  class TaskImpl;
+
+  std::unique_ptr<OneShotDelayedBackgroundTimerImpl> impl_;
+};
+
 }  // namespace base
 
 #endif  // BASE_MEMORY_POST_DELAYED_MEMORY_REDUCTION_TASK_H_
