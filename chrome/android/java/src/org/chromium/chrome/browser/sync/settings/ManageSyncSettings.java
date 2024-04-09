@@ -247,9 +247,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
             }
 
-            mSyncEncryption = findPreference(PREF_ENCRYPTION);
-            mSyncEncryption.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
             Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
             reviewSyncData.setOnPreferenceClickListener(
                     SyncSettingsUtils.toOnClickListener(
@@ -314,6 +311,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             mGoogleActivityControls.setSummary(
                     R.string.sign_in_personalize_google_services_summary);
         }
+
+        mSyncEncryption = findPreference(PREF_ENCRYPTION);
+        mSyncEncryption.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
     }
 
     @Override
@@ -448,12 +449,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         this, () -> onGoogleActivityControlsClicked(signedInAccountName)));
 
         updateDataTypeState();
-
-        // TODO(b/326574743): encryption state should be updated with
-        // shouldReplaceSyncSettingsWithAccountSettings being enabled.
-        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
-            updateEncryptionState();
-        }
+        updateEncryptionState();
     }
 
     /** Gets the state from data type checkboxes and saves this state into {@link SyncService}. */

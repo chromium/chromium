@@ -57,4 +57,8 @@ found in the LICENSE file.
         android:title="@string/sign_in_google_activity_controls_title"
         android:summary="@string/sign_in_google_activity_controls_summary"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="encryption"
+        android:title="@string/sync_encryption"/>
+
 </PreferenceScreen>
