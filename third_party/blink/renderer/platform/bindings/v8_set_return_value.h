@@ -103,14 +103,9 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<v8::Value>& info,
+    const v8::PropertyCallbackInfo<void>& info,
     IndexedPropertySetterResult value) {
-  if (value == IndexedPropertySetterResult::kDidNotIntercept) {
-    // Do not set the return value to indicate that the request was not
-    // intercepted.
-    return;
-  }
-  info.GetReturnValue().SetNull();
+  // Setter callback is not expected to set the return value.
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
@@ -123,25 +118,30 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<v8::Value>& info,
+    const v8::PropertyCallbackInfo<void>& info,
     NamedPropertySetterResult value) {
-  if (value == NamedPropertySetterResult::kDidNotIntercept) {
-    // Do not set the return value to indicate that the request was not
-    // intercepted.
-    return;
-  }
-  info.GetReturnValue().SetNull();
+  // Setter callback is not expected to set the return value.
 }
+
+PLATFORM_EXPORT inline void V8SetReturnValue(
+    const v8::PropertyCallbackInfo<void>& info,
+    NamedPropertyDeleterResult value) {}
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
     const v8::PropertyCallbackInfo<v8::Boolean>& info,
     NamedPropertyDeleterResult value) {
-  if (value == NamedPropertyDeleterResult::kDidNotIntercept) {
-    // Do not set the return value to indicate that the request was not
-    // intercepted.
-    return;
+  switch (value) {
+    case NamedPropertyDeleterResult::kDidNotIntercept:
+      // Deleter callback doesn't have to set the return value if the
+      // operation was not intercepted.
+      return;
+
+    case NamedPropertyDeleterResult::kDidNotDelete:
+    case NamedPropertyDeleterResult::kDeleted:
+      info.GetReturnValue().Set(value == NamedPropertyDeleterResult::kDeleted);
+      return;
   }
-  info.GetReturnValue().Set(value == NamedPropertyDeleterResult::kDeleted);
+  NOTREACHED();
 }
 
 // nullptr

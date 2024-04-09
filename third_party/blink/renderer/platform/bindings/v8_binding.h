@@ -347,6 +347,27 @@ enum class NamedPropertyDeleterResult {
   kDidNotDelete,     // Intercepted but failed to delete.
 };
 
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    IndexedPropertySetterResult value) {
+  return value == IndexedPropertySetterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
+
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    NamedPropertySetterResult value) {
+  return value == NamedPropertySetterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
+
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    NamedPropertyDeleterResult value) {
+  return value == NamedPropertyDeleterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
+
 // Gets the url of the currently executing script. Returns empty string, if no
 // script is executing (e.g. during parsing of a meta tag in markup), or the
 // script context is otherwise unavailable.

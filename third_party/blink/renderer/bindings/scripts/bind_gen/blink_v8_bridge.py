@@ -733,7 +733,7 @@ def make_v8_to_blink_value(blink_var_name,
                            v8_value_expr,
                            idl_type,
                            argument=None,
-                           error_exit_return_statement="return;",
+                           error_exit_return_statement=None,
                            cg_context=None):
     """
     Returns a SymbolNode whose definition converts a v8::Value to a Blink value.

@@ -61,10 +61,12 @@ class CodeGenContext(object):
     # void (*)(v8::Local<v8::Name>, v8::Local<v8::Value>,
     #          const v8::PropertyCallbackInfo<void>&)
     V8_ACCESSOR_NAME_SETTER_CALLBACK = "v8::AccessorNameSetterCallback"
-    # void (*)(v8::Local<v8::Name>, v8::Local<v8::Value>,
-    #          const v8::PropertyCallbackInfo<v8::Value>&)
-    V8_GENERIC_NAMED_PROPERTY_SETTER_CALLBACK = (
-        "v8::GenericNamedPropertySetterCallback")
+    # v8::Intercepted (*)(v8::Local<v8::Name>,
+    #                     const v8::PropertyCallbackInfo<v8::Value>&)
+    V8_NAMED_PROPERTY_GETTER_CALLBACK = "v8::NamedPropertyGetterCallback"
+    # v8::Intercepted (*)(v8::Local<v8::Name>, v8::Local<v8::Value>,
+    #                     const v8::PropertyCallbackInfo<void>&)
+    V8_NAMED_PROPERTY_SETTER_CALLBACK = "v8::NamedPropertySetterCallback"
     # Others
     V8_OTHER_CALLBACK = "other callback type"
 
@@ -289,6 +291,17 @@ class CodeGenContext(object):
         if self.operation_group:
             return self.operation_group[0].return_type.unwrap().is_promise
         return False
+
+    @property
+    def is_interceptor_returning_v8intercepted(self):
+        return bool((self.indexed_interceptor_kind
+                     and self.indexed_interceptor_kind != "Enumerator")
+                    or (self.named_interceptor_kind
+                        and self.named_interceptor_kind != "Enumerator")
+                    or (self.v8_callback_type
+                        == CodeGenContext.V8_NAMED_PROPERTY_GETTER_CALLBACK)
+                    or (self.v8_callback_type
+                        == CodeGenContext.V8_NAMED_PROPERTY_SETTER_CALLBACK))
 
     @property
     def logging_target(self):

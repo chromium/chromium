@@ -23,8 +23,8 @@ struct CrossOriginAttributeTableEntry final {
   const char* name;
   v8::FunctionCallback get_callback;
   v8::FunctionCallback set_callback;
-  v8::GenericNamedPropertyGetterCallback get_value;
-  v8::GenericNamedPropertySetterCallback set_value;
+  v8::NamedPropertyGetterCallback get_value;
+  v8::NamedPropertySetterCallback set_value;
 };
 
 struct CrossOriginOperationTableEntry final {
