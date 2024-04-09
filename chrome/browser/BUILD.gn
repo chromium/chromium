@@ -3075,6 +3075,8 @@ static_library("browser") {
       "android/webapk/webapk_restore_manager.h",
       "android/webapk/webapk_restore_task.cc",
       "android/webapk/webapk_restore_task.h",
+      "android/webapk/webapk_restore_web_contents_manager.cc",
+      "android/webapk/webapk_restore_web_contents_manager.h",
       "android/webapk/webapk_specifics_fetcher.cc",
       "android/webapk/webapk_specifics_fetcher.h",
       "android/webapk/webapk_sync_bridge.cc",

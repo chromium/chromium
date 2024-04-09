@@ -6,32 +6,62 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_TASK_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
 
 namespace webapk {
 
 class WebApkRestoreManager;
+class WebApkRestoreWebContentsManager;
+
+// An abstract task mockable for testing.
+class AbstractWebApkRestoreTask {
+ public:
+  using CompleteCallback = base::OnceCallback<void(const GURL&)>;
+  virtual ~AbstractWebApkRestoreTask() = default;
+  virtual void Start(WebApkRestoreWebContentsManager* web_contents_manager,
+                     CompleteCallback complete_callback) = 0;
+};
 
 // Task for installing previously synced WebAPK on new devices. Each instance
 // represents a WebAPK to be install.
-class WebApkRestoreTask {
+class WebApkRestoreTask : public AbstractWebApkRestoreTask {
  public:
-  using CompleteCallback = base::OnceCallback<void(const GURL&)>;
-
   explicit WebApkRestoreTask(base::PassKey<WebApkRestoreManager>,
-                             const sync_pb::WebApkSpecifics& webapk_specifics,
-                             CompleteCallback complete_callback);
+                             const sync_pb::WebApkSpecifics& webapk_specifics);
   WebApkRestoreTask(const WebApkRestoreTask&) = delete;
   WebApkRestoreTask& operator=(const WebApkRestoreTask&) = delete;
-  ~WebApkRestoreTask();
+  ~WebApkRestoreTask() override;
 
-  void Start();
+  void Start(WebApkRestoreWebContentsManager* web_contents_manager,
+             CompleteCallback complete_callback) override;
 
  private:
+  void OnWebAppUrlLoaded(webapps::WebAppUrlLoaderResult result);
+
   CompleteCallback complete_callback_;
+
+  raw_ptr<content::WebContents> web_contents_;
+
+  base::WeakPtr<WebApkRestoreWebContentsManager> web_contents_manager_;
+
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
+
   std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
+
+  base::WeakPtrFactory<WebApkRestoreTask> weak_factory_{this};
 };
 
 }  // namespace webapk

@@ -7,6 +7,8 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
+#include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -27,6 +29,24 @@ std::unique_ptr<sync_pb::WebApkSpecifics> CreateWebApkSpecifics(
 
   return web_apk;
 }
+
+// A mock WebApkRestoreTask that does nothing but run the complete callback when
+// starts.
+class MockWebApkRestoreTask : public AbstractWebApkRestoreTask {
+ public:
+  explicit MockWebApkRestoreTask(const GURL& manifest_id)
+      : manifest_id_(manifest_id) {}
+  ~MockWebApkRestoreTask() override = default;
+
+  void Start(WebApkRestoreWebContentsManager* web_contents_manager,
+             CompleteCallback complete_callback) override {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(complete_callback), manifest_id_));
+  }
+
+ private:
+  const GURL manifest_id_;
+};
 
 class FakeWebApkRestoreManager : public WebApkRestoreManager {
  public:
@@ -49,6 +69,13 @@ class FakeWebApkRestoreManager : public WebApkRestoreManager {
   std::vector<GURL> finished_tasks() { return finished_tasks_; }
 
  private:
+  // Mock CreateNewTask to create the Mock task instead.
+  std::unique_ptr<AbstractWebApkRestoreTask> CreateNewTask(
+      const sync_pb::WebApkSpecifics& webapk_specifics) override {
+    return std::make_unique<MockWebApkRestoreTask>(
+        GURL(webapk_specifics.manifest_id()));
+  }
+
   base::OnceClosure on_task_finish_;
   std::vector<GURL> finished_tasks_;
 };
@@ -81,6 +108,7 @@ TEST_F(WebApkRestoreManagerTest, ScheduleTasks) {
   const std::string manifest_id_3 = "https://example.com/app3";
 
   base::RunLoop run_loop1;
+
   std::unique_ptr<FakeWebApkRestoreManager> manager =
       std::make_unique<FakeWebApkRestoreManager>(profile());
 

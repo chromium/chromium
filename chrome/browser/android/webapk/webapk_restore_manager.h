@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_MANAGER_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_MANAGER_H_
 
-#include "chrome/browser/android/webapk/webapk_restore_task.h"
-
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
 class Profile;
@@ -22,26 +21,31 @@ namespace webapk {
 // (install previously synced WebAPK on new devices).
 class WebApkRestoreManager {
  public:
+  using PassKey = base::PassKey<WebApkRestoreManager>;
+  static PassKey PassKeyForTesting();
+
   explicit WebApkRestoreManager(Profile* profile);
   WebApkRestoreManager(const WebApkRestoreManager&) = delete;
   WebApkRestoreManager& operator=(const WebApkRestoreManager&) = delete;
   virtual ~WebApkRestoreManager();
 
-  void ScheduleTask(const sync_pb::WebApkSpecifics& webapk_specific);
+  void ScheduleTask(const sync_pb::WebApkSpecifics& webapk_specifics);
 
   uint32_t GetTasksCountForTesting() const { return tasks_.size(); }
 
  protected:
+  virtual std::unique_ptr<AbstractWebApkRestoreTask> CreateNewTask(
+      const sync_pb::WebApkSpecifics& webapk_specifics);
   virtual void OnTaskFinished(const GURL& manifest_id);
 
  private:
-  void StartNextTaskIfNotAlreadyRunning();
+  void MaybeStartNextTask();
 
-  const base::WeakPtr<Profile> profile_;
+  std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager_;
 
   bool is_running_ = false;
   // The list of webapk infos to be restored.
-  std::deque<std::unique_ptr<WebApkRestoreTask>> tasks_;
+  std::deque<std::unique_ptr<AbstractWebApkRestoreTask>> tasks_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
