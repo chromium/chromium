@@ -36,7 +36,8 @@ struct CONTENT_EXPORT MediaStreamRequest {
                      blink::mojom::MediaStreamType audio_type,
                      blink::mojom::MediaStreamType video_type,
                      bool disable_local_echo,
-                     bool request_pan_tilt_zoom_permission);
+                     bool request_pan_tilt_zoom_permission,
+                     bool captured_surface_control_active);
 
   MediaStreamRequest(const MediaStreamRequest& other);
 
@@ -112,6 +113,11 @@ struct CONTENT_EXPORT MediaStreamRequest {
 
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
+
+  // Indicates whether Captured Surface Control APIs (sendWheel, setZoomLevel)
+  // have previously been used on the capture-session associated with this
+  // request. This is only relevant for tab-sharing sessions.
+  bool captured_surface_control_active;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
@@ -120,7 +126,8 @@ struct CONTENT_EXPORT MediaStreamRequest {
 class MediaStreamUI {
  public:
   using SourceCallback =
-      base::RepeatingCallback<void(const DesktopMediaID& media_id)>;
+      base::RepeatingCallback<void(const DesktopMediaID& media_id,
+                                   bool captured_surface_control_active)>;
   using StateChangeCallback = base::RepeatingCallback<void(
       const DesktopMediaID& media_id,
       blink::mojom::MediaStreamStateChange new_state)>;
@@ -151,7 +158,8 @@ class MediaStreamUI {
   virtual void OnDeviceStoppedForSourceChange(
       const std::string& label,
       const DesktopMediaID& old_media_id,
-      const DesktopMediaID& new_media_id) = 0;
+      const DesktopMediaID& new_media_id,
+      bool captured_surface_control_active) = 0;
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;

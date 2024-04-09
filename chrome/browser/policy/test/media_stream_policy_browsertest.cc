@@ -75,7 +75,8 @@ class MediaStreamDevicesControllerBrowserTest
         /*requested_audio_device_ids=*/{}, /*requested_video_device_ids=*/{},
         audio_request_type, video_request_type,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false);
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*captured_surface_control_active=*/false);
   }
 
   // Configure a given policy map. The |policy_name| is the name of either the

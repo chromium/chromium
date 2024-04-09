@@ -669,7 +669,8 @@ class MediaStreamManager::DeviceRequest {
         salt_and_origin.origin(), user_gesture, request_type_,
         requested_audio_device_ids, requested_video_device_ids, audio_type_,
         video_type_, stream_controls_.disable_local_echo,
-        stream_controls_.request_pan_tilt_zoom_permission);
+        stream_controls_.request_pan_tilt_zoom_permission,
+        captured_surface_control_active_);
     ui_request_->suppress_local_audio_playback =
         stream_controls_.suppress_local_audio_playback;
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
@@ -693,7 +694,8 @@ class MediaStreamManager::DeviceRequest {
         salt_and_origin.origin(), user_gesture, request_type_,
         std::vector<std::string>{}, std::vector<std::string>{}, audio_type_,
         video_type_, stream_controls_.disable_local_echo,
-        /*request_pan_tilt_zoom_permission=*/false);
+        /*request_pan_tilt_zoom_permission=*/false,
+        captured_surface_control_active_);
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
   }
 
@@ -917,6 +919,15 @@ class MediaStreamManager::DeviceRequest {
   virtual void OnZoomLevelChange(const std::string& label, int zoom_level) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+  // Marks that CSC was used at least once during this capture-session.
+  void SetCapturedSurfaceControlActive() {
+    captured_surface_control_active_ = true;
+  }
+
+  bool captured_surface_control_active() const {
+    return captured_surface_control_active_;
+  }
+
   // The render frame host id that requested this stream to be generated and
   // that will receive a handle to the MediaStream. This may be different from
   // MediaStreamRequest::render_process_id which in the tab capture case
@@ -1018,10 +1029,9 @@ class MediaStreamManager::DeviceRequest {
   GlobalRenderFrameHostId target_render_frame_host_id_;
   std::string label_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // If an attempt to access any of the Captured Surface Control APIs is made,
-  // a controller is instantiated to manage state.
   std::unique_ptr<CapturedSurfaceController> captured_surface_controller_;
 #endif
+  bool captured_surface_control_active_ = false;
 };
 
 class MediaStreamManager::MediaAccessRequest
@@ -3754,7 +3764,8 @@ void MediaStreamManager::StopMediaStreamFromBrowser(const std::string& label) {
 
 void MediaStreamManager::ChangeMediaStreamSourceFromBrowser(
     const std::string& label,
-    const DesktopMediaID& media_id) {
+    const DesktopMediaID& media_id,
+    bool captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   DeviceRequest* request = FindRequest(label);
@@ -3766,6 +3777,10 @@ void MediaStreamManager::ChangeMediaStreamSourceFromBrowser(
   const blink::mojom::StreamDevices& devices =
       *request->stream_devices_set.stream_devices[0];
 
+  if (captured_surface_control_active) {
+    request->SetCapturedSurfaceControlActive();
+  }
+
   if (request->ui_proxy) {
     for (const std::optional<blink::MediaStreamDevice>* device_ptr :
          {&devices.audio_device, &devices.video_device}) {
@@ -3775,8 +3790,9 @@ void MediaStreamManager::ChangeMediaStreamSourceFromBrowser(
       const blink::MediaStreamDevice& device = device_ptr->value();
       const DesktopMediaID old_media_id = DesktopMediaID::Parse(device.id);
       if (!old_media_id.is_null()) {
-        request->ui_proxy->OnDeviceStoppedForSourceChange(label, old_media_id,
-                                                          media_id);
+        request->ui_proxy->OnDeviceStoppedForSourceChange(
+            label, old_media_id, media_id,
+            request->captured_surface_control_active());
       }
     }
   }

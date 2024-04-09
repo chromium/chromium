@@ -694,7 +694,8 @@ void DesktopCaptureAccessHandler::AcceptRequest(
       // DesktopCaptureAccessHandler and DisplayMediaAccessHandler, that's fine.
       /*suppress_local_audio_playback=*/false,
       pending_request->should_display_notification,
-      pending_request->application_title, stream_devices);
+      pending_request->application_title,
+      pending_request->request.captured_surface_control_active, stream_devices);
   DCHECK(stream_devices.audio_device.has_value() ||
          stream_devices.video_device.has_value());
 

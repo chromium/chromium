@@ -52,7 +52,8 @@ class TabSharingUIViews : public TabSharingUI,
                     const std::u16string& capturer_name,
                     bool favicons_used_for_switch_to_tab_button,
                     bool app_preferred_current_tab,
-                    TabSharingInfoBarDelegate::TabShareType capture_type);
+                    TabSharingInfoBarDelegate::TabShareType capture_type,
+                    bool captured_surface_control_active);
   ~TabSharingUIViews() override;
 
   // MediaStreamUI:

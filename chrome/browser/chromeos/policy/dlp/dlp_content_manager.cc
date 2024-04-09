@@ -377,11 +377,13 @@ void DlpContentManager::ScreenShareInfo::Resume() {
       web_contents_ && source_callback_) {
     content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
     DCHECK(main_frame);
-    source_callback_.Run(content::DesktopMediaID(
-        content::DesktopMediaID::TYPE_WEB_CONTENTS,
-        content::DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                           main_frame->GetRoutingID())));
+    source_callback_.Run(
+        content::DesktopMediaID(
+            content::DesktopMediaID::TYPE_WEB_CONTENTS,
+            content::DesktopMediaID::kNullId,
+            content::WebContentsMediaCaptureId(
+                main_frame->GetProcess()->GetID(), main_frame->GetRoutingID())),
+        captured_surface_control_active_);
     // Start after source will be changed and notified.
     pending_start_on_source_change_ = true;
   } else {
@@ -434,6 +436,10 @@ bool DlpContentManager::ScreenShareInfo::HasOpenDialogWidget() {
   return dialog_widget_ && !dialog_widget_->IsClosed();
 }
 
+void DlpContentManager::ScreenShareInfo::SetCapturedSurfaceControlActive() {
+  captured_surface_control_active_ = true;
+}
+
 base::WeakPtr<DlpContentManager::ScreenShareInfo>
 DlpContentManager::ScreenShareInfo::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -475,13 +481,18 @@ void DlpContentManager::AddObserver(DlpContentManagerObserver* observer,
 void DlpContentManager::OnScreenShareSourceChanging(
     const std::string& label,
     const content::DesktopMediaID& old_media_id,
-    const content::DesktopMediaID& new_media_id) {
+    const content::DesktopMediaID& new_media_id,
+    bool captured_surface_control_active) {
   for (auto& screen_share : running_screen_shares_) {
     if (screen_share->label() == label &&
-        screen_share->media_id() == old_media_id &&
-        screen_share->new_media_id() != new_media_id) {
-      screen_share->ChangeStateBeforeSourceChange();
-      screen_share->set_new_media_id(new_media_id);
+        screen_share->media_id() == old_media_id) {
+      if (captured_surface_control_active) {
+        screen_share->SetCapturedSurfaceControlActive();
+      }
+      if (screen_share->new_media_id() != new_media_id) {
+        screen_share->ChangeStateBeforeSourceChange();
+        screen_share->set_new_media_id(new_media_id);
+      }
     }
   }
 }

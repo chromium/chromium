@@ -277,7 +277,8 @@ class CastMirroringServiceHostBrowserTest
 
     ASSERT_NE(host_->GetTabSourceId(), web_contents_source_tab_id);
     ASSERT_NE(host_->web_contents(), web_contents);
-    host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents));
+    host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents),
+                                    /*captured_surface_control_active=*/false);
     ASSERT_EQ(host_->web_contents(), web_contents);
     ASSERT_EQ(host_->GetTabSourceId(), web_contents_source_tab_id);
   }

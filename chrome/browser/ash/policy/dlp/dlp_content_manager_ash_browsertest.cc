@@ -126,7 +126,8 @@ content::MediaStreamRequest CreateMediaStreamRequest(
       /*requested_audio_device_id=*/{}, {requested_video_device_id},
       blink::mojom::MediaStreamType::NO_SERVICE, video_type,
       /*disable_local_echo=*/false,
-      /*request_pan_tilt_zoom_permission=*/false);
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
 }
 
 }  // namespace
@@ -1337,7 +1338,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
           new_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
           new_web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   // Simulate changing the source to another tab.
-  manager->OnScreenShareSourceChanging(kLabel, media_id, new_media_id);
+  manager->OnScreenShareSourceChanging(
+      kLabel, media_id, new_media_id,
+      /*captured_surface_control_active=*/false);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   manager->OnScreenShareStopped(kLabel, media_id);

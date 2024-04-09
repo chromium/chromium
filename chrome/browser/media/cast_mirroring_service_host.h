@@ -122,7 +122,10 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   // indicator icon on the tabstrip.
   void ShowTabSharingUI(const blink::mojom::StreamDevices& devices);
 
-  void SwitchMirroringSourceTab(const content::DesktopMediaID& media_id);
+  // `captured_surface_control_active` is ignored because CSC is not supported
+  // for mirroring. It is only here to make the callback's signature line up.
+  void SwitchMirroringSourceTab(const content::DesktopMediaID& media_id,
+                                bool captured_surface_control_active);
 
   // Records metrics about the usage of Tab Switcher UI, and resets data members
   // used for metrics collection.

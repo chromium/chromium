@@ -60,7 +60,8 @@ class MediaStreamUIProxy::Core {
                        const DesktopMediaID& media_id);
   void OnDeviceStoppedForSourceChange(const std::string& label,
                                       const DesktopMediaID& old_media_id,
-                                      const DesktopMediaID& new_media_id);
+                                      const DesktopMediaID& new_media_id,
+                                      bool captured_surface_control_active);
 
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect);
@@ -101,7 +102,8 @@ class MediaStreamUIProxy::Core {
  private:
   friend class FakeMediaStreamUIProxy;
   void ProcessStopRequestFromUI();
-  void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
+  void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id,
+                                        bool captured_surface_control_active);
   void ProcessStateChangeFromUI(const DesktopMediaID& media,
                                 blink::mojom::MediaStreamStateChange);
   RenderFrameHostDelegate* GetRenderFrameHostDelegate(int render_process_id,
@@ -194,10 +196,12 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
 void MediaStreamUIProxy::Core::OnDeviceStoppedForSourceChange(
     const std::string& label,
     const DesktopMediaID& old_media_id,
-    const DesktopMediaID& new_media_id) {
+    const DesktopMediaID& new_media_id,
+    bool captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
-    ui_->OnDeviceStoppedForSourceChange(label, old_media_id, new_media_id);
+    ui_->OnDeviceStoppedForSourceChange(label, old_media_id, new_media_id,
+                                        captured_surface_control_active);
     ui_->OnDeviceStopped(label, old_media_id);
   }
 }
@@ -313,13 +317,14 @@ void MediaStreamUIProxy::Core::ProcessStopRequestFromUI() {
 }
 
 void MediaStreamUIProxy::Core::ProcessChangeSourceRequestFromUI(
-    const DesktopMediaID& media_id) {
+    const DesktopMediaID& media_id,
+    bool captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamUIProxy::ProcessChangeSourceRequestFromUI,
-                     proxy_, media_id));
+                     proxy_, media_id, captured_surface_control_active));
 }
 
 void MediaStreamUIProxy::Core::ProcessStateChangeFromUI(
@@ -412,13 +417,14 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
 void MediaStreamUIProxy::OnDeviceStoppedForSourceChange(
     const std::string& label,
     const DesktopMediaID& old_media_id,
-    const DesktopMediaID& new_media_id) {
+    const DesktopMediaID& new_media_id,
+    bool captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::OnDeviceStoppedForSourceChange, core_->GetWeakPtr(),
-                     label, old_media_id, new_media_id));
+      FROM_HERE, base::BindOnce(&Core::OnDeviceStoppedForSourceChange,
+                                core_->GetWeakPtr(), label, old_media_id,
+                                new_media_id, captured_surface_control_active));
 }
 
 void MediaStreamUIProxy::OnRegionCaptureRectChanged(
@@ -462,11 +468,12 @@ void MediaStreamUIProxy::ProcessStopRequestFromUI() {
 }
 
 void MediaStreamUIProxy::ProcessChangeSourceRequestFromUI(
-    const DesktopMediaID& media_id) {
+    const DesktopMediaID& media_id,
+    bool captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (source_callback_)
-    source_callback_.Run(media_id);
+    source_callback_.Run(media_id, captured_surface_control_active);
 }
 
 void MediaStreamUIProxy::ProcessStateChangeFromUI(
@@ -598,6 +605,7 @@ void FakeMediaStreamUIProxy::OnDeviceStopped(const std::string& label,
 void FakeMediaStreamUIProxy::OnDeviceStoppedForSourceChange(
     const std::string& label,
     const DesktopMediaID& old_media_id,
-    const DesktopMediaID& new_media_id) {}
+    const DesktopMediaID& new_media_id,
+    bool captured_surface_control_active) {}
 
 }  // namespace content

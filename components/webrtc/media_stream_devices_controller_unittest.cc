@@ -192,7 +192,8 @@ class MediaStreamDevicesControllerTest : public testing::Test {
         content::MediaStreamRequest{
             /*render_process_id=*/render_frame_host_id_.child_id,
             /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
-            /*page_request_id=*/0, /*url_origin=*/origin_,
+            /*page_request_id=*/0,
+            /*url_origin=*/origin_,
             /*user_gesture=*/false,
             /*request_type=*/
             request_type,
@@ -203,7 +204,9 @@ class MediaStreamDevicesControllerTest : public testing::Test {
             request_video ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
                           : blink::mojom::MediaStreamType::NO_SERVICE,
             /*disable_local_echo=*/false,
-            /*request_pan_tilt_zoom_permission=*/false},
+            /*request_pan_tilt_zoom_permission=*/false,
+            /*captured_surface_control_active=*/false,
+        },
         &enumerator_,
         base::BindLambdaForTesting(
             [&](const blink::mojom::StreamDevicesSet& stream_devices_set,

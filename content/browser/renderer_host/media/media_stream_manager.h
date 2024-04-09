@@ -504,7 +504,8 @@ class CONTENT_EXPORT MediaStreamManager
       const blink::mojom::StreamDevicesSet& stream_devices_set);
   void StopMediaStreamFromBrowser(const std::string& label);
   void ChangeMediaStreamSourceFromBrowser(const std::string& label,
-                                          const DesktopMediaID& media_id);
+                                          const DesktopMediaID& media_id,
+                                          bool captured_surface_control_active);
   void OnRequestStateChangeFromBrowser(
       const std::string& label,
       const DesktopMediaID& media_id,

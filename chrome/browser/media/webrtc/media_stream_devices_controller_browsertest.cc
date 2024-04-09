@@ -188,7 +188,8 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
         url::Origin::Create(example_url()), false, request_type,
         /*requested_audio_device_ids=*/{audio_id},
         /*requested_video_device_ids=*/{video_id}, audio_type, video_type,
-        /*disable_local_echo=*/false, request_pan_tilt_zoom_permission);
+        /*disable_local_echo=*/false, request_pan_tilt_zoom_permission,
+        /*captured_surface_control_active=*/false);
   }
 
   content::MediaStreamRequest CreateRequest(

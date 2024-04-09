@@ -138,10 +138,11 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const std::u16string& capturer_name,
     bool favicons_used_for_switch_to_tab_button,
     bool app_preferred_current_tab,
-    TabSharingInfoBarDelegate::TabShareType capture_type) {
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    bool captured_surface_control_active) {
   return std::make_unique<TabSharingUIViews>(
       capturer, media_id, capturer_name, favicons_used_for_switch_to_tab_button,
-      app_preferred_current_tab, capture_type);
+      app_preferred_current_tab, capture_type, captured_surface_control_active);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -150,7 +151,8 @@ TabSharingUIViews::TabSharingUIViews(
     const std::u16string& capturer_name,
     bool favicons_used_for_switch_to_tab_button,
     bool app_preferred_current_tab,
-    TabSharingInfoBarDelegate::TabShareType capture_type)
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    bool captured_surface_control_active)
     : capture_session_id_(next_capture_session_id_++),
       profile_(ProfileManager::GetLastUsedProfileAllowedByPolicy()),
       capturer_(capturer),
@@ -167,7 +169,8 @@ TabSharingUIViews::TabSharingUIViews(
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
       app_preferred_current_tab_(app_preferred_current_tab),
-      capture_type_(capture_type) {
+      capture_type_(capture_type),
+      captured_surface_control_active_(captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Observe(shared_tab_);
@@ -245,11 +248,13 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
 
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
-  source_callback_.Run(content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_WEB_CONTENTS,
-      content::DesktopMediaID::kNullId,
-      content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                         main_frame->GetRoutingID())));
+  source_callback_.Run(
+      content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_WEB_CONTENTS,
+          content::DesktopMediaID::kNullId,
+          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
+                                             main_frame->GetRoutingID())),
+      captured_surface_control_active_);
 }
 
 void TabSharingUIViews::StopSharing() {
@@ -680,10 +685,6 @@ void TabSharingUIViews::OnCapturedSurfaceControlByCapturer() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!captured_surface_control_active_) {
-    // TODO(crbug.com/332555474): Set `captured_surface_control_active_` to true
-    // in the ctor if this `TabSharingUIViews` object was constructed in
-    // response to a share-this-tab-instead call for a capture-session where CSC
-    // was previously used.
     captured_surface_control_active_ = true;
 
     content::WebContents* const capturer_wc = WebContentsFromId(capturer_);

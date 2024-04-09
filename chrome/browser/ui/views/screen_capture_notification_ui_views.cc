@@ -313,7 +313,11 @@ void ScreenCaptureNotificationUIViews::OnViewBoundsChanged(
 
 void ScreenCaptureNotificationUIViews::NotifySourceChange() {
   if (!source_callback_.is_null())
-    source_callback_.Run(content::DesktopMediaID());
+    // CSC is only supported for tab-capture, so setting it to `false` is the
+    // correct behavior so long as we don't support cross-surface-type
+    // switching.
+    source_callback_.Run(content::DesktopMediaID(),
+                         /*captured_surface_control_active=*/false);
 }
 
 void ScreenCaptureNotificationUIViews::NotifyStopped() {

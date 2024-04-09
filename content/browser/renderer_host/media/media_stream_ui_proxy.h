@@ -86,7 +86,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   virtual void OnDeviceStoppedForSourceChange(
       const std::string& label,
       const DesktopMediaID& old_media_id,
-      const DesktopMediaID& new_media_id);
+      const DesktopMediaID& new_media_id,
+      bool captured_surface_control_active);
 
   virtual void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect);
@@ -120,7 +121,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
       blink::mojom::StreamDevicesSetPtr stream_devices_set,
       blink::mojom::MediaStreamRequestResult result);
   void ProcessStopRequestFromUI();
-  void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
+  void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id,
+                                        bool captured_surface_control_active);
   void ProcessStateChangeFromUI(const DesktopMediaID& media_id,
                                 blink::mojom::MediaStreamStateChange new_state);
   void OnWindowId(WindowIdCallback window_id_callback,
@@ -167,7 +169,8 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   void OnDeviceStoppedForSourceChange(
       const std::string& label,
       const DesktopMediaID& old_media_id,
-      const DesktopMediaID& new_media_id) override;
+      const DesktopMediaID& new_media_id,
+      bool captured_surface_control_active) override;
 
  private:
   // This is used for RequestAccess().

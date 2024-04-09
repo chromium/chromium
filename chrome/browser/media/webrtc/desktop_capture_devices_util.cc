@@ -258,6 +258,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool suppress_local_audio_playback,
     bool display_notification,
     const std::u16string& application_title,
+    bool captured_surface_control_active,
     blink::mojom::StreamDevices& out_devices) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -321,11 +322,12 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       const bool app_preferred_current_tab =
           request.video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
-      notification_ui = TabSharingUI::Create(
-          capturer_id, media_id, application_title,
-          /*favicons_used_for_switch_to_tab_button=*/false,
-          app_preferred_current_tab,
-          TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+      notification_ui =
+          TabSharingUI::Create(capturer_id, media_id, application_title,
+                               /*favicons_used_for_switch_to_tab_button=*/false,
+                               app_preferred_current_tab,
+                               TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+                               captured_surface_control_active);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
           GetNotificationText(application_title, capture_audio, media_id.type),

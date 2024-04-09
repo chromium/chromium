@@ -54,6 +54,7 @@
 
 namespace {
 
+using ::testing::_;
 using ::testing::Not;
 
 content::WebContents* GetWebContents(Browser* browser, int tab) {
@@ -241,7 +242,8 @@ class TabSharingUIViewsBrowserTest
         GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
         favicons_used_for_switch_to_tab_button_,
         /*app_preferred_current_tab=*/false,
-        TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+        TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+        /*captured_surface_control_active=*/false);
 
     if (favicons_used_for_switch_to_tab_button_) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
@@ -255,7 +257,7 @@ class TabSharingUIViewsBrowserTest
 
     tab_sharing_ui_->OnStarted(
         base::OnceClosure(),
-        base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
+        base::BindRepeating(&TabSharingUIViewsBrowserTest::OnSourceChange,
                             base::Unretained(this)),
         std::vector<content::DesktopMediaID>{});
 
@@ -425,15 +427,13 @@ class TabSharingUIViewsBrowserTest
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
- private:
-  void OnStartSharing(const content::DesktopMediaID& media_id) {
-    tab_sharing_ui_->OnStarted(
-        base::OnceClosure(),
-        base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
-                            base::Unretained(this)),
-        std::vector<content::DesktopMediaID>{});
-  }
+  MOCK_METHOD(void,
+              OnSourceChange,
+              (const content::DesktopMediaID& media_id,
+               bool captured_surface_control_active),
+              ());
 
+ private:
   base::test::ScopedFeatureList features_;
 
   const bool favicons_used_for_switch_to_tab_button_;
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   constexpr int kCapturedTab = 1;
   constexpr int kCapturingTab = 2;
 
-  // Set up a screen-capture session.
+  // Set up a tab-capture session.
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
@@ -752,6 +752,45 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   DidCapturedSurfaceControlForTesting(GetWebContents(browser(), kCapturingTab));
   expectations.has_captured_surface_control_indicator = true;
   VerifyUi(expectations);
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       SourceChangesRemembersIfCapturedSurfaceControlInactive) {
+  constexpr int kOtherTab = 0;
+  constexpr int kCapturedTab = 1;
+  constexpr int kCapturingTab = 2;
+
+  // Set up a tab-capture session.
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+
+  // Note that DidCapturedSurfaceControlForTesting() is *not* called before
+  // the source-change.
+  EXPECT_CALL(*this,
+              OnSourceChange(_, /*captured_surface_control_active=*/false));
+  GetDelegate(browser(), kOtherTab)->ShareThisTabInstead();
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       SourceChangesRemembersIfCapturedSurfaceControlActive) {
+  constexpr int kOtherTab = 0;
+  constexpr int kCapturedTab = 1;
+  constexpr int kCapturingTab = 2;
+
+  // Set up a tab-capture session.
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+
+  // Simulate a call to a Captured Surface Control API.
+  DidCapturedSurfaceControlForTesting(GetWebContents(browser(), kCapturingTab));
+
+  EXPECT_CALL(*this,
+              OnSourceChange(_, /*captured_surface_control_active=*/true));
+  GetDelegate(browser(), kOtherTab)->ShareThisTabInstead();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -842,7 +881,8 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
           GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
           /*favicons_used_for_switch_to_tab_button=*/false,
           /*app_preferred_current_tab=*/false,
-          TabSharingInfoBarDelegate::TabShareType::CAPTURE));
+          TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+          /*captured_surface_control_active=*/false));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
           base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
           std::vector<content::DesktopMediaID>{});
@@ -1090,7 +1130,8 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
         GetDesktopMediaID(browser(), captured_tab), u"example-sharing.com",
         /*favicons_used_for_switch_to_tab_button=*/false,
         /*app_preferred_current_tab=*/true,
-        TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+        TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+        /*captured_surface_control_active=*/false);
     tab_sharing_ui_views_->OnStarted(base::OnceClosure(), source_change_cb,
                                      std::vector<content::DesktopMediaID>{});
   }
@@ -1100,7 +1141,8 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
       AddBlankTabAndShow(browser);
   }
 
-  void SourceChange(const content::DesktopMediaID& media_id) {}
+  void SourceChange(const content::DesktopMediaID& media_id,
+                    bool captured_surface_control_active) {}
 
  protected:
   const int kTab0 = 0;
