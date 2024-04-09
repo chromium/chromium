@@ -664,10 +664,33 @@ class PrerenderHostRegistryNewLimitAndSchedulerTest
       }
     }();
 
+    PreloadingPredictor embedder_predictor(100, "Embedder");
+
+    PreloadingPredictor creating_predictor = [&] {
+      switch (limit_group) {
+        case PrerenderLimitGroup::kSpeculationRulesEager:
+        case PrerenderLimitGroup::kSpeculationRulesNonEager:
+          return content_preloading_predictor::kSpeculationRules;
+        case PrerenderLimitGroup::kEmbedder:
+          return embedder_predictor;
+      }
+    }();
+    PreloadingPredictor enacting_predictor = [&] {
+      switch (limit_group) {
+        case PrerenderLimitGroup::kSpeculationRulesEager:
+          return content_preloading_predictor::kSpeculationRules;
+        case PrerenderLimitGroup::kSpeculationRulesNonEager:
+          // Arbitrarily chosen non-eager predictor.
+          return preloading_predictor::kUrlPointerDownOnAnchor;
+        case PrerenderLimitGroup::kEmbedder:
+          return embedder_predictor;
+      }
+    }();
+
     return IsNewTabTrigger(limit_group)
-               ? registry().CreateAndStartHostForNewTab(
-                     prerender_attributes,
-                     content_preloading_predictor::kSpeculationRules)
+               ? registry().CreateAndStartHostForNewTab(prerender_attributes,
+                                                        creating_predictor,
+                                                        enacting_predictor)
                : registry().CreateAndStartHost(prerender_attributes);
   }
 

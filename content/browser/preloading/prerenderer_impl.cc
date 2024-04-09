@@ -8,6 +8,7 @@
 
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -191,22 +192,29 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   base::ranges::sort(candidates_to_start, std::less<>(),
                      [](const auto& p) { return p.first; });
   for (const auto& [_, candidate] : candidates_to_start) {
-    MaybePrerender(candidate);
+    PreloadingTriggerType trigger_type =
+        PreloadingTriggerTypeFromSpeculationInjectionType(
+            candidate->injection_type);
+    // Eager candidates are enacted by the same predictor that creates them.
+    PreloadingPredictor enacting_predictor =
+        GetPredictorForPreloadingTriggerType(trigger_type);
+    MaybePrerender(candidate, enacting_predictor);
   }
 }
 
 void PrerendererImpl::OnLCPPredicted() {
   blocked_ = false;
-  for (auto& candidate : std::move(blocked_candidates_)) {
-    MaybePrerender(candidate);
+  for (auto& [candidate, enacting_predictor] : std::move(blocked_candidates_)) {
+    MaybePrerender(candidate, enacting_predictor);
   }
 }
 
 bool PrerendererImpl::MaybePrerender(
-    const blink::mojom::SpeculationCandidatePtr& candidate) {
+    const blink::mojom::SpeculationCandidatePtr& candidate,
+    const PreloadingPredictor& enacting_predictor) {
   CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
   if (blocked_) {
-    blocked_candidates_.push_back(candidate->Clone());
+    blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor);
     return false;
   }
 
@@ -268,7 +276,7 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingTriggerType trigger_type =
       PreloadingTriggerTypeFromSpeculationInjectionType(
           candidate->injection_type);
-  PreloadingPredictor predictor =
+  PreloadingPredictor creating_predictor =
       GetPredictorForPreloadingTriggerType(trigger_type);
   int prerender_host_id = [&] {
     // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
@@ -281,8 +289,8 @@ bool PrerendererImpl::MaybePrerender(
                 blink::features::kPrerender2InNewTab)) {
           // For the prerender-in-new-tab, PreloadingAttempt will be managed by
           // a prerender WebContents to be created later.
-          return registry_->CreateAndStartHostForNewTab(attributes,
-                                                        std::move(predictor));
+          return registry_->CreateAndStartHostForNewTab(
+              attributes, creating_predictor, enacting_predictor);
         }
         // Handle the rule as kNoHint if the prerender-in-new-tab is not
         // enabled.
@@ -293,13 +301,13 @@ bool PrerendererImpl::MaybePrerender(
         // Create new PreloadingAttempt and pass all the values corresponding to
         // this prerendering attempt.
         auto* preloading_data =
-            PreloadingData::GetOrCreateForWebContents(web_contents);
+            PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
         PreloadingURLMatchCallback same_url_matcher =
             PreloadingData::GetSameURLMatcher(candidate->url);
         auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
             preloading_data->AddPreloadingAttempt(
-                std::move(predictor), PreloadingType::kPrerender,
-                std::move(same_url_matcher),
+                creating_predictor, enacting_predictor,
+                PreloadingType::kPrerender, std::move(same_url_matcher),
                 web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
         preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
         return registry_->CreateAndStartHost(attributes, preloading_attempt);

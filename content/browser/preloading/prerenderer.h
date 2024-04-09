@@ -27,7 +27,8 @@ class Prerenderer {
   virtual void OnLCPPredicted() = 0;
 
   virtual bool MaybePrerender(
-      const blink::mojom::SpeculationCandidatePtr& candidate) = 0;
+      const blink::mojom::SpeculationCandidatePtr& candidate,
+      const PreloadingPredictor& enacting_predictor) = 0;
 
   virtual bool ShouldWaitForPrerenderResult(const GURL& url) = 0;
 

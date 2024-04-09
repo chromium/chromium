@@ -111,9 +111,23 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
     PreloadingType preloading_type,
     PreloadingURLMatchCallback url_match_predicate,
     ukm::SourceId triggering_primary_page_source_id) {
+  // The same `predictor` created and enacted the candidate associated with this
+  // attempt.
+  return AddPreloadingAttempt(predictor, predictor, preloading_type,
+                              std::move(url_match_predicate),
+                              triggering_primary_page_source_id);
+}
+
+PreloadingAttemptImpl* PreloadingDataImpl::AddPreloadingAttempt(
+    const PreloadingPredictor& creating_predictor,
+    const PreloadingPredictor& enacting_predictor,
+    PreloadingType preloading_type,
+    PreloadingURLMatchCallback url_match_predicate,
+    ukm::SourceId triggering_primary_page_source_id) {
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
-      predictor, preloading_type, triggering_primary_page_source_id,
-      std::move(url_match_predicate), sampling_seed_);
+      creating_predictor, enacting_predictor, preloading_type,
+      triggering_primary_page_source_id, std::move(url_match_predicate),
+      sampling_seed_);
   preloading_attempts_.push_back(std::move(attempt));
 
   return preloading_attempts_.back().get();
@@ -154,11 +168,20 @@ void PreloadingDataImpl::AddExperimentalPreloadingPrediction(
 void PreloadingDataImpl::SetIsNavigationInDomainCallback(
     PreloadingPredictor predictor,
     PredictorDomainCallback is_navigation_in_domain_callback) {
-  if (is_navigation_in_predictor_domain_callbacks_.contains(predictor)) {
-    return;
+  is_navigation_in_predictor_domain_callbacks_.insert(
+      {predictor, std::move(is_navigation_in_domain_callback)});
+}
+
+void PreloadingDataImpl::CopyPredictorDomains(
+    const PreloadingDataImpl& other,
+    const std::vector<PreloadingPredictor>& predictors) {
+  for (const auto& predictor : predictors) {
+    if (const auto it =
+            other.is_navigation_in_predictor_domain_callbacks_.find(predictor);
+        it != other.is_navigation_in_predictor_domain_callbacks_.end()) {
+      SetIsNavigationInDomainCallback(predictor, it->second);
+    }
   }
-  is_navigation_in_predictor_domain_callbacks_[predictor] =
-      std::move(is_navigation_in_domain_callback);
 }
 
 PreloadingDataImpl::PreloadingDataImpl(WebContents* web_contents)
@@ -241,14 +264,17 @@ void PreloadingDataImpl::WebContentsDestroyed() {
 void PreloadingDataImpl::RecordPreloadingAttemptPrecisionToUMA(
     const PreloadingAttemptImpl& attempt) {
   bool is_true_positive = attempt.IsAccurateTriggering();
-  const auto uma_attempt_precision = base::StrCat(
-      {"Preloading.", PreloadingTypeToString(attempt.preloading_type()),
-       ".Attempt.", attempt.predictor_type().name(), ".Precision"});
 
-  base::UmaHistogramEnumeration(uma_attempt_precision,
-                                is_true_positive
-                                    ? PredictorConfusionMatrix::kTruePositive
-                                    : PredictorConfusionMatrix::kFalsePositive);
+  for (const auto& predictor : attempt.GetPredictors()) {
+    const auto uma_attempt_precision = base::StrCat(
+        {"Preloading.", PreloadingTypeToString(attempt.preloading_type()),
+         ".Attempt.", predictor.name(), ".Precision"});
+
+    base::UmaHistogramEnumeration(
+        uma_attempt_precision, is_true_positive
+                                   ? PredictorConfusionMatrix::kTruePositive
+                                   : PredictorConfusionMatrix::kFalsePositive);
+  }
 }
 
 void PreloadingDataImpl::RecordPredictionPrecisionToUMA(
@@ -267,8 +293,10 @@ void PreloadingDataImpl::UpdatePreloadingAttemptRecallStats(
     const PreloadingAttemptImpl& attempt) {
   bool is_true_positive = attempt.IsAccurateTriggering();
   if (is_true_positive) {
-    preloading_attempt_recall_stats_.insert(
-        {attempt.predictor_type(), attempt.preloading_type()});
+    for (const auto& predictor : attempt.GetPredictors()) {
+      preloading_attempt_recall_stats_.insert(
+          {predictor, attempt.preloading_type()});
+    }
   }
 }
 void PreloadingDataImpl::UpdatePredictionRecallStats(
@@ -345,7 +373,9 @@ void PreloadingDataImpl::RecordMetricsForPreloadingAttempts(
     // reported from the same thread (whichever thread calls
     // `PreloadingDataImpl::WebContentsDestroyed` or
     // `PreloadingDataImpl::DidFinishNavigation`).
-    CheckPreloadingPredictorValidity(attempt->predictor_type());
+    for (const auto& predictor : attempt->GetPredictors()) {
+      CheckPreloadingPredictorValidity(predictor);
+    }
     attempt->RecordPreloadingAttemptMetrics(navigated_page_source_id);
   }
 

@@ -52,7 +52,8 @@ TEST_P(PreloadingAttemptImplRecordUMATest, TestHistogramRecordedCorrectly) {
   const auto predictor = ::testing::get<0>(test_param);
   const auto preloading_type = ::testing::get<1>(test_param);
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
-      predictor, preloading_type, /*triggered_primary_page_source_id=*/0,
+      predictor, predictor, preloading_type,
+      /*triggered_primary_page_source_id=*/0,
       /*url_match_predicate=*/
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),
       /*sampling_seed=*/1ul);
@@ -117,6 +118,7 @@ TEST_F(PreloadingAttemptUKMTest, NoSampling) {
 
   PreloadingAttemptImpl attempt(
       preloading_predictor::kUrlPointerDownOnAnchor,
+      preloading_predictor::kUrlPointerDownOnAnchor,
       PreloadingType::kPreconnect, ukm::AssignNewSourceId(),
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),
       /*sampling_seed=*/1ul);
@@ -151,6 +153,7 @@ TEST_F(PreloadingAttemptUKMTest, SampledOut) {
   config.ParseConfig();
 
   PreloadingAttemptImpl attempt(
+      preloading_predictor::kUrlPointerDownOnAnchor,
       preloading_predictor::kUrlPointerDownOnAnchor,
       PreloadingType::kPreconnect, ukm::AssignNewSourceId(),
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),

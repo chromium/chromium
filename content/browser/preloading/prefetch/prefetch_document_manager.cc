@@ -189,8 +189,11 @@ void PrefetchDocumentManager::ProcessCandidates(
 
   for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
        prefetches) {
-    PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
-                devtools_observer);
+    // Eager candidates are enacted by the same predictor that creates them.
+    const PreloadingPredictor enacting_predictor =
+        GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
+    PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
+                no_vary_search_expected, devtools_observer);
   }
 
   if (PrefetchService* prefetch_service = GetPrefetchService()) {
@@ -200,6 +203,7 @@ void PrefetchDocumentManager::ProcessCandidates(
 
 bool PrefetchDocumentManager::MaybePrefetch(
     blink::mojom::SpeculationCandidatePtr candidate,
+    const PreloadingPredictor& enacting_predictor,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
     return false;
@@ -207,14 +211,15 @@ bool PrefetchDocumentManager::MaybePrefetch(
 
   auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
       SpeculationCandidateToPrefetchUrlParams(candidate);
-  PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
-              devtools_observer);
+  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
+              no_vary_search_expected, devtools_observer);
   return true;
 }
 
 void PrefetchDocumentManager::PrefetchUrl(
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const PreloadingPredictor& enacting_predictor,
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
@@ -249,19 +254,24 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   auto* web_contents = WebContents::FromRenderFrameHost(&render_frame_host());
   auto* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents);
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
 
+  const PreloadingPredictor creating_predictor =
+      GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
   PreloadingURLMatchCallback matcher =
       PreloadingDataImpl::GetPrefetchServiceMatcher(
           prefetch_service, PrefetchContainer::Key(document_token_, url));
 
   auto* attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
-          GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-          PreloadingType::kPrefetch, std::move(matcher),
+          creating_predictor, enacting_predictor, PreloadingType::kPrefetch,
+          std::move(matcher),
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
   attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
+  CHECK(prefetch_type.GetEagerness() !=
+            blink::mojom::SpeculationEagerness::kEager ||
+        creating_predictor == enacting_predictor);
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 

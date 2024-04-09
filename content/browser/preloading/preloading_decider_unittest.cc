@@ -12,7 +12,9 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetcher.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerenderer.h"
 #include "content/common/features.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
@@ -72,14 +74,20 @@ class MockPrerenderer : public Prerenderer {
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override {
     for (const auto& candidate : candidates) {
-      MaybePrerender(candidate);
+      // Eager candidates are enacted by the same predictor that creates them.
+      PreloadingTriggerType trigger_type =
+          PreloadingTriggerTypeFromSpeculationInjectionType(
+              candidate->injection_type);
+      PreloadingPredictor enacting_predictor =
+          GetPredictorForPreloadingTriggerType(trigger_type);
+      MaybePrerender(candidate, enacting_predictor);
     }
   }
 
   void OnLCPPredicted() override {}
 
-  bool MaybePrerender(
-      const blink::mojom::SpeculationCandidatePtr& candidate) override {
+  bool MaybePrerender(const blink::mojom::SpeculationCandidatePtr& candidate,
+                      const PreloadingPredictor& enacting_predictor) override {
     if (PrerenderExists(candidate->url)) {
       return false;
     }

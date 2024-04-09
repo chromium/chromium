@@ -59,12 +59,14 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // for the candidate's URL is started.
   bool MaybePrefetch(
       blink::mojom::SpeculationCandidatePtr candidate,
+      const PreloadingPredictor& enacting_predictor,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Starts the process to prefetch |url| with the given |prefetch_type|.
   void PrefetchUrl(
       const GURL& url,
       const PrefetchType& prefetch_type,
+      const PreloadingPredictor& enacting_predictor,
       const blink::mojom::Referrer& referrer,
       const network::mojom::NoVarySearchPtr& no_vary_search_expected,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);

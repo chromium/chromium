@@ -132,8 +132,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
   // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
-  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes,
-                                  PreloadingPredictor preloading_predictor);
+  int CreateAndStartHostForNewTab(
+      const PrerenderAttributes& attributes,
+      const PreloadingPredictor& creating_predictor,
+      const PreloadingPredictor& enacting_predictor);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved hosts but asynchronously

@@ -86,26 +86,31 @@ class CONTENT_EXPORT PreloadingDecider
   DOCUMENT_USER_DATA_KEY_DECL();
 
   // Attempts preloading actions starting from the most advanced (prerendering)
-  // to least (preconnect), in response to `predictor` predicting a navigation
-  // to `url`. If `fallback_to_preconnect` is true, we preconnect if no other
-  // action is taken.
+  // to least (preconnect), in response to `enacting_predictor` predicting a
+  // navigation to `url`. If `fallback_to_preconnect` is true, we preconnect if
+  // no other action is taken.
   void MaybeEnactCandidate(const GURL& url,
-                           const PreloadingPredictor& predictor,
+                           const PreloadingPredictor& enacting_predictor,
                            bool fallback_to_preconnect);
 
   // Prefetches the |url| if it is safe and eligible to be prefetched. Returns
-  // false if no suitable (given |predictor|) on-standby candidate is found for
-  // the given |url|, or the Prefetcher does not accept the candidate.
-  bool MaybePrefetch(const GURL& url, const PreloadingPredictor& predictor);
+  // false if no suitable (given |enacting_predictor|) on-standby candidate is
+  // found for the given |url|, or the Prefetcher does not accept the candidate.
+  bool MaybePrefetch(const GURL& url,
+                     const PreloadingPredictor& enacting_predictor);
 
   // Returns true if a prefetch was attempted for the |url| and is not failed or
   // discarded by Prefetcher yet, and we should wait for it to finish.
   bool ShouldWaitForPrefetchResult(const GURL& url);
 
   // Prerenders the |url| if it is safe and eligible to be prerendered. Returns
-  // false if no suitable (given |predictor|) on-standby candidate is found for
-  // the given |url|, or the Prerenderer does not accept the candidate.
-  bool MaybePrerender(const GURL& url, const PreloadingPredictor& predictor);
+  // false for the first bool if no suitable (given |enacting_predictor|)
+  // on-standby candidate is found for the given |url|, or the Prerenderer does
+  // not accept the candidate. Returns true for the second bool if a
+  // PreloadingPrediction has been added.
+  std::pair<bool, bool> MaybePrerender(
+      const GURL& url,
+      const PreloadingPredictor& enacting_predictor);
 
   // Returns true if a prerender was attempted for the |url| and is not failed
   // or discarded by Prerenderer yet, and we should wait for it to finish.

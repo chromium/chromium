@@ -798,7 +798,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
 int PrerenderHostRegistry::CreateAndStartHostForNewTab(
     const PrerenderAttributes& attributes,
-    PreloadingPredictor preloading_predictor) {
+    const PreloadingPredictor& creating_predictor,
+    const PreloadingPredictor& enacting_predictor) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
   CHECK(IsSpeculationRuleType(attributes.trigger_type));
   std::string recorded_url =
@@ -811,7 +812,8 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
 
   auto handle = std::make_unique<PrerenderNewTabHandle>(
       attributes, *web_contents()->GetBrowserContext());
-  int prerender_host_id = handle->StartPrerendering(preloading_predictor);
+  int prerender_host_id =
+      handle->StartPrerendering(creating_predictor, enacting_predictor);
   if (prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
     return RenderFrameHost::kNoFrameTreeNodeId;
   prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =

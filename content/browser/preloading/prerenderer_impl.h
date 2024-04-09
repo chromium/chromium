@@ -30,8 +30,8 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override;
 
-  bool MaybePrerender(
-      const blink::mojom::SpeculationCandidatePtr& candidate) override;
+  bool MaybePrerender(const blink::mojom::SpeculationCandidatePtr& candidate,
+                      const PreloadingPredictor& enacting_predictor) override;
   void OnLCPPredicted() override;
 
   bool ShouldWaitForPrerenderResult(const GURL& url) override;
@@ -90,7 +90,9 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   // Below two fields are used to defer starting prerenders until LCP timing
   // and are only used under LCPTimingPredictorPrerender2.
   bool blocked_ = false;
-  std::vector<blink::mojom::SpeculationCandidatePtr> blocked_candidates_;
+  std::vector<
+      std::pair<blink::mojom::SpeculationCandidatePtr, PreloadingPredictor>>
+      blocked_candidates_;
 };
 
 }  // namespace content

@@ -87,6 +87,20 @@ class CONTENT_EXPORT PreloadingDataImpl
     return is_navigation_in_predictor_domain_callbacks_.count(predictor);
   }
 
+  // A version of `AddPreloadingAttempt` which takes two PreloadingPredictors in
+  // the case where one predictor creates a preloading candidate which is
+  // enacted by another predictor (e.g. a non-eager speculation rule creates a
+  // candidate which is enacted by a pointer down heuristic).
+  PreloadingAttemptImpl* AddPreloadingAttempt(
+      const PreloadingPredictor& creating_predictor,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingType preloading_type,
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id);
+
+  void CopyPredictorDomains(const PreloadingDataImpl& other,
+                            const std::vector<PreloadingPredictor>& predictors);
+
   // The output of many predictors is a score (usually probability or logit),
   // where a higher score indicates a higher confidence in the prediction. To
   // use this score for binary classification, we compare it to a threshold. If
@@ -141,29 +155,10 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // Stores recall statistics for preloading predictions/attempts to later
   // record them to UMA.
-  struct PreloadingPredictorLess {
-    bool operator()(const PreloadingPredictor& lhs,
-                    const PreloadingPredictor& rhs) const {
-      return lhs.ukm_value() < rhs.ukm_value();
-    }
-  };
-  struct PreloadingAttemptLess {
-    bool operator()(
-        const std::pair<PreloadingPredictor, PreloadingType>& lhs,
-        const std::pair<PreloadingPredictor, PreloadingType>& rhs) const {
-      return std::forward_as_tuple(lhs.first.ukm_value(), lhs.second) <
-             std::forward_as_tuple(rhs.first.ukm_value(), rhs.second);
-    }
-  };
-
-  base::flat_map<PreloadingPredictor,
-                 PredictorDomainCallback,
-                 PreloadingPredictorLess>
+  base::flat_map<PreloadingPredictor, PredictorDomainCallback>
       is_navigation_in_predictor_domain_callbacks_;
-  base::flat_set<PreloadingPredictor, PreloadingPredictorLess>
-      predictions_recall_stats_;
-  base::flat_set<std::pair<PreloadingPredictor, PreloadingType>,
-                 PreloadingAttemptLess>
+  base::flat_set<PreloadingPredictor> predictions_recall_stats_;
+  base::flat_set<std::pair<PreloadingPredictor, PreloadingType>>
       preloading_attempt_recall_stats_;
 
   // Stores all the experimental preloading predictions that are happening for

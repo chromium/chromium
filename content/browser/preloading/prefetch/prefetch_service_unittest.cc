@@ -317,7 +317,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
 
     prefetch_document_manager->PrefetchUrl(
-        prefetch_url, prefetch_type, referrer, no_vary_search_hint, nullptr);
+        prefetch_url, prefetch_type,
+        GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
+        referrer, no_vary_search_hint, nullptr);
   }
 
   void MakePrefetchFromEmbedder(

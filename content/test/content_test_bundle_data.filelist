@@ -7039,6 +7039,7 @@ data/portals/touch-input-transfer-across-reactivation.html
 data/post_message.html
 data/post_message2.html
 data/preloading/preloading_decider.html
+data/preloading/preloading_decider_moderate.html
 data/prerender/cross_origin_prerender.html
 data/prerender/cross_origin_srcdoc_sandboxed_postmessage.html
 data/prerender/doc-with-display-none-iframe.html

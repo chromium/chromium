@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -65,14 +66,15 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
 }
 
 int PrerenderNewTabHandle::StartPrerendering(
-    PreloadingPredictor preloading_predictor) {
+    const PreloadingPredictor& creating_predictor,
+    const PreloadingPredictor& enacting_predictor) {
   CHECK(web_contents_);
   CHECK(attributes_.initiator_web_contents);
 
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt.
   auto* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents_.get());
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents_.get());
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(attributes_.prerendering_url);
   ukm::SourceId triggered_primary_page_source_id =
@@ -80,13 +82,17 @@ int PrerenderNewTabHandle::StartPrerendering(
           ->GetPageUkmSourceId();
   auto* preloading_attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
-          preloading_predictor, PreloadingType::kPrerender,
+          creating_predictor, enacting_predictor, PreloadingType::kPrerender,
           std::move(same_url_matcher), triggered_primary_page_source_id));
   preloading_data->AddPreloadingPrediction(
-      preloading_predictor,
+      enacting_predictor,
       /*confidence=*/100,
       PreloadingData::GetSameURLMatcher(attributes_.prerendering_url),
       triggered_primary_page_source_id);
+  preloading_data->CopyPredictorDomains(
+      *PreloadingDataImpl::GetOrCreateForWebContents(
+          attributes_.initiator_web_contents.get()),
+      {creating_predictor, enacting_predictor});
   CHECK(attributes_.eagerness.has_value());
   preloading_attempt->SetSpeculationEagerness(attributes_.eagerness.value());
 
