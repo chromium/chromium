@@ -75,6 +75,7 @@ source_set("android") {
 
     deps = [
       ":android_utils",
+      ":features",
       ":xr_jni_headers",
       "//base",
       "//components/messages/android",
@@ -229,5 +230,36 @@ generate_jni("xr_jni_headers") {
 if (enable_arcore) {
   java_cpp_enum("webxr_ar_android_enums") {
     sources = [ "arcore_install_helper.h" ]
+  }
+}
+
+generate_jni("features_jni") {
+  sources =
+      [ "java/src/org/chromium/components/webxr/WebXrAndroidFeatureMap.java" ]
+}
+
+android_library("features_java") {
+  srcjar_deps = [ ":features_jni" ]
+  sources =
+      [ "java/src/org/chromium/components/webxr/WebXrAndroidFeatureMap.java" ]
+  deps = [
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  deps += [ "//device/vr/public:java" ]
+}
+
+component("features") {
+  sources = [ "webxr_android_feature_map.cc" ]
+
+  deps = [
+    ":features_jni",
+    "//base",
+    "//device/vr/buildflags",
+  ]
+
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp:features" ]
   }
 }

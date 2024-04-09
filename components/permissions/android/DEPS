@@ -6,6 +6,7 @@ include_rules = [
   "+components/messages/android",
   "+components/omnibox/browser",
   "+components/security_state/core",
+  "+components/webxr/android",
   "+content/public/android",
   "+third_party/jni_zero",
   "+ui/android",

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//device/vr/buildflags/buildflags.gni")
+
 source_set("permissions_common") {
   sources = [
     "constants.cc",
@@ -143,6 +145,9 @@ source_set("permissions") {
     "//ui/strings:ui_strings_grit",
     "//url",
   ]
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp" ]
+  }
   if (is_mac || is_chromeos) {
     sources += [
       "contexts/geolocation_permission_context_system.cc",
@@ -195,6 +200,10 @@ source_set("permissions") {
       "//components/resources:android_resources",
       "//components/security_state/core:core",
       "//components/strings:components_strings_grit",
+
+      # Our corresponding java library references Java files which use the
+      # jni depended on here.
+      "//components/webxr/android:features",
       "//third_party/jni_zero",
       "//ui/android",
     ]

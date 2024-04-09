@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -14,6 +15,10 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
+#if BUILDFLAG(ENABLE_VR)
+#include "base/feature_list.h"
+#include "device/vr/public/cpp/features.h"
+#endif
 #endif
 
 namespace permissions {
@@ -56,10 +61,20 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // for `UpdateTabContext()` - if it did, we'd need to stop calling into base
   // class with the parameter not matching user's answer.
 
-  // Only AR needs to check for additional permissions, and then only if it was
-  // actually allowed.
-  if (!(content_settings_type_ == ContentSettingsType::AR &&
-        content_setting == ContentSetting::CONTENT_SETTING_ALLOW)) {
+  // If permission was denied, we don't need to check for additional
+  // permissions. We also don't need to check for additional permissions for
+  // non-OpenXR VR.
+  const bool permission_granted =
+      content_setting == ContentSetting::CONTENT_SETTING_ALLOW;
+  const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
+  bool is_openxr = false;
+#if BUILDFLAG(ENABLE_VR)
+  is_openxr = content_settings_type_ == ContentSettingsType::VR &&
+              device::features::IsOpenXrEnabled();
+#endif
+  const bool additional_permissions_needed =
+      permission_granted && (is_ar || is_openxr);
+  if (!additional_permissions_needed) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
         content_setting, is_one_time, is_final_decision);

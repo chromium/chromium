@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.webxr.WebXrAndroidFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -51,6 +52,11 @@ public class PermissionUtil {
         android.Manifest.permission.POST_NOTIFICATIONS
     };
 
+    /** TODO(https://crbug.com/331574787): Replace with official strings. */
+    private static final String[] OPENXR_PERMISSIONS = {
+        "android.permission.HAND_TRACKING", "android.permission.SCENE_UNDERSTANDING"
+    };
+
     /** Signifies there are no permissions associated. */
     private static final String[] EMPTY_PERMISSIONS = {};
 
@@ -70,13 +76,19 @@ public class PermissionUtil {
                                 .ANDROID_APPROXIMATE_LOCATION_PERMISSION_SUPPORT);
     }
 
+    private static boolean isOpenXrSupportEnabled() {
+        // OpenXR only requires additional permissions after Android 14.
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && WebXrAndroidFeatureMap.isOpenXrEnabled();
+    }
+
     /**
-     * Returns required Android permission strings for a given {@link ContentSettingsType}.  If
-     * there is no permissions associated with the content setting, then an empty array is returned.
+     * Returns required Android permission strings for a given {@link ContentSettingsType}. If there
+     * is no permissions associated with the content setting, then an empty array is returned.
      *
      * @param contentSettingType The content setting to get the Android permissions for.
      * @return The required Android permissions for the given content setting. Permission sets
-     *         returned for different content setting types are disjunct.
+     *     returned for different content setting types are disjunct.
      */
     @CalledByNative
     public static String[] getRequiredAndroidPermissionsForContentSetting(int contentSettingType) {
@@ -91,8 +103,17 @@ public class PermissionUtil {
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return Arrays.copyOf(MICROPHONE_PERMISSIONS, MICROPHONE_PERMISSIONS.length);
             case ContentSettingsType.MEDIASTREAM_CAMERA:
-            case ContentSettingsType.AR:
                 return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
+            case ContentSettingsType.AR:
+                if (isOpenXrSupportEnabled()) {
+                    return Arrays.copyOf(OPENXR_PERMISSIONS, OPENXR_PERMISSIONS.length);
+                }
+                return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
+            case ContentSettingsType.VR:
+                if (isOpenXrSupportEnabled()) {
+                    return Arrays.copyOf(OPENXR_PERMISSIONS, OPENXR_PERMISSIONS.length);
+                }
+                return EMPTY_PERMISSIONS;
             case ContentSettingsType.NOTIFICATIONS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     return Arrays.copyOf(

@@ -4,6 +4,8 @@ include_rules = [
   "+components/prefs",
   "+components/webrtc",
   "+device/bluetooth",
+  "+device/vr/buildflags",
+  "+device/vr/public/cpp",
   "+mojo/public",
   "+services/device/public",
   "+third_party/blink/public/common",
