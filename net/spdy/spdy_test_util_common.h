@@ -30,6 +30,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
@@ -192,6 +193,8 @@ struct SpdySessionDependencies {
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
   std::unique_ptr<HttpServerProperties> http_server_properties;
   std::unique_ptr<QuicContext> quic_context;
+  std::unique_ptr<QuicCryptoClientStreamFactory>
+      quic_crypto_client_stream_factory;
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingService> reporting_service;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service;

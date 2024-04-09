@@ -329,10 +329,6 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
-  // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
-  // supported, but when it is we can remove this CHECK.
-  CHECK(proxy_info_.proxy_chain().is_direct());
-
   return quic_request_.CanUseExistingSession(
       origin_url_, proxy_info_.proxy_chain(), request_info_.privacy_mode,
       SessionUsage::kDestination, request_info_.socket_tag,
@@ -410,14 +406,13 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
   if (is_websocket) {
     return false;
   }
-  // If a QUIC proxy is being used then a tunnel will be needed, and those are
-  // handled by the socket pools, using an HttpProxyConnectJob.
-  if (!proxy_info.is_direct() && proxy_info.proxy_chain().Last().is_quic()) {
+  // If a proxy is being used, the last proxy in the chain must be QUIC if we
+  // are to use QUIC on top of it.
+  if (!proxy_info.is_direct() && !proxy_info.proxy_chain().Last().is_quic()) {
     return false;
   }
   return OriginToForceQuicOn(*session->context().quic_context->params(),
                              destination) &&
-         proxy_info.is_direct() &&
          base::EqualsCaseInsensitiveASCII(destination.scheme(),
                                           url::kHttpsScheme);
 }
@@ -902,18 +897,29 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
-  // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
-  // supported, but when it is we can remove this CHECK.
-  CHECK(proxy_info_.proxy_chain().is_direct());
+  ProxyChain proxy_chain = proxy_info_.proxy_chain();
+  if (!proxy_chain.is_direct()) {
+    // We only support proxying QUIC over QUIC. While MASQUE defines mechanisms
+    // to carry QUIC traffic over non-QUIC proxies, the performance of these
+    // mechanisms would be worse than simply using H/1 or H/2 to reach the
+    // destination. The error for an invalid condition should not be user
+    // visible, because the non-alternative Job should be resumed.
+    if (proxy_chain.AnyProxy(
+            [](const ProxyServer& s) { return !s.is_quic(); })) {
+      return ERR_NO_SUPPORTED_PROXIES;
+    }
+  }
 
   std::optional<NetworkTrafficAnnotationTag> traffic_annotation =
       proxy_info_.traffic_annotation().is_valid()
           ? std::make_optional<NetworkTrafficAnnotationTag>(
                 proxy_info_.traffic_annotation())
           : std::nullopt;
+
+  // The QuicSessionRequest will take care of connecting to any proxies in the
+  // proxy chain.
   int rv = quic_request_.Request(
-      destination_, quic_version_, proxy_info_.proxy_chain(),
-      std::move(traffic_annotation),
+      destination_, quic_version_, proxy_chain, std::move(traffic_annotation),
       session_->context().http_user_agent_settings.get(),
       SessionUsage::kDestination, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,

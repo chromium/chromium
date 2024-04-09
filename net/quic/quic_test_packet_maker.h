@@ -293,7 +293,11 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDatagramPacket(
       uint64_t packet_number,
-      std::string_view data);
+      std::string_view datagram);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakeDatagramPacket(
+      uint64_t packet_number,
+      std::vector<std::string> datagrams);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
       uint64_t packet_number,

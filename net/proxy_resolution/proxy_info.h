@@ -84,9 +84,7 @@ class NET_EXPORT ProxyInfo {
     if (is_empty()) {
       return false;
     }
-    const std::vector<ProxyServer>& proxy_servers =
-        proxy_chain().proxy_servers();
-    return std::any_of(proxy_servers.begin(), proxy_servers.end(), p);
+    return proxy_chain().AnyProxy(p);
   }
 
   // Returns true if any of the contained ProxyChains are multi-proxy.

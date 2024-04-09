@@ -693,9 +693,19 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeDataPacket(
 
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
-                                        std::string_view data) {
+                                        std::string_view datagram) {
   InitializeHeader(packet_number);
-  AddQuicMessageFrame(data);
+  AddQuicMessageFrame(datagram);
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
+                                        std::vector<std::string> datagrams) {
+  InitializeHeader(packet_number);
+  for (auto& datagram : datagrams) {
+    AddQuicMessageFrame(datagram);
+  }
   return BuildPacket();
 }
 

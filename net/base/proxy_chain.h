@@ -131,6 +131,13 @@ class NET_EXPORT ProxyChain {
                                           : false;
   }
 
+  template <class Predicate>
+  bool AnyProxy(Predicate p) const {
+    return proxy_server_list_.has_value() &&
+           std::any_of(proxy_server_list_->begin(), proxy_server_list_->end(),
+                       p);
+  }
+
   // Determines if HTTP GETs to the last proxy in the chain are allowed,
   // instead of establishing a tunnel with CONNECT. This is no longer supported
   // for QUIC proxy chains and is not currently supported for multi-proxy

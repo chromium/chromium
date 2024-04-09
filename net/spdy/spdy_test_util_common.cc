@@ -33,6 +33,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/next_proto.h"
@@ -396,6 +397,8 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
   context.http_server_properties = session_deps->http_server_properties.get();
   context.quic_context = session_deps->quic_context.get();
   context.net_log = session_deps->net_log;
+  context.quic_crypto_client_stream_factory =
+      session_deps->quic_crypto_client_stream_factory.get();
 #if BUILDFLAG(ENABLE_REPORTING)
   context.reporting_service = session_deps->reporting_service.get();
   context.network_error_logging_service =

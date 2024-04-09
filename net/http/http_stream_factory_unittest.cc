@@ -86,6 +86,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 // This file can be included from net/http even though
 // it is in net/websockets because it doesn't
 // introduce any link dependency to net/websockets.
@@ -961,8 +962,10 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     GURL url = GURL("https://www.google.com");
 
     SpdySessionDependencies session_deps(
-        ConfiguredProxyResolutionService::CreateFixedForTest(
-            "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
+        ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+            {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+                ProxyServer::SCHEME_QUIC, "quic_proxy", 443)})},
+            TRAFFIC_ANNOTATION_FOR_TESTS));
 
     // Setup params to disable preconnect, but QUIC doesn't 0RTT.
     HttpNetworkSessionParams session_params =
@@ -988,8 +991,9 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
     HttpNetworkSessionPeer peer(session.get());
-    ProxyChain proxy_chain(ProxyServer::SCHEME_HTTP,
-                           HostPortPair("http_proxy", 80));
+    ProxyChain proxy_chain =
+        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            ProxyServer::SCHEME_QUIC, "quic_proxy", 443)});
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();
     auto http_proxy_pool =
@@ -1907,6 +1911,432 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
             GetSocketPoolGroupCount(session->GetSocketPool(
                 HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct())));
   EXPECT_TRUE(waiter.used_proxy_info().is_direct());
+}
+
+// Tests for creating an HTTP stream via QUIC.
+class HttpStreamFactoryQuicTest
+    : public TestWithTaskEnvironment,
+      public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
+ protected:
+  HttpStreamFactoryQuicTest()
+      : version_(GetParam()),
+        quic_context_(std::make_unique<MockQuicContext>()),
+        session_deps_(ConfiguredProxyResolutionService::CreateDirect()),
+        clock_(quic_context_->clock()),
+        random_generator_(quic_context_->random_generator()) {
+    FLAGS_quic_enable_http3_grease_randomness = false;
+    quic::QuicEnableVersion(version_);
+    quic_context_->params()->supported_versions =
+        quic::test::SupportedVersions(version_);
+    quic_context_->params()->origins_to_force_quic_on.insert(
+        HostPortPair::FromString("www.example.org:443"));
+    quic_context_->AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
+    session_deps_.enable_quic = true;
+    session_deps_.quic_context = std::move(quic_context_);
+
+    // Load a certificate that is valid for *.example.org
+    scoped_refptr<X509Certificate> test_cert(
+        ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+    EXPECT_TRUE(test_cert.get());
+    verify_details_.cert_verify_result.verified_cert = test_cert;
+    verify_details_.cert_verify_result.is_issued_by_known_root = true;
+    auto mock_crypto_client_stream_factory =
+        std::make_unique<MockCryptoClientStreamFactory>();
+    mock_crypto_client_stream_factory->AddProofVerifyDetails(&verify_details_);
+    mock_crypto_client_stream_factory->set_handshake_mode(
+        MockCryptoClientStream::CONFIRM_HANDSHAKE);
+    session_deps_.quic_crypto_client_stream_factory =
+        std::move(mock_crypto_client_stream_factory);
+
+    session_deps_.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("test-lang", "test-ua");
+  }
+
+  HttpNetworkSession* MakeSession() {
+    session_ = SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
+        &session_deps_, &socket_factory_);
+    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+        true);
+    return session_.get();
+  }
+
+  void TearDown() override { session_.reset(); }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructInitialSettingsPacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number) {
+    return packet_maker.MakeInitialSettingsPacket(packet_number);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructAckPacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      uint64_t packet_num_received,
+      uint64_t smallest_received,
+      uint64_t largest_received) {
+    return packet_maker.MakeAckPacket(packet_number, packet_num_received,
+                                      smallest_received, largest_received);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructConnectUdpRequestPacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      std::string authority,
+      std::string path,
+      bool fin) {
+    spdy::Http2HeaderBlock headers;
+    headers[":method"] = "CONNECT";
+    headers[":authority"] = authority;
+    headers["user-agent"] = "test-ua";
+    headers["capsule-protocol"] = "?1";
+    headers[":scheme"] = "https";
+    headers[":path"] = path;
+    headers[":protocol"] = "connect-udp";
+    spdy::SpdyPriority priority =
+        ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+    size_t spdy_headers_frame_len;
+    auto rv = packet_maker.MakeRequestHeadersPacket(
+        packet_number, stream_id, fin, priority, std::move(headers),
+        &spdy_headers_frame_len, /*should_include_priority_frame=*/false);
+    return rv;
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructOkResponsePacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      bool fin) {
+    spdy::Http2HeaderBlock headers = packet_maker.GetResponseHeaders("200");
+    size_t spdy_headers_frame_len;
+    return packet_maker.MakeResponseHeadersPacket(packet_number, stream_id, fin,
+                                                  std::move(headers),
+                                                  &spdy_headers_frame_len);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket>
+  ConstructAckAndClientH3DatagramPacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      uint64_t quarter_stream_id,
+      uint64_t context_id,
+      std::unique_ptr<quic::QuicEncryptedPacket> packet) {
+    std::string datagram;
+    // Allow enough space for payload and two varint-62's.
+    datagram.resize(packet->length() + 2 * 8);
+    quiche::QuicheDataWriter writer(datagram.capacity(), datagram.data());
+    CHECK(writer.WriteVarInt62(quarter_stream_id));
+    CHECK(writer.WriteVarInt62(context_id));
+    CHECK(writer.WriteBytes(packet->data(), packet->length()));
+    datagram.resize(writer.length());
+    return packet_maker.MakeAckAndDatagramPacket(
+        packet_number, largest_received, smallest_received, datagram);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientH3DatagramPacket(
+      test::QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      uint64_t quarter_stream_id,
+      uint64_t context_id,
+      std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> packets) {
+    std::vector<std::string> datagrams;
+    for (auto& packet : packets) {
+      std::string data;
+      // Allow enough space for payload and two varint-62's.
+      data.resize(packet->length() + 2 * 8);
+      quiche::QuicheDataWriter writer(data.capacity(), data.data());
+      CHECK(writer.WriteVarInt62(quarter_stream_id));
+      CHECK(writer.WriteVarInt62(context_id));
+      CHECK(writer.WriteBytes(packet->data(), packet->length()));
+      data.resize(writer.length());
+      datagrams.push_back(std::move(data));
+    }
+    return packet_maker.MakeDatagramPacket(packet_number, datagrams);
+  }
+
+  // Make a `QuicTestPacketMaker` for the current test with the given
+  // characteristics.
+  test::QuicTestPacketMaker MakePacketMaker(
+      const std::string& host,
+      quic::Perspective perspective,
+      bool client_priority_uses_incremental = false,
+      bool use_priority_header = false) {
+    return test::QuicTestPacketMaker(
+        version_, quic::QuicUtils::CreateRandomConnectionId(random_generator_),
+        clock_, host, perspective, client_priority_uses_incremental,
+        use_priority_header);
+  }
+
+  MockTaggingClientSocketFactory* socket_factory() { return &socket_factory_; }
+
+  quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) {
+    return quic::test::GetNthClientInitiatedBidirectionalStreamId(
+        version_.transport_version, n);
+  }
+
+  SpdySessionDependencies& session_deps() { return session_deps_; }
+
+  quic::ParsedQuicVersion version() const { return version_; }
+
+ private:
+  quic::test::QuicFlagSaver saver_;
+  const quic::ParsedQuicVersion version_;
+  std::unique_ptr<MockQuicContext> quic_context_;
+  SpdySessionDependencies session_deps_;
+  raw_ptr<const quic::QuicClock> clock_;
+  raw_ptr<quic::QuicRandom> random_generator_;
+  MockTaggingClientSocketFactory socket_factory_;
+  std::unique_ptr<HttpNetworkSession> session_;
+  ProofVerifyDetailsChromium verify_details_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryQuicTest,
+                         ::testing::ValuesIn(AllSupportedQuicVersions()),
+                         ::testing::PrintToStringParamName());
+
+// Check that requesting an HTTP stream over a QUIC proxy sends the correct
+// set of QUIC packets.
+TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverQuicProxy) {
+  static constexpr uint64_t kConnectUdpContextId = 0;
+  GURL kRequestUrl("https://www.example.org");
+  session_deps().proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "qproxy.example.org", 8888)})},
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  MockQuicData proxy_quic_data(version());
+  quic::QuicStreamId stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  int to_proxy_packet_num = 1;
+  auto to_proxy =
+      MakePacketMaker("qproxy.example.org", quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/false);
+  int from_proxy_packet_num = 1;
+  auto from_proxy =
+      MakePacketMaker("qproxy.example.org", quic::Perspective::IS_SERVER,
+                      /*client_priority_uses_incremental=*/false,
+                      /*use_priority_header=*/false);
+  int to_endpoint_packet_num = 1;
+  auto to_endpoint =
+      MakePacketMaker("www.example.org", quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/true);
+
+  // The browser sends initial settings to the proxy.
+  proxy_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
+                                            to_proxy, to_proxy_packet_num++));
+
+  // The browser sends CONNECT-UDP request to proxy.
+  proxy_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructConnectUdpRequestPacket(
+          to_proxy, to_proxy_packet_num++, stream_id, "qproxy.example.org:8888",
+          "/.well-known/masque/udp/www.example.org/443/", false));
+
+  // Proxy sends initial settings.
+  proxy_quic_data.AddRead(ASYNC, ConstructInitialSettingsPacket(
+                                     from_proxy, from_proxy_packet_num++));
+
+  // Proxy responds to the CONNECT.
+  proxy_quic_data.AddRead(
+      ASYNC, ConstructOkResponsePacket(from_proxy, from_proxy_packet_num++,
+                                       stream_id, true));
+  proxy_quic_data.AddReadPauseForever();
+
+  // The browser ACKs the OK response packet.
+  proxy_quic_data.AddWrite(
+      ASYNC, ConstructAckPacket(to_proxy, to_proxy_packet_num++, 1, 2, 1));
+
+  // The browser sends initial settings to the endpoint, via proxy.
+  std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> datagrams;
+  datagrams.push_back(
+      ConstructInitialSettingsPacket(to_endpoint, to_endpoint_packet_num++));
+  proxy_quic_data.AddWrite(
+      ASYNC, ConstructClientH3DatagramPacket(to_proxy, to_proxy_packet_num++,
+                                             stream_id, kConnectUdpContextId,
+                                             std::move(datagrams)));
+
+  proxy_quic_data.AddSocketDataToFactory(socket_factory());
+
+  HttpNetworkSession* session = MakeSession();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = kRequestUrl;
+  request_info.load_flags = 0;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  StreamRequestWaiter waiter;
+  std::unique_ptr<HttpStreamRequest> request(
+      session->http_stream_factory()->RequestStream(
+          request_info, DEFAULT_PRIORITY, /* allowed_bad_certs = */ {}, &waiter,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+
+  waiter.WaitForStream();
+  EXPECT_TRUE(waiter.stream_done());
+  EXPECT_FALSE(waiter.websocket_stream());
+  EXPECT_TRUE(waiter.stream());
+  EXPECT_FALSE(waiter.used_proxy_info().is_direct());
+
+  RunUntilIdle();
+
+  proxy_quic_data.ExpectAllReadDataConsumed();
+  proxy_quic_data.ExpectAllWriteDataConsumed();
+}
+
+// Check that requesting an HTTP stream over a two QUIC proxies sends the
+// correct set of QUIC packets.
+TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
+  static constexpr uint64_t kConnectUdpContextId = 0;
+  GURL kRequestUrl("https://www.example.org");
+  session_deps().proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {
+              ProxyChain::ForIpProtection(
+                  {ProxyServer::FromSchemeHostAndPort(
+                       ProxyServer::SCHEME_QUIC, "qproxy1.example.org", 8888),
+                   ProxyServer::FromSchemeHostAndPort(
+                       ProxyServer::SCHEME_QUIC, "qproxy2.example.org", 8888)}),
+          },
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  MockQuicData proxy_quic_data(version());
+  quic::QuicStreamId stream_id_0 =
+      GetNthClientInitiatedBidirectionalStreamId(0);
+  int to_proxy1_packet_num = 1;
+  auto to_proxy1 =
+      MakePacketMaker("qproxy1.example.org", quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/false);
+  int from_proxy1_packet_num = 1;
+  auto from_proxy1 =
+      MakePacketMaker("qproxy1.example.org", quic::Perspective::IS_SERVER,
+                      /*client_priority_uses_incremental=*/false,
+                      /*use_priority_header=*/false);
+  int to_proxy2_packet_num = 1;
+  auto to_proxy2 =
+      MakePacketMaker("qproxy2.example.org", quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/false);
+  int from_proxy2_packet_num = 1;
+  auto from_proxy2 =
+      MakePacketMaker("qproxy2.example.org", quic::Perspective::IS_SERVER,
+                      /*client_priority_uses_incremental=*/false,
+                      /*use_priority_header=*/false);
+  int to_endpoint_packet_num = 1;
+  auto to_endpoint =
+      MakePacketMaker("www.example.org", quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/true);
+
+  // The browser sends initial settings to proxy1.
+  proxy_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(
+                                            to_proxy1, to_proxy1_packet_num++));
+
+  // The browser sends CONNECT-UDP request to proxy1.
+  proxy_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructConnectUdpRequestPacket(
+          to_proxy1, to_proxy1_packet_num++, stream_id_0,
+          "qproxy1.example.org:8888",
+          "/.well-known/masque/udp/qproxy2.example.org/8888/", false));
+
+  // Proxy1 sends initial settings.
+  proxy_quic_data.AddRead(ASYNC, ConstructInitialSettingsPacket(
+                                     from_proxy1, from_proxy1_packet_num++));
+
+  // Proxy1 responds to the CONNECT.
+  proxy_quic_data.AddRead(
+      ASYNC, ConstructOkResponsePacket(from_proxy1, from_proxy1_packet_num++,
+                                       stream_id_0, true));
+
+  // The browser ACKs the OK response packet.
+  proxy_quic_data.AddWrite(
+      ASYNC, ConstructAckPacket(to_proxy1, to_proxy1_packet_num++, 1, 2, 1));
+
+  // The browser sends initial settings and a CONNECT-UDP request to proxy2 via
+  // proxy1.
+  std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> datagrams;
+  datagrams.push_back(
+      ConstructInitialSettingsPacket(to_proxy2, to_proxy2_packet_num++));
+  datagrams.push_back(ConstructConnectUdpRequestPacket(
+      to_proxy2, to_proxy2_packet_num++, stream_id_0,
+      "qproxy2.example.org:8888",
+      "/.well-known/masque/udp/www.example.org/443/", false));
+  proxy_quic_data.AddWrite(
+      ASYNC, ConstructClientH3DatagramPacket(to_proxy1, to_proxy1_packet_num++,
+                                             stream_id_0, kConnectUdpContextId,
+                                             std::move(datagrams)));
+
+  // Proxy2 sends initial settings and an OK response to the CONNECT request,
+  // via proxy1.
+  datagrams.clear();
+  datagrams.push_back(
+      ConstructInitialSettingsPacket(from_proxy2, from_proxy2_packet_num++));
+  datagrams.push_back(ConstructOkResponsePacket(
+      from_proxy2, from_proxy2_packet_num++, stream_id_0, true));
+  proxy_quic_data.AddRead(
+      ASYNC, ConstructClientH3DatagramPacket(
+                 from_proxy1, from_proxy1_packet_num++, stream_id_0,
+                 kConnectUdpContextId, std::move(datagrams)));
+  proxy_quic_data.AddReadPauseForever();
+
+  // The browser ACK's the datagram from proxy1, and acks proxy2's OK response
+  // packet via proxy1.
+  proxy_quic_data.AddWrite(
+      ASYNC,
+      ConstructAckAndClientH3DatagramPacket(
+          to_proxy1, to_proxy1_packet_num++, 3, 1, stream_id_0,
+          kConnectUdpContextId,
+          ConstructAckPacket(to_proxy2, to_proxy2_packet_num++, 1, 2, 1)));
+
+  // The browser sends initial settings to the endpoint, via proxy2, via proxy1.
+  datagrams.clear();
+  std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> inner_datagrams;
+  inner_datagrams.push_back(
+      ConstructInitialSettingsPacket(to_endpoint, to_endpoint_packet_num++));
+  datagrams.push_back(ConstructClientH3DatagramPacket(
+      to_proxy2, to_proxy2_packet_num++, stream_id_0, kConnectUdpContextId,
+      std::move(inner_datagrams)));
+  proxy_quic_data.AddWrite(
+      ASYNC, ConstructClientH3DatagramPacket(to_proxy1, to_proxy1_packet_num++,
+                                             stream_id_0, kConnectUdpContextId,
+                                             std::move(datagrams)));
+
+  proxy_quic_data.AddSocketDataToFactory(socket_factory());
+
+  HttpNetworkSession* session = MakeSession();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = kRequestUrl;
+  request_info.load_flags = 0;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  StreamRequestWaiter waiter;
+  std::unique_ptr<HttpStreamRequest> request(
+      session->http_stream_factory()->RequestStream(
+          request_info, DEFAULT_PRIORITY, /* allowed_bad_certs = */ {}, &waiter,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+
+  waiter.WaitForStream();
+  EXPECT_TRUE(waiter.stream_done());
+  EXPECT_FALSE(waiter.websocket_stream());
+  EXPECT_TRUE(waiter.stream());
+  EXPECT_FALSE(waiter.used_proxy_info().is_direct());
+
+  RunUntilIdle();
+
+  proxy_quic_data.ExpectAllReadDataConsumed();
+  proxy_quic_data.ExpectAllWriteDataConsumed();
 }
 
 class HttpStreamFactoryBidirectionalQuicTest

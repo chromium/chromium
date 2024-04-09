@@ -832,7 +832,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url_.scheme(),
                                        url::kHttpsScheme) &&
-      session_->IsQuicEnabled() && proxy_info_.is_direct() &&
+      session_->IsQuicEnabled() &&
       !session_->http_server_properties()->IsAlternativeServiceBroken(
           GetAlternativeServiceForDnsJob(origin_url_),
           request_info_.network_anonymization_key);
@@ -1299,7 +1299,6 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     // Check whether there is an existing QUIC session to use for this origin.
     GURL mapped_origin = original_url;
     RewriteUrlWithHostMappingRules(mapped_origin);
-    CHECK(proxy_info_.proxy_chain().is_direct());
     QuicSessionKey session_key(
         HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
         proxy_info_.proxy_chain(), SessionUsage::kDestination,

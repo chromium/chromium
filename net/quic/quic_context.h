@@ -219,7 +219,7 @@ class NET_EXPORT_PRIVATE QuicContext {
   QuicContext();
   explicit QuicContext(
       std::unique_ptr<quic::QuicConnectionHelperInterface> helper);
-  ~QuicContext();
+  virtual ~QuicContext();
 
   quic::QuicConnectionHelperInterface* helper() { return helper_.get(); }
   const quic::QuicClock* clock() { return helper_->GetClock(); }

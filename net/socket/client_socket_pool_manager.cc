@@ -284,9 +284,6 @@ int PreconnectSocketsForHttpRequest(
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
     CompletionOnceCallback callback) {
-  // QUIC proxies are currently not supported through this method.
-  DCHECK(proxy_info.is_direct() || !proxy_info.proxy_chain().Last().is_quic());
-
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
   // equivalent.
   DCHECK(endpoint.scheme() == url::kHttpScheme ||
