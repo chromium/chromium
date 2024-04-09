@@ -89,7 +89,8 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   OidcInterceptionStatus interception_status() { return interception_status_; }
 
  private:
-  void CreateBrowserAfterSigninInterception(content::WebContents* web_contents);
+  void CreateBrowserAfterSigninInterception();
+  void CloseInterceptedWebContent(content::WebContents* intercepted_contents);
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
   void Reset();

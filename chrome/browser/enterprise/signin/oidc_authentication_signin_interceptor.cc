@@ -295,8 +295,8 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
           << static_cast<int>(set_primary_account_result);
 
   interception_status_ = OidcInterceptionStatus::kCompleted;
-  // TODO(b/319477219): In addition to kSignin level primary account, allow user
-  // to turn on sync service and upgrade to kSync.
+
+  CloseInterceptedWebContent(web_contents_.get());
   Reset();
 }
 
@@ -364,7 +364,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     // OidcAuthenticationSigninInterceptor that is attached to the new profile.
     // We pass relevant parameters from this instance to the new one.
     OidcAuthenticationSigninInterceptorFactory::GetForProfile(new_profile.get())
-        ->CreateBrowserAfterSigninInterception(web_contents_.get());
+        ->CreateBrowserAfterSigninInterception();
   }
 
   policy::UserPolicyOidcSigninService* policy_service =
@@ -383,20 +383,24 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
                      weak_factory_.GetWeakPtr(), new_profile.get()));
 }
 
-void OidcAuthenticationSigninInterceptor::CreateBrowserAfterSigninInterception(
-    content::WebContents* intercepted_contents) {
-  DCHECK(intercepted_contents);
-
+void OidcAuthenticationSigninInterceptor::
+    CreateBrowserAfterSigninInterception() {
   GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
-  if (intercepted_contents) {
-    intercepted_contents->Close();
-  }
 
   // Open a new browser.
   NavigateParams params(profile_, url_to_open,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
   DVLOG(1) << "New browser created";
+}
+
+void OidcAuthenticationSigninInterceptor::CloseInterceptedWebContent(
+    content::WebContents* intercepted_contents) {
+  DCHECK(intercepted_contents);
+
+  if (intercepted_contents) {
+    intercepted_contents->Close();
+  }
 }
 
 void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
@@ -408,5 +412,10 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
 
   interception_status_ = success ? OidcInterceptionStatus::kCompleted
                                  : OidcInterceptionStatus::kError;
+
+  if (success) {
+    CloseInterceptedWebContent(web_contents_.get());
+  }
+
   Reset();
 }

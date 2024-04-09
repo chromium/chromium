@@ -24,8 +24,20 @@
 
 namespace {
 
-constexpr char kQuerySeparator[] = "&";
+// OIDC enrollment can be intiated by passing tokens through either of the
+// following host/URL, but `kOidcEnrollmentHost` may need to be deprecated once
+// the redirect URL
 constexpr char kOidcEnrollmentHost[] = "chromeprofiletoken";
+constexpr char kEnrollmentFallbackHost[] = "chromeenterprise.google";
+constexpr char kEnrollmentFallbackPath[] = "/enroll/";
+
+// Msft Entra will first navigate to a reprocess URL and redirect to our
+// enrolllment URL, we need to capture this to correctly create the navigation
+// throttle.
+constexpr char kOidcEntraReprocessHost[] = "login.microsoftonline.com";
+constexpr char kOidcEntraReprocessPath[] = "/common/reprocess";
+
+constexpr char kQuerySeparator[] = "&";
 constexpr char kAuthTokenHeader[] = "access_token=";
 constexpr char kIdTokenHeader[] = "id_token=";
 
@@ -42,6 +54,12 @@ std::string ExtractFragmentValueWithKey(const std::string& fragment,
                                     : fragment.substr(start, end - start);
 }
 
+bool IsEnrollmentUrl(GURL& url) {
+  return url.DomainIs(kOidcEnrollmentHost) ||
+         (url.DomainIs(kEnrollmentFallbackHost) &&
+          url.path() == kEnrollmentFallbackPath);
+}
+
 }  // namespace
 
 namespace profile_management {
@@ -50,12 +68,19 @@ namespace profile_management {
 std::unique_ptr<OidcAuthResponseCaptureNavigationThrottle>
 OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  return (base::FeatureList::IsEnabled(
-              profile_management::features::kOidcAuthProfileManagement) &&
-          navigation_handle->GetURL().host() == kOidcEnrollmentHost)
-             ? std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
-                   navigation_handle)
-             : nullptr;
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::kOidcAuthProfileManagement)) {
+    return nullptr;
+  }
+
+  auto url = navigation_handle->GetURL();
+  if (!IsEnrollmentUrl(url) && !(url.DomainIs(kOidcEntraReprocessHost) &&
+                                 url.path() == kOidcEntraReprocessPath)) {
+    return nullptr;
+  }
+
+  return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
+      navigation_handle);
 }
 
 OidcAuthResponseCaptureNavigationThrottle::
@@ -73,20 +98,29 @@ OidcAuthResponseCaptureNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
+  auto url = navigation_handle()->GetURL();
+
+  // This maybe some other redirect from MSFT Entra that isn't an OIDC profile
+  // registration attempt.
+  if (!IsEnrollmentUrl(url)) {
+    return PROCEED;
+  }
+
   // Extract parameters from the fragment part (#) of the URL. The auth token
   // from OIDC authentication will be decoded and parsed by data_decoder for
   // security reasons. Example URL:
   // https://chromeprofiletoken/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session
   // state>
-  std::string url_ref = navigation_handle()->GetURL().ref();
+  std::string url_ref = url.ref();
 
   std::string auth_token =
       ExtractFragmentValueWithKey(url_ref, kAuthTokenHeader);
   std::string id_token = ExtractFragmentValueWithKey(url_ref, kIdTokenHeader);
 
   if (auth_token.empty() || id_token.empty()) {
-    LOG(ERROR) << "Missing token from OIDC response.";
-    return CANCEL_AND_IGNORE;
+    LOG(ERROR) << "Missing token from OIDC response. This may not be a OIDC "
+                  "registration attempt.";
+    return PROCEED;
   }
 
   std::string json_payload;
@@ -111,7 +145,7 @@ OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
           weak_ptr_factory_.GetWeakPtr(),
           ProfileManagementOicdTokens{.auth_token = std::move(auth_token),
                                       .id_token = std::move(id_token)}));
-  return DEFER;
+  return PROCEED;
 }
 
 const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {

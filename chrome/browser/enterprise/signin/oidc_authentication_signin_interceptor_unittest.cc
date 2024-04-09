@@ -392,8 +392,10 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/true);
 
-  // TODO(b/329283247): after the operation order is corrected, this should not
-  // start a registration attempt.
+  // Adding a new tab since the old one will be closed on successful
+  // interception.
+  AddTab(browser(), GURL("about:blank"));
+
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expect_registration_attempt=*/
@@ -403,14 +405,12 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
 TEST_P(OidcAuthenticationSigninInterceptorTest, MultipleProfileCreation) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/true);
+  AddTab(browser(), GURL("about:blank"));
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, "new_subject_id",
                               /*expect_profile_created=*/true);
 }
 
-// TODO(b/329283247): after the operation order is corrected, registration
-// attempt should come after the consent dialog. `expect_registration_attempt`
-// should be false after the change.
 TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
