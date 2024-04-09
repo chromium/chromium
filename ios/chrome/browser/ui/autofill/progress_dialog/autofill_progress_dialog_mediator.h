@@ -42,6 +42,8 @@ class AutofillProgressDialogMediator
   void SetConsumer(id<AlertConsumer> consumer);
 
  private:
+  void OnCancelButtonTapped();
+
   // The model to provide data to be shown in the IOS view implementation.
   base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
       model_controller_;

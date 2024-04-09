@@ -51,13 +51,23 @@ void AutofillProgressDialogMediator::SetConsumer(id<AlertConsumer> consumer) {
       setTitle:base::SysUTF16ToNSString(model_controller_->GetLoadingTitle())];
   [consumer_ setMessage:base::SysUTF16ToNSString(
                             model_controller_->GetLoadingMessage())];
-  // TODO(crbug.com/324606723): Invoke the MediatorDelegate to close the view
-  // and terminate everything.
-  AlertAction* action = [AlertAction
+  base::WeakPtr<AutofillProgressDialogMediator> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  AlertAction* buttonAction = [AlertAction
       actionWithTitle:base::SysUTF16ToNSString(
                           model_controller_->GetCancelButtonLabel())
                 style:UIAlertActionStyleCancel
-              handler:nil];
-  [consumer_ setActions:@[ @[ action ] ]];
+              handler:^(AlertAction* action) {
+                if (weak_ptr) {
+                  // When the handler is invoked, `this` will for sure exist.
+                  weak_ptr->OnCancelButtonTapped();
+                }
+              }];
+  [consumer_ setActions:@[ @[ buttonAction ] ]];
   [consumer_ setShouldShowActivityIndicator:YES];
+}
+
+void AutofillProgressDialogMediator::OnCancelButtonTapped() {
+  is_canceled_by_user_ = true;
+  [delegate_ dismissDialog];
 }

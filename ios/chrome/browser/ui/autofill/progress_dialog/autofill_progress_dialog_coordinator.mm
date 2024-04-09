@@ -55,6 +55,8 @@
 
 - (void)start {
   AlertViewController* alertViewController = [[AlertViewController alloc] init];
+  alertViewController.modalPresentationStyle =
+      UIModalPresentationOverFullScreen;
   _alertViewController = alertViewController;
   _mediator->SetConsumer(alertViewController);
   [self.baseViewController presentViewController:alertViewController
