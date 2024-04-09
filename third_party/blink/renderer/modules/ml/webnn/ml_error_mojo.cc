@@ -6,13 +6,13 @@
 
 namespace blink {
 
-#define DEFINE_WEBNN_ERROR_CODE_MAPPING(error_code) \
-  case blink_mojom::Error::Code::error_code: {      \
-    return DOMExceptionCode::error_code;            \
+#define DEFINE_WEBNN_ERROR_CODE_MAPPING(error_code)    \
+  case webnn::mojom::blink::Error::Code::error_code: { \
+    return DOMExceptionCode::error_code;               \
   }
 
 DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
-    blink_mojom::Error::Code error_code) {
+    webnn::mojom::blink::Error::Code error_code) {
   switch (error_code) {
     DEFINE_WEBNN_ERROR_CODE_MAPPING(kUnknownError)
     DEFINE_WEBNN_ERROR_CODE_MAPPING(kNotSupportedError)

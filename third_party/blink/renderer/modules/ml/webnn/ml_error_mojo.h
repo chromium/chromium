@@ -11,17 +11,15 @@
 
 namespace blink {
 
-namespace blink_mojom = webnn::mojom::blink;
-
 DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
-    blink_mojom::Error::Code error_code);
+    webnn::mojom::blink::Error::Code error_code);
 
 template <typename MojoResultType>
 mojo::StructPtr<MojoResultType> ToError(
-    const blink_mojom::Error::Code& error_code,
+    const webnn::mojom::blink::Error::Code& error_code,
     const WTF::String& error_message) {
   return MojoResultType::NewError(
-      blink_mojom::Error::New(error_code, error_message));
+      webnn::mojom::blink::Error::New(error_code, error_message));
 }
 
 }  // namespace blink

@@ -255,9 +255,9 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   // (default value of `MLContextOptions.numThreads`) and `1` mean executing
   // operators without parallelization.
   static scoped_refptr<XnnRuntimeWrapper> Create(
-      XnnSubgraphPtr subgraph,
+      internal::XnnSubgraphPtr subgraph,
       scoped_refptr<SharedXnnpackContext> xnn_context,
-      Vector<DataBuffer> static_data_buffers,
+      Vector<internal::DataBuffer> static_data_buffers,
       uint32_t num_threads,
       String& error_message) {
     ScopedMLTrace scoped_trace("XnnRuntimeWrapper::Create");
@@ -304,7 +304,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   // Invoke the XNNPACK Runtime object. If there are any data pointers changed,
   // setup the XNNPACK Runtime with the updated `xnn_external_values` before the
   // invocation.
-  xnn_status Invoke(XnnExternalValuesPtr external_values,
+  xnn_status Invoke(internal::XnnExternalValuesPtr external_values,
                     String& error_message) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ScopedMLTrace scoped_trace("XnnRuntimeWrapper::Invoke");
@@ -346,7 +346,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   XnnRuntimeWrapper(xnn_runtime_t xnn_runtime,
                     pthreadpool_t pthreadpool,
                     scoped_refptr<SharedXnnpackContext> xnn_context,
-                    Vector<DataBuffer> static_data_buffers)
+                    Vector<internal::DataBuffer> static_data_buffers)
       : xnn_context_(std::move(xnn_context)),
         static_data_buffers_(std::move(static_data_buffers)),
         xnn_external_values_(std::make_unique<Vector<xnn_external_value>>()),
@@ -360,12 +360,12 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
 
   // Holds the static data of XNNPACK Values for MLGraph's constant operands.
   // The data must outlive XNNPACK Subgraph and Runtime objects using them.
-  Vector<DataBuffer> static_data_buffers_;
+  Vector<internal::DataBuffer> static_data_buffers_;
 
   // Holds the XNNPACK external values (value ID and data pointer) used for
   // Runtime setup. It is used to avoid unnecessary Runtime setup if no pointers
   // are changed. See more details in the comment of the `Invoke()` method.
-  XnnExternalValuesPtr xnn_external_values_;
+  internal::XnnExternalValuesPtr xnn_external_values_;
 
   // The XNNPACK Runtime object for the accelerated executions.
   std::unique_ptr<xnn_runtime, decltype(&xnn_delete_runtime)> xnn_runtime_
@@ -423,7 +423,7 @@ Vector<size_t> GetXnnDimensions(const Vector<uint32_t>& operand_dimensions) {
 // static_data_buffers_ member, it would outlive the XNNPACK Value who uses it.
 xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
                           const MLOperand* operand,
-                          const DataBuffer& data,
+                          const internal::DataBuffer& data,
                           uint32_t external_value_id,
                           uint32_t& value_id,
                           String& error_message) {
@@ -489,8 +489,8 @@ xnn_status DefineExternalXnnValue(xnn_subgraph_t subgraph,
                                   uint32_t& value_id,
                                   String& error_message) {
   DCHECK_NE(external_value_id, XNN_INVALID_VALUE_ID);
-  return DefineXnnValue(subgraph, operand, DataBuffer(), external_value_id,
-                        value_id, error_message);
+  return DefineXnnValue(subgraph, operand, internal::DataBuffer(),
+                        external_value_id, value_id, error_message);
 }
 
 // Define an internal XNNPACK Value given a WebNN graph's intermediate
@@ -501,8 +501,8 @@ xnn_status DefineInternalXnnValue(xnn_subgraph_t subgraph,
                                   String& error_message) {
   // Set external_value_id to XNN_INVALID_VALUE_ID, so an internal ID will be
   // created for the Value and value_id will be set to that internal ID.
-  return DefineXnnValue(subgraph, operand, DataBuffer(), XNN_INVALID_VALUE_ID,
-                        value_id, error_message);
+  return DefineXnnValue(subgraph, operand, internal::DataBuffer(),
+                        XNN_INVALID_VALUE_ID, value_id, error_message);
 }
 
 // Define a static XNNPACK Value given a WebNN graph's constant operand and its
@@ -510,7 +510,7 @@ xnn_status DefineInternalXnnValue(xnn_subgraph_t subgraph,
 // the Subgraph object, and of any Runtime objects created from the Subgraph.
 xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
                                 const MLOperand* operand,
-                                const DataBuffer& data,
+                                const internal::DataBuffer& data,
                                 uint32_t& value_id,
                                 String& error_message) {
   CHECK(!data.empty());
@@ -523,7 +523,7 @@ xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
 // XNNPACK requires input and static data buffers to have `XNN_EXTRA_BYTES`
 // bytes at the end. This method allocates a buffer with `XNN_EXTRA_BYTES` bytes
 // and copies the content of array buffer into the new buffer.
-std::optional<DataBuffer> MakeBufferWithExtraBytes(
+std::optional<internal::DataBuffer> MakeBufferWithExtraBytes(
     const DOMArrayBufferView* array_buffer_view) {
   CHECK(!array_buffer_view->IsDetached());
   // Allocate an initialized buffer with `XNN_EXTRA_BYTES` extra bytes.
@@ -532,7 +532,7 @@ std::optional<DataBuffer> MakeBufferWithExtraBytes(
   if (!buffer_size.IsValid()) {
     return std::nullopt;
   }
-  auto buffer = DataBuffer::WithSize(buffer_size.ValueOrDie());
+  auto buffer = internal::DataBuffer::WithSize(buffer_size.ValueOrDie());
   memcpy(buffer.data(), array_buffer_view->BaseAddress(),
          array_buffer_view->byteLength());
   return buffer;
@@ -2010,12 +2010,12 @@ MLGraphXnnpack::MLGraphXnnpack(MLContext* context)
 
 MLGraphXnnpack::~MLGraphXnnpack() = default;
 
-const ExternalValueIdMap& MLGraphXnnpack::GetInputExternalValueIdMapForTesting()
-    const {
+const MLGraphXnnpack::ExternalValueIdMap&
+MLGraphXnnpack::GetInputExternalValueIdMapForTesting() const {
   return input_external_value_id_map_;
 }
 
-const ExternalValueIdMap&
+const MLGraphXnnpack::ExternalValueIdMap&
 MLGraphXnnpack::GetOutputExternalValueIdMapForTesting() const {
   return output_external_value_id_map_;
 }
@@ -2073,8 +2073,8 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     return;
   }
 
-  Vector<DataBuffer> static_data_buffers;
-  XnnSubgraphPtr subgraph(nullptr, &xnn_delete_subgraph);
+  Vector<internal::DataBuffer> static_data_buffers;
+  internal::XnnSubgraphPtr subgraph(nullptr, &xnn_delete_subgraph);
   xnn_status status = CreateXnnSubgraph(*named_outputs, subgraph,
                                         static_data_buffers, error_message);
   if (status != xnn_status_success) {
@@ -2098,9 +2098,9 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
 // static
 void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
     ScopedMLTrace scoped_trace,
-    XnnSubgraphPtr subgraph,
+    internal::XnnSubgraphPtr subgraph,
     scoped_refptr<SharedXnnpackContext> xnn_context,
-    Vector<DataBuffer> static_data_buffers,
+    Vector<internal::DataBuffer> static_data_buffers,
     CrossThreadHandle<MLGraphXnnpack> graph,
     uint32_t num_threads,
     CrossThreadHandle<ScriptPromiseResolver<MLGraph>> resolver,
@@ -2191,10 +2191,10 @@ void MLGraphXnnpack::ComputeImpl(
 void MLGraphXnnpack::ComputeOnBackgroundThread(
     ScopedMLTrace scoped_trace,
     scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
-    Vector<DataBuffer> input_buffers,
-    XnnExternalValuesPtr external_values,
-    NamedArrayBufferViewsInfoPtr inputs_info,
-    NamedArrayBufferViewsInfoPtr outputs_info,
+    Vector<internal::DataBuffer> input_buffers,
+    internal::XnnExternalValuesPtr external_values,
+    std::unique_ptr<internal::NamedArrayBufferViewsInfo> inputs_info,
+    std::unique_ptr<internal::NamedArrayBufferViewsInfo> outputs_info,
     CrossThreadHandle<MLGraphXnnpack> graph,
     CrossThreadHandle<ScriptPromiseResolver<MLComputeResult>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
@@ -2217,8 +2217,8 @@ void MLGraphXnnpack::ComputeOnBackgroundThread(
 void MLGraphXnnpack::OnDidCompute(
     ScopedMLTrace scoped_trace,
     xnn_status status,
-    NamedArrayBufferViewsInfoPtr inputs_info,
-    NamedArrayBufferViewsInfoPtr outputs_info,
+    std::unique_ptr<internal::NamedArrayBufferViewsInfo> inputs_info,
+    std::unique_ptr<internal::NamedArrayBufferViewsInfo> outputs_info,
     ScriptPromiseResolver<MLComputeResult>* resolver,
     String error_message) {
   if (status != xnn_status_success) {
@@ -2236,8 +2236,8 @@ void MLGraphXnnpack::OnDidCompute(
 
 xnn_status MLGraphXnnpack::CreateXnnSubgraph(
     const MLNamedOperands& named_outputs,
-    XnnSubgraphPtr& out_subgraph,
-    Vector<DataBuffer>& out_static_data_buffers,
+    internal::XnnSubgraphPtr& out_subgraph,
+    Vector<internal::DataBuffer>& out_static_data_buffers,
     String& error_message) {
   ScopedMLTrace scoped_trace("MLGraphXnnpack::CreateXnnSubgraph");
 
@@ -2254,10 +2254,10 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
       xnn_create_subgraph(external_value_ids_num, 0, &subgraph_ptr));
   CHECK(subgraph_ptr);
-  XnnSubgraphPtr subgraph(subgraph_ptr, &xnn_delete_subgraph);
+  internal::XnnSubgraphPtr subgraph(subgraph_ptr, &xnn_delete_subgraph);
 
   // Holds the static data of XNNPACK Values for MLGraph's constant operands.
-  Vector<DataBuffer> static_data_buffers;
+  Vector<internal::DataBuffer> static_data_buffers;
   // Map the operand to its XNNPACK Value ID.
   OperandValueIdMap operand_value_id_map;
   // The ID is used to define an external XNNPACK Value. It should be increased
@@ -2368,11 +2368,12 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   return xnn_status_success;
 }
 
-std::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+std::optional<
+    std::pair<internal::XnnExternalValuesPtr, Vector<internal::DataBuffer>>>
 MLGraphXnnpack::CreateExternalValues(
     const MLNamedArrayBufferViews& inputs,
     const MLNamedArrayBufferViews& outputs) const {
-  Vector<DataBuffer> input_buffers;
+  Vector<internal::DataBuffer> input_buffers;
   input_buffers.reserve(inputs.size());
   auto external_values = std::make_unique<Vector<xnn_external_value>>();
   external_values->reserve(inputs.size() + outputs.size());
