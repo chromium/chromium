@@ -969,7 +969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Arc.DeferActivation.{DeferArcActivationType}{SuccessFailure}.Result"
+    name="Arc.DeferActivation.{DeferArcActivationType}{SuccessFailure}.Reason"
     enum="AllowActivationReason" expires_after="2025-01-01">
   <owner>hidehiko@chromium.org</owner>
   <owner>raging@google.com</owner>
