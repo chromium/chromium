@@ -32,6 +32,8 @@
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
@@ -1786,6 +1788,36 @@ const ComputedStyle* StyleResolver::StyleForPage(
       CSSDefaultStyleSheets::Instance().DefaultPrintStyle(),
       CascadeOrigin::kUserAgent, nullptr /* tree_scope */,
       nullptr /* layer_map */);
+
+  // Calling this function without being in print mode is unusual and special,
+  // but it happens from unit tests, if nothing else.
+  if (GetDocument().Printing()) {
+    const WebPrintParams& params = GetDocument().GetFrame()->GetPrintParams();
+    const WebPrintPageDescription& description =
+        params.default_page_description;
+    // Set margins from print settings. They may be overridden by author styles,
+    // unless params.ignore_css_margins is set.
+    auto* set =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+    auto* value = CSSNumericLiteralValue::Create(
+        description.margin_top, CSSPrimitiveValue::UnitType::kPixels);
+    set->SetProperty(CSSPropertyID::kMarginTop, *value,
+                     /*important=*/params.ignore_css_margins);
+    value = CSSNumericLiteralValue::Create(
+        description.margin_right, CSSPrimitiveValue::UnitType::kPixels);
+    set->SetProperty(CSSPropertyID::kMarginRight, *value,
+                     /*important=*/params.ignore_css_margins);
+    value = CSSNumericLiteralValue::Create(
+        description.margin_bottom, CSSPrimitiveValue::UnitType::kPixels);
+    set->SetProperty(CSSPropertyID::kMarginBottom, *value,
+                     /*important=*/params.ignore_css_margins);
+    value = CSSNumericLiteralValue::Create(
+        description.margin_left, CSSPrimitiveValue::UnitType::kPixels);
+    set->SetProperty(CSSPropertyID::kMarginLeft, *value,
+                     /*important=*/params.ignore_css_margins);
+    cascade.MutableMatchResult().AddMatchedProperties(
+        set, CascadeOrigin::kUserAgent);
+  }
 
   if (ScopedStyleResolver* scoped_resolver =
           GetDocument().GetScopedStyleResolver()) {

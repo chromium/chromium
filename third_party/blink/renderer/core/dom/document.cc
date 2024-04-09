@@ -2963,23 +2963,21 @@ WebPrintPageDescription Document::GetPageDescriptionNoLifecycleUpdate(
       NOTREACHED();
   }
 
-  if (!print_params.ignore_css_margins) {
-    if (!style.MarginTop().IsAuto()) {
-      description.margin_top =
-          FloatValueForLength(style.MarginTop(), description.size.height());
-    }
-    if (!style.MarginRight().IsAuto()) {
-      description.margin_right =
-          FloatValueForLength(style.MarginRight(), description.size.width());
-    }
-    if (!style.MarginBottom().IsAuto()) {
-      description.margin_bottom =
-          FloatValueForLength(style.MarginBottom(), description.size.height());
-    }
-    if (!style.MarginLeft().IsAuto()) {
-      description.margin_left =
-          FloatValueForLength(style.MarginLeft(), description.size.width());
-    }
+  if (!style.MarginTop().IsAuto()) {
+    description.margin_top =
+        FloatValueForLength(style.MarginTop(), description.size.height());
+  }
+  if (!style.MarginRight().IsAuto()) {
+    description.margin_right =
+        FloatValueForLength(style.MarginRight(), description.size.width());
+  }
+  if (!style.MarginBottom().IsAuto()) {
+    description.margin_bottom =
+        FloatValueForLength(style.MarginBottom(), description.size.height());
+  }
+  if (!style.MarginLeft().IsAuto()) {
+    description.margin_left =
+        FloatValueForLength(style.MarginLeft(), description.size.width());
   }
 
   float page_area_width = description.size.width() -

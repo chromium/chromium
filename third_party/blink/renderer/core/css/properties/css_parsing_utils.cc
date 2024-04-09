@@ -6377,23 +6377,10 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
       AllowCalcSize::kAllowWithAuto);
 }
 
-CSSValue* ConsumeMargin(CSSParserTokenRange& range,
-                        const CSSParserContext& context,
-                        UnitlessQuirk unitless,
-                        CSSAnchorQueryTypes allowed_anchor_queries) {
-  CSSValueID id = range.Peek().Id();
-  if (id == CSSValueID::kAuto || id == CSSValueID::kInternalUserMargin) {
-    return ConsumeIdent(range);
-  }
-  return ConsumeLengthOrPercent(range, context,
-                                CSSPrimitiveValue::ValueRange::kAll, unitless,
-                                allowed_anchor_queries);
-}
-
-CSSValue* ConsumeOffset(CSSParserTokenRange& range,
-                        const CSSParserContext& context,
-                        UnitlessQuirk unitless,
-                        CSSAnchorQueryTypes allowed_anchor_queries) {
+CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,
+                                const CSSParserContext& context,
+                                UnitlessQuirk unitless,
+                                CSSAnchorQueryTypes allowed_anchor_queries) {
   if (range.Peek().Id() == CSSValueID::kAuto) {
     return ConsumeIdent(range);
   }

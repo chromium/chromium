@@ -1523,10 +1523,6 @@ dialog:popover-open {
     /* FIXME: Define the right default values for page properties. */
     size: auto;
 
-    /* Unless overridden by author styles, use margin values from print
-       parameters (e.g. set from the print preview UI). */
-    margin: -internal-user-margin;
-
     padding: 0px;
     border-width: 0px;
 }

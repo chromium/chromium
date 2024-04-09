@@ -1626,7 +1626,7 @@ const CSSValue* Bottom::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -4566,7 +4566,7 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -4580,7 +4580,7 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -4594,7 +4594,7 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -4608,7 +4608,7 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -5308,7 +5308,7 @@ const CSSValue* Left::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -5526,7 +5526,7 @@ const CSSValue* MarginBlockEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
@@ -5539,7 +5539,7 @@ const CSSValue* MarginBlockStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
@@ -5547,7 +5547,7 @@ const CSSValue* MarginBottom::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kAllow);
 }
 
@@ -5579,7 +5579,7 @@ const CSSValue* MarginInlineEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
@@ -5592,7 +5592,7 @@ const CSSValue* MarginInlineStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
@@ -5600,7 +5600,7 @@ const CSSValue* MarginLeft::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kAllow);
 }
 
@@ -5628,7 +5628,7 @@ const CSSValue* MarginRight::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kAllow);
 }
 
@@ -5656,7 +5656,7 @@ const CSSValue* MarginTop::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeMargin(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kAllow);
 }
 
@@ -7134,7 +7134,7 @@ const CSSValue* Right::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
@@ -8821,7 +8821,7 @@ const CSSValue* Top::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeOffset(
+  return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
