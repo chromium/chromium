@@ -817,5 +817,60 @@ TEST_F(RefreshRateControllerTest, TestThrottlingWithHighPerformance) {
   }
 }
 
+TEST_F(RefreshRateControllerTest, CompositorsGetVrrIntervalsOnSwap) {
+  scoped_features_.Reset();
+  scoped_features_.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableVariableRefreshRateAlwaysOn},
+      /*disabled_features=*/{});
+
+  const int64_t internal_id = GetPrimaryDisplay().id();
+  const int64_t external_id = display::GetASynthesizedDisplayId();
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL, 48));
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      external_id, display::DISPLAY_CONNECTION_TYPE_HDMI, 40));
+  SetUpDisplays(std::move(snapshots));
+
+  // Verify VRR is enabled on both displays.
+  {
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(internal_snapshot, nullptr);
+    ASSERT_TRUE(internal_snapshot->IsVrrCapable());
+    ASSERT_TRUE(internal_snapshot->IsVrrEnabled());
+
+    const DisplaySnapshot* external_snapshot = GetDisplaySnapshot(external_id);
+    ASSERT_NE(external_snapshot, nullptr);
+    ASSERT_TRUE(external_snapshot->IsVrrCapable());
+    ASSERT_TRUE(external_snapshot->IsVrrEnabled());
+  }
+
+  const ui::Compositor* primary = GetCompositorForDisplayId(internal_id);
+  ASSERT_NE(primary, nullptr);
+  const ui::Compositor* secondary = GetCompositorForDisplayId(external_id);
+  ASSERT_NE(secondary, nullptr);
+
+  // Expect VRR intervals to be set on each display's compositor.
+  {
+    EXPECT_EQ(primary, GetCompositorForDisplayId(internal_id));
+    EXPECT_EQ(base::Hertz(48), primary->max_vrr_interval_for_testing());
+
+    EXPECT_EQ(secondary, GetCompositorForDisplayId(external_id));
+    EXPECT_EQ(base::Hertz(40), secondary->max_vrr_interval_for_testing());
+  }
+
+  SwapPrimaryDisplay();
+
+  // Expect compositors to have swapped displays, and VRR intervals to be
+  // updated accordingly.
+  {
+    EXPECT_EQ(primary, GetCompositorForDisplayId(external_id));
+    EXPECT_EQ(base::Hertz(40), primary->max_vrr_interval_for_testing());
+
+    EXPECT_EQ(secondary, GetCompositorForDisplayId(internal_id));
+    EXPECT_EQ(base::Hertz(48), secondary->max_vrr_interval_for_testing());
+  }
+}
+
 }  // namespace
 }  // namespace ash
