@@ -79,6 +79,9 @@ TransferNamedArrayBufferViews(v8::Isolate* isolate,
                               const MLNamedArrayBufferViews& source_views,
                               ExceptionState& exception_state);
 
+MODULES_EXPORT DOMArrayBufferView* CreateArrayBufferView(
+    ArrayBufferViewInfo view_info);
+
 MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 

@@ -163,6 +163,14 @@ void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
                               const MLNamedArrayBufferViews& outputs,
                               ScriptPromiseResolver<MLComputeResult>* resolver,
                               ExceptionState& exception_state) {
+  // The inputs were already verified in the base class so we can fill the
+  // buffer directly with the input tensors.
+  HashMap<String, mojo_base::BigBuffer> name_to_buffer_map;
+  for (const auto& [name, array_buffer_view] : inputs) {
+    name_to_buffer_map.insert(
+        name, mojo_base::BigBuffer(array_buffer_view->ByteSpan()));
+  }
+
   // TransferNamedArrayBufferViews deteches input and output array buffers, so
   // JavaScript can't modify them during Compute().
   //
@@ -181,15 +189,6 @@ void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
     return;
   }
 
-  // The inputs were already verified in the base class so we can fill the
-  // buffer directly with the input tensors.
-  HashMap<String, mojo_base::BigBuffer> name_to_buffer_map;
-  for (const auto& [name, input_info] : *inputs_info) {
-    name_to_buffer_map.insert(
-        name,
-        base::make_span(static_cast<const uint8_t*>(input_info.contents.Data()),
-                        input_info.contents.DataLength()));
-  }
   remote_graph_->Compute(
       std::move(name_to_buffer_map),
       WTF::BindOnce(&MLGraphMojo::OnDidCompute, WrapPersistent(this),
@@ -213,7 +212,9 @@ void MLGraphMojo::OnDidCompute(
   }
 
   const auto& mojo_outputs = mojo_result->get_named_outputs();
-  for (const auto& [output_name, output_view_info] : *outputs_info) {
+  auto* outputs = MakeGarbageCollected<MLNamedArrayBufferViews>();
+  outputs->reserve(outputs_info->size());
+  for (auto& [output_name, output_view_info] : *outputs_info) {
     // The verification before computing ensures the `ml_outputs` match graph's
     // expectation, so we only need to verify the result `mojo_outputs` from
     // WebNN Service here.
@@ -225,20 +226,23 @@ void MLGraphMojo::OnDidCompute(
               output_name);
       return;
     }
-    const auto output_byte_length = output_view_info.contents.DataLength();
-    if (output_buffer_iter->value.size() != output_byte_length) {
+    DOMArrayBufferView* output_view =
+        CreateArrayBufferView(std::move(output_view_info));
+    CHECK(output_view);
+    auto output_buffer = base::make_span(output_buffer_iter->value);
+    if (output_buffer.size() != output_view->byteLength()) {
       resolver->RejectWithDOMException(
           DOMExceptionCode::kUnknownError,
           "The output tensor size does not match graph's expectation: " +
               output_name);
       return;
     }
-    memcpy(output_view_info.contents.Data(), output_buffer_iter->value.data(),
-           output_byte_length);
+    output_view->ByteSpan().copy_from(output_buffer);
+    outputs->push_back(std::make_pair(output_name, output_view));
   }
   auto* result = MLComputeResult::Create();
   result->setInputs(*CreateNamedArrayBufferViews(std::move(inputs_info)));
-  result->setOutputs(*CreateNamedArrayBufferViews(std::move(outputs_info)));
+  result->setOutputs(*outputs);
   resolver->Resolve(result);
 }
 
