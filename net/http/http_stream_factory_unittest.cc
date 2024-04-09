@@ -56,6 +56,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
+#include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -111,9 +112,11 @@ class Value;
 }  // namespace base
 
 namespace net {
-
 class BidirectionalStreamImpl;
 class WebSocketEndpointLockManager;
+}  // namespace net
+
+namespace net::test {
 
 namespace {
 
@@ -949,45 +952,6 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
   void OnFailed(int error) override { NOTREACHED(); }
   base::RunLoop loop_;
   spdy::Http2HeaderBlock response_headers_;
-};
-
-// Helper class to encapsulate MockReads and MockWrites for QUIC.
-// Simplify ownership issues and the interaction with the MockSocketFactory.
-class MockQuicData {
- public:
-  explicit MockQuicData(quic::ParsedQuicVersion version) : printer_(version) {}
-
-  ~MockQuicData() = default;
-
-  void AddRead(std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-    reads_.emplace_back(ASYNC, packet->data(), packet->length(),
-                        packet_number_++);
-    packets_.push_back(std::move(packet));
-  }
-
-  void AddRead(IoMode mode, int rv) {
-    reads_.emplace_back(mode, rv, packet_number_++);
-  }
-
-  void AddWrite(std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-    writes_.emplace_back(SYNCHRONOUS, packet->data(), packet->length(),
-                         packet_number_++);
-    packets_.push_back(std::move(packet));
-  }
-
-  void AddSocketDataToFactory(MockClientSocketFactory* factory) {
-    socket_data_ = std::make_unique<SequencedSocketData>(reads_, writes_);
-    socket_data_->set_printer(&printer_);
-    factory->AddSocketDataProvider(socket_data_.get());
-  }
-
- private:
-  std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> packets_;
-  std::vector<MockWrite> writes_;
-  std::vector<MockRead> reads_;
-  size_t packet_number_ = 0;
-  QuicPacketPrinter printer_;
-  std::unique_ptr<SequencedSocketData> socket_data_;
 };
 
 }  // namespace
@@ -2083,17 +2047,21 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   mock_quic_data.AddWrite(
+      SYNCHRONOUS,
       client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, priority,
-      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      &spdy_headers_frame_length));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_packet_maker().MakeRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+          /*fin=*/true, priority,
+          client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+          &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
-  mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
-      &spdy_response_headers_frame_length));
+  mock_quic_data.AddRead(
+      ASYNC, server_packet_maker().MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0),
+                 /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+                 &spdy_response_headers_frame_length));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory());
 
@@ -2170,17 +2138,21 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   mock_quic_data.AddWrite(
+      SYNCHRONOUS,
       client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, priority,
-      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      &spdy_headers_frame_length));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_packet_maker().MakeRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+          /*fin=*/true, priority,
+          client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+          &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
-  mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
-      &spdy_response_headers_frame_length));
+  mock_quic_data.AddRead(
+      ASYNC, server_packet_maker().MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0),
+                 /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+                 &spdy_response_headers_frame_length));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory());
 
@@ -2419,17 +2391,21 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   mock_quic_data.AddWrite(
+      SYNCHRONOUS,
       client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, priority,
-      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      &spdy_headers_frame_length));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_packet_maker().MakeRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+          /*fin=*/true, priority,
+          client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+          &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
-  mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
-      &spdy_response_headers_frame_length));
+  mock_quic_data.AddRead(
+      ASYNC, server_packet_maker().MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0),
+                 /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+                 &spdy_response_headers_frame_length));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory());
 
@@ -2438,16 +2414,20 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   MockQuicData mock_quic_data2(version());
   packet_num = 1;
   mock_quic_data2.AddWrite(
+      SYNCHRONOUS,
       client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  mock_quic_data2.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, priority,
-      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      &spdy_headers_frame_length));
-  mock_quic_data2.AddRead(server_packet_maker().MakeResponseHeadersPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
-      &spdy_response_headers_frame_length));
+  mock_quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_packet_maker().MakeRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+          /*fin=*/true, priority,
+          client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+          &spdy_headers_frame_length));
+  mock_quic_data2.AddRead(
+      ASYNC, server_packet_maker().MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0),
+                 /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+                 &spdy_response_headers_frame_length));
   mock_quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data2.AddSocketDataToFactory(&socket_factory());
 
@@ -3244,17 +3224,21 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   mock_quic_data.AddWrite(
+      SYNCHRONOUS,
       client_packet_maker().MakeInitialSettingsPacket(packet_num++));
-  mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, priority,
-      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
-      &spdy_headers_frame_length));
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_packet_maker().MakeRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+          /*fin=*/true, priority,
+          client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+          &spdy_headers_frame_length));
   size_t spdy_response_headers_frame_length;
-  mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
-      &spdy_response_headers_frame_length));
+  mock_quic_data.AddRead(
+      ASYNC, server_packet_maker().MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0),
+                 /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+                 &spdy_response_headers_frame_length));
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
   mock_quic_data.AddSocketDataToFactory(&socket_factory());
 
@@ -3540,4 +3524,4 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcHttp2) {
 
 }  // namespace
 
-}  // namespace net
+}  // namespace net::test
