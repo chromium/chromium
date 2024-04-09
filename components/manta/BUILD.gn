@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "proto",
     "//base",
     "//base/test:test_support",
+    "//components/endpoint_fetcher",
     "//components/signin/public/identity_manager:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

@@ -7,6 +7,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/manta/base_provider.h"
+#include "components/manta/manta_service_callbacks.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +18,7 @@ namespace manta {
 // A provider (e.g. FooProvider) unittest should have:
 //   * a FakeFooProvider that extends both FooProvider and FakeBaseProvider so
 //     that it mocks the FooProvider's functions by using
-//     `FakeBaseProvider::CreateEndpointFetcher`.
+//     `FakeBaseProvider::RequestInternal`.
 //   * a FooProviderTest fixture that extends BaseProviderTest and implement a
 //     `CreateFooProvider` function to return a FakeFooProvider instance.
 
@@ -34,11 +35,11 @@ class FakeBaseProvider : virtual public BaseProvider {
 
  protected:
   // Overrides BaseProvider:
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& oauth_consumer_name,
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const std::string& post_data) override;
+  void RequestInternal(const GURL& url,
+                       const std::string& oauth_consumer_name,
+                       const net::NetworkTrafficAnnotationTag& annotation_tag,
+                       manta::proto::Request& request,
+                       MantaProtoResponseCallback done_callback) override;
 };
 
 class BaseProviderTest : public testing::Test {

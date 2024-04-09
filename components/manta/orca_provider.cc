@@ -51,8 +51,7 @@ std::optional<Tone> GetTone(const std::string& tone) {
 }
 
 std::optional<proto::Request> ComposeRequest(
-    const std::map<std::string, std::string>& input,
-    const std::string& chrome_version) {
+    const std::map<std::string, std::string>& input) {
   const auto& tone_iter = input.find("tone");
   if (tone_iter == input.end()) {
     DVLOG(1) << "Tone not found in the parameters";
@@ -69,10 +68,6 @@ std::optional<proto::Request> ComposeRequest(
   request.set_feature_name(proto::FeatureName::TEXT_TEST);
   auto& request_config = *request.mutable_request_config();
   request_config.set_tone(tone.value());
-
-  auto& client_info = *request.mutable_client_info();
-  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
-  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version);
 
   for (const auto& kv : input) {
     auto* input_data = request.add_input_data();
@@ -130,23 +125,13 @@ OrcaProvider::~OrcaProvider() = default;
 
 void OrcaProvider::Call(const std::map<std::string, std::string>& input,
                         MantaGenericCallback done_callback) {
-  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
-    std::move(done_callback)
-        .Run(base::Value::Dict(), {MantaStatusCode::kNoIdentityManager});
-    return;
-  }
-
-  std::optional<proto::Request> request =
-      ComposeRequest(input, chrome_version_);
+  std::optional<proto::Request> request = ComposeRequest(input);
   if (request == std::nullopt) {
     std::move(done_callback)
         .Run(base::Value::Dict(),
              {MantaStatusCode::kInvalidInput, std::string()});
     return;
   }
-
-  std::string serialized_request;
-  request.value().SerializeToString(&serialized_request);
 
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("help_me_write_request", R"(
@@ -187,28 +172,11 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
           }
         })");
 
-  MantaProtoResponseCallback internal_callback = base::BindOnce(
-      &OnServerResponseOrErrorReceived, std::move(done_callback));
-
-  if (is_demo_mode_) {
-    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
-        GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
-        traffic_annotation, serialized_request);
-    EndpointFetcher* const fetcher_ptr = fetcher.get();
-    fetcher_ptr->PerformRequest(
-        base::BindOnce(&OnEndpointFetcherComplete, std::move(internal_callback),
-                       std::move(fetcher)),
-        nullptr);
-  } else {
-    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-        GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
-        kOauthConsumerName, traffic_annotation, serialized_request);
-
-    EndpointFetcher* const fetcher_ptr = fetcher.get();
-    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                      std::move(internal_callback),
-                                      std::move(fetcher)));
-  }
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
+      kOauthConsumerName, traffic_annotation, request.value(),
+      base::BindOnce(&OnServerResponseOrErrorReceived,
+                     std::move(done_callback)));
 }
 
 }  // namespace manta

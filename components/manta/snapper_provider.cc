@@ -51,38 +51,10 @@ SnapperProvider::~SnapperProvider() = default;
 void SnapperProvider::Call(manta::proto::Request& request,
                            net::NetworkTrafficAnnotationTag traffic_annotation,
                            MantaProtoResponseCallback done_callback) {
-  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
-    std::move(done_callback)
-        .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
-    return;
-  }
-  auto* client_info = request.mutable_client_info();
-  client_info->set_client_type(manta::proto::ClientInfo::CHROME);
-  client_info->mutable_chrome_client_info()->set_chrome_version(
-      chrome_version_);
-
-  std::string serialized_request;
-  request.SerializeToString(&serialized_request);
-
-  if (is_demo_mode_) {
-    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
-        GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
-        traffic_annotation, serialized_request);
-    EndpointFetcher* const fetcher_ptr = fetcher.get();
-    fetcher_ptr->PerformRequest(
-        base::BindOnce(&OnEndpointFetcherComplete, std::move(done_callback),
-                       std::move(fetcher)),
-        nullptr);
-  } else {
-    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-        GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
-        kOauthConsumerName, traffic_annotation, serialized_request);
-
-    EndpointFetcher* const fetcher_ptr = fetcher.get();
-    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                      std::move(done_callback),
-                                      std::move(fetcher)));
-  }
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
+      kOauthConsumerName, traffic_annotation, request,
+      std::move(done_callback));
 }
 
 }  // namespace manta

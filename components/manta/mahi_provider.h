@@ -67,9 +67,6 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
  private:
   friend class FakeMahiProvider;
 
-  void RequestInternal(const proto::Request& request,
-                       MantaGenericCallback done_callback);
-
   base::WeakPtrFactory<MahiProvider> weak_ptr_factory_{this};
 };
 

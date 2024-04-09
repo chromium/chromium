@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/manta/base_provider_test_helper.h"
+
 #include "base/strings/stringprintf.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
+#include "components/manta/manta_service_callbacks.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -31,22 +34,33 @@ FakeBaseProvider::FakeBaseProvider(
 
 FakeBaseProvider::~FakeBaseProvider() = default;
 
-std::unique_ptr<EndpointFetcher> FakeBaseProvider::CreateEndpointFetcher(
+void FakeBaseProvider::RequestInternal(
     const GURL& url,
     const std::string& oauth_consumer_name,
-    /*unused*/ const net::NetworkTrafficAnnotationTag& annotation_tag,
-    const std::string& post_data) {
-  CHECK(identity_manager_observation_.IsObserving());
-  return std::make_unique<EndpointFetcher>(
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    manta::proto::Request& request,
+    MantaProtoResponseCallback done_callback) {
+  if (!identity_manager_observation_.IsObserving()) {
+    std::move(done_callback)
+        .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
+    return;
+  }
+
+  auto fetcher = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       /*oauth_consumer_name=*/kMockOAuthConsumerName,
       /*url=*/GURL{kMockEndpoint},
       /*http_method=*/kHttpMethod, /*content_type=*/kMockContentType,
       /*scopes=*/std::vector<std::string>{kMockScope},
-      /*timeout=*/kMockTimeout, /*post_data=*/post_data,
+      /*timeout=*/kMockTimeout, /*post_data=*/request.SerializeAsString(),
       /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
       /*identity_manager=*/identity_manager_observation_.GetSource(),
       /*consent_level=*/signin::ConsentLevel::kSync);
+
+  EndpointFetcher* const fetcher_ptr = fetcher.get();
+  fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                    std::move(done_callback),
+                                    std::move(fetcher)));
 }
 
 BaseProviderTest::BaseProviderTest()

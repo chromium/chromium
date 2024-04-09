@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "components/manta/manta_status.h"
@@ -29,6 +30,7 @@ using MantaProtoResponseCallback =
 using MantaGenericCallback =
     base::OnceCallback<void(base::Value::Dict, MantaStatus)>;
 
+COMPONENT_EXPORT(MANTA)
 void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses);

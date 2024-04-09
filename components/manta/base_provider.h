@@ -8,6 +8,8 @@
 #include <string>
 
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_service_callbacks.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -39,14 +41,30 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       signin::IdentityManager* identity_manager) override;
 
  protected:
+  // Receives a request proto, adds additional info (e.g. chrome version) to it,
+  // makes calls to the server side, and invokes the `done_callback` with
+  // server response.
+  // Virtual to allow overriding in tests.
+  virtual void RequestInternal(
+      const GURL& url,
+      const std::string& oauth_consumer_name,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      manta::proto::Request& request,
+      MantaProtoResponseCallback done_callback);
+
+  // TODO(b:333459167): they are protected because FakeBaseProvider needs to
+  // access them. Try to make them private.
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+
+ private:
   // Creates and returns unique pointer to an `EndpointFetcher` initialized with
-  // the provided parameters and defaults relevant to Manta providers. Virtual
-  // to allow overriding in tests.
-  // It's a particular provider's choice to support Demo mode or not, and choose
-  // from these two functions accordingly.
+  // the provided parameters and defaults relevant to Manta providers.
 
   // Creates an EndpointFetcher with oauth-based auth.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const GURL& url,
       const std::string& oauth_consumer_name,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
@@ -54,15 +72,10 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   // Creates an EndpointFetcher with default API key auth.
   // If an EndpointFetcher is obtained with this function, call its
   // `PerformRequest` directly instead of `Fetch`.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForDemoMode(
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForDemoMode(
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const std::string& post_data);
-
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   // Useful client info for particular providers.
   const bool is_demo_mode_;

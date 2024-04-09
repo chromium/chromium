@@ -88,15 +88,16 @@ void MahiProvider::Summarize(const std::string& input,
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
 
-  auto& client_info = *request.mutable_client_info();
-  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
-  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version_);
-
   auto* input_data = request.add_input_data();
   input_data->set_tag("model_input");
   input_data->set_text(input);
 
-  RequestInternal(request, std::move(done_callback));
+  // TODO(b:333459933): MISSING_TRAFFIC_ANNOTATION should be resolved before
+  // launch.
+  RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
+                  MISSING_TRAFFIC_ANNOTATION, request,
+                  base::BindOnce(&OnServerResponseOrErrorReceived,
+                                 std::move(done_callback)));
 }
 
 void MahiProvider::Outline(const std::string& input,
@@ -112,10 +113,6 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
                                      MantaGenericCallback done_callback) {
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
-
-  auto& client_info = *request.mutable_client_info();
-  client_info.set_client_type(manta::proto::ClientInfo::CHROME);
-  client_info.mutable_chrome_client_info()->set_chrome_version(chrome_version_);
 
   auto* input_data = request.add_input_data();
   input_data->set_tag("original_content");
@@ -135,32 +132,12 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
     input_data->set_text(previous_answer);
   }
 
-  RequestInternal(request, std::move(done_callback));
-}
-
-void MahiProvider::RequestInternal(const proto::Request& request,
-                                   MantaGenericCallback done_callback) {
-  if (!identity_manager_observation_.IsObserving()) {
-    std::move(done_callback)
-        .Run(base::Value::Dict(), {MantaStatusCode::kNoIdentityManager});
-    return;
-  }
-
-  std::string serialized_request;
-  request.SerializeToString(&serialized_request);
-
   // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-      GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
-      MISSING_TRAFFIC_ANNOTATION, serialized_request);
-
-  EndpointFetcher* const fetcher_ptr = fetcher.get();
-  MantaProtoResponseCallback internal_callback = base::BindOnce(
-      &OnServerResponseOrErrorReceived, std::move(done_callback));
-  fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                    std::move(internal_callback),
-                                    std::move(fetcher)));
+  RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
+                  MISSING_TRAFFIC_ANNOTATION, request,
+                  base::BindOnce(&OnServerResponseOrErrorReceived,
+                                 std::move(done_callback)));
 }
 
 }  // namespace manta

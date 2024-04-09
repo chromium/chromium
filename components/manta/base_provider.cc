@@ -44,6 +44,45 @@ void BaseProvider::OnIdentityManagerShutdown(
   }
 }
 
+void BaseProvider::RequestInternal(
+    const GURL& url,
+    const std::string& oauth_consumer_name,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    manta::proto::Request& request,
+    MantaProtoResponseCallback done_callback) {
+  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
+    std::move(done_callback)
+        .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
+    return;
+  }
+
+  // Add additional info to the request proto.
+  auto* client_info = request.mutable_client_info();
+  client_info->set_client_type(manta::proto::ClientInfo::CHROME);
+  client_info->mutable_chrome_client_info()->set_chrome_version(
+      chrome_version_);
+
+  std::string serialized_request;
+  request.SerializeToString(&serialized_request);
+
+  if (is_demo_mode_) {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
+        url, annotation_tag, serialized_request);
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->PerformRequest(
+        base::BindOnce(&OnEndpointFetcherComplete, std::move(done_callback),
+                       std::move(fetcher)),
+        nullptr);
+  } else {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+        url, oauth_consumer_name, annotation_tag, serialized_request);
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                      std::move(done_callback),
+                                      std::move(fetcher)));
+  }
+}
+
 std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcher(
     const GURL& url,
     const std::string& oauth_consumer_name,

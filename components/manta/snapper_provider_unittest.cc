@@ -39,10 +39,7 @@ class FakeSnapperProvider : public SnapperProvider, public FakeBaseProvider {
                      identity_manager,
                      /*is_demo_mode=*/false,
                      /*chrome_version=*/std::string()),
-        SnapperProvider(test_url_loader_factory,
-                        identity_manager,
-                        /*is_demo_mode=*/false,
-                        /*chrome_version=*/std::string()),
+        SnapperProvider(test_url_loader_factory, identity_manager),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 

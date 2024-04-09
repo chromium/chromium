@@ -247,15 +247,17 @@ TEST_F(OrcaProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
 
   identity_test_env_.reset();
 
+  std::map<std::string, std::string> input = {{"data", "simple post data"},
+                                              {"tone", "SHORTEN"}};
   orca_provider->Call(
-      {}, base::BindLambdaForTesting(
-              [quit_closure = task_environment_.QuitClosure()](
-                  base::Value::Dict dict, MantaStatus manta_status) {
-                ASSERT_TRUE(dict.empty());
-                ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
-                          manta_status.status_code);
-                quit_closure.Run();
-              }));
+      input, base::BindLambdaForTesting(
+                 [quit_closure = task_environment_.QuitClosure()](
+                     base::Value::Dict dict, MantaStatus manta_status) {
+                   ASSERT_TRUE(dict.empty());
+                   ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
+                             manta_status.status_code);
+                   quit_closure.Run();
+                 }));
   task_environment_.RunUntilQuit();
 }
 
