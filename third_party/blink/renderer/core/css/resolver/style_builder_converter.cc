@@ -1357,8 +1357,9 @@ GridAutoFlow StyleBuilderConverter::ConvertGridAutoFlow(StyleResolverState&,
   }
 }
 
-GridPosition StyleBuilderConverter::ConvertGridPosition(StyleResolverState&,
-                                                        const CSSValue& value) {
+GridPosition StyleBuilderConverter::ConvertGridPosition(
+    StyleResolverState& state,
+    const CSSValue& value) {
   // We accept the specification's grammar:
   // 'auto' | [ <integer> || <custom-ident> ] |
   // [ span && [ <integer> || <custom-ident> ] ] | <custom-ident>
@@ -1396,7 +1397,8 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(StyleResolverState&,
 
   auto* current_primitive_value = DynamicTo<CSSPrimitiveValue>(current_value);
   if (current_primitive_value && current_primitive_value->IsNumber()) {
-    grid_line_number = current_primitive_value->GetIntValue();
+    grid_line_number = current_primitive_value->ComputeInteger(
+        state.CssToLengthConversionData());
     ++it;
     current_value = it != values.end() ? it->Get() : nullptr;
   }
