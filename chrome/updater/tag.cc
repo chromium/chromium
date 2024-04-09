@@ -646,16 +646,14 @@ std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
   int64_t file_size = 0;
   if (!base::GetFileSize(file, &file_size)) {
-    LOG(ERROR) << __func__ << ": Could not get file size: " << file << ": "
-               << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << ": Could not get file size: " << file;
     return {};
   }
 
   std::vector<uint8_t> contents(file_size);
   if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
                      contents.size()) == -1) {
-    LOG(ERROR) << __func__ << ": Could not read file: " << file << ": "
-               << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << ": Could not read file: " << file;
     return {};
   }
   return contents;
@@ -961,8 +959,7 @@ bool BinaryWriteTag(const base::FilePath& in_file,
     out_file = in_file;
   }
   if (!base::WriteFile(out_file, *new_contents)) {
-    LOG(ERROR) << __func__ << "Error while writing updated file: " << out_file
-               << ": " << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << "Error while writing updated file: " << out_file;
     return false;
   }
   return true;
