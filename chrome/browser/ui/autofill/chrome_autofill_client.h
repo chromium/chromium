@@ -252,6 +252,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       override;
   void ShowAutofillFieldIphForManualFallbackFeature(
       const FormFieldData& field) override;
+  void NotifyAutofillManualFallbackUsed() override;
 
   // TODO(b/320634151): Create a test API.
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {

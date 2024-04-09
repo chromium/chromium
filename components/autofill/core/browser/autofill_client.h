@@ -822,6 +822,9 @@ class AutofillClient {
   // platforms that support manual fallback.
   virtual void ShowAutofillFieldIphForManualFallbackFeature(
       const FormFieldData& field);
+
+  // Notifies the IPH code that the manual fallback feature was used.
+  virtual void NotifyAutofillManualFallbackUsed();
 };
 
 }  // namespace autofill

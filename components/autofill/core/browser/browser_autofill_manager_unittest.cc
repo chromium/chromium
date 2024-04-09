@@ -449,6 +449,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillFieldIphForManualFallbackFeature,
               (const FormFieldData& field),
               (override));
+  MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -1646,6 +1647,19 @@ TEST_F(BrowserAutofillManagerTest,
 
   // IPH should not be shown if the profiles don't have values for that field.
   GetAutofillSuggestions(form, form.fields[2]);
+}
+
+TEST_F(BrowserAutofillManagerTest, AutofillManualFallback_NotifyFeatureUsed) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(autofill_client_, NotifyAutofillManualFallbackUsed).Times(2);
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

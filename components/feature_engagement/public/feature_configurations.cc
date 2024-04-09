@@ -1444,8 +1444,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHAutofillManualFallbackFeature.name == feature->name) {
-    // Autofill Manual Fallback IPH is shown when it has not been shown before
-    // in the last 90 days.
+    // Autofill Manual Fallback IPH is shown if all of the following are true:
+    // * it has not been shown before in the last 90 days;
+    // * the user has never used the autofill manual fallback.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -1453,6 +1454,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("autofill_manual_fallback_trigger",
                                   Comparator(LESS_THAN, 1), 90, 360);
+    config->used =
+        EventConfig("autofill_manual_fallback_accepted", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 

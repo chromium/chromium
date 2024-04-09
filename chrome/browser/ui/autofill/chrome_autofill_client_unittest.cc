@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
@@ -34,11 +35,13 @@
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +58,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "components/feature_engagement/test/mock_tracker.h"  // nogncheck
 #endif
 
 namespace autofill {
@@ -342,6 +346,20 @@ TEST_F(ChromeAutofillClientTest,
                               delegate->GetWeakPtr());
   testing::Mock::VerifyAndClearExpectations(
       autofill_field_promo_controller_manual_fallback());
+}
+
+TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_NotifyFeatureUsed) {
+  feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<feature_engagement::test::MockTracker>();
+      }));
+
+  EXPECT_CALL(
+      *static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForBrowserContext(profile())),
+      NotifyUsedEvent);
+  client()->NotifyAutofillManualFallbackUsed();
 }
 #endif
 

@@ -1082,6 +1082,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
+  // Once the user triggers autofill from the context menu, this event is
+  // recorded, because the IPH configuration limits how many times the IPH can
+  // be shown.
+  if (IsAutofillManuallyTriggered(trigger_source)) {
+    client().NotifyAutofillManualFallbackUsed();
+  }
+
   external_delegate_->SetCurrentDataListValues(field.datalist_options);
   external_delegate_->OnQuery(form, field, transformed_box, trigger_source);
 
