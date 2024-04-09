@@ -419,24 +419,18 @@ new histograms don't turn out to have the properties the implementer wants,
 whether due to bugs in the implementation or simply an evolving understanding
 of what should be measured.
 
-#### How to choose expiry for histograms
-
-If you are adding a histogram to evaluate a feature launch, set an expiry date
-consistent with the expected feature launch date. Otherwise, we recommend
-choosing 3-6 months.
+#### Guidelines on expiry
 
 Here are some guidelines for common scenarios:
 
-*   If the listed owner moved to different project, find a new owner.
+*   If the listed owner moved to a different project, find a new owner.
 *   If neither the owner nor the team uses the histogram, remove it.
 *   If the histogram is not in use now, but might be useful in the far future,
     remove it.
 *   If the histogram is not in use now, but might be useful in the near
     future, pick ~3 months (also ~3 milestones) ahead.
-*   If the histogram is actively in use now and is useful in the short term,
-    pick 3-6 months (3-6 milestones) ahead.
-*   If the histogram is actively in use and seems useful for an indefinite time,
-    pick 1 year.
+*   Otherwise, pick an expiry that is reasonable for how long the metric should
+    be used, up to a year.
 
 We also have a tool that automatically extends expiry dates. The most frequently
 accessed histograms, currently 99%, have their expirations automatically
@@ -445,6 +439,20 @@ the [design
 doc](https://docs.google.com/document/d/1IEAeBF9UnYQMDfyh2gdvE7WlUKsfIXIZUw7qNoU89A4)
 of the program that does this.  The bottom line is: If the histogram is being
 checked, it should be extended without developer interaction.
+
+#### How to choose expiry for new histograms
+
+In general, set an expiry that is reasonable for how long the metric should
+be used, up to a year.
+
+Some common cases:
+
+*   When adding a histogram to evaluate a feature launch, set an expiry date
+    consistent with the expected feature launch date.
+*   If you expect the histogram to be useful for an indefinite time, set an
+    expiry date up to 1 year out. This gives a chance to re-evaluate whether
+    the histogram indeed proved to be useful.
+*   Otherwise, 3-6 months (3-6 milestones) is typically a good choice.
 
 #### How to extend an expired histogram {#extending}
 
