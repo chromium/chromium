@@ -1818,17 +1818,9 @@ bool PaymentsDataManager::AreBankAccountsSupported() const {
 }
 
 void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
-  if (prefs::IsPaymentCardBenefitsEnabled(pref_service_)) {
-    if (sync_service_) {
-      // Credit card and benefits data reside in AUTOFILL_WALLET_DATA. Turning
-      // off the benefits preference selectively clears benefits data.
-      // `TriggerRefresh` is required to restore benefits.
-      sync_service_->TriggerRefresh(
-          syncer::ModelTypeSet({syncer::AUTOFILL_WALLET_DATA}));
-    }
-  } else {
-    ClearAllCreditCardBenefits();
-  }
+  prefs::IsPaymentCardBenefitsEnabled(pref_service_)
+      ? LoadCreditCardBenefits()
+      : ClearAllCreditCardBenefits();
 }
 
 void PaymentsDataManager::ClearAllCreditCardBenefits() {

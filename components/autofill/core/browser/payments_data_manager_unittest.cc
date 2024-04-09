@@ -1966,30 +1966,21 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PaymentsDataManagerTest,
-       OnBenefitsPrefChange_PrefIsOn_DoesNotClearBenefitsAndTriggersRefresh) {
+       OnBenefitsPrefChange_PrefIsOn_LoadsCardBenefits) {
   // Add the card benefits to the web database.
   std::vector<CreditCardBenefit> card_benefits;
   card_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
   card_benefits.push_back(test::GetActiveCreditCardCategoryBenefit());
   card_benefits.push_back(test::GetActiveCreditCardMerchantBenefit());
   SetCreditCardBenefits(card_benefits);
-  // Refresh to load the card benefits from the web database.
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
 
-  ASSERT_EQ(card_benefits.size(),
-            test_api(payments_data_manager()).GetCreditCardBenefitsCount());
-  bool callback_called = false;
-  sync_service_.SetTriggerRefreshCallback(base::BindLambdaForTesting(
-      [&callback_called](syncer::ModelTypeSet types) {
-        callback_called = true;
-        ASSERT_TRUE(types.size() == 1 &&
-                    *types.begin() == syncer::AUTOFILL_WALLET_DATA);
-      }));
+  // Verify that the card benefits are not loaded from the web database.
+  ASSERT_EQ(0U, test_api(payments_data_manager()).GetCreditCardBenefitsCount());
 
   prefs::SetPaymentCardBenefits(prefs_.get(), true);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
-  ASSERT_TRUE(callback_called);
+  // Verify that the card benefits are loaded from the web database.
   ASSERT_EQ(card_benefits.size(),
             test_api(payments_data_manager()).GetCreditCardBenefitsCount());
 }

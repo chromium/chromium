@@ -519,8 +519,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Whether MaskedBankAccounts are supported for the platform OS.
   bool AreBankAccountsSupported() const;
 
-  // Clear all credit card benefits when the `kAutofillPaymentCardBenefits`
-  // preference is turned off.
+  // Monitors the `kAutofillPaymentCardBenefits` preference for changes and
+  // controls the clearing/loading of credit card benefits into
+  // `credit_card_benefits_` accordingly.
   void OnAutofillPaymentsCardBenefitsPrefChange();
 
   // Clears all credit card benefits in `credit_card_benefits_`.
