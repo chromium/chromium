@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,6 +20,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
+#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
@@ -132,41 +132,13 @@ MATCHER_P(AtomicRequestHasCrtcConnectorPairs, pairings, "") {
   return true;
 }
 
-// FakeDrmDevice is not set up to provide a finer grain mocking behavior for
-// CommitProperties. GmockDrmDevice provides gmockable interface for DrmDevice,
-// but also defaults to FakeDrmDevice unless a mock is specified.
-class GmockDrmDevice : public FakeDrmDevice {
- public:
-  explicit GmockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
-      : FakeDrmDevice(std::move(gbm_device)) {}
-
-  GmockDrmDevice(const base::FilePath& path,
-                 std::unique_ptr<GbmDevice> gbm_device,
-                 bool is_primary_device)
-      : FakeDrmDevice(path, std::move(gbm_device), is_primary_device) {}
-
-  MOCK_METHOD(bool,
-              CommitProperties,
-              (drmModeAtomicReq * request,
-               uint32_t flags,
-               uint32_t crtc_count,
-               scoped_refptr<PageFlipRequest> callback),
-              (override));
-
- protected:
-  ~GmockDrmDevice() override = default;
-};
-
-class GmockDrmDeviceGenerator : public DrmDeviceGenerator {
+class MockDrmDeviceGenerator : public DrmDeviceGenerator {
   scoped_refptr<DrmDevice> CreateDevice(const base::FilePath& path,
                                         base::ScopedFD fd,
                                         bool is_primary_device) override {
     auto gbm_device = std::make_unique<MockGbmDevice>();
-    if (path.empty()) {
-      return base::MakeRefCounted<GmockDrmDevice>(std::move(gbm_device));
-    }
-
-    return base::MakeRefCounted<GmockDrmDevice>(
+    DCHECK(!path.empty());
+    return base::MakeRefCounted<MockDrmDevice>(
         std::move(path), std::move(gbm_device), is_primary_device);
   }
 };
@@ -568,8 +540,8 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
 class DrmGpuDisplayManagerMockedDeviceTest : public DrmGpuDisplayManagerTest {
  protected:
   void SetUp() override {
-    std::unique_ptr<GmockDrmDeviceGenerator> fake_device_generator =
-        std::make_unique<GmockDrmDeviceGenerator>();
+    std::unique_ptr<MockDrmDeviceGenerator> fake_device_generator =
+        std::make_unique<MockDrmDeviceGenerator>();
     device_manager_ =
         std::make_unique<DrmDeviceManager>(std::move(fake_device_generator));
     screen_manager_ = std::make_unique<ScreenManager>();
@@ -627,7 +599,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
-  GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
 
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 2u);
@@ -639,14 +611,14 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   // Modesets should fail by default, unless it is with CRTC-connector pairings
   // specified with |desired_pairings|.
-  EXPECT_CALL(*gmock_drm, CommitProperties)
+  EXPECT_CALL(*mock_drm, CommitProperties)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(false));
 
   CrtcConnectorPairs desired_pairings = {{crtc_1, primary_connector_id},
                                          {crtc_3, secondary_connector_id}};
   EXPECT_CALL(
-      *gmock_drm,
+      *mock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings), _,
                        _, _))
       .WillOnce(Return(true));
@@ -672,9 +644,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   // Check that commit modeset after fallback changes the CRTC assignment for
   // displays.
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
   EXPECT_CALL(
-      *gmock_drm,
+      *mock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings), _,
                        _, _))
       .WillOnce(Return(true));
@@ -686,8 +658,8 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   // DrmDevice seems to leak on successful configure in tests. Manually
   // checking for mock calls and allowing leak for now.
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
-  testing::Mock::AllowLeak(gmock_drm);
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
+  testing::Mock::AllowLeak(mock_drm);
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
@@ -730,21 +702,21 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
-  GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
 
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 2u);
 
   // Modesets should fail by default, unless it is with CRTC-connector pairings
   // specified with |desired_pairings|.
-  EXPECT_CALL(*gmock_drm, CommitProperties)
+  EXPECT_CALL(*mock_drm, CommitProperties)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(false));
 
   CrtcConnectorPairs desired_pairings = {{crtc_1, primary_connector_id},
                                          {crtc_3, secondary_connector_id}};
   EXPECT_CALL(
-      *gmock_drm,
+      *mock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings), _,
                        _, _))
       .WillRepeatedly(Return(true));
@@ -762,7 +734,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                                          Field(&base::Bucket::count, Eq(1)))));
 
   EXPECT_CALL(
-      *gmock_drm,
+      *mock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings),
                        // For non-test.
                        DRM_MODE_ATOMIC_ALLOW_MODESET, _, _))
@@ -817,11 +789,11 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
-  GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
 
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 2u);
-  EXPECT_CALL(*gmock_drm, CommitProperties)
+  EXPECT_CALL(*mock_drm, CommitProperties)
       // Expect at least 4 calls to ensure fallback is being triggered (2 from
       // the initial linear/preferred modifier test modeset, and another 2 for
       // the first fallback).
@@ -868,13 +840,13 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
-  GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
 
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 1u);
 
   // Test-modeset should only be called twice - without any fallbacks attempted.
-  EXPECT_CALL(*gmock_drm, CommitProperties)
+  EXPECT_CALL(*mock_drm, CommitProperties)
       // Expect 2 calls as ScreenManager tests modeset with preferred modifiers
       // and then linear modifiers on failure.
       .Times(Exactly(2))
@@ -939,7 +911,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
-  GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
 
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 2u);
@@ -950,12 +922,12 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   {
     // Modesets should fail by default, unless it is with CRTC-connector
     // pairings specified with |desired_pairings|.
-    EXPECT_CALL(*gmock_drm, CommitProperties)
+    EXPECT_CALL(*mock_drm, CommitProperties)
         .Times(AtLeast(1))
         .WillRepeatedly(Return(false));
 
     EXPECT_CALL(
-        *gmock_drm,
+        *mock_drm,
         CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings),
                          _, _, _))
         .WillOnce(Return(true));
@@ -972,7 +944,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
             kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
         UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
                                    Field(&base::Bucket::count, Eq(1)))));
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
+    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
   }
   // Second test modeset with different config should fail, and leave the
   // DrmGpuDisplayManager with a failed CRTC-connector pairings.
@@ -983,7 +955,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                                    snapshot->modes().back().get());
     }
 
-    EXPECT_CALL(*gmock_drm, CommitProperties)
+    EXPECT_CALL(*mock_drm, CommitProperties)
         .Times(AtLeast(1))
         .WillRepeatedly(Return(false));
     EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
@@ -999,15 +971,15 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                                    Field(&base::Bucket::count, Eq(1))),
                              AllOf(Field(&base::Bucket::min, Gt(0)),
                                    Field(&base::Bucket::count, Eq(1)))));
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
+    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
   }
   // A commit call made with previously successful config (first config) should
   // restore the abstractions back to the state of its success.
   {
     // Only commit modeset should be called once.
-    EXPECT_CALL(*gmock_drm, CommitProperties).Times(0);
+    EXPECT_CALL(*mock_drm, CommitProperties).Times(0);
     EXPECT_CALL(
-        *gmock_drm,
+        *mock_drm,
         CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings),
                          _, _, _))
         .WillOnce(Return(true));
@@ -1017,8 +989,8 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
     // DrmDevice seems to leak on successful configure in tests. Manually
     // checking for mock calls and allowing leak for now.
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
-    testing::Mock::AllowLeak(gmock_drm);
+    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
+    testing::Mock::AllowLeak(mock_drm);
   }
 
   DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);

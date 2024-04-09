@@ -197,6 +197,8 @@ source_set("gbm_unittests") {
     "gpu/fake_drm_device_generator.h",
     "gpu/hardware_display_controller_unittest.cc",
     "gpu/hardware_display_plane_manager_unittest.cc",
+    "gpu/mock_drm_device.cc",
+    "gpu/mock_drm_device.h",
     "gpu/mock_drm_modifiers_filter.cc",
     "gpu/mock_drm_modifiers_filter.h",
     "gpu/proxy_helpers_unittest.cc",
