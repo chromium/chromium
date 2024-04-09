@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
@@ -23,14 +24,13 @@ class WebStateList;
 // state change, as well as any group state change.
 class TabGroup {
  public:
-  explicit TabGroup(const tab_groups::TabGroupVisualData& visual_data,
-                    TabGroupRange range = TabGroupRange::InvalidRange())
-      : visual_data_(visual_data), range_(range) {}
+  TabGroup(const tab_groups::TabGroupVisualData& visual_data,
+           TabGroupRange range = TabGroupRange::InvalidRange());
 
   TabGroup(const TabGroup&) = delete;
   TabGroup& operator=(const TabGroup&) = delete;
 
-  ~TabGroup() {}
+  ~TabGroup();
 
   // Returns the title of the group.
   NSString* GetTitle() const;
@@ -71,10 +71,15 @@ class TabGroup {
   static tab_groups::TabGroupColorId DefaultColorForNewTabGroup(
       WebStateList* web_state_list);
 
+  // Returns a weak pointer.
+  base::WeakPtr<const TabGroup> GetWeakPtr() const;
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   tab_groups::TabGroupVisualData visual_data_;
   TabGroupRange range_;
+
+  base::WeakPtrFactory<const TabGroup> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_H_

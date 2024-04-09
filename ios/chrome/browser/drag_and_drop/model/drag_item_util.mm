@@ -34,16 +34,27 @@
 }
 @end
 
-@implementation TabGroupInfo
+@implementation TabGroupInfo {
+  // Weak reference of the dragged tab group.
+  base::WeakPtr<const TabGroup> _weakTabGroup;
+}
+
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
                        incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    _tabGroup = tabGroup;
+    _weakTabGroup = tabGroup->GetWeakPtr();
     _incognito = incognito;
   }
   return self;
 }
+
+#pragma mark - Getters
+
+- (const TabGroup*)tabGroup {
+  return _weakTabGroup.get();
+}
+
 @end
 
 UIDragItem* CreateTabDragItem(web::WebState* web_state) {

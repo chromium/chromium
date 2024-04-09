@@ -10,6 +10,12 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+TabGroup::TabGroup(const tab_groups::TabGroupVisualData& visual_data,
+                   TabGroupRange range)
+    : visual_data_(visual_data), range_(range) {}
+
+TabGroup::~TabGroup() = default;
+
 NSString* TabGroup::GetTitle() const {
   NSString* visual_data_title = base::SysUTF16ToNSString(visual_data_.title());
   if (visual_data_title.length > 0) {
@@ -88,4 +94,8 @@ tab_groups::TabGroupColorId TabGroup::DefaultColorForNewTabGroup(
     }
   }
   return default_color;
+}
+
+base::WeakPtr<const TabGroup> TabGroup::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
 }
