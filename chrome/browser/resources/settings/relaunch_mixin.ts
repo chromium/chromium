@@ -64,9 +64,11 @@ export const RelaunchMixin = dedupingMixin(
         }
 
         // <if expr="not chromeos_ash">
-        private async performRestartForNonChromeOs_(restartType: RestartType) {
-          const shouldShowDialog = await this.lifetimeBrowserProxy_
-                                       .shouldShowRelaunchConfirmationDialog();
+        private async performRestartForNonChromeOs_(
+            restartType: RestartType, alwaysShowDialog: boolean) {
+          const shouldShowDialog =
+              await this.lifetimeBrowserProxy_
+                  .shouldShowRelaunchConfirmationDialog(alwaysShowDialog);
           if (!shouldShowDialog) {
             this.performRestartInternal_(restartType);
             return;
@@ -85,14 +87,21 @@ export const RelaunchMixin = dedupingMixin(
          * how to add the new <relaunch-confirmation-dialog> element in the DOM.
          *
          * @param restartType This specifies the type of restart to perform.
+         * @param alwaysShowDialog Always show a confirmation dialog before the
+         *     restart if this parameter is true. Otherwise, only when there is
+         *     an incognito window open.
          */
-        performRestart(restartType: RestartType) {
+        performRestart(restartType: RestartType, alwaysShowDialog?: boolean) {
+          if (alwaysShowDialog == null) {
+            alwaysShowDialog = false;
+          }
+
           // <if expr="chromeos_ash">
           this.performRestartInternal_(restartType);
           // </if>
 
           // <if expr="not chromeos_ash">
-          this.performRestartForNonChromeOs_(restartType);
+          this.performRestartForNonChromeOs_(restartType, alwaysShowDialog);
           // </if>
         }
       }
@@ -101,5 +110,5 @@ export const RelaunchMixin = dedupingMixin(
 
 
 export interface RelaunchMixinInterface {
-  performRestart(restartType: RestartType): void;
+  performRestart(restartType: RestartType, alwaysShowDialog?: boolean): void;
 }

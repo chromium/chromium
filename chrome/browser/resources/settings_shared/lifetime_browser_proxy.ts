@@ -15,12 +15,14 @@ export interface LifetimeBrowserProxy {
 
   // <if expr="not chromeos_ash">
   // Indicates whether a relaunch confirmation dialog needs to be shown or not.
-  shouldShowRelaunchConfirmationDialog(): Promise<boolean>;
+  shouldShowRelaunchConfirmationDialog(alwaysShowDialog: boolean):
+      Promise<boolean>;
 
   // Returns the description of the relaunch confirmation dialog.
   // A null value can be returned if the condition to show the relaunch dialog
   // is no longer true.
-  getRelaunchConfirmationDialogDescription(): Promise<string|null>;
+  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean):
+      Promise<string|null>;
   // </if>
 
   // <if expr="chromeos_ash">
@@ -45,12 +47,14 @@ export class LifetimeBrowserProxyImpl implements LifetimeBrowserProxy {
   }
 
   // <if expr="not chromeos_ash">
-  shouldShowRelaunchConfirmationDialog() {
-    return sendWithPromise('shouldShowRelaunchConfirmationDialog');
+  shouldShowRelaunchConfirmationDialog(alwaysShowDialog: boolean) {
+    return sendWithPromise(
+        'shouldShowRelaunchConfirmationDialog', alwaysShowDialog);
   }
 
-  getRelaunchConfirmationDialogDescription() {
-    return sendWithPromise('getRelaunchConfirmationDialogDescription');
+  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean) {
+    return sendWithPromise(
+        'getRelaunchConfirmationDialogDescription', alwaysShowDialog);
   }
   // </if>
 

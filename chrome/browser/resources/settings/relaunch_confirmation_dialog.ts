@@ -55,17 +55,25 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
       relaunchConfirmationDialogDesc: String,
 
       restartType: Object,
+
+      //  Boolean that defines if the confirmation dialog should be shown even
+      //  if there are no incognito tabs open.
+      showAlways: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   relaunchConfirmationDialogDesc: string|null;
   restartType: RestartType;
+  showAlways: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();
     this.relaunchConfirmationDialogDesc =
         await LifetimeBrowserProxyImpl.getInstance()
-            .getRelaunchConfirmationDialogDescription();
+            .getRelaunchConfirmationDialogDescription(this.showAlways);
   }
 
   private onDialogCancel_() {

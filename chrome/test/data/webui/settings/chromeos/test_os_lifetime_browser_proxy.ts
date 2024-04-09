@@ -48,13 +48,16 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('factoryReset', requestTpmFirmwareUpdate);
   }
 
-  shouldShowRelaunchConfirmationDialog(): Promise<boolean> {
-    this.methodCalled('shouldShowRelaunchConfirmationDialog');
+  shouldShowRelaunchConfirmationDialog(alwaysShowDialog: boolean):
+      Promise<boolean> {
+    this.methodCalled('shouldShowRelaunchConfirmationDialog', alwaysShowDialog);
     return Promise.resolve(this.showRelaunchConfirmationDialog);
   }
 
-  getRelaunchConfirmationDialogDescription(): Promise<string|null> {
-    this.methodCalled('getRelaunchConfirmationDialogDescription');
+  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean):
+      Promise<string|null> {
+    this.methodCalled(
+        'getRelaunchConfirmationDialogDescription', alwaysShowDialog);
     return Promise.resolve(this.confirmationDialogDescription);
   }
 }

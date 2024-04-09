@@ -231,7 +231,9 @@ export class SettingsSafetyHubPageElement extends
         this.versionCardData_.state as unknown as SafetyHubCardState);
 
     if (this.versionCardData_.state === CardState.WARNING) {
-      this.performRestart(RestartType.RELAUNCH);
+      // Optional parameter alwaysShowDialog is set to true to always show the
+      // confirmation dialog regardless of the incognito windows open.
+      this.performRestart(RestartType.RELAUNCH, true);
     } else {
       Router.getInstance().navigateTo(
           routes.ABOUT, /* dynamicParams= */ undefined,

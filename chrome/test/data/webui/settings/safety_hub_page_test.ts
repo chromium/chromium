@@ -17,6 +17,10 @@ import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+// <if expr="not chromeos_ash">
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+// </if>
 // clang-format on
 
 suite('SafetyHubPage', function() {
@@ -293,7 +297,31 @@ suite('SafetyHubPage', function() {
     document.body.appendChild(testElement);
     await flushTasks();
 
+    // <if expr="not chromeos_ash">
+    lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
+    lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
+        'Test description.');
+    // </if>
+
     testElement.$.version.click();
+
+    // <if expr="not chromeos_ash">
+    // Ensure the confirmation dialog is always shown.
+    await eventToPromise('cr-dialog-open', testElement);
+    const relaunchConfirmationDialogElement =
+        testElement.shadowRoot!.querySelector('relaunch-confirmation-dialog')!;
+    assertTrue(relaunchConfirmationDialogElement.$.dialog.open);
+
+    // Ensure the confirmation dialog shows a correct description.
+    const dialog = relaunchConfirmationDialogElement.shadowRoot!.querySelector(
+        'cr-dialog')!;
+    const description =
+        dialog.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=body]')!;
+    assertEquals(
+        'Test description.', description.assignedNodes()[0]!.textContent);
+
+    relaunchConfirmationDialogElement.$.confirm.click();
+    // </if>
 
     // Ensure the card state on click metrics are recorded.
     const result =

@@ -94,12 +94,10 @@
       sites="[[userEducationItemList_]]">
   </settings-safety-hub-module>
 </template>
-<!-- TODO(crbug.com/1443466): The dialog is shown only if there is a
-  incognito window. Instead should be shown always.-->
 <if expr="not chromeos_ash">
   <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
     <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RELAUNCH]]"
-        on-close="onRelaunchDialogClose">
+        on-close="onRelaunchDialogClose" show-always>
     </relaunch-confirmation-dialog>
   </template>
 </if>
