@@ -718,7 +718,7 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
 }
 
 GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
-  if (credit_card.record_type() == CreditCard::RecordType::kMaskedServerCard) {
+  if (credit_card.card_art_url().is_valid()) {
     return credit_card.card_art_url();
   }
 
