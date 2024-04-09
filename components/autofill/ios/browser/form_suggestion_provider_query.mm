@@ -11,9 +11,9 @@
 }
 
 - (instancetype)initWithFormName:(NSString*)formName
-                    uniqueFormID:(autofill::FormRendererId)uniqueFormID
+                  formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
-                   uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+                 fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue
@@ -21,9 +21,9 @@
   self = [super init];
   if (self) {
     _formName = [formName copy];
-    _uniqueFormID = uniqueFormID;
+    _formRendererID = formRendererID;
     _fieldIdentifier = [fieldIdentifier copy];
-    _uniqueFieldID = uniqueFieldID;
+    _fieldRendererID = fieldRendererID;
     _fieldType = [fieldType copy];
     _type = [type copy];
     _typedValue = [typedValue copy];

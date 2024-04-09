@@ -440,7 +440,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   if (self.isPasswordGenerated &&
       ([formQuery.type isEqual:@"input"] ||
        [formQuery.type isEqual:@"keyup"]) &&
-      formQuery.uniqueFieldID == self.passwordGeneratedIdentifier) {
+      formQuery.fieldRendererID == self.passwordGeneratedIdentifier) {
     // On other platforms, when the user clicks on generation field, we show
     // password in clear text. And the user has the possibility to edit it. On
     // iOS, it's harder to do (it's probably bad idea to change field type from
@@ -454,28 +454,28 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       _passwordManager->OnPasswordNoLongerGenerated();
     } else {
       // Inject updated value to possibly update confirmation field.
-      [self injectGeneratedPasswordForFormId:formQuery.uniqueFormID
+      [self injectGeneratedPasswordForFormId:formQuery.formRendererID
                                      inFrame:frame
                            generatedPassword:formQuery.typedValue
                            completionHandler:nil];
     }
   }
 
-  if (formQuery.uniqueFieldID != _lastTypedfieldIdentifier ||
+  if (formQuery.fieldRendererID != _lastTypedfieldIdentifier ||
       ![formQuery.typedValue isEqual:_lastTypedValue]) {
     // This method is called multiple times for the same user keystroke. Inform
     // only once the keystroke.
-    _lastTypedfieldIdentifier = formQuery.uniqueFieldID;
+    _lastTypedfieldIdentifier = formQuery.fieldRendererID;
     _lastTypedValue = formQuery.typedValue;
 
     if ([formQuery.type isEqual:@"input"] ||
         [formQuery.type isEqual:@"keyup"]) {
-      [self.formHelper updateFieldDataOnUserInput:formQuery.uniqueFieldID
+      [self.formHelper updateFieldDataOnUserInput:formQuery.fieldRendererID
                                           inFrame:frame
                                        inputValue:formQuery.typedValue];
       _passwordManager->UpdateStateOnUserInput(
-          [_driverHelper PasswordManagerDriver:frame], formQuery.uniqueFormID,
-          formQuery.uniqueFieldID, SysNSStringToUTF16(formQuery.typedValue));
+          [_driverHelper PasswordManagerDriver:frame], formQuery.formRendererID,
+          formQuery.fieldRendererID, SysNSStringToUTF16(formQuery.typedValue));
     }
   }
 }
@@ -536,8 +536,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     suggestionState = PasswordDropdownState::kStandard;
   }
 
-  if ([self canGeneratePasswordForForm:formQuery.uniqueFormID
-                       fieldIdentifier:formQuery.uniqueFieldID
+  if ([self canGeneratePasswordForForm:formQuery.formRendererID
+                       fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {
     // Add "Suggest Password...".
@@ -563,9 +563,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
-               uniqueFormID:(FormRendererId)uniqueFormID
+             formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(FieldRendererId)uniqueFieldID
+            fieldRendererID:(FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   password_manager::PasswordManagerJavaScriptFeature* feature =
@@ -590,8 +590,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     case autofill::PopupItemId::kGeneratePasswordEntry: {
       // Don't call completion because current suggestion state should remain
       // whether user injects a generated password or cancels.
-      [self generatePasswordForFormId:uniqueFormID
-                      fieldIdentifier:uniqueFieldID
+      [self generatePasswordForFormId:formRendererID
+                      fieldIdentifier:fieldRendererID
                               inFrame:frame
                   isManuallyTriggered:NO];
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
@@ -620,7 +620,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
       [self.formHelper fillPasswordFormWithFillData:*fillData
                                             inFrame:frame
-                                   triggeredOnField:uniqueFieldID
+                                   triggeredOnField:fieldRendererID
                                   completionHandler:^(BOOL success) {
                                     completion();
                                   }];
@@ -978,8 +978,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   }
 
   if (params.type == "focus") {
-    _lastFocusedFormIdentifier = params.unique_form_id;
-    _lastFocusedFieldIdentifier = params.unique_field_id;
+    _lastFocusedFormIdentifier = params.form_renderer_id;
+    _lastFocusedFieldIdentifier = params.field_renderer_id;
     _lastFocusedFrame = frame;
   }
 

@@ -192,7 +192,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                 NSArray<FormSuggestion*>* suggestions,
                 id<FormInputSuggestionsProvider> formInputSuggestionsProvider) {
               weakSelf.suggestions = suggestions;
-              [weakSelf fetchCredentialsForForm:params.unique_form_id
+              [weakSelf fetchCredentialsForForm:params.form_renderer_id
                                        webState:activeWebState
                                      webFrameId:params.frame_id];
             }];

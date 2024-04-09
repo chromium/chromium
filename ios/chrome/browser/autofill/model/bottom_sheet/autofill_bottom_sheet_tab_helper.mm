@@ -109,7 +109,7 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     return;
   }
 
-  const autofill::FieldRendererId renderer_id = params.unique_field_id;
+  const autofill::FieldRendererId renderer_id = params.field_renderer_id;
   std::string& frame_id = params.frame_id;
   bool is_password_related =
       base::Contains(registered_password_renderer_ids_[frame_id], renderer_id);

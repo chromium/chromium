@@ -316,7 +316,7 @@ class PasswordControllerTest : public PlatformTest {
         feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormActivityParams params;
     params.type = type;
-    params.unique_form_id = form_id;
+    params.form_renderer_id = form_id;
     params.frame_id = frame->GetFrameId();
     params.value = value;
     [passwordController_.sharedPasswordController webState:web_state()
@@ -366,18 +366,18 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   void SimulateUserTyping(const std::string& form_name,
-                          FormRendererId uniqueFormID,
+                          FormRendererId formRendererID,
                           const std::string& field_identifier,
-                          FieldRendererId uniqueFieldID,
+                          FieldRendererId fieldRendererID,
                           const std::string& typed_value,
                           const std::string& main_frame_id) {
     __block BOOL completion_handler_called = NO;
     FormSuggestionProviderQuery* form_query =
         [[FormSuggestionProviderQuery alloc]
             initWithFormName:SysUTF8ToNSString(form_name)
-                uniqueFormID:uniqueFormID
+              formRendererID:formRendererID
              fieldIdentifier:SysUTF8ToNSString(field_identifier)
-               uniqueFieldID:uniqueFieldID
+             fieldRendererID:fieldRendererID
                    fieldType:@"not_important"
                         type:@"input"
                   typedValue:SysUTF8ToNSString(typed_value)
@@ -574,9 +574,9 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:SysUTF8ToNSString(test_data.form_name)
-          uniqueFormID:FormRendererId(test_data.form_renderer_id)
+        formRendererID:FormRendererId(test_data.form_renderer_id)
        fieldIdentifier:SysUTF8ToNSString(test_data.username_element)
-         uniqueFieldID:FieldRendererId(test_data.username_renderer_id)
+       fieldRendererID:FieldRendererId(test_data.username_renderer_id)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -636,9 +636,9 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
   [passwordController_.sharedPasswordController
       didSelectSuggestion:suggestion
                      form:SysUTF8ToNSString(test_data.form_name)
-             uniqueFormID:FormRendererId(test_data.form_renderer_id)
+           formRendererID:FormRendererId(test_data.form_renderer_id)
           fieldIdentifier:SysUTF8ToNSString(test_data.username_element)
-            uniqueFieldID:FieldRendererId(test_data.username_renderer_id)
+          fieldRendererID:FieldRendererId(test_data.username_renderer_id)
                   frameID:SysUTF8ToNSString(frame->GetFrameId())
         completionHandler:completion];
 
@@ -1497,9 +1497,9 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
     FormSuggestionProviderQuery* form_query =
         [[FormSuggestionProviderQuery alloc]
             initWithFormName:@"dynamic_form"
-                uniqueFormID:form_id
+              formRendererID:form_id
              fieldIdentifier:@"username"
-               uniqueFieldID:field_id
+             fieldRendererID:field_id
                    fieldType:@"text"
                         type:@"focus"
                   typedValue:@""
@@ -1542,9 +1542,9 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"dynamic_form"
-          uniqueFormID:FormRendererId(1)
+        formRendererID:FormRendererId(1)
        fieldIdentifier:@"address"
-         uniqueFieldID:FieldRendererId(4)
+       fieldRendererID:FieldRendererId(4)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1576,9 +1576,9 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
   EXPECT_CALL(*store_, GetLogins).Times(0);
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:FormRendererId(1)
+        formRendererID:FormRendererId(1)
        fieldIdentifier:@"address"
-         uniqueFieldID:FieldRendererId(2)
+       fieldRendererID:FieldRendererId(2)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -2220,9 +2220,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
   FormSuggestionProviderQuery* focus_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(1)
+            formRendererID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(3)
+           fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"focus"
                 typedValue:@""
@@ -2262,9 +2262,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
   FormSuggestionProviderQuery* extend_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(1)
+            formRendererID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(3)
+           fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@"generated_password_long"
@@ -2304,9 +2304,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
   FormSuggestionProviderQuery* clear_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(1)
+            formRendererID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(3)
+           fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@""

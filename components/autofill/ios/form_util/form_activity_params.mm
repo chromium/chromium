@@ -58,16 +58,17 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
   }
 
   const std::string* form_name = message_body->FindString("formName");
-  const std::string* unique_form_id = message_body->FindString("uniqueFormID");
+  const std::string* form_renderer_id =
+      message_body->FindString("formRendererID");
   const std::string* field_identifier =
       message_body->FindString("fieldIdentifier");
-  const std::string* unique_field_id =
-      message_body->FindString("uniqueFieldID");
+  const std::string* field_renderer_id =
+      message_body->FindString("fieldRendererID");
   const std::string* field_type = message_body->FindString("fieldType");
   const std::string* type = message_body->FindString("type");
   const std::string* value = message_body->FindString("value");
 
-  if (!form_name || !unique_form_id) {
+  if (!form_name || !form_renderer_id) {
     params->input_missing = true;
   }
 
@@ -75,25 +76,25 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
     params->form_name = *form_name;
   }
 
-  if (unique_form_id) {
+  if (form_renderer_id) {
     // Parse the form renderer id.
     // Fallback to 0 if invalid or no form id provided, which is interpreted in
     // Autofill as the field not being owned by a form element.
-    base::StringToUint(*unique_form_id, &params->unique_form_id.value());
+    base::StringToUint(*form_renderer_id, &params->form_renderer_id.value());
   }
 
   std::optional<bool> has_user_gesture =
       message_body->FindBool("hasUserGesture");
-  if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
-      !has_user_gesture) {
+  if (!field_identifier || !field_renderer_id || !field_type || !type ||
+      !value || !has_user_gesture) {
     params->input_missing = true;
   }
 
   if (field_identifier) {
     params->field_identifier = *field_identifier;
   }
-  if (unique_field_id) {
-    base::StringToUint(*unique_field_id, &params->unique_field_id.value());
+  if (field_renderer_id) {
+    base::StringToUint(*field_renderer_id, &params->field_renderer_id.value());
   }
   if (field_type) {
     params->field_type = *field_type;
@@ -114,9 +115,9 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
 bool FormActivityParams::operator==(const FormActivityParams& params) const {
   return BaseFormActivityParams::operator==(params) &&
          (form_name == params.form_name) &&
-         (unique_form_id == params.unique_form_id) &&
+         (form_renderer_id == params.form_renderer_id) &&
          (field_identifier == params.field_identifier) &&
-         (unique_field_id == params.unique_field_id) &&
+         (field_renderer_id == params.field_renderer_id) &&
          (field_type == params.field_type) && (value == params.value) &&
          (type == params.type) && (has_user_gesture == params.has_user_gesture);
 }

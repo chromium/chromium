@@ -96,9 +96,9 @@ NSString* PrimaryActionLabelForUsernameFill() {
 @implementation PasswordSuggestionBottomSheetMediatorTestSuggestionProvider {
   NSArray<FormSuggestion*>* _suggestions;
   NSString* _formName;
-  autofill::FormRendererId _uniqueFormID;
+  autofill::FormRendererId _formRendererID;
   NSString* _fieldIdentifier;
-  autofill::FieldRendererId _uniqueFieldID;
+  autofill::FieldRendererId _fieldRendererID;
   NSString* _frameID;
   FormSuggestion* _suggestion;
 }
@@ -171,17 +171,17 @@ NSString* PrimaryActionLabelForUsernameFill() {
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
-               uniqueFormID:(autofill::FormRendererId)uniqueFormID
+             formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+            fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
   _formName = [formName copy];
-  _uniqueFormID = uniqueFormID;
+  _formRendererID = formRendererID;
   _fieldIdentifier = [fieldIdentifier copy];
-  _uniqueFieldID = uniqueFieldID;
+  _fieldRendererID = fieldRendererID;
   _frameID = [frameID copy];
   completion();
 }

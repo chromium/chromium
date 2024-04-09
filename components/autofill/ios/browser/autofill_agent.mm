@@ -372,7 +372,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     if (success && forms.size() == 1) {
       [weakSelf queryAutofillForForm:forms[0]
-                     fieldIdentifier:formQuery.uniqueFieldID
+                     fieldIdentifier:formQuery.fieldRendererID
                                 type:formQuery.type
                           typedValue:formQuery.typedValue
                                frame:weakFrame
@@ -414,9 +414,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
-               uniqueFormID:(FormRendererId)uniqueFormID
+             formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(FieldRendererId)uniqueFieldID
+            fieldRendererID:(FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   [[UIDevice currentDevice] playInputClick];
@@ -458,7 +458,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
            autofill::features::kAutofillEnableVirtualCards) &&
        suggestion.popupItemId ==
            autofill::PopupItemId::kVirtualCreditCardEntry)) {
-    _pendingAutocompleteFieldID = uniqueFieldID;
+    _pendingAutocompleteFieldID = fieldRendererID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
       autofill::Suggestion autofill_suggestion;
@@ -498,17 +498,17 @@ constexpr CGFloat kSuggestionIconWidth = 32;
           autofill::PopupItemId::kFillExistingPlusAddress) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
-        uniqueFieldID:uniqueFieldID
-             formName:SysNSStringToUTF8(formName)
-                value:SysNSStringToUTF16(suggestion.value)
-              inFrame:frame];
+        fieldRendererID:fieldRendererID
+               formName:SysNSStringToUTF8(formName)
+                  value:SysNSStringToUTF16(suggestion.value)
+                inFrame:frame];
   } else if (suggestion.popupItemId == autofill::PopupItemId::kClearForm) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
     _suggestionHandledCompletion = nil;
     AutofillJavaScriptFeature::GetInstance()->ClearAutofilledFieldsForForm(
-        frame, uniqueFormID, uniqueFieldID,
+        frame, formRendererID, fieldRendererID,
         base::BindOnce(^(NSString* jsonString) {
           AutofillAgent* strongSelf = weakSelf;
           if (!strongSelf) {
@@ -964,7 +964,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // and may have been destroyed by the point the block is executed).
   __weak AutofillAgent* weakSelf = self;
   __block const std::string webFrameId = frame->GetFrameId();
-  __block FieldRendererId fieldIdentifier = params.unique_field_id;
+  __block FieldRendererId fieldIdentifier = params.field_renderer_id;
   auto completionHandler = ^(BOOL success, const FormDataVector& forms) {
     [weakSelf onFormsFetched:success
                    formsData:forms
@@ -1048,12 +1048,12 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 // AutofillFormFieldData. fillFormField() also expects members 'max_length' and
 // 'is_checked' to exist.
 - (void)fillField:(const std::string&)fieldIdentifier
-    uniqueFieldID:(FieldRendererId)uniqueFieldID
-         formName:(const std::string&)formName
-            value:(const std::u16string)value
-          inFrame:(web::WebFrame*)frame {
+    fieldRendererID:(FieldRendererId)fieldRendererID
+           formName:(const std::string&)formName
+              value:(const std::u16string)value
+            inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
-  data.Set("renderer_id", static_cast<int>(uniqueFieldID.value()));
+  data.Set("renderer_id", static_cast<int>(fieldRendererID.value()));
   data.Set("identifier", fieldIdentifier);
   data.Set("form", formName);
   data.Set("value", value);
@@ -1069,7 +1069,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         if (!strongSelf)
           return;
         if (success) {
-          [strongSelf updateFieldManagerForSpecificField:uniqueFieldID
+          [strongSelf updateFieldManagerForSpecificField:fieldRendererID
                                                  inFrame:frame
                                                withValue:value];
         }
@@ -1097,11 +1097,11 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       .Record(ukm::UkmRecorder::Get());
 }
 
-- (void)updateFieldManagerForSpecificField:(FieldRendererId)uniqueFieldID
+- (void)updateFieldManagerForSpecificField:(FieldRendererId)fieldRendererID
                                    inFrame:(web::WebFrame*)frame
                                  withValue:(const std::u16string&)value {
   FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
-      uniqueFieldID, value, kAutofilledOnUserTrigger);
+      fieldRendererID, value, kAutofilledOnUserTrigger);
 }
 
 // Sends the the |data| to |frame| to actually fill the data.

@@ -211,8 +211,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   }
   const filledElements = {};
 
-  const form =
-      __gCrWeb.form.getFormElementFromUniqueFormId(data.formRendererID);
+  const form = __gCrWeb.form.getFormElementFromRendererId(data.formRendererID);
   const controlElements = form ?
       __gCrWeb.form.getFormControlElements(form) :
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -306,7 +305,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     formUniqueID, fieldUniqueID) {
   const clearedElements = [];
 
-  const form = __gCrWeb.form.getFormElementFromUniqueFormId(formUniqueID);
+  const form = __gCrWeb.form.getFormElementFromRendererId(formUniqueID);
 
   const controlElements = form ?
       __gCrWeb.form.getFormControlElements(form) :

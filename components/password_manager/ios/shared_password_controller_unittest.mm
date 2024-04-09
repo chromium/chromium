@@ -378,9 +378,9 @@ TEST_F(SharedPasswordControllerTest,
        CheckNoSuggestionsAreAvailableForNonPasswordForm) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -420,9 +420,9 @@ TEST_F(SharedPasswordControllerTest,
 TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
@@ -461,9 +461,9 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
 TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
@@ -497,9 +497,9 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
 TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
@@ -553,9 +553,9 @@ TEST_F(SharedPasswordControllerTest,
        ReturnsGenerateSuggestionIfFormIsEligibleForGeneration) {
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
@@ -575,8 +575,8 @@ TEST_F(SharedPasswordControllerTest,
                    webFrame:frame]);
 
   autofill::PasswordFormGenerationData form_generation_data = {
-      form_query.uniqueFormID, form_query.uniqueFieldID,
-      form_query.uniqueFieldID};
+      form_query.formRendererID, form_query.fieldRendererID,
+      form_query.fieldRendererID};
   [controller_ formEligibleForGenerationFound:form_generation_data];
   __block BOOL completion_was_called = NO;
 
@@ -678,9 +678,9 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
-                      uniqueFormID:form_id
+                    formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
-                     uniqueFieldID:field_id
+                   fieldRendererID:field_id
                            frameID:kTestFrameID
                  completionHandler:nil];
 
@@ -752,9 +752,9 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
-                      uniqueFormID:form_id
+                    formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
-                     uniqueFieldID:field_id
+                   fieldRendererID:field_id
                            frameID:kTestFrameID
                  completionHandler:nil];
 
@@ -769,9 +769,9 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
 TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
   base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
-  params.unique_form_id = autofill::FormRendererId(0);
+  params.form_renderer_id = autofill::FormRendererId(0);
   params.field_type = "password";
-  params.unique_field_id = autofill::FieldRendererId(1);
+  params.field_renderer_id = autofill::FieldRendererId(1);
   params.type = "focus";
   params.input_missing = false;
 
@@ -796,7 +796,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
         return YES;
       }];
   [[form_helper_ expect]
-      extractPasswordFormData:params.unique_form_id
+      extractPasswordFormData:params.form_renderer_id
                       inFrame:frame
             completionHandler:extract_completion_handler_arg];
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
@@ -816,9 +816,9 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
 // provide valid form and field identifiers.
 TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
   autofill::FormActivityParams params;
-  params.unique_form_id = autofill::FormRendererId(0);
+  params.form_renderer_id = autofill::FormRendererId(0);
   params.field_type = "password";
-  params.unique_field_id = autofill::FieldRendererId(1);
+  params.field_renderer_id = autofill::FieldRendererId(1);
   params.type = "focus";
   params.input_missing = true;
 
@@ -969,9 +969,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // response is received.
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:SysUTF16ToNSString(form.name)
-          uniqueFormID:form.renderer_id
+        formRendererID:form.renderer_id
        fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
-         uniqueFieldID:form.fields[0].renderer_id
+       fieldRendererID:form.fields[0].renderer_id
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1039,9 +1039,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   FormSuggestionProviderQuery* form_query1 =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:SysUTF16ToNSString(form.name)
-              uniqueFormID:form.renderer_id
+            formRendererID:form.renderer_id
            fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
-             uniqueFieldID:form.fields[0].renderer_id
+           fieldRendererID:form.fields[0].renderer_id
                  fieldType:@"text"
                       type:@"focus"
                 typedValue:@""
@@ -1066,9 +1066,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   FormSuggestionProviderQuery* form_query2 =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:SysUTF16ToNSString(form.name)
-              uniqueFormID:form.renderer_id
+            formRendererID:form.renderer_id
            fieldIdentifier:SysUTF16ToNSString(form.fields[1].name)
-             uniqueFieldID:form.fields[1].renderer_id
+           fieldRendererID:form.fields[1].renderer_id
                  fieldType:kObfuscatedFieldType
                       type:@"focus"
                 typedValue:@""
@@ -1144,9 +1144,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:kObfuscatedFieldType
                   type:@"focus"
             typedValue:@""
@@ -1270,9 +1270,9 @@ TEST_F(SharedPasswordControllerTest,
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1315,9 +1315,9 @@ TEST_F(SharedPasswordControllerTest,
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:autofill::FormRendererId(0)
+        formRendererID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
-         uniqueFieldID:autofill::FieldRendererId(1)
+       fieldRendererID:autofill::FieldRendererId(1)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1481,9 +1481,9 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
-                      uniqueFormID:form_id
+                    formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
-                     uniqueFieldID:field_id
+                   fieldRendererID:field_id
                            frameID:kTestFrameID
                  completionHandler:nil];
 }

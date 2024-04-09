@@ -12,10 +12,10 @@ using autofill::FieldRendererId;
 
 namespace {
 NSString* const kTestFormName = @"login_form";
-FormRendererId const kTestFormUniqueID = FormRendererId(0);
+FormRendererId const kTestFormRendererID = FormRendererId(0);
 NSString* const kTestUsernameFieldIdentifier = @"username";
 NSString* const kTestPasswordFieldIdentifier = @"pw";
-FieldRendererId const kTestFieldUniqueID = FieldRendererId(1);
+FieldRendererId const kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestTextFieldType = @"text";
 NSString* const kTestFocusType = @"focus";
 NSString* const kTestInputType = @"input";
@@ -30,9 +30,9 @@ using FormSuggestionProviderQueryTest = PlatformTest;
 TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:kTestFormName
-          uniqueFormID:kTestFormUniqueID
+        formRendererID:kTestFormRendererID
        fieldIdentifier:kTestPasswordFieldIdentifier
-         uniqueFieldID:kTestFieldUniqueID
+       fieldRendererID:kTestFieldRendererID
              fieldType:kObfuscatedFieldType
                   type:kTestFocusType
             typedValue:kTestTypedValue
@@ -46,9 +46,9 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
 TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:kTestFormName
-          uniqueFormID:kTestFormUniqueID
+        formRendererID:kTestFormRendererID
        fieldIdentifier:kTestUsernameFieldIdentifier
-         uniqueFieldID:kTestFieldUniqueID
+       fieldRendererID:kTestFieldRendererID
              fieldType:kTestTextFieldType
                   type:kTestInputType
             typedValue:kTestTypedValue

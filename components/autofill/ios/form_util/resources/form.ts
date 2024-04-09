@@ -287,12 +287,12 @@ function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
 }
 
 /**
- * Returns the form element from an unique form id.
+ * Returns the form element from an form renderer id.
  *
  * @param identifier An ID string obtained via getFormIdentifier.
  * @return The original form element, if it can be determined.
  */
-function getFormElementFromUniqueFormId(identifier: number): HTMLFormElement|
+function getFormElementFromRendererId(identifier: number): HTMLFormElement|
     null {
   if (identifier.toString() === RENDERER_ID_NOT_SET) {
     return null;
@@ -332,6 +332,6 @@ gCrWeb.form = {
   getFieldName,
   getFormIdentifier,
   getFormElementFromIdentifier,
-  getFormElementFromUniqueFormId,
+  getFormElementFromRendererId,
   fieldWasEditedByUser,
 };

@@ -60,9 +60,9 @@ namespace {
 
 const char kApplicationLocale[] = "en-US";
 NSString* const kTestFormName = @"FormName";
-FormRendererId kTestUniqueFormID = FormRendererId(0);
+FormRendererId kTestFormRendererID = FormRendererId(0);
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
-FieldRendererId kTestUniqueFieldID = FieldRendererId(1);
+FieldRendererId kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestFieldValue = @"FieldValue";
 NSString* const kTestDisplayDescription = @"DisplayDescription";
 
@@ -293,9 +293,9 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
 
     autofill::FormActivityParams params;
     params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.unique_form_id = kTestUniqueFormID;
+    params.form_renderer_id = kTestFormRendererID;
     params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.unique_field_id = kTestUniqueFieldID;
+    params.field_renderer_id = kTestFieldRendererID;
     params.value = base::SysNSStringToUTF8(kTestFieldValue);
     params.frame_id = web::kMainFakeFrameId;
     params.has_user_gesture = true;

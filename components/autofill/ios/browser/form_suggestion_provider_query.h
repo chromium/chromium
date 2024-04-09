@@ -25,15 +25,15 @@ NSString* const kObfuscatedFieldType = @"password";
 // missing, a name assigned by Chrome in __gCrWeb.form.getFormIdentifier.
 @property(readonly, nonatomic, copy) NSString* formName;
 
-// Number ID, unique for a tab and stable within navigations.
-@property(readonly, nonatomic) autofill::FormRendererId uniqueFormID;
+// Number ID, unique for a frame.
+@property(readonly, nonatomic) autofill::FormRendererId formRendererID;
 
 // Field HTML 'id' attribute. If missing, its 'name' attribute. If also
 // missing, a unique string path assigned in __gCrWeb.form.getFieldIdentifier.
 @property(readonly, nonatomic, copy) NSString* fieldIdentifier;
 
-// Number ID, unique for a tab and stable within navigations.
-@property(readonly, nonatomic) autofill::FieldRendererId uniqueFieldID;
+// Number ID, unique for a frame.
+@property(readonly, nonatomic) autofill::FieldRendererId fieldRendererID;
 
 // HTML input field type (i.e. 'text', 'password').
 @property(readonly, nonatomic, copy) NSString* fieldType;
@@ -49,9 +49,9 @@ NSString* const kObfuscatedFieldType = @"password";
 @property(readonly, nonatomic, copy) NSString* frameID;
 
 - (instancetype)initWithFormName:(NSString*)formName
-                    uniqueFormID:(autofill::FormRendererId)uniqueFormID
+                  formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
-                   uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+                 fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue

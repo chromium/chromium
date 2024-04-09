@@ -240,9 +240,9 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   EXPECT_NSEQ(@"form.activity", body[@"command"]);
   EXPECT_TRUE(body[@"frameID"]);
   EXPECT_NSEQ(@"", body[@"formName"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"formRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldType"]);
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
@@ -331,9 +331,9 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   EXPECT_NSEQ(@"form.activity", body[@"command"]);
   EXPECT_TRUE(body[@"frameID"]);
   EXPECT_NSEQ(@"", body[@"formName"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"formRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldType"]);
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
@@ -403,9 +403,9 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   EXPECT_NSEQ(@"form.activity", body[@"command"]);
   EXPECT_TRUE(body[@"frameID"]);
   EXPECT_NSEQ(@"", body[@"formName"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"formRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldType"]);
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
@@ -461,9 +461,9 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   EXPECT_NSEQ(@"form.activity", body[@"command"]);
   EXPECT_TRUE(body[@"frameID"]);
   EXPECT_NSEQ(@"", body[@"formName"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"formRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldRendererID"]);
   EXPECT_NSEQ(@"", body[@"fieldType"]);
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);

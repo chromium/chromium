@@ -278,7 +278,7 @@ const CGFloat kIPHVerticalOffset = -5;
                                  URL:URL
                     injectionHandler:self.injectionHandler
             invokedOnObfuscatedField:invokedOnObfuscatedField
-                              formID:lastSeenParams.unique_form_id
+                              formID:lastSeenParams.form_renderer_id
                              frameID:lastSeenParams.frame_id];
 
   passwordCoordinator.delegate = self;
@@ -341,7 +341,7 @@ const CGFloat kIPHVerticalOffset = -5;
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
       invokedOnObfuscatedField;
-  expandedManualFillCoordinator.formID = lastSeenParams.unique_form_id;
+  expandedManualFillCoordinator.formID = lastSeenParams.form_renderer_id;
   expandedManualFillCoordinator.frameID = lastSeenParams.frame_id;
   expandedManualFillCoordinator.delegate = self;
   [expandedManualFillCoordinator start];

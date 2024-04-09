@@ -61,9 +61,9 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
 // field, invoking |completion| when finished.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
-               uniqueFormID:(autofill::FormRendererId)uniqueFormID
+             formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+            fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion;
 

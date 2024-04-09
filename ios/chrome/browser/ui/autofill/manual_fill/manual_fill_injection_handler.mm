@@ -157,7 +157,7 @@ using base::UmaHistogramEnumeration;
   self.lastFocusedElementSecure =
       autofill::IsContextSecureForWebState(webState);
   self.lastFocusedElementPasswordField = params.field_type == "password";
-  self.lastFocusedElementUniqueId = params.unique_field_id;
+  self.lastFocusedElementUniqueId = params.field_renderer_id;
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
   const GURL frameSecureOrigin = frame->GetSecurityOrigin();

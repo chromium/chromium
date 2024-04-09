@@ -704,7 +704,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
   // Post it to the consumer.
   self.consumer.mainFillingProduct = provider.mainFillingProduct;
-  self.consumer.currentFieldId = _lastSeenParams.unique_field_id;
+  self.consumer.currentFieldId = _lastSeenParams.field_renderer_id;
   [self.consumer showAccessorySuggestions:suggestions];
   if (suggestions.count) {
     if (provider.type == SuggestionProviderTypeAutofill) {

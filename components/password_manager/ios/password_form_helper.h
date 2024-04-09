@@ -91,12 +91,12 @@ enum class HandleSubmittedFormStatus {
             completionHandler:(nullable void (^)(BOOL))completionHandler;
 
 // Autofills credentials into the page on credential suggestion selection.
-// Credentials and input fields are specified by |fillData|. |uniqueFieldID|
+// Credentials and input fields are specified by |fillData|. |fieldRendererID|
 // specifies the unput on which the suggestion was accepted. Invokes
 // |completionHandler| when finished with YES if successful and NO otherwise.
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
                              inFrame:(web::WebFrame*)frame
-                    triggeredOnField:(autofill::FieldRendererId)uniqueFieldID
+                    triggeredOnField:(autofill::FieldRendererId)fieldRendererID
                    completionHandler:(nullable void (^)(BOOL))completionHandler;
 
 // Finds the password form with unique ID |formIdentifier| and calls

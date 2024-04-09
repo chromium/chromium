@@ -293,9 +293,9 @@ TEST_F(AutofillAgentTests,
 
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(1)
+                                             formRendererID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(2)
+                                            fieldRendererID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -341,9 +341,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(1)
+                                             formRendererID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(2)
+                                            fieldRendererID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -679,9 +679,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(1)
+                                             formRendererID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(2)
+                                            fieldRendererID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -736,9 +736,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(1)
+                                             formRendererID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(2)
+                                            fieldRendererID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""

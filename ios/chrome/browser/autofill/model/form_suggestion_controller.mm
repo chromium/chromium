@@ -39,12 +39,12 @@ struct AutofillSuggestionState {
   AutofillSuggestionState(const autofill::FormActivityParams& params);
   // The name of the form for autofill.
   std::string form_name;
-  // The unique numeric identifier of the form for autofill.
-  FormRendererId unique_form_id;
+  // The numeric identifier of the form for autofill.
+  FormRendererId form_renderer_id;
   // The identifier of the field for autofill.
   std::string field_identifier;
-  // The unique numeric identifier of the field for autofill.
-  FieldRendererId unique_field_id;
+  // The numeric identifier of the field for autofill.
+  FieldRendererId field_renderer_id;
   // The identifier of the frame for autofill.
   std::string frame_identifier;
   // The user-typed value in the field.
@@ -56,9 +56,9 @@ struct AutofillSuggestionState {
 AutofillSuggestionState::AutofillSuggestionState(
     const autofill::FormActivityParams& params)
     : form_name(params.form_name),
-      unique_form_id(params.unique_form_id),
+      form_renderer_id(params.form_renderer_id),
       field_identifier(params.field_identifier),
-      unique_field_id(params.unique_field_id),
+      field_renderer_id(params.field_renderer_id),
       frame_identifier(params.frame_id),
       typed_value(params.value) {}
 
@@ -188,9 +188,9 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:base::SysUTF8ToNSString(params.form_name)
-          uniqueFormID:params.unique_form_id
+        formRendererID:params.form_renderer_id
        fieldIdentifier:base::SysUTF8ToNSString(params.field_identifier)
-         uniqueFieldID:params.unique_field_id
+       fieldRendererID:params.field_renderer_id
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
             typedValue:base::SysUTF8ToNSString(
@@ -363,10 +363,10 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   [_provider
       didSelectSuggestion:suggestion
                      form:base::SysUTF8ToNSString(suggestionState.form_name)
-             uniqueFormID:suggestionState.unique_form_id
+           formRendererID:suggestionState.form_renderer_id
           fieldIdentifier:base::SysUTF8ToNSString(
                               suggestionState.field_identifier)
-            uniqueFieldID:suggestionState.unique_field_id
+          fieldRendererID:suggestionState.field_renderer_id
                   frameID:base::SysUTF8ToNSString(
                               suggestionState.frame_identifier)
         completionHandler:^{

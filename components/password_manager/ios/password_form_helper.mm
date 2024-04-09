@@ -245,7 +245,7 @@ const char kFrameIdKey[] = "frame_id";
 
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
                              inFrame:(web::WebFrame*)frame
-                    triggeredOnField:(FieldRendererId)uniqueFieldID
+                    triggeredOnField:(FieldRendererId)fieldRendererID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
   // Necessary copy so the values can be used inside a block.
@@ -259,8 +259,8 @@ const char kFrameIdKey[] = "frame_id";
 
   // Do not fill the username if filling was triggered on a password field and
   // the username field has user typed input.
-  BOOL fillUsername =
-      uniqueFieldID == usernameID || !fieldDataManager->DidUserType(usernameID);
+  BOOL fillUsername = fieldRendererID == usernameID ||
+                      !fieldDataManager->DidUserType(usernameID);
   __weak PasswordFormHelper* weakSelf = self;
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->FillPasswordForm(
