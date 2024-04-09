@@ -1,9 +1,7 @@
 <?php
 header("Content-Type: application/json");
-if (isset($_GET['origin'])) {
-  header("Access-Control-Allow-Origin: " . $_GET['origin']);
-  header("Access-Control-Allow-Credentials: true");
-}
+header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+header("Access-Control-Allow-Credentials: true");
 ?>
 {
   "token": "<?php echo $_POST["account_id"]; ?>"
