@@ -220,8 +220,10 @@ class CORE_EXPORT InlineLayoutStateStack {
   HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
     return ruby_column_list_;
   }
-  // This should be called after finishing to fill LogicalLineItems.
-  HeapVector<Member<LogicalRubyColumn>>&& TakeRubyColumnList() {
+  // Returns `ruby_column_list_`. The data member becomes unusable after
+  // calling this functions.
+  // This function should be called after finishing to fill LogicalLineItems.
+  HeapVector<Member<LogicalRubyColumn>> TakeRubyColumnList() {
     return std::move(ruby_column_list_);
   }
 
