@@ -17,6 +17,13 @@ function prepareDatabase(evt)
     store.put("value2", "key2");
 }
 
+let finishJsCalls = 0;
+// Similar to `base::BarrierCallback`, this function must be called twice for the test
+// to be considered finished.
+function halfFinishJsTest() {
+  if (++finishJsCalls == 2) finishJSTest();
+}
+
 function onOpen(evt)
 {
     preamble(evt);
@@ -82,11 +89,12 @@ function onOpen(evt)
             asyncGC(function () {
                 shouldBeTrue("cursorRequestObservation.wasCollected");
                 shouldBeTrue("cursorObservation.wasCollected");
+                halfFinishJsTest();
             });
         };
     };
 
-    tx.oncomplete = finishJSTest;
+    tx.oncomplete = halfFinishJsTest;
 }
 
 
