@@ -41,7 +41,6 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -53,6 +52,8 @@ using profile_management::features::kOidcAuthStubUserEmail;
 using profile_management::features::kOidcAuthStubUserName;
 
 namespace {
+
+const char kDummyRefreshToken[] = "dummy_refresh_token";
 
 bool IsValidOidcToken(ProfileManagementOicdTokens oidc_tokens) {
   return !oidc_tokens.auth_token.empty() && !oidc_tokens.id_token.empty();
@@ -279,7 +280,7 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
 
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-          gaia_id, user_email_, GaiaConstants::kInvalidRefreshToken,
+          gaia_id, user_email_, kDummyRefreshToken,
           /*is_under_advanced_protection=*/false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::
