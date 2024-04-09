@@ -795,7 +795,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const focusableElements = buttons.filter(el => {
       return (el.clientHeight > 0) && (el.clientWidth > 0) &&
           (el.getBoundingClientRect().right < toolbar.clientWidth) &&
-          (el.className !== 'separator');
+          (el.style.visibility !== 'hidden') && (el.style.display !== 'none') &&
+          (!(el as any).disabled) && (el.className !== 'separator');
     });
 
     // Allow focusing the font selection if it's visible.
