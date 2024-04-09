@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Class to get the native disassembly for symbols."""
 
+import contextlib
 import difflib
+import itertools
 import logging
 import os
 import shlex
@@ -19,21 +21,27 @@ import readelf
 _MAX_DISASSEMBLY_BYTES = 2 * 1024
 
 
-def _DisassembleFunc(symbol, output_directory, elf_path):
-  """Returns disassembly for the given symbol.
+@contextlib.contextmanager
+def Disassemble(symbol,
+                output_directory,
+                elf_path,
+                max_bytes=_MAX_DISASSEMBLY_BYTES):
+  """Yields disassembly for the given symbol.
 
   Args:
     symbol: Must be a .text symbol and not a SymbolGroup.
     output_directory: Path to the output directory of the build.
     elf_path: Path to the executable containing the symbol. Required only
         when auto-detection fails.
+    max_bytes: Stop disassembling after this many bytes.
   Returns:
     Array with the lines of disassembly for symbol.
   """
   # Shouldn't happen.
   if symbol.size_without_padding < 1:
     logging.info('Skipping due to zero size: %r', symbol)
-    return None
+    yield []
+    return
 
   # Running objdump from an output directory means that objdump can
   # interleave source file lines in the disassembly.
@@ -43,10 +51,13 @@ def _DisassembleFunc(symbol, output_directory, elf_path):
     arch = readelf.ArchFromElf(elf_path)
   except Exception:
     logging.warning('llvm-readelf failed on: %s', elf_path)
-    return None
+    yield []
+    return
   objdump_path = path_util.GetDisassembleObjDumpPath(arch)
   # E.g. "** thunk" symbols tend to be very large.
-  end_address = min(symbol.end_address, symbol.address + _MAX_DISASSEMBLY_BYTES)
+  end_address = symbol.end_address
+  if max_bytes is not None and max_bytes > 0:
+    end_address = min(end_address, symbol.address + max_bytes)
   args = [
       os.path.relpath(objdump_path, objdump_cwd),
       '--disassemble',
@@ -63,15 +74,24 @@ def _DisassembleFunc(symbol, output_directory, elf_path):
   logging.info('Disassembling symbol: %r', symbol)
   logging.info('Running: %s  # cwd=%s', cmd_str, objdump_cwd)
   try:
-    stdout = subprocess.check_output(args, cwd=objdump_cwd, encoding='utf-8')
+    proc = subprocess.Popen(args,
+                            stdout=subprocess.PIPE,
+                            encoding='utf-8',
+                            cwd=objdump_cwd)
   except Exception:
     logging.warning('objdump failed: %s  # cwd=%s', cmd_str, objdump_cwd)
-    return None
+    yield []
+    return
 
   truncated_str = '' if symbol.end_address == end_address else ' (truncated)'
-  ret = ['Captured via: {}{}\n'.format(cmd_str, truncated_str), '\n', '\n']
-  ret += stdout.splitlines(keepends=True)
-  return ret
+  try:
+    # objdump can be slow for large symbols, so it's helpful to stream the
+    # output when in supersize console.
+    yield itertools.chain(
+        ('Showing disassembly for %r\n' % symbol, 'Captured via: %s%s\n' %
+         (shlex.join(args), truncated_str), '\n'), proc.stdout)
+  finally:
+    proc.kill()
 
 
 def _CreateUnifiedDiff(name, before, after):
@@ -111,8 +131,10 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
   before = None
   after = None
   for symbol in top_changed_symbols:
+    before_symbol = symbol.before_symbol
+    after_symbol = symbol.after_symbol
     logging.debug('Symbols to go: %d', counter)
-    elf_name = symbol.after_symbol.container.metadata['elf_file_name']
+    elf_name = after_symbol.container.metadata['elf_file_name']
     elf_path = _ResolveElfPath(after_path_resolver(elf_name))
     if elf_path is None:
       # Do not continue trying symbols since we'll likely hit the same issue.
@@ -121,22 +143,25 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
     out_directory = delta_size_info.after.build_config.get('out_directory')
     if out_directory and not os.path.exists(out_directory):
       out_directory = None
-    after = _DisassembleFunc(symbol.after_symbol, out_directory, elf_path)
-    if after is None:
-      continue
+    with Disassemble(after_symbol, out_directory, elf_path) as lines:
+      if not lines:
+        continue
+      after = list(lines)
+
     before = None
-    if symbol.before_symbol:
-      elf_name = symbol.before_symbol.container.metadata['elf_file_name']
+    if before_symbol:
+      elf_name = before_symbol.container.metadata['elf_file_name']
       elf_path = _ResolveElfPath(before_path_resolver(elf_name))
       if elf_path:
         # The source tree will have changed due to building "after", so it's
         # better to not include source lines than to include incorrect ones.
         out_directory = None
-        before = _DisassembleFunc(symbol.before_symbol, out_directory, elf_path)
+        with Disassemble(before_symbol, out_directory, elf_path) as lines:
+          before = list(lines)
 
     logging.info('Creating unified diff')
-    symbol.after_symbol.disassembly = _CreateUnifiedDiff(
-        symbol.full_name, before or [], after)
+    after_symbol.disassembly = _CreateUnifiedDiff(symbol.full_name, before
+                                                  or [], after)
     counter -= 1
     if counter == 0:
       break

@@ -7,6 +7,7 @@
 import argparse
 import bisect
 import code
+import collections
 import contextlib
 import itertools
 import logging
@@ -20,10 +21,12 @@ import archive
 import canned_queries
 import data_quality
 import describe
+import dex_disassembly
 import diff
 import file_format
 import match_util
 import models
+import native_disassembly
 import path_util
 import readelf
 import string_extract
@@ -50,7 +53,7 @@ def _LessPipe():
     pass  # Assume used to break out of less.
 
 
-def _WriteToStream(lines, use_pager=None, to_file=None):
+def _WriteToStream(lines, has_newlines=False, use_pager=None, to_file=None):
   if to_file:
     use_pager = False
   if use_pager is None and sys.stdout.isatty():
@@ -59,14 +62,19 @@ def _WriteToStream(lines, use_pager=None, to_file=None):
     use_pager = len(first_lines) == _THRESHOLD_FOR_PAGER
     lines = itertools.chain(first_lines, lines)
 
+  if has_newlines:
+    func = lambda lines, obj: obj.writelines(lines)
+  else:
+    func = lambda lines, obj: describe.WriteLines(lines, obj.write)
+
   if use_pager:
     with _LessPipe() as stdin:
-      describe.WriteLines(lines, stdin.write)
+      func(lines, stdin)
   elif to_file:
     with open(to_file, 'w') as file_obj:
-      describe.WriteLines(lines, file_obj.write)
+      func(lines, file_obj)
   else:
-    describe.WriteLines(lines, sys.stdout.write)
+    func(lines, sys.stdout)
 
 
 @contextlib.contextmanager
@@ -104,6 +112,8 @@ class _Session:
     }
     self._output_directory_finder = output_directory_finder
     self._size_infos = size_infos
+    self._dex_disassembly_cache_by_size_info = collections.defaultdict(
+        dex_disassembly.CreateCache)
 
     if len(size_infos) == 1:
       self._variables['size_info'] = size_infos[0]
@@ -309,62 +319,85 @@ class _Session:
     assert False, 'Symbol does not belong to a size_info.'
     return None
 
-  def _DisassembleFunc(self, symbol, elf_path=None, use_pager=None,
+  def _DisassembleNative(self,
+                         symbol,
+                         output_directory,
+                         elf_path=None,
+                         use_pager=None,
+                         to_file=None):
+    if output_directory is None:
+      # If we do not know/guess the output directory, run from any directory 2
+      # levels below src since it is better than a random cwd (because usually
+      # source file paths are relative to an output directory two levels below
+      # src and start with ../../).
+      output_directory = path_util.FromToolsSrcRoot('tools', 'binary_size')
+
+    size_info = self._SizeInfoForSymbol(symbol)
+    elf_path = self._ElfPathForSymbol(size_info, symbol.container, elf_path)
+
+    with native_disassembly.Disassemble(symbol,
+                                        output_directory,
+                                        elf_path,
+                                        max_bytes=None) as lines:
+      _WriteToStream(lines,
+                     has_newlines=True,
+                     use_pager=use_pager,
+                     to_file=to_file)
+
+  def _DisassembleDex(self,
+                      symbol,
+                      output_directory,
+                      use_pager=None,
+                      to_file=None):
+
+    def path_resolver(path):
+      return os.path.join(output_directory, path)
+
+    size_info = self._SizeInfoForSymbol(symbol)
+    cache = self._dex_disassembly_cache_by_size_info[size_info]
+    lines = dex_disassembly.Disassemble(symbol, path_resolver, cache)
+    _WriteToStream(iter(lines),
+                   has_newlines=True,
+                   use_pager=use_pager,
+                   to_file=to_file)
+
+  def _DisassembleFunc(self,
+                       symbol,
+                       elf_or_apk_path=None,
+                       use_pager=None,
                        to_file=None):
     """Shows objdump disassembly for the given symbol.
 
     Args:
       symbol: Must be a .text symbol and not a SymbolGroup.
-      elf_path: Path to the executable containing the symbol. Required only
-          when auto-detection fails.
+      elf_or_apk_path: Path to the executable containing the symbol. Required
+          only when auto-detection fails.
     """
     assert not symbol.IsGroup()
-    assert symbol.address and symbol.section_name == models.SECTION_TEXT
     assert not symbol.IsDelta(), ('Cannot disasseble a Diff\'ed symbol. Try '
                                   'passing .before_symbol or .after_symbol.')
-    size_info = self._SizeInfoForSymbol(symbol)
-    container = symbol.container
-    elf_path = self._ElfPathForSymbol(size_info, container, elf_path)
-    # Always use Android NDK's objdump because llvm-objdump does not print
-    # the target of jump instructions, which is really useful.
+
     output_directory_finder = self._output_directory_finder
     if not output_directory_finder.Tentative():
       output_directory_finder = path_util.OutputDirectoryFinder(
-          any_path_within_output_directory=elf_path)
-    if output_directory_finder.Tentative():
-      # Running objdump from an output directory means that objdump can
-      # interleave source file lines in the disassembly.
-      objdump_pwd = output_directory_finder.Finalized()
+          any_path_within_output_directory=elf_or_apk_path)
+    output_directory = output_directory_finder.Tentative()
+
+    if symbol.section_name == models.SECTION_TEXT:
+      assert symbol.address, 'Symbol is missing address'
+      self._DisassembleNative(symbol,
+                              output_directory,
+                              elf_path=elf_or_apk_path,
+                              use_pager=use_pager,
+                              to_file=to_file)
+    elif symbol.section_name == models.SECTION_DEX_METHOD:
+      self._DisassembleDex(symbol,
+                           output_directory,
+                           use_pager=use_pager,
+                           to_file=to_file)
     else:
-      # If we do not know/guess the output directory, run from any directory 2
-      # levels below src since it is better than a random cwd (because usually
-      # source file paths are relative to an output directory two levels below
-      # src and start with ../../).
-      objdump_pwd = path_util.FromToolsSrcRoot('tools', 'binary_size')
+      raise Exception('Symbol type is not supported: ' + symbol.section_name)
 
-    arch = readelf.ArchFromElf(elf_path)
-    objdump_path = path_util.GetDisassembleObjDumpPath(arch)
-    args = [
-        os.path.relpath(objdump_path, objdump_pwd),
-        '--disassemble',
-        '--source',
-        '--line-numbers',
-        '--demangle',
-        '--start-address=0x%x' % symbol.address,
-        '--stop-address=0x%x' % symbol.end_address,
-        os.path.relpath(elf_path, objdump_pwd),
-    ]
-
-    # pylint: disable=unexpected-keyword-arg
-    proc = subprocess.Popen(args,
-                            stdout=subprocess.PIPE,
-                            encoding='utf-8',
-                            cwd=objdump_pwd)
-    lines = itertools.chain(('Showing disassembly for %r' % symbol,
-                             'Command: %s' % ' '.join(args)),
-                            (l.rstrip() for l in proc.stdout))
-    _WriteToStream(lines, use_pager=use_pager, to_file=to_file)
-    proc.kill()
 
   def _ReplaceWithRelocations(self, size_info=None):
     """Replace all symbol sizes with counts of native relocations.

@@ -79,6 +79,10 @@ class _CachedApkDisassembler:
     return class_obj_map
 
 
+def CreateCache():
+  return _CachedApkDisassembler()
+
+
 def _ExtractDisassemblyForMethod(class_obj_map, method):
   param_types = None
   return_type = None
@@ -96,9 +100,8 @@ def _ExtractDisassemblyForMethod(class_obj_map, method):
   return bytecode
 
 
-def _ComputeDisassemblyForSymbol(symbol, path_resolver, apk_disassembler_cache):
-  logging.debug('Attempting to capture disassembly for symbol %s',
-                symbol.full_name)
+def Disassemble(symbol, path_resolver, apk_disassembler_cache):
+  logging.debug('Disassembling %s', symbol.full_name)
   container = symbol.container
   proguard_mapping_file_name = container.metadata.get(
       'proguard_mapping_file_name')
@@ -115,6 +118,7 @@ def _ComputeDisassemblyForSymbol(symbol, path_resolver, apk_disassembler_cache):
       apk_file_path, split_name)
   if class_obj_map is None:
     return None
+  logging.info('Looking up disassembly for %s', symbol.full_name)
   return _ExtractDisassemblyForMethod(class_obj_map, symbol.full_name)
 
 
@@ -140,15 +144,13 @@ def _AddUnifiedDiff(top_changed_symbols, before_path_resolver,
   before_apk_disassembler_cache = _CachedApkDisassembler()
   for symbol in top_changed_symbols:
     logging.debug('Symbols to go: %d', counter)
-    after = _ComputeDisassemblyForSymbol(symbol.after_symbol,
-                                         after_path_resolver,
-                                         after_apk_disassembler_cache)
+    after = Disassemble(symbol.after_symbol, after_path_resolver,
+                        after_apk_disassembler_cache)
     if after is None:
       continue
     if symbol.before_symbol:
-      before = _ComputeDisassemblyForSymbol(symbol.before_symbol,
-                                            before_path_resolver,
-                                            before_apk_disassembler_cache)
+      before = Disassemble(symbol.before_symbol, before_path_resolver,
+                           before_apk_disassembler_cache)
     else:
       before = None
     logging.info('Adding disassembly for: %s', symbol.full_name)
