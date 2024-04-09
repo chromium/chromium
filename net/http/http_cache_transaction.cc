@@ -4,6 +4,7 @@
 
 #include "net/http/http_cache_transaction.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"  // For IS_POSIX
 
 #if BUILDFLAG(IS_POSIX)
@@ -3839,7 +3840,8 @@ void HttpCache::Transaction::RecordHistograms() {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta total_time = now - first_cache_access_since_;
 
-  UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone", total_time);
+  UMA_HISTOGRAM_CUSTOM_TIMES("HttpCache.AccessToDone2", total_time,
+                             base::Milliseconds(1), base::Seconds(30), 100);
 
   bool did_send_request = !send_request_since_.is_null();
 
@@ -3860,7 +3862,8 @@ void HttpCache::Transaction::RecordHistograms() {
 
   if (!did_send_request) {
     if (cache_entry_status_ == CacheEntryStatus::ENTRY_USED) {
-      UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone.Used", total_time);
+      UMA_HISTOGRAM_CUSTOM_TIMES("HttpCache.AccessToDone2.Used", total_time,
+                                 base::Milliseconds(1), base::Seconds(3), 100);
     }
     return;
   }
@@ -3868,7 +3871,8 @@ void HttpCache::Transaction::RecordHistograms() {
   base::TimeDelta before_send_time =
       send_request_since_ - first_cache_access_since_;
 
-  UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone.SentRequest", total_time);
+  UMA_HISTOGRAM_CUSTOM_TIMES("HttpCache.AccessToDone2.SentRequest", total_time,
+                             base::Milliseconds(1), base::Seconds(30), 100);
   UMA_HISTOGRAM_TIMES("HttpCache.BeforeSend", before_send_time);
 
   // TODO(gavinp): Remove or minimize these histograms, particularly the ones

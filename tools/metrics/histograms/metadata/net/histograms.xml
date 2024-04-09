@@ -331,9 +331,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.AccessToDone" units="ms" expires_after="2024-09-01">
+<histogram name="HttpCache.AccessToDone2" units="ms" expires_after="2024-09-01">
   <owner>morlovich@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
   <summary>
     For every http cache transaction with a pattern (see HttpCache.Pattern), the
     time from the first access to the disk cache until the transaction was done.

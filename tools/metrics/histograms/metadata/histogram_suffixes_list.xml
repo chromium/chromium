@@ -1398,7 +1398,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="SentRequest" label="The request was sent over the network."/>
   <suffix name="Used"
       label="A cache entry was used without using the network."/>
-  <affected-histogram name="HttpCache.AccessToDone"/>
+  <affected-histogram name="HttpCache.AccessToDone2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="HttpCacheBeforeSendCases" separator=".">
