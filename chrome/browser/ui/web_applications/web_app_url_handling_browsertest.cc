@@ -63,6 +63,7 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kWebAppEnableUrlHandlers};
 };
