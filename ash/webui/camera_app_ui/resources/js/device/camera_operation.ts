@@ -278,6 +278,14 @@ class Reconfigurer {
           c.mode, c.constraints, c.captureCandidate.resolution,
           c.videoSnapshotResolution);
       try {
+        if (deviceOperator !== null) {
+          if (c.mode === Mode.PORTRAIT &&
+              await deviceOperator.isDeviceInUse(c.deviceId)) {
+            // TODO(b/326350233): Show a message to notify the user that the
+            // device is in use.
+            continue;
+          }
+        }
         await this.modes.prepareDevice();
         const factory = this.modes.getModeFactory(c.mode);
         await this.preview.open(c.constraints);
