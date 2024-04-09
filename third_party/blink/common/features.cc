@@ -118,16 +118,6 @@ BASE_FEATURE(kAllowDropAlphaForMediaStream,
              "AllowDropAlphaForMediaStream",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1331187): Delete the flag.
-BASE_FEATURE(kAllowPageWithIDBConnectionInBFCache,
-             "AllowPageWithIDBConnectionInBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(https://crbug.com/1331187): Delete the flag.
-BASE_FEATURE(kAllowPageWithIDBTransactionInBFCache,
-             "AllowPageWithIDBTransactionInBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowSourceSwitchOnPausedVideoMediaStream,
              "AllowSourceSwitchOnPausedVideoMediaStream",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2583,11 +2573,6 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
 // ---------------------------------------------------------------------------
 // Helper functions for querying feature status. Please define any features or
 // constants for features in the section above.
-
-bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPageWithIDBConnectionInBFCache) &&
-         base::FeatureList::IsEnabled(kAllowPageWithIDBTransactionInBFCache);
-}
 
 bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);

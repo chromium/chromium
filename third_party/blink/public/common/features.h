@@ -84,13 +84,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowDropAlphaForMediaStream);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kComputePressureRateObfuscationMitigation);
 
-// Feature for allowing page with open IDB connection to be
-// stored in back/forward cache.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);
-// Feature for allowing page with open IDB transaction to be stored in
-// back/forward cache.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBTransactionInBFCache);
-
 // Feature for allowing page into back/forward cache when datapipe has been
 // drained as bytes consumer for fetch requests.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1635,12 +1628,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 // constants for features in the section above.
 
 BLINK_COMMON_EXPORT bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled();
-
-// Checks both of kAllowPageWithIDBConnectionInBFCache and
-// kAllowPageWithIDBTransactionInBFCache are turned on when determining if a
-// page with IndexedDB transaction is eligible for BFCache.
-BLINK_COMMON_EXPORT bool
-IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
 
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
