@@ -522,6 +522,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
   html_source->AddBoolean(
+      "enableTrackingProtectionRolloutUx",
+      TrackingProtectionSettingsFactory::GetForProfile(profile)
+              ->IsTrackingProtection3pcdEnabled() &&
+          base::FeatureList::IsEnabled(
+              privacy_sandbox::kTrackingProtectionSettingsLaunch));
+  html_source->AddBoolean(
       "isIpProtectionV1Enabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx) && false);
   html_source->AddBoolean("isFingerprintingProtectionEnabled",
