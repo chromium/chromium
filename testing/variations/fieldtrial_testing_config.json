@@ -18724,6 +18724,21 @@
             ]
         }
     ],
+    "TabSateFlatBuffer": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabStateFlatBuffer"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSearchFuzzySearchStudy": [
         {
             "platforms": [
