@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.os.Build.VERSION_CODES.O_MR1;
 import static android.os.Build.VERSION_CODES.Q;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
@@ -1754,6 +1755,9 @@ public class TabSwitcherLayoutTest {
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
+
+        // Close the soft keyboard that appears when the dialog is shown.
+        closeSoftKeyboard();
 
         // Accept without changing the title.
         onView(withId(R.id.positive_button)).perform(click());
