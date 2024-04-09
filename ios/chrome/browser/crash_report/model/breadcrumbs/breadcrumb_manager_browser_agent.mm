@@ -137,11 +137,10 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const TabGroupRange from_range = group_move_change.moved_from_range();
       const TabGroupRange to_range = group_move_change.moved_to_range();
       CHECK_EQ(from_range.count(), to_range.count());
-      for (auto from_it = from_range.begin(), to_it = to_range.begin();
-           (from_it != from_range.end()) && (to_it != to_range.end());
-           ++from_it, ++to_it) {
-        const int from_index = *from_it;
-        const int to_index = *to_it;
+      const int count = from_range.count();
+      for (int offset = 0; offset < count; ++offset) {
+        const int from_index = from_range.range_begin() + offset;
+        const int to_index = to_range.range_begin() + offset;
         LogTabMoved(GetTabId(web_state_list->GetWebStateAt(to_index)),
                     from_index, to_index);
       }
