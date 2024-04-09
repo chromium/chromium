@@ -54,6 +54,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image.h"
@@ -225,6 +226,18 @@ bool ShouldTakePineScreeshot() {
   return has_regular_unminimized_window;
 }
 
+// Hide the cursor and lock the cursor as well if `lock` is true.
+void HideAndMaybeLockCursor(bool lock) {
+  Shell* shell = Shell::Get();
+  if (auto* cursor_manager = shell->cursor_manager(); cursor_manager) {
+    // Hide cursor, but let it reappear if the mouse moves.
+    cursor_manager->HideCursor();
+    if (lock) {
+      cursor_manager->LockCursor();
+    }
+  }
+}
+
 }  // namespace
 
 // static
@@ -304,12 +317,21 @@ void LockStateController::StartLockAnimation() {
 void LockStateController::StartShutdownAnimation(ShutdownReason reason) {
   shutdown_reason_ = reason;
 
-  Shell* shell = Shell::Get();
-  // Hide cursor, but let it reappear if the mouse moves.
-  if (shell->cursor_manager())
-    shell->cursor_manager()->HideCursor();
-
+  HideAndMaybeLockCursor(/*lock=*/false);
   ShutdownOnPine(/*with_pre_animation=*/true);
+}
+
+void LockStateController::RequestRestart(
+    power_manager::RequestRestartReason reason,
+    const std::string& description) {
+  if (features::IsForestFeatureEnabled()) {
+    restart_reason_ = reason;
+    restart_description_ = description;
+    HideAndMaybeLockCursor(/*lock=*/false);
+    TakePineImageAndShutdown(/*with_pre_animation=*/true);
+  } else {
+    chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
+  }
 }
 
 void LockStateController::LockWithoutAnimation() {
@@ -410,10 +432,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
                           now_timestamp);
   }
 
-  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
-  cursor_manager->HideCursor();
-  cursor_manager->LockCursor();
-
+  HideAndMaybeLockCursor(/*lock=*/true);
   ShutdownOnPine(/*with_pre_animation=*/false);
 }
 
@@ -462,9 +481,7 @@ void LockStateController::OnChromeTerminating() {
   // This is also the case when the user signs off.
   if (!shutting_down_) {
     shutting_down_ = true;
-    ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
-    cursor_manager->HideCursor();
-    cursor_manager->LockCursor();
+    HideAndMaybeLockCursor(/*lock=*/true);
     animator_->StartAnimation(SessionStateAnimator::kAllNonRootContainersMask,
                               SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY,
                               SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
@@ -533,10 +550,7 @@ void LockStateController::OnPreShutdownAnimationTimeout() {
   VLOG(1) << "OnPreShutdownAnimationTimeout";
   shutting_down_ = true;
 
-  Shell* shell = Shell::Get();
-  if (shell->cursor_manager())
-    shell->cursor_manager()->HideCursor();
-
+  HideAndMaybeLockCursor(/*lock=*/false);
   StartRealShutdownTimer(false);
 }
 
@@ -559,9 +573,14 @@ void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
 void LockStateController::OnRealPowerTimeout() {
   VLOG(1) << "OnRealPowerTimeout";
   DCHECK(shutting_down_);
-  DCHECK(shutdown_reason_);
+  DCHECK(shutdown_reason_ || restart_reason_);
   // Shut down or reboot based on device policy.
-  shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
+  if (restart_reason_) {
+    chromeos::PowerManagerClient::Get()->RequestRestart(*restart_reason_,
+                                                        restart_description_);
+  } else {
+    shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
+  }
 }
 
 void LockStateController::PreLockAnimation(

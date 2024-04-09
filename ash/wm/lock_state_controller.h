@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/gfx/image/image.h"
 
@@ -73,6 +74,12 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // Starts shutting down (with slow animation) that can be cancelled.
   void StartShutdownAnimation(ShutdownReason reason);
+
+  // Requests restart with the same animation as `StartShutdownAnimation`.
+  // `description` is a human-readable string describing the source of request
+  // the restart.
+  void RequestRestart(power_manager::RequestRestartReason reason,
+                      const std::string& description);
 
   // Starts locking without slow animation.
   void LockWithoutAnimation();
@@ -224,6 +231,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // The reason (e.g. user action) for a pending shutdown.
   std::optional<ShutdownReason> shutdown_reason_;
+
+  // The reason and description for requesting a restart.
+  std::optional<power_manager::RequestRestartReason> restart_reason_;
+  std::string restart_description_;
 
   // Indicates whether controller should proceed to (cancellable) shutdown after
   // locking.

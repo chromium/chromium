@@ -27,7 +27,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -212,7 +211,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       case VIEW_ID_QS_POWER_RESTART_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerRestartMenuButton);
-        chromeos::PowerManagerClient::Get()->RequestRestart(
+        Shell::Get()->lock_state_controller()->RequestRestart(
             power_manager::REQUEST_RESTART_FOR_USER, "Reboot by user");
         break;
       case VIEW_ID_QS_POWER_LOCK_MENU_BUTTON:
