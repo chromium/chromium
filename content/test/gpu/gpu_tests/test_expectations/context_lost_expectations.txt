@@ -170,7 +170,7 @@ crbug.com/1489852 [ mac intel release asan ] GpuCrash_InfoForHardwareGpu [ Skip 
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
 # Windows debug causes render process hangs due to slow gpu process restart.
-crbug.com/1416920 [ win debug graphite-disabled ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -200,7 +200,7 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImag
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Fails with Graphite on Windows
-crbug.com/329145823 [ win graphite-enabled ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
