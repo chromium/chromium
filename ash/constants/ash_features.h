@@ -808,6 +808,8 @@ BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnostics);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsDevMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShortcutStateMachines);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
@@ -1282,6 +1284,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSimLockPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsDevModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStandaloneWindowMigrationUxEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShowSharingUserInLauncherContinueSectionEnabled();

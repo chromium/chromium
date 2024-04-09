@@ -166,12 +166,16 @@ void OnIsolatedWebAppInstalled(
   // TODO(b/294815884): Check this when installing the IWA after we can add
   // custom checker. For now, we just install the IWA. Because we won't return
   // the profile and won't launch the IWA it should be fine.
-  if (!web_app->permissions_policy().empty()) {
-    for (const auto& permission_policy : web_app->permissions_policy()) {
-      if (!kAllowlistedPermissionPolicy.contains(permission_policy.feature)) {
-        ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
-        return;
-      }
+  if (!web_app->permissions_policy().empty() &&
+      !ash::features::
+          IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled()) {
+    ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
+    return;
+  }
+  for (const auto& permission_policy : web_app->permissions_policy()) {
+    if (!kAllowlistedPermissionPolicy.contains(permission_policy.feature)) {
+      ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
+      return;
     }
   }
   state->name = web_app->untranslated_name();

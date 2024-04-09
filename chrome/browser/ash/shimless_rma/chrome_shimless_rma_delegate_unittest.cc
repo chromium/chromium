@@ -182,6 +182,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
         {
             ash::features::kShimlessRMA3pDiagnostics,
             ash::features::kShimlessRMA3pDiagnosticsDevMode,
+            ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
         },
         {});
     ASSERT_TRUE(testing_profile_manager_.SetUp());
@@ -350,4 +351,23 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
   EXPECT_EQ(result.error(), k3pDiagErrorIWACannotHasPermissionPolicy);
 }
 
+// Verify that IWA with allowlisted permission policy but without feature flag
+// will be blocked.
+TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
+       IWACannotHavePermissionsPolicyWithoutFeatureFlag) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
+
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
+      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
+          blink::mojom::PermissionsPolicyFeature::kCamera}}});
+
+  auto result = PrepareDiagnosticsAppBrowserContext(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .Append(kTestCrxPath));
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), k3pDiagErrorIWACannotHasPermissionPolicy);
+}
 }  // namespace ash::shimless_rma

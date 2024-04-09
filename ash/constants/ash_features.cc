@@ -2642,7 +2642,7 @@ BASE_FEATURE(kShelfStackedHotseat,
              "ShelfStackedHotseat",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the OS update page in the shimless RMA flow.
+// Enables or disables the OS update page in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2667,6 +2667,12 @@ BASE_FEATURE(kShimlessRMA3pDiagnostics,
 // purpose.
 BASE_FEATURE(kShimlessRMA3pDiagnosticsDevMode,
              "ShimlessRMA3pDiagnosticsDevMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether Shimless diagnostics IWAs can access user permission through
+// requesting permission at install time.
+BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
+             "ShimlessRMA3pDiagnosticsAllowPermissionPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, system shortcuts will utilize state machiens instead of
@@ -4401,6 +4407,11 @@ bool IsShimlessRMA3pDiagnosticsEnabled() {
 
 bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnosticsDevMode);
+}
+
+bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
+  return base::FeatureList::IsEnabled(
+      kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {
