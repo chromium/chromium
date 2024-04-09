@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,13 +52,7 @@ class ASH_EXPORT PickerSearchAggregator {
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
-  std::vector<PickerSearchResult> category_results_;
-  std::vector<PickerSearchResult> suggested_results_;
-  std::vector<PickerSearchResult> omnibox_results_;
-  std::vector<PickerSearchResult> gif_results_;
-  std::vector<PickerSearchResult> emoji_results_;
-  std::vector<PickerSearchResult> local_file_results_;
-  std::vector<PickerSearchResult> drive_file_results_;
+  base::flat_map<PickerSectionType, std::vector<PickerSearchResult>> results_;
 
   // Whether the drive search has finished (either successfully or with an
   // error).

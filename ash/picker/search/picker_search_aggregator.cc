@@ -86,32 +86,19 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 
 void PickerSearchAggregator::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
-  if (!suggested_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kSuggestions,
-                          std::move(suggested_results_));
-  }
-  if (!category_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kCategories,
-                          std::move(category_results_));
-  }
-  if (!emoji_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kExpressions,
-                          std::move(emoji_results_));
-  }
-  if (!omnibox_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kLinks,
-                          std::move(omnibox_results_));
-  }
-  if (!local_file_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kFiles,
-                          std::move(local_file_results_));
-  }
-  if (!drive_file_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kDriveFiles,
-                          std::move(drive_file_results_));
-  }
-  if (!gif_results_.empty()) {
-    sections.emplace_back(PickerSectionType::kGifs, std::move(gif_results_));
+  for (PickerSectionType type : {
+           PickerSectionType::kSuggestions,
+           PickerSectionType::kCategories,
+           PickerSectionType::kExpressions,
+           PickerSectionType::kLinks,
+           PickerSectionType::kFiles,
+           PickerSectionType::kDriveFiles,
+           PickerSectionType::kGifs,
+       }) {
+    if (auto it = results_.find(type);
+        it != results_.end() && !it->second.empty()) {
+      sections.emplace_back(type, std::move(it->second));
+    }
   }
   current_callback_.Run(std::move(sections));
 }
@@ -124,7 +111,8 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
   if (source == PickerSearchSource::kDate ||
       source == PickerSearchSource::kMath ||
       source == PickerSearchSource::kClipboard) {
-    base::ranges::move(results, std::back_inserter(suggested_results_));
+    base::ranges::move(
+        results, std::back_inserter(results_[PickerSectionType::kSuggestions]));
     return;
   }
 
@@ -139,33 +127,9 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     return;
   }
 
-  switch (source) {
-    case PickerSearchSource::kDate:
-    case PickerSearchSource::kMath:
-    case PickerSearchSource::kClipboard:
-      // These should be caught by the above "move into suggested results"
-      // if block.
-      NOTREACHED() << "Tried assigning suggested results";
-      break;
-    case PickerSearchSource::kOmnibox:
-      omnibox_results_ = std::move(results);
-      break;
-    case PickerSearchSource::kTenor:
-      gif_results_ = std::move(results);
-      break;
-    case PickerSearchSource::kEmoji:
-      emoji_results_ = std::move(results);
-      break;
-    case PickerSearchSource::kCategory:
-      category_results_ = std::move(results);
-      break;
-    case PickerSearchSource::kLocalFile:
-      local_file_results_ = std::move(results);
-      break;
-    case PickerSearchSource::kDrive:
-      drive_file_results_ = std::move(results);
-      break;
-  }
+  const auto& [unused, inserted] =
+      results_.emplace(SectionTypeFromSearchSource(source), std::move(results));
+  CHECK(inserted);
 }
 
 base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
