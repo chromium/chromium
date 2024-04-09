@@ -168,7 +168,8 @@ TEST_F(PdfThumbnailerTest, TooLargeThumbnailSize) {
   auto pdf_region = CreatePdfRegion(kPdfContent);
 
   auto params = mojom::ThumbParams::New(
-      gfx::Size(PdfThumbnailer::kMaxWidth + 1, PdfThumbnailer::kMaxHeight + 1),
+      gfx::Size(pdf::mojom::PdfThumbnailer::kMaxWidthPixels + 1,
+                pdf::mojom::PdfThumbnailer::kMaxHeightPixels + 1),
       gfx::Size(kHorizontalDpi, kVerticalDpi), kStretch, kKeepRatio);
   thumbnailer_.GetThumbnail(
       std::move(params), std::move(pdf_region),

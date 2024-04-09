@@ -26,6 +26,12 @@ struct ThumbParams {
 // Interface used to generate a thumbnail for a PDF contents given as a set of
 // bytes. Used by Chrome OS to generate thumbnails for local PDF files.
 interface PdfThumbnailer {
+  // The maximum dimensions of a thumbnail accepted in the GetThumbnail()
+  // `params`. If a specified dimension exceeds the maximum, an empty, invalid
+  // bitmap is returned.
+  const int32 kMaxWidthPixels = 512;
+  const int32 kMaxHeightPixels = 512;
+
   // Generates a thumbnail for a PDF content.
   // `params` dictate details (e.g., size) of the thumbnail. `pdf_region`
   // should hold bytes of the PDF for which the thumbnail is generated.

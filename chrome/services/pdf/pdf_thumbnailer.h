@@ -26,14 +26,6 @@ class PdfThumbnailer : public pdf::mojom::PdfThumbnailer {
                     base::ReadOnlySharedMemoryRegion pdf_region,
                     GetThumbnailCallback callback) override;
   void SetUseSkiaRendererPolicy(bool use_skia) override;
-
-  // The maximum width of a thumbnail we accept. If the specified width
-  // exceeds the maximum, an empty, invalid bitmap is returned.
-  constexpr static int kMaxWidth = 512;
-
-  // The maximum height of a thumbnail we accept. If the specified height
-  // exceeds the maximum, an empty, invalid bitmap is returned.
-  constexpr static int kMaxHeight = 512;
 };
 
 }  // namespace pdf

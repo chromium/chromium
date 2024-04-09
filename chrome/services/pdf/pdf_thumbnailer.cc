@@ -35,8 +35,9 @@ void PdfThumbnailer::GetThumbnail(pdf::mojom::ThumbParamsPtr params,
   // Vet the requested thumbnail size.
   int width_px = params->size_px.width();
   int height_px = params->size_px.height();
-  if (params->size_px.IsEmpty() || width_px > PdfThumbnailer::kMaxWidth ||
-      height_px > PdfThumbnailer::kMaxHeight) {
+  if (params->size_px.IsEmpty() ||
+      width_px > pdf::mojom::PdfThumbnailer::kMaxWidthPixels ||
+      height_px > pdf::mojom::PdfThumbnailer::kMaxHeightPixels) {
     DLOG(ERROR) << "Invalid thumbnail size " << width_px << " x " << height_px;
     std::move(callback).Run(SkBitmap());
     return;
