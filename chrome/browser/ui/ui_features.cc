@@ -186,12 +186,7 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
 // the browser width is resized smaller than normal.
 BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
@@ -234,7 +229,7 @@ BASE_FEATURE(kSidePanelCompanionDefaultPinned,
 
 BASE_FEATURE(kSidePanelPinning,
              "SidePanelPinning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSidePanelPinningEnabled() {
   return (IsChromeRefresh2023() &&
