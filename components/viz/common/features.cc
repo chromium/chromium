@@ -67,7 +67,12 @@ BASE_FEATURE(kDelegatedCompositing,
 
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kVideoDetectorIgnoreNonVideos,
              "VideoDetectorIgnoreNonVideos",
