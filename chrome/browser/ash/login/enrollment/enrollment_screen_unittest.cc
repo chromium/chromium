@@ -424,6 +424,12 @@ class EnrollmentScreenAttestationFlowTest
     : public EnrollmentScreenBaseTest,
       public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
  protected:
+  EnrollmentScreenAttestationFlowTest() {
+    if (IsRollbackFlow()) {
+      wizard_context().configuration.Set(configuration::kRestoreAfterRollback,
+                                         true);
+    }
+  }
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
     config.mode = GetParam();
@@ -434,6 +440,10 @@ class EnrollmentScreenAttestationFlowTest
 
     return config;
   }
+  bool IsRollbackFlow() const {
+    return GetParam() ==
+           policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  }
 };
 
 TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
@@ -443,7 +453,9 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
 
   ExpectAttestationBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  ExpectSuccessScreen();
+  if (!IsRollbackFlow()) {
+    ExpectSuccessScreen();
+  }
   ExpectClearAuth();
 
   SetUpEnrollmentScreen(config);
@@ -486,7 +498,9 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
     ExpectShowView();
     ExpectAttestationBasedEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-    ExpectSuccessScreen();
+    if (!IsRollbackFlow()) {
+      ExpectSuccessScreen();
+    }
   }
 
   ExpectClearAuth();
@@ -510,7 +524,8 @@ INSTANTIATE_TEST_SUITE_P(
         policy::EnrollmentConfig::MODE_ATTESTATION,
         policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
         policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED));
+        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
+        policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED));
 
 class EnrollmentScreenAttestationFlowWithManualFallbackTest
     : public EnrollmentScreenAttestationFlowTest {
@@ -545,7 +560,9 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-    ExpectSuccessScreen();
+    if (!IsRollbackFlow()) {
+      ExpectSuccessScreen();
+    }
   }
 
   ExpectClearAuth();
@@ -577,7 +594,9 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
     ExpectShowViewWithLogin();
     ExpectManualEnrollmentAndReportEnrolled();
     ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-    ExpectSuccessScreen();
+    if (!IsRollbackFlow()) {
+      ExpectSuccessScreen();
+    }
   }
 
   ExpectClearAuth();
@@ -598,160 +617,7 @@ INSTANTIATE_TEST_SUITE_P(
     EnrollmentScreenAttestationFlowWithManualFallbackTest,
     ::testing::Values(
         policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED));
-
-class EnrollmentScreenRollbackFlowTest : public EnrollmentScreenBaseTest {
- protected:
-  EnrollmentScreenRollbackFlowTest() { ConfigureRestoreAfterRollback(); }
-
-  static const policy::EnrollmentConfig& rollback_config() {
-    static policy::EnrollmentConfig config;
-    config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-    return config;
-  }
-
-  static const policy::EnrollmentConfig& rollback_fallback_config() {
-    static policy::EnrollmentConfig config;
-    config.mode =
-        policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-    return config;
-  }
-
- private:
-  void ConfigureRestoreAfterRollback() {
-    wizard_context().configuration.Set(configuration::kRestoreAfterRollback,
-                                       true);
-  }
-};
-
-TEST_F(EnrollmentScreenRollbackFlowTest, ShouldFinishEnrollmentScreen) {
-  ExpectEnrollmentConfig(rollback_config().mode,
-                         rollback_config().auth_mechanism);
-  ExpectAttestationBasedEnrollmentAndReportEnrolled();
-  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  ShowEnrollmentScreen();
-
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
-}
-
-TEST_F(EnrollmentScreenRollbackFlowTest,
-       ShouldNotAutomaticallyRetryEnrollment) {
-  ExpectEnrollmentConfig(rollback_config().mode,
-                         rollback_config().auth_mechanism);
-  ExpectAttestationBasedEnrollmentAndReportFailure();
-  ExpectErrorScreen();
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  ShowEnrollmentScreen(/*suppress_jitter=*/true);
-
-  FastForwardTime(base::Days(1));
-
-  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
-  EXPECT_FALSE(last_screen_result().has_value());
-}
-
-TEST_F(EnrollmentScreenRollbackFlowTest, ShouldRetryEnrollmentOnUserAction) {
-  {
-    testing::InSequence s;
-    // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(rollback_config().mode,
-                           rollback_config().auth_mechanism);
-    ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportFailure();
-    ExpectErrorScreen();
-
-    // Second view is shown after user retry.
-    ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportEnrolled();
-    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  }
-
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  ShowEnrollmentScreen();
-
-  EXPECT_FALSE(last_screen_result().has_value());
-
-  UserRetry();
-
-  EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
-}
-
-TEST_F(EnrollmentScreenRollbackFlowTest,
-       ShouldAutomaticallyFallbackToManuallEnrollment) {
-  {
-    testing::InSequence s;
-    // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(rollback_config().mode,
-                           rollback_config().auth_mechanism);
-    ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportFailureWithAutomaticFallback();
-
-    // Second view is shown for manual fallback.
-    ExpectEnrollmentConfig(rollback_fallback_config().mode,
-                           rollback_fallback_config().auth_mechanism);
-    ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportEnrolled();
-    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  }
-
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  ShowEnrollmentScreen();
-
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
-}
-
-TEST_F(EnrollmentScreenRollbackFlowTest,
-       ShouldFallbackToManualEnrollmentOnUserAction) {
-  {
-    testing::InSequence s;
-    // First view is shown for attestation-based failure.
-    ExpectEnrollmentConfig(rollback_config().mode,
-                           rollback_config().auth_mechanism);
-    ExpectShowView();
-    ExpectAttestationBasedEnrollmentAndReportFailure();
-    ExpectErrorScreen();
-
-    // Second view is shown for manual fallback. This should be triggered after
-    // user decides to fallback.
-    ExpectEnrollmentConfig(rollback_fallback_config().mode,
-                           rollback_fallback_config().auth_mechanism);
-    ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportEnrolled();
-    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  }
-
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  ShowEnrollmentScreen();
-
-  EXPECT_FALSE(last_screen_result().has_value());
-
-  UserCancel();
-
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
-}
+        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
+        policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED));
 
 }  // namespace ash
