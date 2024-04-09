@@ -29,6 +29,7 @@ struct Options {
   bool disable_check_raw_ptr_to_stack_allocated_error = false;
   bool check_ptrs_to_non_string_literals = false;
   bool check_span_fields = false;
+  bool enable_match_profiling = false;
   std::string exclude_fields_file;
   std::vector<std::string> raw_ptr_paths_to_exclude_lines;
   std::vector<std::string> check_bad_raw_ptr_cast_exclude_funcs;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "FindBadRawPtrPatterns.h"
+
 #include <memory>
 
 #include "RawPtrHelpers.h"
@@ -19,6 +20,7 @@
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
+#include "llvm/Support/TimeProfiler.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -110,6 +112,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
     }
   }
 
+  llvm::StringRef getID() const override { return "BadCastMatcher"; };
+
  private:
   clang::CompilerInstance& compiler_;
   const FilterFile& exclude_files_;
@@ -153,6 +157,8 @@ class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
                                       error_need_raw_ptr_signature_);
   }
 
+  llvm::StringRef getID() const override { return "RawPtrFieldMatcher"; };
+
  private:
   clang::CompilerInstance& compiler_;
   unsigned error_need_raw_ptr_signature_;
@@ -191,6 +197,8 @@ class RawRefFieldMatcher : public MatchFinder::MatchCallback {
     compiler_.getDiagnostics().Report(field_decl->getEndLoc(),
                                       error_need_raw_ref_signature_);
   }
+
+  llvm::StringRef getID() const override { return "RawRefFieldMatcher"; };
 
  private:
   clang::CompilerInstance& compiler_;
@@ -234,6 +242,10 @@ class RawPtrToStackAllocatedMatcher : public MatchFinder::MatchCallback {
                                       error_no_raw_ptr_to_stack_)
         << pointer->getNameAsString() << pointee_name;
   }
+
+  llvm::StringRef getID() const override {
+    return "RawPtrToStackAllocatedMatcher";
+  };
 
  private:
   clang::CompilerInstance& compiler_;
@@ -339,6 +351,8 @@ class SpanFieldMatcher : public MatchFinder::MatchCallback {
     }
   }
 
+  llvm::StringRef getID() const override { return "SpanFieldMatcher"; };
+
  private:
   clang::CompilerInstance& compiler_;
   unsigned error_need_span_signature_;
@@ -349,7 +363,12 @@ class SpanFieldMatcher : public MatchFinder::MatchCallback {
 void FindBadRawPtrPatterns(Options options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
-  MatchFinder match_finder;
+  llvm::StringMap<llvm::TimeRecord> Records;
+  MatchFinder::MatchFinderOptions FinderOptions;
+  if (options.enable_match_profiling) {
+    FinderOptions.CheckProfiling.emplace(Records);
+  }
+  MatchFinder match_finder(std::move(FinderOptions));
 
   std::vector<std::string> paths_to_exclude_lines;
   std::vector<std::string> check_bad_raw_ptr_cast_exclude_paths;
@@ -408,7 +427,17 @@ void FindBadRawPtrPatterns(Options options,
     raw_span_matcher.Register(match_finder);
   }
 
-  match_finder.matchAST(ast_context);
+  {
+    llvm::TimeTraceScope TimeScope(
+        "match_finder.matchAST in FindBadRawPtrPatterns");
+    match_finder.matchAST(ast_context);
+  }
+
+  if (options.enable_match_profiling) {
+    llvm::TimerGroup TG("FindBadRawPtrPatterns",
+                        "FindBadRawPtrPatterns match profiling", Records);
+    TG.print(llvm::errs());
+  }
 }
 
 }  // namespace chrome_checker

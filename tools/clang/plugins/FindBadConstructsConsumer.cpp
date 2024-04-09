@@ -11,6 +11,7 @@
 #include "clang/Lex/Lexer.h"
 #include "clang/Sema/Sema.h"
 #include "llvm/ADT/StringExtras.h"
+#include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/raw_ostream.h"
 
 using namespace clang;
@@ -239,14 +240,30 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
     ipc_visitor_->set_context(&context);
     ParseFunctionTemplates(context.getTranslationUnitDecl());
   }
+
   if (layout_visitor_) {
+    llvm::TimeTraceScope TimeScope(
+        "VisitLayoutObjectMethods in "
+        "FindBadConstructsConsumer::Traverse");
     layout_visitor_->VisitLayoutObjectMethods(context);
   }
-  RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
+
+  {
+    llvm::TimeTraceScope TimeScope(
+        "TraverseDecl in FindBadConstructsConsumer::Traverse");
+    RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
+  }
+
   if (ipc_visitor_) {
     ipc_visitor_->set_context(nullptr);
   }
-  FindBadRawPtrPatterns(options_, context, instance());
+
+  {
+    llvm::TimeTraceScope TimeScope(
+        "FindBadRawPtrPatterns in "
+        "FindBadConstructsConsumer::Traverse");
+    FindBadRawPtrPatterns(options_, context, instance());
+  }
 }
 
 bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
