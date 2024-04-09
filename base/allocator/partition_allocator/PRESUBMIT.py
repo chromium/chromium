@@ -12,6 +12,10 @@ PRESUBMIT_VERSION = '2.0.0'
 _PARTITION_ALLOC_BASE_PATH = 'base/allocator/partition_allocator/src/'
 
 
+# This is adapted from Chromium's PRESUBMIT.py. The differences are:
+# - Base path: It is relative to the partition_alloc's source directory instead
+#              of chromium.
+# - Stricter: A single format is allowed: `PATH_ELEM_FILE_NAME_H_`.
 def CheckForIncludeGuards(input_api, output_api):
     """Check that header files have proper include guards"""
 
