@@ -57,7 +57,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   }
 
   // Waits until all tasks are completed. This is used for tests.
-  func waitForAllTasks(callback: @escaping () -> Void) {
+  func waitForAllTasksForTesting(callback: @escaping () -> Void) {
     backgroundTaskGroup.wait()
     // Do not use `mainTaskGroup.wait()` because it can cause a deadlock.
     mainTaskGroup.notify(queue: DispatchQueue.main) {

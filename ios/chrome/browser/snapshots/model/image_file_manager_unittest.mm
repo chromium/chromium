@@ -499,7 +499,7 @@ class ImageFileManagerTest : public PlatformTest {
 
     base::RunLoop run_loop;
     base::RunLoop* run_loop_ptr = &run_loop;
-    [image_file_manager_ waitForAllTasksWithCallback:(^() {
+    [image_file_manager_ waitForAllTasksForTestingWithCallback:(^() {
                            run_loop_ptr->QuitClosure().Run();
                          })];
     run_loop.Run();
