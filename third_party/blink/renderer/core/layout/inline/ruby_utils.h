@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -96,7 +98,8 @@ struct AnnotationMetrics {
 AnnotationMetrics ComputeAnnotationOverflow(
     const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
-    const ComputedStyle& line_style);
+    const ComputedStyle& line_style,
+    std::optional<FontHeight> annotation_metrics);
 
 // Update inline positions of LogicalLineItems for all LogicalRubyColumns
 // linked from `column_list`.
@@ -191,6 +194,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   // called after PlaceLines().
   RubyBlockPositionCalculator& AddLinesTo(LogicalLineContainer& line_container);
 
+  // Returns a metrics including all annotation lines. This must be called
+  // after PlaceLines().
+  FontHeight AnnotationMetrics() const;
+
   const HeapVector<Member<RubyLine>, 2>& RubyLineListForTesting() const {
     return ruby_lines_;
   }
@@ -201,6 +208,13 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   RubyLine& EnsureRubyLine(const RubyLevel& level);
 
   HeapVector<Member<RubyLine>, 2> ruby_lines_;
+
+  // Annotation distance from the base baseline.  `.ascent` is the top offset
+  // of the highest annotation from the base baseline, and `.descent` is the
+  // bottom offset of the lowest annotation from the base baseline.  They are
+  // zero if there are no higher/lower annotations.  This is available after
+  // PlaceLines().
+  FontHeight annotation_metrics_ = FontHeight::Empty();
 };
 
 }  // namespace blink

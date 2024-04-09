@@ -99,9 +99,11 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   // will be resumed in a subsequent fragmentainer.
   bool AddAnyClearanceAfterLine(const LineInfo&);
 
-  LayoutUnit SetAnnotationOverflow(const LineInfo& line_info,
-                                   const LogicalLineItems& line_box,
-                                   const FontHeight& line_box_metrics);
+  LayoutUnit SetAnnotationOverflow(
+      const LineInfo& line_info,
+      const LogicalLineItems& line_box,
+      const FontHeight& line_box_metrics,
+      std::optional<FontHeight> annotation_font_height);
 
   bool ShouldLineClamp(const LineInfo*) const;
 

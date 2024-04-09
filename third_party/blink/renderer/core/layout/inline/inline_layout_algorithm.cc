@@ -449,17 +449,19 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
   if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
+    std::optional<FontHeight> annotation_metrics;
     if (!box_states_->RubyColumnList().empty()) {
       HeapVector<Member<LogicalRubyColumn>> column_list(
           box_states_->TakeRubyColumnList());
       UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
-      RubyBlockPositionCalculator()
-          .GroupLines(column_list)
+      RubyBlockPositionCalculator calculator;
+      calculator.GroupLines(column_list)
           .PlaceLines(*line_box, line_box_metrics)
           .AddLinesTo(*line_container);
+      annotation_metrics = calculator.AnnotationMetrics();
     }
-    line_info->SetAnnotationBlockStartAdjustment(
-        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics));
+    line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
+        *line_info, *line_box, line_box_metrics, annotation_metrics));
   }
 
   if (UNLIKELY(line_builder.InitialLetterItemResult())) {
@@ -861,9 +863,11 @@ LayoutUnit InlineLayoutAlgorithm::ApplyTextAlign(LineInfo* line_info) {
 LayoutUnit InlineLayoutAlgorithm::SetAnnotationOverflow(
     const LineInfo& line_info,
     const LogicalLineItems& line_box,
-    const FontHeight& line_box_metrics) {
-  AnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
-      line_box, line_box_metrics, line_info.LineStyle());
+    const FontHeight& line_box_metrics,
+    std::optional<FontHeight> annotation_font_height) {
+  AnnotationMetrics annotation_metrics =
+      ComputeAnnotationOverflow(line_box, line_box_metrics,
+                                line_info.LineStyle(), annotation_font_height);
   LayoutUnit annotation_overflow_block_start;
   LayoutUnit annotation_overflow_block_end;
   LayoutUnit annotation_space_block_start;

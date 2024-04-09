@@ -268,7 +268,8 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
 AnnotationMetrics ComputeAnnotationOverflow(
     const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
-    const ComputedStyle& line_style) {
+    const ComputedStyle& line_style,
+    std::optional<FontHeight> annotation_metrics) {
   // Min/max position of content and annotations, ignoring line-height.
   const LayoutUnit line_over;
   LayoutUnit content_over = line_over + line_box_metrics.ascent;
@@ -295,6 +296,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
     } else {
       const auto* fragment = item.GetPhysicalFragment();
       if (fragment && fragment->IsRubyColumn()) {
+        DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
         PhysicalRect rect =
             ComputeRubyEmHeightBox(*To<PhysicalBoxFragment>(fragment));
         LayoutUnit block_size;
@@ -337,6 +339,22 @@ AnnotationMetrics ComputeAnnotationOverflow(
         else
           has_under_emphasis = true;
       }
+    }
+  }
+
+  if (annotation_metrics) {
+    DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+    if (annotation_metrics->ascent) {
+      LayoutUnit item_over =
+          line_box_metrics.ascent - annotation_metrics->ascent;
+      content_over = std::min(content_over, item_over);
+      has_over_annotation = true;
+    }
+    if (annotation_metrics->descent) {
+      LayoutUnit item_under =
+          line_box_metrics.ascent + annotation_metrics->descent;
+      content_under = std::max(content_under, item_under);
+      has_under_annotation = true;
     }
   }
 
@@ -943,6 +961,7 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
     const LogicalLineItems& base_line_items,
     const FontHeight& line_box_metrics) {
   DCHECK(!ruby_lines_.empty()) << "This must be called after GroupLines().";
+  annotation_metrics_ = FontHeight();
 
   // Sort `ruby_lines` from the lowest to the highest.
   base::ranges::sort(ruby_lines_, [](const Member<RubyLine>& line1,
@@ -973,6 +992,7 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
       ruby_line.MoveInBlockDirection(offset);
       offset += metrics.descent;
     }
+    annotation_metrics_.descent = offset;
   }
 
   // Place "over" annotations from the base level to the highest one.
@@ -993,17 +1013,27 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
       ruby_line.MoveInBlockDirection(offset);
       offset -= metrics.ascent;
     }
+    annotation_metrics_.ascent = -offset;
   }
   return *this;
 }
 
 RubyBlockPositionCalculator& RubyBlockPositionCalculator::AddLinesTo(
     LogicalLineContainer& line_container) {
+  DCHECK(!annotation_metrics_.IsEmpty())
+      << "This must be called after PlaceLines().";
   for (const auto& ruby_line : ruby_lines_) {
     ruby_line->AddLinesTo(line_container);
   }
   return *this;
 }
+
+FontHeight RubyBlockPositionCalculator::AnnotationMetrics() const {
+  DCHECK(!annotation_metrics_.IsEmpty())
+      << "This must be called after PlaceLines().";
+  return annotation_metrics_;
+}
+
 // ================================================================
 
 RubyBlockPositionCalculator::RubyLine::RubyLine(const RubyLevel& level)
