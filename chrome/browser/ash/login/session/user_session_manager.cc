@@ -1980,6 +1980,14 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
   SigninProfileHandler::Get()->ProfileStartUp(profile);
 
+  // Workaround for potential data race between loading keyboard extension
+  // and switching Active profile for a new user, which might result in
+  // keyboard extension getting blocked.
+  // This is required for keyboard to properly work during user onboarding.
+  if (user_manager->IsCurrentUserNew()) {
+    ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
+  }
+
   PrefService* prefs = profile->GetPrefs();
   arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);
 
