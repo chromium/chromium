@@ -29,6 +29,7 @@ class WolvicWebContentsDelegate
                       const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) final;
+  bool ShouldResumeRequestsForCreatedWindow() override;
 
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) final;

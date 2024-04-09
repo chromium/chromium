@@ -44,12 +44,20 @@ public class Tab {
         return TabJni.get().createWebContents(is_off_the_record);
     }
 
+    private void attachWebContents(WebContents mWebContents) {
+        TabJni.get().attachWebContents(mWebContents);
+    }
+
+    private void releaseWebContents(WebContents webContents) {
+        TabJni.get().releaseWebContents(webContents);
+    }
+
     public void setWebContentsDelegate(
             WebContents webContents, WolvicWebContentsDelegate delegate) {
         TabJni.get().setWebContentsDelegate(webContents, delegate);
     }
 
-    public Tab(@NonNull Context context, boolean is_off_the_record) {
+    public Tab(@NonNull Context context, boolean is_off_the_record, WebContents webContents) {
         mWindowAndroid = new ActivityWindowAndroid(context, false,
                 IntentRequestTracker.createFromActivity(ContextUtils.activityFromContext(context)));
 
@@ -57,7 +65,12 @@ public class Tab {
         mCompositorView.onNativeLibraryLoaded(mWindowAndroid);
         mWindowAndroid.setAnimationPlaceholderView(mCompositorView);
 
-        mWebContents = createWebContents(is_off_the_record);
+        if (webContents != null) {
+            mWebContents = webContents;
+            attachWebContents(mWebContents);
+        } else {
+            mWebContents = createWebContents(is_off_the_record);
+        }
 
         mContentView =
                 ContentView.createContentView(context, null /* eventOffsetHandler */, mWebContents);
@@ -71,6 +84,18 @@ public class Tab {
         // TODO: Call `onShow()` on the appropriate place and should be pair
         // with `onHide()`.
         mWebContents.onShow();
+    }
+
+    public void destroy() {
+        mWindowAndroid = null;
+        mContentView = null;
+        mNavigationController = null;;
+        mCompositorView = null;;
+
+        if (!mWebContents.isDestroyed()) {
+            releaseWebContents(mWebContents);
+        }
+        mWebContents = null;
     }
 
     public void goBack() {
@@ -150,6 +175,8 @@ public class Tab {
     @NativeMethods
     public interface Natives {
         WebContents createWebContents(boolean is_off_the_record);
+        void attachWebContents(WebContents webContents);
+        void releaseWebContents(WebContents webContents);
         void setWebContentsDelegate(WebContents webContents, WolvicWebContentsDelegate delegate);
         void pageZoomIn(WebContents webContents);
         void pageZoomOut(WebContents webContents);

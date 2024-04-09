@@ -6,13 +6,13 @@ package org.chromium.wolvic;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.url.GURL;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.content_public.browser.WebContents;
 
 @JNINamespace("wolvic")
 public abstract class WolvicWebContentsDelegate extends WebContentsDelegateAndroid {
     @CalledByNative
-    public abstract void onCreateNewWindow(GURL url);
+    public abstract void onCreateNewWindow(WebContents webContents);
 }

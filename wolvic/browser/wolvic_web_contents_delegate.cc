@@ -27,9 +27,8 @@ WolvicWebContentsDelegate::~WolvicWebContentsDelegate() = default;
 
 using base::android::ScopedJavaLocalRef;
 
-// Called by web_contents_impl.cc whenever a navigation
-// requires the creation of a new window (for example
-// a link with target=_blank
+// Called by web_contents_impl.cc whenever a navigation requires the creation
+// of a new window (for example a link with target=_blank and window.open)
 void WolvicWebContentsDelegate::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
@@ -38,21 +37,24 @@ void WolvicWebContentsDelegate::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
   if (java_delegate.is_null())
     return;
 
-  // We let new_contents die on purpouse (by not assigning the
-  // unique_ptr to any local variable/attribute because that way
-  // we are telling the web engine that we do not want a new
-  // window to be created. We'll in any case use the target_urlformatter
-  // to notify the client (Wolvic) so that it can create the window
-  // for the new URL on its own.
-  ScopedJavaLocalRef<jobject> java_gurl =
-      url::GURLAndroid::FromNativeGURL(env, target_url);
-  Java_WolvicWebContentsDelegate_onCreateNewWindow(env, java_delegate, java_gurl);
+  Java_WolvicWebContentsDelegate_onCreateNewWindow(
+      env, java_delegate, new_contents->GetJavaWebContents());
+
+  // |new_contents| ownership has been passed to java, and will retake it
+  // in WolvicWebContents when the new tab is created asynchronously.
+  new_contents.release();
+}
+
+bool WolvicWebContentsDelegate::ShouldResumeRequestsForCreatedWindow() {
+  // Always return false here since we need to defer loading the created window
+  // until after we have attached a new delegate to the new webcontents (which
+  // happens asynchronously).
+  return false;
 }
 
 // This adds an extra null check to the parent's behaviour. Seems to be needed

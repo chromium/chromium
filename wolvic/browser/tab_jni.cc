@@ -55,6 +55,26 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
   return web_contents_impl->GetJavaWebContents();
 }
 
+void JNI_Tab_AttachWebContents(JNIEnv* env,
+                            const JavaParamRef<jobject>& jweb_contents) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+  auto wolvic_contents = std::make_unique<WolvicContents>(
+      std::unique_ptr<WebContents>(web_contents));
+  wolvic_contents.release()->Init();
+  web_contents->ResumeLoadingCreatedWebContents();
+}
+
+void JNI_Tab_ReleaseWebContents(JNIEnv* env,
+                                const JavaParamRef<jobject>& jweb_contents) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+
+  auto* wolvic_contents = WolvicContents::FromWebContents(web_contents);
+  DCHECK(wolvic_contents);
+  delete wolvic_contents;
+}
+
 void JNI_Tab_SetWebContentsDelegate(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,

@@ -34,7 +34,7 @@ class WolvicContentsUserData : public base::SupportsUserData::Data {
   }
 
  private:
-  std::unique_ptr<WolvicContents> contents_;
+  raw_ptr<WolvicContents> contents_;
 };
 
 // static
