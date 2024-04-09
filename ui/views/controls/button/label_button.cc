@@ -30,6 +30,8 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -61,6 +63,7 @@ LabelButton::LabelButton(
           PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
   ink_drop_container_ = AddChildView(std::make_unique<InkDropContainerView>());
   ink_drop_container_->SetVisible(false);
+  ink_drop_container_->SetProperty(kViewIgnoredByLayoutKey, true);
 
   AddChildView(image_container_->CreateView());
 
@@ -71,6 +74,7 @@ LabelButton::LabelButton(
 
   SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
+  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 LabelButton::~LabelButton() {
@@ -376,10 +380,21 @@ int LabelButton::GetHeightForWidth(int width) const {
   return height;
 }
 
-void LabelButton::Layout(PassKey) {
+ProposedLayout LabelButton::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layouts;
+  if (!size_bounds.is_fully_bounded()) {
+    layouts.host_size = gfx::Size();
+    return layouts;
+  }
+
   gfx::Rect image_area = GetLocalBounds();
 
-  ink_drop_container_->SetBoundsRect(image_area);
+  layouts.child_layouts.emplace_back(
+      ink_drop_container_.get(),
+      static_cast<DelegatingLayoutManager*>(GetLayoutManager())
+          ->CanBeVisible(ink_drop_container_.get()),
+      image_area, SizeBounds());
 
   gfx::Insets insets = GetInsets();
   // If the button have a limited space to fit in, the image and the label
@@ -431,7 +446,11 @@ void LabelButton::Layout(PassKey) {
   } else if (horizontal_alignment == gfx::ALIGN_RIGHT) {
     image_origin.Offset(image_area.width() - image_size.width(), 0);
   }
-  image_container_view()->SetBoundsRect(gfx::Rect(image_origin, image_size));
+  layouts.child_layouts.emplace_back(
+      const_cast<LabelButton*>(this)->image_container_view(),
+      static_cast<DelegatingLayoutManager*>(GetLayoutManager())
+          ->CanBeVisible(image_container_view()),
+      gfx::Rect(image_origin, image_size), SizeBounds());
 
   gfx::Rect label_bounds = label_area;
   if (label_area.width() == label_size.width()) {
@@ -440,12 +459,20 @@ void LabelButton::Layout(PassKey) {
     label_bounds.ClampToCenteredSize(label_size);
   } else {
     label_bounds.set_size(label_size);
-    if (horizontal_alignment == gfx::ALIGN_RIGHT)
+    if (horizontal_alignment == gfx::ALIGN_RIGHT) {
       label_bounds.Offset(label_area.width() - label_size.width(), 0);
+    }
   }
 
-  label_->SetBoundsRect(label_bounds);
-  LayoutSuperclass<Button>(this);
+  layouts.child_layouts.emplace_back(
+      label_.get(),
+      static_cast<DelegatingLayoutManager*>(GetLayoutManager())
+          ->CanBeVisible(label_.get()),
+      label_bounds, SizeBounds());
+  layouts.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+  return layouts;
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

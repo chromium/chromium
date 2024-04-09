@@ -900,7 +900,8 @@ void View::Layout(PassKey) {
   // action.
   internal::ScopedChildrenLock lock(this);
   for (views::View* child : children_) {
-    if (child->needs_layout_ || !HasLayoutManager()) {
+    if (child->needs_layout_ || !HasLayoutManager() ||
+        child->GetProperty(kViewIgnoredByLayoutKey)) {
       TRACE_EVENT1("views", "View::LayoutChildren", "class",
                    child->GetClassName());
       child->needs_layout_ = false;
