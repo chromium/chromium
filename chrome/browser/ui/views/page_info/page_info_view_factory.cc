@@ -414,6 +414,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
         icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
                                   : &vector_icons::kUsbChromeRefreshIcon;
         break;
+      case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+        icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffIcon
+                                  : &vector_icons::kTouchpadMouseIcon;
+        break;
       default:
         break;
     }
