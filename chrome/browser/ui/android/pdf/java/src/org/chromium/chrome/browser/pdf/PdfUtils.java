@@ -44,7 +44,9 @@ public class PdfUtils {
         }
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
-        assert scheme != null;
+        if (scheme == null) {
+            return false;
+        }
         if (scheme.equals(UrlConstants.FILE_SCHEME)) {
             // TODO(shuyng): ask the download subsystem for MIME type.
             String fileExtension = MimeTypeMap.getFileExtensionFromUrl(url).toLowerCase(Locale.US);

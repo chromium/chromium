@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -452,8 +451,7 @@ public class StaticLayout extends Layout {
 
     // Whether the tab is ready to display or it should be faded in as it loads.
     private boolean shouldStall(Tab tab) {
-        return (tab.isFrozen() || tab.needsReload())
-                && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
+        return (tab.isFrozen() || tab.needsReload()) && !tab.isNativePage();
     }
 
     private boolean canUseLiveTexture(Tab tab) {

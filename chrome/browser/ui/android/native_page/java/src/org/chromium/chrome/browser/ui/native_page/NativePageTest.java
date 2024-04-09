@@ -72,9 +72,9 @@ public class NativePageTest {
         for (UrlCombo urlCombo : VALID_URLS) {
             String url = urlCombo.url;
             GURL gurl = new GURL(url);
-            Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, false));
+            Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, false, false));
             if (isValidInIncognito(urlCombo)) {
-                Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, true));
+                Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, true, false));
             }
         }
     }
@@ -87,8 +87,8 @@ public class NativePageTest {
     public void testNegativeIsNativePageUrl() {
         for (String invalidUrl : INVALID_URLS) {
             GURL gurl = new GURL(invalidUrl);
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, false));
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, true));
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, false, false));
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, true, false));
         }
     }
 }

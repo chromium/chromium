@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -168,7 +169,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             // content. The URL check is done in addition to the isNativePage to ensure a navigation
             // off the native page did not result in the crash.
             if (mTab.isNativePage()
-                    && NativePage.isNativePageUrl(mTab.getUrl(), mTab.isIncognito())) {
+                    && (mTab.getNativePage().getUrl().equals(mTab.getUrl().getSpec())
+                            || NativePage.isNativePageUrl(
+                                    mTab.getUrl(),
+                                    mTab.isIncognito(),
+                                    PdfUtils.isPdfNavigation(mTab.getUrl().getSpec(), null)))) {
                 return;
             }
 

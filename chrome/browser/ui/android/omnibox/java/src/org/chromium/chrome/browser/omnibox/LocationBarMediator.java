@@ -465,7 +465,7 @@ class LocationBarMediator
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
             GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
-            if (NativePage.isNativePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
+            if (NativePage.isChromePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
                 setUrlBarTextEmpty();
             } else {
                 setUrlBarText(

@@ -54,7 +54,9 @@ public class LoadProgressMediator {
                                 }
 
                                 if (NativePage.isNativePageUrl(
-                                        navigation.getUrl(), tab.isIncognito())) {
+                                        navigation.getUrl(),
+                                        tab.isIncognito(),
+                                        navigation.isPdf())) {
                                     finishLoadProgress(false);
                                     return;
                                 }
@@ -82,7 +84,10 @@ public class LoadProgressMediator {
                                 if (tab.getUrl() == null
                                         || UrlUtilities.isNtpUrl(tab.getUrl())
                                         || NativePage.isNativePageUrl(
-                                                tab.getUrl(), tab.isIncognito())) {
+                                                tab.getUrl(),
+                                                tab.isIncognito(),
+                                                tab.isNativePage()
+                                                        && tab.getNativePage().isPdf())) {
                                     return;
                                 }
 
@@ -134,7 +139,10 @@ public class LoadProgressMediator {
         }
 
         if (tab.isLoading()) {
-            if (NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito())) {
+            if (NativePage.isNativePageUrl(
+                    tab.getUrl(),
+                    tab.isIncognito(),
+                    tab.isNativePage() && tab.getNativePage().isPdf())) {
                 finishLoadProgress(false);
             } else {
                 startLoadProgress();

@@ -96,7 +96,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -1587,12 +1586,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
             GURL url = getUrl();
-            // Don't show anything for Chrome URLs.
-            if (NativePage.isNativePageUrl(url, getCurrentTab().isIncognito())) {
-                mUrlCoordinator.setUrlBarData(
-                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
-                return;
-            }
             final CharSequence displayText;
             final int originStart;
             final int originEnd;

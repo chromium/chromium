@@ -120,5 +120,6 @@ specific_include_rules = {
   ],
   'TabWebContentsObserver\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
+    "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
   ],
 }
