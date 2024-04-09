@@ -135,6 +135,9 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
                                   CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForRelu(
+      const mojom::Relu& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);

@@ -98,6 +98,7 @@ constexpr char kOpConstTypeName[] = "const";
 constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConv2dTypeName[] = "conv";
+constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpTransposeTypeName[] = "transpose";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
@@ -518,6 +519,10 @@ GraphBuilder::BuildCoreMLModel() {
             *operation->get_element_wise_unary(), block));
         break;
       }
+      case mojom::Operation::Tag::kRelu: {
+        RETURN_IF_ERROR(AddOperationForRelu(*operation->get_relu(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -545,7 +550,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPool2d:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kReduce:
-      case mojom::Operation::Tag::kRelu:
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReshape:
       case mojom::Operation::Tag::kSigmoid:
@@ -727,9 +731,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  static const char kParamX[] = "x";
-  static const char kParamAlpha[] = "alpha";
-  static const char kParamBeta[] = "beta";
+  static constexpr char kParamAlpha[] = "alpha";
+  static constexpr char kParamBeta[] = "beta";
 
   // Clip's min and max values are passed as constant scalar tensors.
   const std::string alpha_op_output_name =
@@ -749,7 +752,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
 
-  (*op->mutable_inputs())[kParamX].add_arguments()->set_name(
+  (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
       input_operand_info.coreml_name);
   (*op->mutable_inputs())[kParamAlpha].add_arguments()->set_name(
       alpha_op_output_name);
@@ -917,6 +920,30 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
   (*(*op->mutable_inputs())[kOpDataTypeName].add_arguments()->mutable_value()) =
       CreateStringValue(DataTypeToString(output_data_type));
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForRelu(
+    const mojom::Relu& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  static constexpr auto kSupportedReluOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::FLOAT32});
+  if (!kSupportedReluOpsTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpReluTypeName);
+
+  (*op->mutable_inputs())[kOpParamX].add_arguments()->set_name(
+      input_operand_info.coreml_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test compute() working for input ArrayBufferView created from bigger ArrayBuffer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
-[FAIL] Test compute() working for output ArrayBufferView created from bigger ArrayBuffer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
-Harness: the test ran to completion.
-
