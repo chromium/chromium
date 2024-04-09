@@ -801,7 +801,9 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 // Regression test for crbug.com/40946538. Ensures Exo is able to handle
 // arbitrary ordering of asynchronous system mouse events and exo client drag
 // requests.
-TEST_F(ExtendedDragSourceTest, HandlesMouseMoveBeforeExtendedDragStart) {
+// TODO(crbug.com/333504586): This test started to consistently fail
+TEST_F(ExtendedDragSourceTest,
+       DISABLED_HandlesMouseMoveBeforeExtendedDragStart) {
   UpdateDisplay("800x600,800x600");
   const auto* screen = display::Screen::GetScreen();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
