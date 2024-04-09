@@ -467,6 +467,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CloudManagement.PolicyFetchingTime" units="ms"
+    expires_after="2025-05-01">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The amount of time for fetching cloud policies, measured from the moment the
+    request object is created until the client receives the policy payload.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
     enum="EnterpriseCloudManagementEnrollmentTokenLocationMac"
     expires_after="2025-05-01">

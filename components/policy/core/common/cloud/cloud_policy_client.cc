@@ -12,10 +12,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -547,8 +549,9 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   params.auth_data = DMAuth::FromDMToken(dm_token_);
   params.oauth_token = oauth_token_;
   params.profile_id = profile_id_;
-  params.callback = base::BindOnce(&CloudPolicyClient::OnPolicyFetchCompleted,
-                                   weak_ptr_factory_.GetWeakPtr());
+  params.callback =
+      base::BindOnce(&CloudPolicyClient::OnPolicyFetchCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now());
   // Marking a small number of fetch reasons critical helps on DMServer, see for
   // instance https://crbug.com/660009.
   if (reason == PolicyFetchReason::kDeviceEnrollment) {
@@ -1326,7 +1329,11 @@ void CloudPolicyClient::OnFetchRobotAuthCodesCompleted(
   // |this| might be deleted at this point.
 }
 
-void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
+void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
+                                               DMServerJobResult result) {
+  UMA_HISTOGRAM_LONG_TIMES(kPolicyFetchingTimeHistogramName,
+                           base::Time::Now() - start_time);
+
   if (result.dm_status == DM_STATUS_SUCCESS) {
     if (!result.response.has_policy_response() ||
         result.response.policy_response().responses_size() == 0) {

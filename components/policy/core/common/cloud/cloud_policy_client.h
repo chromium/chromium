@@ -48,6 +48,9 @@ class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
 
+inline constexpr char kPolicyFetchingTimeHistogramName[] =
+    "Enterprise.CloudManagement.PolicyFetchingTime";
+
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
 // such as whether there is a valid registration (DMToken is present in that
@@ -642,8 +645,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // Callback for registration requests.
   void OnRegisterCompleted(DMServerJobResult result);
 
-  // Callback for policy fetch requests.
-  void OnPolicyFetchCompleted(DMServerJobResult result);
+  // Callback for policy fetch requests. `start_time` is the timestamp of the
+  // request creation, used for recording fetching time as a histogram.
+  void OnPolicyFetchCompleted(base::Time start_time, DMServerJobResult result);
 
   // Callback for robot account api authorization requests.
   void OnFetchRobotAuthCodesCompleted(RobotAuthCodeCallback callback,
