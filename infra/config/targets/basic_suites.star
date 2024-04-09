@@ -3786,6 +3786,12 @@ targets.legacy_basic_suite(
                 "--use-gpu-in-tests",
             ],
         ),
+        "components_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
+            ],
+        ),
         "compositor_unittests": targets.legacy_test_config(
             args = [
                 "--test-launcher-bot-mode",
