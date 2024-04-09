@@ -164,4 +164,33 @@
   [self removeObservationForWebState:detachedWebState];
 }
 
+// Overrides the parent observations. The parent treats a group as one cell and
+// just update it, whereas this TabGroupMediator treats them as multiples cell,
+// so this overrides manages notifications accordingly.
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  DCHECK_EQ(self.webStateList, webStateList);
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
+  switch (change.type()) {
+    case WebStateListChange::Type::kGroupVisualDataUpdate: {
+      const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
+          change.As<WebStateListChangeGroupVisualDataUpdate>();
+      const TabGroup* tabGroup = visualDataChange.updated_group();
+      if (_tabGroup != tabGroup) {
+        break;
+      }
+      [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
+      [_groupConsumer setGroupColor:tabGroup->GetColor()];
+      break;
+    }
+    default:
+      [super didChangeWebStateList:webStateList change:change status:status];
+      break;
+  }
+}
+
 @end

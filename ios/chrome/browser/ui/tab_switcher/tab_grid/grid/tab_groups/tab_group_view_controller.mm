@@ -53,6 +53,10 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   UIVisualEffectView* _blurView;
   // Currently displayed group.
   const TabGroup* _tabGroup;
+  // Title label.
+  UILabel* _titleView;
+  // Dot view.
+  UIView* _coloredDotView;
 }
 
 #pragma mark - Public
@@ -217,10 +221,12 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 
 - (void)setGroupTitle:(NSString*)title {
   _groupTitle = title;
+  [_titleView setText:_groupTitle];
 }
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
+  [_coloredDotView setBackgroundColor:_groupColor];
 }
 
 #pragma mark - Private
@@ -317,26 +323,26 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   fullTitleView.layer.cornerRadius = kTitleBackgroundCornerRadius;
   fullTitleView.opaque = NO;
 
-  UIView* coloredDotView = [self groupColorDotView];
-  UILabel* titleView = [self groupTitleView];
-  [fullTitleView addSubview:coloredDotView];
-  [fullTitleView addSubview:titleView];
+  _coloredDotView = [self groupColorDotView];
+  _titleView = [self groupTitleView];
+  [fullTitleView addSubview:_coloredDotView];
+  [fullTitleView addSubview:_titleView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [titleView.leadingAnchor
-        constraintEqualToAnchor:coloredDotView.trailingAnchor
+    [_titleView.leadingAnchor
+        constraintEqualToAnchor:_coloredDotView.trailingAnchor
                        constant:kDotTitleSeparationMargin],
-    [coloredDotView.centerYAnchor
-        constraintEqualToAnchor:titleView.centerYAnchor],
-    [coloredDotView.leadingAnchor
+    [_coloredDotView.centerYAnchor
+        constraintEqualToAnchor:_titleView.centerYAnchor],
+    [_coloredDotView.leadingAnchor
         constraintEqualToAnchor:fullTitleView.leadingAnchor
                        constant:kTitleHorizontalMargin],
     [fullTitleView.trailingAnchor
-        constraintEqualToAnchor:titleView.trailingAnchor
+        constraintEqualToAnchor:_titleView.trailingAnchor
                        constant:kTitleHorizontalMargin],
-    [titleView.topAnchor constraintEqualToAnchor:fullTitleView.topAnchor
-                                        constant:kTitleVerticalMargin],
-    [fullTitleView.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor
+    [_titleView.topAnchor constraintEqualToAnchor:fullTitleView.topAnchor
+                                         constant:kTitleVerticalMargin],
+    [fullTitleView.bottomAnchor constraintEqualToAnchor:_titleView.bottomAnchor
                                                constant:kTitleVerticalMargin],
   ]];
   return fullTitleView;
