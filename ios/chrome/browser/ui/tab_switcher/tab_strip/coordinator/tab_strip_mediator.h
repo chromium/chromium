@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_mutator.h"
 
+@protocol TabStripCommands;
 @protocol TabStripConsumer;
 
 class Browser;
@@ -29,6 +30,9 @@ class WebStateList;
 
 // The associated browser needed to move tabs across browsers.
 @property(nonatomic, assign) Browser* browser;
+
+// Commands handler for the Tab Strip.
+@property(nonatomic, weak) id<TabStripCommands> tabStripHandler;
 
 // Designated initializer. Initializer with a TabStripConsumer.
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer

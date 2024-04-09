@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
@@ -31,6 +32,35 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+// Fake handler to get commands in tests.
+@interface FakeTabStripHandler : NSObject <TabStripCommands>
+
+@property(nonatomic, assign) std::set<web::WebStateID>
+    identifiersForTabGroupCreation;
+
+@property(nonatomic, assign) const TabGroup* groupForTabGroupEdition;
+
+@end
+
+@implementation FakeTabStripHandler
+
+- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
+}
+
+- (void)showTabStripGroupCreationForTabs:
+    (const std::set<web::WebStateID>&)identifiers {
+  _identifiersForTabGroupCreation = identifiers;
+}
+
+- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup {
+  _groupForTabGroupEdition = tabGroup;
+}
+
+- (void)hideTabStripGroupCreation {
+}
+
+@end
 
 // Fake consumer to get the passed value in tests.
 @interface FakeTabStripConsumer : NSObject <TabStripConsumer>
@@ -227,6 +257,8 @@ class TabStripMediatorTest : public PlatformTest {
         browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
 
+    tab_strip_handler_ = [[FakeTabStripHandler alloc] init];
+
     consumer_ = [[FakeTabStripConsumer alloc] init];
   }
 
@@ -237,6 +269,7 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_.browserState = browser_state_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
+    mediator_.tabStripHandler = tab_strip_handler_;
   }
 
   void AddWebState(bool pinned = false) {
@@ -253,6 +286,7 @@ class TabStripMediatorTest : public PlatformTest {
   }
 
  protected:
+  FakeTabStripHandler* tab_strip_handler_;
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -939,8 +973,8 @@ TEST_F(TabStripMediatorTest, DeleteAllWebState) {
   EXPECT_EQ(web_state_list_->count(), (int)consumer_.items.count);
 }
 
-// Tests that the model and consumer are correctly updated after creating a new
-// group from an item.
+// Tests that the appropriate command is sent when creating a new group from an
+// item.
 TEST_F(TabStripMediatorTest, CreateNewGroupWithItem) {
   AddWebState();
   AddWebState();
@@ -952,17 +986,8 @@ TEST_F(TabStripMediatorTest, CreateNewGroupWithItem) {
   TabSwitcherItem* tab_switcher_item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
   [mediator_ createNewGroupWithItem:tab_switcher_item];
-
-  // Model has a new group.
-  const TabGroup* group =
-      web_state_list_->GetGroupOfWebStateAt(web_state_index);
-  EXPECT_NE(nullptr, group);
-
-  // The consumer has a new group item.
-  ASSERT_EQ(web_state_list_->count() + 1, (int)consumer_.items.count);
-  EXPECT_EQ(consumer_.items[1].tabGroupItem.tabGroup, group);
-  EXPECT_EQ(consumer_.items[2].tabSwitcherItem.identifier,
-            web_state->GetUniqueIdentifier());
+  EXPECT_EQ(std::set<web::WebStateID>{tab_switcher_item.identifier},
+            tab_strip_handler_.identifiersForTabGroupCreation);
 }
 
 // Tests that the consumer is correctly updated after collapsing/expanding a
@@ -1006,4 +1031,89 @@ TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
   EXPECT_FALSE([consumer_.expandedItems containsObject:group_item_identifier]);
   web_state_list_->UpdateGroupVisualData(group, expanded_visual_data);
   EXPECT_TRUE([consumer_.expandedItems containsObject:group_item_identifier]);
+}
+
+// Tests that the appropriate command is sent when renaming an existing group.
+TEST_F(TabStripMediatorTest, RenameGroup) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  [mediator_ renameGroup:groupItem];
+  EXPECT_EQ(group, tab_strip_handler_.groupForTabGroupEdition);
+}
+
+// Tests that adding a new tab in a group works.
+TEST_F(TabStripMediatorTest, AddTabInGroup) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+  ASSERT_EQ(2, web_state_list_->count());
+
+  [mediator_ addNewTabInGroup:groupItem];
+
+  // Check model is updated.
+  EXPECT_EQ(2, web_state_list_->active_index());
+  EXPECT_EQ(3, web_state_list_->count());
+  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+  EXPECT_EQ(group, web_state_list_->GetGroupOfWebStateAt(2));
+}
+
+// Tests that ungrouping tabs in a group works.
+TEST_F(TabStripMediatorTest, UngroupTabs) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+  ASSERT_EQ(2, web_state_list_->count());
+  ASSERT_TRUE(web_state_list_->ContainsGroup(group));
+
+  [mediator_ ungroupGroup:groupItem];
+
+  // Check model is updated.
+  EXPECT_EQ(1, web_state_list_->active_index());
+  EXPECT_EQ(2, web_state_list_->count());
+  EXPECT_FALSE(web_state_list_->ContainsGroup(group));
+}
+
+// Tests that deleting a group works.
+TEST_F(TabStripMediatorTest, DeleteGroup) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+  ASSERT_EQ(2, web_state_list_->count());
+  ASSERT_TRUE(web_state_list_->ContainsGroup(group));
+
+  [mediator_ deleteGroup:groupItem];
+
+  // Check model is updated.
+  EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_->active_index());
+  EXPECT_EQ(0, web_state_list_->count());
+  EXPECT_FALSE(web_state_list_->ContainsGroup(group));
 }

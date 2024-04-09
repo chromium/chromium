@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_snapshots_view.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -53,8 +53,6 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 @implementation CreateTabGroupViewController {
   // Text input to name the group.
   UITextField* _tabGroupTextField;
-  // Handler to handle user's actions.
-  __weak id<TabGroupsCommands> _tabGroupsHandler;
   // List of all colored buttons.
   NSArray<UIButton*>* _colorSelectionButtons;
   // Currently selected color view represented by the dot next to the title.
@@ -84,15 +82,12 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   NSArray<NSLayoutConstraint*>* _multipleSnapshotsConstraints;
 }
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                       tabGroup:(const TabGroup*)tabGroup {
+- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];
   if (self) {
-    CHECK(handler);
-    _tabGroupsHandler = handler;
     _tabGroup = tabGroup;
 
     [self createColorSelectionButtons];
@@ -164,10 +159,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
                         action:@selector(creationButtonTapped)
               forControlEvents:UIControlEventPrimaryActionTriggered];
 
-  UITraitCollection* interfaceStyleDarkTraitCollection = [UITraitCollection
-      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
-  UIColor* placeholderTextColor = [[UIColor colorNamed:kTextSecondaryColor]
-      resolvedColorWithTraitCollection:interfaceStyleDarkTraitCollection];
+  UIColor* placeholderTextColor = [UIColor colorNamed:kTextSecondaryColor];
 
   tabGroupTextField.attributedPlaceholder = [[NSAttributedString alloc]
       initWithString:l10n_util::GetNSString(
@@ -337,7 +329,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   // animation is longer than the view one, and element attached to the keyboard
   // are still visible for a frame after the end of the view animation.
   _bottomStackView.hidden = YES;
-  [_tabGroupsHandler hideTabGroupCreation];
+  [self.delegate createOrEditTabGroupViewControllerDidDismiss:self];
 }
 
 // Changes the selected color.
@@ -581,7 +573,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
     self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
         colorWithAlphaComponent:kBackgroundAlpha];
     UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
     UIVisualEffectView* blurEffectView =
         [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;

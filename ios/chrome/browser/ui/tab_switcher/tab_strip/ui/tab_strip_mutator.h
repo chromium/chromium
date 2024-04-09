@@ -32,6 +32,21 @@
 /// Tells the receiver to expand the group associated with `tabGroupItem`.
 - (void)expandGroup:(TabGroupItem*)tabGroupItem;
 
+/// Tells the receiver to rename the group associated with `tabGroupItem`.
+- (void)renameGroup:(TabGroupItem*)tabGroupItem;
+
+/// Tells the receiver to add a new tab in the group associated with
+/// `tabGroupItem`.
+- (void)addNewTabInGroup:(TabGroupItem*)tabGroupItem
+    NS_SWIFT_NAME(addNewTabInGroup(_:));
+
+/// Tells the receiver to ungroup the tabs in the group associated with
+/// `tabGroupItem`.
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem;
+
+/// Tells the receiver to delete the group associated with `tabGroupItem`.
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_

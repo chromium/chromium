@@ -8,8 +8,8 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 
 /// View Controller displaying the TabStrip.
 @objcMembers
-class TabStripViewController: UIViewController, TabStripTabCellDelegate,
-  TabStripConsumer, TabStripCommands, TabStripNewTabButtonDelegate
+class TabStripViewController: UIViewController,
+  TabStripConsumer, TabStripNewTabButtonDelegate, TabStripTabCellDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -409,9 +409,9 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       numberOfVisibleItemsChanged: true)
   }
 
-  // MARK: - TabStripCommands
+  // MARK: - Public
 
-  func setNewTabButtonOnTabStripIPHHighlighted(_ iphHighlighted: Bool) {
+  @objc func setNewTabButtonOnTabStripIPHHighlighted(_ iphHighlighted: Bool) {
     newTabButton.IPHHighlighted = iphHighlighted
   }
 
@@ -634,7 +634,39 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   private func contextMenuForTabGroupItem(_ tabGroupItem: TabGroupItem, at indexPath: IndexPath)
     -> UIMenu
   {
-    return UIMenu()
+    let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
+    weak var weakSelf = self
+    var menuElements: [UIMenuElement?] = []
+
+    /// Add edit group menu.
+    var editGroupMenuElements: [UIMenuElement?] = []
+    let renameGroup = actionFactory?.actionToRenameTabGroup {
+      weakSelf?.mutator?.renameGroup(tabGroupItem)
+    }
+    editGroupMenuElements.append(renameGroup)
+    let addNewTabToGroup = actionFactory?.actionToAddNewTabInGroup {
+      weakSelf?.mutator?.addNewTabInGroup(tabGroupItem)
+    }
+    editGroupMenuElements.append(addNewTabToGroup)
+    let ungroupGroup = actionFactory?.actionToUngroupTabGroup {
+      weakSelf?.mutator?.ungroupGroup(tabGroupItem)
+    }
+    editGroupMenuElements.append(ungroupGroup)
+    let editGroupMenu = UIMenu(
+      options: .displayInline, children: editGroupMenuElements.compactMap { $0 })
+    menuElements.append(editGroupMenu)
+
+    /// Close group menu.
+    var closeGroupMenuElements: [UIMenuElement?] = []
+    let closeGroup = actionFactory?.actionToDeleteTabGroup {
+      weakSelf?.mutator?.deleteGroup(tabGroupItem)
+    }
+    closeGroupMenuElements.append(closeGroup)
+    let closeGroupMenu = UIMenu(
+      options: .displayInline, children: closeGroupMenuElements.compactMap { $0 })
+    menuElements.append(closeGroupMenu)
+
+    return UIMenu(children: menuElements.compactMap { $0 })
   }
 
   // Update visible cells identifier, following a reorg of cells.

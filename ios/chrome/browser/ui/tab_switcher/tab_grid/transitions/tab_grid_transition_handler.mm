@@ -21,7 +21,7 @@
   TabGridTransitionDirection _direction;
 
   UIViewController<TabGridTransitionLayoutProviding>* _tabGridViewController;
-  BVCContainerViewController* _BVCContainerViewController;
+  UIViewController* _BVCContainerViewController;
 
   // Transition item for the selected cell in tab grid.
   TabGridTransitionItem* _tabGridCellItem;
@@ -38,7 +38,7 @@
                      (UIViewController<TabGridTransitionLayoutProviding>*)
                          tabGridViewController
             bvcContainerViewController:
-                (BVCContainerViewController*)bvcContainerViewController {
+                (UIViewController*)bvcContainerViewController {
   self = [super init];
   if (self) {
     CHECK(tabGridViewController.transitionLayout);

@@ -9,10 +9,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/web/public/web_state_id.h"
+
+@interface CreateTabGroupCoordinator () <
+    CreateOrEditTabGroupViewControllerDelegate>
+@end
 
 @implementation CreateTabGroupCoordinator {
   // Mediator for tab groups creation.
@@ -59,14 +64,18 @@
   return self;
 }
 
+#pragma mark - CreateOrEditTabGroupViewControllerDelegate
+
+- (void)createOrEditTabGroupViewControllerDidDismiss:
+    (CreateTabGroupViewController*)viewController {
+  [self.delegate createOrEditTabGroupCoordinatorDidDismiss:self];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  id<TabGroupsCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController =
-      [[CreateTabGroupViewController alloc] initWithHandler:handler
-                                                   tabGroup:_tabGroup];
+      [[CreateTabGroupViewController alloc] initWithTabGroup:_tabGroup];
 
   if (_tabGroup) {
     _mediator = [[CreateTabGroupMediator alloc]
@@ -80,6 +89,7 @@
                             webStateList:self.browser->GetWebStateList()];
   }
   _viewController.mutator = _mediator;
+  _viewController.delegate = self;
 
   // TODO(crbug.com/1501837): Add the create tab group animation.
   _viewController.modalPresentationStyle =

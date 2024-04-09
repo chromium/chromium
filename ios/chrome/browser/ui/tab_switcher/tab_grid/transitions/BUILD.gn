@@ -27,7 +27,6 @@ source_set("transitions") {
     "//base",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations",
   ]

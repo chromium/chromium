@@ -9,13 +9,17 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
 
+@protocol CreateOrEditTabGroupViewControllerDelegate;
 class TabGroup;
 @protocol TabGroupCreationMutator;
-@protocol TabGroupsCommands;
 
 // View controller that display the tab group creation view.
 @interface CreateTabGroupViewController
     : UIViewController <TabGroupCreationConsumer>
+
+// Delegate.
+@property(nonatomic, weak) id<CreateOrEditTabGroupViewControllerDelegate>
+    delegate;
 
 // Mutator to handle model changes.
 @property(nonatomic, weak) id<TabGroupCreationMutator> mutator;
@@ -23,8 +27,7 @@ class TabGroup;
 // Initiates a CreateTabGroupViewController with `handler` to handle user
 // action. `tabGroup` can be nil in case we are in creation mode and not in
 // edition mode.
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                       tabGroup:(const TabGroup*)tabGroup;
+- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup;
 
 @end
 

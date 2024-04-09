@@ -24576,17 +24576,43 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabStripCreateGroupWithItem">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a tab cell in the tab strip and tapped
+    &quot;Add Tab to New Group&quot; to create a new tab group containing this
+    tab (iPad only).
+  </description>
+</action>
+
+<action name="MobileTabStripDeleteGroup">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a group cell in the tab strip and tapped
+    &quot;Delete Group&quot; to delete a group and close all its tabs (iPad
+    only).
+  </description>
+</action>
+
 <action name="MobileTabStripGroupCollapse">
+  <owner>qpubert@google.com</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User tapped a group cell in the tab strip to collapse the group (iPad only).
   </description>
 </action>
 
 <action name="MobileTabStripGroupExpand">
+  <owner>qpubert@google.com</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User tapped a group cell in the tab strip to expand the group (iPad only).
   </description>
@@ -24595,9 +24621,31 @@ should be able to be added at any place in this file.
 <action name="MobileTabStripNewTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User opened a tab using the tab strip new ta button. Obsolete until
     19/02/2024.
+  </description>
+</action>
+
+<action name="MobileTabStripNewTabInGroup">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a group cell in the tab strip and tapped
+    &quot;New Tab in Group&quot; to open a new tab in a group (iPad only).
+  </description>
+</action>
+
+<action name="MobileTabStripRenameGroup">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a group cell in the tab strip and tapped
+    &quot;Rename Group&quot; to rename the group or customize the group color
+    (iPad only).
   </description>
 </action>
 
@@ -24610,6 +24658,17 @@ should be able to be added at any place in this file.
 <action name="MobileTabStripShowTabGridMenu">
   <owner>justincohen@chromium.org</owner>
   <description>User long-pressed on the tab strip tab grid button.</description>
+</action>
+
+<action name="MobileTabStripUngroupTabs">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a group cell in the tab strip and tapped
+    &quot;Ungroup&quot; to delete the group while keeping all its tabs (iPad
+    only).
+  </description>
 </action>
 
 <action name="MobileTabSwitched" not_user_triggered="true">

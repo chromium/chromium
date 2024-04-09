@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol CreateOrEditTabGroupCoordinatorDelegate;
 class TabGroup;
 namespace web {
 class WebStateID;
@@ -16,6 +17,9 @@ class WebStateID;
 
 // Coordinator that manage the model and UI of the tab group creation.
 @interface CreateTabGroupCoordinator : ChromeCoordinator
+
+// Delegate.
+@property(nonatomic, weak) id<CreateOrEditTabGroupCoordinatorDelegate> delegate;
 
 // Initializer when you create a new group.
 // - `identifiers` is the list of selected tab to put in the group once created.

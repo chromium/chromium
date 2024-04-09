@@ -13,11 +13,15 @@
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
-@interface TabStripCoordinator () <TabStripViewControllerDelegate>
+@interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
+                                   TabStripCommands,
+                                   TabStripViewControllerDelegate>
 
 // Mediator for updating the TabStrip when the WebStateList changes.
 @property(nonatomic, strong) TabStripMediator* mediator;
@@ -28,6 +32,7 @@
 
 @implementation TabStripCoordinator {
   SharingCoordinator* _sharingCoordinator;
+  CreateTabGroupCoordinator* _createTabGroupCoordinator;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -42,6 +47,10 @@
 - (void)start {
   if (self.tabStripViewController)
     return;
+
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabStripCommands)];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK(browserState);
@@ -59,13 +68,11 @@
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.browserState = browserState;
   self.mediator.browser = self.browser;
+  self.mediator.tabStripHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabStripCommands);
 
   self.tabStripViewController.mutator = self.mediator;
   self.tabStripViewController.dragDropHandler = self.mediator;
-
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self.tabStripViewController
-                   forProtocol:@protocol(TabStripCommands)];
 }
 
 - (void)stop {
@@ -76,6 +83,48 @@
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(TabStripCommands)];
   self.tabStripViewController = nil;
+}
+
+#pragma mark - TabStripCommands
+
+- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
+  [self.tabStripViewController
+      setNewTabButtonOnTabStripIPHHighlighted:IPHHighlighted];
+}
+
+- (void)showTabStripGroupCreationForTabs:
+    (const std::set<web::WebStateID>&)identifiers {
+  [self hideTabStripGroupCreation];
+  _createTabGroupCoordinator = [[CreateTabGroupCoordinator alloc]
+      initTabGroupCreationWithBaseViewController:self.baseViewController
+                                         browser:self.browser
+                                    selectedTabs:identifiers];
+  _createTabGroupCoordinator.delegate = self;
+  [_createTabGroupCoordinator start];
+}
+
+- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup {
+  [self hideTabStripGroupCreation];
+  _createTabGroupCoordinator = [[CreateTabGroupCoordinator alloc]
+      initTabGroupEditionWithBaseViewController:self.baseViewController
+                                        browser:self.browser
+                                       tabGroup:tabGroup];
+  _createTabGroupCoordinator.delegate = self;
+  [_createTabGroupCoordinator start];
+}
+
+- (void)hideTabStripGroupCreation {
+  [_createTabGroupCoordinator stop];
+  _createTabGroupCoordinator = nil;
+}
+
+#pragma mark - CreateOrEditTabGroupCoordinatorDelegate
+
+- (void)createOrEditTabGroupCoordinatorDidDismiss:
+    (CreateTabGroupCoordinator*)coordinator {
+  id<TabStripCommands> tabStripHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabStripCommands);
+  [tabStripHandler hideTabStripGroupCreation];
 }
 
 #pragma mark - Properties

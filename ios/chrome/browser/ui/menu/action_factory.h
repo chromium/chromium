@@ -156,7 +156,8 @@ class TabGroup;
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for adding a new tab to the tab group.
-- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block;
+- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block
+    NS_SWIFT_NAME(actionToAddNewTabInGroup(with:));
 
 // Creates a UIAction instance for ungrouping a tab group.
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block;

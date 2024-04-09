@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
@@ -225,6 +226,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
   }
+  _tabStripHandler = nil;
 }
 
 #pragma mark - Public properties
@@ -500,35 +502,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 #pragma mark - TabStripMutator
 
 - (void)addNewItem {
-  if (!self.webStateList)
-    return;
-
-  if (!self.browserState) {
+  if (!self.webStateList || !self.browserState) {
     return;
   }
-
-  if (!IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
-                                  self.browserState->IsOffTheRecord())) {
-    return;
-  }
-
-  web::WebState::CreateParams params(self.browserState);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  GURL url(kChromeUINewTabURL);
-  web::NavigationManager::WebLoadParams loadParams(url);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  self.webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::Automatic().Activate());
-  TabSwitcherItem* item;
-  if (self.webStateList->GetActiveWebState()) {
-    item = [[WebStateTabSwitcherItem alloc]
-        initWithWebState:self.webStateList->GetActiveWebState()];
-  }
-  [self.consumer selectItem:item];
+  const auto insertionParams = WebStateList::InsertionParams::Automatic();
+  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
 }
 
 - (void)activateItem:(TabSwitcherItem*)item {
@@ -600,15 +578,44 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!self.webStateList) {
     return;
   }
-  const WebStateSearchCriteria indexToAddToNewGroupSearchCriteria(
-      item.identifier);
-  const int indexToAddToNewGroup =
-      GetWebStateIndex(self.webStateList, indexToAddToNewGroupSearchCriteria);
-  // TODO(crbug.com/1501837): Update name/color.
-  self.webStateList->CreateGroup(
-      {indexToAddToNewGroup},
-      tab_groups::TabGroupVisualData{u"Temporary Group Name",
-                                     tab_groups::TabGroupColorId::kGrey});
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabStripCreateGroupWithItem"));
+  [_tabStripHandler showTabStripGroupCreationForTabs:{item.identifier}];
+}
+
+- (void)renameGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripRenameGroup"));
+  [_tabStripHandler showTabStripGroupEditionForGroup:tabGroupItem.tabGroup];
+}
+
+- (void)addNewTabInGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList || !self.browserState) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripNewTabInGroup"));
+  const auto insertionParams =
+      WebStateList::InsertionParams::Automatic().InGroup(tabGroupItem.tabGroup);
+  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+}
+
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
+  self.webStateList->DeleteGroup(tabGroupItem.tabGroup);
+}
+
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
+  CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
+                           WebStateList::CLOSE_USER_ACTION);
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1067,6 +1074,30 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (newGroup) {
     [self updateDataAndReconfigureItemsInGroup:newGroup];
   }
+}
+
+// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
+// `insertionParams`.
+- (void)insertAndActivateNewWebStateWithInsertionParams:
+    (WebStateList::InsertionParams)insertionParams {
+  CHECK(self.browserState);
+  CHECK(self.webStateList);
+
+  if (!IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
+                                  self.browserState->IsOffTheRecord())) {
+    return;
+  }
+
+  web::WebState::CreateParams params(self.browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  GURL url(kChromeUINewTabURL);
+  web::NavigationManager::WebLoadParams loadParams(url);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  self.webStateList->InsertWebState(std::move(webState),
+                                    insertionParams.Activate());
 }
 
 @end

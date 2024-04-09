@@ -7,11 +7,28 @@
 
 #import <Foundation/Foundation.h>
 
+#import <set>
+
+class TabGroup;
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // Commands for tab strip changes.
 @protocol TabStripCommands
 
 // Set the `iphHighlighted` state for the new tab button on the tab strip.
 - (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted;
+
+// Shows the tab group creation view.
+- (void)showTabStripGroupCreationForTabs:
+    (const std::set<web::WebStateID>&)identifiers;
+
+// Shows tab group editing view.
+- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup;
+
+// Hides the tab group creation view.
+- (void)hideTabStripGroupCreation;
 
 @end
 
