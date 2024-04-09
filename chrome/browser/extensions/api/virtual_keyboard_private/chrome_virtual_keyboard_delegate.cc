@@ -524,9 +524,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag("autocorrect", config.auto_correct));
   features.Append(GenerateFeatureFlag("spellcheck", config.spell_check));
   features.Append(GenerateFeatureFlag("handwriting", config.handwriting));
-  features.Append(GenerateFeatureFlag(
-      "handwritinggesture",
-      base::FeatureList::IsEnabled(features::kHandwritingGesture)));
   features.Append(GenerateFeatureFlag("handwritinglegacyrecognition",
                                       IsHandwritingLegacyRecognitionEnabled()));
   features.Append(GenerateFeatureFlag(

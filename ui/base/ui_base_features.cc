@@ -368,12 +368,6 @@ bool IsNotificationGesturesUpdateEnabled() {
   return base::FeatureList::IsEnabled(kNotificationGesturesUpdate);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kHandwritingGesture,
-             "HandwritingGesture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kSynchronousPageFlipTesting,
              "SynchronousPageFlipTesting",
              base::FEATURE_ENABLED_BY_DEFAULT);
