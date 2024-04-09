@@ -129,7 +129,8 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     private @BrowserControlsState int calculateVisibilityConstraints() {
         if (mPersistentFullscreenMode.get()) {
             return BrowserControlsState.HIDDEN;
-        } else if (mTokenHolder.hasTokens() && !sDisableOverridesForTesting) {
+        } else if (ChromeFeatureList.sToolbarScrollAblation.isEnabled()
+                || (mTokenHolder.hasTokens() && !sDisableOverridesForTesting)) {
             return BrowserControlsState.SHOWN;
         }
         return BrowserControlsState.BOTH;
