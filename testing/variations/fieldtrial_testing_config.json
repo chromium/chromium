@@ -1401,6 +1401,27 @@
             ]
         }
     ],
+    "AutofillEnableCardBenefits": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableCardBenefitsForAmericanExpress",
+                        "AutofillEnableCardBenefitsForCapitalOne",
+                        "AutofillEnableCardBenefitsSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableCvcStorage": [
         {
             "platforms": [
