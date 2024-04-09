@@ -43,12 +43,14 @@ export class CrFeedbackButtonsElement extends CrLitElement {
       selectedOption: {type: String},
       thumbsDownLabel_: {type: String},
       thumbsUpLabel_: {type: String},
+      disabled: {type: Boolean},
     };
   }
 
   selectedOption: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
   protected thumbsDownLabel_: string = loadTimeData.getString('thumbsDown');
   protected thumbsUpLabel_: string = loadTimeData.getString('thumbsUp');
+  disabled: boolean = false;
 
   protected getThumbsDownAriaPressed_(): boolean {
     return this.selectedOption === CrFeedbackOption.THUMBS_DOWN;

@@ -13,14 +13,16 @@ export function getHtml(this: CrFeedbackButtonsElement) {
       aria-label="${this.thumbsUpLabel_}"
       title="${this.thumbsUpLabel_}"
       aria-pressed="${this.getThumbsUpAriaPressed_()}"
-      @click="${this.onThumbsUpClick_}">
+      @click="${this.onThumbsUpClick_}"
+      ?disabled="${this.disabled}">
   </cr-icon-button>
   <cr-icon-button id="thumbsDown"
       iron-icon="${this.getThumbsDownIcon_()}"
       aria-label="${this.thumbsDownLabel_}"
       title="${this.thumbsDownLabel_}"
       aria-pressed="${this.getThumbsDownAriaPressed_()}"
-      @click="${this.onThumbsDownClick_}">
+      @click="${this.onThumbsDownClick_}"
+      ?disabled="${this.disabled}">
   </cr-icon-button>
 </div>`;
 }
