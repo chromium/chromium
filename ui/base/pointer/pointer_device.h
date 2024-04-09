@@ -5,6 +5,7 @@
 #ifndef UI_BASE_POINTER_POINTER_DEVICE_H_
 #define UI_BASE_POINTER_POINTER_DEVICE_H_
 
+#include <cstdint>
 #include <optional>
 #include <tuple>
 #include <vector>
