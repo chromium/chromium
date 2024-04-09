@@ -358,12 +358,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
 
-  std::string& GetUnresponsiveDocumentJavascriptCallStack();
-  blink::LocalFrameToken& GetUnresponsiveDocumentToken();
+  const std::string& GetUnresponsiveDocumentJavascriptCallStack() const;
+  const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const;
 
   void SetUnresponsiveDocumentJSCallStackAndToken(
-      const blink::LocalFrameToken& frame_token,
-      const std::string& untrusted_javascript_call_stack);
+      const std::string& untrusted_javascript_call_stack,
+      const std::optional<blink::LocalFrameToken>& frame_token);
 
   void InterruptJavaScriptIsolateAndCollectCallStack();
 

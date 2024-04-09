@@ -14015,8 +14015,6 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       if (!unresponsive_document_javascript_call_stack.empty() &&
           unresponsive_document_token == GetFrameToken()) {
         body.Set("stack", unresponsive_document_javascript_call_stack);
-        rph->SetUnresponsiveDocumentJSCallStackAndToken(
-            blink::LocalFrameToken(), "");
       } else {
         body.Set("stack", "Unable to collect JS call stack.");
       }

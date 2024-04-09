@@ -27,8 +27,9 @@
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<blink::LocalFrameToken>
-    : public WTF::CrossThreadCopierPassThrough<blink::LocalFrameToken> {};
+struct CrossThreadCopier<std::optional<blink::LocalFrameToken>>
+    : public CrossThreadCopierPassThrough<
+          std::optional<blink::LocalFrameToken>> {};
 
 }  // namespace WTF
 
@@ -50,6 +51,22 @@ void FormatStackTrace(v8::Isolate* isolate, StringBuilder& builder) {
   }
 }
 
+void PostHandleCollectedCallStackTask(
+    JavaScriptCallStackGenerator* generator,
+    WTF::StringBuilder& builder,
+    std::optional<LocalFrameToken> frame_token = std::nullopt) {
+  DCHECK(Platform::Current());
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      WTF::CrossThreadBindOnce(
+          [](JavaScriptCallStackGenerator* generator, String call_stack,
+             std::optional<LocalFrameToken> frame_token) {
+            generator->HandleCallStackCollected(call_stack, frame_token);
+          },
+          CrossThreadUnretained(generator), builder.ReleaseString(),
+          frame_token));
+}
+
 void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
   CHECK(IsMainThread());
 
@@ -57,18 +74,25 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
   v8::HandleScope handle_scope(isolate);
   WTF::StringBuilder builder;
   if (!isolate->InContext()) {
+    PostHandleCollectedCallStackTask(generator, builder);
     return;
   }
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  ExecutionContext* execution_context = ExecutionContext::From(context);
-  DOMWrapperWorld& world = DOMWrapperWorld::Current(isolate);
+  ScriptState* script_state = ScriptState::MaybeFrom(context);
+  if (!script_state) {
+    PostHandleCollectedCallStackTask(generator, builder);
+    return;
+  }
+  ExecutionContext* execution_context = ToExecutionContext(script_state);
+  DOMWrapperWorld& world = script_state->World();
   auto* execution_dom_window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame =
       execution_dom_window ? execution_dom_window->GetFrame() : nullptr;
 
+  std::optional<LocalFrameToken> frame_token;
   if (frame && world.IsMainWorld()) {
-    LocalFrameToken frame_token = frame->GetLocalFrameToken();
+    frame_token = frame->GetLocalFrameToken();
     if (!execution_context->IsFeatureEnabled(
             mojom::blink::DocumentPolicyFeature::
                 kIncludeJSCallStacksInCrashReports)) {
@@ -78,17 +102,8 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
     } else {
       FormatStackTrace(isolate, builder);
     }
-    DCHECK(Platform::Current());
-    PostCrossThreadTask(*Platform::Current()->GetIOTaskRunner(), FROM_HERE,
-                        WTF::CrossThreadBindOnce(
-                            [](JavaScriptCallStackGenerator* generator,
-                               LocalFrameToken frame_token, String call_stack) {
-                              generator->HandleCallStackCollected(frame_token,
-                                                                  call_stack);
-                            },
-                            CrossThreadUnretained(generator), frame_token,
-                            builder.ReleaseString()));
   }
+  PostHandleCollectedCallStackTask(generator, builder, frame_token);
 }
 
 }  // namespace
@@ -102,12 +117,12 @@ void JavaScriptCallStackGenerator::InterruptIsolateAndCollectCallStack(
 }
 
 void JavaScriptCallStackGenerator::HandleCallStackCollected(
-    const LocalFrameToken& frame_token,
-    const String& call_stack) {
+    const String& call_stack,
+    const std::optional<LocalFrameToken> frame_token) {
   if (!call_stack_collected_) {
     call_stack_collected_ = true;
     DCHECK(callback_);
-    std::move(callback_).Run(frame_token, call_stack);
+    std::move(callback_).Run(call_stack, frame_token);
   }
 }
 

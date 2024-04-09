@@ -13,7 +13,7 @@ interface CallStackGenerator {
   // Calls the CollectJavaScriptCallStack function to collect a JavaScript
   // call stack
   CollectJavaScriptCallStack() => (
-    LocalFrameToken frame_token,
-    string javascript_call_stack
+    string javascript_call_stack,
+    LocalFrameToken? frame_token
     );
 };

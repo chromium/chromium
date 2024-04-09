@@ -3658,21 +3658,25 @@ bool RenderProcessHostImpl::IsReady() {
   return GetProcess().Handle() && channel_connected_;
 }
 
-std::string&
-RenderProcessHostImpl::GetUnresponsiveDocumentJavascriptCallStack() {
+const std::string&
+RenderProcessHostImpl::GetUnresponsiveDocumentJavascriptCallStack() const {
   return unresponsive_document_javascript_call_stack_;
 }
 
-blink::LocalFrameToken& RenderProcessHostImpl::GetUnresponsiveDocumentToken() {
+const blink::LocalFrameToken&
+RenderProcessHostImpl::GetUnresponsiveDocumentToken() const {
   return unresponsive_document_token_;
 }
 
 void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
-    const blink::LocalFrameToken& frame_token,
-    const std::string& untrusted_javascript_call_stack) {
+    const std::string& untrusted_javascript_call_stack,
+    const std::optional<blink::LocalFrameToken>& frame_token) {
+  if (!frame_token) {
+    return;
+  }
   unresponsive_document_javascript_call_stack_ =
       untrusted_javascript_call_stack;
-  unresponsive_document_token_ = frame_token;
+  unresponsive_document_token_ = frame_token.value();
 }
 
 void RenderProcessHostImpl::InterruptJavaScriptIsolateAndCollectCallStack() {

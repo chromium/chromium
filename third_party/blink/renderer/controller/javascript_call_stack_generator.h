@@ -22,8 +22,9 @@ class CONTROLLER_EXPORT JavaScriptCallStackGenerator
       mojo::PendingReceiver<mojom::blink::CallStackGenerator> receiver);
   void CollectJavaScriptCallStack(
       CollectJavaScriptCallStackCallback callback) override;
-  void HandleCallStackCollected(const LocalFrameToken& frame_token,
-                                const String& call_stack);
+  void HandleCallStackCollected(
+      const String& call_stack,
+      const std::optional<LocalFrameToken> frame_token);
 
  private:
   void InterruptIsolateAndCollectCallStack(v8::Isolate* isolate);
