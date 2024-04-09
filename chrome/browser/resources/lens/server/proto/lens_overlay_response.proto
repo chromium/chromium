@@ -8,8 +8,6 @@ option optimize_for = LITE_RUNTIME;
 
 package lens.proto;
 
-message LensOverlayFullImageResponse {}
-
 message LensOverlayInteractionResponse {
   // The suggest signals.
   optional string suggest_signals = 1;

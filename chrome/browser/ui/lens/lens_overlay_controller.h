@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "chrome/browser/ui/tabs/tab_model_observer.h"
@@ -230,7 +230,8 @@ class LensOverlayController : public TabStripModelObserver,
 
   // Handles the response to the Lens start query request.
   void HandleStartQueryResponse(
-      lens::proto::LensOverlayFullImageResponse response);
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text);
 
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(

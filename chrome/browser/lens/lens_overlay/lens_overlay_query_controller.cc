@@ -4,15 +4,21 @@
 
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 
+#include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_proto_converter.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
 #include "components/version_info/channel.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -91,8 +97,7 @@ lens::CenterRotatedBox ConvertToServerCenterRotatedBox(
 }  // namespace
 
 LensOverlayQueryController::LensOverlayQueryController(
-    base::RepeatingCallback<void(lens::proto::LensOverlayFullImageResponse)>
-        full_image_callback,
+    LensOverlayFullImageResponseCallback full_image_callback,
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
         url_callback,
     base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
@@ -158,17 +163,44 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
 
+  CHECK(full_image_endpoint_fetcher_);
+  full_image_endpoint_fetcher_.reset();
   query_controller_state_ = QueryControllerState::kReceivedFullImageResponse;
+
+  if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    VLOG(1) << "Could not fetch full image response. HTTP status code: "
+            << response->http_status_code;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(full_image_callback_,
+                       std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
+    return;
+  }
+
   if (has_pending_interaction_) {
     FetchInteractionRequestAndGenerateLensSearchUrl();
   }
 
-  lens::proto::LensOverlayFullImageResponse lens_overlay_full_image_response;
+  lens::LensOverlayServerResponse server_response;
+  const std::string response_string = response->response;
+  bool parse_successful = server_response.ParseFromArray(
+      response_string.data(), response_string.size());
+  if (!parse_successful) {
+    VLOG(1) << "Could not parse overlay server response from response string: "
+            << response_string;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(full_image_callback_,
+                       std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
+    return;
+  }
 
-  // TODO(b/331488406): Set the overlay response data.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(full_image_callback_, lens_overlay_full_image_response));
+      base::BindOnce(
+          full_image_callback_,
+          lens::CreateObjectsMojomArrayFromServerResponse(server_response),
+          lens::CreateTextMojomFromServerResponse(server_response)));
 }
 
 void LensOverlayQueryController::EndQuery() {

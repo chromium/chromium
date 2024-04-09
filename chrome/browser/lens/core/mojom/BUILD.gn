@@ -8,6 +8,7 @@ mojom("mojo_bindings") {
   sources = [
     "geometry.mojom",
     "lens.mojom",
+    "overlay_object.mojom",
     "search_bubble.mojom",
     "text.mojom",
   ]

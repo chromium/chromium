@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
@@ -574,7 +575,10 @@ void LensOverlayController::IssueTextSelectionRequest(
 }
 
 void LensOverlayController::HandleStartQueryResponse(
-    lens::proto::LensOverlayFullImageResponse response) {}
+    std::vector<lens::mojom::OverlayObjectPtr> objects,
+    lens::mojom::TextPtr text) {
+  // TODO(b/331488406): Handle response and pass objects and text to WebUI.
+}
 
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {

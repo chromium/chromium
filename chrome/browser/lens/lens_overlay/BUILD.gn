@@ -9,6 +9,8 @@ static_library("lens_overlay") {
   sources = [
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
+    "lens_overlay_proto_converter.cc",
+    "lens_overlay_proto_converter.h",
     "lens_overlay_query_controller.cc",
     "lens_overlay_query_controller.h",
     "lens_overlay_request_id_generator.cc",
@@ -27,6 +29,7 @@ static_library("lens_overlay") {
     "//components/lens:features",
     "//components/version_info:channel",
     "//google_apis",
+    "//google_apis/common:common",
     "//net",
     "//net/traffic_annotation",
     "//services/network/public/cpp",

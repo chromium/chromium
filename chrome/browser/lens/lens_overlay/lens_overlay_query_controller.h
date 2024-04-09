@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
-#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_request_id_generator.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -20,12 +21,16 @@
 
 namespace lens {
 
+// Callback type alias for the lens overlay full image response.
+using LensOverlayFullImageResponseCallback =
+    base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
+                                 lens::mojom::TextPtr)>;
+
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController {
  public:
   explicit LensOverlayQueryController(
-      base::RepeatingCallback<void(lens::proto::LensOverlayFullImageResponse)>
-          full_image_callback,
+      LensOverlayFullImageResponseCallback full_image_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
@@ -122,8 +127,7 @@ class LensOverlayQueryController {
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
-  base::RepeatingCallback<void(lens::proto::LensOverlayFullImageResponse)>
-      full_image_callback_;
+  LensOverlayFullImageResponseCallback full_image_callback_;
 
   // Url callback for for an interaction.
   base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>

@@ -4,17 +4,17 @@
 
 #include "lens_overlay_query_controller.h"
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/common/api_error_codes.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
@@ -42,8 +42,7 @@ class FakeEndpointFetcher : public EndpointFetcher {
 class LensOverlayQueryControllerMock : public LensOverlayQueryController {
  public:
   explicit LensOverlayQueryControllerMock(
-      base::RepeatingCallback<void(lens::proto::LensOverlayFullImageResponse)>
-          full_image_callback,
+      LensOverlayFullImageResponseCallback full_image_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
@@ -53,23 +52,25 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    interaction_data_callback) {}
   ~LensOverlayQueryControllerMock() override = default;
 
-  EndpointResponse fake_endpoint_response_for_objects_request_;
-  EndpointResponse fake_endpoint_response_for_interaction_request_;
   lens::LensOverlayObjectsRequest sent_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
 
  protected:
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest request_data) override {
+    EndpointResponse fake_endpoint_response;
+    lens::LensOverlayServerResponse fake_server_response;
+    fake_endpoint_response.response = fake_server_response.SerializeAsString();
+    fake_endpoint_response.http_status_code =
+        google_apis::ApiErrorCode::HTTP_SUCCESS;
+
     if (request_data.has_objects_request()) {
       sent_objects_request_.CopyFrom(request_data.objects_request());
-      return std::make_unique<FakeEndpointFetcher>(
-          fake_endpoint_response_for_objects_request_);
+      return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
     }
     CHECK(request_data.has_interaction_request());
     sent_interaction_request_.CopyFrom(request_data.interaction_request());
-    return std::make_unique<FakeEndpointFetcher>(
-        fake_endpoint_response_for_interaction_request_);
+    return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   }
 };
 
@@ -92,7 +93,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
 
 TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   task_environment_.RunUntilIdle();
-  base::test::TestFuture<lens::proto::LensOverlayFullImageResponse>
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr>
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -119,7 +121,8 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
 TEST_F(LensOverlayQueryControllerTest,
        FetchRegionSearchInteraction_ReturnsResponses) {
   task_environment_.RunUntilIdle();
-  base::test::TestFuture<lens::proto::LensOverlayFullImageResponse>
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
@@ -192,7 +195,8 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteraction_ReturnsResponse) {
   task_environment_.RunUntilIdle();
-  base::test::TestFuture<lens::proto::LensOverlayFullImageResponse>
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
