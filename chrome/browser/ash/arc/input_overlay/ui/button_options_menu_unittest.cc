@@ -244,16 +244,11 @@ TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
 }
 
 TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
-  // Tap action menu.
   auto* menu = ShowButtonOptionsMenu(tap_action_);
-  // The first label is auto focused when the menu shows up.
-  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
   PressActionEdit(menu);
   EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
-
-  // Move action menu.
   menu = ShowButtonOptionsMenu(move_action_);
-  // The first label is auto focused when the menu shows up.
+  PressActionEdit(menu);
   EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
   PressActionEdit(menu);
   EXPECT_FALSE(IsEditLabelFocused(menu, /*index=*/0));

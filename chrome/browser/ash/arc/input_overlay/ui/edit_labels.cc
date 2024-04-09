@@ -142,10 +142,9 @@ std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
   return base::JoinString(keys, u", ");
 }
 
-void EditLabels::SetAxDescriptionOnFirstLabel() {
+bool EditLabels::IsFirstLabelUnassigned() const {
   DCHECK_GE(labels_.size(), 1u);
-  labels_[0]->SetAccessibleDescription(l10n_util::GetStringUTF16(
-      IDS_INPUT_OVERLAY_EDIT_LABEL_ADDITIONAL_INSTRUCTION_A11Y_DES));
+  return labels_[0]->IsInputUnbound();
 }
 
 void EditLabels::PerformPulseAnimationOnFirstLabel() {

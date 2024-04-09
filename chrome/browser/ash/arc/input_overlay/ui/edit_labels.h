@@ -66,7 +66,7 @@ class EditLabels : public views::View {
   // Returns key list, such as "w, a, s, d" or "w".
   std::u16string CalculateKeyListForA11yLabel() const;
 
-  void SetAxDescriptionOnFirstLabel();
+  bool IsFirstLabelUnassigned() const;
 
   void PerformPulseAnimationOnFirstLabel();
 

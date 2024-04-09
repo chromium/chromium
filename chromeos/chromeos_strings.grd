@@ -6411,9 +6411,6 @@
         <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_KEYBOARD_REASSIGN_INSTRUCTION_A11Y_LABEL" desc="Edit label button a11y label as replacement instruction. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Tap on another keyboard key to replace
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_ADDITIONAL_INSTRUCTION_A11Y_DES" desc="Edit label button a11y description once the first edit label is focused on the button options menu for the first time. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
-          Press Shift plus Tab to edit control type or delete
-        </message>
         <message name="IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_UP_A11Y_LABEL" desc="A11y name for joystick direction when the up label is focused. It's not visually rendered." translateable="false">
           up
         </message>

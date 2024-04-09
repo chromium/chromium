@@ -12,7 +12,6 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
-#include "base/scoped_observation.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -39,7 +38,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 
@@ -61,8 +59,7 @@ constexpr int kHeaderLeftMarginSpacing = 6;
 // ----------------------------
 // | |Name tag|        |keys| |
 // ----------------------------
-class ButtonOptionsActionEdit : public ActionEditView,
-                                public views::WidgetObserver {
+class ButtonOptionsActionEdit : public ActionEditView {
   METADATA_HEADER(ButtonOptionsActionEdit, ActionEditView)
 
  public:
@@ -73,7 +70,6 @@ class ButtonOptionsActionEdit : public ActionEditView,
     name_tag_->SetTitle(l10n_util::GetStringUTF16(
         action_->is_new() ? IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY
                           : IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
-    labels_view_->SetAxDescriptionOnFirstLabel();
   }
   ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
   ButtonOptionsActionEdit& operator=(const ButtonOptionsActionEdit&) = delete;
@@ -86,32 +82,21 @@ class ButtonOptionsActionEdit : public ActionEditView,
         IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
   }
 
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override {
+    if (is_visible && action_->is_new() &&
+        labels_view_->IsFirstLabelUnassigned() &&
+        controller_->HasSingleUserAddedAction()) {
+      PerformPulseAnimation();
+    }
+  }
+
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
 
   // ActionEditView:
   void ClickCallback() override { labels_view_->FocusLabel(); }
-
-  // views::View:
-  void AddedToWidget() override { observation_.Observe(GetWidget()); }
-
-  void RemovedFromWidget() override { observation_.Reset(); }
-
-  // views::WidgetObserver:
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
-    if (active) {
-      DCHECK(!for_editing_list_);
-      labels_view_->FocusLabel();
-
-      if (action_->is_new() && controller_->HasSingleUserAddedAction()) {
-        PerformPulseAnimation();
-      }
-    }
-  }
-
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
 };
 
 BEGIN_METADATA(ButtonOptionsActionEdit)
