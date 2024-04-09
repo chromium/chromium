@@ -4,10 +4,11 @@
 
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
@@ -64,7 +65,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
     return scoped_temp_dir_.GetPath().Append(filename);
   }
 
-  void SerializeTestRawData(base::StringPiece raw_data, base::FilePath path) {
+  void SerializeTestRawData(std::string_view raw_data, base::FilePath path) {
     ASSERT_TRUE(base::WriteFile(path, raw_data));
   }
 
@@ -155,7 +156,7 @@ TEST_F(CrowdDenyPreloadDataTest, MissingFile) {
 TEST_F(CrowdDenyPreloadDataTest, EmptyData) {
   const base::FilePath empty_file_path =
       GetPathInTempDir(FILE_PATH_LITERAL("EmptyFile"));
-  SerializeTestRawData(base::StringPiece(), empty_file_path);
+  SerializeTestRawData(std::string_view(), empty_file_path);
   LoadTestDataAndWait(empty_file_path);
   ExpectEmptyPreloadData();
 }
@@ -359,7 +360,7 @@ TEST_F(CrowdDenyPreloadDataTest, UpdateToEmptyFileWipesInMemoryState) {
 
   const base::FilePath empty_file_path =
       GetPathInTempDir(FILE_PATH_LITERAL("EmptyFile"));
-  SerializeTestRawData(base::StringPiece(), empty_file_path);
+  SerializeTestRawData(std::string_view(), empty_file_path);
   LoadTestDataAndWait(empty_file_path);
   ExpectEmptyPreloadData();
 }
