@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -50,7 +52,7 @@ namespace {
 
 class MockCredentialManager : public mojom::blink::CredentialManager {
  public:
-  MockCredentialManager() {}
+  MockCredentialManager() = default;
 
   MockCredentialManager(const MockCredentialManager&) = delete;
   MockCredentialManager& operator=(const MockCredentialManager&) = delete;
@@ -110,7 +112,7 @@ class CredentialManagerTestingContext {
   STACK_ALLOCATED();
 
  public:
-  CredentialManagerTestingContext(
+  explicit CredentialManagerTestingContext(
       MockCredentialManager* mock_credential_manager)
       : dummy_context_(KURL("https://example.test")) {
     DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
@@ -203,6 +205,48 @@ TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOpera
                      ->store(context.GetScriptState(),
                              MakeGarbageCollected<MockPublicKeyCredential>(),
                              IGNORE_EXCEPTION_FOR_TESTING);
+
+  EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
+}
+
+class AuthenticationCredentialsContainerButtonModeMultiIdpTest
+    : public testing::Test,
+      private ScopedFedCmMultipleIdentityProvidersForTest,
+      ScopedFedCmButtonModeForTest {
+ protected:
+  AuthenticationCredentialsContainerButtonModeMultiIdpTest()
+      : ScopedFedCmMultipleIdentityProvidersForTest(true),
+        ScopedFedCmButtonModeForTest(true) {}
+};
+
+TEST_F(AuthenticationCredentialsContainerButtonModeMultiIdpTest,
+       RejectButtonModeWithMultipleIdps) {
+  test::TaskEnvironment task_environment;
+  MockCredentialManager mock_credential_manager;
+  CredentialManagerTestingContext context(&mock_credential_manager);
+
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  IdentityCredentialRequestOptions* identity =
+      IdentityCredentialRequestOptions::Create();
+
+  auto* idp1 = IdentityProviderRequestOptions::Create();
+  idp1->setConfigURL("https://idp1.example/config.json");
+  idp1->setClientId("clientId");
+
+  auto* idp2 = IdentityProviderRequestOptions::Create();
+  idp2->setConfigURL("https://idp2.example/config.json");
+  idp2->setClientId("clientId");
+
+  identity->setProviders({idp1, idp2});
+  identity->setMode("button");
+  options->setIdentity(identity);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  task_environment.RunUntilIdle();
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
 }

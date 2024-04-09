@@ -2007,6 +2007,13 @@ void AuthenticationCredentialsContainer::GetForIdentity(
           resolver->GetExecutionContext())) {
     // TODO(crbug.com/1429083): add use counters for rp mode.
     rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
+    if (rp_mode == mojom::blink::RpMode::kButton &&
+        identity_provider_ptrs.size() > 1u) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Button mode is not currently supported with multiple identity "
+          "providers."));
+    }
   }
   // TODO(crbug.com/1429083): add uma histograms for rp mode.
 
