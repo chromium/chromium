@@ -8,7 +8,6 @@
 
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
-#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_link.h"
@@ -53,12 +52,11 @@ class NodeTest : public testing::Test {
     const NodeName broker_name = broker_->GetAssignedName();
     auto broker_link = NodeLink::CreateInactive(
         broker_, LinkSide::kA, broker_name, name, Node::Type::kNormal, 0,
-        Features{}, transports.first,
+        transports.first,
         NodeLinkMemory::Create(broker_, std::move(buffer.mapping)));
     auto node_link = NodeLink::CreateInactive(
         node, LinkSide::kB, name, broker_name, Node::Type::kBroker, 0,
-        Features{}, transports.second,
-        NodeLinkMemory::Create(node, buffer.memory.Map()));
+        transports.second, NodeLinkMemory::Create(node, buffer.memory.Map()));
     broker_->AddConnection(name, {.link = broker_link});
     node->AddConnection(broker_name, {.link = node_link, .broker = node_link});
     broker_link->Activate();

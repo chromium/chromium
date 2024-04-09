@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ipcz/driver_memory.h"
-#include "ipcz/features.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_link_memory.h"
@@ -44,11 +43,11 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
   const NodeName non_broker_name = broker->GenerateRandomName();
   auto link0 = NodeLink::CreateInactive(
       broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
-      Node::Type::kNormal, 0, non_broker->features(), transport0,
+      Node::Type::kNormal, 0, transport0,
       NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
   auto link1 = NodeLink::CreateInactive(
       non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
-      Node::Type::kNormal, 0, broker->features(), transport1,
+      Node::Type::kNormal, 0, transport1,
       NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
   link0->Activate();
   link1->Activate();
@@ -85,37 +84,6 @@ TEST_F(NodeLinkTest, BasicTransmission) {
 
   link0->Deactivate(context);
   link1->Deactivate(context);
-}
-
-TEST_F(NodeLinkTest, AvailableFeatures) {
-  const IpczFeature kEnabledFeatures[] = {IPCZ_FEATURE_MEM_V2};
-  const IpczCreateNodeOptions options_with_features = {
-      .size = sizeof(options_with_features),
-      .enabled_features = kEnabledFeatures,
-      .num_enabled_features = std::size(kEnabledFeatures),
-  };
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver,
-                                         &options_with_features);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver,
-                                         &options_with_features);
-  Ref<Node> node2 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
-
-  const OperationContext context{OperationContext::kTransportNotification};
-  auto [link01, link10] = LinkNodes(node0, node1);
-  auto [link02, link20] = LinkNodes(node0, node2);
-
-  // The node0-node1 link supports mem_v2 because both nodes enabled it.
-  EXPECT_TRUE(link01->available_features().mem_v2());
-  EXPECT_TRUE(link10->available_features().mem_v2());
-
-  // The node0-node2 link doesn't support mem_v2 because node2 didn't enable it.
-  EXPECT_FALSE(link02->available_features().mem_v2());
-  EXPECT_FALSE(link20->available_features().mem_v2());
-
-  link01->Deactivate(context);
-  link10->Deactivate(context);
-  link02->Deactivate(context);
-  link20->Deactivate(context);
 }
 
 }  // namespace

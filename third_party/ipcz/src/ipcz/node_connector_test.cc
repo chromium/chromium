@@ -25,13 +25,12 @@ const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
 
 class NodeConnectorTest : public test::Test {
  protected:
-  Ref<Node> CreateBrokerNode(const IpczCreateNodeOptions* options = nullptr) {
-    return MakeRefCounted<Node>(Node::Type::kBroker, kDriver, options);
+  Ref<Node> CreateBrokerNode() {
+    return MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
   }
 
-  Ref<Node> CreateNonBrokerNode(
-      const IpczCreateNodeOptions* options = nullptr) {
-    return MakeRefCounted<Node>(Node::Type::kNormal, kDriver, options);
+  Ref<Node> CreateNonBrokerNode() {
+    return MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
   }
 
   DriverTransport::Pair CreateTransports() {
@@ -49,17 +48,8 @@ class NodeConnectorTest : public test::Test {
 };
 
 TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
-  const uint32_t kEnabledFeatures[] = {IPCZ_FEATURE_MEM_V2};
-  const IpczCreateNodeOptions broker_options{
-      .size = sizeof(broker_options),
-      .enabled_features = kEnabledFeatures,
-      .num_enabled_features = std::size(kEnabledFeatures),
-  };
-  Ref<Node> broker = CreateBrokerNode(&broker_options);
-  EXPECT_TRUE(broker->features().mem_v2());
-
+  Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
-  EXPECT_FALSE(non_broker->features().mem_v2());
 
   auto [broker_transport, non_broker_transport] = CreateTransports();
 
@@ -68,11 +58,6 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
   listener.OnMessage<msg::ConnectFromBrokerToNonBroker>([&](auto& connect) {
     EXPECT_EQ(broker->GetAssignedName(), connect.v0()->broker_name);
     EXPECT_EQ(1u, connect.v0()->num_initial_portals);
-
-    const auto features =
-        Features::Deserialize(connect, connect.v1()->features);
-    EXPECT_TRUE(features.mem_v2());
-
     non_broker_received_connect = true;
     return true;
   });
@@ -87,17 +72,8 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
 }
 
 TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
-  const uint32_t kEnabledFeatures[] = {IPCZ_FEATURE_MEM_V2};
-  const IpczCreateNodeOptions non_broker_options{
-      .size = sizeof(non_broker_options),
-      .enabled_features = kEnabledFeatures,
-      .num_enabled_features = std::size(kEnabledFeatures),
-  };
   Ref<Node> broker = CreateBrokerNode();
-  EXPECT_FALSE(broker->features().mem_v2());
-
-  Ref<Node> non_broker = CreateNonBrokerNode(&non_broker_options);
-  EXPECT_TRUE(non_broker->features().mem_v2());
+  Ref<Node> non_broker = CreateNonBrokerNode();
 
   auto [broker_transport, non_broker_transport] = CreateTransports();
 
@@ -105,11 +81,6 @@ TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
   test::TestTransportListener listener(broker_transport);
   listener.OnMessage<msg::ConnectFromNonBrokerToBroker>([&](auto& connect) {
     EXPECT_EQ(1u, connect.v0()->num_initial_portals);
-
-    const auto features =
-        Features::Deserialize(connect, connect.v1()->features);
-    EXPECT_TRUE(features.mem_v2());
-
     broker_received_connect = true;
     return true;
   });

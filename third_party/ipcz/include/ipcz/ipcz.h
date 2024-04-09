@@ -550,14 +550,6 @@ typedef uint32_t IpczMemoryFlags;
 // links as needed.
 #define IPCZ_MEMORY_FIXED_PARCEL_CAPACITY ((IpczMemoryFlags)(1 << 0))
 
-// Feature identifiers which may be passed through IpczCreateNodeOptions to
-// control dynamic runtime features.
-typedef uint32_t IpczFeature;
-
-// When this feature is enabled, ipcz will use alternative shared memory layout
-// and allocation behavior intended to be more efficient than the v1 scheme.
-#define IPCZ_FEATURE_MEM_V2 ((IpczFeature)0xA110C002)
-
 // Options given to CreateNode() to configure the new node's behavior.
 struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
   // The exact size of this structure in bytes. Must be set accurately before
@@ -566,15 +558,6 @@ struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
 
   // See IpczMemoryFlags above.
   IpczMemoryFlags memory_flags;
-
-  // List of features to enable for this node.
-  const IpczFeature* enabled_features;
-  size_t num_enabled_features;
-
-  // List of features to disable for this node. Note that if a feature is listed
-  // both in `enabled_features` and `disabled_features`, it is disabled.
-  const IpczFeature* disabled_features;
-  size_t num_disabled_features;
 };
 
 // See CreateNode() and the IPCZ_CREATE_NODE_* flag descriptions below.
@@ -989,6 +972,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // If `flags` contains IPCZ_CREATE_NODE_AS_BROKER then the node will act as
   // the broker in its cluster of connected nodes. See details on that flag
   // description above.
+  //
+  // `options` is ignored and must be null.
   //
   // Returns:
   //

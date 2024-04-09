@@ -10,7 +10,6 @@
 
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
-#include "ipcz/features.h"
 #include "ipcz/handle_type.h"
 #include "ipcz/link_side.h"
 #include "ipcz/message.h"

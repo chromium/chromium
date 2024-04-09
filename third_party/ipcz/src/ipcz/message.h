@@ -260,16 +260,6 @@ class IPCZ_ALIGN(8) Message {
     return AllocateGenericArray(sizeof(ElementType), num_elements);
   }
 
-  // Allocates an array and populates its elements in-place, returning the array
-  // offset to use as a field value.
-  template <typename ElementType>
-  uint32_t AllocateAndSetArray(absl::Span<const ElementType> elements) {
-    const auto offset = AllocateArray<ElementType>(elements.size());
-    const auto view = GetArrayView<ElementType>(offset);
-    std::copy(elements.begin(), elements.end(), view.begin());
-    return offset;
-  }
-
   // Appends a single driver object to this message, and returns its index into
   // the message's DriverObject array. This index should be stored as the value
   // for whatever IPCZ_MSG_PARAM_DRIVER_OBJECT() parameter corresponds to the

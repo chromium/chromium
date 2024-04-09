@@ -13,7 +13,6 @@
 
 #include "ipcz/api_object.h"
 #include "ipcz/driver_memory.h"
-#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_messages.h"
@@ -60,7 +59,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   Type type() const { return type_; }
   const IpczDriver& driver() const { return driver_; }
   const IpczCreateNodeOptions& options() const { return options_; }
-  const Features& features() const { return features_; }
 
   // APIObject:
   IpczResult Close() override;
@@ -137,7 +135,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
                           LinkSide side,
                           Node::Type remote_node_type,
                           uint32_t remote_protocol_version,
-                          const Features& remote_features,
                           Ref<DriverTransport> transport,
                           Ref<NodeLinkMemory> memory);
 
@@ -192,7 +189,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   const Type type_;
   const IpczDriver& driver_;
   const IpczCreateNodeOptions options_;
-  const Features features_;
 
   absl::Mutex mutex_;
 

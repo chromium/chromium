@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ipcz/driver_memory.h"
-#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_connector.h"
@@ -94,10 +93,7 @@ class Node::PendingIntroduction {
 Node::Node(Type type,
            const IpczDriver& driver,
            const IpczCreateNodeOptions* options)
-    : type_(type),
-      driver_(driver),
-      options_(CopyOrUseDefaultOptions(options)),
-      features_(Features::FromNodeOptions(options)) {
+    : type_(type), driver_(driver), options_(CopyOrUseDefaultOptions(options)) {
   if (type_ == Type::kBroker) {
     // Only brokers assign their own names.
     assigned_name_ = GenerateRandomName();
@@ -368,7 +364,6 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
                               LinkSide side,
                               Node::Type remote_node_type,
                               uint32_t remote_protocol_version,
-                              const Features& remote_features,
                               Ref<DriverTransport> transport,
                               Ref<NodeLinkMemory> memory) {
   // NodeLink should never dispatch this method to a node if the introduction
@@ -383,7 +378,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
 
   Ref<NodeLink> new_link = NodeLink::CreateInactive(
       WrapRefCounted(this), side, local_name, name, remote_node_type,
-      remote_protocol_version, remote_features, transport, memory);
+      remote_protocol_version, transport, memory);
   ABSL_ASSERT(new_link);
 
   std::unique_ptr<PendingIntroduction> pending_introduction;
@@ -657,14 +652,14 @@ void Node::IntroduceRemoteNodes(NodeLink& first, NodeLink& second) {
   auto [transport_for_first_node, transport_for_second_node] =
       DriverTransport::CreatePair(driver_, first.transport().get(),
                                   second.transport().get());
-  first.AcceptIntroduction(
-      second_name, LinkSide::kA, second.remote_node_type(),
-      second.remote_protocol_version(), second.remote_features(),
-      std::move(transport_for_first_node), std::move(cloned_buffer));
-  second.AcceptIntroduction(
-      first_name, LinkSide::kB, first.remote_node_type(),
-      first.remote_protocol_version(), first.remote_features(),
-      std::move(transport_for_second_node), std::move(buffer.memory));
+  first.AcceptIntroduction(second_name, LinkSide::kA, second.remote_node_type(),
+                           second.remote_protocol_version(),
+                           std::move(transport_for_first_node),
+                           std::move(cloned_buffer));
+  second.AcceptIntroduction(first_name, LinkSide::kB, first.remote_node_type(),
+                            first.remote_protocol_version(),
+                            std::move(transport_for_second_node),
+                            std::move(buffer.memory));
 }
 
 }  // namespace ipcz
