@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 
+#import "ios/chrome/grit/ios_strings.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using TabGroupTest = PlatformTest;
 
@@ -61,4 +64,23 @@ TEST_F(TabGroupTest, RangeUpdate) {
   group.range().MoveRight(2);
   group.range().ExpandLeft();
   EXPECT_EQ(range, group.range());
+}
+
+TEST_F(TabGroupTest, GetTitle) {
+  auto range = TabGroupRange(2, 3);
+  tab_groups::TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
+      u"A Group", tab_groups::TabGroupColorId::kGrey);
+  TabGroup group(visual_data, range);
+  EXPECT_NSEQ(group.GetTitle(), @"A Group");
+
+  visual_data.SetTitle(u"A New Name");
+  EXPECT_NSEQ(group.GetTitle(), @"A Group");
+
+  group.SetVisualData(visual_data);
+  EXPECT_NSEQ(group.GetTitle(), @"A New Name");
+
+  visual_data.SetTitle(u"");
+  group.SetVisualData(visual_data);
+  EXPECT_NSEQ(group.GetTitle(),
+              l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 3));
 }

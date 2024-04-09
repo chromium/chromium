@@ -31,6 +31,7 @@ source_set("web_state_list") {
   deps = [
     "//base",
     "//components/tab_groups",
+    "//ios/chrome/app/strings",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
@@ -79,6 +80,7 @@ source_set("unit_tests") {
     "//components/favicon/ios",
     "//components/keyed_service/core",
     "//components/tab_groups",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser",

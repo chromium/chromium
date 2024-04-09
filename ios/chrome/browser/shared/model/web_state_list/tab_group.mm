@@ -7,9 +7,16 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 NSString* TabGroup::GetTitle() const {
-  return base::SysUTF16ToNSString(visual_data_.title());
+  NSString* visual_data_title = base::SysUTF16ToNSString(visual_data_.title());
+  if (visual_data_title.length > 0) {
+    return visual_data_title;
+  }
+  return l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER,
+                                       range().count());
 }
 
 UIColor* TabGroup::GetColor() const {
