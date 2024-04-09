@@ -1158,12 +1158,9 @@ void BlockNode::CopyFragmentDataToLayoutBox(
 
     block->SetNeedsOverflowRecalc(
         LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-    block->SetScrollableOverflowFromLayoutResults();
-  } else {
-    box_->ClearChildNeedsScrollableOverflowRecalc();
-    box_->ClearSelfNeedsScrollableOverflowRecalc();
   }
 
+  box_->SetScrollableOverflowFromLayoutResults();
   box_->UpdateAfterLayout();
 
   if (needs_full_invalidation)

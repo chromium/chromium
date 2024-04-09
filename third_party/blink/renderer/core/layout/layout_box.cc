@@ -3288,7 +3288,13 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
   NOT_DESTROYED();
   ClearSelfNeedsScrollableOverflowRecalc();
   ClearChildNeedsScrollableOverflowRecalc();
-  ClearScrollableOverflow();
+  if (overflow_) {
+    overflow_->scrollable_overflow.reset();
+  }
+
+  if (IsLayoutReplaced()) {
+    return;
+  }
 
   const WritingMode writing_mode = StyleRef().GetWritingMode();
   std::optional<PhysicalRect> scrollable_overflow;
@@ -3547,14 +3553,6 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
         outsets.top != outline_extent || outsets.right != outline_extent ||
         outsets.bottom != outline_extent || outsets.left != outline_extent);
   }
-}
-
-void LayoutBox::ClearScrollableOverflow() {
-  NOT_DESTROYED();
-  if (overflow_)
-    overflow_->scrollable_overflow.reset();
-  // overflow_ will be reset by MutableForPainting::ClearPreviousOverflowData()
-  // if we don't need it to store previous overflow data.
 }
 
 void LayoutBox::ClearVisualOverflow() {
