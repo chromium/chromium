@@ -6055,7 +6055,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Share with summary feedback sheet closed
       </message>
       <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_DISCLAIMER" desc="Disclaimer at the bottom of a bottom sheet to provide feedback for a generated web page summary.">
-        The URL of the page you\u2019re providing feedback for will be sent by Google and may be reviewed by humans to improve this feature
+        The URL of the page you\u2019re providing feedback for will be sent to Google, and may be reviewed by humans to improve this feature
       </message>
       <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_OFFENSIVE" desc="Label of a radio button item for providing feedback on a generated summary that's offensive or unsafe.">
         Offensive or unsafe
