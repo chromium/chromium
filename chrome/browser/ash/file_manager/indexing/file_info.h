@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INFO_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INFO_H_
 
+#include <ostream>
+
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -33,6 +35,10 @@ struct FileInfo {
            file_url == other.file_url && size == other.size &&
            last_modified == other.last_modified;
   }
+
+  // Human readable output of this structure.
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const FileInfo& file_info);
 
   // The URL of the file in the form filesystem:<origin>:<type>:/path/to/entry.
   // For example, for a file stored on the local file system the URL would be

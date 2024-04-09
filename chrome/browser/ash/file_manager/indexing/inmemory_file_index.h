@@ -49,8 +49,7 @@ class InmemoryFileIndex : public FileIndex {
 
  private:
   // Builds a map from field name to unique term IDs.
-  std::map<std::string, std::set<int64_t>> ConvertToTermIds(
-      const std::vector<Term>& terms);
+  std::set<int64_t> ConvertToTermIds(const std::vector<Term>& terms);
 
   // Sets association between terms and the file. This method assumes that the
   // term list is not empty.
@@ -58,55 +57,62 @@ class InmemoryFileIndex : public FileIndex {
 
   // Adds association between terms and the file. This method assumes that the
   // term list is not empty.
-  void AddFileTerms(const std::string& field_name,
-                    const std::set<int64_t>& term_ids,
-                    int64_t url_id);
+  void AddFileTerms(const std::set<int64_t>& term_ids, int64_t url_id);
 
   // For the given field name, adds to the posting list for the given term ID
-  // with the given file info ID. This may be no-op if the file_info_id already
+  // with the given file info ID. This may be no-op if the `url_id` already
   // is associated with the given term_id.
-  void AddToPostingList(const std::string& field_name,
-                        int64_t term_id,
-                        int64_t file_info_id);
+  void AddToPostingList(int64_t term_id, int64_t url_id);
 
-  // For posting namespace of the given `field_name`, this method removes the
-  // `file_info_id` from the posting list of the specified `term_id`. This may
-  // be a no-op if the file_info_id is not present on the posting list for the
-  // given term.
-  void RemoveFromPostingList(const std::string& field_name,
-                             int64_t term_id,
-                             int64_t file_info_id);
+  // This method removes the `url_id` from the posting lists of the specified
+  // `term_id`. This may be a no-op if the url_id is not present on the posting
+  // list for the given term.
+  void RemoveFromPostingList(int64_t term_id, int64_t url_id);
 
-  // Adds to the term list, associated with the given `field_name` the specified
-  // `term_id`. For a given field name, a term list stores all term IDs known
-  // for the given file info ID. This may be a no-op if the given term has
-  // previously been associated with the file info ID.
-  void AddToTermList(const std::string& field_name,
-                     int64_t file_info_id,
-                     int64_t term_id);
+  // Adds to the inverted posting lists the specified `term_id`. This may be
+  // a no-op if the given term has previously been associated with the file
+  // info ID.
+  void AddToTermList(int64_t url_id, int64_t term_id);
 
-  // Removes the given `term_id` from the term list of the specified
-  // `file_info_id`. This may be a no-op if the term_id is not present
-  // on the term list for the given `file_info_id`.
-  void RemoveFromTermList(const std::string& field_name,
-                          int64_t file_info_id,
-                          int64_t term_id);
+  // Removes the given `term_id` from the inverted posting lists of the
+  // specified `url_id`. This may be a no-op if the term_id is not present
+  // on the term list for the given `url_id`.
+  void RemoveFromTermList(int64_t url_id, int64_t term_id);
+
+  // Returns the ID corresponding to the given augmented term. If the augmented
+  // term cannot be located, the method returns -1.
+  int64_t GetAugmentedTermId(const std::string& field_name,
+                             int64_t term_id) const;
+
+  // Returns the ID corresponding to the augmented term. If the augmented term
+  // cannot be located, a new ID is allocated and returned.
+  int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
+                                     int64_t term_id);
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
-  // cannot be located, we return -1, unless create is set to true.
-  int64_t GetTermId(const std::string& term_bytes, bool create);
+  // cannot be located, the method returns -1.
+  int64_t GetTermId(const std::string& term_bytes) const;
+
+  // Returns the ID corresponding to the given term bytes. If the term bytes
+  // cannot be located, a new ID is allocated and returned.
+  int64_t GetOrCreateTermId(const std::string& term_bytes);
 
   // Returns the ID corresponding to the given file URL. If this is the first
   // time we see this file URL, we return -1.
   int64_t GetUrlId(const GURL& url);
 
-  // Returns the ID corresponding to the given FileInfo. If this is the first
-  // time we see this file info's URL, a new ID is created and returned.
-  int64_t GetOrCreateUrlId(const FileInfo& info);
+  // Returns the ID corresponding to the given GURL. If this is the first
+  // time we see this URL, a new ID is created and returned.
+  int64_t GetOrCreateUrlId(const GURL& url);
 
   // Maps from stringified terms to a unique ID.
   std::map<std::string, int64_t> term_map_;
   int64_t term_id_ = 0;
+
+  // Maps field and term to a single term ID. It uses term_id rather than
+  // term to minimize memory usage.
+  std::map<std::tuple<std::string, int64_t>, int64_t> augmented_term_map_;
+  int64_t augmented_term_id_ = 0;
 
   // Maps a file URL to a unique ID. The GURL is the data uniquely identifying
   // a file. Hence we use the GURL rather than the whole FileInfo. For example,
@@ -118,24 +124,12 @@ class InmemoryFileIndex : public FileIndex {
   // Maps url_id to the corresponding FileInfo.
   std::map<int64_t, FileInfo> url_id_to_file_info_;
 
-  // A posting list, which is a map from a term ID to a set of all FileInfo
-  // IDs that represent files that has this term ID associated with them.
-  typedef std::map<int64_t, std::set<int64_t>> PostingLists;
+  // A posting list, which is a map from an augmented term ID to a set of all
+  // URL IDs that represent files that has this term ID associated with them.
+  std::map<int64_t, std::set<int64_t>> posting_lists_;
 
-  // A map from field name posting list.
-  std::map<std::string, PostingLists> posting_namespace_;
-
-  // A global map from term ID to all FileInfo IDs associated with the term.
-  // This additional posting list is to give us the ability to search for match
-  // regardless of the field name used (i.e., do "global" search, or search for
-  // "anything" that has been associated with some term).
-  PostingLists global_posting_lists_;
-
-  // A map from FileInfo ID to term IDs that are stored for a given file.
-  typedef std::map<int64_t, std::set<int64_t>> TermLists;
-
-  // A map from field name to TermLists.
-  std::map<std::string, TermLists> term_namespace_;
+  // A map from URL ID to augmented term IDs that are stored for a given file.
+  std::map<int64_t, std::set<int64_t>> inverted_posting_lists_;
 };
 
 }  // namespace file_manager

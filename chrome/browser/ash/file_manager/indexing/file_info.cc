@@ -15,4 +15,11 @@ FileInfo::~FileInfo() = default;
 
 FileInfo& FileInfo::operator=(const FileInfo& other) = default;
 
+std::ostream& operator<<(std::ostream& out, const FileInfo& file_info) {
+  out << "FileInfo(file_url=" << file_info.file_url.spec()
+      << ", size=" << file_info.size
+      << ", last_modified=" << file_info.last_modified << ")";
+  return out;
+}
+
 }  // namespace file_manager
