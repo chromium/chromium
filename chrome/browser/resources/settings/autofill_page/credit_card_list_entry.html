@@ -43,9 +43,8 @@
           <div id="summaryLabel" class="ellipses" aria-hidden="true">
             [[creditCard.metadata.summaryLabel]]
           </div>
-          <div id="summarySublabel"
-              class="sub-label" aria-hidden="true">
-            [[getSummarySublabel_(creditCard)]]
+          <div id="summarySublabel" class="sub-label">
+            <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
               (<a id="summaryTermsLink"
                   aria-description="$i18n{opensInNewTab}"
