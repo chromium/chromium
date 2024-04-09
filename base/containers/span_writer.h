@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_SPAN_WRITER_H_
 #define BASE_CONTAINERS_SPAN_WRITER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
