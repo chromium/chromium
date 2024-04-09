@@ -147,22 +147,6 @@ bool IsNotPasswordField(const ProcessedField& field,
   return is_otp_field;
 }
 
-// Returns true iff |field_type| is one of password types.
-bool IsPasswordPrediction(const CredentialFieldType field_type) {
-  switch (field_type) {
-    case CredentialFieldType::kUsername:
-    case CredentialFieldType::kSingleUsername:
-    case CredentialFieldType::kNone:
-      return false;
-    case CredentialFieldType::kCurrentPassword:
-    case CredentialFieldType::kNewPassword:
-    case CredentialFieldType::kConfirmationPassword:
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
 // Returns true iff |processed_field| matches the |interactability_bar|. That is
 // when either:
 // (1) |processed_field.interactability| is not less than |interactability_bar|,
@@ -414,12 +398,7 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     ProcessedField* processed_field = nullptr;
 
     CredentialFieldType field_type = DeriveFromFieldType(prediction.type);
-    bool is_password_prediction = IsPasswordPrediction(field_type);
-    if (mode == FormDataParser::Mode::kSaving && is_password_prediction &&
-        !base::FeatureList::IsEnabled(
-            password_manager::features::kUseServerPredictionsOnSaveParsing)) {
-      continue;
-    }
+
     switch (field_type) {
       case CredentialFieldType::kUsername:
         if (!result->username) {

@@ -147,11 +147,6 @@ bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
-// Enables using server prediction when parsing password forms for saving.
-// If disabled, password server predictions are only used when parsing forms
-// for filling.
-BASE_DECLARE_FEATURE(kUseServerPredictionsOnSaveParsing);
-
 // Enables support of sending additional votes on username first flow. The votes
 // are sent on single password forms and contain information about preceding
 // single username forms.

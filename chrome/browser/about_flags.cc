@@ -10707,13 +10707,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          permissions::features::kShowRelatedWebsiteSetsPermissionGrants)},
 
-    {"password-parsing-on-save-uses-predictions",
-     flag_descriptions::kPasswordParsingOnSaveUsesPredictionsName,
-     flag_descriptions::kPasswordParsingOnSaveUsesPredictionsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUseServerPredictionsOnSaveParsing)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"upm-local-no-migration",
      flag_descriptions::

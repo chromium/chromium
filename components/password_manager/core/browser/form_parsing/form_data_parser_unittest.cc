@@ -1310,8 +1310,6 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
 
 // Checks that passwords of length one can only be saved on manual fallback.
 TEST_F(FormParserTest, PasswordsWithLengthOneAreSavedOnlyOnManualFallback) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kUseServerPredictionsOnSaveParsing);
   CheckTestData({{
       .description_for_logging =
           "Passwords of length 1 can be saved only on manual fallback.",
@@ -2923,9 +2921,6 @@ TEST_F(FormParserTest, ContradictingPasswordPredictionAndAutocomplete) {
 }
 
 TEST_F(FormParserTest, SingleUsernamePrediction) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kUseServerPredictionsOnSaveParsing);
   CheckTestData({
       {
           .description_for_logging = "1 field",
@@ -2934,17 +2929,6 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::SINGLE_USERNAME}},
-              },
-      },
-      {
-          .description_for_logging = "Password field is ignored",
-          .fields =
-              {
-                  {.role = ElementRole::USERNAME,
-                   .form_control_type = FormControlType::kInputText,
-                   .prediction = {.type = autofill::SINGLE_USERNAME}},
-                  {.form_control_type = FormControlType::kInputPassword,
-                   .prediction = {.type = autofill::PASSWORD}},
               },
       },
       {
@@ -2974,9 +2958,6 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
 // Password predictions should have priority over single username predictions
 // when the form is parsed for saving to avoid losing the password.
 TEST_F(FormParserTest, BothSingleUsernameAndPasswordPredictions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kUseServerPredictionsOnSaveParsing);
   CheckTestData({
       {
           .description_for_logging =
@@ -3333,34 +3314,6 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
           form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
   EXPECT_EQ(username_detection_method,
             UsernameDetectionMethod::kServerSidePrediction);
-}
-
-// Tests that password server predictions are taken into account during saving
-// if kUseServerPredictionsOnSaveParsing feature is enabled.
-TEST_F(FormParserTest, UsePasswordServerPredictionsOnSaving) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kUseServerPredictionsOnSaveParsing);
-  CheckTestData({
-      {
-          .description_for_logging = "Password predictions used during saving.",
-          .fields =
-              {
-                  {.role = ElementRole::USERNAME,
-                   .value = u"testusername",
-                   .name = u"username",
-                   .form_control_type = FormControlType::kInputText},
-                  {.value = u"mysteriousstring",
-                   .name = u"mysteriousfield",
-                   .form_control_type = FormControlType::kInputPassword},
-                  {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = u"strongpassword",
-                   .name = u"likelypassword",
-                   .form_control_type = FormControlType::kInputPassword,
-                   .prediction = {.type = autofill::PASSWORD}},
-              },
-      },
-  });
 }
 
 TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {

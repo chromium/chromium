@@ -21265,7 +21265,6 @@ from previous Chrome versions.
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86563978" label="CCTTextFragmentLookupApiEnabled:enabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
-  <int value="86996919" label="UseServerPredictionsOnSaveParsing:disabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
@@ -24478,7 +24477,6 @@ from previous Chrome versions.
   <int value="1530177325" label="LanguagesPreference:disabled"/>
   <int value="1530182188" label="PdfHonorJsContentSettings:enabled"/>
   <int value="1531164533" label="SyncPseudoUSSFavicons:disabled"/>
-  <int value="1531345915" label="UseServerPredictionsOnSaveParsing:enabled"/>
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
   <int value="1532006216" label="CommerceHintAndroid:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
