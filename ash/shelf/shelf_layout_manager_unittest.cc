@@ -714,6 +714,17 @@ TEST_F(ShelfLayoutManagerTest, VisibleInOverview) {
             GetShelfWidget()->GetNativeWindow()->GetTargetBounds().y());
 }
 
+TEST_F(ShelfLayoutManagerTest,
+       HotseatStateAfterTabletModeTransitionWithOverview) {
+  // Tests that the shelf is visible when in overview mode.
+  EnterOverview();
+  ASSERT_EQ(HotseatState::kShownClamshell,
+            GetShelfLayoutManager()->hotseat_state());
+
+  TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+}
+
 // Assertions around SetAutoHideBehavior.
 TEST_F(ShelfLayoutManagerTest, SetAutoHideBehavior) {
   Shelf* shelf = GetPrimaryShelf();
