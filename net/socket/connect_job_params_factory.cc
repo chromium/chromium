@@ -229,7 +229,22 @@ ConnectJobParams CreateProxyParams(
   // Create the nested parameters over which the connection to the proxy
   // will be made.
   ConnectJobParams params;
-  if (proxy_chain_index == 0) {
+
+  if (proxy_server.is_quic()) {
+    // If this and all proxies earlier in the chain are QUIC, then we can hand
+    // off the remainder of the proxy connecting work to the QuicSocketPool, so
+    // no further recursion is required. If any proxies earlier in the chain are
+    // not QUIC, then the chain is unsupported. Such ProxyChains cannot be
+    // constructed, so this is just a double-check.
+    for (size_t i = 0; i < proxy_chain_index; i++) {
+      CHECK(proxy_chain.GetProxyServer(i).is_quic());
+    }
+    return ConnectJobParams(base::MakeRefCounted<HttpProxySocketParams>(
+        /*transport_params=*/nullptr, /*ssl_params=*/nullptr,
+        std::move(proxy_server_ssl_config), host_port_pair, proxy_chain,
+        proxy_chain_index, should_tunnel, *proxy_annotation_tag,
+        network_anonymization_key, secure_dns_policy));
+  } else if (proxy_chain_index == 0) {
     // At the beginning of the chain, create the only TransportSocketParams
     // object, corresponding to the transport socket we want to create to the
     // first proxy.
@@ -241,10 +256,6 @@ ConnectJobParams CreateProxyParams(
         secure_dns_policy, resolution_callback,
         SupportedProtocolsFromSSLConfig(proxy_server_ssl_config)));
   } else {
-    // TODO(https://crbug.com/1491092): For now we will assume that proxy
-    // chains with multiple proxies must all use HTTPS.
-    CHECK(proxy_chain.GetProxyServer(proxy_chain_index - 1)
-              .is_secure_http_like());
     params = CreateProxyParams(
         proxy_server.host_port_pair(), true, endpoint, proxy_chain,
         proxy_chain_index - 1, proxy_annotation_tag, resolution_callback,
@@ -267,16 +278,10 @@ ConnectJobParams CreateProxyParams(
         MaybeTransportSocketParams(params);
     scoped_refptr<SSLSocketParams> ssl_socket_params =
         MaybeSSLSocketParams(params);
-    std::optional<SSLConfig> quic_ssl_config;
-    if (proxy_server.is_quic()) {
-      // For QUIC, we only need the SSL config, not the full SSLSocketParams.
-      // A subsequent CL will remove the redundant SSLSocketParams creation.
-      quic_ssl_config = ssl_socket_params->ssl_config();
-      ssl_socket_params = nullptr;
-    }
+    CHECK(!proxy_server.is_quic());
     params = ConnectJobParams(base::MakeRefCounted<HttpProxySocketParams>(
         std::move(transport_socket_params), std::move(ssl_socket_params),
-        std::move(quic_ssl_config), host_port_pair, proxy_chain,
+        /*quic_ssl_config=*/std::nullopt, host_port_pair, proxy_chain,
         proxy_chain_index, should_tunnel, *proxy_annotation_tag,
         network_anonymization_key, secure_dns_policy));
   } else {

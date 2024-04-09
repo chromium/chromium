@@ -703,17 +703,23 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   // Use default QUIC version, which is the version listed supported version.
   quic::ParsedQuicVersion quic_version =
       common_connect_job_params()->quic_supported_versions->front();
-  // TODO(https://crbug.com/1491092): Update to handle multi-proxy chains. We
-  // will need to create a proxy chain corresponding to all proxy servers up to
-  // but not including the one we are connecting to (or ProxyChain::Direct for
-  // the first proxy server) and use that instead of ProxyChain::Direct() below.
-  CHECK(!params_->proxy_chain().is_multi_proxy());
+
+  // The QuicSessionRequest will handle connecting to any proxies earlier in the
+  // chain to this one, but expects a ProxyChain containing only QUIC proxies.
+  ProxyChain quic_proxies =
+      params_->proxy_chain().Prefix(params_->proxy_chain_index());
+
+  // The ConnectJobParamsFactory ensures that this prefix is all QUIC proxies.
+  for (const ProxyServer& ps : quic_proxies.proxy_servers()) {
+    CHECK(ps.is_quic());
+  }
+
   return quic_session_request_->Request(
       // TODO(crbug.com/1206799) Pass the destination directly once it's
       // converted to contain scheme.
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
                           proxy_server.port()),
-      quic_version, ProxyChain::Direct(), params_->traffic_annotation(),
+      quic_version, quic_proxies, params_->traffic_annotation(),
       http_user_agent_settings(), SessionUsage::kProxy, ssl_config.privacy_mode,
       kH2QuicTunnelPriority, socket_tag(), params_->network_anonymization_key(),
       params_->secure_dns_policy(),

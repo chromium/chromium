@@ -259,6 +259,26 @@ TEST(ProxyChainTest, SplitLast) {
             std::make_pair(ProxyChain::Direct(), proxy_server1));
 }
 
+TEST(ProxyChainTest, Prefix) {
+  auto proxy_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server3 =
+      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+  auto chain = ProxyChain::ForIpProtection(
+      {proxy_server1, proxy_server2, proxy_server3}, /*chain_id=*/2);
+  EXPECT_EQ(chain.Prefix(0), ProxyChain::ForIpProtection({}, /*chain_id=*/2));
+  EXPECT_EQ(chain.Prefix(1),
+            ProxyChain::ForIpProtection({proxy_server1}, /*chain_id=*/2));
+  EXPECT_EQ(chain.Prefix(2),
+            ProxyChain::ForIpProtection({proxy_server1, proxy_server2},
+                                        /*chain_id=*/2));
+  EXPECT_EQ(chain.Prefix(3),
+            ProxyChain::ForIpProtection(
+                {proxy_server1, proxy_server2, proxy_server3}, /*chain_id=*/2));
+}
+
 TEST(ProxyChainTest, First) {
   auto proxy_server1 =
       ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);

@@ -87,6 +87,10 @@ class NET_EXPORT ProxyChain {
   // only has one proxy server, then the resulting chain will be direct.
   std::pair<ProxyChain, const ProxyServer&> SplitLast() const;
 
+  // Return a prefix of this proxy chain, of the given length. This length must
+  // be less than or equal to the chain's length.
+  ProxyChain Prefix(size_t length) const;
+
   // Get the first ProxyServer in this chain, which must have at least one
   // server.
   const ProxyServer& First() const;

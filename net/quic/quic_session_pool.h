@@ -343,7 +343,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // should be false in the case of a proxy.
   // When the `proxy_chain` in the session key is not direct,
   // `proxy_annotation_tag` must be set.
-  int RequestSession(
+  // This method is virtual to facilitate mocking for tests.
+  virtual int RequestSession(
       const QuicSessionKey& session_key,
       url::SchemeHostPort destination,
       quic::ParsedQuicVersion quic_version,
@@ -367,7 +368,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void OnBlackholeAfterHandshakeConfirmed(QuicChromiumClientSession* session);
 
   // Cancels a pending request.
-  void CancelRequest(QuicSessionRequest* request);
+  // This method is virtual to facilitate mocking for tests.
+  virtual void CancelRequest(QuicSessionRequest* request);
 
   // Sets priority of a request.
   void SetRequestPriority(QuicSessionRequest* request,
@@ -398,6 +400,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
   // `callback` with a net_error code.
+  // This method is virtual to facilitate mocking for tests.
   virtual void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
                                                DatagramClientSocket* socket,
                                                const SocketTag& socket_tag,
