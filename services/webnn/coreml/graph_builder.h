@@ -38,7 +38,8 @@ concept IsSupportedTensorType = IsAnyOf<T,
                                         uint32_t,
                                         int64_t,
                                         uint64_t,
-                                        char>;
+                                        char,
+                                        bool>;
 }  // namespace internal
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";
@@ -124,6 +125,9 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
       const mojom::Clamp& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConcat(
+      const mojom::Concat& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
       const mojom::Conv2d& operation,

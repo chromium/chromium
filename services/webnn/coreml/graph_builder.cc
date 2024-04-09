@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -97,6 +98,7 @@ constexpr char kOpConstTypeName[] = "const";
 // Generic operators.
 constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
+constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpTransposeTypeName[] = "transpose";
@@ -317,6 +319,11 @@ struct MilDataTypeMap<char> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::STRING;
 };
+template <>
+struct MilDataTypeMap<bool> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::BOOL;
+};
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
@@ -334,7 +341,6 @@ void SetTensorValueForImmediateValue<Float16>(
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
-
 template <>
 void SetTensorValueForImmediateValue<int8_t>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -355,7 +361,6 @@ void SetTensorValueForImmediateValue<uint32_t>(
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
-
 template <>
 void SetTensorValueForImmediateValue<float>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -364,7 +369,6 @@ void SetTensorValueForImmediateValue<float>(
     tensor.mutable_floats()->add_values(next);
   }
 }
-
 template <>
 void SetTensorValueForImmediateValue<int32_t>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -373,7 +377,6 @@ void SetTensorValueForImmediateValue<int32_t>(
     tensor.mutable_ints()->add_values(next);
   }
 }
-
 template <>
 void SetTensorValueForImmediateValue<int64_t>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -390,13 +393,20 @@ void SetTensorValueForImmediateValue<uint64_t>(
     tensor.mutable_longints()->add_values(next);
   }
 }
-
 template <>
 void SetTensorValueForImmediateValue<char>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
     base::span<const char> value) {
   tensor.mutable_strings()->add_values(
       std::string(base::as_string_view(value)));
+}
+template <>
+void SetTensorValueForImmediateValue<bool>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const bool> value) {
+  for (auto next : value) {
+    tensor.mutable_bools()->add_values(next);
+  }
 }
 
 }  // namespace
@@ -505,6 +515,10 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForClamp(*operation->get_clamp(), block));
         break;
       }
+      case mojom::Operation::Tag::kConcat: {
+        RETURN_IF_ERROR(AddOperationForConcat(*operation->get_concat(), block));
+        break;
+      }
       case mojom::Operation::Tag::kConv2d: {
         RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
         break;
@@ -530,7 +544,6 @@ GraphBuilder::BuildCoreMLModel() {
       }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGather:
@@ -758,6 +771,60 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
       alpha_op_output_name);
   (*op->mutable_inputs())[kParamBeta].add_arguments()->set_name(
       beta_op_output_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
+    const mojom::Concat& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  static constexpr auto kSupportedConcatOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::FLOAT32,
+           CoreML::Specification::MILSpec::DataType::INT32,
+           CoreML::Specification::MILSpec::DataType::BOOL});
+  if (base::ranges::any_of(
+          operation.input_operand_ids, [&](uint64_t input_operand_id) {
+            return !kSupportedConcatOpsTypes.contains(
+                GetOperandInfo(input_operand_id).mil_data_type);
+          })) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  static const char kParamValues[] = "values";
+  static const char kParamAxis[] = "axis";
+  static const char kParamInterleave[] = "interleave";
+
+  const std::string axis_op_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamAxis);
+  int32_t axis = base::checked_cast<int32_t>(operation.axis);
+  AddConstantImmediateValue<int32_t>(block, axis_op_output_name,
+                                     /*dimensions=*/{},
+                                     base::make_span(&axis, 1u));
+
+  const std::string interleave_op_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamInterleave);
+  static constexpr bool kDefaultInterleaveValue = false;
+  AddConstantImmediateValue<bool>(
+      block, interleave_op_output_name,
+      /*dimensions=*/{},
+      /*value=*/base::make_span(&kDefaultInterleaveValue, 1u));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpConcatTypeName);
+
+  google::protobuf::Map<std::string,
+                        ::CoreML::Specification::MILSpec::Argument>& inputs =
+      (*op->mutable_inputs());
+
+  for (uint64_t input_operand_id : operation.input_operand_ids) {
+    inputs[kParamValues].add_arguments()->set_name(
+        GetOperandInfo(input_operand_id).coreml_name);
+  }
+  inputs[kParamAxis].add_arguments()->set_name(axis_op_output_name);
+  inputs[kParamInterleave].add_arguments()->set_name(interleave_op_output_name);
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
