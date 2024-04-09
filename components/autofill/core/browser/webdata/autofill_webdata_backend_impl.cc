@@ -94,8 +94,7 @@ enum class Result {
   kAddUpiId_Failure = 181,
   kClearAllServerData_Success = 190,
   kClearAllServerData_Failure = 191,
-  kClearAllLocalData_Success = 200,
-  kClearAllLocalData_Failure = 201,
+  // Clearing of local data (200, 201) is deprecated.
   kRemoveAutofillDataModifiedBetween_Success = 210,
   kRemoveAutofillDataModifiedBetween_Failure = 211,
   kRemoveOriginURLsModifiedBetween_Success = 220,
@@ -857,19 +856,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
   }
   ReportResult(Result::kClearAllServerData_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::ClearAllLocalData(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  bool a_succeeded =
-      AddressAutofillTable::FromWebDatabase(db)->ClearAllLocalData();
-  bool b_succeeded =
-      PaymentsAutofillTable::FromWebDatabase(db)->ClearAllLocalData();
-  ReportResult(a_succeeded && b_succeeded ? Result::kClearAllLocalData_Success
-                                          : Result::kClearAllLocalData_Failure);
-  return a_succeeded || b_succeeded ? WebDatabase::COMMIT_NEEDED
-                                    : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State

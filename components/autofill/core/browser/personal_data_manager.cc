@@ -304,13 +304,6 @@ void PersonalDataManager::ClearAllServerDataForTesting() {
   payments_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
 }
 
-void PersonalDataManager::ClearAllLocalData() {
-  payments_data_manager_->GetLocalDatabase()->ClearAllLocalData();
-  payments_data_manager_->local_credit_cards_.clear();
-  payments_data_manager_->local_ibans_.clear();
-  address_data_manager_->synced_local_profiles_.clear();
-}
-
 void PersonalDataManager::AddServerCreditCardForTest(
     std::unique_ptr<CreditCard> credit_card) {
   payments_data_manager_->server_credit_cards_.push_back(

@@ -756,19 +756,6 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
   return s.Succeeded();
 }
 
-bool AddressAutofillTable::ClearAllLocalData() {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin()) {
-    return false;  // Some error, nothing was changed.
-  }
-
-  RemoveAllAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable);
-  bool changed = db_->GetLastChangeCount() > 0;
-
-  transaction.Commit();
-  return changed;
-}
-
 bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
     const base::Time& delete_begin,
     const base::Time& delete_end,

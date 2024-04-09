@@ -324,29 +324,6 @@ TEST_F(PaymentsAutofillTableTest, AddCreditCardCvcWithFlagOff) {
   EXPECT_EQ(u"", db_card->cvc());
 }
 
-// Tests that verify ClearLocalPaymentMethodsData function working as expected.
-TEST_F(PaymentsAutofillTableTest, ClearLocalPaymentMethodsData) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-  CreditCard card = test::WithCvc(test::GetCreditCard());
-  EXPECT_TRUE(table_->AddCreditCard(card));
-  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
-  EXPECT_EQ(card.cvc(), db_card->cvc());
-  Iban iban = test::GetLocalIban();
-  EXPECT_TRUE(table_->AddLocalIban(iban));
-
-  // After calling ClearLocalPaymentMethodsData, the local_stored_cvc,
-  // credit_cards, and local_ibans tables should be empty.
-  table_->ClearLocalPaymentMethodsData();
-  EXPECT_FALSE(table_->GetCreditCard(card.guid()));
-  EXPECT_FALSE(table_->GetLocalIban(iban.guid()));
-  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT guid FROM local_stored_cvc WHERE guid=?"));
-  s.BindString(0, card.guid());
-  ASSERT_TRUE(s.is_valid());
-  EXPECT_FALSE(s.Step());
-}
-
 // Tests that adding credit card with cvc, get credit card with cvc and update
 // credit card with only cvc change will not update credit_card table
 // modification_date.

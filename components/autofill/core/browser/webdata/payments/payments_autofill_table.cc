@@ -1524,18 +1524,6 @@ bool PaymentsAutofillTable::ClearAllServerData() {
   return changed;
 }
 
-bool PaymentsAutofillTable::ClearAllLocalData() {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;  // Some error, nothing was changed.
-
-  ClearLocalPaymentMethodsData();
-  bool changed = db_->GetLastChangeCount() > 0;
-
-  transaction.Commit();
-  return changed;
-}
-
 bool PaymentsAutofillTable::RemoveAutofillDataModifiedBetween(
     const base::Time& delete_begin,
     const base::Time& delete_end,
@@ -1613,12 +1601,6 @@ bool PaymentsAutofillTable::RemoveOriginURLsModifiedBetween(
   }
 
   return true;
-}
-
-void PaymentsAutofillTable::ClearLocalPaymentMethodsData() {
-  Delete(db_, kLocalStoredCvcTable);
-  Delete(db_, kCreditCardsTable);
-  Delete(db_, kLocalIbansTable);
 }
 
 bool PaymentsAutofillTable::SetCreditCardBenefits(

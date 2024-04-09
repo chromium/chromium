@@ -203,7 +203,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   void ClearAllCreditCardBenefits();
 
   void ClearAllServerData();
-  void ClearAllLocalData();
 
   // Updates the metadata for a server card (masked or not).
   void UpdateServerCardMetadata(const CreditCard& credit_card);

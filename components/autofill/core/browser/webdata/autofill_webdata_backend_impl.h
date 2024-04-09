@@ -219,7 +219,6 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetMaskedBankAccounts(WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
-  WebDatabase::State ClearAllLocalData(WebDatabase* db);
 
   // Removes Autofill records from the database. Valid only for local cards and
   // kLocalOrSyncable profiles.

@@ -260,9 +260,6 @@ class PersonalDataManager : public KeyedService,
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
 
-  // Deletes all local profiles and cards.
-  virtual void ClearAllLocalData();
-
   // Sets a server credit card for test.
   //
   // TODO(crbug.com/330865438): This method currently sets `server_cards_`

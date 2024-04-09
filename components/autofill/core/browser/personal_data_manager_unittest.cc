@@ -176,25 +176,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   EXPECT_EQ(expected_country_code, actual_country_code);
 }
 
-TEST_F(PersonalDataManagerTest, ClearAllLocalData) {
-  // Add some local data.
-  AddProfileToPersonalDataManager(test::GetFullProfile());
-  personal_data_->AddCreditCard(test::GetCreditCard());
-  personal_data_->Refresh();
-
-  // The card and profile should be there.
-  ResetPersonalDataManager();
-  EXPECT_FALSE(personal_data_->GetCreditCards().empty());
-  EXPECT_FALSE(personal_data_->GetProfiles().empty());
-
-  personal_data_->ClearAllLocalData();
-
-  // Reload the database, everything should be gone.
-  ResetPersonalDataManager();
-  EXPECT_TRUE(personal_data_->GetCreditCards().empty());
-  EXPECT_TRUE(personal_data_->GetProfiles().empty());
-}
-
 // Sync Transport mode is only for Win, Mac, and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -507,11 +507,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // "error").
   bool ClearAllServerData();
 
-  // Deletes all data from the local card table. Returns true if any data was
-  // deleted, false if not (so false means "commit not needed" rather than
-  // "error").
-  bool ClearAllLocalData();
-
   // Removes rows from credit_cards if they were created on or after
   // `delete_begin` and strictly before `delete_end`. Returns the list of
   // deleted cards in `credit_cards`. Return value is true if all rows were
@@ -529,9 +524,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // rows were successfully updated and false on a database error.
   bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
                                        const base::Time& delete_end);
-
-  // Clear all local payment methods (credit cards and IBANs).
-  void ClearLocalPaymentMethodsData();
 
   // Set, get, and clear the `credit_card_benefits` table and the
   // 'benefit_merchant_domains' table. Return true if the operation

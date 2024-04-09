@@ -67,7 +67,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // or to make things easier in general to toggle.
   bool IsEligibleForAddressAccountStorage() const override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  void ClearAllLocalData() override;
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
@@ -77,6 +76,9 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Clears `web_profiles_` and `account_profiles_`.
   void ClearProfiles();
+
+  // Clears all address and payments data.
+  void ClearAllLocalData();
 
   // Adds a card to `server_credit_cards_`. This test class treats masked and
   // full server cards equally, relying on their preset RecordType to

@@ -344,12 +344,6 @@ void AutofillWebDataService::ClearAllServerData() {
                                 autofill_backend_));
 }
 
-void AutofillWebDataService::ClearAllLocalData() {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllLocalData,
-                                autofill_backend_));
-}
-
 void AutofillWebDataService::UpdateServerCardMetadata(
     const CreditCard& credit_card) {
   wdbs_->ScheduleDBTask(
