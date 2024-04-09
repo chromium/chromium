@@ -238,6 +238,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
 
+  // Try to save a credit card locally. If the card already exists, do nothing
+  // and return false. If the card is new, save it locally and return true.
+  virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
+
   // Removes the credit card or IBAN identified by `guid`.
   // Returns true if something was removed.
   virtual bool RemoveByGUID(const std::string& guid);
@@ -338,6 +342,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Triggered when a user selects the option to see cards from their account.
   // Records the sync transport consent.
   void OnUserAcceptedCardsFromAccountOption();
+
+  // Records the sync transport consent if the user is in sync transport mode.
+  virtual void OnUserAcceptedUpstreamOffer();
 
   // The functions below are related to the payments mandatory re-auth feature.
   // All of this functionality is done through per-profile per-device prefs.

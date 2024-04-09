@@ -1047,6 +1047,15 @@ void PaymentsDataManager::OnUserAcceptedCardsFromAccountOption() {
       /*opted_in=*/true);
 }
 
+void PaymentsDataManager::OnUserAcceptedUpstreamOffer() {
+  // If the user is in sync transport mode for Wallet, record an opt-in.
+  if (IsPaymentsWalletSyncTransportEnabled()) {
+    prefs::SetUserOptedInWalletSyncTransport(
+        pref_service_, sync_service_->GetAccountInfo().account_id,
+        /*opted_in=*/true);
+  }
+}
+
 void PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
     bool enabled) {
   prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
@@ -1469,6 +1478,23 @@ void PaymentsDataManager::SetCreditCards(
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
+}
+
+bool PaymentsDataManager::SaveCardLocallyIfNew(
+    const CreditCard& imported_card) {
+  CHECK(!imported_card.number().empty());
+
+  std::vector<CreditCard> credit_cards;
+  for (auto& card : local_credit_cards_) {
+    if (card->MatchingCardDetails(imported_card)) {
+      return false;
+    }
+    credit_cards.push_back(*card);
+  }
+  credit_cards.push_back(imported_card);
+
+  SetCreditCards(&credit_cards);
+  return true;
 }
 
 bool PaymentsDataManager::RemoveByGUID(const std::string& guid) {

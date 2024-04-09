@@ -615,19 +615,7 @@ void PersonalDataManager::SetCreditCards(
 
 bool PersonalDataManager::SaveCardLocallyIfNew(
     const CreditCard& imported_card) {
-  CHECK(!imported_card.number().empty());
-
-  std::vector<CreditCard> credit_cards;
-  for (auto& card : payments_data_manager_->local_credit_cards_) {
-    if (card->MatchingCardDetails(imported_card)) {
-      return false;
-    }
-    credit_cards.push_back(*card);
-  }
-  credit_cards.push_back(imported_card);
-
-  SetCreditCards(&credit_cards);
-  return true;
+  return payments_data_manager_->SaveCardLocallyIfNew(imported_card);
 }
 
 void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
@@ -645,12 +633,7 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
 }
 
 void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
-  // If the user is in sync transport mode for Wallet, record an opt-in.
-  if (payments_data_manager_->IsPaymentsWalletSyncTransportEnabled()) {
-    prefs::SetUserOptedInWalletSyncTransport(
-        pref_service_, sync_service_->GetAccountInfo().account_id,
-        /*opted_in=*/true);
-  }
+  payments_data_manager_->OnUserAcceptedUpstreamOffer();
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {

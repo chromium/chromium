@@ -210,8 +210,8 @@ class PersonalDataManager : public KeyedService,
   void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card);
 
-  // Try to save a credit card locally. If the card already exists, do nothing
-  // and return false. If the card is new, save it locally and return true.
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `payments_data_manager()` instead. Some mocks still rely on this.
   virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
 
   // Adds |profile| to the web database.
@@ -450,7 +450,8 @@ class PersonalDataManager : public KeyedService,
     payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
   }
 
-  // Records the sync transport consent if the user is in sync transport mode.
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `payments_data_manager()` instead. Some mocks still rely on this.
   virtual void OnUserAcceptedUpstreamOffer();
 
   // Triggers `OnPersonalDataChanged()` for all `observers_`.
