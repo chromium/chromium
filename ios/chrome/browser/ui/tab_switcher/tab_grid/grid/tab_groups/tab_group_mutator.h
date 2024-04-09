@@ -11,6 +11,12 @@
 // YES if it inserted an element, NO otherwise.
 - (BOOL)addNewItemInGroup;
 
+// Ungroups the current group (keeps the tab).
+- (void)ungroup;
+
+// Closes the tabs and deletes the current group.
+- (void)deleteGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUP_MUTATOR_H_

@@ -400,7 +400,9 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       const TabGroup* newGroup = selectionOnlyChange.new_group();
 
       if (oldGroup != newGroup) {
+        // There is a change of group.
         if (oldGroup == nullptr) {
+          // The tab was ungrouped and is moving to a group.
           web::WebState* currentWebState =
               _webStateList->GetWebStateAt(selectionOnlyChange.index());
 
@@ -410,6 +412,7 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
           [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
                            selectedItemIdentifier:[self activeIdentifier]];
         } else {
+          // The tab left a group.
           GridItemIdentifier* oldGroupIdentifier =
               [GridItemIdentifier groupIdentifier:oldGroup
                                  withWebStateList:_webStateList];
@@ -418,6 +421,7 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
         }
 
         if (newGroup) {
+          // The tab joined a group.
           GridItemIdentifier* newGroupIdentifier =
               [GridItemIdentifier groupIdentifier:newGroup
                                  withWebStateList:_webStateList];
@@ -425,8 +429,13 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
           [self.consumer replaceItem:newGroupIdentifier
                  withReplacementItem:newGroupIdentifier];
         } else {
-          // TODO(crbug.com/331745255): : Insert the webStates when the new
-          // group is null (which represents the ungrouping).
+          // The tab is now ungrouped.
+          int webStateIndex = selectionOnlyChange.index();
+          web::WebState* currentWebState =
+              _webStateList->GetWebStateAt(webStateIndex);
+
+          [self insertItem:[GridItemIdentifier tabIdentifier:currentWebState]
+              beforeWebStateIndex:webStateIndex + 1];
         }
         break;
       }

@@ -66,10 +66,11 @@
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
-                  tabGroup:_tabGroup
+                  tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController];
   _mediator.browser = self.browser;
+  _mediator.tabGroupsHandler = handler;
 
   _viewController.mutator = _mediator;
   _viewController.gridViewController.mutator = _mediator;

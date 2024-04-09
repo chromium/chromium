@@ -186,14 +186,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 }
 
 - (void)didTapPlusButton {
-  if ([self.mutator addNewItemInGroup]) {
-    [_handler showActiveTab];
-  } else {
-    // Dismiss the view as it looks like the policy changed, and it is not
-    // possible to create a new tab anymore. In this case, the user should not
-    // see any tabs.
-    [_handler hideTabGroup];
-  }
+  [self openNewTab];
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -394,20 +387,16 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   }];
 
   UIAction* newTabAction = [actionFactory actionToAddNewTabInGroupWithBlock:^{
-      // TODO(crbug.com/1501837): Add new tab in current group and open it.
+    [weakSelf openNewTab];
   }];
-  newTabAction.image =
-      DefaultSymbolWithPointSize(kPlusInSquareSymbol, kSymbolActionPointSize);
 
   UIAction* ungroupAction = [actionFactory actionToUngroupTabGroupWithBlock:^{
-      // TODO(crbug.com/1501837): Remove the group but keep tabs and
-      // dismiss the view.
+    [weakSelf ungroup];
   }];
 
   UIAction* deleteGroupAction =
       [actionFactory actionToDeleteTabGroupWithBlock:^{
-          // TODO(crbug.com/1501837): Delete the current group, remove the group
-          // and dismiss the view.
+        [weakSelf deleteGroup];
       }];
 
   return
@@ -415,6 +404,30 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
                    children:@[
                      renameGroup, newTabAction, ungroupAction, deleteGroupAction
                    ]];
+}
+
+// Opens a new tab in the group.
+- (void)openNewTab {
+  if ([self.mutator addNewItemInGroup]) {
+    [_handler showActiveTab];
+  } else {
+    // Dismiss the view as it looks like the policy changed, and it is not
+    // possible to create a new tab anymore. In this case, the user should not
+    // see any tabs.
+    [_handler hideTabGroup];
+  }
+}
+
+// Ungroups the current group (keeps the tab) and closes the view.
+- (void)ungroup {
+  [self.mutator ungroup];
+  [_handler hideTabGroup];
+}
+
+// Closes the tabs and deletes the current group and closes the view.
+- (void)deleteGroup {
+  [self.mutator deleteGroup];
+  [_handler hideTabGroup];
 }
 
 @end

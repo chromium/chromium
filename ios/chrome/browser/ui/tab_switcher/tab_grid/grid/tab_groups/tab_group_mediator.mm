@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -28,11 +29,11 @@
   // Tab group consumer.
   __weak id<TabGroupConsumer> _groupConsumer;
   // Current group.
-  const TabGroup* _tabGroup;
+  base::WeakPtr<const TabGroup> _tabGroup;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                            tabGroup:(const TabGroup*)tabGroup
+                            tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
   CHECK(IsTabGroupInGridEnabled())
@@ -76,11 +77,24 @@
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
-  self.webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::Automatic().InGroup(_tabGroup).Activate());
+  self.webStateList->InsertWebState(std::move(webState),
+                                    WebStateList::InsertionParams::Automatic()
+                                        .InGroup(_tabGroup.get())
+                                        .Activate());
 
   return YES;
+}
+
+- (void)ungroup {
+  auto scoped_lock = self.webStateList->StartBatchOperation();
+  self.webStateList->DeleteGroup(_tabGroup.get());
+  _tabGroup.reset();
+}
+
+- (void)deleteGroup {
+  CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
+                           WebStateList::CLOSE_USER_ACTION);
+  _tabGroup.reset();
 }
 
 #pragma mark - Parent's functions
@@ -98,7 +112,8 @@
   GridItemIdentifier* identifier = nil;
   int webStateIndex = self.webStateList->active_index();
   if (webStateIndex != WebStateList::kInvalidIndex &&
-      self.webStateList->GetGroupOfWebStateAt(webStateIndex) == _tabGroup) {
+      self.webStateList->GetGroupOfWebStateAt(webStateIndex) ==
+          _tabGroup.get()) {
     web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
     identifier = [GridItemIdentifier tabIdentifier:webState];
   }
@@ -111,7 +126,7 @@
 // Override the parent to only show individual web state in the group.
 - (GridItemIdentifier*)activeIdentifier {
   WebStateList* webStateList = self.webStateList;
-  if (!webStateList) {
+  if (!webStateList || !_tabGroup) {
     return nil;
   }
 
@@ -130,6 +145,9 @@
 
 // Overrides the parent observations: only observe the group `WebState`s.
 - (void)addWebStateObservations {
+  if (!_tabGroup) {
+    return;
+  }
   for (int index : _tabGroup->range()) {
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
     [self addObservationForWebState:webState];
@@ -148,14 +166,14 @@
   if (webStateList->IsBatchInProgress()) {
     return;
   }
-  CHECK(detachChange.group() == _tabGroup);
+  CHECK(detachChange.group() == _tabGroup.get());
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
   GridItemIdentifier* identifierToRemove =
       [GridItemIdentifier tabIdentifier:detachedWebState];
   GridItemIdentifier* selectedIdentifier;
   if (self.webStateList->GetGroupOfWebStateAt(webStateList->active_index()) ==
-      _tabGroup) {
+      _tabGroup.get()) {
     selectedIdentifier =
         [GridItemIdentifier tabIdentifier:webStateList->GetActiveWebState()];
   }
@@ -180,11 +198,20 @@
       const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
       const TabGroup* tabGroup = visualDataChange.updated_group();
-      if (_tabGroup != tabGroup) {
+      if (_tabGroup.get() != tabGroup) {
         break;
       }
       [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
       [_groupConsumer setGroupColor:tabGroup->GetColor()];
+      break;
+    }
+    case WebStateListChange::Type::kGroupDelete: {
+      const WebStateListChangeGroupDelete& groupDeleteChange =
+          change.As<WebStateListChangeGroupDelete>();
+      if (groupDeleteChange.deleted_group() == _tabGroup.get()) {
+        _tabGroup.reset();
+        [self.tabGroupsHandler hideTabGroup];
+      }
       break;
     }
     default:

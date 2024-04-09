@@ -7,19 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 
 class TabGroup;
 @protocol TabCollectionConsumer;
+@protocol TabGroupsCommands;
 @protocol TabGroupConsumer;
 class WebStateList;
 
 // Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
 
+// Handler for the tab group commands.
+@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
+
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                            tabGroup:(const TabGroup*)tabGroup
+                            tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)consumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer;
 
