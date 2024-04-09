@@ -369,7 +369,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
       bool account_for_divider_width) const override;
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
-  aura::Window::Windows GetLayoutWindows() const override;
 
  private:
   friend class SplitViewControllerTest;
@@ -559,9 +558,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // `SnapPosition::kPrimary` and `SnapPosition::kSecondary`. The bounds of the
   // window(s) will also be updated.
   void SwapWindowsAndUpdateBounds();
-
-  // Sets the position of the split view divider.
-  void SetDividerPosition(int divider_position);
 
   // Root window the split view is in.
   raw_ptr<aura::Window, DanglingUntriaged> root_window_;

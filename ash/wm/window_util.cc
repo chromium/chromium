@@ -158,7 +158,7 @@ aura::Window* FindTopMostChild(aura::Window* parent,
                                const aura::Window::Windows& windows) {
   for (aura::Window* child : base::Reversed(parent->children())) {
     for (aura::Window* window : windows) {
-      if (child == window) {
+      if (child == window && !window->is_destroying()) {
         return window;
       }
       if (child->Contains(window)) {

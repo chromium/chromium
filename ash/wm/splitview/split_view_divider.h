@@ -25,7 +25,6 @@ namespace ash {
 
 class LayoutDividerController;
 class SnapGroupController;
-class SplitViewController;
 class SplitViewDividerView;
 
 // Observes the windows in the split view and controls the stacking orders among
@@ -65,23 +64,19 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   const aura::Window::Windows& observed_windows() const {
     return observed_windows_;
   }
-
-  // Called explicitly by the delegate that created this when it is shutting
-  // down.
-  void ShutDown();
+  const gfx::Point previous_event_location() const {
+    return previous_event_location_;
+  }
 
   // Returns true if the divider widget is created.
   bool HasDividerWidget() const;
 
-  // Shows the divider widget with the origin at `divider_position`.
-  void ShowFor(int divider_position);
+  // Updates the divider's target visibility.
+  void SetVisible(bool visible);
 
-  // Closes the divider widget.
-  void CloseDividerWidget();
-
-  // Sets the divider position, ensuring it meets the minimum window size
-  // requirement. Returns the actual `divider_position_`.
-  int SetDividerPosition(int requested_divider_position);
+  // Sets the divider's position, ensuring it meets the minimum window size
+  // requirement.
+  void SetDividerPosition(int divider_position);
 
   // Updates divider position while resizing, keeping it within allowed range.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
@@ -134,6 +129,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnWindowDragStarted(aura::Window* dragged_window);
   void OnWindowDragEnded();
 
+  // Calls the delegate to swap the windows.
+  void SwapWindows();
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowBoundsChanged(aura::Window* window,
@@ -153,9 +151,14 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   SplitViewDividerView* divider_view_for_testing() { return divider_view_; }
 
  private:
-  friend class SplitViewController;
+  // Refreshes the divider's state by creating or closing the divider widget if
+  // needed, and updating its visibility, bounds, and stacking order as needed.
+  // If `observed_windows_changed` is true, this will refresh the divider
+  // position and stacking order.
+  void RefreshDividerState(bool observed_windows_changed);
 
   void CreateDividerWidget(int divider_position);
+  void CloseDividerWidget();
 
   // Refreshes the stacking order of the `divider_widget_` to be right on top of
   // the `observed_windows_` and reparents the split view divider to be on the
@@ -189,6 +192,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Initialized as -1 before `divider_widget_` is created and shown.
   int divider_position_ = -1;
 
+  // True if the divider widget should be shown, false otherwise.
+  bool target_visibility_ = false;
+
   // Split view divider widget. It's a black bar stretching from one edge of the
   // screen to the other, containing a small white drag bar in the middle. As
   // the user presses on it and drag it to left or right, the left and right
@@ -208,9 +214,13 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // `observed_windows_` is primary or secondary snapped.
   aura::Window::Windows observed_windows_;
 
+  // If true, skip refreshing the divider state. This is used to avoid recursive
+  // updates when updating the divider state.
+  bool is_refreshing_state_ = false;
+
   // If true, skip the stacking order update. This is used to avoid recursive
   // update when updating the stacking order.
-  bool pause_update_ = false;
+  bool is_refreshing_stacking_order_ = false;
 
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

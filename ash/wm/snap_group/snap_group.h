@@ -78,7 +78,6 @@ class SnapGroup : public aura::WindowObserver,
       bool account_for_divider_width) const override;
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
-  aura::Window::Windows GetLayoutWindows() const override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

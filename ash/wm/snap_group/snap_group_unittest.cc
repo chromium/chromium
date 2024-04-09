@@ -2100,7 +2100,7 @@ TEST_F(SnapGroupTest, DragSnappedWindowExitPointTest) {
   event_generator->PressLeftButton();
   event_generator->MoveMouseBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
-  EXPECT_FALSE(snap_group_divider()->HasDividerWidget());
+  EXPECT_FALSE(snap_group_divider()->divider_widget()->IsVisible());
 
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(
@@ -2116,7 +2116,7 @@ TEST_F(SnapGroupTest, DragSnappedWindowExitPointTest) {
   event_generator->PressTouch();
   event_generator->MoveTouchBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
-  EXPECT_FALSE(snap_group_divider()->HasDividerWidget());
+  EXPECT_FALSE(snap_group_divider()->divider_widget()->IsVisible());
 
   event_generator->ReleaseTouch();
   EXPECT_FALSE(
@@ -2653,7 +2653,7 @@ TEST_F(SnapGroupTest, OverviewEnterExitBasic) {
   WaitForOverviewEnterAnimation();
   EXPECT_TRUE(overview_controller->overview_session());
   EXPECT_EQ(GetOverviewGridBounds(), work_area_bounds());
-  EXPECT_FALSE(snap_group_divider()->divider_widget());
+  EXPECT_FALSE(snap_group_divider()->divider_widget()->IsVisible());
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_EQ(WindowStateType::kSecondarySnapped,

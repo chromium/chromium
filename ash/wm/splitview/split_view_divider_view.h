@@ -12,7 +12,6 @@
 namespace ash {
 
 class IconButton;
-class LayoutDividerController;
 class SplitViewDivider;
 class SplitViewDividerHandlerView;
 
@@ -22,8 +21,7 @@ class SplitViewDividerView : public views::View,
   METADATA_HEADER(SplitViewDividerView, views::View)
 
  public:
-  explicit SplitViewDividerView(LayoutDividerController* controller,
-                                SplitViewDivider* divider);
+  explicit SplitViewDividerView(SplitViewDivider* divider);
   SplitViewDividerView(const SplitViewDividerView&) = delete;
   SplitViewDividerView& operator=(const SplitViewDividerView&) = delete;
   ~SplitViewDividerView() override;
@@ -31,9 +29,8 @@ class SplitViewDividerView : public views::View,
   void DoSpawningAnimation(int spawn_position);
   void SetDividerBarVisible(bool visible);
 
-  // Called explicitly by SplitViewDivider when LayoutDividerController is
-  // shutting down.
-  void OnShuttingDown();
+  // Called explicitly by SplitViewDivider when the divider widget is closing.
+  void OnDividerClosing();
 
   // views::View:
   void Layout(PassKey) override;
@@ -79,9 +76,8 @@ class SplitViewDividerView : public views::View,
   // a resize.
   bool mouse_move_started_ = false;
 
-  raw_ptr<LayoutDividerController> controller_;
   raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
-  raw_ptr<SplitViewDivider, DanglingUntriaged> divider_;
+  raw_ptr<SplitViewDivider> divider_;
 
   raw_ptr<IconButton> feedback_button_ = nullptr;
 

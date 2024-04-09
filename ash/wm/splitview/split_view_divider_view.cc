@@ -12,7 +12,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
@@ -46,10 +45,8 @@ constexpr int kFeedbackButtonIconSize = 20;
 
 }  // namespace
 
-SplitViewDividerView::SplitViewDividerView(LayoutDividerController* controller,
-                                           SplitViewDivider* divider)
-    : controller_(controller),
-      divider_handler_view_(
+SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
+    : divider_handler_view_(
           AddChildView(std::make_unique<SplitViewDividerHandlerView>())),
       divider_(divider) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -64,8 +61,8 @@ SplitViewDividerView::SplitViewDividerView(LayoutDividerController* controller,
 
 SplitViewDividerView::~SplitViewDividerView() = default;
 
-void SplitViewDividerView::OnShuttingDown() {
-  controller_ = nullptr;
+void SplitViewDividerView::OnDividerClosing() {
+  divider_ = nullptr;
 }
 
 void SplitViewDividerView::DoSpawningAnimation(int spawn_position) {
@@ -106,8 +103,8 @@ void SplitViewDividerView::Layout(PassKey) {
   // `kSnapGroup` is enabled. If we are in clamshell mode without the feature
   // flag and params, then we must be transitioning from tablet mode, and the
   // divider will be destroyed and there is no need to update it.
-  if (!display::Screen::GetScreen()->InTabletMode() &&
-      !IsSnapGroupEnabledInClamshellMode()) {
+  if (!divider_ || (!display::Screen::GetScreen()->InTabletMode() &&
+                    !IsSnapGroupEnabledInClamshellMode())) {
     return;
   }
 
@@ -144,6 +141,7 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
+  CHECK(divider_);
   RefreshFeedbackButton(/*visible=*/false);
   if (!mouse_move_started_) {
     // If this is the first mouse drag event, start the resize and reset
@@ -172,6 +170,7 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
+  CHECK(divider_);
   if (event->IsSynthesized()) {
     // When `divider_` is destroyed, closing the widget can cause a window
     // visibility change which will cancel active touches and dispatch a
@@ -217,13 +216,14 @@ bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
 }
 
 void SplitViewDividerView::SwapWindows() {
-  controller_->SwapWindows();
+  CHECK(divider_);
+  divider_->SwapWindows();
 }
 
 void SplitViewDividerView::OnResizeStatusChanged() {
   // If split view has ended, the divider widget will be closing. In this case
   // no need to update the divider layout and do the animation.
-  if (!divider_->divider_widget()) {
+  if (!divider_ || !divider_->divider_widget()) {
     return;
   }
 
@@ -256,6 +256,7 @@ void SplitViewDividerView::OnResizeStatusChanged() {
 }
 
 void SplitViewDividerView::StartResizing(gfx::Point location) {
+  CHECK(divider_);
   // `StartResizeWithDivider()` may cause this view to be destroyed.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   divider_->StartResizeWithDivider(location);
@@ -313,6 +314,7 @@ void SplitViewDividerView::RefreshFeedbackButtonBounds() {
 }
 
 void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
+  CHECK(divider_);
   // `EndResizeWithDivider()` may cause this view to be destroyed.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   divider_->EndResizeWithDivider(location);

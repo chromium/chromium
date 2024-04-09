@@ -56,9 +56,7 @@ SnapGroup::~SnapGroup() {
   // divider when snap group was created.
   UpdateGroupWindowsBounds(/*account_for_divider_width=*/false);
 
-  // Close the divider before we stop observing windows, since
-  // `~SplitViewDivider` will try to remove the observers again.
-  HideDivider();
+  // `SplitViewDivider::MaybeRemoveObservedWindow()` will close the divider.
   StopObservingWindows();
 }
 
@@ -81,12 +79,13 @@ void SnapGroup::ShowDivider() {
   const bool account_for_divider_width =
       edge_gap < kSplitviewDividerShortSideLength;
 
-  snap_group_divider_.ShowFor(
+  snap_group_divider_.SetDividerPosition(
       GetEquivalentDividerPosition(window1_, account_for_divider_width));
+  snap_group_divider_.SetVisible(true);
 }
 
 void SnapGroup::HideDivider() {
-  snap_group_divider_.CloseDividerWidget();
+  snap_group_divider_.SetVisible(false);
 }
 
 bool SnapGroup::IsSnapGroupLayoutHorizontal() {
@@ -104,7 +103,8 @@ void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
   if (client_component != HTCAPTION && client_component != HTCLIENT) {
     return;
   }
-
+  // When the window is dragged via the caption bar to unsnap, we early hide the
+  // divider to avoid re-stacking the divider on top of the dragged window.
   gfx::Point location_in_screen = event->location();
   wm::ConvertPointToScreen(target, &location_in_screen);
   if (window1_->GetBoundsInScreen().Contains(location_in_screen) ||
@@ -144,7 +144,9 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
 }
 
 aura::Window* SnapGroup::GetRootWindow() {
-  CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
+  // This can be called during dragging window out of a snap group to another
+  // display.
+  // TODO(b/331993231): Update the root window in `OnWindowParentChanged()`.
   return window1_->GetRootWindow();
 }
 
@@ -202,10 +204,6 @@ SnapPosition SnapGroup::GetPositionOfSnappedWindow(
   return window == window1_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
 }
 
-aura::Window::Windows SnapGroup::GetLayoutWindows() const {
-  return {window1_.get(), window2_.get()};
-}
-
 void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
                                         uint32_t metrics) {
   if (window1_->GetRootWindow() !=
@@ -239,6 +237,7 @@ void SnapGroup::StartObservingWindows() {
   for (aura::Window* window : {window1_, window2_}) {
     window->AddObserver(this);
     WindowState::Get(window)->AddObserver(this);
+    snap_group_divider_.MaybeAddObservedWindow(window);
   }
 }
 
@@ -247,6 +246,7 @@ void SnapGroup::StopObservingWindows() {
     if (window) {
       window->RemoveObserver(this);
       WindowState::Get(window)->RemoveObserver(this);
+      snap_group_divider_.MaybeRemoveObservedWindow(window);
     }
   }
   window1_ = nullptr;
@@ -287,18 +287,14 @@ void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
 
   // TODO(b/5613837): Remove the cyclic dependencies between snapped window
   // bounds calculation and divider position calculation.
-  const int actual_divider_position =
-      snap_group_divider_.SetDividerPosition(requested_divider_position);
+  // `SplitViewDivider::SetDividerPosition()` will account for the windows'
+  // minimum sizes.
+  snap_group_divider_.SetDividerPosition(requested_divider_position);
 
   UpdateSnappedWindowBounds(window1_, /*account_for_divider_width=*/true,
                             primary_snap_ratio);
   UpdateSnappedWindowBounds(window2_, /*account_for_divider_width=*/true,
                             1 - primary_snap_ratio);
-
-  // The actual divider position might differ from the
-  // `requested_divider_position` because it needs to be adjusted to accommodate
-  // the windows' minimum sizes.
-  snap_group_divider_.ShowFor(actual_divider_position);
 }
 
 }  // namespace ash
