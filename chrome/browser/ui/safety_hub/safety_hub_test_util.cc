@@ -36,15 +36,6 @@ class TestObserver : public SafetyHubService::Observer {
   base::RepeatingClosure callback_;
 };
 
-void RemoveExtension(const std::string& name,
-                     extensions::mojom::ManifestLocation location,
-                     Profile* profile) {
-  const std::string kId = crx_file::id_util::GenerateId(name);
-  extensions::ExtensionPrefs::Get(profile)->OnExtensionUninstalled(
-      kId, location, false);
-  extensions::ExtensionRegistry::Get(profile)->RemoveEnabled(kId);
-}
-
 // These `cws_info` variables are used to test the various states that an
 // extension could be in. Is a trigger due to the malware violation.
 static extensions::CWSInfoService::CWSInfo cws_info_malware{
@@ -202,6 +193,21 @@ extensions::CWSInfoService::CWSInfo GetCWSInfoNoTrigger() {
       extensions::CWSInfoService::CWSViolationType::kNone,
       false,
       false};
+}
+
+void RemoveExtension(const std::string& name,
+                     extensions::mojom::ManifestLocation location,
+                     Profile* profile) {
+  const std::string kId = crx_file::id_util::GenerateId(name);
+  extensions::ExtensionPrefs::Get(profile)->OnExtensionUninstalled(
+      kId, location, false);
+  extensions::ExtensionRegistry::Get(profile)->RemoveEnabled(kId);
+}
+
+void AcknowledgeSafetyCheckExtensions(const std::string& name,
+                                      Profile* profile) {
+  extensions::ExtensionPrefs::Get(profile)->UpdateExtensionPref(
+      name, "ack_safety_check_warning", base::Value(true));
 }
 
 }  // namespace safety_hub_test_util

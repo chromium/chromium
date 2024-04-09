@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -44,10 +45,16 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
+using extensions::ExtensionPrefs;
+using extensions::ExtensionRegistry;
 using safety_hub::SafetyHubCardState;
 
 namespace {
@@ -170,7 +177,10 @@ void AppendModuleNameToString(std::u16string& str,
 }  // namespace
 
 SafetyHubHandler::SafetyHubHandler(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
+  prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+}
 SafetyHubHandler::~SafetyHubHandler() = default;
 
 SafetyHubHandler::PermissionsData::PermissionsData() = default;
@@ -468,6 +478,14 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
   const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id, GetSafeBrowsingCardData());
+}
+
+void SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview(
+    const base::Value::List& args) {
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(GetNumberOfExtensionsThatNeedReview()));
 }
 
 base::Value::Dict SafetyHubHandler::GetSafeBrowsingCardData() {
@@ -768,6 +786,11 @@ void SafetyHubHandler::RegisterMessages() {
       base::BindRepeating(
           &SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getNumberOfExtensionsThatNeedReview",
+      base::BindRepeating(
+          &SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview,
+          base::Unretained(this)));
 }
 
 void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
@@ -793,22 +816,92 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
       service->PopulateNotificationPermissionReviewData());
 }
 
-int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
-  extensions::CWSInfoService* cws_info_service =
-      extensions::CWSInfoServiceFactory::GetForProfile(profile_);
+void SafetyHubHandler::InitSafetyHubExtensionResults() {
   std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
-      SafetyHubExtensionsResult::GetResult(cws_info_service, profile_, false);
-  if (!sh_result.has_value()) {
+      SafetyHubExtensionsResult::GetResult(
+          extensions::CWSInfoService::Get(profile_), profile_, false);
+  if (sh_result.has_value()) {
+    extension_sh_result_ = std::make_unique<SafetyHubExtensionsResult>(
+        *static_cast<SafetyHubExtensionsResult*>(sh_result->get()));
+  }
+}
+
+int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
+  if (!extension_sh_result_) {
+    InitSafetyHubExtensionResults();
+  }
+  if (extension_sh_result_) {
+    return extension_sh_result_->GetNumTriggeringExtensions();
+  } else {
     return 0;
   }
+}
 
-  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+void SafetyHubHandler::UpdateNumberOfExtensionsThatNeedReview(
+    int num_extension_need_review_before,
+    int num_extension_need_review_after) {
+  if (num_extension_need_review_before != num_extension_need_review_after) {
+    AllowJavascript();
+    FireWebUIListener("extensions-review-list-maybe-changed",
+                      num_extension_need_review_after);
+  }
+}
 
-  return result->GetNumTriggeringExtensions();
+void SafetyHubHandler::OnExtensionPrefsUpdated(
+    const std::string& extension_id) {
+  if (!extension_sh_result_) {
+    return;
+  }
+  int num_extension_need_review_before = GetNumberOfExtensionsThatNeedReview();
+  extension_sh_result_->OnExtensionPrefsUpdated(
+      extension_id, profile_, extensions::CWSInfoService::Get(profile_));
+  int num_extension_need_review_after = GetNumberOfExtensionsThatNeedReview();
+  UpdateNumberOfExtensionsThatNeedReview(num_extension_need_review_before,
+                                         num_extension_need_review_after);
+}
+
+void SafetyHubHandler::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  if (!extension_sh_result_) {
+    return;
+  }
+  int num_extension_need_review_before = GetNumberOfExtensionsThatNeedReview();
+  extension_sh_result_->OnExtensionUninstalled(browser_context, extension,
+                                               reason);
+  int num_extension_need_review_after = GetNumberOfExtensionsThatNeedReview();
+  UpdateNumberOfExtensionsThatNeedReview(num_extension_need_review_before,
+                                         num_extension_need_review_after);
+}
+
+void SafetyHubHandler::OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {
+  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  prefs_observation_.Reset();
+}
+
+void SafetyHubHandler::OnShutdown(extensions::ExtensionRegistry* registry) {
+  extension_registry_observation_.Reset();
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+}
+
+void SafetyHubHandler::ClearExtensionResultsForTesting() {
+  GetNumberOfExtensionsThatNeedReview();
+  if (extension_sh_result_) {
+    extension_sh_result_->ClearTriggeringExtensionsForTesting();  // IN-TEST
+  }
+}
+
+void SafetyHubHandler::SetTriggeringExtensionForTesting(
+    std::string extension_id) {
+  GetNumberOfExtensionsThatNeedReview();
+  if (extension_sh_result_) {
+    extension_sh_result_->SetTriggeringExtensionForTesting(  // IN-TEST
+        extension_id);                                       // IN-TEST
+  }
 }
 
 void SafetyHubHandler::OnJavascriptAllowed() {}

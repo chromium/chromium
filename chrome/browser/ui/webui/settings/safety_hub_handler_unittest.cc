@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
+
 #include <ctime>
 #include <memory>
 
@@ -15,17 +17,18 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -40,6 +43,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/crx_file/id_util.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -48,10 +52,16 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
 using password_manager::TestPasswordStore;
 using safety_hub::SafetyHubCardState;
 
@@ -73,6 +83,8 @@ class SafetyHubHandlerTest : public testing::Test {
         {content_settings::features::kSafetyCheckUnusedSitePermissions,
          content_settings::features::
              kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
+         features::kSafetyHubExtensionsUwSTrigger,
+         features::kSafetyHubExtensionsOffStoreTrigger,
          features::kSafetyHub},
         /*disabled_features=*/{});
   }
@@ -175,6 +187,10 @@ class SafetyHubHandlerTest : public testing::Test {
               Profile::FromBrowserContext(context));
         }));
     safety_hub_test_util::CreateMockExtensions(profile());
+  }
+
+  void AddTriggeringExtension() {
+    handler_->SetTriggeringExtensionForTesting("Test");
   }
 
   void ExpectRevokedPermission() {
@@ -301,9 +317,8 @@ class SafetyHubHandlerTest : public testing::Test {
             : SetPrefsForSafeBrowsing(true, true, SettingManager::USER);
         break;
       case SafetyHubHandler::SafetyHubModule::kExtensions:
-        isModuleRecommended
-            ? AddExtensionsForReview()
-            : safety_hub_test_util::CleanAllMockExtensions(profile());
+        isModuleRecommended ? AddTriggeringExtension()
+                            : ClearTriggeringExtensions();
         break;
       case SafetyHubHandler::SafetyHubModule::kNotifications:
         hcsm()->ClearSettingsForOneType(
@@ -324,6 +339,10 @@ class SafetyHubHandlerTest : public testing::Test {
             << "Unexpected SafetyHubModule for test setup. A proper setup for "
                "the module can be done only for supported modules.\n";
     }
+  }
+
+  void ClearTriggeringExtensions() {
+    handler_->ClearExtensionResultsForTesting();
   }
 
   void ValidateEntryPointSubheader(
@@ -410,7 +429,6 @@ class SafetyHubHandlerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<SafetyHubHandler> handler_;
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
@@ -419,6 +437,7 @@ class SafetyHubHandlerTest : public testing::Test {
       CreateAndUseTestPasswordStore(&profile_);
   scoped_refptr<password_manager::TestPasswordStore> account_store_ =
       CreateAndUseTestAccountPasswordStore(&profile_);
+  std::unique_ptr<SafetyHubHandler> handler_;
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
@@ -970,4 +989,30 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_AllModules) {
       l10n_util::GetStringUTF8(
           IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
   ValidateEntryPointSubheader(expected_subheader);
+}
+
+TEST_F(SafetyHubHandlerTest, ExtensionPrefAndInitialization) {
+  // Create fake extensions for our pref service to load and test that
+  // the `web_ui()` has recorded no events
+  AddExtensionsForReview();
+  EXPECT_EQ(5, handler()->GetNumberOfExtensionsThatNeedReview());
+  EXPECT_EQ(0u, web_ui()->call_data().size());
+  // After `AcknowledgeSafetyCheckExtensions` one event should have been fired.
+  safety_hub_test_util::AcknowledgeSafetyCheckExtensions(
+      crx_file::id_util::GenerateId("TestExtension5"), profile());
+  EXPECT_EQ(1u, web_ui()->call_data().size());
+  // After `RemoveExtension` one additional event should have been fired
+  // making two total events.
+  safety_hub_test_util::AcknowledgeSafetyCheckExtensions(
+      crx_file::id_util::GenerateId("TestExtension4"), profile());
+  EXPECT_EQ(2u, web_ui()->call_data().size());
+  // When the same actions are preformed on good extensions, no more
+  // events are fired.
+  safety_hub_test_util::AcknowledgeSafetyCheckExtensions(
+      crx_file::id_util::GenerateId("lgcbbihjdcmnlndohpfhppljiilnkoab"),
+      profile());
+  EXPECT_EQ(2u, web_ui()->call_data().size());
+  safety_hub_test_util::RemoveExtension("jadkojfancihcakelhdnpkcidencgdjg",
+                                        ManifestLocation::kInternal, profile());
+  EXPECT_EQ(2u, web_ui()->call_data().size());
 }

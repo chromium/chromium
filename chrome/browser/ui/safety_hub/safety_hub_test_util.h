@@ -61,6 +61,15 @@ void CleanAllMockExtensions(Profile* profile);
 // Creates and returns a CWSInfo without any triggers.
 extensions::CWSInfoService::CWSInfo GetCWSInfoNoTrigger();
 
+// Removes an extension from the Chrome registry and extension prefs.
+void RemoveExtension(const std::string& name,
+                     extensions::mojom::ManifestLocation location,
+                     Profile* profile);
+
+// Add the `ack_safety_check_warning` pref to an extension.
+void AcknowledgeSafetyCheckExtensions(const std::string& name,
+                                      Profile* profile);
+
 }  // namespace safety_hub_test_util
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_

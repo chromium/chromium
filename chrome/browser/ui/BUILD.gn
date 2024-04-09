@@ -1884,8 +1884,6 @@ static_library("ui") {
       "webui/settings/recent_site_settings_helper.h",
       "webui/settings/reset_settings_handler.cc",
       "webui/settings/reset_settings_handler.h",
-      "webui/settings/safety_check_extensions_handler.cc",
-      "webui/settings/safety_check_extensions_handler.h",
       "webui/settings/safety_check_handler.cc",
       "webui/settings/safety_check_handler.h",
       "webui/settings/safety_hub_handler.cc",

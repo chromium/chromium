@@ -49,10 +49,14 @@ bool ShouldExtensionBeReviewed(
   extension_prefs->ReadPrefAsBoolean(
       extension.id(), kPrefAcknowledgeSafetyCheckWarning, &warning_acked);
   bool is_extension = extension.is_extension() || extension.is_shared_module();
+  bool is_non_visible_extension =
+      extensions::Manifest::IsPolicyLocation(extension.location()) ||
+      extensions::Manifest::IsComponentLocation(extension.location());
   // If the user has previously acknowledged the warning on this
   // extension and chosen to keep it, we will not show an additional
-  // Safety Hub warning. We also will not show warnings on Chrome apps.
-  if (warning_acked || !is_extension) {
+  // Safety Hub warning. We also will not show warnings on Chrome apps
+  // or extensions that are not visible to the user.
+  if (warning_acked || !is_extension || is_non_visible_extension) {
     return false;
   }
   std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
@@ -179,6 +183,33 @@ std::unique_ptr<SafetyHubService::Result> SafetyHubExtensionsResult::Clone()
   return std::make_unique<SafetyHubExtensionsResult>(*this);
 }
 
+void SafetyHubExtensionsResult::OnExtensionPrefsUpdated(
+    const std::string& extension_id,
+    Profile* profile,
+    const extensions::CWSInfoService* extension_info_service) {
+  auto extension_ptr = triggering_extensions_.find(extension_id);
+  if (extension_ptr != triggering_extensions_.end()) {
+    extensions::ExtensionPrefs* extension_prefs =
+        extensions::ExtensionPrefsFactory::GetForBrowserContext(profile);
+    bool warning_acked = false;
+    extension_prefs->ReadPrefAsBoolean(
+        extension_id, kPrefAcknowledgeSafetyCheckWarning, &warning_acked);
+    if (warning_acked) {
+      triggering_extensions_.erase(extension_ptr);
+    }
+  }
+}
+
+void SafetyHubExtensionsResult::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  auto extension_ptr = triggering_extensions_.find(extension->id());
+  if (extension_ptr != triggering_extensions_.end()) {
+    triggering_extensions_.erase(extension_ptr);
+  }
+}
+
 base::Value::Dict SafetyHubExtensionsResult::ToDictValue() const {
   // Only results that contain extensions that have been unpublished for a long
   // time should be serialized.
@@ -229,4 +260,13 @@ std::u16string SafetyHubExtensionsResult::GetNotificationString() const {
 int SafetyHubExtensionsResult::GetNotificationCommandId() const {
   CHECK(is_unpublished_extensions_only_);
   return IDC_MANAGE_EXTENSIONS;
+}
+
+void SafetyHubExtensionsResult::ClearTriggeringExtensionsForTesting() {
+  triggering_extensions_.clear();
+}
+
+void SafetyHubExtensionsResult::SetTriggeringExtensionForTesting(
+    std::string extension_id) {
+  triggering_extensions_.insert(extension_id);
 }
