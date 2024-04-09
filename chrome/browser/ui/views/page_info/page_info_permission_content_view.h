@@ -106,7 +106,7 @@ class PageInfoPermissionContentView
   raw_ptr<PageInfo> presenter_ = nullptr;
   ContentSettingsType type_;
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::WeakPtr<content::WebContents> web_contents_;
   PageInfo::PermissionInfo permission_;
 
   raw_ptr<NonAccessibleImageView> icon_ = nullptr;

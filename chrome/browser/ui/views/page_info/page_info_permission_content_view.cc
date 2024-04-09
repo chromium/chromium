@@ -47,10 +47,10 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
     ChromePageInfoUiDelegate* ui_delegate,
     ContentSettingsType type,
     content::WebContents* web_contents)
-    : presenter_(presenter),
-      type_(type),
-      ui_delegate_(ui_delegate),
-      web_contents_(web_contents) {
+    : presenter_(presenter), type_(type), ui_delegate_(ui_delegate) {
+  CHECK(web_contents);
+  web_contents_ = web_contents->GetWeakPtr();
+
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // Use the same insets as buttons and permission rows in the main page for
@@ -213,14 +213,16 @@ void PageInfoPermissionContentView::SetPermissionInfo(
 
   if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
       UseUpdatedFileSystemPersistentPermissionUI()) {
-    auto* context =
-        FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
-            web_contents_->GetBrowserContext());
-    remember_setting_->SetVisible(context &&
-                                  permission_.setting != CONTENT_SETTING_BLOCK);
-    remember_setting_->SetChecked(
-        context && context->OriginHasExtendedPermission(url::Origin::Create(
-                       web_contents_->GetLastCommittedURL())));
+    if (web_contents_.MaybeValid()) {
+      auto* context =
+          FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
+              web_contents_->GetBrowserContext());
+      remember_setting_->SetVisible(context && permission_.setting !=
+                                                   CONTENT_SETTING_BLOCK);
+      remember_setting_->SetChecked(
+          context && context->OriginHasExtendedPermission(url::Origin::Create(
+                         web_contents_->GetLastCommittedURL())));
+    }
   } else {
     remember_setting_->SetChecked(!permission_.is_one_time &&
                                   permission_.setting !=
@@ -299,6 +301,9 @@ void PageInfoPermissionContentView::SetTitleTextAndTooltip(
 #endif
 
 void PageInfoPermissionContentView::ToggleFileSystemExtendedPermissions() {
+  if (!web_contents_.MaybeValid()) {
+    return;
+  }
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
           web_contents_->GetBrowserContext());
