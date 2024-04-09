@@ -1472,7 +1472,7 @@ bool QuicSessionPool::CreateSessionHelper(
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
-      std::move(socket_performance_watcher), metadata, net_log.net_log());
+      std::move(socket_performance_watcher), metadata, net_log);
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);

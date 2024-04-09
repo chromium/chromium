@@ -511,7 +511,8 @@ class WebSocketHandshakeStreamCreateHelperTest
             base::DefaultTickClock::GetInstance(),
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             /*socket_performance_watcher=*/nullptr,
-            ConnectionEndpointMetadata(), NetLog::Get());
+            ConnectionEndpointMetadata(),
+            NetLogWithSource::Make(NetLogSourceType::NONE));
 
         session_->Initialize();
 
