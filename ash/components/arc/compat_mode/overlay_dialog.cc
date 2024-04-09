@@ -36,6 +36,7 @@ void OverlayDialog::Show(aura::Window* base_window,
   exo::ShellSurfaceBase::OverlayParams params(std::move(dialog));
   params.translucent = true;
   params.overlaps_frame = false;
+  params.focusable = false;
 
   if (chromeos::features::IsRoundedWindowsEnabled()) {
     auto window_radii = shell_surface_base->window_corners_radii();
