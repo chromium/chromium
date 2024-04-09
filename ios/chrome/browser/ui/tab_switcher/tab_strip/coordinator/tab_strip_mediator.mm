@@ -421,6 +421,15 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       if (oldCollapsed != newCollapsed) {
         if (newCollapsed) {
           [self.consumer collapseGroup:updatedGroupItem];
+          // If the active WebState is now collapsed, activate an existing or
+          // new non-collapsed WebState.
+          if (updatedGroup->range().contains(webStateList->active_index())) {
+            __weak __typeof(self) weakSelf = self;
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(^{
+                  [weakSelf activateExistingOrNewNonCollapsedWebState];
+                }));
+          }
         } else {
           [self.consumer expandGroup:updatedGroupItem];
         }
@@ -473,16 +482,31 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 
   if (status.active_web_state_change()) {
+    const int activeIndex = webStateList->active_index();
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be -1.
-    if (webStateList->active_index() == WebStateList::kInvalidIndex) {
+    if (activeIndex == WebStateList::kInvalidIndex) {
       [self.consumer selectItem:nil];
       return;
     }
-
     TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
         initWithWebState:status.new_active_web_state];
     [self.consumer selectItem:item];
+    // If the new active WebState is in a group, ensure that group is not
+    // collapsed.
+    const TabGroup* groupOfActiveWebState =
+        webStateList->GetGroupOfWebStateAt(activeIndex);
+    if (groupOfActiveWebState &&
+        groupOfActiveWebState->visual_data().is_collapsed()) {
+      const tab_groups::TabGroupVisualData oldVisualData =
+          groupOfActiveWebState->visual_data();
+      const tab_groups::TabGroupVisualData newVisualData{
+          oldVisualData.title(), oldVisualData.color(), /*is_collapsed=*/false};
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&WebStateList::UpdateGroupVisualData,
+                                    webStateList->AsWeakPtr(),
+                                    groupOfActiveWebState, newVisualData));
+    }
   }
 }
 
@@ -1098,6 +1122,75 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   self.webStateList->InsertWebState(std::move(webState),
                                     insertionParams.Activate());
+}
+
+// Returns whether the WebState at `index` is collapsed i.e. it is inside of a
+// collapsed TabGroup.
+- (BOOL)webStateIsCollapsedAtIndex:(int)index {
+  if (!self.webStateList->ContainsIndex(index)) {
+    return NO;
+  }
+  const TabGroup* groupAtIndex = self.webStateList->GetGroupOfWebStateAt(index);
+  return groupAtIndex && groupAtIndex->visual_data().is_collapsed();
+}
+
+// Activates a non-collapsed WebState close to the current active WebState. If
+// all WebStates in the WebStateList are collapsed, inserts a new WebState and
+// activates it.
+- (void)activateExistingOrNewNonCollapsedWebState {
+  int activeIndex = self.webStateList->active_index();
+  if (!self.webStateList->ContainsIndex(activeIndex)) {
+    return;
+  }
+  // If the active WebState is not collapsed, there is nothing to do.
+  if (![self webStateIsCollapsedAtIndex:activeIndex]) {
+    return;
+  }
+  // If the active WebState is collapsed, find the closest WebState that is not
+  // collapsed.
+  const int indexOfNewActiveWebState =
+      [self indexOfNonCollapsedWebStateCloseToCollapsedWebStateAt:activeIndex];
+  if (self.webStateList->ContainsIndex(indexOfNewActiveWebState)) {
+    // If there is a WebState that is not collapsed, activate that WebState.
+    self.webStateList->ActivateWebStateAt(indexOfNewActiveWebState);
+    return;
+  }
+  // If there is no WebState to activate on the right or on the left, insert
+  // and activate a new WebState at the end of the WebStateList instead.
+  const auto insertionParams = WebStateList::InsertionParams::Automatic();
+  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+}
+
+// Returns the index of a non-collapsed WebState close to `index`. If all
+// WebStates in the WebStateList are collapsed, returns `kInvalidIndex`.
+- (int)indexOfNonCollapsedWebStateCloseToCollapsedWebStateAt:(int)index {
+  CHECK([self webStateIsCollapsedAtIndex:index]);
+  // If the tab for WebState at `index` is collapsed, then it must be in a group
+  // that is collapsed.
+  const TabGroup* groupAtIndex = self.webStateList->GetGroupOfWebStateAt(index);
+  CHECK(groupAtIndex);
+  CHECK(groupAtIndex->visual_data().is_collapsed());
+  // If the WebState at `index` is collapsed, find the first WebState to the
+  // right of `index` that is not collapsed.
+  int newActiveIndex = groupAtIndex->range().range_end();
+  while (self.webStateList->ContainsIndex(newActiveIndex)) {
+    if (![self webStateIsCollapsedAtIndex:newActiveIndex]) {
+      return newActiveIndex;
+    }
+    newActiveIndex++;
+  }
+  // If all WebStates to the right of `index` are collapsed, find the first
+  // WebState to the left of `index` that is not collapsed.
+  newActiveIndex = groupAtIndex->range().range_begin() - 1;
+  while (self.webStateList->ContainsIndex(newActiveIndex)) {
+    if (![self webStateIsCollapsedAtIndex:newActiveIndex]) {
+      return newActiveIndex;
+    }
+    newActiveIndex--;
+  }
+  // If all WebStates in the WebStateList are collapsed, return
+  // `WebStateList::kInvalidIndex`.
+  return WebStateList::kInvalidIndex;
 }
 
 @end
