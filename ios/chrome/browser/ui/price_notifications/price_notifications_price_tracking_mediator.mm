@@ -17,6 +17,7 @@
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -101,6 +102,14 @@ using PriceNotificationItems =
   [self fetchPriceTrackingData];
 }
 
+- (void)setPriceInsightsConsumer:(id<PriceInsightsConsumer>)consumer {
+  if (_priceInsightsConsumer == consumer) {
+    return;
+  }
+
+  _priceInsightsConsumer = consumer;
+}
+
 #pragma mark - Accessors
 
 - (bookmarks::BookmarkModel*)bookmarkModel {
@@ -110,13 +119,9 @@ using PriceNotificationItems =
 #pragma mark - PriceNotificationsMutator
 
 - (void)trackItem:(PriceNotificationsTableViewItem*)item {
-  // Requests push notification permission. This will determine whether the user
-  // receives price tracking notifications to the current device. However, the
-  // device's permission status will not prevent the shopping service from
-  // subscribing the user to the product and its price tracking events.
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-  [PushNotificationUtil requestPushNotificationPermission:^(
-                            BOOL granted, BOOL promptShown, NSError* error) {
+  [self presentNotificationPermission:^(BOOL granted, BOOL promptShown,
+                                        NSError* error) {
     if (!error && !promptShown && !granted) {
       // This callback can be executed on a background thread, make sure the UI
       // is displayed on the main thread.
@@ -134,54 +139,28 @@ using PriceNotificationItems =
     }
   }];
 
-  // The price tracking infrastructure is built on top of bookmarks, so a new
-  // bookmark needs to be created before the item can be registered for price
-  // tracking.
-  const bookmarks::BookmarkNode* bookmark =
-      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.entryURL);
-  bool isNewBookmark = bookmark == nullptr;
-  if (!bookmark) {
-    const bookmarks::BookmarkNode* defaultFolder =
-        self.bookmarkModel->mobile_node();
-    bookmark = self.bookmarkModel->AddURL(
-        defaultFolder, defaultFolder->children().size(),
-        base::SysNSStringToUTF16(item.title), item.entryURL);
-  }
-
-  commerce::SetPriceTrackingStateForBookmark(
-      self.shoppingService, self.bookmarkModel, bookmark, true,
-      base::BindOnce(^(bool success) {
+  [self trackForURL:item.entryURL
+                  title:item.title
+      completionHandler:^(bool success) {
         [weakSelf didTrackItem:item successfully:success];
-      }),
-      isNewBookmark);
+      }];
 }
 
 - (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item {
-  // Retrieve the bookmark node for the given URL.
-  const bookmarks::BookmarkNode* bookmark =
-      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.entryURL);
-
-  if (!bookmark) {
-    return;
-  }
-
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-  commerce::SetPriceTrackingStateForBookmark(
-      self.shoppingService, self.bookmarkModel, bookmark, false,
-      base::BindOnce(^(bool success) {
+  [self stopTrackingForURL:item.entryURL
+      withCompletionHandler:^(bool success) {
         if (!success) {
           [weakSelf.presenter presentStopPriceTrackingErrorAlertForItem:item];
           return;
         }
         [weakSelf didStopTrackingItem:item];
-      }));
+      }];
 }
 
 - (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item {
   DCHECK(item.tracking);
-  self.webState->OpenURL(web::WebState::OpenURLParams(
-      item.entryURL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+  [self navigateToWebpageForURL:item.entryURL];
   [self.handler hidePriceNotifications];
 }
 
@@ -189,6 +168,63 @@ using PriceNotificationItems =
   [self.handler hidePriceNotifications];
   GURL URL = _webState->GetLastCommittedURL();
   [self.bookmarksHandler openToExternalBookmark:URL];
+}
+
+#pragma mark - PriceInsightsMutator
+
+- (void)priceInsightsTrackItem:(PriceInsightsItem*)item {
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+
+  [self presentNotificationPermission:^(BOOL granted, BOOL promptShown,
+                                        NSError* error) {
+    if (!error && !promptShown && !granted) {
+      // This callback can be executed on a background thread, make sure the UI
+      // is displayed on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.priceInsightsConsumer presentPushNotificationPermissionAlert];
+      });
+    } else if (!error && promptShown && granted) {
+      // This callback can be executed on a background thread causing this
+      // function to fail. Thus, the invocation is scheduled to run on the main
+      // thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.pushNotificationService->SetPreference(
+            weakSelf.gaiaID, PushNotificationClientId::kCommerce, true);
+      });
+    }
+  }];
+
+  [self trackForURL:item.productURL
+                  title:item.title
+      completionHandler:^(bool success) {
+        if (!success) {
+          [weakSelf.priceInsightsConsumer
+              presentStartPriceTrackingErrorAlertForItem:item];
+          return;
+        }
+
+        [weakSelf.priceInsightsConsumer didStartPriceTracking];
+      }];
+}
+
+- (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item {
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  [self stopTrackingForURL:item.productURL
+      withCompletionHandler:^(bool success) {
+        if (!success) {
+          [weakSelf.priceInsightsConsumer
+              presentStopPriceTrackingErrorAlertForItem:item];
+          return;
+        }
+
+        [weakSelf.priceInsightsConsumer didStopPriceTracking];
+      }];
+}
+
+- (void)priceInsightsNavigateToWebpageForItem:(PriceInsightsItem*)item {
+  DCHECK(item.buyingOptionsURL.is_valid());
+  [self navigateToWebpageForURL:item.buyingOptionsURL];
+  [self.priceInsightsConsumer didStartNavigationToWebpage];
 }
 
 #pragma mark - Private
@@ -482,6 +518,61 @@ using PriceNotificationItems =
 
 - (void)recordProductStatus:(PriceNotificationProductStatus)status {
   base::UmaHistogramEnumeration(kPriceTrackingStatusHistogram, status);
+}
+
+- (void)navigateToWebpageForURL:(const GURL&)URL {
+  self.webState->OpenURL(web::WebState::OpenURLParams(
+      URL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+}
+
+- (void)stopTrackingForURL:(const GURL&)URL
+     withCompletionHandler:(void (^)(BOOL success))completionHandler {
+  // Retrieve the bookmark node for the given URL.
+  const bookmarks::BookmarkNode* bookmark =
+      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+
+  if (!bookmark) {
+    return;
+  }
+
+  commerce::SetPriceTrackingStateForBookmark(
+      self.shoppingService, self.bookmarkModel, bookmark, false,
+      base::BindOnce(completionHandler));
+}
+
+- (void)presentNotificationPermission:
+    (void (^)(BOOL granted, BOOL promptShown, NSError* error))
+        completionHandler {
+  // Requests push notification permission. This will determine whether the user
+  // receives price tracking notifications to the current device. However, the
+  // device's permission status will not prevent the shopping service from
+  // subscribing the user to the product and its price tracking events.
+  [PushNotificationUtil requestPushNotificationPermission:completionHandler];
+}
+
+- (void)trackForURL:(const GURL&)URL
+                title:(NSString*)title
+    completionHandler:(void (^)(BOOL success))completionHandler {
+  // The price tracking infrastructure is built on top of bookmarks, so a new
+  // bookmark needs to be created before the item can be registered for price
+  // tracking.
+  const bookmarks::BookmarkNode* bookmark =
+      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+  bool isNewBookmark = bookmark == nullptr;
+  // TODO(b/333063857): New bookmarks are not created before registering price
+  // tracking.
+  if (!bookmark) {
+    const bookmarks::BookmarkNode* defaultFolder =
+        self.bookmarkModel->mobile_node();
+    bookmark = self.bookmarkModel->AddURL(defaultFolder,
+                                          defaultFolder->children().size(),
+                                          base::SysNSStringToUTF16(title), URL);
+  }
+
+  commerce::SetPriceTrackingStateForBookmark(
+      self.shoppingService, self.bookmarkModel, bookmark, true,
+      base::BindOnce(completionHandler), isNewBookmark);
 }
 
 @end

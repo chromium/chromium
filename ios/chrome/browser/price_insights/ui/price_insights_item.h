@@ -27,6 +27,8 @@ class GURL;
 @property(nonatomic, assign) BOOL canPriceTrack;
 // Whether or not the price is already being tracked.
 @property(nonatomic, assign) BOOL isPriceTracked;
+// The product URL.
+@property(nonatomic, assign) const GURL& productURL;
 
 @end
 

@@ -6,14 +6,17 @@
 #define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRICE_TRACKING_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+
 #import <memory>
 
+#import "ios/chrome/browser/price_insights/coordinator/price_insights_mutator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
 @protocol BookmarksCommands;
 @protocol PriceNotificationsAlertPresenter;
 @protocol PriceNotificationsCommands;
 @protocol PriceNotificationsConsumer;
+@protocol PriceInsightsConsumer;
 class PushNotificationService;
 
 namespace commerce {
@@ -29,7 +32,7 @@ class WebState;
 }  // namespace web
 
 @interface PriceNotificationsPriceTrackingMediator
-    : NSObject <PriceNotificationsMutator>
+    : NSObject <PriceNotificationsMutator, PriceInsightsMutator>
 
 // The designated initializer. `ShoppingService`, `ImageDataFetcher`,
 // `WebState`, and `PushNotificationService` must not be nil.
@@ -46,6 +49,8 @@ class WebState;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
 @property(nonatomic, weak) id<PriceNotificationsConsumer> consumer;
+
+@property(nonatomic, weak) id<PriceInsightsConsumer> priceInsightsConsumer;
 
 @property(nonatomic, weak) id<PriceNotificationsCommands> handler;
 

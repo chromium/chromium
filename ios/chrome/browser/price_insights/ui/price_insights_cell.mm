@@ -230,7 +230,7 @@ const CGFloat kIconSize = 20.0f;
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
-  verticalStack.spacing = kVerticalStackViewSpacing;
+  verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
 
   UIImage* icon = DefaultSymbolWithPointSize(kOpenImageActionSymbol, kIconSize);
   UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];

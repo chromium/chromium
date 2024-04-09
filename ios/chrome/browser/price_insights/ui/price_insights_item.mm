@@ -8,6 +8,7 @@
 
 @implementation PriceInsightsItem {
   GURL _buyingOptionsURL;
+  GURL _productURL;
 }
 
 #pragma mark - Properties
@@ -18,6 +19,14 @@
 
 - (void)setBuyingOptionsUrl:(const GURL&)url {
   _buyingOptionsURL = url;
+}
+
+- (const GURL&)productURL {
+  return _productURL;
+}
+
+- (void)setProductUrl:(const GURL&)url {
+  _productURL = url;
 }
 
 @end

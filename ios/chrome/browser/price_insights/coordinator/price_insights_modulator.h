@@ -7,9 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"
+
+class Browser;
+
 // A coordinator-like object for Price Insights integrated into the contextual
 // panel as an info block.
-@interface PriceInsightsModulator : NSObject
+@interface PriceInsightsModulator : NSObject <PriceInsightsConsumer>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Designated initializer.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
 
 // Starts the modulator.
 - (void)start;

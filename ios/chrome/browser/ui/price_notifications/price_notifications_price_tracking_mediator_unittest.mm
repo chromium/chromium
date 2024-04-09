@@ -21,8 +21,9 @@
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/price_insights/coordinator/test_price_insights_consumer.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -49,6 +50,14 @@ namespace {
 const char kTestUrl[] = "https://www.merchant.com/price_drop_product";
 const char kBookmarkTitle[] = "My product title";
 uint64_t kClusterId = 12345L;
+
+PriceInsightsItem* GetPriceInsightsItem() {
+  PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
+  item.title = base::SysUTF8ToNSString(kBookmarkTitle);
+  item.productURL = GURL(kTestUrl);
+  item.buyingOptionsURL = GURL(kTestUrl);
+  return item;
+}
 
 void TrackBookmark(commerce::ShoppingService* shopping_service,
                    bookmarks::BookmarkModel* bookmark_model,
@@ -185,6 +194,8 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   std::unique_ptr<PushNotificationService> push_notification_service_;
   TestPriceNotificationsConsumer* consumer_ =
       [[TestPriceNotificationsConsumer alloc] init];
+  TestPriceInsightsConsumer* price_insights_consumer_ =
+      [[TestPriceInsightsConsumer alloc] init];
 };
 
 TEST_F(PriceNotificationsPriceTrackingMediatorTest,
@@ -240,4 +251,114 @@ TEST_F(
       }));
 
   EXPECT_EQ(consumer_.trackableItem.title, product.title);
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       SuccessfullyTrackedProductURLFromPriceInsights) {
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPriceTrack = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ priceInsightsTrackItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_.didPriceTrack;
+      }));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       PresentAlertWhenTrackingIsUnsuccessfulFromPriceInsights) {
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+  shopping_service_->SetSubscribeCallbackValue(false);
+
+  price_insights_consumer_.didPresentStartPriceTrackingErrorAlertForItem = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ priceInsightsTrackItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_
+            .didPresentStartPriceTrackingErrorAlertForItem;
+      }));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       SuccessfullyUntrackedProductURLFromPriceInsights) {
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+
+  const bookmarks::BookmarkNode* default_folder =
+      bookmark_model_->mobile_node();
+  bookmark_model_->AddURL(default_folder, default_folder->children().size(),
+                          base::UTF8ToUTF16(product_info.title),
+                          GURL(kTestUrl));
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPriceUntrack = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ priceInsightsStopTrackingItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_.didPriceUntrack;
+      }));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       PresentAlertWhenUntrackingIsUnsuccessfulFromPriceInsights) {
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+
+  const bookmarks::BookmarkNode* default_folder =
+      bookmark_model_->mobile_node();
+  bookmark_model_->AddURL(default_folder, default_folder->children().size(),
+                          base::UTF8ToUTF16(product_info.title),
+                          GURL(kTestUrl));
+  shopping_service_->SetUnsubscribeCallbackValue(false);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPresentStopPriceTrackingErrorAlertForItem = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ priceInsightsStopTrackingItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_
+            .didPresentStopPriceTrackingErrorAlertForItem;
+      }));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       NavigateToWebPageUponUserRequestsFromPriceInsights) {
+  price_insights_consumer_.didNavigateToWebpage = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ priceInsightsNavigateToWebpageForItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_.didNavigateToWebpage;
+      }));
 }

@@ -8,6 +8,41 @@ source_set("price_insights_coordinator") {
     "price_insights_modulator.mm",
   ]
 
-  deps = [ "//ios/chrome/browser/price_insights/ui/price_insights_ui" ]
+  deps = [
+    ":delegates",
+    "//components/image_fetcher/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/price_notifications",
+    "//ios/chrome/browser/ui/price_notifications:price_notifications_ui",
+    "//ui/base",
+    "//url",
+  ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("delegates") {
+  sources = [
+    "price_insights_consumer.h",
+    "price_insights_mutator.h",
+  ]
+
+  deps = [ "//ios/chrome/browser/price_insights/ui:price_insights_ui" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_price_insights_consumer.h",
+    "test_price_insights_consumer.mm",
+  ]
+
+  deps = [ ":delegates" ]
 }
