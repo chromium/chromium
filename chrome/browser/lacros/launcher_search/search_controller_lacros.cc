@@ -20,7 +20,7 @@
 
 namespace crosapi {
 
-SearchControllerLacros::SearchControllerLacros()
+SearchControllerLacros::SearchControllerLacros(int provider_types)
     : profile_(g_browser_process->profile_manager()->GetProfileByPath(
           ProfileManager::GetPrimaryUserProfilePath())) {
   if (!profile_) {
@@ -32,7 +32,7 @@ SearchControllerLacros::SearchControllerLacros()
 
   autocomplete_controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-      ProviderTypes(), /*is_cros_launcher=*/true);
+      provider_types, /*is_cros_launcher=*/true);
   autocomplete_controller_->AddObserver(this);
 
   favicon_cache_ = std::make_unique<FaviconCache>(
