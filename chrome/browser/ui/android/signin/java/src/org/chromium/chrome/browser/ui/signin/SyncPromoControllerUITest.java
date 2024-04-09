@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.Hi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -88,6 +89,8 @@ public class SyncPromoControllerUITest {
             new AutomotiveContextWrapperTestRule();
 
     private static final String TEST_EMAIL = "john.doe@gmail.com";
+    private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
+            new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
 
     @Rule
     public final RenderTestRule mRenderTestRule =
@@ -222,6 +225,7 @@ public class SyncPromoControllerUITest {
                 .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
+                        eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
@@ -309,6 +313,7 @@ public class SyncPromoControllerUITest {
                 .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
+                        eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
@@ -424,6 +429,7 @@ public class SyncPromoControllerUITest {
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
+                        eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
@@ -466,6 +472,7 @@ public class SyncPromoControllerUITest {
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
+                        eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
@@ -508,6 +515,7 @@ public class SyncPromoControllerUITest {
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
+                        eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
@@ -644,6 +652,7 @@ public class SyncPromoControllerUITest {
                             SyncPromoController syncPromoController =
                                     new SyncPromoController(
                                             ProfileManager.getLastUsedRegularProfile(),
+                                            BOTTOM_SHEET_STRINGS,
                                             accessPoint,
                                             mSyncConsentActivityLauncher,
                                             mSigninAndHistoryOptInActivityLauncher);

@@ -26,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -64,6 +66,9 @@ public class SyncPromoControllerTest {
     private static final int RESET_AFTER_HOURS = 10;
     private static final long RESET_AFTER_MS = RESET_AFTER_HOURS * DateUtils.HOUR_IN_MILLIS;
     private static final int MAX_SIGN_IN_PROMO_IMPRESSIONS = 10;
+
+    private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
+            new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -120,6 +125,7 @@ public class SyncPromoControllerTest {
         mSyncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -335,6 +341,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -349,6 +356,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -365,6 +373,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -380,6 +389,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -395,6 +405,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -410,6 +421,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -426,6 +438,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -441,6 +454,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -457,6 +471,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
@@ -472,6 +487,7 @@ public class SyncPromoControllerTest {
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);

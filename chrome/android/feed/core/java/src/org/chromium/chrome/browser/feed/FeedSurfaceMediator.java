@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -804,13 +805,18 @@ public class FeedSurfaceMediator
 
     /**
      * Determines whether a signin promo should be shown.
+     *
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
         SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
+        // TODO(crbug.com/41493776): Update the bottom sheet subtitle string.
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
         SyncPromoController promoController =
                 new SyncPromoController(
                         mProfile,
+                        bottomSheetStrings,
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistoryOptInActivityLauncherImpl.get());

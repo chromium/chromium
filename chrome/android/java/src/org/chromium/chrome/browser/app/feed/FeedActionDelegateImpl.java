@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -181,12 +183,22 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             SigninAndHistoryOptInActivityLauncherImpl.get()
                     .launchActivityIfAllowed(
                             mActivity,
                             mProfile,
+                            bottomSheetStrings,
                             SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                             SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -202,7 +214,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                         DeviceLockActivityLauncherImpl.get(),
                         bottomSheetController,
                         mProfile,
-                        null,
+                        bottomSheetStrings,
                         null,
                         signinAccessPoint);
         signinCoordinator.show();

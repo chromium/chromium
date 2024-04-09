@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -116,9 +118,12 @@ public class RecentTabsManager
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
         mSyncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        bottomSheetStrings,
                         SigninAccessPoint.RECENT_TABS,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistoryOptInActivityLauncherImpl.get());

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
@@ -128,6 +130,7 @@ public class SyncPromoController {
     }
 
     private final Profile mProfile;
+    private final AccountPickerBottomSheetStrings mBottomSheetStrings;
     private final @AccessPoint int mAccessPoint;
     private final String mImpressionUserActionName;
     // TODO(b/332704829): Move the declaration of most of these access-point specific fields to the
@@ -239,6 +242,7 @@ public class SyncPromoController {
      * Creates a new SyncPromoController.
      *
      * @param profile The Profile associated with the sync promo.
+     * @param bottomSheetStrings Contains the string resource IDs for the sign-in bottom sheet.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
      * @param signinAndHistoryOptInActivityLauncher Launcher of {@link
@@ -246,10 +250,12 @@ public class SyncPromoController {
      */
     public SyncPromoController(
             Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccessPoint int accessPoint,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
             SigninAndHistoryOptInActivityLauncher signinAndHistoryOptInActivityLauncher) {
         mProfile = profile;
+        mBottomSheetStrings = bottomSheetStrings;
         mAccessPoint = accessPoint;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         mSigninAndHistoryOptInActivityLauncher = signinAndHistoryOptInActivityLauncher;
@@ -656,6 +662,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -665,6 +672,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -682,6 +690,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -690,6 +699,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -707,6 +717,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .CHOOSE_ACCOUNT_BOTTOM_SHEET,
@@ -715,6 +726,7 @@ public class SyncPromoController {
             mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
                     context,
                     mProfile,
+                    mBottomSheetStrings,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                             .CHOOSE_ACCOUNT_BOTTOM_SHEET,

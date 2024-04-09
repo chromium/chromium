@@ -26,10 +26,12 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -41,6 +43,15 @@ import org.chromium.ui.base.WindowAndroid;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SigninBottomSheetCoordinatorTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
+    private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
+            new AccountPickerBottomSheetStrings.Builder(
+                            R.string
+                                    .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                    .setSubtitleStringId(
+                            R.string
+                                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
+                    .setDismissButtonStringId(R.string.close)
+                    .build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -77,7 +88,7 @@ public class SigninBottomSheetCoordinatorTest {
                         null,
                         mBottomSheetControllerMock,
                         mProfileMock,
-                        null,
+                        BOTTOM_SHEET_STRINGS,
                         null,
                         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
     }
@@ -148,7 +159,7 @@ public class SigninBottomSheetCoordinatorTest {
                         null,
                         mBottomSheetControllerMock,
                         mProfileMock,
-                        null,
+                        BOTTOM_SHEET_STRINGS,
                         mOnSigninSuccessCallbackMock,
                         SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
         doAnswer(
@@ -171,7 +182,7 @@ public class SigninBottomSheetCoordinatorTest {
                         null,
                         mBottomSheetControllerMock,
                         mProfileMock,
-                        null,
+                        BOTTOM_SHEET_STRINGS,
                         mOnSigninSuccessCallbackMock,
                         SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
         doAnswer(

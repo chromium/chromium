@@ -32,11 +32,13 @@ import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -89,7 +91,8 @@ public class SigninAccountPickerCoordinatorTest {
         when(mAccountManagerFacadeMock.getCoreAccountInfos()).thenReturn(new Promise<>());
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
-
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
         mCoordinator =
                 new SigninAccountPickerCoordinator(
                         mWindowAndroidMock,
@@ -98,6 +101,7 @@ public class SigninAccountPickerCoordinatorTest {
                         mDelegateMock,
                         mDeviceLockActivityLauncherMock,
                         mSigninManagerMock,
+                        bottomSheetStrings,
                         AccountPickerLaunchMode.DEFAULT,
                         mAccessPoint);
     }

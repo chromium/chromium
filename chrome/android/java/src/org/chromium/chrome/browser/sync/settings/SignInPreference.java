@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -181,10 +182,15 @@ public class SignInPreference extends Preference
                 pref -> {
                     if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                        AccountPickerBottomSheetStrings bottomSheetStrings =
+                                new AccountPickerBottomSheetStrings.Builder(
+                                                R.string.sign_in_to_chrome)
+                                        .build();
                         SigninAndHistoryOptInActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(
                                         getContext(),
                                         mProfile,
+                                        bottomSheetStrings,
                                         SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                                 .ADD_ACCOUNT,
                                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode

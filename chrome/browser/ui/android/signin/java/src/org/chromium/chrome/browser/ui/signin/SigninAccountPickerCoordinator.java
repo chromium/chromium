@@ -43,7 +43,6 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final SigninManager mSigninManager;
-    private final @AccountPickerLaunchMode int mAccountPickerLaunchMode;
     private final @SigninAccessPoint int mSigninAccessPoint;
 
     private ScrimCoordinator mScrim;
@@ -79,6 +78,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
             @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull SigninManager signinManager,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -87,13 +87,14 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mSigninManager = signinManager;
-        mAccountPickerLaunchMode = accountPickerLaunchMode;
         mSigninAccessPoint = signinAccessPoint;
 
-        initAndShowBottomSheet();
+        initAndShowBottomSheet(bottomSheetStrings, accountPickerLaunchMode);
     }
 
-    private void initAndShowBottomSheet() {
+    private void initAndShowBottomSheet(
+            AccountPickerBottomSheetStrings bottomSheetStrings,
+            @AccountPickerLaunchMode int accountPickerLaunchMode) {
         ViewGroup sheetContainer = new FrameLayout(mActivity);
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -138,18 +139,14 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                 bottomSheetBackPressHandler,
                 SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN);
 
-        // TODO(crbug.com/41493768): Update the sign-in flow API to accept strings from embedder,
-        // and do not initialize AccountPickerBottomSheetStrings here.
-        AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings(R.string.sign_in_to_chrome, 0, 0);
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(
                         mWindowAndroid,
                         mBottomSheetController,
                         this,
-                        strings,
+                        bottomSheetStrings,
                         mDeviceLockActivityLauncher,
-                        mAccountPickerLaunchMode,
+                        accountPickerLaunchMode,
                         mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
                         mSigninAccessPoint);
     }

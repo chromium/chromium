@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.feed.signinbottomsheet;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -43,7 +44,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             BottomSheetController controller,
             Profile profile,
-            @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @Nullable Runnable onSigninSuccessCallback,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -54,18 +55,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
         mSigninAccessPoint = signinAccessPoint;
-
-        if (bottomSheetStrings == null) {
-            mBottomSheetStrings =
-                    new AccountPickerBottomSheetStrings(
-                            R.string
-                                    .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin,
-                            R.string
-                                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin,
-                            R.string.close);
-        } else {
-            mBottomSheetStrings = bottomSheetStrings;
-        }
+        mBottomSheetStrings = bottomSheetStrings;
     }
 
     @Override

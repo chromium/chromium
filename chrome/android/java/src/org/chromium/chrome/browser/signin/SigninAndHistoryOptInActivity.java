@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.Hi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.UpgradePromoCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -48,6 +49,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         implements SigninAndHistoryOptInCoordinator.Delegate, UpgradePromoCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
+    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS =
+            "SigninAndHistoryOptInActivity.BottomSheetStrings";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
             "SigninAndHistoryOptInActivity.NoAccountSigninMode";
     private static final String ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE =
@@ -98,6 +101,9 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
         int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                (AccountPickerBottomSheetStrings)
+                        intent.getParcelableExtra(ARGUMENT_BOTTOM_SHEET_STRINGS);
         @NoAccountSigninMode
         int noAccountSigninMode =
                 intent.getIntExtra(
@@ -121,6 +127,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
                         DeviceLockActivityLauncherImpl.get(),
                         mProfileSupplier,
                         getModalDialogManagerSupplier(),
+                        bottomSheetStrings,
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
@@ -213,12 +220,16 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     }
 
     public static @NonNull Intent createIntent(
-            Context context,
+            @NonNull Context context,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint) {
+        assert bottomSheetStrings != null;
+
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
+        intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS, bottomSheetStrings);
         intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
         intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
@@ -228,12 +239,14 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
     public static @NonNull Intent createIntentForDedicatedFlow(
             Context context,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent =
                 createIntent(
                         context,
+                        bottomSheetStrings,
                         noAccountSigninMode,
                         withAccountSigninMode,
                         HistoryOptInMode.REQUIRED,

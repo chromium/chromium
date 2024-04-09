@@ -193,12 +193,14 @@ public class SendTabToSelfCoordinator {
                 {
                     MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
                     AccountPickerBottomSheetStrings strings =
-                            new AccountPickerBottomSheetStrings(
-                                    R.string
-                                            .signin_account_picker_bottom_sheet_title_for_send_tab_to_self,
-                                    R.string
-                                            .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self,
-                                    R.string.cancel);
+                            new AccountPickerBottomSheetStrings.Builder(
+                                            R.string
+                                                    .signin_account_picker_bottom_sheet_title_for_send_tab_to_self)
+                                    .setSubtitleStringId(
+                                            R.string
+                                                    .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self)
+                                    .setDismissButtonStringId(R.string.cancel)
+                                    .build();
                     new AccountPickerBottomSheetCoordinator(
                             mWindowAndroid,
                             mController,

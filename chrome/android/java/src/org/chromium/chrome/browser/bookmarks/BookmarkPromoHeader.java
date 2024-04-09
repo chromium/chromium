@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -71,9 +72,12 @@ public class BookmarkPromoHeader
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
         SyncPromoController syncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        bottomSheetStrings,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistoryOptInActivityLauncherImpl.get());

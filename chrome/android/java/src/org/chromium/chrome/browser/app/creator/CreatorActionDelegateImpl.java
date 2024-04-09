@@ -118,12 +118,22 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             int signinAccessPoint,
             BottomSheetController mBottomSheetController,
             WindowAndroid mWindowAndroid) {
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_cormorant_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             SigninAndHistoryOptInActivityLauncherImpl.get()
                     .launchActivityIfAllowed(
                             mActivity,
                             mProfile,
+                            strings,
                             SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                             SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -131,11 +141,6 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                             signinAccessPoint);
             return;
         }
-        AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings(
-                        R.string.signin_account_picker_bottom_sheet_title_for_cormorant_signin,
-                        R.string.signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin,
-                        R.string.close);
         SigninBottomSheetCoordinator signinCoordinator =
                 new SigninBottomSheetCoordinator(
                         mWindowAndroid,

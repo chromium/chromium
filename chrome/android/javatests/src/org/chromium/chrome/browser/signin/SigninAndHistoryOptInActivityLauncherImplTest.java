@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -61,6 +62,9 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule(BlankUiTestActivity.class);
+
+    private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
+            new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
 
     @Mock private Context mContextMock;
     @Mock private IdentityServicesProvider mIdentityProviderMock;
@@ -88,6 +92,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -113,6 +118,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -135,6 +141,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -159,6 +166,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -186,6 +194,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -212,6 +221,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -237,6 +247,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mContextMock,
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -265,6 +276,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityIfAllowed(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode
@@ -299,6 +311,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.WithAccountSigninMode

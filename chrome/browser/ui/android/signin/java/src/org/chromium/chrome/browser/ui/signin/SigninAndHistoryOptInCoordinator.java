@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -56,6 +57,7 @@ public class SigninAndHistoryOptInCoordinator
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
+    private final AccountPickerBottomSheetStrings mBottomSheetStrings;
     private final @NoAccountSigninMode int mNoAccountSigninMode;
     private final @WithAccountSigninMode int mWithAccountSigninMode;
     private final @HistoryOptInMode int mHistoryOptInMode;
@@ -163,6 +165,7 @@ public class SigninAndHistoryOptInCoordinator
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
@@ -175,6 +178,7 @@ public class SigninAndHistoryOptInCoordinator
         mProfileSupplier = profileSupplier;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mBottomSheetStrings = bottomSheetStrings;
         mNoAccountSigninMode = noAccountSigninMode;
         mWithAccountSigninMode = withAccountSigninMode;
         mHistoryOptInMode = historyOptInMode;
@@ -329,6 +333,7 @@ public class SigninAndHistoryOptInCoordinator
                         this,
                         mDeviceLockActivityLauncher,
                         signinManager,
+                        mBottomSheetStrings,
                         accountPickerMode,
                         mSigninAccessPoint);
         mDidShowSigninStep = true;

@@ -125,6 +125,7 @@ public final class FeedActionDelegateImplTest {
                 .launchActivityIfAllowed(
                         any(),
                         any(),
+                        any(),
                         eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode

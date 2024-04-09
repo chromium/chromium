@@ -8,8 +8,10 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
@@ -38,6 +40,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * UI if sign-in is not allowed. Returns a boolean indicating whether the activity was launched.
      *
      * @param profile the current profile.
+     * @param bottomSheetString the strings shown in the sign-in bottom sheet.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if
      *     there's no account on the device.
      * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if
@@ -50,6 +53,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
     boolean launchActivityIfAllowed(
             Context context,
             Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
@@ -60,6 +64,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * flow is dedicated to enabling history sync. Shows error UI if sign-in is not allowed.
      *
      * @param profile the current profile.
+     * @param bottomSheetString the strings shown in the sign-in bottom sheet.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if *
      *     there's no account on the device.
      * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if *
@@ -68,8 +73,9 @@ public interface SigninAndHistoryOptInActivityLauncher {
      */
     @MainThread
     void launchActivityForHistorySyncDedicatedFlow(
-            Context context,
-            Profile profile,
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint);

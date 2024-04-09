@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -183,6 +184,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 IdentityServicesProvider.get().getIdentityManager(getProfile());
 
         SyncPromoPreference syncPromoPreference = findPreference(PREF_SYNC_PROMO);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome).build();
         syncPromoPreference.initialize(
                 profileDataCache,
                 accountManagerFacade,
@@ -190,6 +193,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 identityManager,
                 new SyncPromoController(
                         getProfile(),
+                        bottomSheetStrings,
                         SigninAccessPoint.SETTINGS,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistoryOptInActivityLauncherImpl.get()));

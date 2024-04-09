@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -373,10 +374,15 @@ public class IdentityDiscController
             if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                     && !BuildInfo.getInstance().isAutomotive) {
+                // TODO(crbug.com/41493775): Update the bottom sheet subtitle string.
+                AccountPickerBottomSheetStrings bottomSheetStrings =
+                        new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome)
+                                .build();
                 SigninAndHistoryOptInActivityLauncherImpl.get()
                         .launchActivityIfAllowed(
                                 mContext,
                                 mProfileSupplier.get().getOriginalProfile(),
+                                bottomSheetStrings,
                                 SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,

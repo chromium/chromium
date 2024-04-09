@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -53,8 +55,9 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
 
     @Override
     public boolean launchActivityIfAllowed(
-            Context context,
-            Profile profile,
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
@@ -62,6 +65,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
         Intent intent =
                 SigninAndHistoryOptInActivity.createIntent(
                         context,
+                        bottomSheetStrings,
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
@@ -71,14 +75,19 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
 
     @Override
     public void launchActivityForHistorySyncDedicatedFlow(
-            Context context,
-            Profile profile,
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent =
                 SigninAndHistoryOptInActivity.createIntentForDedicatedFlow(
-                        context, noAccountSigninMode, withAccountSigninMode, signinAccessPoint);
+                        context,
+                        bottomSheetStrings,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        signinAccessPoint);
         launchActivityOrShowError(
                 context,
                 profile,

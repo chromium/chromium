@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLaunch
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -347,6 +348,7 @@ public class MainSettingsFragmentTest {
                 .launchActivityIfAllowed(
                         any(Activity.class),
                         any(Profile.class),
+                        any(AccountPickerBottomSheetStrings.class),
                         eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
                         eq(
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode

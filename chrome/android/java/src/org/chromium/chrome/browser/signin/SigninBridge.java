@@ -142,10 +142,11 @@ final class SigninBridge {
             return;
         }
         AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings(
-                        R.string.signin_account_picker_dialog_title,
-                        R.string.signin_account_picker_bottom_sheet_subtitle,
-                        R.string.signin_account_picker_dismiss_button);
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_dialog_title)
+                        .setSubtitleStringId(R.string.signin_account_picker_bottom_sheet_subtitle)
+                        .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
+                        .build();
 
         factory.create(
                 windowAndroid,
