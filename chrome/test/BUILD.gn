@@ -392,6 +392,7 @@ static_library("test_support") {
     "//components/captive_portal/core:test_support",
     "//components/consent_auditor:test_support",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/crash/core/app",
     "//components/custom_handlers/",
     "//components/device_reauth:test_support",

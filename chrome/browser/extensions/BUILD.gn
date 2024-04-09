@@ -852,6 +852,7 @@ static_library("extensions") {
     "//components/browsing_data/content",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/cookie_config:cookie_config",
     "//components/crx_file",
     "//components/device_signals/core/browser",

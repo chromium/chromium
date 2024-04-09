@@ -457,6 +457,7 @@ source_set("web_applications") {
     "//components/base32:base32",
     "//components/browsing_data/content",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/custom_handlers",
     "//components/device_event_log",
     "//components/keep_alive_registry:keep_alive_registry",

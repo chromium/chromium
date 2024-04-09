@@ -33,6 +33,7 @@ static_library("browser") {
 
   deps = [
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/google/core/common",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",

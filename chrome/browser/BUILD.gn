@@ -2233,6 +2233,7 @@ static_library("browser") {
     "//components/content_settings/browser",
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/contextual_search/core/browser",
     "//components/continuous_search/browser",

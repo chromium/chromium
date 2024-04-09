@@ -12,6 +12,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/keyed_service/ios",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser_state",

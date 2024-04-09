@@ -27,6 +27,7 @@ source_set("storage_access_api") {
     "//chrome/common",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//content/public/browser",
     "//services/network/public/mojom",
   ]

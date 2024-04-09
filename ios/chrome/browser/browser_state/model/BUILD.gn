@@ -49,6 +49,7 @@ source_set("model") {
     "//components/bookmarks/browser",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/invalidation/impl",
     "//components/keyed_service/ios",

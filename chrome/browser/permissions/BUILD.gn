@@ -69,6 +69,7 @@ source_set("permissions") {
     "//chrome/common:constants",
     "//components/background_sync",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/embedder_support:browser_util",
     "//components/google/core/common",
     "//components/infobars/content",

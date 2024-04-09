@@ -63,6 +63,7 @@ source_set("model") {
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/keyed_service/core",

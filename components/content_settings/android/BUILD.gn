@@ -41,6 +41,7 @@ source_set("android") {
     "//base",
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/permissions",
     "//content/public/browser",

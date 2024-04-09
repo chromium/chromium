@@ -144,6 +144,7 @@ if (use_blink) {
       ":tracking_protection_settings",
       "//components/browsing_topics/common:common",
       "//components/content_settings/core/browser",
+      "//components/content_settings/core/browser:cookie_settings",
       "//components/content_settings/core/common",
       "//components/keyed_service/core:core",
       "//components/pref_registry:pref_registry",

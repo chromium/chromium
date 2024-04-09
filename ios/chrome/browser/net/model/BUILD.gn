@@ -25,6 +25,7 @@ source_set("model") {
     "//base",
     "//components/component_updater",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/language/core/browser",
     "//components/pref_registry",
     "//components/prefs",

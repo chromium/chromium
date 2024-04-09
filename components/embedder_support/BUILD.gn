@@ -27,6 +27,7 @@ static_library("browser_util") {
     "//components/background_sync",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/permissions",
     "//components/policy/core/common",
     "//components/prefs",
