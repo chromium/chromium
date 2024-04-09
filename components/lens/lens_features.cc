@@ -52,7 +52,7 @@ const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
 const base::FeatureParam<std::string> kResultsSearchUrl{
     &kLensOverlay, "results-search-url", "https://www.google.com/search"};
 const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
-    &kLensOverlay, "image-compression-quality", 90};
+    &kLensOverlay, "image-compression-quality", 40};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
     &kLensOverlay, "image-dimensions-max-area", 1000000};
 const base::FeatureParam<int> kLensOverlayImageMaxHeight{
