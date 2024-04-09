@@ -1988,7 +1988,7 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(
 }
 
 StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
-    StyleResolverState&,
+    StyleResolverState& state,
     const CSSValue& value) {
   if (auto* normal_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(normal_value->GetValueID(), CSSValueID::kNormal);
@@ -2016,8 +2016,9 @@ StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
   }
 
   if (auto* sink = DynamicTo<CSSPrimitiveValue>(second)) {
-    DCHECK_GE(sink->GetIntValue(), 1);
-    return StyleInitialLetter(size, sink->GetIntValue());
+    DCHECK_GE(sink->ComputeNumber(state.CssToLengthConversionData()), 1);
+    return StyleInitialLetter(
+        size, sink->ComputeNumber(state.CssToLengthConversionData()));
   }
 
   return StyleInitialLetter::Normal();
