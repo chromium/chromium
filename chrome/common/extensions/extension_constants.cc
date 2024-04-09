@@ -65,7 +65,10 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     kEmbeddedA11yHelperExtensionId,
     kChromeVoxHelperExtensionId,
-#endif        // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    kReadingModeGDocsHelperExtensionId,
+#endif        // !BUILDFLAG(IS_CHROMEOS_LACROS)
     nullptr,  // Null-terminated array.
 };
 
@@ -155,6 +158,13 @@ const char kChromeVoxHelperExtensionPath[] = "accessibility";
 const char kChromeVoxHelperManifestFilename[] =
     "chromevox_helper_manifest.json";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kReadingModeGDocsHelperExtensionId[] =
+    "cjlaeehoipngghikfjogbdkpbdgebppb";
+const char kReadingModeGDocsHelperExtensionPath[] = "accessibility";
+const base::FilePath::CharType kReadingModeGDocsHelperManifestFilename[] =
+    FILE_PATH_LITERAL("reading_mode_gdocs_helper_manifest.json");
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 const char kAppStateNotInstalled[] = "not_installed";
 const char kAppStateInstalled[] = "installed";

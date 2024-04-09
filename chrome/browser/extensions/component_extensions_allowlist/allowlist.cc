@@ -56,6 +56,9 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
     extension_misc::kQuickOfficeComponentExtensionId,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    extension_misc::kReadingModeGDocsHelperExtensionId,
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   };
 
   for (size_t i = 0; i < std::size(kAllowed); ++i) {

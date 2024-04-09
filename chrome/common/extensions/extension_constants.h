@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -272,6 +273,16 @@ extern const char kChromeVoxHelperExtensionPath[];
 // The name of the manifest file for the Lacros ChromeVox helper extension.
 extern const char kChromeVoxHelperManifestFilename[];
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// The extension id of the helper extension for Reading Mode to work on Google
+// Docs.
+extern const char kReadingModeGDocsHelperExtensionId[];
+// The path to the the helper extension for Reading Mode to work on Google Docs.
+extern const char kReadingModeGDocsHelperExtensionPath[];
+// The name of the manifest file for the extension that enables Reading Mode to
+// work on Google Docs.
+extern const base::FilePath::CharType kReadingModeGDocsHelperManifestFilename[];
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // What causes an extension to be installed? Used in histograms, so don't
 // change existing values.

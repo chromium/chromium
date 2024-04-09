@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//chrome/common/features.gni")
+import("//tools/typescript/ts_library.gni")
+
+out_dir = "$root_out_dir/resources/accessibility/reading_mode_gdocs_helper"
+tsc_output_dir = "$target_gen_dir/tsc"
+
+group("build") {
+  deps = [ ":reading_mode_gdocs_helper_copied_files" ]
+}
+
+ts_library("build_ts") {
+  in_files = [ "content.ts" ]
+  out_dir = tsc_output_dir
+  definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+}
+
+copy("reading_mode_gdocs_helper_copied_files") {
+  sources = [
+    "$tsc_output_dir/content.js",
+    "../../chromeos/accessibility/common/gdocs_script.js",
+  ]
+  outputs = [ "$out_dir/{{source_file_part}}" ]
+  deps = [ ":build_ts" ]
+}
