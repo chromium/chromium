@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
 namespace input_method {
@@ -411,6 +412,19 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
+}
+
+void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
+                                           const std::string& engine_id,
+                                           const base::Value::Dict& values) {
+  // This creates a dictionary where any changes to the dictionary will notify
+  // the prefs service (and its observers).
+  ScopedDictPrefUpdate update = ScopedDictPrefUpdate(
+      &prefs, ::prefs::kLanguageInputMethodSpecificSettings);
+
+  for (const auto [key, value] : values) {
+    update->FindDict(engine_id)->Set(key, value.Clone());
+  }
 }
 
 bool IsAutocorrectSupported(const std::string& engine_id) {
