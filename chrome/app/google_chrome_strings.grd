@@ -814,8 +814,22 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL" desc="Alerts the user that the extension should be reviewed.">
         Chrome recommends you review this extension
       </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE" desc="Alerts the user that the extension is not from the Chrome web store.">
+        Chrome can't verify where this extension comes from
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON" desc="Alerts the user that the extension is not from the Chrome web store.">
+        On • Chrome can't verify where this extension comes from
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF" desc="Alerts the user that the extension is not from the Chrome web store.">
+        Off • Chrome can't verify where this extension comes from
+      </message>
 
       <!-- chrome://settings/extensions page -->
+    <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">
+      {NUM_EXTENSIONS, plural,
+      =1 {Chrome recommends that you remove it}
+      other {Chrome recommends that you remove them}}
+    </message>
       <message name="IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR" desc="The label on the toggle to allow the extension to show site access requests in the toolbar.">
         Allow extension to show access requests in the Chrome toolbar
       </message>

@@ -228,19 +228,15 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
                                        : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
         break;
       case SafetyCheckWarningReason::kOffstore:
-        // TODO(https://crbug.com/322898612): Update the detail and panel
-        // strings to their real values once they have been finalized.
-        // Currently using the unpublished strings as a placeholder.
-        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
-        panel_string = extension_state ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
-                                       : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        detail_page_string = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
+        panel_string = extension_state
+                           ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
+                           : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
         break;
       case SafetyCheckWarningReason::kUnwantedSoftware:
-        // TODO(crbug.com/5327689): Update strings to real values once
-        // finalized.
-        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
-        panel_string = extension_state ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
-                                       : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
+        panel_string = extension_state ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                                       : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
         break;
       case SafetyCheckWarningReason::kNone:
         EXPECT_FALSE(info->safety_check_text->detail_string.has_value());

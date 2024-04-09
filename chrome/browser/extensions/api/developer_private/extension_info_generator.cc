@@ -877,24 +877,20 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
                           ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
                           : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
   } else if (potentially_unwanted) {
-    // TODO(crbug.com/5327689): Update strings to real values once finalized.
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
     panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
-                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+                          ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                          : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
   } else if (valid_cws_info && cws_info->unpublished_long_ago) {
     detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
     panel_string_id = state == developer::ExtensionState::kEnabled
                           ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
                           : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
   } else if (warn_for_offstore_extension) {
-    // TODO(https://crbug.com/322898612): Update the detail and panel
-    // strings to their real values once they have been finalized.
-    // Currently using the unpublished strings as a placeholder.
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
     panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
-                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+                          ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
+                          : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
   }
 
   if (detail_string_id != -1) {
