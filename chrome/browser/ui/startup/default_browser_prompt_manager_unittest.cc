@@ -87,7 +87,7 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
     }
 
     auto* manager = DefaultBrowserPromptManager::GetInstance();
-    manager->CloseAllInfoBars();
+    manager->CloseAllPrompts();
 
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(

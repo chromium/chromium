@@ -83,8 +83,10 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
                      weak_ptr_factory_.GetWeakPtr(), std::nullopt));
 
   // If the user attempted to make Chrome the default browser, notify
-  // them when this changes.
-  DefaultBrowserPromptManager::ResetPromptPrefs(Profile::FromWebUI(web_ui()));
+  // them when this changes and close all open prompts.
+  DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
+      Profile::FromWebUI(web_ui()));
+  DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
 }
 
 void DefaultBrowserHandler::OnDefaultBrowserSettingChange() {

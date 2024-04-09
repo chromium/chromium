@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/webui_interactive_test_mixin.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
@@ -41,10 +42,18 @@
 #include "ui/gfx/animation/animation_test_api.h"
 
 namespace {
+#if !BUILDFLAG(IS_LINUX)
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+#endif
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+
+const WebContentsInteractionTestUtil::DeepQuery kDefaultBrowserButton = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-default-browser-page", "cr-button"};
 }  // namespace
 
-class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
+class DefaultBrowserInfobarInteractiveTest
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(
@@ -145,6 +154,23 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       SelectTab(kTabStripElementId, 0),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
+
+// Linux test environment doesn't allow setting default via the
+// chrome://settings/defaultBrowser page.
+#if !BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       RemovesAllBrowserPromptsOnSettingsChange) {
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      NavigateWebContents(
+          kFirstTabContents,
+          GURL(chrome::GetSettingsUrl(chrome::kDefaultBrowserSubPage))),
+      ClickElement(kFirstTabContents, kDefaultBrowserButton),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        HandlesAcceptWithDisabledAnimation) {

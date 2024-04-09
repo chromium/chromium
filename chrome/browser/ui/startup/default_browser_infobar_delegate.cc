@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -128,7 +129,11 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   // message loops of the FILE and UI thread will hold references to it
   // and it will be automatically freed once all its tasks have finished.
   base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-      ->StartSetAsDefault(base::NullCallback());
+      ->StartSetAsDefault(
+          base::IgnoreArgs<shell_integration::DefaultWebClientState>(
+              base::BindOnce(&DefaultBrowserPromptManager::CloseAllPrompts,
+                             base::Unretained(
+                                 DefaultBrowserPromptManager::GetInstance()))));
 
   return ConfirmInfoBarDelegate::Accept();
 }

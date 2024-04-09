@@ -102,15 +102,10 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
   }
 }
 
-void DefaultBrowserPromptManager::CloseAllInfoBars() {
-  browser_tab_strip_tracker_.reset();
+void DefaultBrowserPromptManager::CloseAllPrompts() {
+  CloseAllInfoBars();
 
-  for (const auto& infobars_entry : infobars_) {
-    infobars_entry.second->owner()->RemoveObserver(this);
-    infobars_entry.second->RemoveSelf();
-  }
-
-  infobars_.clear();
+  SetShowAppMenuPromptVisibility(false);
 }
 
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
@@ -178,6 +173,23 @@ void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
+void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
+    content::WebContents* web_contents,
+    Profile* profile) {
+  // Ensure that an infobar hasn't already been created.
+  CHECK(!infobars_.contains(web_contents));
+
+  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
+  infobars_[web_contents] = infobar;
+
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddObserver(this);
+}
+
 bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
     PrefService* local_state) {
   if (!features::kShowDefaultBrowserInfoBar.Get()) {
@@ -210,21 +222,15 @@ bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
 }
 
-void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
-    content::WebContents* web_contents,
-    Profile* profile) {
-  // Ensure that an infobar hasn't already been created.
-  CHECK(!infobars_.contains(web_contents));
+void DefaultBrowserPromptManager::CloseAllInfoBars() {
+  browser_tab_strip_tracker_.reset();
 
-  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
-  infobars_[web_contents] = infobar;
+  for (const auto& infobars_entry : infobars_) {
+    infobars_entry.second->owner()->RemoveObserver(this);
+    infobars_entry.second->RemoveSelf();
+  }
 
-  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
-
-  auto* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobar_manager->AddObserver(this);
+  infobars_.clear();
 }
 
 void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {

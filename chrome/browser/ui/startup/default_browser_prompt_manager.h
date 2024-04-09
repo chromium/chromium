@@ -67,7 +67,7 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void RemoveObserver(Observer* observer);
 
   void MaybeShowPrompt();
-  void CloseAllInfoBars();
+  void CloseAllPrompts();
 
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(Browser* browser) override;
@@ -99,6 +99,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   bool ShouldShowInfoBarPrompt(
       PrefService* local_state = g_browser_process->local_state());
+
+  void CloseAllInfoBars();
 
   void SetShowAppMenuPromptVisibility(bool show);
 
