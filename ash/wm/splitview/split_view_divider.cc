@@ -505,9 +505,15 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
     UpdateDividerBounds();
     if (update_visibility) {
       divider_widget_->Show();
+      // Since the divider may be hidden and re-shown during
+      // `SnapGroupController::OnOverviewModeStarting|Ending()`,
+      // we need to refresh the stacking order when it's shown again.
+      refresh_stacking_order = true;
     }
   } else if (update_visibility) {
     divider_widget_->Hide();
+    // Else no need to refresh the stacking order if the divider is hidden.
+    refresh_stacking_order = false;
   }
 
   if (refresh_stacking_order) {
