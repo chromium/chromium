@@ -157,14 +157,16 @@ class WPTResult(Result):
         kwargs.setdefault('expected', exp_line.results)
         super().__init__(*args, **kwargs)
         self.testharness_results = []
-        self.messages = []
         self.test_type = test_type
         self._exp_line = exp_line or Expectation()
         self._baseline = baseline or []
-        self.has_stderr = False
         self.image_diff_stats = None
         # TODO(crbug.com/1521922): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
+
+    @property
+    def has_stderr(self) -> bool:
+        return 'stderr' in self.artifacts
 
     @functools.cached_property
     def can_have_subtests(self) -> bool:
@@ -194,17 +196,9 @@ class WPTResult(Result):
                             subtest: str,
                             status: str,
                             message: Optional[str] = None):
-        if message:
-            self.messages.append('%s: %s\n' % (subtest, message))
-            self.has_stderr = True
         self._maybe_add_testharness_result(status, message, subtest)
 
-    def update_from_test(self,
-                         status: str,
-                         message: Optional[str] = None):
-        if message:
-            self.messages.insert(0, 'Harness: %s\n' % message)
-            self.has_stderr = True
+    def update_from_test(self, status: str, message: Optional[str] = None):
         self._maybe_add_testharness_result(status, message)
         self.actual = wptrunner_to_chromium_status(status)
         if self.can_have_subtests and self.actual not in {
@@ -645,7 +639,8 @@ class WPTResultsProcessor:
         result.took = max(0, event.time - result.started) / 1000
         result.pid = (extra or {}).get('browser_pid', 0)
         result.update_from_test(status, message)
-        artifacts, image_diff_stats = self._extract_artifacts(result, extra)
+        artifacts, image_diff_stats = self._extract_artifacts(
+            result, message, extra)
         result.artifacts = artifacts.artifacts
         result.image_diff_stats = image_diff_stats
         if result.unexpected:
@@ -878,7 +873,8 @@ class WPTResultsProcessor:
         log_subpath = self.port.output_filename(test_name, suffix, '.txt')
         artifacts.CreateArtifact(artifact_id, log_subpath, contents.encode())
 
-    def _extract_artifacts(self, result: WPTResult, extra) -> (Artifacts, str):
+    def _extract_artifacts(self, result: WPTResult, message: Optional[str],
+                           extra) -> Tuple[Artifacts, str]:
         # Ensure `artifacts_base_dir` (i.e., `layout-test-results`) is prepended
         # to `full_results_jsonp.js` paths so that `results.html` can correctly
         # fetch artifacts.
@@ -898,19 +894,17 @@ class WPTResultsProcessor:
                 image_diff_stats = self._write_screenshots(
                     result.name, artifacts, screenshots)
 
-        if result.messages:
-            # Each line should already end in a newline.
-            self._write_log(result.name, artifacts, 'stderr',
-                            test_failures.FILENAME_SUFFIX_STDERR,
-                            ''.join(result.messages))
+        if message:
+            self._write_log(result.name, artifacts, 'crash_log',
+                            test_failures.FILENAME_SUFFIX_CRASH_LOG, message)
 
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
         # next test that browser runs.
         browser_log = self.browser_logs.pop(result.pid, None)
         if browser_log:
-            self._write_log(result.name, artifacts, 'crash_log',
-                            test_failures.FILENAME_SUFFIX_CRASH_LOG,
+            self._write_log(result.name, artifacts, 'stderr',
+                            test_failures.FILENAME_SUFFIX_STDERR,
                             browser_log.getvalue())
 
         return artifacts, image_diff_stats

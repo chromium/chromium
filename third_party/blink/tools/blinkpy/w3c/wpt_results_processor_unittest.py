@@ -269,9 +269,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertFalse(ok.unexpected)
         self.assertEqual(
             ok.artifacts, {
-                'stderr': [
+                'crash_log': [
                     self.fs.join('layout-test-results', 'retry_1', 'external',
-                                 'wpt', 'variant_foo=bar_abc-stderr.txt'),
+                                 'wpt', 'variant_foo=bar_abc-crash-log.txt'),
                 ],
             })
         fail_summary = report_mock.call_args_list[0].kwargs['html_summary']
@@ -466,16 +466,16 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # Timeouts and crashes shouldn't output `{actual,expected}_*` artifacts.
         self.assertEqual(
             result.artifacts, {
-                'crash_log': [
+                'stderr': [
                     self.fs.join('layout-test-results', 'external', 'wpt',
-                                 'timeout-crash-log.txt'),
+                                 'timeout-stderr.txt'),
                 ],
             })
         self.assertEqual(
             self.fs.read_text_file(
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'external', 'wpt',
-                             'timeout-crash-log.txt')), 'Log this line\n')
+                             'timeout-stderr.txt')), 'Log this line\n')
 
     def test_report_expected_timeout_with_unexpected_fails(self):
         self.fs.write_text_file(
@@ -778,17 +778,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     data='Do not log; unrelated executable',
                     process='99999')
         self._event(action='test_start', test='/test.html')
-        self._event(
-            action='test_status',
-            test='/test.html',
-            status='PASS',
-            # The Greek letter pi, which 'cp1252' cannot represent.
-            subtest='subtest with Unicode \u03c0',
-            message='assert_eq(a, b)')
         self._event(action='test_start', test='/timeout.html')
         self._event(action='process_output',
                     command='chromedriver --port=101',
-                    data='Running test.html',
+                    data='cp1252 cannot represent \u03c0, the Greek letter',
                     process='101')
         self._event(action='process_output',
                     command='chromedriver --port=202',
@@ -797,7 +790,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self._event(action='test_end',
                     test='/test.html',
                     status='OK',
-                    message='Test ran to completion.',
+                    message='Remote-end stacktrace:\n\n#0 0xffff <unknown>\n',
                     extra={'browser_pid': 101})
         self._event(action='test_end',
                     test='/timeout.html',
@@ -812,25 +805,26 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.fs.read_text_file(
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'external', 'wpt',
-                             'test-stderr.txt')),
-            textwrap.dedent("""\
-                Harness: Test ran to completion.
-                subtest with Unicode \u03c0: assert_eq(a, b)
-                """))
-        self.assertEqual(
-            self.fs.read_text_file(
-                self.fs.join('/mock-checkout', 'out', 'Default',
-                             'layout-test-results', 'external', 'wpt',
                              'test-crash-log.txt')),
             textwrap.dedent("""\
-                Running test.html
-                Running test.html
+                Remote-end stacktrace:
+
+                #0 0xffff <unknown>
                 """))
         self.assertEqual(
             self.fs.read_text_file(
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'external', 'wpt',
-                             'timeout-crash-log.txt')),
+                             'test-stderr.txt')),
+            textwrap.dedent("""\
+                Running test.html
+                cp1252 cannot represent \u03c0, the Greek letter
+                """))
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'timeout-stderr.txt')),
             textwrap.dedent("""\
                 Running timeout.html
                 """))
@@ -925,8 +919,11 @@ class WPTResultsProcessorTest(LoggingTestCase):
                             test='/test.html',
                             status='FAIL',
                             expected='PASS',
-                            subtest='subtest',
-                            message='assert_eq(a, b)')
+                            subtest='subtest')
+                self._event(action='process_output',
+                            process='101',
+                            command='chromedriver --port=101',
+                            data='[101:101:INFO] This is Chrome version 125')
                 self._event(action='test_end',
                             test='/test.html',
                             status='OK',
@@ -934,7 +931,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                 'reftest_screenshots': [{
                                     'url': '/test.html',
                                     'screenshot': 'abcd',
-                                }]
+                                }],
+                                'browser_pid':
+                                101,
                             })
                 self._event(action='test_start', test='/reftest.html')
                 self._event(action='test_end',
