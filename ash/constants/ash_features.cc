@@ -1800,7 +1800,7 @@ BASE_FEATURE(kLauncherContinueSectionWithRecents,
 // from enabling the feature on versions where
 // LauncherContinueSectionWithRecents was first added.
 BASE_FEATURE(kLauncherContinueSectionWithRecentsRollout,
-             "LauncherContinueSectionWithRecentsRollout",
+             "LauncherContinueSectionWithRecentsRollout125",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses short intervals for launcher nudge for testing if enabled.
