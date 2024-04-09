@@ -46,6 +46,7 @@ class CORE_EXPORT HTMLPermissionElement final
   void Trace(Visitor*) const override;
 
   void AttachLayoutTree(AttachContext& context) override;
+  void DetachLayoutTree(bool performing_reattach) override;
 
   bool granted() const { return permissions_granted_; }
 
@@ -69,6 +70,7 @@ class CORE_EXPORT HTMLPermissionElement final
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
   friend class ClickingEnabledChecker;
+  friend class RegistrationWaiter;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);

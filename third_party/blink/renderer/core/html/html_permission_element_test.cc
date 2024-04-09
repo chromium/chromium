@@ -291,13 +291,13 @@ class TestPermissionService : public PermissionService {
   base::OnceClosure pepc_registered_callback_;
 };
 
-class InnerTextChangeWaiter {
+class RegistrationWaiter {
  public:
-  explicit InnerTextChangeWaiter(HTMLSpanElement* element)
+  explicit RegistrationWaiter(HTMLPermissionElement* element)
       : element_(element) {}
 
-  InnerTextChangeWaiter(const InnerTextChangeWaiter&) = delete;
-  InnerTextChangeWaiter& operator=(const InnerTextChangeWaiter&) = delete;
+  RegistrationWaiter(const RegistrationWaiter&) = delete;
+  RegistrationWaiter& operator=(const RegistrationWaiter&) = delete;
 
   void Wait() {
     PostDelayedTask();
@@ -307,12 +307,12 @@ class InnerTextChangeWaiter {
   void PostDelayedTask() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&InnerTextChangeWaiter::VerifyInnerText,
+        WTF::BindOnce(&RegistrationWaiter::VerifyRegistration,
                       base::Unretained(this)),
         base::Milliseconds(500));
   }
-  void VerifyInnerText() {
-    if (element_ && element_->innerText().empty()) {
+  void VerifyRegistration() {
+    if (element_ && !element_->IsRegisteredInBrowserProcess()) {
       PostDelayedTask();
     } else {
       run_loop_.Quit();
@@ -320,7 +320,7 @@ class InnerTextChangeWaiter {
   }
 
  private:
-  WeakPersistent<HTMLSpanElement> element_;
+  WeakPersistent<HTMLPermissionElement> element_;
   base::RunLoop run_loop_;
 };
 
@@ -354,6 +354,16 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
 
   TestPermissionService* permission_service() {
     return permission_service_.get();
+  }
+
+  HTMLPermissionElement* CreatePermissionElement(const char* permission) {
+    HTMLPermissionElement* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    GetDocument().body()->AppendChild(permission_element);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    return permission_element;
   }
 
  private:
@@ -449,14 +459,9 @@ TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
       {"microphone", MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
       {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString}};
   for (const auto& data : kTestData) {
-    auto* permission_element =
-        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(data.type));
+    auto* permission_element = CreatePermissionElement(data.type);
     permission_service()->set_initial_statuses({data.status});
-    InnerTextChangeWaiter waiter(
-        permission_element->permission_text_span_for_testing());
-    waiter.Wait();
+    RegistrationWaiter(permission_element).Wait();
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -490,15 +495,10 @@ TEST_F(HTMLPemissionElementTest,
        kCameraMicrophoneAllowedString},
   };
   for (const auto& data : kTestData) {
-    auto* permission_element =
-        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString("camera microphone"));
+    auto* permission_element = CreatePermissionElement("camera microphone");
     permission_service()->set_initial_statuses(
         {data.camera_status, data.microphone_status});
-    InnerTextChangeWaiter waiter(
-        permission_element->permission_text_span_for_testing());
-    waiter.Wait();
+    RegistrationWaiter(permission_element).Wait();
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -530,10 +530,7 @@ TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
                    {"camera", PermissionName::VIDEO_CAPTURE,
                     MojoPermissionStatus::GRANTED, kCameraAllowedString}};
   for (const auto& data : kTestData) {
-    auto* permission_element =
-        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(data.type));
+    auto* permission_element = CreatePermissionElement(data.type);
     permission_service()->WaitForPermissionObserverAdded();
     permission_service()->NotifyPermissionStatusChange(data.name, data.status);
     EXPECT_EQ(
@@ -569,10 +566,7 @@ TEST_F(HTMLPemissionElementTest,
        kCameraMicrophoneAllowedString},
   };
   for (const auto& data : kTestData) {
-    auto* permission_element =
-        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString("camera microphone"));
+    auto* permission_element = CreatePermissionElement("camera microphone");
     permission_service()->WaitForPermissionObserverAdded();
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::VIDEO_CAPTURE, data.camera_status);
@@ -603,13 +597,12 @@ TEST_F(HTMLPemissionElementClickingEnabledTest, UnclickableBeforeRegistered) {
                    {"camera", kCameraString},
                    {"camera microphone", kCameraMicrophoneString}};
   for (const auto& data : kTestData) {
-    auto* permission_element =
-        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(data.type));
+    auto* permission_element = CreatePermissionElement(data.type);
     permission_service()->set_should_defer_registered_callback(
         /*should_defer*/ true);
-    FastForwardBy(kDefaultTimeout);
+    // Check if the element is still unclickable even after the default timeout
+    // of `kRecentlyAttachedToDOM`.
+    FastForwardBy(base::Milliseconds(600));
     EXPECT_FALSE(permission_element->IsClickingEnabled());
     std::move(permission_service()->TakePEPCRegisteredCallback()).Run();
     FastForwardUntilNoTasksRemain();
@@ -650,6 +643,17 @@ class HTMLPemissionElementSimTest : public SimTest {
     return permission_service_.get();
   }
 
+  HTMLPermissionElement* CreatePermissionElement(Document& document,
+                                                 const char* permission) {
+    HTMLPermissionElement* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(document);
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    document.body()->AppendChild(permission_element);
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    return permission_element;
+  }
+
  private:
   std::unique_ptr<TestPermissionService> permission_service_;
 };
@@ -676,10 +680,9 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
   auto* first_child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
   for (const char* permission : {"camera", "microphone", "geolocation"}) {
-    auto* permission_element = MakeGarbageCollected<HTMLPermissionElement>(
-        *last_child_frame->GetFrame()->GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(permission));
+    auto* permission_element = CreatePermissionElement(
+        *last_child_frame->GetFrame()->GetDocument(), permission);
+    RegistrationWaiter(permission_element).Wait();
     // PermissionsPolicy passed with no console log.
     auto& last_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
@@ -687,12 +690,11 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
             ->ConsoleMessages();
     EXPECT_EQ(last_console_messages.size(), 0u);
 
-    permission_element = MakeGarbageCollected<HTMLPermissionElement>(
-        *first_child_frame->GetFrame()->GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(permission));
+    CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
+                            permission);
     permission_service()->set_pepc_registered_callback(
         base::BindOnce(&NotReachedForPEPCRegistered));
+    base::RunLoop().RunUntilIdle();
     // Should console log a error message due to PermissionsPolicy
     auto& first_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
@@ -707,14 +709,8 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
 }
 
 TEST_F(HTMLPemissionElementSimTest, EnableClickingAfterDelay) {
-  auto* permission_element =
-      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
   ClickingEnabledChecker checker(permission_element);
-
-  // Permission element doesn't allow clicking if there is no type set.
-  permission_element->setAttribute(html_names::kTypeAttr,
-                                   AtomicString("camera"));
-
   permission_element->DisableClickingIndefinitely(
       HTMLPermissionElement::DisableReason::kInvalidStyle);
   checker.CheckClickingEnabled(/*enabled=*/false);
@@ -735,15 +731,8 @@ TEST_F(HTMLPemissionElementSimTest, EnableClickingAfterDelay) {
 }
 
 TEST_F(HTMLPemissionElementSimTest, BadContrastDisablesElement) {
-  auto* permission_element =
-      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
   ClickingEnabledChecker checker(permission_element);
-
-  // Permission element doesn't allow clicking if there is no type set.
-  permission_element->setAttribute(html_names::kTypeAttr,
-                                   AtomicString("camera"));
-  GetDocument().body()->AppendChild(permission_element);
-
   // Red on white is sufficient contrast.
   permission_element->setAttribute(
       html_names::kStyleAttr,
@@ -782,14 +771,8 @@ TEST_F(HTMLPemissionElementSimTest, BadContrastDisablesElement) {
 
 TEST_F(HTMLPemissionElementSimTest, FontSizeCanDisableElement) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
-  auto* permission_element =
-      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
   ClickingEnabledChecker checker(permission_element);
-
-  // Permission element doesn't allow clicking if there is no type set.
-  permission_element->setAttribute(html_names::kTypeAttr,
-                                   AtomicString("camera"));
-  GetDocument().body()->AppendChild(permission_element);
 
   // Normal font-size for baseline.
   permission_element->setAttribute(html_names::kStyleAttr,
@@ -854,15 +837,14 @@ TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
   )");
 
   for (const char* permission : {"camera", "microphone", "geolocation"}) {
-    auto* permission_element = MakeGarbageCollected<HTMLPermissionElement>(
-        *MainFrame().GetFrame()->GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(permission));
+    auto* permission_element = CreatePermissionElement(
+        *MainFrame().GetFrame()->GetDocument(), permission);
     // We need this call to establish binding to the remote permission service,
     // otherwise the next testing binder will fail.
     permission_element->GetPermissionService();
     permission_service()->set_pepc_registered_callback(
         base::BindOnce(&NotReachedForPEPCRegistered));
+    base::RunLoop().RunUntilIdle();
   }
 }
 

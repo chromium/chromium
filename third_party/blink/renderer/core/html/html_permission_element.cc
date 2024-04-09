@@ -268,8 +268,42 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
 
 void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   Element::AttachLayoutTree(context);
+  if (permission_descriptors_.empty()) {
+    return;
+  }
+
+  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
+    AddConsoleError(
+        String::Format("The permission '%s' is not allowed in fenced frame",
+                       GetType().Utf8().c_str()));
+    return;
+  }
+
+  for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+    if (!GetExecutionContext()->IsFeatureEnabled(
+            PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+      AddConsoleError(String::Format(
+          "The permission '%s' is not allowed in the current context due to "
+          "PermissionsPolicy",
+          PermissionNameToString(descriptor->name).Utf8().c_str()));
+      return;
+    }
+  }
   DisableClickingTemporarily(DisableReason::kRecentlyAttachedToDOM,
                              kDefaultDisableTimeout);
+  if (embedded_permission_control_receiver_.is_bound()) {
+    return;
+  }
+  mojo::PendingRemote<EmbeddedPermissionControlClient> client;
+  embedded_permission_control_receiver_.Bind(
+      client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
+  GetPermissionService()->RegisterPageEmbeddedPermissionControl(
+      mojo::Clone(permission_descriptors_), std::move(client));
+}
+
+void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
+  Element::DetachLayoutTree(performing_reattach);
+  embedded_permission_control_receiver_.reset();
 }
 
 // static
@@ -329,30 +363,6 @@ void HTMLPermissionElement::AttributeChanged(
         NOTREACHED() << "Unexpected permissions size "
                      << permission_descriptors_.size();
     }
-
-    if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-      AddConsoleError(
-          String::Format("The permission '%s' is not allowed in fenced frame",
-                         GetType().Utf8().c_str()));
-      return;
-    }
-
-    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
-      if (!GetExecutionContext()->IsFeatureEnabled(
-              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
-        AddConsoleError(String::Format(
-            "The permission '%s' is not allowed in the current context due to "
-            "PermissionsPolicy",
-            PermissionNameToString(descriptor->name).Utf8().c_str()));
-        return;
-      }
-    }
-
-    mojo::PendingRemote<EmbeddedPermissionControlClient> client;
-    embedded_permission_control_receiver_.Bind(
-        client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
-    GetPermissionService()->RegisterPageEmbeddedPermissionControl(
-        mojo::Clone(permission_descriptors_), std::move(client));
   }
 
   HTMLElement::AttributeChanged(params);
