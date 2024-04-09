@@ -380155,7 +380155,7 @@
       []
      ],
      "permissions-policy.js": [
-      "32fb4cfd4a9535c9cf7d25a381d0159e09136837",
+      "d30d1191d169d5a7bb51c6fdbfb232b06e2be804",
       []
      ],
      "picture-in-picture.js": [
@@ -440227,6 +440227,13 @@
      ],
      "inset-area-computed.html": [
       "a49ff2a452288a5b9676ffe726dd5b3c5df466d7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-function.html": [
+      "9d68bf9ddf4ec5adc30186fee497294e1d024054",
       [
        null,
        {}
@@ -607251,28 +607258,28 @@
      ]
     ],
     "payment-allowed-by-permissions-policy-attribute.https.sub.html": [
-     "779e9d666c0a9f966c0e7ca4ee388c58a130eb21",
+     "3a7e11b03c7519e8e1468de741aeb10ef91a30bf",
      [
       null,
       {}
      ]
     ],
     "payment-allowed-by-permissions-policy.https.sub.html": [
-     "456626c350feaefdc92c227952bb95a62573a94b",
+     "27583d3c9c5ab1860afca771d40d9cdef4607d4b",
      [
       null,
       {}
      ]
     ],
     "payment-default-permissions-policy.https.sub.html": [
-     "da5fe80f66f0c27b8bac966ca72a27a96fb15a96",
+     "92a0f7e14f26f11218e53ec66fe77c6f56b65bf3",
      [
       null,
       {}
      ]
     ],
     "payment-disabled-by-permissions-policy.https.sub.html": [
-     "cc358a1c0f6623a1ddcfa5d6e2d86b8290e2d7b2",
+     "b53eff996a4e386b97fdbb85609c4abf4e3eb6ee",
      [
       null,
       {}
