@@ -146,8 +146,27 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
 
   AddItems(line_items.begin(), line_items.end());
 
-  // TODO(crbug.com/324111880): Add nested line items for
-  // line_container->annotation_line_list_.
+  for (wtf_size_t i = 0; i < line_container->AnnotationSize(); ++i) {
+    const wtf_size_t annotation_line_start_index = items_.size();
+    const LayoutUnit line_height =
+        line_container->AnnotationMetricsAt(i).LineHeight();
+    auto& annotation_line = line_container->AnnotationLineAt(i);
+    if (!annotation_line.FirstInFlowChild()) {
+      continue;
+    }
+    LogicalOffset line_offset = annotation_line.FirstInFlowChild()->Offset();
+    LayoutUnit line_inline_size =
+        annotation_line.LastInFlowChild()->rect.InlineEndOffset() -
+        line_offset.inline_offset;
+    PhysicalSize size = IsHorizontalWritingMode(GetWritingMode())
+                            ? PhysicalSize(line_inline_size, line_height)
+                            : PhysicalSize(line_height, line_inline_size);
+    // The offset must be relative to the base line box for now.
+    items_.emplace_back(line_offset, size, line_fragment);
+    AddItems(annotation_line.begin(), annotation_line.end());
+    items_[annotation_line_start_index].item.SetDescendantsCount(
+        items_.size() - annotation_line_start_index);
+  }
 
   // All children are added. Create an item for the start of the line.
   FragmentItem& line_item = items_[line_start_index].item;

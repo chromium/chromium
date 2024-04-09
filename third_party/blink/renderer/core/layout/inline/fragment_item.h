@@ -111,6 +111,9 @@ class CORE_EXPORT FragmentItem final {
                TextDirection resolved_direction);
   // Create a line item.
   explicit FragmentItem(const PhysicalLineBoxFragment& line);
+  // Create an annotation line item.
+  FragmentItem(const PhysicalSize& size,
+               const PhysicalLineBoxFragment& base_line);
 
   // The copy/move constructors.
   FragmentItem(const FragmentItem&);
