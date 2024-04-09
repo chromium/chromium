@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "partition_alloc/flags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"

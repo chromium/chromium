@@ -27,7 +27,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc.h"

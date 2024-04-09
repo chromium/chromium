@@ -10,9 +10,8 @@ include_rules = [
   # `partition_alloc` can depends on itself, via the `include_dirs` it declares.
   "+partition_alloc",
 
-  # Build flags to infer the architecture and operating system in use.
+  # Build config to infer the architecture and operating system in use.
   "+build/build_config.h",
-  "+build/buildflag.h",
 ]
 
 specific_include_rules = {
