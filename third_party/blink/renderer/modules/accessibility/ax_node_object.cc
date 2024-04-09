@@ -4686,16 +4686,10 @@ String AXNodeObject::TextAlternative(
     }
   }
 
-  name_from = ax::mojom::blink::NameFrom::kNone;
-  if (name_sources && found_text_alternative) {
-    for (NameSource& name_source : *name_sources) {
-      if (!name_source.text.IsNull() && !name_source.superseded) {
-        name_from = name_source.type;
-        if (!name_source.related_objects.empty())
-          *related_objects = name_source.related_objects;
-        return name_source.text;
-      }
-    }
+  String saved_text_alternative = GetSavedTextAlternativeFromNameSource(
+      found_text_alternative, name_from, related_objects, name_sources);
+  if (!saved_text_alternative.empty()) {
+    return saved_text_alternative;
   }
 
   if (has_explicitly_empty_native_text_alternative) {
@@ -6765,6 +6759,32 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   return text_alternative;
+}
+
+// static
+String AXNodeObject::GetSavedTextAlternativeFromNameSource(
+    bool found_text_alternative,
+    ax::mojom::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) {
+  name_from = ax::mojom::blink::NameFrom::kNone;
+  if (!name_sources || !found_text_alternative) {
+    return String();
+  }
+
+  for (NameSource& name_source : *name_sources) {
+    if (name_source.text.IsNull() || name_source.superseded) {
+      continue;
+    }
+
+    name_from = name_source.type;
+    if (!name_source.related_objects.empty()) {
+      *related_objects = name_source.related_objects;
+    }
+    return name_source.text;
+  }
+
+  return String();
 }
 
 // This is not part of the spec, but we think it's a worthy addition: if the

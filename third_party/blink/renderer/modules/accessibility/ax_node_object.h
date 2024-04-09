@@ -245,6 +245,17 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                          ax::mojom::blink::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
+  // If name_sources are being collected in a call to TextAlternative(), the
+  // algorithm will continue even after finding a valid text alternative in
+  // order to collect all viable name_sources. This can cause the original text
+  // alternative to be overwritten. So, at the end of TextAlternative() it's
+  // necessary to call GetSavedTextAlternativeFromNameSource() to recover the
+  // original text alternative from name_sources.
+  static String GetSavedTextAlternativeFromNameSource(
+      bool found_text_alternative,
+      ax::mojom::NameFrom& name_from,
+      AXRelatedObjectVector* related_objects,
+      NameSources* name_sources);
   String Description(ax::mojom::blink::NameFrom,
                      ax::mojom::blink::DescriptionFrom&,
                      AXObjectVector* description_objects) const override;

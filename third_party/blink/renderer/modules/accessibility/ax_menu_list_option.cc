@@ -236,11 +236,14 @@ String AXMenuListOption::TextAlternative(
 
   name_from = ax::mojom::NameFrom::kContents;
   text_alternative = To<HTMLOptionElement>(GetNode())->DisplayLabel();
+
   if (name_sources) {
     name_sources->push_back(NameSource(found_text_alternative));
     name_sources->back().type = name_from;
     name_sources->back().text = text_alternative;
     found_text_alternative = true;
+    return GetSavedTextAlternativeFromNameSource(
+        found_text_alternative, name_from, related_objects, name_sources);
   }
 
   return text_alternative;
