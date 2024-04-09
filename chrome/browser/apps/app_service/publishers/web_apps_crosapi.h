@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -141,6 +143,10 @@ class WebAppsCrosapi : public KeyedService,
 
   void PublishImpl(std::vector<AppPtr> deltas);
   void PublishCapabilityAccessesImpl(std::vector<CapabilityAccessPtr> deltas);
+  void LaunchMallWithContext(int32_t event_flags,
+                             apps::LaunchSource launch_source,
+                             apps::WindowInfoPtr window_info,
+                             apps::DeviceInfo device_info);
 
   // Stores a copy of the app deltas, which haven't been published to
   // AppRegistryCache yet. When the crosapi is bound or changed from disconnect
@@ -163,6 +169,8 @@ class WebAppsCrosapi : public KeyedService,
   mojo::Remote<crosapi::mojom::AppController> controller_;
   const raw_ptr<AppServiceProxy> proxy_;
   bool should_notify_initialized_ = true;
+
+  DeviceInfoManager device_info_manager_;
 
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};
 };

@@ -243,6 +243,7 @@ source_set("app_service") {
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/image_decoder",
