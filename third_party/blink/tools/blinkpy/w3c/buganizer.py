@@ -184,7 +184,7 @@ class BuganizerClient:
     def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""
         request = self._service.issues().issueUpdates().list(
-            issueId=self._ResolveID(issue_id))
+            issueId=str(self._ResolveID(issue_id)))
 
         try:
             response = self._ExecuteRequest(request)
