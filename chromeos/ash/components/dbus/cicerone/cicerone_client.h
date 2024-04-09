@@ -71,11 +71,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     virtual void OnLxdContainerStarting(
         const vm_tools::cicerone::LxdContainerStartingSignal& signal) {}
 
-    // OnLxdContainerStopping is signaled from Cicerone when async container
-    // stop is used.
-    virtual void OnLxdContainerStopping(
-        const vm_tools::cicerone::LxdContainerStoppingSignal& signal) {}
-
     // OnExportLxdContainerProgress is signalled from Cicerone while a container
     // is being exported via ExportLxdContainer.
     virtual void OnExportLxdContainerProgress(
@@ -170,9 +165,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
 
   // This should be true prior to calling StartLxdContainer in async mode.
   virtual bool IsLxdContainerStartingSignalConnected() = 0;
-
-  // This should be true prior to calling StopLxdContainer in async mode.
-  virtual bool IsLxdContainerStoppingSignalConnected() = 0;
 
   // This should be true prior to calling ExportLxdContainer.
   virtual bool IsExportLxdContainerProgressSignalConnected() = 0;

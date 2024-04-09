@@ -517,8 +517,6 @@ class CrostiniManager : public KeyedService,
       const vm_tools::cicerone::TremplinStartedSignal& signal) override;
   void OnLxdContainerStarting(
       const vm_tools::cicerone::LxdContainerStartingSignal& signal) override;
-  void OnLxdContainerStopping(
-      const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
   void OnExportLxdContainerProgress(
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal)
       override;
@@ -839,8 +837,6 @@ class CrostiniManager : public KeyedService,
   // Callbacks that are waiting on a signal
   std::multimap<guest_os::GuestId, CrostiniResultCallback>
       start_container_callbacks_;
-  std::multimap<guest_os::GuestId, CrostiniResultCallback>
-      stop_container_callbacks_;
   std::multimap<guest_os::GuestId, base::OnceClosure>
       shutdown_container_callbacks_;
   std::multimap<guest_os::GuestId, CrostiniResultCallback>

@@ -90,10 +90,6 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_lxd_container_starting_signal_connected_;
   }
 
-  bool IsLxdContainerStoppingSignalConnected() override {
-    return is_lxd_container_stopping_signal_connected_;
-  }
-
   bool IsExportLxdContainerProgressSignalConnected() override {
     return is_export_lxd_container_progress_signal_connected_;
   }
@@ -884,13 +880,6 @@ class CiceroneClientImpl : public CiceroneClient {
                        weak_ptr_factory_.GetWeakPtr()));
     cicerone_proxy_->ConnectToSignal(
         vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kLxdContainerStoppingSignal,
-        base::BindRepeating(&CiceroneClientImpl::OnLxdContainerStoppingSignal,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    cicerone_proxy_->ConnectToSignal(
-        vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kExportLxdContainerProgressSignal,
         base::BindRepeating(
             &CiceroneClientImpl::OnExportLxdContainerProgressSignal,
@@ -1111,18 +1100,6 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
-  void OnLxdContainerStoppingSignal(dbus::Signal* signal) {
-    vm_tools::cicerone::LxdContainerStoppingSignal proto;
-    dbus::MessageReader reader(signal);
-    if (!reader.PopArrayOfBytesAsProto(&proto)) {
-      LOG(ERROR) << "Failed to parse proto from DBus Signal";
-      return;
-    }
-    for (auto& observer : observer_list_) {
-      observer.OnLxdContainerStopping(proto);
-    }
-  }
-
   void OnExportLxdContainerProgressSignal(dbus::Signal* signal) {
     vm_tools::cicerone::ExportLxdContainerProgressSignal proto;
     dbus::MessageReader reader(signal);
@@ -1272,8 +1249,6 @@ class CiceroneClientImpl : public CiceroneClient {
       is_tremplin_started_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kLxdContainerStartingSignal) {
       is_lxd_container_starting_signal_connected_ = is_connected;
-    } else if (signal_name == vm_tools::cicerone::kLxdContainerStoppingSignal) {
-      is_lxd_container_stopping_signal_connected_ = is_connected;
     } else if (signal_name ==
                vm_tools::cicerone::kExportLxdContainerProgressSignal) {
       is_export_lxd_container_progress_signal_connected_ = is_connected;
@@ -1318,7 +1293,6 @@ class CiceroneClientImpl : public CiceroneClient {
   bool is_lxd_container_downloading_signal_connected_ = false;
   bool is_tremplin_started_signal_connected_ = false;
   bool is_lxd_container_starting_signal_connected_ = false;
-  bool is_lxd_container_stopping_signal_connected_ = false;
   bool is_export_lxd_container_progress_signal_connected_ = false;
   bool is_import_lxd_container_progress_signal_connected_ = false;
   bool is_pending_app_list_updates_signal_connected_ = false;
@@ -1355,8 +1329,9 @@ void CiceroneClient::Initialize(dbus::Bus* bus) {
 void CiceroneClient::InitializeFake() {
   // Do not create a new fake if it was initialized early in a browser test to
   // allow the test to set its own client.
-  if (!FakeCiceroneClient::Get())
+  if (!FakeCiceroneClient::Get()) {
     new FakeCiceroneClient();
+  }
 }
 
 // static

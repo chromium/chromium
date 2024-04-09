@@ -108,8 +108,6 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
       const vm_tools::cicerone::ContainerStartedSignal& signal) override;
   void OnContainerShutdown(
       const vm_tools::cicerone::ContainerShutdownSignal& signal) override;
-  void OnLxdContainerStopping(
-      const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
 
  private:
   void OnListVms(std::optional<vm_tools::concierge::ListVmsResponse> response);

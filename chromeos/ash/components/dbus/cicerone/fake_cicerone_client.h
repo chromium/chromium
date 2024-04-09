@@ -44,7 +44,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsLxdContainerDownloadingSignalConnected() override;
   bool IsTremplinStartedSignalConnected() override;
   bool IsLxdContainerStartingSignalConnected() override;
-  bool IsLxdContainerStoppingSignalConnected() override;
   bool IsExportLxdContainerProgressSignalConnected() override;
   bool IsImportLxdContainerProgressSignalConnected() override;
   bool IsPendingAppListUpdatesSignalConnected() override;
@@ -228,9 +227,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   }
   void set_lxd_container_starting_signal_connected(bool connected) {
     is_lxd_container_starting_signal_connected_ = connected;
-  }
-  void set_lxd_container_stopping_signal_connected(bool connected) {
-    is_lxd_container_stopping_signal_connected_ = connected;
   }
   void set_export_lxd_container_progress_signal_connected(bool connected) {
     is_export_lxd_container_progress_signal_connected_ = connected;
@@ -465,8 +461,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::TremplinStartedSignal& signal);
   void NotifyLxdContainerStarting(
       const vm_tools::cicerone::LxdContainerStartingSignal& signal);
-  void NotifyLxdContainerStopping(
-      const vm_tools::cicerone::LxdContainerStoppingSignal& signal);
   void NotifyExportLxdContainerProgress(
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal);
   void NotifyImportLxdContainerProgress(
@@ -507,7 +501,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool is_lxd_container_downloading_signal_connected_ = true;
   bool is_tremplin_started_signal_connected_ = true;
   bool is_lxd_container_starting_signal_connected_ = true;
-  bool is_lxd_container_stopping_signal_connected_ = true;
   bool is_export_lxd_container_progress_signal_connected_ = true;
   bool is_import_lxd_container_progress_signal_connected_ = true;
   bool is_apply_ansible_playbook_progress_signal_connected_ = true;
@@ -538,9 +531,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   vm_tools::cicerone::LxdContainerStartingSignal_Status
       lxd_container_starting_signal_status_ =
           vm_tools::cicerone::LxdContainerStartingSignal::STARTED;
-  vm_tools::cicerone::LxdContainerStoppingSignal_Status
-      lxd_container_stopping_signal_status_ =
-          vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED;
 
   vm_tools::cicerone::LaunchContainerApplicationResponse
       launch_container_application_response_;

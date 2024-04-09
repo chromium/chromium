@@ -129,10 +129,6 @@ bool FakeCiceroneClient::IsLxdContainerStartingSignalConnected() {
   return is_lxd_container_starting_signal_connected_;
 }
 
-bool FakeCiceroneClient::IsLxdContainerStoppingSignalConnected() {
-  return is_lxd_container_stopping_signal_connected_;
-}
-
 bool FakeCiceroneClient::IsInstallLinuxPackageProgressSignalConnected() {
   return is_install_linux_package_progress_signal_connected_;
 }
@@ -331,18 +327,6 @@ void FakeCiceroneClient::StopLxdContainer(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), stop_lxd_container_response_),
-      send_stop_lxd_container_response_delay_);
-
-  // Trigger CiceroneClient::Observer::NotifyLxdContainerStoppingSignal
-  vm_tools::cicerone::LxdContainerStoppingSignal stopping_signal;
-  stopping_signal.set_owner_id(request.owner_id());
-  stopping_signal.set_vm_name(request.vm_name());
-  stopping_signal.set_container_name(request.container_name());
-  stopping_signal.set_status(lxd_container_stopping_signal_status_);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerStopping,
-                     weak_factory_.GetWeakPtr(), std::move(stopping_signal)),
       send_stop_lxd_container_response_delay_);
 
   // Trigger CiceroneClient::Observer::NotifyContainerShutdownSignal
@@ -578,13 +562,6 @@ void FakeCiceroneClient::NotifyLxdContainerStarting(
     const vm_tools::cicerone::LxdContainerStartingSignal& proto) {
   for (auto& observer : observer_list_) {
     observer.OnLxdContainerStarting(proto);
-  }
-}
-
-void FakeCiceroneClient::NotifyLxdContainerStopping(
-    const vm_tools::cicerone::LxdContainerStoppingSignal& proto) {
-  for (auto& observer : observer_list_) {
-    observer.OnLxdContainerStopping(proto);
   }
 }
 
