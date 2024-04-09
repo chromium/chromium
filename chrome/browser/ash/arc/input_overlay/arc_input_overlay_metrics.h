@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
-#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_METRICS_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_METRICS_H_
 
 #include <string>
 
@@ -11,11 +11,16 @@
 
 namespace arc::input_overlay {
 
-void RecordInputOverlayFeatureState(bool enable);
+// Records whether the feature is on or off.
+void RecordInputOverlayFeatureState(const std::string& package_name,
+                                    bool enable);
 
-void RecordInputOverlayMappingHintState(bool enable);
+// Records whether the mapping hint is on or off.
+void RecordInputOverlayMappingHintState(const std::string& package_name,
+                                    bool enable);
 
-void RecordInputOverlayCustomizedUsage();
+// Records whether the overlay is customized.
+void RecordInputOverlayCustomizedUsage(const std::string& package_name);
 
 // Record when finishing action dragging or releasing arrow key.
 void RecordInputOverlayActionReposition(const std::string& package_name,
@@ -36,4 +41,4 @@ void RecordInputOverlayButtonGroupReposition(
 
 }  // namespace arc::input_overlay
 
-#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_METRICS_H_

@@ -20,8 +20,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_ukm.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
@@ -406,16 +405,13 @@ void TouchInjector::OnInputMenuViewRemoved() {
   // unfinalized menu state change.
   if (touch_injector_enable_ != touch_injector_enable_uma_) {
     touch_injector_enable_uma_ = touch_injector_enable_;
-    RecordInputOverlayFeatureState(touch_injector_enable_uma_);
-    InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
-        package_name_, touch_injector_enable_uma_);
+    RecordInputOverlayFeatureState(package_name_, touch_injector_enable_uma_);
   }
 
   if (input_mapping_visible_ != input_mapping_visible_uma_) {
     input_mapping_visible_uma_ = input_mapping_visible_;
-    RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
-    InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
-        package_name_, input_mapping_visible_uma_);
+    RecordInputOverlayMappingHintState(package_name_,
+                                       input_mapping_visible_uma_);
   }
 }
 
@@ -1094,12 +1090,8 @@ void TouchInjector::NotifyContentBoundsSizeChanged() {
 void TouchInjector::RecordMenuStateOnLaunch() {
   touch_injector_enable_uma_ = touch_injector_enable_;
   input_mapping_visible_uma_ = input_mapping_visible_;
-  RecordInputOverlayFeatureState(touch_injector_enable_uma_);
-  InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
-      package_name_, touch_injector_enable_uma_);
-  RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
-  InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
-      package_name_, input_mapping_visible_uma_);
+  RecordInputOverlayFeatureState(package_name_, touch_injector_enable_uma_);
+  RecordInputOverlayMappingHintState(package_name_, input_mapping_visible_uma_);
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {

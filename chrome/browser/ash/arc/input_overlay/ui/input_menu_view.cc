@@ -14,8 +14,7 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_ukm.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -427,8 +426,7 @@ void InputMenuView::OnEditButtonPressed() {
     show_mapping_toggle_->SetIsOn(true);
     display_overlay_controller_->SetInputMappingVisible(/*visible=*/true);
   }
-  RecordInputOverlayCustomizedUsage();
-  InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
+  RecordInputOverlayCustomizedUsage(
       display_overlay_controller_->GetPackageName());
   // Change display mode, load edit UI per action and overall edit buttons; make
   // sure the following line is at the bottom because edit mode will kill this
