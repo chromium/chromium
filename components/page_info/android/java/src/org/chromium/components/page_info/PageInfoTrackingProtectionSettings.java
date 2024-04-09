@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.components.page_info;
@@ -30,14 +30,15 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.AttrUtils;
 
-/** View showing a toggle and a description for third-party cookie blocking for a site. */
-public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
+/** View showing a toggle and a description for tracking protection for a site. */
+public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
+    private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
@@ -56,10 +57,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private FPSCookieInfo mFPSInfo;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
-    private PageInfoControllerDelegate mPageInfoControllerDelegate;
+    // Used to have a constant # of days until expiration to prevent test flakiness.
+    private boolean mFixedExpiration;
 
     /** Parameters to configure the cookie controls view. */
-    public static class PageInfoCookiesViewParams {
+    public static class PageInfoTrackingProtectionViewParams {
         // Called when the toggle controlling third-party cookie blocking changes.
         public boolean thirdPartyCookieBlockingEnabled;
         public Callback<Boolean> onThirdPartyCookieToggleChanged;
@@ -71,6 +73,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         // Block all third-party cookies when Tracking Protection is on.
         public boolean blockAll3PC;
         public boolean isIncognito;
+        public boolean fixedExpirationForTesting;
     }
 
     @Override
@@ -80,7 +83,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }
-        SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
+        SettingsUtils.addPreferencesFromResource(
+                this, R.xml.page_info_tracking_protection_preference);
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
@@ -101,9 +105,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         return getContext().getResources().getQuantityString(resId, count, count);
     }
 
-    public void setParams(PageInfoCookiesViewParams params) {
+    public void setParams(PageInfoTrackingProtectionViewParams params) {
         mBlockAll3PC = params.blockAll3PC;
         mIsIncognito = params.isIncognito;
+        mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         NoUnderlineClickableSpan linkSpan =
@@ -112,9 +117,18 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         (view) -> {
                             mOnCookieSettingsLinkClicked.run();
                         });
+        int summaryString;
+        if (mIsIncognito) {
+            summaryString =
+                    R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
+        } else if (mBlockAll3PC) {
+            summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
+        } else {
+            summaryString = R.string.page_info_tracking_protection_description;
+        }
         cookieSummary.setSummary(
                 SpanApplier.applySpans(
-                        getString(R.string.page_info_cookies_description),
+                        getString(summaryString),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
@@ -239,20 +253,25 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             int resId =
                     willCreatePermanentException()
                             ? R.string.page_info_cookies_site_not_working_description_permanent
-                            : R.string.page_info_cookies_site_not_working_description_temporary;
+                            : R.string
+                                    .page_info_cookies_site_not_working_description_tracking_protection;
             mThirdPartyCookiesSummary.setSummary(getString(resId));
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
                     getString(R.string.page_info_cookies_permanent_allowed_title));
-            int resId = R.string.page_info_cookies_send_feedback_description;
+            int resId = R.string.page_info_cookies_tracking_protection_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
-            int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
+            int days =
+                    mFixedExpiration
+                            ? EXPIRATION_FOR_TESTING
+                            : calculateDaysUntilExpiration(
+                                    TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
-            int resId = R.string.page_info_cookies_send_feedback_description;
+            int resId = R.string.page_info_cookies_tracking_protection_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
@@ -294,17 +313,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     /**
-     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
-     *     Sets) in settings.
-     */
-    public void setPageInfoDelegate(PageInfoControllerDelegate delegate) {
-        mPageInfoControllerDelegate = delegate;
-    }
-
-    /**
-     * Returns a boolean indicating if the FPS info has been shown or not.\
-     *
-     * <p>TODO(b/331453627): change to RWS
+     * Returns a boolean indicating if the FPS info has been shown or not.
      *
      * @param fpsInfo First Party Sets info to show.
      * @param currentOrigin PageInfo current origin.
@@ -334,19 +343,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                 .isPartOfManagedFirstPartySet(currentOrigin);
                     }
                 });
-        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-            mFPSInUse.setOnPreferenceClickListener(
-                    preference -> {
-                        mPageInfoControllerDelegate.showAllSettingsForRws(mFPSInfo.getOwner());
-                        return false;
-                    });
-        }
 
         return true;
     }
 
     /**
      * Returns the number of days left until the exception expiration.
+     *
      * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
      * @param expiration A timestamp for the expiration.
      * @return Number of days until expiration. Day boundary is considered to be the local midnight.
@@ -367,20 +370,33 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private void updateCookieSwitch() {
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(
-                    getQuantityString(R.plurals.page_info_sites_blocked, mBlockedSites));
+            int resId =
+                    mBlockAll3PC
+                            ? R.string.page_info_tracking_protection_toggle_blocked
+                            : R.string.page_info_tracking_protection_toggle_limited;
+            mCookieSwitch.setSummary(getString(resId));
         } else {
             mCookieSwitch.setSummary(
-                    getQuantityString(R.plurals.page_info_sites_allowed, mAllowedSites));
+                    getString(R.string.page_info_tracking_protection_toggle_allowed));
         }
     }
 
     private void updateThirdPartyCookiesTitleTemporary(int days) {
-        mThirdPartyCookiesTitle.setTitle(
-                days == 0
-                        ? getString(R.string.page_info_cookies_blocking_restart_today_title)
-                        : getQuantityString(
-                                R.plurals.page_info_cookies_blocking_restart_title, days));
+        if (mBlockAll3PC || mIsIncognito) {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_blocking_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals
+                                            .page_info_cookies_blocking_restart_tracking_protection_title,
+                                    days));
+        } else {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_limiting_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals.page_info_cookies_limiting_restart_title, days));
+        }
     }
 
     private boolean willCreatePermanentException() {

@@ -252,6 +252,13 @@ public class PageInfoViewTest {
         return view;
     }
 
+    private void enableTrackingProtectionFixedExpiration() {
+        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        assertNotNull(controller);
+        var tpController = controller.getTrackingProtectionControllerForTesting();
+        tpController.setFixedExceptionExpirationForTesting(true);
+    }
+
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -691,11 +698,11 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(
                 allOf(
@@ -719,12 +726,12 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
         blockAll3PC();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(
                 allOf(withText(containsString("You blocked sites from using")), isDisplayed()));
