@@ -23,6 +23,11 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
 // zoom level, used to stand in for the WKWebView if it has been purged from memory or when quickly
 // switching tabs. Persists to disk on a background thread each time a snapshot changes.
 @objcMembers public class SnapshotStorage: NSObject {
+  // Weak type to store the observers.
+  struct Weak<T: AnyObject> {
+    weak var value: T?
+  }
+
   // Cache to hold color snapshots in memory. The gray snapshots are not kept in memory at all.
   private let lruCache: SnapshotLRUCache
 
@@ -30,7 +35,7 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
   private let fileManager: ImageFileManager
 
   // List of observers to be notified of changes to the snapshot storage.
-  private var observers: [SnapshotStorageObserver]
+  private var observers: [Weak<SnapshotStorageObserver>]
 
   // Designated initializer. `storageDirectoryUrl` is the file path where all images managed by this
   // SnapshotStorage are stored. `storageDirectoryUrl` is not guaranteed to exist. The contents of
@@ -130,7 +135,7 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
     }
 
     for observer in observers {
-      observer.didUpdateSnapshotStorage?(snapshotID: snapshotID)
+      observer.value?.didUpdateSnapshotStorage?(snapshotID: snapshotID)
     }
   }
 
@@ -139,8 +144,10 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
     lruCache.removeObject(forKey: snapshotID)
     fileManager.removeImage(snapshotID: snapshotID)
 
-    for observer in observers {
-      observer.didUpdateSnapshotStorage?(snapshotID: snapshotID)
+    for weakObserver in observers {
+      if let observer = weakObserver.value {
+        observer.didUpdateSnapshotStorage?(snapshotID: snapshotID)
+      }
     }
   }
 
@@ -187,15 +194,15 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
 
   // Adds an observer to this snapshot storage.
   func addObserver(_ observer: SnapshotStorageObserver) {
-    if observers.contains(where: { $0 === observer }) {
+    if observers.contains(where: { $0.value === observer }) {
       return
     }
-    observers.append(observer)
+    observers.append(Weak(value: observer))
   }
 
   // Removes an observer from this snapshot storage.
   func removeObserver(_ observer: SnapshotStorageObserver) {
-    if let index = observers.firstIndex(where: { $0 === observer }) {
+    if let index = observers.firstIndex(where: { $0.value === observer }) {
       observers.remove(at: index)
     }
   }
