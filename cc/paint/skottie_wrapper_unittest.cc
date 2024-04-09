@@ -79,7 +79,7 @@ TEST(SkottieWrapperTest, LoadsValidLottieFileSerializable) {
 }
 
 TEST(SkottieWrapperTest, DetectsInvalidLottieFile) {
-  static constexpr base::StringPiece kInvalidJson = "this is invalid json";
+  static constexpr std::string_view kInvalidJson = "this is invalid json";
   scoped_refptr<SkottieWrapper> skottie =
       SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kInvalidJson.data()),
