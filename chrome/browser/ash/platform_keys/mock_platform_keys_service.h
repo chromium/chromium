@@ -61,8 +61,8 @@ class MockPlatformKeysService : public PlatformKeysService {
   MOCK_METHOD(void,
               DecryptAES,
               (chromeos::platform_keys::TokenId token_id,
-               std::vector<uint8_t> key_id,
                std::vector<uint8_t> encrypted_data,
+               std::vector<uint8_t> key_id,
                std::string decrypt_algorithm,
                std::vector<uint8_t> init_vector,
                EncryptDecryptCallback callback),
@@ -71,8 +71,8 @@ class MockPlatformKeysService : public PlatformKeysService {
   MOCK_METHOD(void,
               EncryptAES,
               (chromeos::platform_keys::TokenId token_id,
-               std::vector<uint8_t> key_id,
                std::vector<uint8_t> data,
+               std::vector<uint8_t> key_id,
                std::string encrypt_algorithm,
                std::vector<uint8_t> init_vector,
                EncryptDecryptCallback callback),
@@ -101,6 +101,14 @@ class MockPlatformKeysService : public PlatformKeysService {
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,
                chromeos::platform_keys::HashAlgorithm hash_algorithm,
+               SignCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              SignWithSymKey,
+              (std::optional<chromeos::platform_keys::TokenId> token_id,
+               std::vector<uint8_t> data,
+               std::vector<uint8_t> key_id,
                SignCallback callback),
               (override));
 
