@@ -39,10 +39,6 @@ source_set("lib") {
     deps += [ "//pdf" ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/services/pdf:lib" ]
-  }
-
   if (is_win) {
     sources += [
       "pdf_to_emf_converter.cc",

@@ -5769,6 +5769,9 @@
   <message name="IDS_ASH_UI_SERVICE_NAME" desc="Name of the internal software service that manages the user interface (UI). Appears in the task manager.">
     UI service
   </message>
+  <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
+    PDF Service
+  </message>
 
   <message name="IDS_POWER_SOURCE_PORT_LEFT" desc="The text identifying an external device, when that device is connected to the USB Type-C port on the left side of this device.">
     USB-C device (left port)

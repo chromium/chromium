@@ -4168,6 +4168,7 @@ source_set("ash") {
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/pdf:pdf_pref_names",
+    "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/policy:onc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",

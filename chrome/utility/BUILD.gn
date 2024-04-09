@@ -10,6 +10,7 @@ import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 
@@ -60,6 +61,7 @@ static_library("utility") {
     "//ipc",
     "//media",
     "//net",
+    "//pdf:buildflags",
     "//printing/buildflags",
     "//services/data_decoder:lib",
     "//services/network:network_service",
@@ -210,6 +212,9 @@ static_library("utility") {
         "//chromeos/ash/services/libassistant/public/mojom",
       ]
     }
+
+    assert(enable_pdf)
+    deps += [ "//chrome/services/pdf:lib" ]
   }
 
   if (is_chromeos) {

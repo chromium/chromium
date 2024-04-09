@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -54,6 +55,24 @@ source_set("pdf_pref_names") {
     "pdf_pref_names.cc",
     "pdf_pref_names.h",
   ]
+}
+
+if (is_chromeos_ash) {
+  source_set("pdf_service") {
+    sources = [
+      "pdf_service.cc",
+      "pdf_service.h",
+    ]
+    public_deps = [
+      "//chrome/services/pdf/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//content/public/browser",
+    ]
+  }
 }
 
 source_set("pdf_extension_test_utils") {

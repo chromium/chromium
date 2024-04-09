@@ -28,6 +28,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -73,11 +74,6 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
-#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
-#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
 #endif
@@ -112,10 +108,18 @@
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 #include "components/services/paint_preview_compositor/paint_preview_compositor_collection_impl.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+static_assert(BUILDFLAG(ENABLE_PDF), "ChromeOS Ash must enable PDF");
+static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
+#include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
+#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"  // nogncheck
+#include "chrome/services/pdf/pdf_service.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
@@ -266,7 +270,7 @@ auto RunScreenAIServiceFactory(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunCupsIppParser(
     mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
   return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
@@ -300,6 +304,12 @@ auto RunMediaParserFactory(
   return std::make_unique<MediaParserFactory>(std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+auto RunPdfService(mojo::PendingReceiver<pdf::mojom::PdfService> receiver) {
+  return std::make_unique<pdf::PdfService>(std::move(receiver));
+}
+#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
@@ -477,7 +487,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunCupsIppParser);
 #endif
 
@@ -500,6 +510,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
   services.Add(RunMediaParserFactory);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  services.Add(RunPdfService);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \

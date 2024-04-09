@@ -21,10 +21,6 @@
 #include "chrome/services/printing/pdf_flattener.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/services/pdf/pdf_thumbnailer.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <memory>
 
@@ -87,14 +83,6 @@ void PrintingService::BindPdfFlattener(
                               std::move(receiver));
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PrintingService::BindPdfThumbnailer(
-    mojo::PendingReceiver<pdf::mojom::PdfThumbnailer> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<pdf::PdfThumbnailer>(),
-                              std::move(receiver));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
 void PrintingService::BindPdfToEmfConverterFactory(

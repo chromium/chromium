@@ -11,6 +11,8 @@ assert(is_chromeos_ash)
 
 source_set("lib") {
   sources = [
+    "pdf_service.cc",
+    "pdf_service.h",
     "pdf_thumbnailer.cc",
     "pdf_thumbnailer.h",
   ]
@@ -20,9 +22,15 @@ source_set("lib") {
   public_deps = [
     "//base",
     "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 
-  deps = [ "//pdf" ]
+  deps = [
+    "//components/discardable_memory/client",
+    "//content/public/child",
+    "//content/public/utility",
+    "//pdf",
+  ]
 }
 
 source_set("pdf_thumbnailer_test") {

@@ -8,10 +8,14 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojom") {
-  sources = [ "pdf_thumbnailer.mojom" ]
+  sources = [
+    "pdf_service.mojom",
+    "pdf_thumbnailer.mojom",
+  ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]

@@ -69,9 +69,9 @@ class ImageLoaderPrivateGetPdfThumbnailFunction
   ResponseAction Run() override;
 
  private:
-  // For a given |content| starts fetching the first page PDF thumbnail by
-  // calling PdfThumbnailer from the printing service. The first parameters,
-  // |size| is supplied by the JavaScript caller.
+  // For a given `content` starts fetching the first page PDF thumbnail by
+  // calling PdfThumbnailer from PdfService. The first parameters, `size` is
+  // supplied by the JavaScript caller.
   void FetchThumbnail(const gfx::Size& size, const std::string& content);
 
   // Callback invoked by the thumbnailing service when a PDF thumbnail has been

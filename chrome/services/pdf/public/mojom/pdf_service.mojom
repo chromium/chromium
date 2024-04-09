@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom";
+
+// The main interface to Chrome's PDF Service, which performs various PDF
+// conversion operations in an isolated sandboxed process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface PdfService {
+  // Binds an interface that is used to generate thumbnails for PDF content.
+  [EnableIf=is_chromeos_ash]
+  BindPdfThumbnailer(pending_receiver<PdfThumbnailer> receiver);
+};
