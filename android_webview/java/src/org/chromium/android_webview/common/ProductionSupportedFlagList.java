@@ -693,6 +693,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.RENDER_DOCUMENT_COMPOSITOR_REUSE,
                 "If enabled, allows compositor to be reused on cross-RenderFrameHost navigations"),
+        Flag.baseFeature("ConditionallySkipGpuChannelFlush"),
         Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
         Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
