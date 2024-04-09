@@ -210,6 +210,11 @@ class PageSpecificContentSettings
     raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   };
 
+  class PermissionUsageObserver : public base::CheckedObserver {
+   public:
+    virtual void OnPermissionUsageChange() = 0;
+  };
+
   PageSpecificContentSettings(const PageSpecificContentSettings&) = delete;
   PageSpecificContentSettings& operator=(const PageSpecificContentSettings&) =
       delete;
@@ -290,6 +295,10 @@ class PageSpecificContentSettings
   base::WeakPtr<PageSpecificContentSettings> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Add/remove observer.
+  void AddPermissionUsageObserver(PermissionUsageObserver* observer);
+  void RemovePermissionUsageObserver(PermissionUsageObserver* observer);
 
   // Changes the |content_blocked_| entry for popups.
   void ClearPopupsBlocked();
@@ -651,6 +660,8 @@ class PageSpecificContentSettings
   // Calls to |delegate_| and SiteDataObservers that have been queued up while
   // the page is prerendering. These calls are run when the page is activated.
   std::unique_ptr<PendingUpdates> updates_queued_during_prerender_;
+
+  base::ObserverList<PermissionUsageObserver> permission_usage_observers_;
 
   PAGE_USER_DATA_KEY_DECL();
 

@@ -215,6 +215,18 @@ void PageInfoMainView::SetPermissionInfo(
     return;
   }
 
+  // When LHS indicators are enabled, permissions usage in PageInfo should be
+  // updated to reflect activity indicators.
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    for (const auto& permission : permission_info_list) {
+      auto it = syncable_permission_rows_.find(permission.type);
+      if (it != syncable_permission_rows_.end()) {
+        it->second->UpdatePermission(permission);
+      }
+    }
+  }
+
   // This method is called when Page Info is constructed/displayed, then called
   // again whenever permissions/chosen objects change while the bubble is still
   // opened. Once Page Info is displaying a non-zero number of permissions, all
@@ -223,8 +235,6 @@ void PageInfoMainView::SetPermissionInfo(
   // assumption is incorrect and it is actually possible that the number of
   // permission rows will need to change, but this should be an extremely rare
   // case that can be recovered from by closing & reopening the bubble.
-  // TODO(patricialor): Investigate removing callsites to this method other than
-  // the constructor.
   if (!permissions_view_->children().empty()) {
     UpdateResetButton(permission_info_list);
     return;
@@ -258,13 +268,14 @@ void PageInfoMainView::SetPermissionInfo(
   }
 
   for (const auto& permission : permission_info_list) {
-    auto* toggle_row =
+    PermissionToggleRowView* toggle_row =
         content_view->AddChildView(std::make_unique<PermissionToggleRowView>(
             ui_delegate_, navigation_handler_, permission, should_show_spacer));
     toggle_row->AddObserver(this);
     toggle_row->SetProperty(views::kCrossAxisAlignmentKey,
                             views::LayoutAlignment::kStretch);
-    toggle_rows_.push_back(std::move(toggle_row));
+    syncable_permission_rows_.emplace(permission.type, toggle_row);
+    toggle_rows_.push_back(toggle_row);
   }
 
   for (auto& object : chosen_object_info_list) {

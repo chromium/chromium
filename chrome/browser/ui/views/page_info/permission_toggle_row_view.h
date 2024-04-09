@@ -44,6 +44,7 @@ class PermissionToggleRowView : public views::View {
 
   void AddObserver(PermissionToggleRowViewObserver* observer);
   void PermissionChanged();
+  void UpdatePermission(const PageInfo::PermissionInfo& permission);
   void ResetPermission();
 
   const std::u16string& GetRowTitleForTesting() const {

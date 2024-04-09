@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -23,10 +24,6 @@
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
-
-namespace content_settings {
-class PageSpecificContentSettings;
-}
 
 namespace net {
 class X509Certificate;
@@ -50,7 +47,9 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::CookieControlsObserver {
+class PageInfo : private content_settings::CookieControlsObserver,
+                 public content_settings::PageSpecificContentSettings::
+                     PermissionUsageObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -297,6 +296,9 @@ class PageInfo : private content_settings::CookieControlsObserver {
   }
 
   void PresentSitePermissionsForTesting() { PresentSitePermissions(); }
+
+  // PageSpecificContentSettings::PermissionUsageObserver:
+  void OnPermissionUsageChange() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,

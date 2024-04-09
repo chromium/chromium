@@ -143,6 +143,12 @@ void PermissionToggleRowView::PermissionChanged() {
   }
 }
 
+void PermissionToggleRowView::UpdatePermission(
+    const PageInfo::PermissionInfo& permission) {
+  permission_ = permission;
+  UpdateUiOnPermissionChanged();
+}
+
 void PermissionToggleRowView::OnToggleButtonPressed() {
   PageInfoUI::ToggleBetweenAllowAndBlock(permission_);
   PermissionChanged();

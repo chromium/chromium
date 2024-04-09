@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
@@ -281,6 +280,11 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
     // TODO(crbug.com/1430440): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
     controller_->Update(web_contents);
+
+    auto* pscs = GetPageSpecificContentSettings();
+    if (pscs) {
+      pscs->AddPermissionUsageObserver(this);
+    }
   }
 #endif
 }
@@ -324,6 +328,15 @@ PageInfo::~PageInfo() {
   }
 
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (web_contents_) {
+    auto* pscs = GetPageSpecificContentSettings();
+    if (pscs) {
+      pscs->RemovePermissionUsageObserver(this);
+    }
+  }
+#endif
 }
 
 void PageInfo::OnStatusChanged(bool controls_visible,
@@ -737,6 +750,10 @@ void PageInfo::OnRevokeSSLErrorBypassButtonPressed() {
       site_url().host());
   did_revoke_user_ssl_decisions_ = true;
   RecordPageInfoAction(page_info::PAGE_INFO_RESET_DECISIONS_CLICKED);
+}
+
+void PageInfo::OnPermissionUsageChange() {
+  UpdatePermissions();
 }
 
 void PageInfo::OpenSiteSettingsView() {

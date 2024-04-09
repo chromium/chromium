@@ -1251,6 +1251,15 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   }
 }
 
+void PageSpecificContentSettings::AddPermissionUsageObserver(
+    PermissionUsageObserver* observer) {
+  permission_usage_observers_.AddObserver(observer);
+}
+void PageSpecificContentSettings::RemovePermissionUsageObserver(
+    PermissionUsageObserver* observer) {
+  permission_usage_observers_.RemoveObserver(observer);
+}
+
 void PageSpecificContentSettings::ClearPopupsBlocked() {
   ContentSettingsStatus& status =
       content_settings_status_[ContentSettingsType::POPUPS];
@@ -1677,6 +1686,10 @@ void PageSpecificContentSettings::MaybeUpdateLocationBar() {
   if (IsPagePrerendering())
     return;
   delegate_->UpdateLocationBar();
+
+  for (PermissionUsageObserver& observer : permission_usage_observers_) {
+    observer.OnPermissionUsageChange();
+  }
 }
 
 content::WebContents* PageSpecificContentSettings::GetWebContents() const {
