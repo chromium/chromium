@@ -317,12 +317,14 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
        .safe_fields = raw_ref(safe_fields),
        .builder = raw_ref(builder)});
 
+  latest_filled_card_was_masked_server_card_ = false;
   switch (record_type) {
     case CreditCard::RecordType::kLocalCard:
       Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, form);
+      latest_filled_card_was_masked_server_card_ = true;
       break;
     case CreditCard::RecordType::kFullServerCard:
       Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
@@ -366,6 +368,32 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       autofill_metrics::CardMetadataLoggingEvent::kFilled,
       metadata_logging_context_,
       HasBeenLogged(has_logged_form_filling_suggestion_filled_));
+
+  // Log masked server card filled events for benefits.
+  if (latest_filled_card_was_masked_server_card_) {
+    latest_filled_card_was_card_with_benefit_available_ =
+        metadata_logging_context_.instrument_ids_with_benefits_available
+            .contains(credit_card.instrument_id());
+
+    Log(latest_filled_card_was_card_with_benefit_available_
+            ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED
+            : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
+        form);
+
+    if (!has_logged_masked_server_card_suggestion_filled_) {
+      has_logged_masked_server_card_suggestion_filled_ = true;
+      Log(latest_filled_card_was_card_with_benefit_available_
+              ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE
+              : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE,
+          form);
+      // Log when a masked server card was filled after benefits were shown.
+      if (!metadata_logging_context_.instrument_ids_with_benefits_available
+               .empty()) {
+        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+            form);
+      }
+    }
+  }
 
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
@@ -581,6 +609,22 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
         form);
+  }
+
+  // Log masked server card submitted events for benefits.
+  if (latest_filled_card_was_masked_server_card_) {
+    Log(latest_filled_card_was_card_with_benefit_available_
+            ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE
+            : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
+        form);
+    // Log when a form is submitted after a suggestion for a card with benefits
+    // was shown. The user may have selected a card other than the card with
+    // benefits.
+    if (!metadata_logging_context_.instrument_ids_with_benefits_available
+             .empty()) {
+      Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+          form);
+    }
   }
 }
 
