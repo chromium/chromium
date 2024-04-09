@@ -54,7 +54,7 @@ each other. CTS is versioned alongside the Android OS; any Android 10 device is
 expected to pass CTS version 10, and so on. CTS does have minor version updates
 to address bugs in the tests themselves, such as flakiness or assumptions that
 are discovered not to be valid on all devices; see
-[WebView's CTS docs](./tools/cts_config/README.md#changing-cts-tests-retroactively)
+[WebView's CTS docs](../tools/cts_config/README.md#changing-cts-tests-retroactively)
 for more information on when this may be appropriate.
 
 CTS contains a number of tests which test the WebView's APIs and behaviours, and
