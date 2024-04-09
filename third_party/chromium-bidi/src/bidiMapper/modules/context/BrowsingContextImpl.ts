@@ -75,6 +75,8 @@ export class BrowsingContextImpl {
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm?: Realm;
   readonly #logger?: LoggerFn;
+  // Keeps track of the previously set viewport.
+  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
 
   private constructor(
     id: BrowsingContext.BrowsingContext,
@@ -725,11 +727,23 @@ export class BrowsingContextImpl {
       );
     } else {
       try {
+        let appliedViewport;
+        if (viewport === undefined) {
+          appliedViewport = this.#previousViewport;
+        } else if (viewport === null) {
+          appliedViewport = {
+            width: 0,
+            height: 0,
+          };
+        } else {
+          appliedViewport = viewport;
+        }
+        this.#previousViewport = appliedViewport;
         await this.#cdpTarget.cdpClient.sendCommand(
           'Emulation.setDeviceMetricsOverride',
           {
-            width: viewport ? viewport.width : 0,
-            height: viewport ? viewport.height : 0,
+            width: this.#previousViewport.width,
+            height: this.#previousViewport.height,
             deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
             mobile: false,
             dontSetVisibleSize: true,
