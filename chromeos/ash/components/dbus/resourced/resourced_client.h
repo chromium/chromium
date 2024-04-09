@@ -141,9 +141,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     kLacros = 1,
   };
 
-  virtual void ReportBackgroundProcesses(Component component,
-                                         const std::vector<int32_t>& pids) = 0;
-
   struct Process {
     Process(base::ProcessHandle pid,
             bool is_protected,

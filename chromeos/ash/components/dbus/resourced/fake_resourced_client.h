@@ -36,9 +36,6 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
                            uint32_t moderate,
                            SetMemoryMarginsBpsCallback callback) override;
 
-  void ReportBackgroundProcesses(Component component,
-                                 const std::vector<int32_t>& pids) override;
-
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
 

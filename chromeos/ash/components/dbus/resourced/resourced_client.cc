@@ -74,9 +74,6 @@ class ResourcedClientImpl : public ResourcedClient {
                            uint32_t moderate_margin,
                            SetMemoryMarginsBpsCallback callback) override;
 
-  void ReportBackgroundProcesses(Component component,
-                                 const std::vector<int32_t>& pids) override;
-
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
 
@@ -413,39 +410,6 @@ void ResourcedClientImpl::SetMemoryMarginsBps(
       base::BindOnce(&ResourcedClientImpl::HandleSetMemoryMarginBps,
                      weak_factory_.GetWeakPtr(), critical_margin,
                      moderate_margin, std::move(callback)));
-}
-
-void ResourcedClientImpl::ReportBackgroundProcesses(
-    Component component,
-    const std::vector<int32_t>& pids) {
-  resource_manager::ReportBackgroundProcesses request;
-
-  if (component == ResourcedClient::Component::kAsh) {
-    request.set_component(
-        resource_manager::ReportBackgroundProcesses_Component_ASH);
-  } else if (component == ResourcedClient::Component::kLacros) {
-    request.set_component(
-        resource_manager::ReportBackgroundProcesses_Component_LACROS);
-  } else {
-    NOTREACHED();
-  }
-
-  for (auto it = pids.begin(); it != pids.end(); ++it) {
-    request.add_pids(*it);
-  }
-
-  dbus::MethodCall method_call(
-      resource_manager::kResourceManagerInterface,
-      resource_manager::kReportBackgroundProcessesMethod);
-  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
-    LOG(ERROR) << "Error serializing "
-               << resource_manager::kReportBackgroundProcessesMethod
-               << " request";
-    return;
-  }
-
-  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
-                     base::DoNothing());
 }
 
 void ResourcedClientImpl::ReportBrowserProcesses(
