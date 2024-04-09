@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_request_id_generator.h"
-#include "chrome/browser/resources/lens/server/proto/lens_overlay_request.pb.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
@@ -40,9 +40,19 @@ class LensOverlayQueryController {
   // Clears the state and resets stored values.
   void EndQuery();
 
-  // Sends a request to Lens representing an interaction following the initial
-  // query. Expected to be called multiple times.
-  void SendInteraction(lens::proto::LensOverlayRequest request);
+  // Sends a region search interaction. Expected to be called multiple times.
+  void SendRegionSearch(lens::mojom::CenterRotatedBoxPtr region);
+
+  // Sends an object selection interaction. Expected to be called multiple
+  // times.
+  void SendObjectSelection(const std::string& object_id);
+
+  // Sends a text-only interaction. Expected to be called multiple times.
+  void SendTextOnlyQuery(const std::string& query_text);
+
+  // Sends a multimodal interaction. Expected to be called multiple times.
+  void SendMultimodalRequest(lens::mojom::CenterRotatedBoxPtr region,
+                             const std::string& query_text);
 
  protected:
   // Creates an endpoint fetcher for fetching the request data.
@@ -60,9 +70,15 @@ class LensOverlayQueryController {
     kReceivedFullImageResponse = 2,
   };
 
-  // Creates the image data for the initial request, setting
-  // full_image_data_.
-  void CreateFullImageData(base::OnceCallback<void()> callback);
+  // Sends the last received interaction data.
+  void SendInteraction();
+
+  // Processes the newly created full image data, setting full_image_data_.
+  void HandleFullImageDataCreated(lens::ImageData image_data);
+
+  // Processes the newly created cropped image data, setting
+  // cropped_image_data_.
+  void HandleCroppedImageDataCreated(lens::ImageCrop image_crop);
 
   // Fetches the endpoint using the initial image data.
   void FetchFullImageRequest(
@@ -72,27 +88,21 @@ class LensOverlayQueryController {
   void FullImageFetchResponseHandler(
       std::unique_ptr<EndpointResponse> response);
 
-  // Creates the metadata for an interaction request, setting
-  // cropped_image_data_.
-  void CropImageForInteraction(lens::proto::LensOverlayRequest request,
-                               base::OnceCallback<void()> callback);
-
   // Handles the endpoint fetch response for an interaction request.
   void InteractionFetchResponseHandler(
       std::unique_ptr<EndpointResponse> response);
 
-  // Fetches the endpoint using the last interaction data if the initial
+  // Updates the saved image crop and fetches the endpoint if the full image
   // response was received.
-  void MaybeFetchInteractionRequest(
-      std::unique_ptr<lens::LensOverlayRequestId> request_id);
+  void MaybeFetchInteractionRequest(std::optional<lens::ImageCrop> image_crop);
 
-  // Fetches the endpoint using the last interaction data.
-  void FetchInteractionRequest(
-      std::unique_ptr<lens::LensOverlayRequestId> request_id);
+  // Fetches the endpoint for an interaction request and creates a Lens search
+  // url.
+  void FetchInteractionRequestAndGenerateLensSearchUrl();
 
-  // Generates the url response and send it to the overlay controller via the
-  // url callback.
-  void GenerateAndSendSearchUrl(
+  // Creates the metadata for an interaction request using the latest
+  // interaction and image crop data.
+  lens::LensOverlayServerRequest CreateInteractionRequest(
       std::unique_ptr<lens::LensOverlayRequestId> request_id);
 
   // The request id generator.
@@ -106,9 +116,6 @@ class LensOverlayQueryController {
 
   // The stored interaction image crop data, used for retries too.
   lens::ImageCrop cropped_image_data_;
-
-  // The last interaction data, stored for retries.
-  lens::proto::LensOverlayRequest last_interaction_data_;
 
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;
@@ -132,10 +139,17 @@ class LensOverlayQueryController {
   // full image response was received.
   bool has_pending_interaction_ = false;
 
-  // Whether or not there was an interaction request whose search url
-  // needs to be generated. This can happen if an interaction occurs
-  // before the full image response was received.
-  bool has_pending_url_change_ = false;
+  // The last selected object id. Only set if the most recent request
+  // was an object selection request.
+  std::optional<std::string> last_object_id_ = std::nullopt;
+
+  // The last region or multimodal search region. Only set if the most
+  // recent request was a region or multimodal request.
+  lens::mojom::CenterRotatedBoxPtr last_region_;
+
+  // The last multimodal query text. Only set if the most recent request
+  // was a multimodal request.
+  std::optional<std::string> last_multimodal_query_text_ = std::nullopt;
 
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;

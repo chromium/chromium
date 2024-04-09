@@ -21,8 +21,7 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_hasSequenceOne) {
   ASSERT_EQ(request_id_generator.GetNextRequestId()->sequence_id(), 1);
 }
 
-TEST_F(LensOverlayRequestIdGeneratorTest,
-       GetNextREequestId_IncrementsSequence) {
+TEST_F(LensOverlayRequestIdGeneratorTest, GetNextRequestId_IncrementsSequence) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
   request_id_generator.GetNextRequestId();
   ASSERT_EQ(request_id_generator.GetNextRequestId()->sequence_id(), 2);

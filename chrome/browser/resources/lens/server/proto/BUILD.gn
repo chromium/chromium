@@ -5,8 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "lens_overlay_request.proto",
-    "lens_overlay_response.proto",
-  ]
+  sources = [ "lens_overlay_response.proto" ]
 }

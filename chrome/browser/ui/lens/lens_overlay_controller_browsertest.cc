@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 // TODO(b/328294794): This browser test should be deleted / modified after text
 // requests are implemented from mojo.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       ShowSidePanelAfterTextRequest) {
+                       ShowSidePanelAfterTextSelectionRequest) {
   WaitForPaint();
 
   std::string text_query = "Apples";
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // TODO(b/328294794): This function should be replaced when the text selection
   // call from mojo is implemented.
-  controller->IssueTextRequestForTesting(text_query);
+  controller->IssueTextSelectionRequestForTesting(text_query);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
 

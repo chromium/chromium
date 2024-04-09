@@ -268,11 +268,10 @@ void LensOverlayController::BindSidePanel(
 
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));
-  if (pending_text_query_.has_value()) {
+  if (pending_side_panel_url_.has_value()) {
     // TODO(b/330204523): Send query to the searchbox.
-    side_panel_page_->LoadResultsInFrame(
-        lens::BuildSearchURL(*pending_text_query_));
-    pending_text_query_.reset();
+    side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
+    pending_side_panel_url_.reset();
   }
 }
 
@@ -328,9 +327,9 @@ void LensOverlayController::OnSidePanelEntryDeregistered() {
   side_panel_receiver_.reset();
 }
 
-void LensOverlayController::IssueTextRequestForTesting(
+void LensOverlayController::IssueTextSelectionRequestForTesting(
     const std::string& text_query) {
-  IssueTextRequest(text_query);
+  IssueTextSelectionRequest(text_query);
 }
 
 class LensOverlayController::UnderlyingWebContentsObserver
@@ -532,58 +531,42 @@ void LensOverlayController::CloseUIAsync() {
 
 void LensOverlayController::IssueLensRequest(
     lens::mojom::CenterRotatedBoxPtr region) {
-  lens::proto::LensOverlayRequest request;
-  request.set_type(lens::proto::LensOverlayRequest::REGION_SEARCH);
-  auto* request_region = request.mutable_region();
-  request_region->set_center_x(region->box.x());
-  request_region->set_center_y(region->box.y());
-  request_region->set_width(region->box.width());
-  request_region->set_height(region->box.height());
-  request_region->set_rotation_z(region->rotation);
-
-  switch (region->coordinate_type) {
-    case lens::mojom::CenterRotatedBox_CoordinateType::kNormalized:
-      request_region->set_coordinate_type(
-          lens::proto::LensOverlayRequest::CenterRotatedBox::NORMALIZED);
-      break;
-    case lens::mojom::CenterRotatedBox_CoordinateType::kImage:
-      request_region->set_coordinate_type(
-          lens::proto::LensOverlayRequest::CenterRotatedBox::IMAGE);
-      break;
-    case lens::mojom::CenterRotatedBox_CoordinateType::kUnspecified:
-      [[fallthrough]];  // Fall through to default unspecified case.
-    default:
-      request_region->set_coordinate_type(
-          lens::proto::LensOverlayRequest::CenterRotatedBox::
-              COORDINATE_TYPE_UNSPECIFIED);
-      break;
-  }
-
-  lens_overlay_query_controller_->SendInteraction(request);
-
+  DCHECK(region);
+  selected_region_ = region.Clone();
+  lens_overlay_query_controller_->SendRegionSearch(region.Clone());
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
 
-void LensOverlayController::IssueTextRequest(const std::string& query) {
-  // TODO(b/330204523): Send query to the searchbox.
+void LensOverlayController::IssueObjectSelectionRequest(
+    const std::string& object_id) {
+  selected_region_.reset();
+  lens_overlay_query_controller_->SendObjectSelection(object_id);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
-  if (side_panel_page_) {
-    side_panel_page_->LoadResultsInFrame(lens::BuildSearchURL(query));
-    return;
-  }
+}
 
-  // If the side panel was not bound at the time of request, we store the query
-  // as pending to load results on bind.
-  pending_text_query_ = std::make_optional<std::string>(query);
+void LensOverlayController::IssueTextSelectionRequest(
+    const std::string& query) {
+  selected_region_.reset();
+
+  // TODO(b/330204523): Send query to the searchbox.
+  lens_overlay_query_controller_->SendTextOnlyQuery(query);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::HandleStartQueryResponse(
     lens::proto::LensOverlayFullImageResponse response) {}
 
 void LensOverlayController::HandleInteractionURLResponse(
-    lens::proto::LensOverlayUrlResponse response) {}
+    lens::proto::LensOverlayUrlResponse response) {
+  if (side_panel_page_) {
+    side_panel_page_->LoadResultsInFrame(GURL(response.url()));
+  } else {
+    pending_side_panel_url_ = std::make_optional<GURL>(response.url());
+  }
+}
 
 void LensOverlayController::HandleInteractionDataResponse(
     lens::proto::LensOverlayInteractionResponse response) {}

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_IMAGE_HELPER_H_
 
 #include "base/memory/ref_counted_memory.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 
 class SkBitmap;
@@ -17,6 +19,14 @@ namespace lens {
 // Downscaling only occurs if the bitmap dimensions exceed configured flag
 // values.
 lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image);
+
+// Downscales and encodes the provided bitmap region and then stores it in a
+// lens::ImageCrop object if needed. Returns a nullopt if the region is not
+// set. Downscaling only occurs if the region dimensions exceed configured
+// flag values.
+std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
+    const SkBitmap& image,
+    lens::mojom::CenterRotatedBoxPtr region);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_IMAGE_HELPER_H_

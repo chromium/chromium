@@ -170,7 +170,7 @@ class LensOverlayController : public TabStripModelObserver,
 
   // Testing function to issue a text request.
   // TODO(b/328294794): Remove this function when connecting the mojo call.
-  void IssueTextRequestForTesting(const std::string& text_query);
+  void IssueTextSelectionRequestForTesting(const std::string& text_query);
 
  private:
   class UnderlyingWebContentsObserver;
@@ -211,11 +211,16 @@ class LensOverlayController : public TabStripModelObserver,
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
+  // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
 
-  // Handles a text query by constructing a search URL and loading it into the
-  // results frame.
-  void IssueTextRequest(const std::string& text_query);
+  // Handles an object selection by sending the request to the query
+  // controller.
+  void IssueObjectSelectionRequest(const std::string& object_id);
+
+  // Handles a text selection by sending a text-only request to the query
+  // controller and to the search box.
+  void IssueTextSelectionRequest(const std::string& text_query);
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
@@ -258,9 +263,9 @@ class LensOverlayController : public TabStripModelObserver,
   // The screenshot that is currently being rendered by the WebUI.
   SkBitmap current_screenshot_;
 
-  // A pending text query to be loaded in the side panel. Needed when the side
+  // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
-  std::optional<std::string> pending_text_query_ = std::nullopt;
+  std::optional<GURL> pending_side_panel_url_ = std::nullopt;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS
@@ -289,6 +294,12 @@ class LensOverlayController : public TabStripModelObserver,
   // Query controller.
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
+
+  // The selected region. Stored so that it can be used for multiple
+  // requests, such as if the user changes the text query without changing
+  // the region. Cleared if the user makes a text-only or object selection
+  // query.
+  lens::mojom::CenterRotatedBoxPtr selected_region_;
 
   base::ScopedObservation<tabs::TabModel, tabs::TabModelObserver>
       tab_model_observer_{this};

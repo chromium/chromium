@@ -20,6 +20,7 @@ static_library("lens_overlay") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/resources/lens/server/proto",
     "//chrome/common:channel_info",
     "//components/endpoint_fetcher",

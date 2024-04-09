@@ -52,12 +52,24 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    url_callback,
                                    interaction_data_callback) {}
   ~LensOverlayQueryControllerMock() override = default;
-  EndpointResponse fake_endpoint_response_;
+
+  EndpointResponse fake_endpoint_response_for_objects_request_;
+  EndpointResponse fake_endpoint_response_for_interaction_request_;
+  lens::LensOverlayObjectsRequest sent_objects_request_;
+  lens::LensOverlayInteractionRequest sent_interaction_request_;
 
  protected:
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest request_data) override {
-    return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response_);
+    if (request_data.has_objects_request()) {
+      sent_objects_request_.CopyFrom(request_data.objects_request());
+      return std::make_unique<FakeEndpointFetcher>(
+          fake_endpoint_response_for_objects_request_);
+    }
+    CHECK(request_data.has_interaction_request());
+    sent_interaction_request_.CopyFrom(request_data.interaction_request());
+    return std::make_unique<FakeEndpointFetcher>(
+        fake_endpoint_response_for_interaction_request_);
   }
 };
 
@@ -66,6 +78,13 @@ class LensOverlayQueryControllerTest : public testing::Test {
   LensOverlayQueryControllerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  const SkBitmap CreateNonEmptyBitmap(int width, int height) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(width, height);
+    bitmap.eraseColor(SK_ColorGREEN);
+    return bitmap;
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -78,14 +97,27 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
       base::NullCallback());
-  SkBitmap bitmap;
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
 
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
+                .image_metadata()
+                .width(),
+            100);
+  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
+                .image_metadata()
+                .height(),
+            100);
 }
 
-TEST_F(LensOverlayQueryControllerTest, FetchInteraction_ReturnsResponses) {
+TEST_F(LensOverlayQueryControllerTest,
+       FetchRegionSearchInteraction_ReturnsResponses) {
   task_environment_.RunUntilIdle();
   base::test::TestFuture<lens::proto::LensOverlayFullImageResponse>
       full_image_response_future;
@@ -97,15 +129,89 @@ TEST_F(LensOverlayQueryControllerTest, FetchInteraction_ReturnsResponses) {
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback());
-  SkBitmap bitmap;
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
-  lens::proto::LensOverlayRequest interaction_request;
-  query_controller.SendInteraction(interaction_request);
-
   task_environment_.RunUntilIdle();
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendRegionSearch(std::move(region));
+  task_environment_.RunUntilIdle();
+
   ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
+                .image_metadata()
+                .width(),
+            100);
+  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
+                .image_metadata()
+                .height(),
+            100);
   ASSERT_EQ(url_response_future.Get().url(), "");
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(), "");
+  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  ASSERT_EQ(query_controller.sent_interaction_request_.request_context()
+                .request_id()
+                .sequence_id(),
+            2);
+  ASSERT_EQ(
+      query_controller.sent_interaction_request_.interaction_request_metadata()
+          .type(),
+      lens::LensOverlayInteractionRequestMetadata::REGION);
+  ASSERT_EQ(
+      query_controller.sent_interaction_request_.interaction_request_metadata()
+          .selection_metadata()
+          .region()
+          .region()
+          .center_x(),
+      30);
+  ASSERT_EQ(
+      query_controller.sent_interaction_request_.interaction_request_metadata()
+          .selection_metadata()
+          .region()
+          .region()
+          .center_y(),
+      40);
+  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
+                .zoomed_crop()
+                .crop()
+                .center_x(),
+            30);
+  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
+                .zoomed_crop()
+                .crop()
+                .center_y(),
+            40);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchTextOnlyInteraction_ReturnsResponse) {
+  task_environment_.RunUntilIdle();
+  base::test::TestFuture<lens::proto::LensOverlayFullImageResponse>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+      interaction_data_response_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback());
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(bitmap);
+  task_environment_.RunUntilIdle();
+
+  query_controller.SendTextOnlyQuery("");
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_TRUE(url_response_future.IsReady());
+  ASSERT_FALSE(interaction_data_response_future.IsReady());
 }
 
 }  // namespace lens
