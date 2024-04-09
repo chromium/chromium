@@ -118,12 +118,6 @@ BASE_FEATURE(kGetTheMostOutOfChrome,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature controls whether the user can be shown the Chrome for iOS promo
-// when saving or updating addresses.
-BASE_FEATURE(kIOSPromoAddressBubble,
-             "IOSPromoAddressBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature controls whether the user can be shown the Chrome for iOS promo
 // when adding to the bookmarks.
 BASE_FEATURE(kIOSPromoBookmarkBubble,
              "IOSPromoBookmarkBubble",
@@ -142,7 +136,7 @@ constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>
         &kIOSPromoBookmarkBubble, "activation",
         IOSPromoBookmarkBubbleActivation::kContextual,
         &kIOSPromoBookmarkBubbleActivationOptions};
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking Surveys being delivered via chrome

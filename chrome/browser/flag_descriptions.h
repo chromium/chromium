@@ -2953,9 +2953,6 @@ extern const char kSmartCardWebApiDescription[];
 extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
 
-extern const char kIOSPromoAddressBubbleName[];
-extern const char kIOSPromoAddressBubbleDescription[];
-
 extern const char kIOSPromoBookmarkBubbleName[];
 extern const char kIOSPromoBookmarkBubbleDescription[];
 #endif
