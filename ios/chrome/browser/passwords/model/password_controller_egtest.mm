@@ -120,8 +120,7 @@ BOOL WaitForKeyboardToAppear() {
 #pragma mark - Tests
 
 // Tests that save password prompt is shown on new login.
-// TODO(crbug.com/1192446): Reenable this test.
-- (void)DISABLED_testSavePromptAppearsOnFormSubmission {
+- (void)testSavePromptAppearsOnFormSubmission {
   [self loadLoginPage];
 
   // Simulate user interacting with fields.
