@@ -211,7 +211,6 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
 
 void WritePixelsINTERNALImmediate(GLint x_offset,
                                   GLint y_offset,
-                                  GLint plane_index,
                                   GLuint src_width,
                                   GLuint src_height,
                                   GLuint src_row_bytes,
@@ -227,9 +226,9 @@ void WritePixelsINTERNALImmediate(GLint x_offset,
       GetImmediateCmdSpaceTotalSize<raster::cmds::WritePixelsINTERNALImmediate>(
           size);
   if (c) {
-    c->Init(x_offset, y_offset, plane_index, src_width, src_height,
-            src_row_bytes, src_sk_color_type, src_sk_alpha_type, shm_id,
-            shm_offset, pixels_offset, mailbox);
+    c->Init(x_offset, y_offset, src_width, src_height, src_row_bytes,
+            src_sk_color_type, src_sk_alpha_type, shm_id, shm_offset,
+            pixels_offset, mailbox);
   }
 }
 

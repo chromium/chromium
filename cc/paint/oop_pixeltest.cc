@@ -295,7 +295,7 @@ class OopPixelTest : public testing::Test,
                     const SkImageInfo& info,
                     const SkBitmap& bitmap) {
     ri->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-                    /*dst_plane_index=*/0, /*texture_target=*/0,
+                    /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
   }
@@ -2378,9 +2378,8 @@ TEST_F(OopPixelTest, CopySharedImage) {
         ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    ri->WritePixels(
-        source_client_si->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-        /*dst_plane_index=*/0, GL_TEXTURE_2D, upload_bitmap.pixmap());
+    ri->WritePixels(source_client_si->mailbox(), /*dst_x_offset=*/0,
+                    /*dst_y_offset=*/0, GL_TEXTURE_2D, upload_bitmap.pixmap());
   }
 
   // Create a DisplayP3 SharedImage and copy to it.

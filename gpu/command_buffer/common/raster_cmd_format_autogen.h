@@ -936,7 +936,6 @@ struct WritePixelsINTERNALImmediate {
 
   void Init(GLint _x_offset,
             GLint _y_offset,
-            GLint _plane_index,
             GLuint _src_width,
             GLuint _src_height,
             GLuint _src_row_bytes,
@@ -949,7 +948,6 @@ struct WritePixelsINTERNALImmediate {
     SetHeader();
     x_offset = _x_offset;
     y_offset = _y_offset;
-    plane_index = _plane_index;
     src_width = _src_width;
     src_height = _src_height;
     src_row_bytes = _src_row_bytes;
@@ -964,7 +962,6 @@ struct WritePixelsINTERNALImmediate {
   void* Set(void* cmd,
             GLint _x_offset,
             GLint _y_offset,
-            GLint _plane_index,
             GLuint _src_width,
             GLuint _src_height,
             GLuint _src_row_bytes,
@@ -975,9 +972,9 @@ struct WritePixelsINTERNALImmediate {
             GLuint _pixels_offset,
             const GLbyte* _mailbox) {
     static_cast<ValueType*>(cmd)->Init(
-        _x_offset, _y_offset, _plane_index, _src_width, _src_height,
-        _src_row_bytes, _src_sk_color_type, _src_sk_alpha_type, _shm_id,
-        _shm_offset, _pixels_offset, _mailbox);
+        _x_offset, _y_offset, _src_width, _src_height, _src_row_bytes,
+        _src_sk_color_type, _src_sk_alpha_type, _shm_id, _shm_offset,
+        _pixels_offset, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -985,7 +982,6 @@ struct WritePixelsINTERNALImmediate {
   gpu::CommandHeader header;
   int32_t x_offset;
   int32_t y_offset;
-  int32_t plane_index;
   uint32_t src_width;
   uint32_t src_height;
   uint32_t src_row_bytes;
@@ -996,37 +992,34 @@ struct WritePixelsINTERNALImmediate {
   uint32_t pixels_offset;
 };
 
-static_assert(sizeof(WritePixelsINTERNALImmediate) == 48,
-              "size of WritePixelsINTERNALImmediate should be 48");
+static_assert(sizeof(WritePixelsINTERNALImmediate) == 44,
+              "size of WritePixelsINTERNALImmediate should be 44");
 static_assert(offsetof(WritePixelsINTERNALImmediate, header) == 0,
               "offset of WritePixelsINTERNALImmediate header should be 0");
 static_assert(offsetof(WritePixelsINTERNALImmediate, x_offset) == 4,
               "offset of WritePixelsINTERNALImmediate x_offset should be 4");
 static_assert(offsetof(WritePixelsINTERNALImmediate, y_offset) == 8,
               "offset of WritePixelsINTERNALImmediate y_offset should be 8");
+static_assert(offsetof(WritePixelsINTERNALImmediate, src_width) == 12,
+              "offset of WritePixelsINTERNALImmediate src_width should be 12");
+static_assert(offsetof(WritePixelsINTERNALImmediate, src_height) == 16,
+              "offset of WritePixelsINTERNALImmediate src_height should be 16");
 static_assert(
-    offsetof(WritePixelsINTERNALImmediate, plane_index) == 12,
-    "offset of WritePixelsINTERNALImmediate plane_index should be 12");
-static_assert(offsetof(WritePixelsINTERNALImmediate, src_width) == 16,
-              "offset of WritePixelsINTERNALImmediate src_width should be 16");
-static_assert(offsetof(WritePixelsINTERNALImmediate, src_height) == 20,
-              "offset of WritePixelsINTERNALImmediate src_height should be 20");
+    offsetof(WritePixelsINTERNALImmediate, src_row_bytes) == 20,
+    "offset of WritePixelsINTERNALImmediate src_row_bytes should be 20");
 static_assert(
-    offsetof(WritePixelsINTERNALImmediate, src_row_bytes) == 24,
-    "offset of WritePixelsINTERNALImmediate src_row_bytes should be 24");
+    offsetof(WritePixelsINTERNALImmediate, src_sk_color_type) == 24,
+    "offset of WritePixelsINTERNALImmediate src_sk_color_type should be 24");
 static_assert(
-    offsetof(WritePixelsINTERNALImmediate, src_sk_color_type) == 28,
-    "offset of WritePixelsINTERNALImmediate src_sk_color_type should be 28");
+    offsetof(WritePixelsINTERNALImmediate, src_sk_alpha_type) == 28,
+    "offset of WritePixelsINTERNALImmediate src_sk_alpha_type should be 28");
+static_assert(offsetof(WritePixelsINTERNALImmediate, shm_id) == 32,
+              "offset of WritePixelsINTERNALImmediate shm_id should be 32");
+static_assert(offsetof(WritePixelsINTERNALImmediate, shm_offset) == 36,
+              "offset of WritePixelsINTERNALImmediate shm_offset should be 36");
 static_assert(
-    offsetof(WritePixelsINTERNALImmediate, src_sk_alpha_type) == 32,
-    "offset of WritePixelsINTERNALImmediate src_sk_alpha_type should be 32");
-static_assert(offsetof(WritePixelsINTERNALImmediate, shm_id) == 36,
-              "offset of WritePixelsINTERNALImmediate shm_id should be 36");
-static_assert(offsetof(WritePixelsINTERNALImmediate, shm_offset) == 40,
-              "offset of WritePixelsINTERNALImmediate shm_offset should be 40");
-static_assert(
-    offsetof(WritePixelsINTERNALImmediate, pixels_offset) == 44,
-    "offset of WritePixelsINTERNALImmediate pixels_offset should be 44");
+    offsetof(WritePixelsINTERNALImmediate, pixels_offset) == 40,
+    "offset of WritePixelsINTERNALImmediate pixels_offset should be 40");
 
 struct WritePixelsYUVINTERNALImmediate {
   typedef WritePixelsYUVINTERNALImmediate ValueType;

@@ -64,14 +64,12 @@ class RasterInterface : public InterfaceBase {
                                GLboolean unpack_premultiply_alpha) = 0;
 
   // Asynchronously writes pixels from caller-owned memory inside
-  // |src_sk_pixmap| into |dest_mailbox| for given |plane_index|. |plane_index|
-  // applies to multiplanar textures in mailboxes, for example YUV images
-  // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
-  // single-plane textures.
+  // |src_sk_pixmap| into |dest_mailbox|.
+  // NOTE: This is only for single planar shared images (RGB). For multiplanar
+  // shared images, perform WritePixelsYUV.
   virtual void WritePixels(const gpu::Mailbox& dest_mailbox,
                            int dst_x_offset,
                            int dst_y_offset,
-                           int dst_plane_index,
                            GLenum texture_target,
                            const SkPixmap& src_sk_pixmap) = 0;
 
@@ -79,7 +77,7 @@ class RasterInterface : public InterfaceBase {
   // |src_yuv_pixmaps| into |dest_mailbox| for all planes. Should be used only
   // with YUV source images.
   // NOTE: This does not perform color space conversions and just uploads
-  // pixesl. For color space conversions (if needed), perform a CopySharedImage.
+  // pixels. For color space conversions (if needed), perform a CopySharedImage.
   virtual void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
                               const SkYUVAPixmaps& src_yuv_pixmap) = 0;
 

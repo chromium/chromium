@@ -1255,7 +1255,6 @@ void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
 void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
                                        int dst_x_offset,
                                        int dst_y_offset,
-                                       int dst_plane_index,
                                        GLenum texture_target,
                                        const SkPixmap& src_sk_pixmap) {
   TRACE_EVENT0("gpu", "RasterImplementation::WritePixels");
@@ -1296,10 +1295,9 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
          src_size);
 
   helper_->WritePixelsINTERNALImmediate(
-      dst_x_offset, dst_y_offset, dst_plane_index, src_info.width(),
-      src_info.height(), src_row_bytes, src_info.colorType(),
-      src_info.alphaType(), shm_id, shm_offset, pixels_offset,
-      dest_mailbox.name);
+      dst_x_offset, dst_y_offset, src_info.width(), src_info.height(),
+      src_row_bytes, src_info.colorType(), src_info.alphaType(), shm_id,
+      shm_offset, pixels_offset, dest_mailbox.name);
 }
 
 void RasterImplementation::WritePixelsYUV(const gpu::Mailbox& dest_mailbox,

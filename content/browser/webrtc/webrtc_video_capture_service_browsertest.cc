@@ -217,8 +217,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
       gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
       ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
-      ri->WritePixels(mailbox, 0, 0, /*dst_plane_index=*/0, GL_TEXTURE_2D,
-                      frame_bitmap.pixmap());
+      ri->WritePixels(mailbox, 0, 0, GL_TEXTURE_2D, frame_bitmap.pixmap());
 
       gpu::SyncToken ri_token;
       ri->GenSyncTokenCHROMIUM(ri_token.GetData());

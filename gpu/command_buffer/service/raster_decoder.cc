@@ -681,7 +681,6 @@ class RasterDecoderImpl final : public RasterDecoder,
                                  const volatile GLbyte* mailboxes);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
-                             GLint plane_index,
                              GLuint src_width,
                              GLuint src_height,
                              GLuint row_bytes,
@@ -709,7 +708,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool DoWritePixelsINTERNALDirectTextureUpload(
       SkiaImageRepresentation* dest_shared_image,
       const SkImageInfo& src_info,
-      const int plane_index,
       const void* pixel_data,
       size_t row_bytes);
   void DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
@@ -1951,7 +1949,6 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
 
 void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                                               GLint y_offset,
-                                              GLint plane_index,
                                               GLuint src_width,
                                               GLuint src_height,
                                               GLuint row_bytes,
@@ -1986,14 +1983,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   viz::SharedImageFormat dest_format = dest_shared_image->format();
-  if (!dest_format.IsValidPlaneIndex(plane_index)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                       "Invalid plane_index");
-    return;
-  }
-
-  if (SkColorTypeBytesPerPixel(
-          viz::ToClosestSkColorType(true, dest_format, plane_index)) !=
+  if (SkColorTypeBytesPerPixel(viz::ToClosestSkColorType(true, dest_format)) !=
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(src_sk_color_type))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Bytes per pixel for src SkColorType and dst "
@@ -2064,9 +2054,8 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
       SkColorSpace::Equals(
           src_info.colorSpace(),
           dest_shared_image->color_space().ToSkColorSpace().get()) &&
-      DoWritePixelsINTERNALDirectTextureUpload(dest_shared_image.get(),
-                                               src_info, plane_index,
-                                               pixel_data, row_bytes)) {
+      DoWritePixelsINTERNALDirectTextureUpload(
+          dest_shared_image.get(), src_info, pixel_data, row_bytes)) {
     if (!dest_shared_image->IsCleared()) {
       dest_shared_image->SetClearedRect(
           gfx::Rect(src_info.width(), src_info.height()));
@@ -2088,7 +2077,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
-  auto* surface = dest_scoped_access->surface(plane_index);
+  auto* surface = dest_scoped_access->surface();
   DCHECK(surface);
 
   if (!begin_semaphores.empty()) {
@@ -2315,7 +2304,6 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
     SkiaImageRepresentation* dest_shared_image,
     const SkImageInfo& src_info,
-    const int plane_index,
     const void* pixel_data,
     size_t row_bytes) {
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -2343,14 +2331,14 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   bool written = false;
   if (gr_context()) {
     written = gr_context()->updateBackendTexture(
-        dest_scoped_access->promise_image_texture(plane_index)
+        dest_scoped_access->promise_image_texture(/*plane_index=*/0)
             ->backendTexture(),
         &pixmap, /*numLevels=*/1, dest_shared_image->surface_origin(),
         /*finishedProc=*/nullptr, /*finishedContext=*/nullptr);
   } else {
     CHECK(graphite_context());
     written = graphite_recorder()->updateBackendTexture(
-        dest_scoped_access->graphite_texture(plane_index), &pixmap,
+        dest_scoped_access->graphite_texture(/*plane_index=*/0), &pixmap,
         /*numLevels=*/1);
   }
 

@@ -129,7 +129,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,
                    int dst_y_offset,
-                   int dst_plane_index,
                    GLenum texture_target,
                    const SkPixmap& src_sk_pixmap) override;
 

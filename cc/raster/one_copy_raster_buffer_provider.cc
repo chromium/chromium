@@ -456,8 +456,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       // https://bugs.chromium.org/p/skia/issues/detail?id=13329
       bitmap.eraseColor(raster_source->background_color().toSkColor());
       ri->WritePixels(shared_image->mailbox(), /*dst_x_offset=*/0,
-                      /*dst_y_offset=*/0,
-                      /*dst_plane_index=*/0, texture_target, bitmap.pixmap());
+                      /*dst_y_offset=*/0, texture_target, bitmap.pixmap());
     }
   }
 

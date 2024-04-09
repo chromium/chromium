@@ -1411,8 +1411,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
                                        color_type, kPremul_SkAlphaType);
   SkPixmap pixmap = SkPixmap(info, source_pixels, bytes_per_row);
   ri->WritePixels(hardware_resource->mailbox(), /*dst_x_offset=*/0,
-                  /*dst_y_offset=*/0, /*dst_plane_index=*/0,
-                  hardware_resource->texture_target(), pixmap);
+                  /*dst_y_offset=*/0, hardware_resource->texture_target(),
+                  pixmap);
 
   return true;
 }
@@ -1526,8 +1526,7 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
                                        color_type, kPremul_SkAlphaType);
   SkPixmap pixmap = SkPixmap(info, pixels, pixels_stride_in_bytes);
   ri->WritePixels(plane_resource->mailbox(), /*dst_x_offset=*/0,
-                  /*dst_y_offset=*/0, /*dst_plane_index=*/0,
-                  plane_resource->texture_target(), pixmap);
+                  /*dst_y_offset=*/0, plane_resource->texture_target(), pixmap);
 
   return true;
 }

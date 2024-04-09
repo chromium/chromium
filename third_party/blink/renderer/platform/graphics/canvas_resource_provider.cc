@@ -317,8 +317,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     WillDrawInternal(true);
     RasterInterface()->WritePixels(
         GetBackingMailboxForOverwrite(kOrderingBarrier), x, y,
-        /*dst_plane_index=*/0, GetBackingTextureTarget(),
-        SkPixmap(orig_info, pixels, row_bytes));
+        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
@@ -914,9 +913,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       return false;
 
     WillDraw();
-    RasterInterface()->WritePixels(
-        resource_->GetBackBufferMailbox(), x, y, /*dst_plane_index=*/0,
-        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
+    RasterInterface()->WritePixels(resource_->GetBackBufferMailbox(), x, y,
+                                   GetBackingTextureTarget(),
+                                   SkPixmap(orig_info, pixels, row_bytes));
     return true;
   }
 
