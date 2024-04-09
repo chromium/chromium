@@ -163,6 +163,7 @@ struct SwitchToTabInfo {
 struct TabOrganization {
   int32 organization_id;
   array<Tab> tabs;
+  int32 first_new_tab_index;
   mojo_base.mojom.String16 name;
 };
 

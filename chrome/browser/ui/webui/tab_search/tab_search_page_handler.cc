@@ -1103,6 +1103,7 @@ TabSearchPageHandler::GetMojoForTabOrganization(
 
   mojo_organization->organization_id = organization->organization_id();
   mojo_organization->tabs = std::move(tabs);
+  mojo_organization->first_new_tab_index = organization->first_new_tab_index();
   mojo_organization->name = organization->GetDisplayName();
 
   return mojo_organization;

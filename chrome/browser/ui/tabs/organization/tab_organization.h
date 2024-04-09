@@ -46,11 +46,13 @@ class TabOrganization : public TabData::Observer {
 
   TabOrganization(TabDatas tab_datas,
                   std::vector<std::u16string> names,
+                  int first_new_tab_index = 0,
                   CurrentName current_name = 0u,
                   UserChoice choice = UserChoice::kNoChoice);
   ~TabOrganization() override;
 
   const TabDatas& tab_datas() const { return tab_datas_; }
+  int first_new_tab_index() const { return first_new_tab_index_; }
   const std::vector<std::u16string>& names() const { return names_; }
   const CurrentName& current_name() const { return current_name_; }
   UserChoice choice() const { return choice_; }
@@ -92,6 +94,11 @@ class TabOrganization : public TabData::Observer {
   // The tabs that are currently included in the organization. When accepted,
   // they will be organized in the tabstrip.
   TabDatas tab_datas_;
+
+  // The index of the first tab in the organization that is not already part of
+  // the corresponding tab group, if any. Will be 0 if this does not correspond
+  // to an existing tab group.
+  int first_new_tab_index_ = 0;
 
   // The tab ids that have been removed by the user after the organization was
   // instantiated.

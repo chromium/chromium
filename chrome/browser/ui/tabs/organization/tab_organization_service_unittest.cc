@@ -425,18 +425,14 @@ TEST_F(TabOrganizationServiceTest,
       std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
   tab_datas_1.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
-  TabOrganization org_1 =
-      TabOrganization(std::move(tab_datas_1), names, 0u,
-                      TabOrganization::UserChoice::kNoChoice);
+  TabOrganization org_1 = TabOrganization(std::move(tab_datas_1), names);
 
   std::vector<std::unique_ptr<TabData>> tab_datas_2;
   tab_datas_2.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
   tab_datas_2.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
-  TabOrganization org_2 =
-      TabOrganization(std::move(tab_datas_2), names, 0u,
-                      TabOrganization::UserChoice::kNoChoice);
+  TabOrganization org_2 = TabOrganization(std::move(tab_datas_2), names);
 
   TestOrganizationObserver observer(&org_1, &org_2);
   org_1.AddObserver(&observer);

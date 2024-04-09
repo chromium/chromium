@@ -129,8 +129,13 @@
   <iron-selector id="selector" role="listbox"
       on-keydown="onListKeyDown_"
       selected-class="selected"
+      selectable="tab-search-item"
       on-iron-select="onSelectedChanged_">
     <template is="dom-repeat" items="[[tabDatas_]]">
+      <template is="dom-if"
+          if="[[showNewTabSectionHeader_(index, firstNewTabIndex)]]">
+        <div class="divider"></div>
+      </template>
       <tab-search-item class="mwb-list-item" data="[[item]]"
           role="option"
           compact="[[multiTabOrganization]]"

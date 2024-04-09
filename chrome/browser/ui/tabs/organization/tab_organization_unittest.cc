@@ -459,7 +459,8 @@ TEST_F(TabOrganizationTest, TabOrganizationReject) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
-  TabOrganization organization({}, {u"default_name"}, /*current_name*/ 0u,
+  TabOrganization organization({}, {u"default_name"}, /*first_new_tab_index=*/0,
+                               /*current_name=*/0u,
                                TabOrganization::UserChoice::kAccepted);
 
   EXPECT_DEATH(organization.Reject(), "");

@@ -24,9 +24,11 @@ int kNextOrganizationID = 1;
 TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
+    int first_new_tab_index,
     absl::variant<size_t, std::u16string> current_name,
     UserChoice choice)
-    : names_(names),
+    : first_new_tab_index_(first_new_tab_index),
+      names_(names),
       current_name_(current_name),
       choice_(choice),
       organization_id_(kNextOrganizationID) {
@@ -115,6 +117,13 @@ void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
                      return tab_data->tab_id() == tab_id;
                    });
   CHECK(position != tab_datas_.end());
+  CHECK(static_cast<size_t>(first_new_tab_index_) < tab_datas_.size());
+  // If the removed tab is already a part of the tab group (if any)
+  // corresponding to this organization, decrement |first_new_tab_index_| to
+  // account for its removal.
+  if (position < tab_datas_.begin() + first_new_tab_index_) {
+    first_new_tab_index_--;
+  }
 
   user_removed_tab_ids_.push_back(tab_id);
   tab_datas_.erase(position);

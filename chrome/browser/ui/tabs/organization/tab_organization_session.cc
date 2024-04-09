@@ -298,6 +298,7 @@ void TabOrganizationSession::PopulateOrganizations(
             tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
       }
     }
+    const int first_new_tab_index = tab_datas_for_org.size();
 
     // Add ungrouped tabs
     for (const TabData::TabID& tab_id : tab_ids) {
@@ -332,7 +333,8 @@ void TabOrganizationSession::PopulateOrganizations(
 
     std::unique_ptr<TabOrganization> organization =
         std::make_unique<TabOrganization>(std::move(tab_datas_for_org),
-                                          std::move(names));
+                                          std::move(names),
+                                          first_new_tab_index);
 
     organization->SetTabGroupId(group_id);
     response_organization.organization_id = organization->organization_id();

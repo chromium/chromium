@@ -43,6 +43,11 @@ export class TabOrganizationGroupElement extends PolymerElement {
         observer: 'onTabsChange_',
       },
 
+      firstNewTabIndex: {
+        type: Number,
+        value: 0,
+      },
+
       name: {
         type: String,
         value: '',
@@ -82,6 +87,7 @@ export class TabOrganizationGroupElement extends PolymerElement {
   }
 
   tabs: Tab[];
+  firstNewTabIndex: number;
   name: string;
   multiTabOrganization: boolean;
   organizationId: number;
@@ -142,6 +148,10 @@ export class TabOrganizationGroupElement extends PolymerElement {
 
   private getRejectButtonAriaLabel_() {
     return loadTimeData.getStringF('rejectAriaLabel', this.name);
+  }
+
+  private showNewTabSectionHeader_(index: number) {
+    return this.firstNewTabIndex > 0 && this.firstNewTabIndex === index;
   }
 
   private onInputFocus_() {
