@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -67,9 +68,20 @@ class SearchProviderAsh : public mojom::SearchControllerRegistry {
   bool IsSearchControllerConnected() const;
 
  private:
+  void OnSearchControllerDisconnected(
+      base::WeakPtr<SearchControllerAsh> controller);
+
+  // Constructed in `RegisterSearchController`, when lacros-chrome registers
+  // its singleton search controller.
+  // Destructed in `OnSearchControllerDisconnected`, when the remote is
+  // disconnected.
+  // If non-null, this is guaranteed to be connected (outside of
+  // `OnSearchControllerDisconnected`).
   std::unique_ptr<SearchControllerAsh> search_controller_;
 
   mojo::ReceiverSet<mojom::SearchControllerRegistry> registry_receivers_;
+
+  base::WeakPtrFactory<SearchProviderAsh> weak_factory_{this};
 };
 
 }  // namespace crosapi

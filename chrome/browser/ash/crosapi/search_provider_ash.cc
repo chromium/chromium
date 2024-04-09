@@ -8,7 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,16 +35,28 @@ void SearchProviderAsh::Search(const std::u16string& query,
 
 void SearchProviderAsh::RegisterSearchController(
     mojo::PendingRemote<mojom::SearchController> search_controller) {
-  if (search_controller_ && search_controller_->IsConnected()) {
+  if (search_controller_) {
     LOG(ERROR) << "Search Controller is already connected.";
     return;
   }
   search_controller_ =
       std::make_unique<SearchControllerAsh>(std::move(search_controller));
+  search_controller_->AddDisconnectHandler(
+      base::BindOnce(&SearchProviderAsh::OnSearchControllerDisconnected,
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool SearchProviderAsh::IsSearchControllerConnected() const {
-  return search_controller_ && search_controller_->IsConnected();
+  return search_controller_.get();
+}
+
+void SearchProviderAsh::OnSearchControllerDisconnected(
+    base::WeakPtr<SearchControllerAsh> controller) {
+  // No other disconnect handler should have been added, so this controller
+  // should always be valid.
+  CHECK(controller);
+
+  search_controller_.reset();
 }
 
 }  // namespace crosapi

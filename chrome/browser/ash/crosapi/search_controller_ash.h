@@ -36,12 +36,27 @@ class SearchControllerAsh : public mojom::SearchResultsPublisher {
  public:
   using SearchResultsReceivedCallback =
       base::RepeatingCallback<void(std::vector<mojom::SearchResultPtr>)>;
+  using DisconnectCallback =
+      base::OnceCallback<void(base::WeakPtr<SearchControllerAsh>)>;
 
   explicit SearchControllerAsh(
       mojo::PendingRemote<mojom::SearchController> search_controller);
   SearchControllerAsh(const SearchControllerAsh&) = delete;
   SearchControllerAsh& operator=(const SearchControllerAsh&) = delete;
   ~SearchControllerAsh() override;
+
+  // Adds a handler which is called when the remote becomes disconnected.
+  // Handlers are called in the order in which they were added.
+  // Handlers are immediately called if the remote is already disconnected.
+  // Handlers are not called if this instance is destroyed before the remote is
+  // disconnected.
+  //
+  // USE-AFTER-FREE WARNING: Destroying this instance is explicitly ALLOWED in
+  // disconnect handlers, so a disconnect handler may be called with a null
+  // `WeakPtr` if a previous disconnect handler destroyed this instance. Do NOT
+  // call methods using a possibly-stale reference to this instance in a
+  // disconnect handler, use the provided `WeakPtr` instead.
+  void AddDisconnectHandler(DisconnectCallback handler);
 
   bool IsConnected() const;
 
@@ -61,6 +76,8 @@ class SearchControllerAsh : public mojom::SearchResultsPublisher {
       std::optional<std::vector<mojom::SearchResultPtr>> results) override;
 
  private:
+  void HandleDisconnect();
+
   void BindPublisher(
       SearchResultsReceivedCallback callback,
       mojo::PendingAssociatedReceiver<mojom::SearchResultsPublisher> publisher);
@@ -72,6 +89,9 @@ class SearchControllerAsh : public mojom::SearchResultsPublisher {
   mojo::AssociatedReceiverSet<mojom::SearchResultsPublisher,
                               SearchResultsReceivedCallback>
       publisher_receivers_;
+
+  // If this instance is disconnected, this is guaranteed to be empty.
+  std::vector<DisconnectCallback> disconnect_callbacks_;
 
   base::WeakPtrFactory<SearchControllerAsh> weak_factory_{this};
 };

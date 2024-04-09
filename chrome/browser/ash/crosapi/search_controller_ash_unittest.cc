@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-forward.h"
@@ -61,6 +63,8 @@ class TestMojomSearchController : public mojom::SearchController {
 
 using SearchResultsTestFuture =
     ::base::test::TestFuture<std::vector<mojom::SearchResultPtr>>;
+using DisconnectTestFuture =
+    ::base::test::TestFuture<::base::WeakPtr<::crosapi::SearchControllerAsh>>;
 
 using SearchControllerAshTest = ::testing::Test;
 
@@ -249,6 +253,119 @@ TEST_F(SearchControllerAshTest, CallbackIsNotCalledWithInProgressResults) {
                     Optional(GURL(
                         "https://www.google.com/search?q=catalan+numbers"))))));
   }
+}
+
+TEST_F(SearchControllerAshTest,
+       DisconnectHandlerIsCalledOnDisconnectWithValidPointer) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future;
+  auto mojom_controller = std::make_unique<TestMojomSearchController>();
+  SearchControllerAsh controller(mojom_controller->BindToRemote());
+
+  controller.AddDisconnectHandler(future.GetCallback());
+  mojom_controller.reset();
+  environment.RunUntilIdle();
+  ASSERT_FALSE(controller.IsConnected());
+
+  EXPECT_TRUE(future.IsReady());
+  base::WeakPtr<SearchControllerAsh> weak_controller = future.Take();
+  EXPECT_TRUE(weak_controller);
+  EXPECT_EQ(weak_controller.get(), &controller);
+}
+
+TEST_F(SearchControllerAshTest,
+       DisconnectHandlersAreCalledOnDisconnectWithValidPointers) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future_1;
+  DisconnectTestFuture future_2;
+  auto mojom_controller = std::make_unique<TestMojomSearchController>();
+  SearchControllerAsh controller(mojom_controller->BindToRemote());
+
+  controller.AddDisconnectHandler(future_1.GetCallback());
+  controller.AddDisconnectHandler(future_2.GetCallback());
+  mojom_controller.reset();
+  environment.RunUntilIdle();
+  ASSERT_FALSE(controller.IsConnected());
+
+  base::WeakPtr<SearchControllerAsh> weak_controller_1 = future_1.Take();
+  EXPECT_TRUE(weak_controller_1);
+  EXPECT_EQ(weak_controller_1.get(), &controller);
+  base::WeakPtr<SearchControllerAsh> weak_controller_2 = future_2.Take();
+  EXPECT_TRUE(weak_controller_2);
+  EXPECT_EQ(weak_controller_2.get(), &controller);
+}
+
+TEST_F(SearchControllerAshTest, DisconnectHandlersAreCalledInAdditionOrder) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future_1;
+  DisconnectTestFuture future_2;
+  auto mojom_controller = std::make_unique<TestMojomSearchController>();
+  SearchControllerAsh controller(mojom_controller->BindToRemote());
+
+  controller.AddDisconnectHandler(
+      future_1.GetCallback().Then(base::BindLambdaForTesting([&future_2]() {
+        EXPECT_FALSE(future_2.IsReady())
+            << "Second future called before first future";
+      })));
+  controller.AddDisconnectHandler(future_2.GetCallback());
+  mojom_controller.reset();
+  environment.RunUntilIdle();
+  ASSERT_FALSE(controller.IsConnected());
+
+  // This also guarantees that the "first future called before second future"
+  // `EXPECT` above is run.
+  EXPECT_TRUE(future_1.IsReady()) << "First future not called";
+  EXPECT_TRUE(future_2.IsReady()) << "Second future not called";
+}
+
+TEST_F(SearchControllerAshTest,
+       DisconnectHandlerIsImmediatelyCalledIfAlreadyDisconnected) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future;
+  auto mojom_controller = std::make_unique<TestMojomSearchController>();
+  SearchControllerAsh controller(mojom_controller->BindToRemote());
+  mojom_controller.reset();
+  environment.RunUntilIdle();
+  ASSERT_FALSE(controller.IsConnected());
+
+  controller.AddDisconnectHandler(future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(SearchControllerAshTest,
+       DisconnectHandlerIsNotCalledIfNeverDisconnected) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future;
+  TestMojomSearchController mojom_controller;
+  auto controller =
+      std::make_unique<SearchControllerAsh>(mojom_controller.BindToRemote());
+
+  controller->AddDisconnectHandler(future.GetCallback());
+  controller.reset();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(SearchControllerAshTest,
+       DisconnectHandlerIsCalledWithNullptrIfDestructed) {
+  base::test::SingleThreadTaskEnvironment environment;
+  DisconnectTestFuture future;
+  auto mojom_controller = std::make_unique<TestMojomSearchController>();
+  auto controller =
+      std::make_unique<SearchControllerAsh>(mojom_controller->BindToRemote());
+
+  controller->AddDisconnectHandler(base::BindLambdaForTesting(
+      [&controller](base::WeakPtr<SearchControllerAsh>) {
+        controller.reset();
+      }));
+  controller->AddDisconnectHandler(future.GetCallback());
+  mojom_controller.reset();
+  environment.RunUntilIdle();
+
+  EXPECT_TRUE(future.IsReady());
+  base::WeakPtr<SearchControllerAsh> weak_controller = future.Take();
+  EXPECT_FALSE(weak_controller);
 }
 
 }  // namespace
