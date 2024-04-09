@@ -773,12 +773,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
     const mojom::Concat& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  // Note that BOOL is also supported by CoreML, but WebNN does not have a
+  // corresponding BOOL type. See docs here:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.concat
   static constexpr auto kSupportedConcatOpsTypes =
       base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
           {CoreML::Specification::MILSpec::DataType::FLOAT16,
            CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32,
-           CoreML::Specification::MILSpec::DataType::BOOL});
+           CoreML::Specification::MILSpec::DataType::INT32});
   if (base::ranges::any_of(
           operation.input_operand_ids, [&](uint64_t input_operand_id) {
             return !kSupportedConcatOpsTypes.contains(
@@ -1007,14 +1009,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  // Input keys (x, perm) and supported types are defined in coremltools.
-  // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/tensor_transformation.py#L968-L975.
+  // Note that BOOL is also supported by CoreML, but WebNN does not have a
+  // corresponding BOOL type. See docs here:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
   static constexpr auto kSupportedTransposeOpsTypes =
       base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
           {CoreML::Specification::MILSpec::DataType::FLOAT16,
            CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32,
-           CoreML::Specification::MILSpec::DataType::BOOL});
+           CoreML::Specification::MILSpec::DataType::INT32});
   if (!kSupportedTransposeOpsTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
