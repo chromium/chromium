@@ -3845,9 +3845,6 @@ extern const char kHelpAppAppsListDescription[];
 extern const char kHelpAppAutoTriggerInstallDialogName[];
 extern const char kHelpAppAutoTriggerInstallDialogDescription[];
 
-extern const char kHelpAppCrosComponentsName[];
-extern const char kHelpAppCrosComponentsDescription[];
-
 extern const char kHelpAppHomePageAppArticlesName[];
 extern const char kHelpAppHomePageAppArticlesDescription[];
 

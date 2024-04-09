@@ -130,9 +130,6 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         base::FeatureList::IsEnabled(ash::features::kHelpAppAppDetailPage));
     source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
                                               ash::features::kHelpAppAppsList));
-    source->AddBoolean(
-        "HelpAppCrosComponents",
-        base::FeatureList::IsEnabled(ash::features::kHelpAppCrosComponents));
     source->AddBoolean("HelpAppHomePageAppArticles",
                        base::FeatureList::IsEnabled(
                            ash::features::kHelpAppHomePageAppArticles));

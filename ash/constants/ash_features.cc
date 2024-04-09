@@ -1437,11 +1437,6 @@ BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
              "HelpAppAutoTriggerInstallDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the Help app will render with Cros components.
-BASE_FEATURE(kHelpAppCrosComponents,
-             "HelpAppCrosComponents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the home page of the Help App will show a section containing
 // articles about apps.
 BASE_FEATURE(kHelpAppHomePageAppArticles,
