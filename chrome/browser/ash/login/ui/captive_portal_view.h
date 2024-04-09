@@ -42,6 +42,7 @@ class CaptivePortalView : public SimpleWebViewDialog {
   // resolved.
   raw_ptr<CaptivePortalWindowProxy, DanglingUntriaged> proxy_;
 
+  GURL start_url_;
   const std::string network_name_;
   bool redirected_ = false;
 };
