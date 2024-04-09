@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -27,7 +29,8 @@ final class PageInfoBottomSheetProperties {
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> ON_CANCEL_CLICKED =
             new ReadableObjectPropertyKey<>();
-
+    static final ReadableObjectPropertyKey<Callback<View>> ON_LEARN_MORE_CLICKED =
+            new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> ON_POSITIVE_FEEDBACK_CLICKED =
             new ReadableObjectPropertyKey<>();
 
@@ -67,6 +70,7 @@ final class PageInfoBottomSheetProperties {
                 CONTENT_TEXT,
                 ON_ACCEPT_CLICKED,
                 ON_CANCEL_CLICKED,
+                ON_LEARN_MORE_CLICKED,
                 ON_POSITIVE_FEEDBACK_CLICKED,
                 ON_NEGATIVE_FEEDBACK_CLICKED,
             };

@@ -12,11 +12,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.model_execution.ExecutionResult;
-import org.chromium.chrome.browser.model_execution.ExecutionResult.ExecutionError;
 import org.chromium.chrome.browser.model_execution.ModelExecutionFeature;
 import org.chromium.chrome.browser.model_execution.ModelExecutionManager;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
@@ -40,6 +40,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
     private ObservableSupplierImpl<PageInfoContents> mCurrentRequestInfoSupplier;
     private ModelExecutionSession mSession;
     private static PageInfoSharingController sInstance;
+    private static String sErrorMessage;
 
     public static PageInfoSharingController getInstance() {
         if (sInstance == null) {
@@ -96,6 +97,12 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab) {
         if (!isAvailableForTab(tab)) return;
+        if (sErrorMessage == null) {
+            // TODO(salg): Improve the way this resource is fetched.
+            sErrorMessage =
+                    context.getResources()
+                            .getString(R.string.share_with_summary_sheet_error_message);
+        }
 
         mCurrentRequestInfoSupplier = new ObservableSupplierImpl<>();
         PageSummarySharingRequest request =
@@ -120,15 +127,16 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
 
     private void onTabTextReceived(Optional<String> tabText) {
         if (tabText.isEmpty()) {
-            // TODO(salg): Convert error strings into resources.
+            // TODO(salg): Remove debug error messages.
             mCurrentRequestInfoSupplier.set(
-                    new PageInfoContents("Error while extracting page text"));
+                    new PageInfoContents(sErrorMessage + ": Text extraction error"));
             return;
         }
 
         if (TextUtils.isEmpty(tabText.get())) {
-            // TODO(salg): Convert error strings into resources.
-            mCurrentRequestInfoSupplier.set(new PageInfoContents("Page has no text"));
+            // TODO(salg): Remove debug error messages.
+            mCurrentRequestInfoSupplier.set(
+                    new PageInfoContents(sErrorMessage + ": Page has no text"));
             return;
         }
 
@@ -147,16 +155,12 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
                                         if (mCurrentRequestInfoSupplier == null) return;
 
                                         if (result.getErrorCode().isPresent()) {
-                                            if (result.getErrorCode().get()
-                                                    == ExecutionError.FILTERED) {
-                                                // TODO(salg): Convert error strings into resources.
-                                                mCurrentRequestInfoSupplier.set(
-                                                        new PageInfoContents("Filtered"));
-                                            } else {
-                                                // TODO(salg): Convert error strings into resources.
-                                                mCurrentRequestInfoSupplier.set(
-                                                        new PageInfoContents("Error"));
-                                            }
+                                            // TODO(salg): Remove debug error messages.
+                                            mCurrentRequestInfoSupplier.set(
+                                                    new PageInfoContents(
+                                                            sErrorMessage
+                                                                    + ": Error code = "
+                                                                    + result.getErrorCode().get()));
                                         } else if (!result.isCompleteResult()) {
                                             receivedText.append(result.getResponse());
                                             mCurrentRequestInfoSupplier.set(

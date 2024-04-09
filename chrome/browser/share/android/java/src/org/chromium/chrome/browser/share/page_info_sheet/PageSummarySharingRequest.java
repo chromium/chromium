@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -19,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.Delegate;
@@ -39,10 +42,16 @@ class PageSummarySharingRequest {
     // TODO(salg): Replace with a channel specific type.
     private static final String FEEDBACK_REPORT_TYPE =
             "com.chrome.canary.summarization.USER_INITIATED_FEEDBACK_REPORT";
-
+    // Key used when sending feedback to identify this feature.
     private static final String FEATURE_TYPE_KEY = "genai_type";
+    // Value used when sending feedback to identify this feature.
     private static final String FEATURE_TYPE_VALUE = "summarization";
+    // Key used when sending feedback to identify the type of feedback that the user selected.
     private static final String FEEDBACK_TYPE_KEY = "genai_chip";
+    // Feature param name for a support page URL.
+    static final String LEARN_MORE_URL_PARAM = "learn_more_url";
+    // Default support page URL that opens when clicking "learn more".
+    private static final String DEFAULT_LEARN_MORE_URL = "https://support.google.com/chrome/";
 
     @NonNull private final Context mContext;
     @NonNull private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -93,6 +102,11 @@ class PageSummarySharingRequest {
                             @Override
                             public void onCancel() {
                                 destroy();
+                            }
+
+                            @Override
+                            public void onLearnMore() {
+                                openLearnMorePage();
                             }
 
                             @Override
@@ -193,6 +207,19 @@ class PageSummarySharingRequest {
         mChromeOptionShareCallback.showShareSheet(
                 shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
 
+        destroy();
+    }
+
+    /** Opens a help article for this feature and dismisses the loading sheet. */
+    void openLearnMorePage() {
+        var learnMoreUrlString =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.CHROME_SHARE_PAGE_INFO, LEARN_MORE_URL_PARAM);
+        Uri learnMoreUri =
+                Uri.parse(
+                        learnMoreUrlString.isEmpty() ? DEFAULT_LEARN_MORE_URL : learnMoreUrlString);
+
+        new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(mContext, learnMoreUri);
         destroy();
     }
 

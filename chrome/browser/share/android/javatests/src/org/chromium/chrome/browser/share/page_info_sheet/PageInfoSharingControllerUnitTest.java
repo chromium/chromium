@@ -26,8 +26,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.Button;
 
@@ -45,9 +48,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -73,6 +79,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -580,6 +587,52 @@ public class PageInfoSharingControllerUnitTest {
 
                     // Feedback launcher shouldn't have been invoked.
                     verifyNoInteractions(mMockFeedbackLauncher);
+                });
+    }
+
+    @Test
+    public void testOpenLearnMoreLink() {
+        String testLearnMoreUrl = "https://google.com/learn_more";
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CHROME_SHARE_PAGE_INFO, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CHROME_SHARE_PAGE_INFO,
+                PageSummarySharingRequest.LEARN_MORE_URL_PARAM,
+                testLearnMoreUrl);
+        FeatureList.setTestValues(testValues);
+
+        ArgumentCaptor<BottomSheetContent> sheetContentCaptor =
+                ArgumentCaptor.forClass(BottomSheetContent.class);
+
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    simulateSuccessfulSummarization(activity, tab, sheetContentCaptor);
+
+                    BottomSheetContent summaryBottomSheetContent = sheetContentCaptor.getValue();
+
+                    // Summary bottom sheet has a disclaimer inside a TextView with clickable spans.
+                    TextViewWithClickableSpans learnMoreText =
+                            summaryBottomSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.learn_more_text);
+                    var learnMoreTextLinks = learnMoreText.getClickableSpans();
+                    assertNotEquals(
+                            "TextView should contain clickable spans", 0, learnMoreTextLinks);
+                    // Click first span, which should contain a "learn more" text and link to a web
+                    // page.
+                    learnMoreTextLinks[0].onClick(learnMoreText);
+
+                    // Link should have opened in a CCT.
+                    ShadowActivity shadowActivity = shadowOf(activity);
+                    var launchedIntent = shadowActivity.getNextStartedActivity();
+                    assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
+                    assertEquals(Uri.parse(testLearnMoreUrl), launchedIntent.getData());
+
+                    // Summary sheet should be closed.
+                    verify(mBottomSheetController).hideContent(summaryBottomSheetContent, true);
                 });
     }
 }

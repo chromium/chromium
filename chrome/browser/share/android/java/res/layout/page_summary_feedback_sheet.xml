@@ -76,7 +76,7 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/page_summary_feedback_sheet_item_margin"
-      android:text="@android:string/ok"
+      android:text="@string/share_with_summary_feedback_sheet_submit"
       app:layout_constraintTop_toBottomOf="@id/learn_more_text"
       app:layout_constraintEnd_toEndOf="parent" />
   <org.chromium.ui.widget.ButtonCompat

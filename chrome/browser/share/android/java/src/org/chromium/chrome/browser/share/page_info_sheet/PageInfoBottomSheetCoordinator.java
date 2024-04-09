@@ -31,6 +31,9 @@ public class PageInfoBottomSheetCoordinator {
         /** Called by bottom sheet when user clicks the cancel button. */
         void onCancel();
 
+        /** Called by bottom sheet when user clicks the learn more button. */
+        void onLearnMore();
+
         /** Called by bottom sheet when user clicks the positive feedback button. */
         void onPositiveFeedback();
 

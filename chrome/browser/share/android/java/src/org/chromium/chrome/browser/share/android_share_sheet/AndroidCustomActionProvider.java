@@ -264,7 +264,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         if (mChromeShareExtras != null
                 && mChromeShareExtras.getDetailedContentType() == DetailedContentType.PAGE_INFO) {
             return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
-                    .setIcon(R.drawable.ic_remove, R.string.remove)
+                    .setIcon(R.drawable.spark_off, R.string.sharing_remove_summary)
                     .setFeatureNameForMetrics(USER_ACTION_REMOVE_PAGE_INFO_SELECTED)
                     .setOnClickCallback(
                             (view) -> {
@@ -276,7 +276,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
         if (mPageInfoSharingController.isAvailableForTab(mTabProvider.get())) {
             return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
-                    .setIcon(R.drawable.ic_content_copy_black, R.string.share)
+                    .setIcon(R.drawable.spark, R.string.sharing_create_summary)
                     .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)
                     .setOnClickCallback(
                             (view) -> {

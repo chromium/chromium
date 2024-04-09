@@ -36,6 +36,7 @@ found in the LICENSE file.
       android:layout_height="@dimen/page_info_icon_button_size"
       android:layout_width="@dimen/page_info_icon_button_size"
       android:src="@drawable/btn_back"
+      android:contentDescription="@android:string/cancel"
       app:layout_constraintTop_toBottomOf="@id/handlebar_bottom_guideline"
       app:layout_constraintBottom_toTopOf="@id/header_bottom_barrier"
       app:layout_constraintStart_toStartOf="parent"
@@ -144,12 +145,11 @@ found in the LICENSE file.
       app:constraint_referenced_ids="summary_text"/>
 
   <!-- Feedback area, contains a text and two buttons. -->
-  <TextView
+  <org.chromium.ui.widget.TextViewWithClickableSpans
       android:id="@+id/learn_more_text"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_margin="@dimen/page_info_feedback_area_margin"
-      android:text="@string/learn_more"
       android:gravity="center_vertical|start"
       android:textAppearance="@style/TextAppearance.TextSmall.Primary"
       app:layout_constraintTop_toTopOf="@id/summary_text_bottom_barrier"
@@ -162,6 +162,7 @@ found in the LICENSE file.
       android:layout_width="@dimen/page_info_icon_button_size"
       android:layout_height="@dimen/page_info_icon_button_size"
       android:src="@drawable/thumb_up"
+      android:contentDescription="@string/share_with_summary_positive_feedback_description"
       app:layout_constraintTop_toTopOf="@id/summary_text_bottom_barrier"
       app:layout_constraintBottom_toBottomOf="@id/feedback_area_bottom_barrier"
       app:layout_constraintEnd_toStartOf="@id/negative_feedback_button"
@@ -173,6 +174,7 @@ found in the LICENSE file.
       android:layout_height="@dimen/page_info_icon_button_size"
       android:layout_marginEnd="8dp"
       android:src="@drawable/thumb_down"
+      android:contentDescription="@string/share_with_summary_negative_feedback_description"
       app:layout_constraintTop_toTopOf="@id/summary_text_bottom_barrier"
       app:layout_constraintBottom_toBottomOf="@id/feedback_area_bottom_barrier"
       app:layout_constraintEnd_toEndOf="@id/contents_container"
@@ -195,7 +197,7 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
-      android:text="@android:string/ok"
+      android:text="@string/share_with_summary_sheet_add_summary"
       app:layout_constraintBottom_toBottomOf="@id/action_buttons_bottom_barrier"
       app:layout_constraintEnd_toEndOf="parent" />
   <org.chromium.ui.widget.ButtonCompat

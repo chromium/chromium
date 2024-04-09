@@ -15,12 +15,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageButton;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 class PageInfoBottomSheetView extends ConstraintLayout {
 
     TextView mTitleText;
     TextView mContentText;
-    TextView mLearnMoreText;
+    TextViewWithClickableSpans mLearnMoreText;
     Button mAcceptButton;
     Button mCancelButton;
     ChromeImageButton mBackButton;

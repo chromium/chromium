@@ -325,7 +325,7 @@ public class AndroidShareSheetControllerUnitTest {
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        chooseCustomAction(intent, R.string.share);
+        chooseCustomAction(intent, R.string.sharing_create_summary);
 
         verify(mockPageInfoSharingController)
                 .sharePageInfo(any(), eq(mBottomSheetController), any(), any(), eq(mTab));
@@ -367,7 +367,7 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         // Share sheets with page info should have a "remove" option to share without page info.
-        chooseCustomAction(intent, R.string.remove);
+        chooseCustomAction(intent, R.string.sharing_remove_summary);
 
         verify(mockPageInfoSharingController).shareWithoutPageInfo(any(), eq(mTab));
     }

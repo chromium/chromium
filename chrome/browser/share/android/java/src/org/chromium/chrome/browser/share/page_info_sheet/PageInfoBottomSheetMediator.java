@@ -43,6 +43,9 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
                                 PageInfoBottomSheetProperties.ON_CANCEL_CLICKED,
                                 this::onCancelClicked)
                         .with(
+                                PageInfoBottomSheetProperties.ON_LEARN_MORE_CLICKED,
+                                this::onLearnMoreClicked)
+                        .with(
                                 PageInfoBottomSheetProperties.ON_POSITIVE_FEEDBACK_CLICKED,
                                 this::onPositiveFeedbackClicked)
                         .with(
@@ -53,6 +56,10 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
 
         mBottomSheetController.addObserver(this);
         mPageInfoDelegate.getContentSupplier().addObserver(this::onContentsChanged);
+    }
+
+    private void onLearnMoreClicked(View view) {
+        mPageInfoDelegate.onLearnMore();
     }
 
     private void onNegativeFeedbackClicked(View view) {

@@ -19,6 +19,8 @@ android_resources("java_resources") {
     "java/res/drawable/qrcode_background.xml",
     "java/res/drawable/save_icon.xml",
     "java/res/drawable/share_icon.xml",
+    "java/res/drawable/spark.xml",
+    "java/res/drawable/spark_off.xml",
     "java/res/drawable/text_icon.xml",
     "java/res/drawable/thumb_down.xml",
     "java/res/drawable/thumb_up.xml",

@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetProperties.PageInfoState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /** Class responsible for binding the model and the view. */
 class PageInfoBottomSheetViewBinder {
@@ -80,6 +84,18 @@ class PageInfoBottomSheetViewBinder {
         } else if (PageInfoBottomSheetProperties.ON_NEGATIVE_FEEDBACK_CLICKED == propertyKey) {
             view.mNegativeFeedbackButton.setOnClickListener(
                     model.get(PageInfoBottomSheetProperties.ON_NEGATIVE_FEEDBACK_CLICKED));
+        } else if (PageInfoBottomSheetProperties.ON_LEARN_MORE_CLICKED == propertyKey) {
+            Callback<View> onLearnMoreClickedCallback =
+                    model.get(PageInfoBottomSheetProperties.ON_LEARN_MORE_CLICKED);
+            NoUnderlineClickableSpan settingsLink =
+                    new NoUnderlineClickableSpan(view.getContext(), onLearnMoreClickedCallback);
+
+            view.mLearnMoreText.setText(
+                    SpanApplier.applySpans(
+                            view.getResources()
+                                    .getString(R.string.share_with_summary_sheet_disclaimer),
+                            new SpanApplier.SpanInfo("<link>", "</link>", settingsLink)));
+            view.mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 }
