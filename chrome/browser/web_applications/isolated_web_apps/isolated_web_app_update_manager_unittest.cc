@@ -586,7 +586,70 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       MaybeDiscoverUpdatesForApp) {
+  // Trigger updates for an app that is not installed. This should fail.
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
+                  iwa_info1_->url_info.app_id()),
+              IsFalse());
+
+  // Trigger updates for an app that is not an IWA. This should fail.
+  webapps::AppId non_iwa_app_id = test::InstallDummyWebApp(
+      profile(), "non-iwa", GURL("https://example.com"));
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(non_iwa_app_id),
+              IsFalse());
+
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
+      WebApp::IsolationData(iwa_info1_->installed_location,
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
+
+  // Trigger updates for an app that is not installed via policy. This should
+  // fail.
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
+                  iwa_info1_->url_info.app_id()),
+              IsFalse());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  SetIwaForceInstallPolicy(
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
+
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
+                  iwa_info1_->url_info.app_id()),
+              IsTrue());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(
+      fake_provider().registrar_unsafe().GetAppById(
+          iwa_info1_->url_info.app_id()),
+      test::IwaIs(Eq("installed iwa 1"),
+                  test::IsolationDataIs(Eq(iwa_info1_->installed_location),
+                                        Eq(iwa_info1_->installed_version),
+                                        /*controlled_frame_partitions=*/_,
+                                        test::PendingUpdateInfoIs(
+                                            UpdateLocationMatcher(profile()),
+                                            Eq(base::Version("2.0.0"))))));
+
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",

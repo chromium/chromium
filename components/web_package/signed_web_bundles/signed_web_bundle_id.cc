@@ -4,6 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
+#include <ostream>
+
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
@@ -100,8 +102,14 @@ SignedWebBundleId::SignedWebBundleId(
 }
 
 SignedWebBundleId::SignedWebBundleId(const SignedWebBundleId& other) = default;
+SignedWebBundleId& SignedWebBundleId::operator=(
+    const SignedWebBundleId& other) = default;
 
 SignedWebBundleId::~SignedWebBundleId() = default;
+
+std::ostream& operator<<(std::ostream& os, const SignedWebBundleId& id) {
+  return os << id.id();
+}
 
 // static
 base::RepeatingCallback<void(base::span<uint8_t>)>

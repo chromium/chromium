@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 
+#include <iosfwd>
+
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
@@ -60,6 +62,7 @@ class SignedWebBundleId {
           GetDefaultRandomGenerator());
 
   SignedWebBundleId(const SignedWebBundleId& other);
+  SignedWebBundleId& operator=(const SignedWebBundleId& other);
 
   ~SignedWebBundleId();
 
@@ -78,6 +81,9 @@ class SignedWebBundleId {
   bool operator!=(const SignedWebBundleId& other) const {
     return !(*this == other);
   }
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const SignedWebBundleId& id);
 
  private:
   SignedWebBundleId(Type type,
