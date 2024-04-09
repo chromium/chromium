@@ -15,9 +15,8 @@ namespace ash {
 
 namespace {
 
-constexpr int kRoundedCornerRadius = 12;
-constexpr ui::ColorId kBackgroundColorId =
-    cros_tokens::kCrosSysSystemOnBaseOpaque;
+constexpr int kRoundedCornerRadius = 20;
+constexpr ui::ColorId kBackgroundColorId = cros_tokens::kCrosSysSystemOnBase;
 
 }  // namespace
 
