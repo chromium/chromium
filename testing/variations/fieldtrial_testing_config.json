@@ -19539,7 +19539,7 @@
                         "ClearLoginDatabaseForUPMUsers",
                         "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
                         "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
-                        "kUnifiedPasswordManagerSyncOnlyInGMSCore"
+                        "UnifiedPasswordManagerSyncOnlyInGMSCore"
                     ]
                 }
             ]
