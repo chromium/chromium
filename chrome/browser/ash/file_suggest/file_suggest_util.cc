@@ -85,7 +85,8 @@ FileSuggestData::FileSuggestData(
     const std::optional<base::Time>& viewed_time,
     const std::optional<base::Time>& shared_time,
     std::optional<float> new_score,
-    const std::optional<std::string>& drive_file_id)
+    const std::optional<std::string>& drive_file_id,
+    const std::optional<std::string>& icon_url)
     : type(new_type),
       file_path(new_file_path),
       id(CalculateSuggestionId(type, file_path)),
@@ -94,7 +95,8 @@ FileSuggestData::FileSuggestData(
       viewed_time(viewed_time),
       shared_time(shared_time),
       score(new_score),
-      drive_file_id(drive_file_id) {}
+      drive_file_id(drive_file_id),
+      icon_url(icon_url) {}
 
 FileSuggestData::FileSuggestData(FileSuggestData&&) = default;
 

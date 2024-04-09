@@ -391,14 +391,16 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
            /*viewed_time=*/std::nullopt,
            /*shared_time=*/std::nullopt,
            /*new_score=*/std::nullopt,
-           /*drive_file_id=*/std::nullopt},
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt},
           {FileSuggestionType::kDriveFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
            /*modified_time=*/std::nullopt,
            /*viewed_time=*/std::nullopt,
            /*shared_time=*/std::nullopt,
            /*new_score=*/std::nullopt,
-           /*drive_file_id=*/std::nullopt}});
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
 
   birch_keyed_service()
       ->GetFileSuggestProviderForTest()
@@ -448,7 +450,8 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
            /*viewed_time=*/std::nullopt,
            /*shared_time=*/std::nullopt,
            /*new_score=*/std::nullopt,
-           /*drive_file_id=*/std::nullopt}});
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   birch_keyed_service()
       ->GetFileSuggestProviderForTest()
       ->OnFileSuggestionUpdated(FileSuggestionType::kDriveFile);

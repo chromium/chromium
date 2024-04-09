@@ -142,7 +142,8 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
                                /*viewed_time=*/std::nullopt,
                                /*shared_time=*/std::nullopt,
                                /*new_score=*/std::nullopt,
-                               /*drive_file_id=*/std::nullopt);
+                               /*drive_file_id=*/std::nullopt,
+                               /*icon_url=*/std::nullopt);
     }
     file_suggest_service_->SetSuggestionsForType(type, suggestions);
     return suggested_file_paths;

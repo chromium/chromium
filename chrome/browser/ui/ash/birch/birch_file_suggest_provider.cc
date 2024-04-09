@@ -69,7 +69,8 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
 
     file_items.emplace_back(suggestion.file_path,
                             suggestion.prediction_reason.value_or(u""),
-                            timestamp, suggestion.drive_file_id.value_or(""));
+                            timestamp, suggestion.drive_file_id.value_or(""),
+                            suggestion.icon_url.value_or(""));
   }
   Shell::Get()->birch_model()->SetFileSuggestItems(std::move(file_items));
 }

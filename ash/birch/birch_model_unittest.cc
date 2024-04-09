@@ -37,7 +37,7 @@ std::vector<BirchFileItem> MakeFileItemList(int item_count) {
   for (int i = 0; i < item_count; i++) {
     file_item_list.emplace_back(
         base::FilePath("test path " + base::NumberToString(i)), u"suggestion",
-        base::Time(), "file_id_" + base::NumberToString(i));
+        base::Time(), "file_id_" + base::NumberToString(i), "icon_url");
   }
   return file_item_list;
 }
@@ -1275,12 +1275,12 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
       base::FilePath("Recently Edited File 1"),
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
-      /*file_id=*/"duplicate_file_id_1");
+      /*file_id=*/"duplicate_file_id_1", "icon_url");
   file_item_list.emplace_back(
       base::FilePath("Recently Edited File 2"),
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
-      /*file_id=*/"duplicate_file_id_2");
+      /*file_id=*/"duplicate_file_id_2", "icon_url");
   model->SetFileSuggestItems(file_item_list);
 
   // Calling GetAllItems() should return two items, once attachment and one

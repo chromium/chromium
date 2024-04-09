@@ -221,7 +221,8 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
         /*viewed_time=*/std::nullopt,
         /*shared_time=*/std::nullopt,
         /*score=*/std::nullopt,
-        /*drive_file_id=*/std::nullopt);
+        /*drive_file_id=*/std::nullopt,
+        /*icon_url=*/std::nullopt);
   }
 
   // Validation fails on each file, so return early.

@@ -229,7 +229,8 @@ void LocalFileSuggestionProvider::OnValidationComplete(
                                /*modified_time=*/result.info.last_modified,
                                /*viewed_time=*/result.info.last_accessed,
                                /*shared_time=*/std::nullopt, result.score,
-                               /*drive_file_id=*/std::nullopt);
+                               /*drive_file_id=*/std::nullopt,
+                               /*icon_url=*/std::nullopt);
   }
 
   // Sort valid results high-to-low by score.

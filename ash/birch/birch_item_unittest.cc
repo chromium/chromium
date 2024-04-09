@@ -316,14 +316,14 @@ TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
 
 TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time(), "id_1");
+                     base::Time(), "id_1", "icon_url");
   // The title does not contain the ".gdoc" extension.
   EXPECT_EQ(u"file", item.title());
 }
 
 TEST_F(BirchItemTest, File_PerformAction) {
   BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1");
+                     "id_1", "icon_url");
   EXPECT_EQ(u"file_path", item.title());
   EXPECT_EQ(u"suggested", item.subtitle());
   EXPECT_EQ("id_1", item.file_id());
@@ -336,7 +336,7 @@ TEST_F(BirchItemTest, File_PerformAction) {
 TEST_F(BirchItemTest, File_PerformAction_Histograms) {
   base::HistogramTester histograms;
   BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1");
+                     "id_1", "icon_url");
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kFile,
@@ -503,20 +503,15 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
 }
 
 TEST_F(BirchItemIconTest, File_LoadIcon) {
-  const base::FilePath excel_path("/my/test/mySheet.xlsx");
-  BirchFileItem item(excel_path, u"suggested", base::Time(), "id_1");
+  const std::string icon_url =
+      "https://drive-thirdparty.googleusercontent.com/32/type/application/"
+      "vnd.google-apps.document";
 
-  item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon) {
-    // Icon was set.
-    EXPECT_FALSE(icon.IsEmpty());
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
+                     base::Time(), "id_1", icon_url);
 
-    // Color is the one used for MS Excel documents.
-    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    auto* color_provider = ui::ColorProviderManager::Get().GetColorProviderFor(
-        native_theme->GetColorProviderKey(nullptr));
-    EXPECT_EQ(icon.GetVectorIcon().color(),
-              color_provider->GetColor(cros_tokens::kCrosSysFileMsExcel));
-  }));
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
 
 }  // namespace

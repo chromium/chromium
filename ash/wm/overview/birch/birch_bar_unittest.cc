@@ -276,7 +276,8 @@ class BirchBarTest : public AshTestBase {
           /*file_path=*/base::FilePath(base::StringPrintf("test path %lu", i)),
           /*justification=*/u"suggestion",
           /*timestamp=*/base::Time(),
-          /*file_id=*/base::StringPrintf("file_id_%lu", i));
+          /*file_id=*/base::StringPrintf("file_id_%lu", i),
+          /*icon_url=*/"icon_url");
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetFileSuggestItems(item_list);

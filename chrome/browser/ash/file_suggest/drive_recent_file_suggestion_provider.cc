@@ -83,11 +83,12 @@ FileSuggestData CreateFileSuggestionWithJustification(
     const std::optional<base::Time>& viewed_time,
     const std::optional<base::Time>& shared_time,
     const std::optional<std::u16string>& justification_string,
-    const std::optional<std::string>& drive_file_id) {
-  return FileSuggestData(FileSuggestionType::kDriveFile, path,
-                         justification_string, modified_time, viewed_time,
-                         shared_time,
-                         /*new_score=*/std::nullopt, drive_file_id);
+    const std::optional<std::string>& drive_file_id,
+    const std::optional<std::string>& icon_url) {
+  return FileSuggestData(
+      FileSuggestionType::kDriveFile, path, justification_string, modified_time,
+      viewed_time, shared_time,
+      /*new_score=*/std::nullopt, drive_file_id, /*icon_url=*/icon_url);
 }
 
 std::optional<std::u16string> CreateSuggestionStatusForNonSharedFile(
@@ -121,6 +122,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
   const base::Time& viewed_time = file_metadata.last_viewed_by_me_time;
   const base::Time modified_time =
       file_metadata.modified_by_me_time.value_or(base::Time());
+  const std::string& icon_url = file_metadata.custom_icon_url;
 
   // If the file was shared with user, but not yet viewed by the user, surface
   // it as a shared file.
@@ -135,13 +137,13 @@ std::optional<FileSuggestData> CreateFileSuggestion(
       const auto& user_info = file_metadata.sharing_user;
       sharing_user_name = user_info ? user_info->display_name : "";
     }
-    return CreateFileSuggestionWithJustification(
+    return {CreateFileSuggestionWithJustification(
         path, /*modified_time=*/std::nullopt, /*viewed_time*/ std::nullopt,
         *shared_time,
         app_list::GetJustificationString(
             FileSuggestionJustificationType::kShared, *shared_time,
             sharing_user_name),
-        file_metadata.item_id);
+        file_metadata.item_id, icon_url)};
   }
 
   if (viewed_time <= file_metadata.modification_time &&
@@ -163,13 +165,13 @@ std::optional<FileSuggestData> CreateFileSuggestion(
         /*modified_time=*/std::nullopt, viewed_time,
         /*shared_time=*/std::nullopt,
         CreateSuggestionStatusForNonSharedFile(file_metadata),
-        file_metadata.item_id);
+        file_metadata.item_id, icon_url);
   }
 
   return CreateFileSuggestionWithJustification(
       path, modified_time, viewed_time, /*shared_time=*/std::nullopt,
       CreateSuggestionStatusForNonSharedFile(file_metadata),
-      file_metadata.item_id);
+      file_metadata.item_id, icon_url);
 }
 
 }  // namespace

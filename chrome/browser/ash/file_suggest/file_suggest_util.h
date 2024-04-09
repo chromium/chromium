@@ -76,7 +76,8 @@ struct FileSuggestData {
                   const std::optional<base::Time>& viewed_time,
                   const std::optional<base::Time>& shared_time,
                   std::optional<float> new_score,
-                  const std::optional<std::string>& drive_file_id);
+                  const std::optional<std::string>& drive_file_id,
+                  const std::optional<std::string>& icon_url);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
   FileSuggestData& operator=(const FileSuggestData&);
@@ -108,6 +109,9 @@ struct FileSuggestData {
 
   // The drive file id for the file.
   std::optional<std::string> drive_file_id;
+
+  // The custom icon url for the file.
+  std::optional<std::string> icon_url;
 };
 
 // Calculates the id of a file suggestion specified by `type` and `file_path`.

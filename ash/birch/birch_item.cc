@@ -298,9 +298,11 @@ std::u16string BirchAttachmentItem::GetSubtitle(base::Time start_time,
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
                              const std::u16string& justification,
                              base::Time timestamp,
-                             const std::string& file_id)
+                             const std::string& file_id,
+                             const std::string& icon_url)
     : BirchItem(GetTitle(file_path), justification),
       file_id_(file_id),
+      icon_url_(icon_url),
       file_path_(file_path),
       timestamp_(timestamp) {}
 
@@ -324,7 +326,7 @@ std::string BirchFileItem::ToString() const {
      << ", title: " << base::UTF16ToUTF8(title())
      << ", file_path:" << file_path_ << ", timestamp: "
      << base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(timestamp_))
-     << ", file_id: " << file_id_ << "}";
+     << ", file_id: " << file_id_ << "}" << ", icon_url: " << icon_url_;
   return ss.str();
 }
 
@@ -338,10 +340,7 @@ void BirchFileItem::PerformSecondaryAction() {
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
-  const gfx::VectorIcon& icon = chromeos::GetIconForPath(file_path_);
-  bool dark_mode = DarkLightModeController::Get()->IsDarkModeEnabled();
-  SkColor color = chromeos::GetIconColorForPath(file_path_, dark_mode);
-  std::move(callback).Run(ui::ImageModel::FromVectorIcon(icon, color));
+  DownloadImageFromUrl(GURL(icon_url_), std::move(callback));
 }
 
 // static
