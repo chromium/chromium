@@ -72,6 +72,9 @@ class WebLinkPreviewTriggererLongPress final
       blink::WebElement anchor_element,
       blink::WebMouseEvent::Button button,
       int click_count) override;
+  void DidAnchorElementReceiveMouseUpEvent(blink::WebElement anchor_element,
+                                           blink::WebMouseEvent::Button button,
+                                           int click_count) override;
 
  private:
   void InitiatePreview();

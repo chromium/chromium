@@ -14,6 +14,8 @@
 namespace {
 
 constexpr base::TimeDelta kHoverThreshold = base::Milliseconds(800);
+// TODO(crbug.com/330196622):
+//   Use ui::GestureConfiguration()->long_press_time_ms() here.
 constexpr base::TimeDelta kLongPressThreshold = base::Milliseconds(800);
 
 blink::WebURL GetURL(blink::WebElement& anchor_element) {
@@ -140,8 +142,10 @@ WebLinkPreviewTriggererLongPress& WebLinkPreviewTriggererLongPress::operator=(
 
 void WebLinkPreviewTriggererLongPress::DidChangeHoverElement(
     blink::WebElement element) {
+  CHECK(!timer_->IsRunning() || !anchor_element_.IsNull());
   if (GetMostInnerAnchorElement(element) != anchor_element_) {
     timer_->Stop();
+    anchor_element_.Reset();
   }
 }
 
@@ -149,6 +153,8 @@ void WebLinkPreviewTriggererLongPress::DidAnchorElementReceiveMouseDownEvent(
     blink::WebElement anchor_element,
     blink::WebMouseEvent::Button button,
     int click_count) {
+  CHECK(!timer_->IsRunning() || !anchor_element_.IsNull());
+  anchor_element_.Reset();
   if (button == blink::WebMouseEvent::Button::kLeft && click_count == 1) {
     anchor_element_ = anchor_element;
     timer_->Start(
@@ -160,16 +166,21 @@ void WebLinkPreviewTriggererLongPress::DidAnchorElementReceiveMouseDownEvent(
   }
 }
 
+void WebLinkPreviewTriggererLongPress::DidAnchorElementReceiveMouseUpEvent(
+    blink::WebElement anchor_element,
+    blink::WebMouseEvent::Button button,
+    int click_count) {
+  CHECK(!timer_->IsRunning() || !anchor_element_.IsNull());
+  timer_->Stop();
+  anchor_element_.Reset();
+}
+
 void WebLinkPreviewTriggererLongPress::InitiatePreview() {
   blink::WebDocument document = anchor_element_.GetDocument();
-  if (document.IsNull()) {
-    return;
-  }
-
   blink::WebURL url = GetURL(anchor_element_);
-  if (url.IsNull()) {
+  anchor_element_.Reset();
+  if (document.IsNull() || url.IsNull()) {
     return;
   }
-
   document.InitiatePreview(url);
 }
