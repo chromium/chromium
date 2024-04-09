@@ -63,6 +63,7 @@ class FakeFormFetcher : public FormFetcher {
       const override;
   std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
+  bool WereGroupedCredentialsAvailable() const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
     state_ = State::NOT_WAITING;

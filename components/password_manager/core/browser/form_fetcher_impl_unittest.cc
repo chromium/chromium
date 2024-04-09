@@ -441,6 +441,7 @@ TEST_P(FormFetcherImplTest, BlockedDifferentScheme) {
 // Grouped credentials should be filtered out unless `FormFetcher` is configured
 // explicitly to include them.
 TEST_P(FormFetcherImplTest, FiltersGroupedCredentials) {
+  EXPECT_FALSE(form_fetcher_->WereGroupedCredentialsAvailable());
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   PasswordForm non_federated = CreateNonFederated();
@@ -453,12 +454,14 @@ TEST_P(FormFetcherImplTest, FiltersGroupedCredentials) {
               UnorderedElementsAre(Pointee(non_federated)));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+  EXPECT_TRUE(form_fetcher_->WereGroupedCredentialsAvailable());
 }
 
 // Grouped credentials should be returned if `FormFetcher` is configured to do
 // keep them in the result set.
 TEST_P(FormFetcherImplTest, ReturnsGroupedCredentialsIfConfigured) {
   form_fetcher_->set_filter_grouped_credentials(false);
+  EXPECT_FALSE(form_fetcher_->WereGroupedCredentialsAvailable());
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   PasswordForm non_federated = CreateNonFederated();
@@ -472,6 +475,7 @@ TEST_P(FormFetcherImplTest, ReturnsGroupedCredentialsIfConfigured) {
               UnorderedElementsAre(Pointee(non_federated), Pointee(grouped)));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+  EXPECT_FALSE(form_fetcher_->WereGroupedCredentialsAvailable());
 }
 
 // Check that mixed PasswordStore results are handled correctly.

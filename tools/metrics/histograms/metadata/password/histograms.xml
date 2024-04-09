@@ -1933,9 +1933,9 @@ chromium-metrics-reviews@google.com.
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
-    This metric records the type of the preferred password for filling. It is
-    recorded when the browser instructs the renderer to fill the credentials on
-    page load.
+    This metric records the type of the preferred password that will be used for
+    filling. It is recorded when the browser instructs the renderer to fill the
+    credentials on page load.
   </summary>
 </histogram>
 
@@ -3067,6 +3067,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     This histogram logs how the post password migration sheet was closed.
     Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PotentialBestMatchFormType"
+    enum="PasswordManagerMatchedFormType" expires_after="2024-09-22">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric records the type of the potential preferred password for
+    filling. It is recorded when the browser instructs the renderer to fill the
+    credentials on page load. It may record values that are different than
+    recorded in PasswordManager.MatchedFormType due to difference in FormFetcher
+    configuration.
   </summary>
 </histogram>
 

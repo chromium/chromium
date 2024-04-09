@@ -132,6 +132,10 @@ FakeFormFetcher::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
 }
 
+bool FakeFormFetcher::WereGroupedCredentialsAvailable() const {
+  return false;
+}
+
 void FakeFormFetcher::SetProfileStoreBackendError(
     std::optional<PasswordStoreBackendError> error) {
   profile_store_backend_error_ = error;

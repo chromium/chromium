@@ -1097,6 +1097,13 @@ void PasswordFormManager::FillNow() {
   }
 #endif
 
+  if (observed_password_form->HasPasswordElement() &&
+      !observed_password_form->IsSingleUsername()) {
+    metrics_recorder_->RecordPotentialPreferredMatch(
+        form_fetcher_->GetPreferredMatch(),
+        form_fetcher_->WereGroupedCredentialsAvailable());
+  }
+
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),

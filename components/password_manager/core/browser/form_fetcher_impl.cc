@@ -119,7 +119,8 @@ void FormFetcherImpl::Fetch() {
   // that things work correctly (i.e. we don't notify of completion too early)
   // even if the fetches return synchronously (which is the case in tests).
   wait_counter_++;
-
+  // Clears the flag since it will be outdated after this fetch is finished.
+  were_grouped_credentials_availible_ = false;
   PasswordStoreInterface* profile_password_store =
       client_->GetProfilePasswordStore();
   if (!profile_password_store) {
@@ -267,6 +268,10 @@ FormFetcherImpl::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
 }
 
+bool FormFetcherImpl::WereGroupedCredentialsAvailable() const {
+  return were_grouped_credentials_availible_;
+}
+
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
@@ -348,9 +353,15 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   std::vector<PasswordForm> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   if (filter_grouped_credentials_) {
-    std::erase_if(results, [](const auto& form) {
-      return form.match_type == PasswordForm::MatchType::kGrouped;
-    });
+    auto grouped_credentials_count =
+        std::erase_if(results, [](const auto& form) {
+          return form.match_type == PasswordForm::MatchType::kGrouped;
+        });
+    // If users is using two password stores this code will executed twice.
+    // Meaning that if either one of them had grouped credentials, the value
+    // should be maintained.
+    were_grouped_credentials_availible_ =
+        were_grouped_credentials_availible_ || grouped_credentials_count > 0;
   }
 
   DCHECK_EQ(State::WAITING, state_);

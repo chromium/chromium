@@ -437,6 +437,9 @@ class PasswordFormMetricsRecorder
   void RecordFirstFillingResult(int32_t result);
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
   void RecordMatchedFormType(const PasswordForm& form);
+  void RecordPotentialPreferredMatch(
+      const PasswordForm* preferred_match,
+      const bool were_grouped_credentials_availible);
 
   // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(
@@ -583,6 +586,8 @@ class PasswordFormMetricsRecorder
   bool recorded_wait_for_username_reason_ = false;
 
   bool recorded_preferred_matched_password_type = false;
+
+  bool recorded_potential_preferred_matched_password_type = false;
 
   absl::variant<absl::monostate,
                 FillingAssistance,

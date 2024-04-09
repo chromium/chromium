@@ -121,6 +121,9 @@ class FormFetcher {
   // account store.
   virtual std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const = 0;
+
+  // Returns if grouped credentials were fetched but were ignored.
+  virtual bool WereGroupedCredentialsAvailable() const = 0;
 };
 
 }  // namespace password_manager
