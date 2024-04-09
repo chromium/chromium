@@ -26,7 +26,6 @@ BASE_DECLARE_FEATURE(kIPHCompanionSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature);
 BASE_DECLARE_FEATURE(kIPHComposeMSBBSettingsFeature);
 BASE_DECLARE_FEATURE(kIPHComposeNewBadgeFeature);
-BASE_DECLARE_FEATURE(kIPHDeepScanPromptRemovalFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature);

@@ -29,7 +29,6 @@
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -763,11 +762,6 @@ DownloadBubbleUpdateService::TakeAccessibleAlertsForAnnouncement(
 void DownloadBubbleUpdateService::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          manager->GetBrowserContext());
-  tracker->NotifyEvent("user_downloaded_file");
-
   if (IsShutDown()) {
     return;
   }

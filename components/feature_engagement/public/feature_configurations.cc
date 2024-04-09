@@ -2001,26 +2001,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  if (kIPHDeepScanPromptRemovalFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    // Don't show if user has already seen an IPH this session.
-    config->session_rate = Comparator(EQUAL, 0);
-    // Only show the IPH if the user hasn't seen it before
-    config->trigger =
-        EventConfig("deep_scan_prompt_removal_iph_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    // Only show the IPH if the user has done a download in the last day.
-    config->used =
-        EventConfig("user_downloaded_file", Comparator(GREATER_THAN, 0), 1, 1);
-    return config;
-  }
-#endif
-
   return std::nullopt;
 }
 
