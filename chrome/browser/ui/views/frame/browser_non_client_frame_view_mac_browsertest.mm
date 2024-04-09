@@ -82,8 +82,17 @@ enum class PrefixTitles { kEnabled, kDisabled };
 using BrowserNonClientFrameViewMacBrowserTestTitlePrefixed =
     web_app::WebAppControllerBrowserTest;
 
+// This will always be flaky on mac due to RemoteCocoa, the way it mocks out
+// fullscreen doesn't play with remote cocoa. So it gets true fullscreen (which
+// would probably be flaky in browser tests), but then also hits the DCHECK
+// because it tests real full screen. https://crbug.com/333417404
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TitleUpdates DISABLED_TitleUpdates
+#else
+#define MAYBE_TitleUpdates TitleUpdates
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
-                       TitleUpdates) {
+                       MAYBE_TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   const GURL start_url = GetInstallableAppURL();

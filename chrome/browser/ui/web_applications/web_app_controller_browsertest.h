@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -34,6 +35,7 @@ class WebContents;
 
 namespace web_app {
 
+class OsIntegrationTestOverrideImpl;
 class WebAppProvider;
 
 // Base class for tests of user interface support for web applications.
@@ -95,13 +97,12 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
                             const GURL& url,
                             const gfx::Size& popup_size);
 
+  OsIntegrationTestOverrideImpl& os_integration_override();
+
  protected:
   WebAppControllerBrowserTest(
       const std::vector<base::test::FeatureRef>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features);
-
-  std::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      os_hooks_suppress_;
 
   content::WebContents* OpenApplication(const webapps::AppId&);
 
@@ -123,6 +124,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
  private:
+  OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::TimeTicks start_time_ = base::TimeTicks::Now();
 
   base::test::ScopedFeatureList scoped_feature_list_;

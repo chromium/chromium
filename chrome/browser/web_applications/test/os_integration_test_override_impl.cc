@@ -66,6 +66,7 @@
 #include <windows.h>
 
 #include <shellapi.h>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -74,6 +75,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/shortcut.h"
@@ -84,6 +86,7 @@
 #include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/icon_util.h"
@@ -94,6 +97,9 @@ namespace web_app {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
+constexpr wchar_t kUninstallRegistryKey[] =
+    L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\";
+
 base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
   base::FilePath shortcut_profile;
   std::wstring cmd_line_string;
@@ -533,9 +539,6 @@ OsIntegrationTestOverrideImpl::IsUninstallRegisteredWithOs(
     const webapps::AppId& app_id,
     const std::string& app_name,
     Profile* profile) {
-  constexpr wchar_t kUninstallRegistryKey[] =
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
-
   base::win::RegKey uninstall_reg_key;
   LONG result = uninstall_reg_key.Open(HKEY_CURRENT_USER, kUninstallRegistryKey,
                                        KEY_READ);
@@ -655,7 +658,8 @@ base::FilePath OsIntegrationTestOverrideImpl::desktop() {
   return desktop_.GetPath();
 }
 base::FilePath OsIntegrationTestOverrideImpl::application_menu() {
-  return application_menu_.GetPath();
+  return application_menu_.GetPath().Append(
+      InstallUtil::GetChromeAppsShortcutDirName());
 }
 base::FilePath OsIntegrationTestOverrideImpl::quick_launch() {
   return quick_launch_.GetPath();
@@ -773,15 +777,32 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
-  base::win::RegKey key;
+  const HKEY kRoot = HKEY_CURRENT_USER;
+  registry_override_.OverrideRegistry(kRoot);
   // In a real registry, this key would exist, but since we're using
   // hive override, it's empty, so we create this key.
-  const LONG result =
-      key.Create(HKEY_CURRENT_USER,
-                 L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-                 KEY_SET_VALUE);
-  CHECK_EQ(result, ERROR_SUCCESS);
+  CHECK(base::win::RegKey(kRoot, kUninstallRegistryKey, KEY_CREATE_SUB_KEY)
+            .Valid());
+  CHECK_EQ(base::win::RegKey().Create(kRoot, kUninstallRegistryKey, KEY_WRITE),
+           ERROR_SUCCESS);
+
+  desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_USER_DESKTOP, desktop_.GetPath());
+  desktop_common_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_DESKTOP, desktop_.GetPath());
+
+  start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_START_MENU, application_menu_.GetPath());
+  start_menu_common_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_START_MENU, application_menu_.GetPath());
+
+  quick_launch_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_USER_QUICK_LAUNCH, startup_.GetPath());
+
+  startup_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_USER_STARTUP, startup_.GetPath());
+  startup_common_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_STARTUP, startup_.GetPath());
 #endif
 }
 

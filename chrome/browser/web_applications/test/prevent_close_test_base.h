@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -47,19 +48,7 @@ class PreventCloseTestBase : public policy::PolicyTest {
   Profile* profile();
 
  private:
-#if BUILDFLAG(IS_WIN)
-  // This prevents SetRunOnOsLoginMode from leaving shortcuts in the Windows
-  // startup directory that cause Chrome to get launched when Windows starts on
-  // a bot. It needs to be in the class so that the override lasts until the
-  // test object is destroyed, because tasks can keep running after the test
-  // method finishes.
-  // See https://crbug.com/1239809
-  base::ScopedPathOverride override_user_startup_{base::DIR_USER_STARTUP};
-
-  // Similarly, this prevents tests from adding shortcuts to the user's real
-  // Windows start menu.
-  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
-#endif  // BUILDFLAG(IS_WIN)
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;

@@ -35,13 +35,6 @@ class InstallPreloadedVerifiedAppCommandTest
  public:
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
-
-    os_hooks_suppress_.reset();
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
-    }
-
     host_resolver()->AddRule("lh3.googleusercontent.com", "127.0.0.1");
     host_resolver()->AddRule("fonts.gstatic.com", "127.0.0.1");
     host_resolver()->AddRule("youtube.com", "127.0.0.1");
@@ -49,10 +42,6 @@ class InstallPreloadedVerifiedAppCommandTest
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(test::UninstallAllWebApps(profile()));
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_.reset();
-    }
     WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
@@ -63,18 +52,13 @@ class InstallPreloadedVerifiedAppCommandTest
     return true;
 #else
     base::ScopedAllowBlockingForTesting allow_blocking;
-    return test_override_->test_override().IsShortcutCreated(profile(), app_id,
-                                                             name);
+    return os_integration_override().IsShortcutCreated(profile(), app_id, name);
 #endif
   }
 
   std::string GetIconUrl() {
     return https_server()->GetURL("/web_apps/blue-192.png").spec();
   }
-
- private:
-  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
-      test_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,

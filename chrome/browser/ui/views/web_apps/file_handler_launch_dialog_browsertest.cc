@@ -61,24 +61,12 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
  public:
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
-
-    // The os_hooks_suppress_ is set as part of the
-    // WebAppControllerBrowserTest to prevent OS integrations from being
-    // executed. This needs to be reset so that OS integration can be run.
-    os_hooks_suppress_.reset();
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    override_registration_ =
-        OsIntegrationTestOverrideImpl::OverrideForTesting();
     test::WaitUntilReady(provider());
     InstallTestWebApp();
   }
 
   void TearDownOnMainThread() override {
     test::UninstallAllWebApps(browser()->profile());
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      override_registration_.reset();
-    }
   }
 
   void LaunchAppWithFiles(const std::vector<base::FilePath>& paths) {
@@ -206,8 +194,6 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
 
  private:
   webapps::AppId app_id_;
-  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
-      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,

@@ -295,7 +295,8 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     }
 #endif
     return chrome::FindTabbedBrowser(
-        &profile_.get(), /*match_original_profiles=*/false, display_id);
+        &profile_.get(), /*match_original_profiles=*/false, display_id,
+        /*ignore_closing_browsers=*/true);
   }
 
   if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {

@@ -35,7 +35,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
-#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -289,8 +289,8 @@ class PreinstalledWebAppManagerBrowserTestBase
   void ResetInterceptor() { url_loader_interceptor_.reset(); }
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 
@@ -335,6 +335,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       embedded_test_server()->GetURL("/web_apps/basic.html?test_launch_params");
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
 
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
+
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
       app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -373,6 +376,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // We should not duplicate the query param if start_url already has it.
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), start_url);
 
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
+
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
       app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -407,6 +413,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
@@ -447,6 +456,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/"
       "query_params_in_start_url.html?query_params=in&start=url&!@%23$%^*&)(");
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(

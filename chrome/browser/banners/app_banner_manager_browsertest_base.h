@@ -13,7 +13,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
@@ -58,7 +58,7 @@ class AppBannerManagerBrowserTestBase : public PlatformBrowserTest {
                                         const std::string& value);
 
 #if !BUILDFLAG(IS_ANDROID)
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration os_hooks_suppress_;
 #endif
 };
 

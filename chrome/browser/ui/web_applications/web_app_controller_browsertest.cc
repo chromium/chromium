@@ -23,7 +23,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -70,7 +72,6 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest(
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
-  os_hooks_suppress_.emplace();
   std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Extend(all_disabled_features,
@@ -215,6 +216,11 @@ Browser* WebAppControllerBrowserTest::OpenPopupAndWait(
   EXPECT_EQ(popup_contents->GetLastCommittedURL(), url);
 
   return popup_browser;
+}
+
+OsIntegrationTestOverrideImpl&
+WebAppControllerBrowserTest::os_integration_override() {
+  return faked_os_integration_.test_override();
 }
 
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(

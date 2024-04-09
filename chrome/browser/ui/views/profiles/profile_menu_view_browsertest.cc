@@ -1444,24 +1444,11 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
                                   public web_app::WebAppControllerBrowserTest {
  protected:
-  void SetUpOnMainThread() override {
-    web_app::WebAppControllerBrowserTest::SetUpOnMainThread();
-
-    // The os_hooks_suppress_ is set as part of the
-    // WebAppControllerBrowserTest to prevent OS integrations from being
-    // executed. OS integration needs to be enabled to make it possible to
-    // launch a standalone windowed web-app, so reset and override it here.
-    os_hooks_suppress_.reset();
-    override_registration_ =
-        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
-  }
-
   void TearDownOnMainThread() override {
     for (Profile* profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
       web_app::test::UninstallAllWebApps(profile);
     }
-    override_registration_.reset();
     web_app::WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
@@ -1470,10 +1457,6 @@ class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
   }
 
  private:
-  // OS integration is needed to be able to launch web applications. This
-  // override ensures OS integration doesn't leave any traces.
-  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
-      override_registration_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 

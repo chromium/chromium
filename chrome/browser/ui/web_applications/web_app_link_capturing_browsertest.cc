@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -231,7 +230,6 @@ class WebAppLinkCapturingBrowserTest
 
   PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList feature_list_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 // Link capturing with navigate_existing_client: always should navigate existing

@@ -90,9 +90,6 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
     std::vector<base::FilePath> shortcuts = GetShortcuts();
     EXPECT_EQ(shortcuts.size(), 0u);
   }
-
- private:
-  base::ScopedPathOverride override_user_startup{base::DIR_USER_STARTUP};
 };
 
 TEST_F(WebAppRunOnOsLoginWinTest, Register) {

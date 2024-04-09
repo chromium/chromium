@@ -34,10 +34,10 @@
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -300,9 +300,9 @@ class PreinstalledWebAppMigrationBrowserTest
   base::test::ScopedFeatureList features_;
   std::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::AutoReset<bool> enable_chrome_apps_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   base::AutoReset<bool> bypass_offline_manifest_requirement_;

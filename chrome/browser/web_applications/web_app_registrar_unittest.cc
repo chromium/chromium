@@ -308,7 +308,7 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
 TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
   base::flat_set<webapps::AppId> ids = PopulateRegistry(
-      CreateRegistryForTesting("https://example.com/path", 100));
+      CreateRegistryForTesting("https://example.com/path", 20));
   StartWebAppProvider();
 
   for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
@@ -320,9 +320,9 @@ TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
 }
 
 TEST_F(WebAppRegistrarTest, DoForEachAndUnregisterAllApps) {
-  Registry registry = CreateRegistryForTesting("https://example.com/path", 100);
+  Registry registry = CreateRegistryForTesting("https://example.com/path", 20);
   auto ids = PopulateRegistry(std::move(registry));
-  EXPECT_EQ(100UL, ids.size());
+  EXPECT_EQ(20UL, ids.size());
 
   StartWebAppProvider();
 
@@ -1037,10 +1037,10 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
 
 TEST_F(WebAppRegistrarTest,
        AppsFromSyncAndPendingInstallationExcludedFromGetAppIds) {
-  PopulateRegistryWithApps("https://example.com/path/", 100);
+  PopulateRegistryWithApps("https://example.com/path/", 20);
   StartWebAppProvider();
 
-  EXPECT_EQ(100u, registrar().GetAppIds().size());
+  EXPECT_EQ(20u, registrar().GetAppIds().size());
 
   std::unique_ptr<WebApp> web_app_in_sync_install =
       test::CreateWebApp(GURL("https://example.org/"));
@@ -1052,7 +1052,7 @@ TEST_F(WebAppRegistrarTest,
 
   // Tests that GetAppIds() excludes web app in sync install:
   std::vector<webapps::AppId> ids = registrar().GetAppIds();
-  EXPECT_EQ(100u, ids.size());
+  EXPECT_EQ(20u, ids.size());
   for (const webapps::AppId& app_id : ids) {
     EXPECT_NE(app_id, web_app_in_sync_install_id);
   }

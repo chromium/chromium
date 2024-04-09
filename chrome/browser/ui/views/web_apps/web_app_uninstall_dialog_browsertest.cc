@@ -61,9 +61,6 @@ class WebAppUninstallDialogViewBrowserTest
   web_app::WebAppProvider* provider() {
     return web_app::WebAppProvider::GetForTest(browser()->profile());
   }
-
- private:
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -99,6 +96,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   webapps::AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_TRUE(app_browser);
+  EXPECT_NE(app_browser, browser());
   chrome::CloseWindow(browser());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;

@@ -62,6 +62,11 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
+  void TearDown() override {
+    test::UninstallAllWebApps(profile());
+    WebAppTest::TearDown();
+  }
+
   webapps::AppId InstallWebApp() {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -101,7 +106,6 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  OsIntegrationTestOverrideBlockingRegistration test_override_;
 };
 
 // Configure tests only.

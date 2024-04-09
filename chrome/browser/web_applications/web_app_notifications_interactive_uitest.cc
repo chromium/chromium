@@ -284,13 +284,6 @@ class WebAppNotificationsBrowserTest_MacPermissions
   void SetUpOnMainThread() override {
     WebAppNotificationsBrowserTest::SetUpOnMainThread();
 
-    // The os_hooks_suppress_ is set as part of the
-    // WebAppControllerBrowserTest to prevent OS integrations from being
-    // executed. This needs to be reset so that OS integration can be run.
-    os_hooks_suppress_.reset();
-    override_registration_ =
-        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
-
     const GURL app_url =
         https_server()->GetURL("/web_app_notifications/index.html");
 
@@ -302,13 +295,8 @@ class WebAppNotificationsBrowserTest_MacPermissions
 
   void TearDownOnMainThread() override {
     test::UninstallAllWebApps(browser()->profile());
-    override_registration_.reset();
     WebAppNotificationsBrowserTest::TearDownOnMainThread();
   }
-
- private:
-  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
-      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions, Granted) {

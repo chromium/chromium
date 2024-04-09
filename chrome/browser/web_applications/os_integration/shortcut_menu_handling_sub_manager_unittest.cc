@@ -644,32 +644,16 @@ TEST_F(ShortcutMenuHandlingSubManagerExecuteTest,
       OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif  // BUILDFLAG(IS_WIN)
 
-  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
-      std::nullopt;
-  scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
-  // Shortcuts menu should should still be registered with the OS.
-#if BUILDFLAG(IS_WIN)
-  ASSERT_TRUE(
-      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
-#else
   ASSERT_FALSE(
       OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
-#endif  // BUILDFLAG(IS_WIN)
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 
   SynchronizeOsOptions options;
   options.force_unregister_os_integration = true;
   test::SynchronizeOsIntegration(profile(), app_id, options);
-
-#if BUILDFLAG(IS_WIN)
   ASSERT_FALSE(
       OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
-#else
-  ASSERT_FALSE(
-      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
-#endif  // BUILDFLAG(IS_WIN)
-  scoped_supress.reset();
 }
 
 }  // namespace

@@ -1089,18 +1089,6 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
       browser(),
       embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
   ASSERT_FALSE(app_id.empty());
-  // Have to call it explicitly due to usage of
-  // OsIntegrationManager::ScopedSuppressForTesting
-  base::RunLoop run_loop;
-  provider()
-      .os_integration_manager()
-      .file_handler_manager()
-      .EnableAndRegisterOsFileHandlers(
-          app_id, base::BindLambdaForTesting([&](Result result) {
-            EXPECT_EQ(result, Result::kOk);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
 
   MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());

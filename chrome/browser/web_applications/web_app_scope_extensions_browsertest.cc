@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
@@ -187,7 +186,6 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
   content::ContentMockCertVerifier cert_verifier_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,

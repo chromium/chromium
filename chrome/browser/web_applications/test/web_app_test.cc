@@ -14,9 +14,6 @@
 WebAppTest::~WebAppTest() = default;
 
 void WebAppTest::SetUp() {
-#if BUILDFLAG(IS_WIN)
-  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
-#endif  // BUILDFLAG(IS_WIN)
   ASSERT_TRUE(testing_profile_manager_.SetUp());
   profile_ = testing_profile_manager_.CreateTestingProfile(
       TestingProfile::kDefaultProfileUserName, /*is_main_profile=*/true,
@@ -25,6 +22,7 @@ void WebAppTest::SetUp() {
 }
 
 void WebAppTest::TearDown() {
+  os_integration_test_override_.reset();
   if (testing::Test::HasFailure()) {
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
     web_app::test::LogDebugInfoToConsole(
@@ -48,4 +46,9 @@ content::BrowserContext* WebAppTest::GetBrowserContext() {
 
 web_app::FakeWebAppProvider& WebAppTest::fake_provider() const {
   return *web_app::FakeWebAppProvider::Get(profile());
+}
+
+web_app::OsIntegrationTestOverrideImpl& WebAppTest::fake_os_integration()
+    const {
+  return os_integration_test_override_->test_override();
 }

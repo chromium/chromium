@@ -499,30 +499,9 @@ TEST_F(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
             std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 
-  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
-      std::nullopt;
-  scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
-  // Protocol Handlers should still be registered with the OS, even though the
-  // app has been uninstalled.
 #if BUILDFLAG(IS_MAC)
-  EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id),
-              testing::ElementsAre(protocol_handler.protocol));
-#endif
-  if (AreProtocolsRegisteredWithOs()) {
-    EXPECT_THAT(
-        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-        testing::ElementsAre(
-            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
-  }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
-
-  SynchronizeOsOptions options;
-  options.force_unregister_os_integration = true;
-  test::SynchronizeOsIntegration(profile(), app_id, options);
-
-#if BUILDFLAG(IS_MAC)
-  ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id), testing::IsEmpty());
+  EXPECT_THAT(GetAppShimRegisteredProtocolHandlers(app_id), testing::IsEmpty());
 #endif
   if (AreProtocolsRegisteredWithOs()) {
     EXPECT_THAT(
@@ -531,7 +510,23 @@ TEST_F(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
   }
-  scoped_supress.reset();
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  // This should have no affect.
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+#if BUILDFLAG(IS_MAC)
+  ASSERT_THAT(GetAppShimRegisteredProtocolHandlers(app_id), testing::IsEmpty());
+#endif
+  if (AreProtocolsRegisteredWithOs()) {
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
+            std::make_tuple(app_id, std::vector<std::string>()),
+            std::make_tuple(app_id, std::vector<std::string>())));
+  }
 }
 
 }  // namespace

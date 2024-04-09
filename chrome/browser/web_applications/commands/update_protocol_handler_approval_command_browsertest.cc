@@ -43,26 +43,8 @@ class UpdateProtocolHandlerApprovalCommandTest
   UpdateProtocolHandlerApprovalCommandTest() = default;
   ~UpdateProtocolHandlerApprovalCommandTest() override = default;
 
-  void SetUpOnMainThread() override {
-    // Suppress the OS hooks to allow OS integration to proceed.
-    os_hooks_suppress_.reset();
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
-    }
-    WebAppControllerBrowserTest::SetUpOnMainThread();
-  }
-
   void TearDownOnMainThread() override {
-    // Uninstallation of all apps is required for the shortcut override
-    // destruction.
     EXPECT_TRUE(test::UninstallAllWebApps(profile()));
-    {
-      // Blocking required due to file operations in the shortcut override
-      // destructor.
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_.reset();
-    }
     WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
@@ -112,10 +94,6 @@ class UpdateProtocolHandlerApprovalCommandTest
     return true;
 #endif
   }
-
- private:
-  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
-      test_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest, Install) {

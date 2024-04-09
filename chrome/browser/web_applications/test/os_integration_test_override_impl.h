@@ -290,6 +290,19 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   base::ScopedTempDir quick_launch_;
   base::ScopedTempDir startup_;
 
+  // The shortcut creation code on windows can save web application shortcuts to
+  // any of these paths, hence they need to be overriden.
+  std::unique_ptr<base::ScopedPathOverride> desktop_override_;
+  std::unique_ptr<base::ScopedPathOverride> desktop_common_override_;
+
+  std::unique_ptr<base::ScopedPathOverride> start_menu_override_;
+  std::unique_ptr<base::ScopedPathOverride> start_menu_common_override_;
+
+  std::unique_ptr<base::ScopedPathOverride> quick_launch_override_;
+
+  std::unique_ptr<base::ScopedPathOverride> startup_override_;
+  std::unique_ptr<base::ScopedPathOverride> startup_common_override_;
+
   // This is used to ensure any registry changes by this test don't affect other
   // parts of the the trybot and are cleaned up.
   registry_util::RegistryOverrideManager registry_override_;

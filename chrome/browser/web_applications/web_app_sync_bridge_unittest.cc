@@ -1529,7 +1529,6 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
   }
 
  private:
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
