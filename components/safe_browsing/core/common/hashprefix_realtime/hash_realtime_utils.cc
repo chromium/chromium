@@ -79,12 +79,16 @@ bool IsHashRealTimeLookupEligibleInSession() {
   return HasGoogleChromeBranding() &&
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
+bool IsHashRealTimeLookupEligibleInLocation(
+    std::optional<std::string> stored_permanent_country) {
+  return (!stored_permanent_country.has_value() ||
+          !base::Contains(GetExcludedCountries(),
+                          stored_permanent_country.value()));
+}
 bool IsHashRealTimeLookupEligibleInSessionAndLocation(
     std::optional<std::string> stored_permanent_country) {
   return IsHashRealTimeLookupEligibleInSession() &&
-         (!stored_permanent_country.has_value() ||
-          !base::Contains(GetExcludedCountries(),
-                          stored_permanent_country.value()));
+         IsHashRealTimeLookupEligibleInLocation(stored_permanent_country);
 }
 std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service) {
@@ -134,6 +138,15 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
         "SafeBrowsing.HPRT.WouldBeIneligibleForSessionOrLatestCountry",
         !hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
             latest_country));
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.Ineligible.NoGoogleChromeBranding",
+        !HasGoogleChromeBranding());
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.Ineligible.FeatureOff",
+        !base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups));
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.Ineligible.IneligibleForLocation",
+        !IsHashRealTimeLookupEligibleInLocation(stored_permanent_country));
   }
   return can_do_lookup ?
 #if BUILDFLAG(IS_ANDROID)

@@ -204,6 +204,9 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool expected_off_the_record_log = false;
     bool expected_not_standard_protection_log = false;
     bool expected_not_allowed_by_policy_log = false;
+    bool expected_no_google_chrome_branding_log = false;
+    bool expected_feature_off_log = false;
+    bool expected_ineligible_for_location_log = false;
   } test_cases[] = {
       {.expected_selection = enabled_selection},
       // Lookups disabled for ESB.
@@ -218,13 +221,15 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.is_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_ineligible_for_session_or_location_log = true,
-       .expected_would_be_ineligible_for_session_or_location_log = true},
+       .expected_would_be_ineligible_for_session_or_location_log = true,
+       .expected_feature_off_log = true},
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // Lookups disabled because it's not a branded build.
       {.has_google_chrome_branding = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_ineligible_for_session_or_location_log = true,
-       .expected_would_be_ineligible_for_session_or_location_log = true},
+       .expected_would_be_ineligible_for_session_or_location_log = true,
+       .expected_no_google_chrome_branding_log = true},
 #endif
       // Lookups allowed for US.
       {.stored_permanent_country = "us",
@@ -232,7 +237,8 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       // Lookups disabled for CN.
       {.stored_permanent_country = "cn",
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-       .expected_ineligible_for_session_or_location_log = true},
+       .expected_ineligible_for_session_or_location_log = true,
+       .expected_ineligible_for_location_log = true},
       // Latest country is for logging only so it does not make it ineligible.
       {.stored_permanent_country = "us",
        .latest_country = "cn",
@@ -242,7 +248,8 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.stored_permanent_country = "cn",
        .latest_country = "us",
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-       .expected_ineligible_for_session_or_location_log = true},
+       .expected_ineligible_for_session_or_location_log = true,
+       .expected_ineligible_for_location_log = true},
       // Lookups allowed because policy allows them and nothing else prevents
       // them.
       {.lookups_allowed_by_policy = true,
@@ -277,6 +284,18 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
         /*sample=*/
         test_case.expected_would_be_ineligible_for_session_or_location_log,
         /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NoGoogleChromeBranding",
+        /*sample=*/test_case.expected_no_google_chrome_branding_log,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.FeatureOff",
+        /*sample=*/test_case.expected_feature_off_log,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForLocation",
+        /*sample=*/test_case.expected_ineligible_for_location_log,
+        /*expected_bucket_count=*/1);
   };
   auto check_no_usage_histograms = [](const base::HistogramTester&
                                           histogram_tester) {
@@ -294,6 +313,15 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
         /*expected_count=*/0);
     histogram_tester.ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.WouldBeIneligibleForSessionOrLatestCountry",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.NoGoogleChromeBranding",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.FeatureOff",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForLocation",
         /*expected_count=*/0);
   };
 
