@@ -18,30 +18,31 @@ class WebStateList;
 // Block invoked when a GroupTabInfo fetching operation completes. The
 // `groupTabInfos` is nil if the operation failed.
 typedef void (^GroupTabInfosFetchingCompletionBlock)(
-    TabGroupItem* item,
-    NSArray<GroupTabInfo*>* groupTabInfos);
+    TabGroupItem* _Nullable item,
+    NSArray<GroupTabInfo*>* _Nullable groupTabInfos);
 
 // Model object representing an group item.
 @interface TabGroupItem : NSObject
 
 #ifdef __cplusplus
-- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
-                    webStateList:(WebStateList*)webStateList
+- (nonnull instancetype)initWithTabGroup:(const TabGroup* _Nonnull)tabGroup
+                             webStateList:(WebStateList* _Nonnull)webStateList
     NS_DESIGNATED_INITIALIZER;
 #endif
-- (instancetype)init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 
 #ifdef __cplusplus
-@property(nonatomic, readonly) const TabGroup* tabGroup;
+@property(nonatomic, readonly, nonnull) const TabGroup* tabGroup;
 #endif
-@property(nonatomic, readonly) NSString* title;
-@property(nonatomic, readonly) UIColor* groupColor;
+@property(nonatomic, readonly, nullable) NSString* title;
+@property(nonatomic, readonly, nullable) UIColor* groupColor;
 @property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 @property(nonatomic, readonly) BOOL collapsed;
 
 // Fetches the groupTabInfos (pair of snapshots and favicons), calling
 // `completion` on the calling sequence when the operation completes.
-- (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion;
+- (void)fetchGroupTabInfos:
+    (nonnull GroupTabInfosFetchingCompletionBlock)completion;
 
 @end
 
