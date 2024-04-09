@@ -9142,7 +9142,8 @@ class DeprecatedRenderURLReplacementsEnabledWithCookieDeprecationBrowserTest
   DeprecatedRenderURLReplacementsEnabledWithCookieDeprecationBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAlwaysAllowFledgeDeprecatedRenderURLReplacements,
+        {blink::features::kFledgeDeprecatedRenderURLReplacements,
+         blink::features::kAlwaysAllowFledgeDeprecatedRenderURLReplacements,
          features::kCookieDeprecationFacilitatedTesting},
         /*disabled_features=*/{});
   }

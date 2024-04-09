@@ -728,11 +728,9 @@ void ResolveInvalidConfigurations() {
           features::kCookieDeprecationFacilitatedTesting)) {
     WebRuntimeFeatures::EnableFledgeMultiBid(false);
 
-    if (base::FeatureList::IsEnabled(
+    if (!base::FeatureList::IsEnabled(
             blink::features::
                 kAlwaysAllowFledgeDeprecatedRenderURLReplacements)) {
-      WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(true);
-    } else {
       WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(false);
     }
   }
