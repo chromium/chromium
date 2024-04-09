@@ -9,7 +9,7 @@
  * #css_wrapper_metadata_end */
 
 .search-bubble {
-  --search-bubble-color: var(--paper-yellow-500);
+  --search-bubble-color: #ffeb3b;  /* --paper-yellow-500 */
   position: absolute;
   z-index: 1;
 }

@@ -2,7 +2,7 @@ diff --git a/components-chromium/paper-styles/color.js b/third_party/polymer/v3_
 index 3482dc758691c..b494ebca25c3c 100644
 --- a/components-chromium/paper-styles/color.js
 +++ b/components-chromium/paper-styles/color.js
-@@ -17,320 +17,25 @@ const template = html`
+@@ -17,320 +17,17 @@ const template = html`
    <style is="custom-style">
      html {
  
@@ -35,14 +35,14 @@ index 3482dc758691c..b494ebca25c3c 100644
 -
        /* Material Design color palette from online spec document */
  
-       --paper-red-50: #ffebee;
+-      --paper-red-50: #ffebee;
 -      --paper-red-100: #ffcdd2;
 -      --paper-red-200: #ef9a9a;
 -      --paper-red-300: #e57373;
 -      --paper-red-400: #ef5350;
 -      --paper-red-500: #f44336;
 -      --paper-red-600: #e53935;
-       --paper-red-700: #d32f2f;
+-      --paper-red-700: #d32f2f;
 -      --paper-red-800: #c62828;
 -      --paper-red-900: #b71c1c;
 -      --paper-red-a100: #ff8a80;
@@ -220,7 +220,7 @@ index 3482dc758691c..b494ebca25c3c 100644
 -      --paper-yellow-200: #fff59d;
 -      --paper-yellow-300: #fff176;
 -      --paper-yellow-400: #ffee58;
-       --paper-yellow-500: #ffeb3b;
+-      --paper-yellow-500: #ffeb3b;
 -      --paper-yellow-600: #fdd835;
 -      --paper-yellow-700: #fbc02d;
 -      --paper-yellow-800: #f9a825;
@@ -250,7 +250,7 @@ index 3482dc758691c..b494ebca25c3c 100644
 -      --paper-orange-200: #ffcc80;
 -      --paper-orange-300: #ffb74d;
 -      --paper-orange-400: #ffa726;
-       --paper-orange-500: #ff9800;
+-      --paper-orange-500: #ff9800;
 -      --paper-orange-600: #fb8c00;
 -      --paper-orange-700: #f57c00;
 -      --paper-orange-800: #ef6c00;
@@ -308,12 +308,12 @@ index 3482dc758691c..b494ebca25c3c 100644
 -      --paper-blue-grey-800: #37474f;
 -      --paper-blue-grey-900: #263238;
 -
-       /* opacity for dark text on a light background */
+-      /* opacity for dark text on a light background */
 -      --dark-divider-opacity: 0.12;
 -      --dark-disabled-opacity: 0.38; /* or hint text or icon */
-       --dark-secondary-opacity: 0.54;
-       --dark-primary-opacity: 0.87;
- 
+-      --dark-secondary-opacity: 0.54;
+-      --dark-primary-opacity: 0.87;
+-
 -      /* opacity for light text on a dark background */
 -      --light-divider-opacity: 0.12;
 -      --light-disabled-opacity: 0.3; /* or hint text or icon */

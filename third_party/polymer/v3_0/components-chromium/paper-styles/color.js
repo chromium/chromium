@@ -19,10 +19,6 @@ const template = html`
 
       /* Material Design color palette from online spec document */
 
-      --paper-red-50: #ffebee;
-      --paper-red-700: #d32f2f;
-      --paper-yellow-500: #ffeb3b;
-      --paper-orange-500: #ff9800;
 
       --paper-grey-50: #fafafa;
       --paper-grey-300: #e0e0e0;
@@ -31,10 +27,6 @@ const template = html`
       --paper-grey-600: #757575;
       --paper-grey-800: #424242;
       --paper-grey-900: #212121;
-
-      /* opacity for dark text on a light background */
-      --dark-secondary-opacity: 0.54;
-      --dark-primary-opacity: 0.87;
 
     }
 
