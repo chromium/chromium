@@ -1098,7 +1098,7 @@ void GraphBuilder::AddConstantImmediateValue(
 }
 
 void GraphBuilder::AddConstantImmediateValue(
-    uint32_t constant_id,
+    uint64_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
   const mojom::Operand& operand = GetOperand(constant_id);
 
@@ -1187,7 +1187,7 @@ void GraphBuilder::AddConstantImmediateValue(
 }
 
 void GraphBuilder::AddConstantFileValue(
-    uint32_t constant_id,
+    uint64_t constant_id,
     uint64_t offset,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();

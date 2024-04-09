@@ -146,10 +146,10 @@ class GraphBuilder {
                                  std::string_view name,
                                  base::span<const uint32_t> dimensions,
                                  base::span<const DataType> value);
-  void AddConstantImmediateValue(uint32_t constant_id,
+  void AddConstantImmediateValue(uint64_t constant_id,
                                  CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  void AddConstantFileValue(uint32_t constant_id,
+  void AddConstantFileValue(uint64_t constant_id,
                             uint64_t offset,
                             CoreML::Specification::MILSpec::Block& block);
 
