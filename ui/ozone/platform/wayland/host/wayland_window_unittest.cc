@@ -933,7 +933,7 @@ TEST_P(WaylandWindowTest, ClientInitiatedMinimize) {
   });
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
   window_->Minimize();
-  Mock::VerifyAndClearExpectations(&delegate_);
+  VerifyAndClearExpectations();
 
   // Simulate an event from the server sent in response to the above request.
   // This should not result in another call to delegates as this will have
@@ -2470,7 +2470,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
   });
 
   ASSERT_TRUE(event->IsKeyEvent());
-  Mock::VerifyAndClearExpectations(&delegate_);
+  VerifyAndClearExpectations();
 
   EXPECT_CALL(menu_window_delegate, DispatchEvent(_)).Times(0);
   event.reset();
@@ -2499,7 +2499,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
   });
 
   ASSERT_TRUE(event->IsKeyEvent());
-  Mock::VerifyAndClearExpectations(&delegate_);
+  VerifyAndClearExpectations();
 
   menu_window.reset();
 }
@@ -4790,11 +4790,11 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
     window_->HandleSurfaceConfigure(3);
     EXPECT_EQ(window_->GetPlatformWindowState(),
               PlatformWindowState::kMinimized);
-    Mock::VerifyAndClearExpectations(&delegate_);
+    VerifyAndClearExpectations();
   } else {
     EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
     window_->Minimize();
-    Mock::VerifyAndClearExpectations(&delegate_);
+    VerifyAndClearExpectations();
 
     // The state of the window has to be already minimized.
     EXPECT_EQ(window_->GetPlatformWindowState(),
