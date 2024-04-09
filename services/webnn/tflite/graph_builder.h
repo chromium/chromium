@@ -117,8 +117,11 @@ class GraphBuilder final {
       ::tflite::BuiltinOptions builtin_options_type =
           ::tflite::BuiltinOptions_NONE,
       flatbuffers::Offset<void> builtin_options = 0);
-  OperatorOffset SerializeCastOperation(uint64_t input_operand_id,
-                                        uint64_t output_operand_id);
+  OperatorOffset SerializeCastOperation(
+      int32_t input_tensor_index,
+      ::tflite::TensorType input_tensor_type,
+      int32_t output_tensor_index,
+      ::tflite::TensorType output_tensor_type);
 
   // This function is called by `SerializeTranspose` to serialize WebNN
   // transpose operator or used to insert a tempary operator to transpose
@@ -160,6 +163,8 @@ class GraphBuilder final {
       const mojom::Gemm& gemm);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
+  OperatorOffset SerializeLogicalNot(
+      const mojom::ElementWiseUnary& logical_not);
   base::expected<OperatorOffset, std::string> SerializePad(
       const mojom::Pad& pad);
   base::expected<OperatorOffset, std::string> SerializePool2d(

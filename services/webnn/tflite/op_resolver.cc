@@ -92,6 +92,8 @@ OpResolver::OpResolver() {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_LOG,
              ::tflite::ops::builtin::Register_LOG());
+  AddBuiltin(::tflite::BuiltinOperator_LOGICAL_NOT,
+             ::tflite::ops::builtin::Register_LOGICAL_NOT());
   AddBuiltin(::tflite::BuiltinOperator_LOGISTIC,
              ::tflite::ops::builtin::Register_LOGISTIC(),
              /* min_version = */ 1,

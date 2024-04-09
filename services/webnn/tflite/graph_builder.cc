@@ -532,18 +532,21 @@ auto GraphBuilder::SerializeUnaryOperation(
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeCastOperation(uint64_t input_operand_id,
-                                          uint64_t output_operand_id)
-    -> OperatorOffset {
+auto GraphBuilder::SerializeCastOperation(
+    int32_t input_tensor_index,
+    ::tflite::TensorType input_tensor_type,
+    int32_t output_tensor_index,
+    ::tflite::TensorType output_tensor_type) -> OperatorOffset {
   const auto cast_options = ::tflite::CreateCastOptions(
-      builder_,
-      /*in_data_type=*/
-      MojoOperandTypeToTFLite(GetOperand(input_operand_id).data_type),
-      /*out_data_type=*/
-      MojoOperandTypeToTFLite(GetOperand(output_operand_id).data_type));
+      builder_, input_tensor_type, output_tensor_type);
 
-  return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_CAST, input_operand_id, output_operand_id,
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_CAST);
+  const std::array<int32_t, 1> op_inputs = {input_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
 }
 
@@ -959,9 +962,14 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
                                      op.input_operand_id, op.output_operand_id);
     case mojom::ElementWiseUnary::Kind::kCast:
-      return SerializeCastOperation(op.input_operand_id, op.output_operand_id);
-    case mojom::ElementWiseUnary::Kind::kTan:
+      return SerializeCastOperation(
+          operand_to_index_map_.at(op.input_operand_id),
+          MojoOperandTypeToTFLite(GetOperand(op.input_operand_id).data_type),
+          operand_to_index_map_.at(op.output_operand_id),
+          MojoOperandTypeToTFLite(GetOperand(op.output_operand_id).data_type));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      return SerializeLogicalNot(op);
+    case mojom::ElementWiseUnary::Kind::kTan:
     case mojom::ElementWiseUnary::Kind::kIdentity:
     case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
@@ -1066,6 +1074,49 @@ auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
       ::tflite::BuiltinOperator_LEAKY_RELU, leaky_relu.input_operand_id,
       leaky_relu.output_operand_id, ::tflite::BuiltinOptions_LeakyReluOptions,
       leaky_rely_options.Union());
+}
+
+auto GraphBuilder::SerializeLogicalNot(
+    const mojom::ElementWiseUnary& logical_not) -> OperatorOffset {
+  // The data type of WebNN LogicalNot operation is uint8, but TFLite LogicalNot
+  // builtin operation needs bool type, so a cast operation need to be inserted
+  // before LogicalNot to convert uint8 to bool for input tensor and a cast
+  // operation after LogicalNot to convert bool to uint8 for output tensor.
+  //
+  // Create two temporary tensors with bool type for TFLite LogicalNot.
+  std::array<int32_t, 2> bool_tensor_indexes;
+  const auto& input_operand = GetOperand(logical_not.input_operand_id);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  for (auto& bool_tensor_index : bool_tensor_indexes) {
+    bool_tensor_index = base::checked_cast<int32_t>(tensors_.size());
+    tensors_.emplace_back(::tflite::CreateTensor(
+        builder_, builder_.CreateVector<int32_t>(*signed_input_dimensions),
+        ::tflite::TensorType_BOOL));
+  }
+
+  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kUint8);
+  operators_.emplace_back(SerializeCastOperation(
+      operand_to_index_map_.at(logical_not.input_operand_id),
+      /*input_tensor_type=*/::tflite::TensorType_UINT8, bool_tensor_indexes[0],
+      /*output_tensor_type=*/::tflite::TensorType_BOOL));
+
+  // Serialize TFLite LogicalNot operation.
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_LOGICAL_NOT);
+  const std::array<int32_t, 1> op_inputs = {bool_tensor_indexes[0]};
+  const std::array<int32_t, 1> op_outputs = {bool_tensor_indexes[1]};
+  operators_.emplace_back(::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs)));
+
+  return SerializeCastOperation(
+      bool_tensor_indexes[1],
+      /*input_tensor_type=*/::tflite::TensorType_BOOL,
+      operand_to_index_map_.at(logical_not.output_operand_id),
+      /*output_tensor_type=*/::tflite::TensorType_UINT8);
 }
 
 auto GraphBuilder::SerializePad(const mojom::Pad& pad)
