@@ -246,8 +246,8 @@ class BrowserAutofillManagerWithMockDelegate : public BrowserAutofillManager {
 
   ~BrowserAutofillManagerWithMockDelegate() override = default;
 
-  NiceMock<MockAutofillExternalDelegate>& external_delegate() {
-    return static_cast<NiceMock<MockAutofillExternalDelegate>&>(
+  MockAutofillExternalDelegate& external_delegate() {
+    return static_cast<MockAutofillExternalDelegate&>(
         *test_api(*this).external_delegate());
   }
 };
@@ -268,7 +268,7 @@ class TestContentAutofillClientWithMockController
   // AutofillExternalDelegate. Therefore, when there are two consecutive
   // `popup_controller(x)` and `popup_controller(y)`, the second call hides the
   // old and creates new controller iff `x` and `y` are distinct.
-  NiceMock<TestAutofillPopupController>& popup_controller(
+  TestAutofillPopupController& popup_controller(
       BrowserAutofillManagerWithMockDelegate& manager) {
     if (manager_of_last_controller_.get() != &manager) {
       DoHide();
@@ -315,17 +315,16 @@ class TestContentAutofillClientWithMockController
     }
   }
 
-  NiceMock<TestAutofillPopupController>& cast_popup_controller() {
-    return static_cast<NiceMock<TestAutofillPopupController>&>(
-        *popup_controller_);
+  TestAutofillPopupController& cast_popup_controller() {
+    return static_cast<TestAutofillPopupController&>(*popup_controller_);
   }
 
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   base::WeakPtr<AutofillManager> manager_of_last_controller_;
 
-  std::unique_ptr<NiceMock<MockAutofillPopupView>> popup_view_ =
+  std::unique_ptr<MockAutofillPopupView> popup_view_ =
       std::make_unique<NiceMock<MockAutofillPopupView>>();
-  std::unique_ptr<NiceMock<MockAutofillPopupView>> sub_popup_view_ =
+  std::unique_ptr<MockAutofillPopupView> sub_popup_view_ =
       std::make_unique<NiceMock<MockAutofillPopupView>>();
   base::MockCallback<base::RepeatingCallback<void(
       gfx::NativeWindow,
@@ -419,8 +418,7 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
     return *autofill_client_injector_[web_contents()];
   }
 
-  NiceMock<MockAutofillDriver>& driver(
-      content::RenderFrameHost* rfh = nullptr) {
+  MockAutofillDriver& driver(content::RenderFrameHost* rfh = nullptr) {
     return *autofill_driver_injector_[rfh ? rfh : main_frame()];
   }
 
