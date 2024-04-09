@@ -58,7 +58,7 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   friend class MahiManagerImplTest;
   friend class MahiManagerImplFeatureKeyTest;
 
-  void SetMahiEnabledFromPref();
+  void OnMahiPrefChanged();
 
   // Initialize required provider if it is not initialized yet.
   void MaybeInitialize();
@@ -81,8 +81,6 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
                                 base::Value::Dict dict,
                                 manta::MantaStatus status);
 
-  // Profile pref state of mahi.
-  bool mahi_pref_enabled_ = false;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};

@@ -71,6 +71,11 @@ namespace ash {
 
 MahiManagerImpl::MahiManagerImpl() {
   session_observation_.Observe(Shell::Get()->session_controller());
+  PrefService* last_active_user_pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (last_active_user_pref_service) {
+    OnActiveUserPrefServiceChanged(last_active_user_pref_service);
+  }
 }
 
 MahiManagerImpl::~MahiManagerImpl() {
@@ -177,6 +182,10 @@ void MahiManagerImpl::OnContextMenuClicked(
         return;
       }
 
+      if (!mahi_panel_widget_) {
+        return;
+      }
+
       // When the user sends a question from the context menu, we treat it as
       // the start of a new journey, so we set `current_panel_content` false.
       static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
@@ -192,7 +201,9 @@ void MahiManagerImpl::OnContextMenuClicked(
 }
 
 bool MahiManagerImpl::IsEnabled() {
-  return IsSupportedWithCorrectFeatureKey() && mahi_pref_enabled_;
+  return IsSupportedWithCorrectFeatureKey() &&
+         Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+             ash::prefs::kMahiEnabled);
 }
 
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
@@ -210,18 +221,16 @@ void MahiManagerImpl::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
       ash::prefs::kMahiEnabled,
-      base::BindRepeating(&MahiManagerImpl::SetMahiEnabledFromPref,
+      base::BindRepeating(&MahiManagerImpl::OnMahiPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  SetMahiEnabledFromPref();
+  OnMahiPrefChanged();
 }
 
-void MahiManagerImpl::SetMahiEnabledFromPref() {
+void MahiManagerImpl::OnMahiPrefChanged() {
   CHECK(pref_change_registrar_);
   CHECK(pref_change_registrar_->prefs());
-  mahi_pref_enabled_ =
-      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled);
-  if (!mahi_pref_enabled_) {
+  if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled)) {
     mahi_panel_widget_.reset();
   }
 }
