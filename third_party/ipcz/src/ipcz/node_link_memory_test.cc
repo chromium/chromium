@@ -9,6 +9,7 @@
 
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
+#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node.h"
@@ -46,11 +47,11 @@ class NodeLinkMemoryTest : public testing::Test {
         NodeLinkMemory::AllocateMemory(kTestDriver);
     links.first = NodeLink::CreateInactive(
         broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
-        Node::Type::kNormal, 0, transports.first,
+        Node::Type::kNormal, 0, Features{}, transports.first,
         NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
     links.second = NodeLink::CreateInactive(
         non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
-        Node::Type::kBroker, 0, transports.second,
+        Node::Type::kBroker, 0, Features{}, transports.second,
         NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
     broker->AddConnection(non_broker_name, {.link = links.first});
     non_broker->AddConnection(broker->GetAssignedName(),

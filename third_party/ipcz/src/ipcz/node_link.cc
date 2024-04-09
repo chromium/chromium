@@ -59,12 +59,13 @@ Ref<NodeLink> NodeLink::CreateActive(Ref<Node> node,
                                      const NodeName& remote_node_name,
                                      Node::Type remote_node_type,
                                      uint32_t remote_protocol_version,
+                                     const Features& remote_features,
                                      Ref<DriverTransport> transport,
                                      Ref<NodeLinkMemory> memory) {
-  return AdoptRef(new NodeLink(std::move(node), link_side, local_node_name,
-                               remote_node_name, remote_node_type,
-                               remote_protocol_version, std::move(transport),
-                               std::move(memory), kActive));
+  return AdoptRef(new NodeLink(
+      std::move(node), link_side, local_node_name, remote_node_name,
+      remote_node_type, remote_protocol_version, remote_features,
+      std::move(transport), std::move(memory), kActive));
 }
 
 // static
@@ -74,12 +75,13 @@ Ref<NodeLink> NodeLink::CreateInactive(Ref<Node> node,
                                        const NodeName& remote_node_name,
                                        Node::Type remote_node_type,
                                        uint32_t remote_protocol_version,
+                                       const Features& remote_features,
                                        Ref<DriverTransport> transport,
                                        Ref<NodeLinkMemory> memory) {
-  return AdoptRef(new NodeLink(std::move(node), link_side, local_node_name,
-                               remote_node_name, remote_node_type,
-                               remote_protocol_version, std::move(transport),
-                               std::move(memory), kNeverActivated));
+  return AdoptRef(new NodeLink(
+      std::move(node), link_side, local_node_name, remote_node_name,
+      remote_node_type, remote_protocol_version, remote_features,
+      std::move(transport), std::move(memory), kNeverActivated));
 }
 
 NodeLink::NodeLink(Ref<Node> node,
@@ -88,6 +90,7 @@ NodeLink::NodeLink(Ref<Node> node,
                    const NodeName& remote_node_name,
                    Node::Type remote_node_type,
                    uint32_t remote_protocol_version,
+                   const Features& remote_features,
                    Ref<DriverTransport> transport,
                    Ref<NodeLinkMemory> memory,
                    ActivationState initial_activation_state)
@@ -97,6 +100,8 @@ NodeLink::NodeLink(Ref<Node> node,
       remote_node_name_(remote_node_name),
       remote_node_type_(remote_node_type),
       remote_protocol_version_(remote_protocol_version),
+      remote_features_(remote_features),
+      available_features_(node_->features().Intersect(remote_features_)),
       transport_(std::move(transport)),
       memory_(std::move(memory)),
       activation_state_(initial_activation_state) {
@@ -196,6 +201,7 @@ void NodeLink::AcceptIntroduction(const NodeName& name,
                                   LinkSide side,
                                   Node::Type remote_node_type,
                                   uint32_t remote_protocol_version,
+                                  const Features& remote_features,
                                   Ref<DriverTransport> transport,
                                   DriverMemory memory) {
   ABSL_ASSERT(node_->type() == Node::Type::kBroker);
@@ -209,6 +215,7 @@ void NodeLink::AcceptIntroduction(const NodeName& name,
   accept.v0()->transport =
       accept.AppendDriverObject(transport->TakeDriverObject());
   accept.v0()->memory = accept.AppendDriverObject(memory.TakeDriverObject());
+  accept.v1()->remote_features = remote_features.Serialize(accept);
   Transmit(accept);
 }
 
@@ -424,10 +431,14 @@ bool NodeLink::OnNonBrokerReferralAccepted(
     return true;
   }
 
+  Features remote_features = {};
+  if (auto* v1 = accepted.v1()) {
+    remote_features = Features::Deserialize(accepted, v1->features);
+  }
   Ref<NodeLink> link_to_referree = NodeLink::CreateInactive(
       node_, LinkSide::kA, local_node_name_, accepted.v0()->name,
-      Node::Type::kNormal, protocol_version, std::move(transport),
-      NodeLinkMemory::Create(node_, std::move(mapping)));
+      Node::Type::kNormal, protocol_version, remote_features,
+      std::move(transport), NodeLinkMemory::Create(node_, std::move(mapping)));
   callback(link_to_referree, accepted.v0()->num_initial_portals);
   link_to_referree->Activate();
   return true;
@@ -474,12 +485,17 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
     return false;
   }
 
+  Features remote_features = {};
+  if (auto* v1 = accept.v1()) {
+    remote_features = Features::Deserialize(accept, v1->remote_features);
+  }
   auto transport = MakeRefCounted<DriverTransport>(
       accept.TakeDriverObject(accept.v0()->transport));
   node()->AcceptIntroduction(
       *this, accept.v0()->name, accept.v0()->link_side,
       accept.v0()->remote_node_type, accept.v0()->remote_protocol_version,
-      std::move(transport), NodeLinkMemory::Create(node(), std::move(mapping)));
+      remote_features, std::move(transport),
+      NodeLinkMemory::Create(node(), std::move(mapping)));
   return true;
 }
 

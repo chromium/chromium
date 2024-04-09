@@ -40,6 +40,11 @@ IPCZ_MSG_BEGIN(ConnectFromBrokerToNonBroker, IPCZ_MSG_ID(0))
     // Explicit padding to preserve 8-byte size alignemnt.
     IPCZ_MSG_PARAM(uint32_t, padding)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the sending node.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Initial greeting sent by a non-broker node when ConnectNode() is invoked with
@@ -56,6 +61,11 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker, IPCZ_MSG_ID(1))
     // behave as if its excess portals have observed peer closure.
     IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the sending node.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent from a non-broker to its broker when calling ConnectNode() with
@@ -111,6 +121,11 @@ IPCZ_MSG_BEGIN(ConnectToReferredBroker, IPCZ_MSG_ID(3))
     // NonBrokerReferralAccepted.
     IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the sending node.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent from a broker to a referred non-broker node over a transport that was
@@ -155,6 +170,14 @@ IPCZ_MSG_BEGIN(ConnectToReferredNonBroker, IPCZ_MSG_ID(4))
     IPCZ_MSG_PARAM_DRIVER_OBJECT(referrer_link_transport)
     IPCZ_MSG_PARAM_DRIVER_OBJECT(referrer_link_buffer)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the broker node.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, broker_features)
+
+    // Features enabled on the referring node.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, referrer_features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent from a broker to a non-broker who previously referred another node via
@@ -182,6 +205,11 @@ IPCZ_MSG_BEGIN(NonBrokerReferralAccepted, IPCZ_MSG_ID(5))
     IPCZ_MSG_PARAM_DRIVER_OBJECT(transport)
     IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the sending broker.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent from a broker to a non-broker who previously referred another node via
@@ -223,6 +251,11 @@ IPCZ_MSG_BEGIN(ConnectFromBrokerToBroker, IPCZ_MSG_ID(7))
     // Explicit padding to preserve 8-byte size alignment.
     IPCZ_MSG_PARAM(uint32_t, padding)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the sending broker.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent to a broker to ask for an introduction to one of the non-broker nodes in
@@ -273,6 +306,11 @@ IPCZ_MSG_BEGIN(AcceptIntroduction, IPCZ_MSG_ID(11))
     // NodeLinkMemory's primary buffer.
     IPCZ_MSG_PARAM_DRIVER_OBJECT(memory)
   IPCZ_MSG_END_VERSION(0)
+
+  IPCZ_MSG_BEGIN_VERSION(1)
+    // Features enabled on the remote node being introduced.
+    IPCZ_MSG_PARAM_ARRAY(Features::Bitfield, remote_features)
+  IPCZ_MSG_END_VERSION(1)
 IPCZ_MSG_END()
 
 // Sent to a node in response to RequestIntroduction if the broker receiving
