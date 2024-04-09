@@ -6,11 +6,22 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/material/material_branding_api.h"
+
+BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
+             "SnackbarUseLegacyDismissalBehavior",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allow access to `usesLegacyDismissalBehavior` since the autoroller to update
+// the header is broken.
+@interface MDCSnackbarMessage (UsesLegacyDismissalBehavior)
+@property(nonatomic) BOOL usesLegacyDismissalBehavior;
+@end
 
 @interface SnackbarCoordinator () <MDCSnackbarManagerDelegate>
 
@@ -94,6 +105,14 @@
       [MDCSnackbarMessage messageWithText:messageText];
   message.action = action;
   message.completionHandler = completionAction;
+
+  // TODO:(crbug.com/333567367) Clean up the killswitch.
+  if (base::FeatureList::IsEnabled(kSnackbarUseLegacyDismissalBehavior)) {
+    if ([message
+            respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
+      message.usesLegacyDismissalBehavior = YES;
+    }
+  }
 
   [self showSnackbarMessage:message];
 }
