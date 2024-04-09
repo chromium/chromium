@@ -8748,7 +8748,7 @@
 <translation id="77381465218432215">Показывать диакритические знаки и специальные символы</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="7742706086992565332">Вы можете настроить масштаб страницы для просмотра определенных сайтов.</translation>
-<translation id="7742726773290359702">{NUM_SITES,plural, =1{Найден один раскрытый пароль.}one{Найден {NUM_SITES} раскрытый пароль.}few{Найдено {NUM_SITES} раскрытых пароля.}many{Найдено {NUM_SITES} раскрытых паролей.}other{Найдено {NUM_SITES} раскрытого пароля.}}</translation>
+<translation id="7742726773290359702">{NUM_SITES,plural, =1{Найден 1 раскрытый пароль.}one{Найден {NUM_SITES} раскрытый пароль.}few{Найдено {NUM_SITES} раскрытых пароля.}many{Найдено {NUM_SITES} раскрытых паролей.}other{Найдено {NUM_SITES} раскрытого пароля.}}</translation>
 <translation id="7742879569460013116">Отправить ссылку</translation>
 <translation id="774377079771918250">Выберите, где сохранить пароль</translation>
 <translation id="7744047395460924128">Просмотр истории печати</translation>
