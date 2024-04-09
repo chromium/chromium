@@ -302,7 +302,7 @@ UIButton* CreateMorePillButton() {
   _searchEngineStackView.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   _searchEngineStackView.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   _searchEngineStackView.layer.cornerRadius = 12.;
   _searchEngineStackView.layer.masksToBounds = YES;
   _searchEngineStackView.translatesAutoresizingMaskIntoConstraints = NO;
