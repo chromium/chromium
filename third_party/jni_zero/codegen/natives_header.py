@@ -18,7 +18,8 @@ def _return_type_cpp(java_type):
 
 def _param_type_cpp(java_type):
   if converted_type := java_type.converted_type():
-    if not java_type.is_primitive():
+    # Drop & when the type is obviously a pointer to avoid "const char *&".
+    if not java_type.is_primitive() and not converted_type.endswith('*'):
       converted_type += '&'
     return converted_type
 

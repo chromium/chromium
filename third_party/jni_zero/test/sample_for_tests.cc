@@ -51,6 +51,10 @@ ScopedJavaLocalRef<jstring> ToJniType<const char*>(
     const char * const& input) {
   return {};
 }
+template <>
+tests::CPPClass* FromJniType<tests::CPPClass*>(JNIEnv* env, const JavaRef<jobject>& j_obj) {
+  return nullptr;
+}
 
 // Specialized conversions for std::optional<std::basic_string<T>> since jstring
 // is a nullable type but std::basic_string<T> is not.
@@ -132,7 +136,8 @@ ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 static jlong JNI_SampleForTests_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& caller,
                                      const JavaParamRef<jstring>& param,
-                                     jni_zero::ByteArrayView& bytes) {
+                                     jni_zero::ByteArrayView& bytes,
+                                     CPPClass* converted_type) {
   return static_cast<jlong>(bytes.size());
 }
 
@@ -351,7 +356,7 @@ int main() {
   std::vector<const char*> string_vector = {"Test"};
   std::string first_string =
       jni_zero::tests::Java_SampleForTests_getFirstString(
-          env, my_created_object, string_vector);
+          env, my_created_object, string_vector, "");
 
   jni_zero::tests::Java_SampleForTests_methodWithAnnotationParamAssignment(
       env, my_created_object);
