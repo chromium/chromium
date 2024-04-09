@@ -23,6 +23,10 @@
 // Used to either suppress or force the bottom sheet to appear in tests.
 + (void)setDismissCount:(int)dismissCount;
 
+// Sets the pref recording the number of times the bottom sheet was dismissed to
+// the maximum number allowed, so that the bottom sheet is effectively disabled.
++ (void)disableBottomSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_APP_INTERFACE_H_

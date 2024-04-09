@@ -230,9 +230,8 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   [AutofillAppInterface saveLocalCreditCard];
   [AutofillAppInterface saveExampleAccountProfile];
 
-  // Set password bottom sheet dismiss count so that the sheet won't be
-  // presented.
-  [PasswordSuggestionBottomSheetAppInterface setDismissCount:3];
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
 }
 
 - (void)tearDown {

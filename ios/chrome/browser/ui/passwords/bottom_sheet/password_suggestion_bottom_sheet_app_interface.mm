@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
@@ -42,6 +43,12 @@ static std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
 + (void)setDismissCount:(int)dismissCount {
   chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetInteger(
       prefs::kIosPasswordBottomSheetDismissCount, dismissCount);
+}
+
++ (void)disableBottomSheet {
+  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetInteger(
+      prefs::kIosPasswordBottomSheetDismissCount,
+      AutofillBottomSheetTabHelper::kPasswordBottomSheetMaxDismissCount);
 }
 
 @end
