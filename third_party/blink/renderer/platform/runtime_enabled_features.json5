@@ -2067,7 +2067,7 @@
       // A flag to control the popovertargetaction=hover behavior,
       // and associated CSS properties.
       name: "HTMLPopoverActionHover",
-      status: "experimental",
+      status: "test",
     },
     {
       // TODO(crbug.com/1416284): Enables popover=hint functionality.
