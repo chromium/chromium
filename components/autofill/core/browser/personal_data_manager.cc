@@ -300,21 +300,6 @@ void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   payments_data_manager_->UpdateCreditCard(credit_card);
 }
 
-void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
-                                         const std::u16string& cvc) {
-  payments_data_manager_->UpdateLocalCvc(guid, cvc);
-}
-
-void PersonalDataManager::AddServerCvc(int64_t instrument_id,
-                                       const std::u16string& cvc) {
-  payments_data_manager_->AddServerCvc(instrument_id, cvc);
-}
-
-void PersonalDataManager::UpdateServerCvc(int64_t instrument_id,
-                                          const std::u16string& cvc) {
-  payments_data_manager_->UpdateServerCvc(instrument_id, cvc);
-}
-
 void PersonalDataManager::ClearAllServerDataForTesting() {
   payments_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
 }
@@ -613,11 +598,6 @@ void PersonalDataManager::SetCreditCards(
   payments_data_manager_->SetCreditCards(credit_cards);
 }
 
-bool PersonalDataManager::SaveCardLocallyIfNew(
-    const CreditCard& imported_card) {
-  return payments_data_manager_->SaveCardLocallyIfNew(imported_card);
-}
-
 void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   CHECK(!sync_service_);
 
@@ -630,10 +610,6 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   // production (as we no longer re-mask cards in this method), but tests may
   // depend on it still. Investigate and remove if possible.
   OnStateChanged(sync_service_);
-}
-
-void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
-  payments_data_manager_->OnUserAcceptedUpstreamOffer();
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {

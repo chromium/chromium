@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -125,10 +126,9 @@ struct CreditCardFormOptions {
 
 }  // anonymous namespace
 
-class MockPersonalDataManager : public TestPersonalDataManager {
+class MockPaymentsDataManager : public TestPaymentsDataManager {
  public:
-  MockPersonalDataManager() = default;
-  ~MockPersonalDataManager() override = default;
+  using TestPaymentsDataManager::TestPaymentsDataManager;
   MOCK_METHOD(void, OnUserAcceptedUpstreamOffer, (), (override));
   MOCK_METHOD(void,
               AddServerCvc,
@@ -152,17 +152,19 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(void, HideSaveCardPromptPrompt, (), (override));
 };
 
+// A mock AutofillClient using the `MockPaymentsDataManager` and
+// `MockPaymentsAutofillClient`.
 class MockAutofillClient : public TestAutofillClient {
  public:
-  explicit MockAutofillClient(
-      std::unique_ptr<TestPersonalDataManager> pdm = nullptr,
-      std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client =
-          nullptr) {
-    set_personal_data_manager(
-        pdm ? std::move(pdm) : std::make_unique<TestPersonalDataManager>());
-    if (payments_client) {
-      set_payments_autofill_client(std::move(payments_client));
-    }
+  MockAutofillClient() {
+    set_personal_data_manager(std::make_unique<TestPersonalDataManager>());
+    TestPersonalDataManager* pdm = GetPersonalDataManager();
+    pdm->set_payments_data_manager(std::make_unique<MockPaymentsDataManager>(
+        pdm->app_locale(),
+        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
+                            base::Unretained(pdm))));
+    set_payments_autofill_client(
+        std::make_unique<MockPaymentsAutofillClient>());
   }
   ~MockAutofillClient() override = default;
   MOCK_METHOD(VirtualCardEnrollmentManager*,
@@ -174,13 +176,7 @@ class MockAutofillClient : public TestAutofillClient {
 class MockVirtualCardEnrollmentManager
     : public TestVirtualCardEnrollmentManager {
  public:
-  MockVirtualCardEnrollmentManager(
-      TestPersonalDataManager* personal_data_manager,
-      payments::TestPaymentsNetworkInterface* payments_network_interface,
-      TestAutofillClient* autofill_client)
-      : TestVirtualCardEnrollmentManager(personal_data_manager,
-                                         payments_network_interface,
-                                         autofill_client) {}
+  using TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager;
   MOCK_METHOD(
       void,
       InitVirtualCardEnroll,
@@ -415,9 +411,12 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
  protected:
-  MockPersonalDataManager& personal_data() {
-    return static_cast<MockPersonalDataManager&>(
-        *autofill_client_.GetPersonalDataManager());
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
+  }
+  MockPaymentsDataManager& payments_data_manager() {
+    return static_cast<MockPaymentsDataManager&>(
+        personal_data().payments_data_manager());
   }
   MockPaymentsAutofillClient& payments_client() {
     return static_cast<MockPaymentsAutofillClient&>(
@@ -436,9 +435,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   syncer::TestSyncService sync_service_;
-  MockAutofillClient autofill_client_{
-      std::make_unique<MockPersonalDataManager>(),
-      std::make_unique<MockPaymentsAutofillClient>()};
+  MockAutofillClient autofill_client_;
   std::unique_ptr<MockVirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
   // TODO(crbug.com/1291003): Refactor to use the real CreditCardSaveManager.
@@ -742,7 +739,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(
       autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
-  EXPECT_CALL(personal_data(), UpdateLocalCvc(local_card.guid(), kCvc));
+  EXPECT_CALL(payments_data_manager(), UpdateLocalCvc(local_card.guid(), kCvc));
   UserDidDecideCvcLocalSave(
       AutofillClient::SaveCardOfferUserDecision::kAccepted);
 }
@@ -1065,7 +1062,8 @@ TEST_F(
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 
   EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
-  EXPECT_CALL(personal_data(), AddServerCvc(credit_card.instrument_id(), kCvc));
+  EXPECT_CALL(payments_data_manager(),
+              AddServerCvc(credit_card.instrument_id(), kCvc));
   UserHasAcceptedCvcUpload({});
 }
 
@@ -1082,7 +1080,7 @@ TEST_F(
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 
   EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
-  EXPECT_CALL(personal_data(),
+  EXPECT_CALL(payments_data_manager(),
               UpdateServerCvc(credit_card.instrument_id(), kNewCvc));
   UserHasAcceptedCvcUpload({});
 }
@@ -5021,7 +5019,7 @@ TEST_F(CreditCardSaveManagerTest,
 // Make sure that the PersonalDataManager gets notified when the user accepts
 // an upload offer.
 TEST_F(CreditCardSaveManagerTest, OnUserDidAcceptUpload_NotifiesPDM) {
-  EXPECT_CALL(personal_data(), OnUserAcceptedUpstreamOffer);
+  EXPECT_CALL(payments_data_manager(), OnUserAcceptedUpstreamOffer);
 
   // Simulate that the user has accepted the upload from the prompt.
   UserHasAcceptedCardUpload({});
@@ -5266,9 +5264,9 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
   // Confirm CVC is added to PaymentsAutofillTable only if CVC storage feature
   // and pref were enabled.
   if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
-    EXPECT_CALL(personal_data(), AddServerCvc(kInstrumentId, kCvc));
+    EXPECT_CALL(payments_data_manager(), AddServerCvc(kInstrumentId, kCvc));
   } else {
-    EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+    EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
   }
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kSuccess,
@@ -5559,7 +5557,7 @@ TEST_F(CreditCardSaveManagerTest,
   upload_card_response_details.instrument_id = 12345L;
 
   // Confirm CVC is not added to PaymentsAutofillTable if CVC was empty.
-  EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+  EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kSuccess,
@@ -5586,7 +5584,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Confirm CVC is not added to PaymentsAutofillTable if instrument_id was
   // empty.
-  EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
+  EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kSuccess,
@@ -5621,7 +5619,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
        OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure) {
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
 
-  EXPECT_CALL(personal_data(), SaveCardLocallyIfNew);
+  EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -5636,7 +5634,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   card.SetExpirationMonth(0);
   credit_card_save_manager_->set_upload_request_card(card);
 
-  EXPECT_CALL(personal_data(), SaveCardLocallyIfNew).Times(0);
+  EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -5650,7 +5648,8 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
        Metrics_OnDidUploadCard_FallbackToLocalSave_CardAdded) {
   base::HistogramTester histogram_tester;
 
-  ON_CALL(personal_data(), SaveCardLocallyIfNew).WillByDefault(Return(true));
+  ON_CALL(payments_data_manager(), SaveCardLocallyIfNew)
+      .WillByDefault(Return(true));
 
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
@@ -5668,7 +5667,8 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
        Metrics_OnDidUploadCard_FallbackToLocalSave_CardExists) {
   base::HistogramTester histogram_tester;
 
-  ON_CALL(personal_data(), SaveCardLocallyIfNew).WillByDefault(Return(false));
+  ON_CALL(payments_data_manager(), SaveCardLocallyIfNew)
+      .WillByDefault(Return(false));
 
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(

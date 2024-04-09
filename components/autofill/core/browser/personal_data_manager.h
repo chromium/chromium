@@ -210,10 +210,6 @@ class PersonalDataManager : public KeyedService,
   void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card);
 
-  // TODO(b/322170538): Deprecated. Use the functions in
-  // `payments_data_manager()` instead. Some mocks still rely on this.
-  virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
-
   // Adds |profile| to the web database.
   virtual void AddProfile(const AutofillProfile& profile);
 
@@ -260,15 +256,6 @@ class PersonalDataManager : public KeyedService,
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);
-
-  // TODO(b/322170538): Deprecated. Use the functions in
-  // `payments_data_manager()` instead. This only exists here because some tests
-  // mock these functions. Migrate those tests.
-  virtual void UpdateLocalCvc(const std::string& guid,
-                              const std::u16string& cvc);
-  virtual void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
-  virtual void UpdateServerCvc(int64_t instrument_id,
-                               const std::u16string& cvc);
 
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
@@ -449,10 +436,6 @@ class PersonalDataManager : public KeyedService,
   void SetSyncingForTest(bool is_syncing_for_test) {
     payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
   }
-
-  // TODO(b/322170538): Deprecated. Use the functions in
-  // `payments_data_manager()` instead. Some mocks still rely on this.
-  virtual void OnUserAcceptedUpstreamOffer();
 
   // Triggers `OnPersonalDataChanged()` for all `observers_`.
   // Additionally, if all of the PDM's pending operations have finished, meaning
