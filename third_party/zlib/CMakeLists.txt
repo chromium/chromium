@@ -26,6 +26,8 @@ option(ENABLE_SIMD_AVX512 "Enable SIMD AXV512 optimizations" OFF)
 option(USE_ZLIB_RABIN_KARP_HASH "Enable bitstream compatibility with canonical zlib" OFF)
 option(BUILD_UNITTESTS "Enable standalone unit tests build" OFF)
 option(BUILD_MINIZIP_BIN "Enable building minzip_bin tool" OFF)
+option(BUILD_ZPIPE "Enable building zpipe tool" OFF)
+option(BUILD_MINIGZIP "Enable building minigzip tool" OFF)
 
 if (USE_ZLIB_RABIN_KARP_HASH)
    add_definitions(-DUSE_ZLIB_RABIN_KARP_ROLLING_HASH)
@@ -351,7 +353,7 @@ if (BUILD_UNITTESTS)
 endif()
 
 #============================================================================
-# Minigzip tool
+# Minizip tool
 #============================================================================
 # TODO(cavalcantii): get it working on Windows.
 if (BUILD_MINIZIP_BIN)
@@ -360,4 +362,19 @@ if (BUILD_MINIZIP_BIN)
     contrib/minizip/unzip.h contrib/minizip/zip.c contrib/minizip/zip.h
     )
   target_link_libraries(minizip_bin zlib)
+endif()
+
+#============================================================================
+# zpipe tool
+#============================================================================
+if (BUILD_ZPIPE)
+  add_executable(zpipe examples/zpipe.c)
+  target_link_libraries(zpipe zlib)
+endif()
+#============================================================================
+# MiniGzip tool
+#============================================================================
+if (BUILD_MINIGZIP)
+  add_executable(minigzip_bin test/minigzip.c)
+  target_link_libraries(minigzip_bin zlib)
 endif()
