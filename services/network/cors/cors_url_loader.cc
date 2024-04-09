@@ -895,26 +895,29 @@ void CorsURLLoader::StartRequest() {
   network_loader_.reset();
 
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> remote_observer;
-  // TODO(https://crbug.com/1338439): Create a base function and clean up all
-  // need_pna_permission check in the code base.
-  const mojom::ClientSecurityState* state = GetClientSecurityState();
-  const bool needs_pna_permission =
-      state && PrivateNetworkAccessChecker::NeedPermission(
-                   request_.url, state->is_web_secure_context,
-                   request_.required_ip_address_space);
-  if (needs_pna_permission &&
-      url_loader_network_service_observer_->is_bound()) {
-    // Fail the request if `targetAddressSpace` on fetch option is not the same
-    // as the real target address space.
-    if (request_.required_ip_address_space != mojom::IPAddressSpace::kUnknown &&
-        request_.required_ip_address_space !=
-            request_.target_ip_address_space) {
-      HandleComplete(URLLoaderCompletionStatus(
-          CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess)));
-      return;
+
+  if (needs_preflight.has_value() &&
+      *needs_preflight == PreflightRequiredReason::kPrivateNetworkAccess) {
+    // TODO(https://crbug.com/1338439): Create a base function and clean up all
+    // need_pna_permission check in the code base.
+    const mojom::ClientSecurityState* state = GetClientSecurityState();
+    const bool needs_pna_permission =
+        state && PrivateNetworkAccessChecker::NeedPermission(
+                     request_.url, state->is_web_secure_context,
+                     request_.required_ip_address_space);
+    if (needs_pna_permission &&
+        url_loader_network_service_observer_->is_bound()) {
+      // Fail the request if `targetAddressSpace` on fetch option is not the
+      // same as the real target address space.
+      if (request_.required_ip_address_space !=
+          request_.target_ip_address_space) {
+        HandleComplete(URLLoaderCompletionStatus(
+            CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess)));
+        return;
+      }
+      (*url_loader_network_service_observer_)
+          ->Clone(remote_observer.InitWithNewPipeAndPassReceiver());
     }
-    (*url_loader_network_service_observer_)
-        ->Clone(remote_observer.InitWithNewPipeAndPassReceiver());
   }
   context_->cors_preflight_controller()->PerformPreflightCheck(
       base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,

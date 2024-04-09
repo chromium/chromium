@@ -139,6 +139,10 @@ CorsURLLoaderTestBase::ResetFactoryParams::ResetFactoryParams() {
   mojom::URLLoaderFactoryOverride factory_override;
   skip_cors_enabled_scheme_check =
       factory_override.skip_cors_enabled_scheme_check;
+
+  url_loader_network_observer = std::move(
+      const_cast<mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+          params.url_loader_network_observer));
 }
 
 CorsURLLoaderTestBase::ResetFactoryParams::~ResetFactoryParams() = default;
@@ -292,6 +296,9 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
       params.skip_cors_enabled_scheme_check;
   factory_params->client_security_state = params.client_security_state.Clone();
   factory_params->isolation_info = params.isolation_info;
+  factory_params->url_loader_network_observer = std::move(
+      const_cast<mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+          params.url_loader_network_observer));
 
   auto resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
