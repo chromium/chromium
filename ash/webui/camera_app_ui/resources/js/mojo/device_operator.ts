@@ -666,7 +666,7 @@ export class DeviceOperator {
         }
       }
     }
-    state.addOneTimeObserver(state.State.SUSPEND, suspendObserver);
+    state.addObserver(state.State.SUSPEND, suspendObserver);
 
     const device = await this.getDevice(deviceId);
     await device.takePortraitModePhoto(
