@@ -576,22 +576,24 @@ bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
            !base::FeatureList::IsEnabled(
                syncer::kSyncEnableContactInfoDataTypeForDasherUsers);
   };
-  auto is_child_account = [&] {
+  auto is_unsupported_child_account = [&] {
     if (!sync_service_ || !identity_manager_ ||
         !identity_manager_->AreRefreshTokensLoaded()) {
       return false;
     }
     return identity_manager_
-               ->FindExtendedAccountInfo(sync_service_->GetAccountInfo())
-               .capabilities.is_subject_to_parental_controls() ==
-           signin::Tribool::kTrue;
+                   ->FindExtendedAccountInfo(sync_service_->GetAccountInfo())
+                   .capabilities.is_subject_to_parental_controls() ==
+               signin::Tribool::kTrue &&
+           !base::FeatureList::IsEnabled(
+               syncer::kSyncEnableContactInfoDataTypeForChildUsers);
   };
   return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
          !sync_service_->HasSyncConsent() &&
          !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
              syncer::UserSelectableType::kAutofill) &&
          !is_unsupported_passphrase_user() && !is_unsupported_dasher_user() &&
-         !is_child_account() &&
+         !is_unsupported_child_account() &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
          ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
