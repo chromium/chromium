@@ -179,19 +179,7 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
   CHECK(format().is_single_plane());
   CHECK(pixels.data());
 
-  if (format().IsCompressed()) {
-    // TODO(crbug.com/1430206): Add support for compressed backend textures.
-    NOTIMPLEMENTED_LOG_ONCE();
-    return false;
-  }
-
   graphite_textures_.resize(1);
-  auto image_info = AsSkImageInfo();
-  if (pixels.size() != image_info.computeMinByteSize()) {
-    LOG(ERROR) << "Invalid initial pixel data size";
-    return false;
-  }
-  SkPixmap pixmap(image_info, pixels.data(), image_info.minRowBytes());
 
   auto& texture = graphite_textures_[0];
   skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
@@ -208,10 +196,25 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
     return false;
   }
 
-  if (!recorder()->updateBackendTexture(texture, &pixmap, /*numLevels=*/1)) {
-    LOG(ERROR) << "Graphite updateBackendTexture() failed for format: "
-               << format().ToString();
-    return false;
+  if (format().IsCompressed()) {
+    if (!recorder()->updateCompressedBackendTexture(texture, pixels.data(),
+                                                    pixels.size())) {
+      LOG(ERROR) << "updateCompressedBackendTexture() failed for "
+                 << format().ToString();
+      return false;
+    }
+  } else {
+    auto image_info = AsSkImageInfo();
+    if (pixels.size() != image_info.computeMinByteSize()) {
+      LOG(ERROR) << "Invalid initial pixel data size";
+      return false;
+    }
+
+    SkPixmap pixmap(image_info, pixels.data(), image_info.minRowBytes());
+    if (!recorder()->updateBackendTexture(texture, &pixmap, /*numLevels=*/1)) {
+      LOG(ERROR) << "updateBackendTexture() failed for " << format().ToString();
+      return false;
+    }
   }
 
   if (!InsertRecordingAndSubmit()) {

@@ -308,6 +308,9 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::ImplicitDeviceSynchronization,
       wgpu::FeatureName::SurfaceCapabilities,
+#if BUILDFLAG(IS_ANDROID)
+      wgpu::FeatureName::TextureCompressionETC2,
+#endif
   };
 
   wgpu::RequestAdapterOptions adapter_options;

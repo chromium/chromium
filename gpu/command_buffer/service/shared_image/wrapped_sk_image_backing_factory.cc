@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_backing.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -64,6 +65,20 @@ uint32_t GetSupportedUsage(const SharedContextState* context_state) {
   }
   return kSupportedUsage;
 }
+
+bool GraphiteSupportsCompressedTextures(
+    const SharedContextState* context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  // TODO(b/281151641): Query graphite instead of dawn to see if compressed
+  // textures are supported.
+  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+    return context_state->dawn_context_provider()->SupportsFeature(
+        wgpu::FeatureName::TextureCompressionETC2);
+  }
+#endif
+  return false;
+}
+
 }  // namespace
 
 WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
@@ -73,7 +88,9 @@ WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
       use_graphite_(context_state_->graphite_context()),
       is_drdc_enabled_(
           features::IsDrDcEnabled() &&
-          !context_state_->feature_info()->workarounds().disable_drdc) {}
+          !context_state_->feature_info()->workarounds().disable_drdc),
+      graphite_supports_compressed_textures_(
+          GraphiteSupportsCompressedTextures(context_state_.get())) {}
 
 WrappedSkImageBackingFactory::~WrappedSkImageBackingFactory() = default;
 
@@ -245,16 +262,12 @@ bool WrappedSkImageBackingFactory::IsSupported(
       // ETC1 is only supported with initial pixel upload.
       return false;
     }
-    // TODO(crbug.com/1430206): Enable once compressed formats are supported.
     if (use_graphite_) {
-      return false;
+      return graphite_supports_compressed_textures_;
     }
     auto backend_format = context_state_->gr_context()->compressedBackendFormat(
         SkTextureCompressionType::kETC1_RGB8);
-    if (!backend_format.isValid()) {
-      return false;
-    }
-    return true;
+    return !backend_format.isValid();
   }
 
   // TODO(b/281151641): Check for formats are supported with graphite.

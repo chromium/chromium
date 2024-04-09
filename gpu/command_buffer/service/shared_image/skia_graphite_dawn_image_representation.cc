@@ -58,8 +58,8 @@ SkiaGraphiteDawnImageRepresentation::Create(
   const bool supports_multiplanar_copy =
       SupportsMultiplanarCopy(context_state.get());
   wgpu::TextureUsage supported_tex_usages = SupportedDawnTextureUsage(
-      is_yuv_plane, is_dcomp_surface, supports_multiplanar_rendering,
-      supports_multiplanar_copy);
+      dawn_representation->format(), is_yuv_plane, is_dcomp_surface,
+      supports_multiplanar_rendering, supports_multiplanar_copy);
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
       manager, backing, tracker, is_yuv_plane, legacy_plane_index,

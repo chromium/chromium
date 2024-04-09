@@ -469,6 +469,8 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::RGBA16Float;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
     return wgpu::TextureFormat::RGB10A2Unorm;
+  } else if (format == viz::SinglePlaneFormat::kETC1) {
+    return wgpu::TextureFormat::ETC2RGB8Unorm;
   } else if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kNV12) {
     return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
@@ -532,12 +534,17 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
 }
 
 wgpu::TextureUsage SupportedDawnTextureUsage(
+    viz::SharedImageFormat format,
     bool is_yuv_plane,
     bool is_dcomp_surface,
     bool supports_multiplanar_rendering,
     bool supports_multiplanar_copy) {
   // TextureBinding usage is always supported.
   wgpu::TextureUsage usage = wgpu::TextureUsage::TextureBinding;
+
+  if (format == viz::SinglePlaneFormat::kETC1) {
+    return usage | wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
+  }
 
   if (is_dcomp_surface) {
     // Textures from DComp surfaces cannot be used as TextureBinding, however
@@ -675,8 +682,8 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
   dawn_texture_info.fViewFormat = wgpu_view_format;
   dawn_texture_info.fAspect = ToDawnTextureAspect(is_yuv_plane, plane_index);
   dawn_texture_info.fUsage = SupportedDawnTextureUsage(
-      is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering,
-      supports_multiplanar_copy);
+      format, is_yuv_plane, scanout_dcomp_surface,
+      supports_multiplanar_rendering, supports_multiplanar_copy);
   if (readonly) {
     constexpr wgpu::TextureUsage kReadOnlyTextureUsage =
         wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
