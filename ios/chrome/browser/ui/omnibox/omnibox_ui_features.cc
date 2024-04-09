@@ -40,3 +40,7 @@ bool IsIpadPopoutOmniboxEnabled() {
 bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
+
+const char kRichAutocompletionParam[] = "RichAutocompletionParam";
+const char kRichAutocompletionParamLabel[] = "Label";
+const char kRichAutocompletionParamTextField[] = "TextField";

@@ -559,6 +559,18 @@ const FeatureEntry::FeatureVariation
          std::size(kBottomOmniboxPromoDefaultPositionBottom), nullptr},
 };
 
+const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
+    {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
+const FeatureEntry::FeatureParam kRichAutocompletionImplementationTextField[] =
+    {{kRichAutocompletionParam, kRichAutocompletionParamTextField}};
+const FeatureEntry::FeatureVariation
+    kRichAutocompletionImplementationVariations[] = {
+        {"In Label", kRichAutocompletionImplementationLabel,
+         std::size(kRichAutocompletionImplementationLabel), nullptr},
+        {"In TextField", kRichAutocompletionImplementationTextField,
+         std::size(kRichAutocompletionImplementationTextField), nullptr},
+};
+
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
     {web::features::kOneTapForMapsConsentModeParamTitle,
      web::features::kOneTapForMapsConsentModeDefaultParam}};
@@ -1507,7 +1519,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-rich-autocompletion",
      flag_descriptions::kOmniboxRichAutocompletionName,
      flag_descriptions::kOmniboxRichAutocompletionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(omnibox::kRichAutocompletion)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kRichAutocompletion,
+         kRichAutocompletionImplementationVariations,
+         "RichAutocompletionImplementationVariations")},
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},

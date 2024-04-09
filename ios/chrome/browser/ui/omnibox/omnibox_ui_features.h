@@ -34,4 +34,11 @@ BASE_DECLARE_FEATURE(kOmniboxPopupRowContentConfiguration);
 // Returns whether kRichAutocompletion feature is enabled.
 bool IsRichAutocompletionEnabled();
 
+// Feature param for kRichAutocompletion.
+extern const char kRichAutocompletionParam[];
+// Rich autocompletion is shown in a UILabel after the text field.
+extern const char kRichAutocompletionParamLabel[];
+// Rich autocompletion is shown inside of the text field.
+extern const char kRichAutocompletionParamTextField[];
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_
