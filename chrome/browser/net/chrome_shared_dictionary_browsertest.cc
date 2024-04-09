@@ -8,24 +8,28 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_dictionary_encoding_names.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -648,21 +652,33 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/1);
 }
 
-// TODO(crbug.com/1472445): Fix flakiness in test and enable.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SiteDataCount DISABLED_SiteDataCount
-#else
-#define MAYBE_SiteDataCount SiteDataCount
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
-  base::Time time1 = base::Time::Now();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-  base::Time time2 = base::Time::Now();
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, SiteDataCount) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
   WaitForDictionaryReady(*embedded_test_server());
-  base::Time time3 = base::Time::Now();
 
-  EXPECT_EQ(0, GetSiteDataCount(time1, time2));
-  EXPECT_EQ(1, GetSiteDataCount(time2, time3));
+  base::RunLoop loop;
+  std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries;
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->GetSharedDictionaryInfo(
+          net::SharedDictionaryIsolationKey(url::Origin::Create(url),
+                                            net::SchemefulSite(url)),
+          base::BindLambdaForTesting(
+              [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
+                EXPECT_FALSE(result.empty());
+                dictionaries = std::move(result);
+                loop.Quit();
+              }));
+  loop.Run();
+  ASSERT_EQ(dictionaries.size(), 1u);
+  ASSERT_TRUE(dictionaries[0]);
+  const base::Time response_time = dictionaries[0]->response_time;
+  EXPECT_EQ(0,
+            GetSiteDataCount(response_time - base::Seconds(1), response_time));
+  EXPECT_EQ(1,
+            GetSiteDataCount(response_time, response_time + base::Seconds(1)));
 }
