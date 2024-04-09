@@ -8770,6 +8770,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Cookies.FirstPartyPartitionedInCrossSiteContextV2">
+  <obsolete>
+    Deprecated as of 04/2024.
+  </obsolete>
   <owner>selya@chromium.org</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -8780,6 +8783,22 @@ be describing additional metrics about the same event.
     <summary>
       Records true if one or more first-party partitioned cookies in a cross
       site context are present.
+    </summary>
+  </metric>
+</event>
+
+<event name="Cookies.FirstPartyPartitionedInCrossSiteContextV3">
+  <owner>selya@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Recorded when a page loads that has a first-party partitioned cookie present
+    and the cookie's name is not receive-cookie-deprecation.
+  </summary>
+  <metric name="CookiePresent" enum="Boolean">
+    <summary>
+      Records true if one or more first-party partitioned cookies in a cross
+      site context are present and the cookie's name is not
+      receive-cookie-deprecation.
     </summary>
   </metric>
 </event>

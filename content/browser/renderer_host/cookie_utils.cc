@@ -87,6 +87,13 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
     return;
   }
 
+  // Cookies_FirstPartyPartitionedInCrossSiteContextV3 measures cookies
+  // without the name of 'receive-cookie-deprecation'. Return here to ensure
+  // that the metric does not include those cookies.
+  if (cookie.Name() == "receive-cookie-deprecation") {
+    return;
+  }
+
   // Same-site embed with cross-site ancestors (ABA embeds) have a null site
   // for cookies since it is a cross-site context. If the result of
   // ComputeSiteForCookies is first-party that means we are not in an ABA
@@ -96,7 +103,7 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
           GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
                              cookie.DomainWithoutDot()})));
 
-  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContextV2(
+  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContextV3(
       render_frame_host_impl->GetPageUkmSourceId())
       .SetCookiePresent(has_cross_site_ancestor)
       .Record(ukm::UkmRecorder::Get());
