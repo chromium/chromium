@@ -38,14 +38,14 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
 #pragma mark - Public
 
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
-                       tabGroups:(NSArray<SessionTabGroup*>*)tabgroups
+                       tabGroups:(NSArray<SessionTabGroup*>*)tabGroups
                    selectedIndex:(NSUInteger)selectedIndex {
   DCHECK(sessions);
   DCHECK(IsIndexValidForSessionCount(selectedIndex, [sessions count]));
   self = [super init];
   if (self) {
     _sessions = [sessions copy];
-    _tabGroups = [tabgroups copy];
+    _tabGroups = [tabGroups copy];
     _selectedIndex = selectedIndex;
   }
   return self;

@@ -30,6 +30,14 @@ struct TabInfo {
   const web::WebStateID unique_identifier;
 };
 
+// Information about a tab group.
+//
+// The default constructor represents an invalid tab group.
+struct GroupInfo {
+  const int start = -1;
+  const int count = 0;
+};
+
 // Information about a session.
 //
 // The default constructor represents a valid session without tabs.
@@ -37,6 +45,7 @@ struct SessionInfo {
   const int active_index = -1;
   const int pinned_tab_count = 0;
   const base::span<const TabInfo> tabs;
+  const base::span<const GroupInfo> groups;
 };
 
 // Constants representing the default session used for tests.
@@ -83,6 +92,12 @@ ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
       opener_storage->set_index(tab.opener_index);
       opener_storage->set_navigation_index(tab.opener_navigation_index);
     }
+  }
+  for (const GroupInfo& group : info.groups) {
+    ios::proto::TabGroupStorage* group_storage = storage.add_groups();
+    ios::proto::RangeIndex* range = group_storage->mutable_range();
+    range->set_start(group.start);
+    range->set_count(group.count);
   }
   return storage;
 }
@@ -452,4 +467,77 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_InvalidIdentifiers) {
   // the filtering stage.
   histogram_tester_.ExpectTotalCount(
       "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
+}
+
+// Tests that LoadSessionStorage correctly recreates the groups even after the
+// duplicates are dropped.
+TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItemsWithGroups) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
+  web::WebStateID other_web_state_id = web::WebStateID::NewUnique();
+  web::WebStateID another_web_state_id = web::WebStateID::NewUnique();
+  web::WebStateID yet_another_web_state_id = web::WebStateID::NewUnique();
+  web::WebStateID and_another_web_state_id = web::WebStateID::NewUnique();
+  TabInfo tabs[] = {
+      TabInfo{.unique_identifier = same_web_state_id},
+      TabInfo{.unique_identifier = same_web_state_id},
+      TabInfo{.unique_identifier = other_web_state_id},        // In 1st group
+      TabInfo{.unique_identifier = same_web_state_id},         // In 1st group
+      TabInfo{.unique_identifier = another_web_state_id},      // In 2nd group
+      TabInfo{.unique_identifier = yet_another_web_state_id},  // In 2nd group
+      TabInfo{.unique_identifier = same_web_state_id},         // In 3rd group
+      TabInfo{.unique_identifier = same_web_state_id},         // In 4th group
+      TabInfo{.unique_identifier = and_another_web_state_id},  // In 4th group
+  };
+  GroupInfo groups[] = {
+      GroupInfo{.start = 2, .count = 2},
+      GroupInfo{.start = 4, .count = 2},
+      GroupInfo{.start = 6, .count = 1},
+      GroupInfo{.start = 7, .count = 2},
+  };
+  SessionInfo session_info = {
+      .active_index = 0,
+      .pinned_tab_count = 0,
+      .tabs = base::make_span(tabs),
+      .groups = base::make_span(groups),
+  };
+
+  // Write the session described by session_info.
+  const ios::proto::WebStateListStorage session =
+      StorageFromSessionInfo(session_info);
+  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+
+  // Load the session and check it is correct.
+  const ios::proto::WebStateListStorage loaded =
+      ios::sessions::LoadSessionStorage(root);
+  // Check that the duplicate tabs (the later occurrences) are dropped.
+  EXPECT_EQ(loaded,
+            ios::sessions::FilterItems(session, RemovingIndexes({1, 3, 6, 7})));
+
+  // Check that there are two items, and the second item is in a group.
+  EXPECT_EQ(5, loaded.items().size());
+  EXPECT_EQ(3, loaded.groups().size());
+  EXPECT_EQ(1, loaded.groups()[0].range().start());
+  EXPECT_EQ(1, loaded.groups()[0].range().count());
+  EXPECT_EQ(2, loaded.groups()[1].range().start());
+  EXPECT_EQ(2, loaded.groups()[1].range().count());
+  EXPECT_EQ(4, loaded.groups()[2].range().start());
+  EXPECT_EQ(1, loaded.groups()[2].range().count());
+
+  for (const auto& item : loaded.items()) {
+    const web::WebStateID item_id =
+        web::WebStateID::FromSerializedValue(item.identifier());
+
+    // Check that the item has been correctly loaded.
+    ASSERT_TRUE(item.has_metadata());
+    EXPECT_EQ(item.metadata().active_page().page_url(),
+              TestUrlForIdentifier(item_id));
+  }
+
+  // Expect a log of 4 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 4, 1);
 }

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 namespace ios::sessions {
@@ -134,7 +135,7 @@ ios::proto::WebStateListStorage FilterItems(
     ios::proto::WebStateListItemStorage* item_storage = result.add_items();
     item_storage->Swap(storage.mutable_items(index));
 
-    // Fix the opener index (to take into acount the closed items) or clear
+    // Fix the opener index (to take into account the closed items) or clear
     // the opener information if the opener has been closed.
     if (item_storage->has_opener()) {
       const int opener_index = item_storage->opener().index();
@@ -150,6 +151,26 @@ ios::proto::WebStateListStorage FilterItems(
   DCHECK_GE(pinned_item_count, 0);
   DCHECK_LE(pinned_item_count, result.items_size());
   result.set_pinned_item_count(pinned_item_count);
+
+  // Create the new list of tab groups, updating the range `start` and
+  // range `count` properties.
+  for (auto& initial_group_storage : *storage.mutable_groups()) {
+    const ios::proto::RangeIndex initial_range_index =
+        initial_group_storage.range();
+    const TabGroupRange initial_range(initial_range_index.start(),
+                                      initial_range_index.count());
+    const TabGroupRange final_range =
+        removing_indexes.RangeAfterRemoval(initial_range);
+    if (final_range.valid()) {
+      // Add a new group, copying its value from the old group.
+      ios::proto::TabGroupStorage* group_storage = result.add_groups();
+      group_storage->Swap(&initial_group_storage);
+      ios::proto::RangeIndex* range_index = group_storage->mutable_range();
+      range_index->set_start(final_range.range_begin());
+      range_index->set_count(final_range.count());
+    }
+  }
+
   return result;
 }
 
@@ -188,7 +209,7 @@ ios::proto::WebStateListStorage LoadSessionStorage(
     const base::FilePath web_state_dir =
         WebStateDirectory(directory, web_state_id);
 
-    // While developping the optimised session storage, at some point, the
+    // While developing the optimized session storage, at some point, the
     // metadata for WebStates were saved in individual files. As all those
     // metadata files had to be loaded on startup, this resulted in many
     // file loads for users with a large number of tabs. This code is here

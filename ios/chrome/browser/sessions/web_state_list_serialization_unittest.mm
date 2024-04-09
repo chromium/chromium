@@ -337,6 +337,85 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropDuplicates) {
       "Tabs.DroppedDuplicatesCountOnSessionSave", 4, 1);
 }
 
+// Tests that serializing a WebStateList drops tabs with similar identifiers and
+// updates the appropriate groups.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropDuplicatesWithGroups) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  WebStateListBuilderFromDescription builder(&web_state_list);
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(0).Pinned());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(1).Pinned());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(2));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(3).Activate());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(4));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(5));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1111)),
+      WebStateList::InsertionParams::AtIndex(6));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1112)),
+      WebStateList::InsertionParams::AtIndex(7));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(8));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(9));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1113)),
+      WebStateList::InsertionParams::AtIndex(10));
+  web_state_list.CreateGroup({2, 3}, {});
+  web_state_list.CreateGroup({6, 7}, {});
+  web_state_list.CreateGroup({8}, {});
+  web_state_list.CreateGroup({9, 10}, {});
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("a b | [ 0 c d* ] e f [ 1 g h ] [ 2 i ] [ 3 j k ]",
+            builder.GetWebStateListDescription());
+
+  // Serialize the session and check the serialized data is correct.
+  SessionWindowIOS* session_window = SerializeWebStateList(&web_state_list);
+
+  // Check that the duplicate items have been closed, including the active tab
+  // (its next kept sibling should be selected).
+  EXPECT_EQ(session_window.sessions.count, 5u);
+  EXPECT_EQ(session_window.selectedIndex, 2u);
+  EXPECT_EQ(session_window.tabGroups.count, 3u);
+  NSArray<SessionTabGroup*>* groups = [session_window.tabGroups
+      sortedArrayUsingComparator:^(SessionTabGroup* group_1,
+                                   SessionTabGroup* group_2) {
+        if (group_1.rangeStart > group_2.rangeStart) {
+          return NSOrderedDescending;
+        } else if (group_1.rangeStart < group_2.rangeStart) {
+          return NSOrderedAscending;
+        }
+        return NSOrderedSame;
+      }];
+  EXPECT_EQ(groups[0].rangeStart, 1);
+  EXPECT_EQ(groups[0].rangeCount, 1);
+  EXPECT_EQ(groups[1].rangeStart, 2);
+  EXPECT_EQ(groups[1].rangeCount, 2);
+  EXPECT_EQ(groups[2].rangeStart, 4);
+  EXPECT_EQ(groups[2].rangeCount, 1);
+
+  // Expect a log of 6 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 6, 1);
+}
+
 // Tests that serializing a WebStateList drops the tab with no navigation when
 // also being a duplicate.
 //
@@ -528,6 +607,83 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropDuplicates) {
   // Expect a log of 4 duplicates.
   histogram_tester_.ExpectUniqueSample(
       "Tabs.DroppedDuplicatesCountOnSessionSave", 4, 1);
+}
+
+// Tests that serializing a WebStateList drops tabs with similar identifiers.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest,
+       Serialize_Proto_DropDuplicatesWithGroups) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  WebStateListBuilderFromDescription builder(&web_state_list);
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(0).Pinned());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(1).Pinned());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(2));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(3).Activate());
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(4));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(5));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1111)),
+      WebStateList::InsertionParams::AtIndex(6));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1112)),
+      WebStateList::InsertionParams::AtIndex(7));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(3333)),
+      WebStateList::InsertionParams::AtIndex(8));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(5555)),
+      WebStateList::InsertionParams::AtIndex(9));
+  web_state_list.InsertWebState(
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1113)),
+      WebStateList::InsertionParams::AtIndex(10));
+  web_state_list.CreateGroup({2, 3}, {});
+  web_state_list.CreateGroup({6, 7}, {});
+  web_state_list.CreateGroup({8}, {});
+  web_state_list.CreateGroup({9, 10}, {});
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("a b | [ 0 c d* ] e f [ 1 g h ] [ 2 i ] [ 3 j k ]",
+            builder.GetWebStateListDescription());
+
+  // Serialize the session and check the serialized data is correct.
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(web_state_list, storage);
+
+  // Check that the duplicate items have been closed, including the active tab
+  // (its next kept sibling should be selected).
+  EXPECT_EQ(storage.items_size(), 5);
+  EXPECT_EQ(storage.active_index(), 2);
+  EXPECT_EQ(storage.pinned_item_count(), 1);
+  EXPECT_EQ(storage.groups_size(), 3);
+  std::sort(storage.mutable_groups()->pointer_begin(),
+            storage.mutable_groups()->pointer_end(),
+            [](const ios::proto::TabGroupStorage* group_1,
+               const ios::proto::TabGroupStorage* group_2) {
+              return group_1->range().start() < group_2->range().start();
+            });
+  EXPECT_EQ(storage.groups(0).range().start(), 1);
+  EXPECT_EQ(storage.groups(0).range().count(), 1);
+  EXPECT_EQ(storage.groups(1).range().start(), 2);
+  EXPECT_EQ(storage.groups(1).range().count(), 2);
+  EXPECT_EQ(storage.groups(2).range().start(), 4);
+  EXPECT_EQ(storage.groups(2).range().count(), 1);
+
+  // Expect a log of 6 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 6, 1);
 }
 
 // Tests that serializing a WebStateList drops the tab with no navigation when

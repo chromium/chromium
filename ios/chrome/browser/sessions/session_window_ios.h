@@ -15,9 +15,9 @@
 
 // Initializes SessionsWindowIOS using the parameters are initial values for
 // the `sessions` and `selectedIndex` properties. `selectedIndex` must be a
-// valid indice in `sessions` or NSNotFound if `sessions` is empty.
+// valid index in `sessions` or NSNotFound if `sessions` is empty.
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
-                       tabGroups:(NSArray<SessionTabGroup*>*)tabgroups
+                       tabGroups:(NSArray<SessionTabGroup*>*)tabGroups
                    selectedIndex:(NSUInteger)selectedIndex
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

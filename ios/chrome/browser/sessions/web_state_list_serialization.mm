@@ -487,16 +487,19 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
   NSMutableArray<SessionTabGroup*>* serialized_groups =
       [[NSMutableArray alloc] init];
   for (const TabGroup* group : web_state_list->GetGroups()) {
-    const TabGroupRange group_range = group->range();
-
-    SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
-        initWithRangeStart:group_range.range_begin()
-                rangeCount:group_range.count()
-                     title:base::SysUTF16ToNSString(
-                               group->visual_data().title())
-                   colorId:static_cast<NSInteger>(
-                               group->visual_data().color())];
-    [serialized_groups addObject:serialized_group];
+    const TabGroupRange initial_range = group->range();
+    const TabGroupRange final_range =
+        removing_indexes.RangeAfterRemoval(initial_range);
+    if (final_range.valid()) {
+      SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
+          initWithRangeStart:final_range.range_begin()
+                  rangeCount:final_range.count()
+                       title:base::SysUTF16ToNSString(
+                                 group->visual_data().title())
+                     colorId:static_cast<NSInteger>(
+                                 group->visual_data().color())];
+      [serialized_groups addObject:serialized_group];
+    }
   }
 
   return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
@@ -554,17 +557,20 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   }
 
   for (const TabGroup* group : web_state_list.GetGroups()) {
-    const TabGroupRange group_range = group->range();
+    const TabGroupRange initial_range = group->range();
+    const TabGroupRange final_range =
+        removing_indexes.RangeAfterRemoval(initial_range);
+    if (final_range.valid()) {
+      ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
+      ios::proto::RangeIndex& range = *group_storage.mutable_range();
 
-    ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
-    ios::proto::RangeIndex& range = *group_storage.mutable_range();
+      range.set_start(final_range.range_begin());
+      range.set_count(final_range.count());
 
-    range.set_start(group_range.range_begin());
-    range.set_count(group_range.count());
-
-    group_storage.set_title(base::UTF16ToUTF8(group->visual_data().title()));
-    group_storage.set_color(
-        tab_group_util::ColorForStorage(group->visual_data().color()));
+      group_storage.set_title(base::UTF16ToUTF8(group->visual_data().title()));
+      group_storage.set_color(
+          tab_group_util::ColorForStorage(group->visual_data().color()));
+    }
   }
 
   DCHECK_LE(removed_pinned_tabs_count, pinned_tabs_count);

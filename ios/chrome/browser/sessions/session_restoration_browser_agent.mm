@@ -214,18 +214,13 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
   }
 
   // Create the new list of tab groups, updating the `rangeStart` and
-  // `rangeStart` properties.
+  // `rangeCount` properties.
   NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
   for (SessionTabGroup* group in session_window.tabGroups) {
-    const TabGroupRange range(
-        removing_indexes.IndexAfterRemoval(group.rangeStart), group.rangeCount);
-    TabGroupRange final_range = range;
-    for (int index : range) {
-      if (removing_indexes.Contains(index)) {
-        final_range.ContractRight();
-      }
-    }
-    if (final_range.count() != 0) {
+    const TabGroupRange initial_range(group.rangeStart, group.rangeCount);
+    const TabGroupRange final_range =
+        removing_indexes.RangeAfterRemoval(initial_range);
+    if (final_range.valid()) {
       group.rangeStart = final_range.range_begin();
       group.rangeCount = final_range.count();
       [groups addObject:group];
