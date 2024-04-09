@@ -266,15 +266,6 @@ void RecordAmbientModeAnimationSmoothness(
       smoothness);
 }
 
-void RecordAmbientModePhotoOrientationMatch(
-    int percentage_match,
-    const AmbientUiSettings& ui_settings) {
-  base::UmaHistogramPercentage(
-      base::StrCat(
-          {"Ash.AmbientMode.PhotoOrientationMatch.", ui_settings.ToString()}),
-      percentage_match);
-}
-
 void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
                                   const AmbientUiSettings& ui_settings) {
   base::UmaHistogramCustomTimes(

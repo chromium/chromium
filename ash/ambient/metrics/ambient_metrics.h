@@ -77,10 +77,6 @@ ASH_EXPORT void RecordAmbientModeAnimationSmoothness(
     int smoothness,
     const AmbientUiSettings& ui_settings);
 
-ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(
-    int percentage_match,
-    const AmbientUiSettings& ui_settings);
-
 ASH_EXPORT void RecordAmbientModeStartupTime(
     base::TimeDelta startup_time,
     const AmbientUiSettings& ui_settings);

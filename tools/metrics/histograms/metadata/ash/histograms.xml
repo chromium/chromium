@@ -547,22 +547,6 @@ chromium-metrics-reviews@google.com.
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.PhotoOrientationMatch.{Settings}" units="%"
-    expires_after="2024-12-01">
-  <owner>esum@google.com</owner>
-  <owner>xiaohuic@chromium.org</owner>
-  <summary>
-    Applies to ambient mode animations with image assets embedded in them (spots
-    in the animation where the user's photos should be plugged in). Captures the
-    percentage of time that the orientation (landscape vs portrait) of the image
-    asset matches that of the actual photo being assigned to it. Ideally this is
-    100%. Does not apply to the slideshow ambient theme. Emitted each time the
-    photos in the animation are refreshed (after each animation cycle is
-    complete).
-  </summary>
-  <token key="Settings" variants="AmbientUiSettings"/>
-</histogram>
-
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
     expires_after="2024-08-25">
   <owner>cowmoo@google.com</owner>
