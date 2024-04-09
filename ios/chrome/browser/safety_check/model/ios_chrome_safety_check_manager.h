@@ -15,6 +15,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 class IOSChromeSafetyCheckManager;
@@ -112,6 +113,9 @@ class IOSChromeSafetyCheckManager
   // Returns the current state of the Update Chrome check.
   UpdateChromeSafetyCheckState GetUpdateChromeCheckState() const;
 
+  // Returns the current insecure password counts.
+  password_manager::InsecurePasswordCounts GetInsecurePasswordCounts() const;
+
   // Returns the App Store Chrome upgrade URL.
   const GURL& GetChromeAppUpgradeUrl() const;
 
@@ -131,6 +135,8 @@ class IOSChromeSafetyCheckManager
   void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);
   RunningSafetyCheckState GetRunningCheckStateForTesting() const;
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
+  void SetInsecurePasswordCountsForTesting(
+      password_manager::InsecurePasswordCounts counts);
   void PasswordCheckStatusChangedForTesting(PasswordCheckState state);
   void InsecureCredentialsChangedForTesting();
   void RestorePreviousSafetyCheckStateForTesting();
@@ -163,6 +169,11 @@ class IOSChromeSafetyCheckManager
   // Updates `password_check_state_` to `state` and notifies any observers
   // of the change.
   void SetPasswordCheckState(PasswordSafetyCheckState state);
+
+  // Updates `insecure_password_counts_` to `counts`. Does not notify any
+  // observers of the change.
+  void SetInsecurePasswordCounts(
+      password_manager::InsecurePasswordCounts counts);
 
   // Updates `update_chrome_check_state_` to `state` and notifies any observers
   // of the change.
@@ -271,6 +282,18 @@ class IOSChromeSafetyCheckManager
   // enables users to cancel a currently running Update Chrome check.)
   UpdateChromeSafetyCheckState previous_update_chrome_check_state_ =
       UpdateChromeSafetyCheckState::kDefault;
+
+  // The count of passwords flagged as compromised, dismissed, reused, and weak
+  // by the most recent Safety Check run.
+  password_manager::InsecurePasswordCounts insecure_password_counts_ = {
+      /* compromised */ 0, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+
+  // The count of passwords flagged as compromised, dismissed, reused, and weak
+  // by the previous Safety Check run.
+  password_manager::InsecurePasswordCounts previous_insecure_password_counts_ =
+      {/* compromised */ 0, /* dismissed */ 0, /* reused */ 0,
+       /* weak */ 0};
 
   // The last time the Safety Check was run, if ever.
   base::Time last_safety_check_run_time_;

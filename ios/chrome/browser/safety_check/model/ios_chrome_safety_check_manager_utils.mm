@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 namespace {
@@ -32,6 +31,11 @@ PasswordSafetyCheckState PasswordSafetyCheckStateForHighestPriorityWarningType(
 }
 
 }  // namespace
+
+constexpr char kSafetyCheckCompromisedPasswordsCountKey[] = "compromised";
+constexpr char kSafetyCheckDismissedPasswordsCountKey[] = "dismissed";
+constexpr char kSafetyCheckReusedPasswordsCountKey[] = "reused";
+constexpr char kSafetyCheckWeakPasswordsCountKey[] = "weak";
 
 PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
     PasswordCheckState check_state,
@@ -71,4 +75,19 @@ PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
     default:
       return PasswordSafetyCheckState::kDefault;
   }
+}
+
+password_manager::InsecurePasswordCounts DictToInsecurePasswordCounts(
+    const base::Value::Dict& dict) {
+  password_manager::InsecurePasswordCounts insecure_password_counts = {
+      /* compromised */
+      dict.FindInt(kSafetyCheckCompromisedPasswordsCountKey).value_or(0),
+      /* dismissed */
+      dict.FindInt(kSafetyCheckDismissedPasswordsCountKey).value_or(0),
+      /* reused */
+      dict.FindInt(kSafetyCheckReusedPasswordsCountKey).value_or(0),
+      /* weak */
+      dict.FindInt(kSafetyCheckWeakPasswordsCountKey).value_or(0)};
+
+  return insecure_password_counts;
 }

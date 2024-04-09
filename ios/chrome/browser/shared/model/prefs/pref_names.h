@@ -303,6 +303,11 @@ inline constexpr char kIosSafetyCheckManagerUpdateCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
     "ios.safety_check_manager.safe_browsing_check_result";
 
+// Dictionary preference containing the counts of passwords flagged as
+// compromised, dismissed, reused, and weak by the most recent Safety Check run.
+inline constexpr char kIosSafetyCheckManagerInsecurePasswordCounts[] =
+    "ios.safety_check_manager.insecure_password_counts";
+
 // String preference containing the default account to use for saving files to
 // Google Drive.
 inline constexpr char kIosSaveToDriveDefaultGaiaId[] =

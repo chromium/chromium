@@ -20,6 +20,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -62,6 +63,9 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     local_registry->RegisterIntegerPref(
         prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
         -1);
+    local_registry->RegisterDictionaryPref(
+        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+        PrefRegistry::LOSSY_PREF);
 
     TestChromeBrowserState::Builder builder;
 
@@ -589,6 +593,109 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             PasswordSafetyCheckState::kDefault);
 }
 
+// Tests updating the insecure password counts results in the values being
+// stored in Prefs.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       SettingInsecurePasswordCountsWritesToPrefs) {
+  password_manager::InsecurePasswordCounts pref_counts =
+      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  password_manager::InsecurePasswordCounts expected_pref_counts = {
+      /* compromised */
+      0,
+      /* dismissed */
+      0,
+      /* reused */
+      0,
+      /* weak */
+      0};
+
+  EXPECT_EQ(pref_counts, expected_pref_counts);
+
+  password_manager::InsecurePasswordCounts counts = {/* compromised */
+                                                     1,
+                                                     /* dismissed */
+                                                     2,
+                                                     /* reused */
+                                                     3,
+                                                     /* weak */
+                                                     4};
+
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), counts);
+
+  password_manager::InsecurePasswordCounts updated_pref_counts =
+      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  EXPECT_EQ(updated_pref_counts, counts);
+}
+
+// Tests cancelling a currently running Safety Check check ignores an
+// incoming insecure password counts change.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningPasswordCheckIgnoresInsecurePasswordCountsChange) {
+  base::Value::Dict insecure_password_counts;
+  insecure_password_counts.Set(kSafetyCheckCompromisedPasswordsCountKey, 1);
+  insecure_password_counts.Set(kSafetyCheckDismissedPasswordsCountKey, 2);
+  insecure_password_counts.Set(kSafetyCheckReusedPasswordsCountKey, 3);
+  insecure_password_counts.Set(kSafetyCheckWeakPasswordsCountKey, 4);
+  local_pref_service_->SetDict(
+      prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+      std::move(insecure_password_counts));
+
+  safety_check_manager_->RestorePreviousSafetyCheckStateForTesting();
+
+  password_manager::InsecurePasswordCounts expected = {
+      /* compromised */ 1, /* dismissed */ 2, /* reused */ 3,
+      /* weak */ 4};
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kRunning);
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Password check state to
+  // `kError` due to the quota limit being reached. However, this call should be
+  // ignored because the Password check was cancelled, reverting the check state
+  // `kDefault`, and ignoring the future update below.
+  safety_check_manager_->PasswordCheckStatusChangedForTesting(
+      PasswordCheckState::kQuotaLimit);
+
+  password_manager::InsecurePasswordCounts updated = {
+      /* compromised */ 5, /* dismissed */ 5, /* reused */ 5,
+      /* weak */ 5};
+
+  // NOTE: Normally this call would change the insecure password counts to
+  // `updated`. However, this call should be ignored because the Password check
+  // was cancelled, reverting the counts to their previous state.
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(updated);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), expected);
+
+  // Verify the Prefs for insecure password counts haven't changed.
+  password_manager::InsecurePasswordCounts stored_counts =
+      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  EXPECT_EQ(stored_counts, expected);
+}
+
 // Tests cancelling a currently running Safety Check check correctly ignores an
 // incoming insecure credentials change.
 TEST_F(IOSChromeSafetyCheckManagerTest,
@@ -880,4 +987,33 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             UpdateChromeSafetyCheckState::kOutOfDate);
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kDefault);
+}
+
+// Tests `DictToInsecurePasswordCounts()` correctly converts a Dict to insecure
+// password counts.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       ConvertsDictionaryToInsecurePasswordCounts) {
+  base::Value::Dict dict_without_duplicate_keys;
+  dict_without_duplicate_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
+  dict_without_duplicate_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
+  dict_without_duplicate_keys.Set(kSafetyCheckReusedPasswordsCountKey, 5);
+  dict_without_duplicate_keys.Set(kSafetyCheckWeakPasswordsCountKey, 6);
+
+  password_manager::InsecurePasswordCounts
+      expected_counts_without_duplicate_keys = {
+          /* compromised */ 3, /* dismissed */ 4, /* reused */ 5, /* weak */ 6};
+
+  EXPECT_EQ(expected_counts_without_duplicate_keys,
+            DictToInsecurePasswordCounts(dict_without_duplicate_keys));
+
+  base::Value::Dict dict_with_missing_keys;
+  dict_with_missing_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
+  dict_with_missing_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
+  dict_with_missing_keys.Set(kSafetyCheckWeakPasswordsCountKey, 6);
+
+  password_manager::InsecurePasswordCounts expected_counts_with_missing_keys = {
+      /* compromised */ 3, /* dismissed */ 4, /* reused */ 0, /* weak */ 6};
+
+  EXPECT_EQ(expected_counts_with_missing_keys,
+            DictToInsecurePasswordCounts(dict_with_missing_keys));
 }
