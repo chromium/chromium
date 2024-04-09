@@ -230,22 +230,7 @@ def __use_remoteexec(ctx):
 
 def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.
-    new_rules = [
-        # Disabling remote should always come first.
-        {
-            # TODO(b/281663988): missing headers.
-            "name": "b281663988/missing-headers",
-            "action_outs": [
-                "./obj/ui/qt/qt5_shim/qt_shim.o",
-                "./obj/ui/qt/qt6_shim/qt_shim.o",
-                "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
-                "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
-                "./obj/ui/qt/qt_interface/qt_interface.o",
-            ],
-            "remote": False,
-            "handler": "strip_rewrapper",
-        },
-    ]
+    new_rules = []
 
     # Disable racing on builders since bots don't have many CPU cores.
     # TODO: b/297807325 - Siso wants to handle local execution.
