@@ -404,7 +404,7 @@ void ConsumerUpdateScreen::OnErrorScreenHidden() {
 
 void ConsumerUpdateScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
-  if (!view_) {
+  if (!view_ || is_hidden()) {
     return;
   }
   const update_engine::StatusResult& status = update_info.status;
@@ -427,6 +427,9 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
         ->PrepareForUpdate();
     did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kUpdateInProgress);
+    // Set consumer update complete for next reboot.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOobeConsumerUpdateCompleted, true);
     wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                              version_updater_.get(),
                              &VersionUpdater::RebootAfterUpdate);
