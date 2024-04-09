@@ -545,8 +545,11 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                                         /*should_document_pip=*/false);
 }
 
-// TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)" and "Linux
+// Chromium OS ASan LSan Tests (1)"
+#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+     BUILDFLAG(IS_LINUX)) &&                                        \
+    defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_OpensAndClosesDocumentAutopip \
   DISABLED_OpensAndClosesDocumentAutopip
 #else
