@@ -24,6 +24,11 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_frame_host.h"
 
+namespace page_content_annotations {
+class BatchAnnotationResult;
+class PageContentAnnotationsService;
+}  // namespace page_content_annotations
+
 namespace history_embeddings {
 
 class Embedder;
@@ -45,7 +50,10 @@ class HistoryEmbeddingsService : public KeyedService,
  public:
   // `history_service` is never nullptr and must outlive `this`.
   // Storage uses its `history_dir() location for the database.
-  explicit HistoryEmbeddingsService(history::HistoryService* history_service);
+  HistoryEmbeddingsService(
+      history::HistoryService* history_service,
+      page_content_annotations::PageContentAnnotationsService*
+          page_content_annotations_service);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
@@ -121,10 +129,31 @@ class HistoryEmbeddingsService : public KeyedService,
   void OnSearchCompleted(SearchResultCallback callback,
                          std::vector<ScoredUrl> scored_urls);
 
+  // Calls `page_content_annotation_service_` to determine whether the passage
+  // of each ScoredUrl should be shown to the user.
+  void DeterminePassageVisibility(SearchResultCallback callback,
+                                  std::vector<ScoredUrl> scored_urls);
+
+  // Called after `page_content_annotation_service_` has determined visibility
+  // for the passage of each ScoredUrl. This will filter `scored_urls` to only
+  // contain entries that can be shown to the user.
+  void OnPassageVisibilityCalculated(
+      SearchResultCallback callback,
+      std::vector<ScoredUrl> scored_urls,
+      const std::vector<page_content_annotations::BatchAnnotationResult>&
+          annotation_results);
+
   // The history service is used to fill in details about URLs and visits
   // found via search. It strictly outlives this due to the dependency
   // specified in HistoryEmbeddingsServiceFactory.
   raw_ptr<history::HistoryService> history_service_;
+
+  // The page content annotations service is used to determine whether the
+  // content is safe. It strictly outlives this due to the dependency specified
+  // in `HistoryEmbeddingsServiceFactory`. Can be nullptr if the underlying
+  // capabilities are not supported.
+  raw_ptr<page_content_annotations::PageContentAnnotationsService>
+      page_content_annotations_service_;
 
   // Tracks the observed history service, for cleanup.
   base::ScopedObservation<history::HistoryService,

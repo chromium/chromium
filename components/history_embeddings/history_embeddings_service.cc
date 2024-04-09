@@ -20,6 +20,7 @@
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -88,8 +89,11 @@ void FinishSearchResultWithHistory(
 ////////////////////////////////////////////////////////////////////////////////
 
 HistoryEmbeddingsService::HistoryEmbeddingsService(
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    page_content_annotations::PageContentAnnotationsService*
+        page_content_annotations_service)
     : history_service_(history_service),
+      page_content_annotations_service_(page_content_annotations_service),
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
@@ -101,6 +105,14 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 
   CHECK(history_service_);
   history_service_observation_.Observe(history_service_);
+
+  // Notify page content annotations service that we will need the content
+  // visibility model during the session.
+  if (page_content_annotations_service_) {
+    page_content_annotations_service_->RequestAndNotifyWhenModelAvailable(
+        page_content_annotations::AnnotationType::kContentVisibility,
+        base::DoNothing());
+  }
 
   // TODO: b/333094780 - Swap this to the model-backed embedder once ready.
   embedder_ = std::make_unique<MockEmbedder>();
@@ -258,6 +270,52 @@ void HistoryEmbeddingsService::OnSearchCompleted(
     std::vector<ScoredUrl> scored_urls) {
   // TODO(b/330925683): Handle search interruption. This may not still need to
   //  happen by now.
+  DeterminePassageVisibility(std::move(callback), std::move(scored_urls));
+}
+
+void HistoryEmbeddingsService::DeterminePassageVisibility(
+    SearchResultCallback callback,
+    std::vector<ScoredUrl> scored_urls) {
+  if (!page_content_annotations_service_ ||
+      !page_content_annotations_service_->GetModelInfoForType(
+          page_content_annotations::AnnotationType::kContentVisibility)) {
+    // Cannot calculate visibility, consider everything to not be visible.
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<std::string> inputs;
+  inputs.reserve(scored_urls.size());
+  for (const ScoredUrl& url : scored_urls) {
+    inputs.emplace_back(url.passage);
+  }
+  page_content_annotations_service_->BatchAnnotate(
+      base::BindOnce(&HistoryEmbeddingsService::OnPassageVisibilityCalculated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(scored_urls)),
+      std::move(inputs),
+      page_content_annotations::AnnotationType::kContentVisibility);
+}
+
+void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
+    SearchResultCallback callback,
+    std::vector<ScoredUrl> scored_urls,
+    const std::vector<page_content_annotations::BatchAnnotationResult>&
+        annotation_results) {
+  CHECK_EQ(scored_urls.size(), annotation_results.size());
+
+  // Filter for scored URLs that are ok to be shown to the user.
+  auto urls_it = scored_urls.begin();
+  for (const page_content_annotations::BatchAnnotationResult& result :
+       annotation_results) {
+    if (result.visibility_score().value_or(0.0) <=
+        kContentVisibilityThreshold.Get()) {
+      urls_it = scored_urls.erase(urls_it);
+    } else {
+      ++urls_it;
+    }
+  }
+
   // Use the callback task mechanism for simplicity and easier control with
   // other standard async machinery.
   history_service_->ScheduleDBTaskForUI(
