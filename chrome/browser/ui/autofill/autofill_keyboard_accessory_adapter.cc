@@ -235,6 +235,31 @@ void AutofillKeyboardAccessoryAdapter::UnselectSuggestion() {
   controller_->UnselectSuggestion();
 }
 
+void AutofillKeyboardAccessoryAdapter::Show(
+    std::vector<Suggestion> suggestions,
+    AutofillSuggestionTriggerSource trigger_source,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::DisableThresholdForTesting(
+    bool disable_threshold) {
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::KeepPopupOpenForTesting() {
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::UpdateDataListValues(
+    base::span<const SelectOption> options) {
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::PinView() {
+  NOTREACHED();
+}
+
 // AutofillPopupViewDelegate implementation
 
 void AutofillKeyboardAccessoryAdapter::Hide(PopupHidingReason reason) {

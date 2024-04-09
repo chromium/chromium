@@ -16,10 +16,9 @@ void JNI_AutofillTestHelper_DisableThresholdForCurrentlyShownAutofillPopup(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  base::WeakPtr<AutofillPopupControllerImpl> popup_controller =
-      ChromeAutofillClient::FromWebContentsForTesting(web_contents)
-          ->popup_controller_for_testing();
-  if (popup_controller) {
+  if (base::WeakPtr<AutofillPopupController> popup_controller =
+          ChromeAutofillClient::FromWebContentsForTesting(web_contents)
+              ->popup_controller_for_testing()) {
     popup_controller->DisableThresholdForTesting(/*disable_threshold=*/true);
   }
 }

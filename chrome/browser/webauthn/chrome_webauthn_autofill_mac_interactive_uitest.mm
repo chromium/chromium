@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   // Interact with the username field until the popup shows up. This has the
   // effect of waiting for the browser to send the renderer the password
   // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillPopupControllerImpl> popup_controller;
+  base::WeakPtr<autofill::AutofillPopupController> popup_controller;
   while (!popup_controller) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
     popup_controller = autofill_client->popup_controller_for_testing();

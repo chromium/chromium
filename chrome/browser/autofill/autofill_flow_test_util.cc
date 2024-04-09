@@ -314,7 +314,7 @@ struct AutofillSuggestionParams {
   // All attempts to accept Autofill suggestions using keyboard "ENTER"
   // keystrokes will be ignored for the first 500ms after the popup is first
   // shown. This overrides this threshold.
-  if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+  if (base::WeakPtr<AutofillPopupController> controller =
           ChromeAutofillClient::FromWebContentsForTesting(
               test->GetWebContents())
               ->popup_controller_for_testing()) {

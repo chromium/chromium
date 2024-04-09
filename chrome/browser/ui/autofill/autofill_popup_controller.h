@@ -110,6 +110,25 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual std::optional<AutofillClient::PopupScreenLocation>
   GetPopupScreenLocation() const = 0;
 
+  // Shows the popup, or updates the existing popup with the given values.
+  virtual void Show(std::vector<Suggestion> suggestions,
+                    AutofillSuggestionTriggerSource trigger_source,
+                    AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
+
+  // Determines whether to suppress minimum show thresholds. It should only be
+  // set during tests that cannot mock time (e.g. the autofill interactive
+  // browsertests).
+  virtual void DisableThresholdForTesting(bool disable_threshold) = 0;
+  virtual void KeepPopupOpenForTesting() = 0;
+
+  // Updates the data list values currently shown with the popup.
+  virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
+
+  // Informs the controller that the popup may not be hidden by stale data or
+  // interactions with native Chrome UI. This state remains active until the
+  // view is destroyed.
+  virtual void PinView() = 0;
+
  protected:
   ~AutofillPopupController() override = default;
 };

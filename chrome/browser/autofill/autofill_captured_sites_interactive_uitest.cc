@@ -387,7 +387,7 @@ class AutofillCapturedSitesInteractiveTest
       auto* client =
           ChromeAutofillClient::FromWebContentsForTesting(web_contents);
       CHECK_NE(client, nullptr);
-      if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+      if (base::WeakPtr<AutofillPopupController> controller =
               client->popup_controller_for_testing()) {
         controller->DisableThresholdForTesting(true);
       }

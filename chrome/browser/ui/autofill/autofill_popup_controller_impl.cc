@@ -111,19 +111,22 @@ bool IsAncestorOf(content::RenderFrameHost* ancestor,
 #if !BUILDFLAG(IS_MAC)
 // static
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
-    WeakPtr<AutofillPopupControllerImpl> previous,
+    WeakPtr<AutofillPopupController> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
-  if (previous && previous->delegate_.get() == delegate.get() &&
-      previous->container_view() == controller_common.container_view) {
-    if (previous->self_deletion_weak_ptr_factory_.HasWeakPtrs())
-      previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
-    previous->controller_common_ = std::move(controller_common);
-    previous->form_control_ax_id_ = form_control_ax_id;
-    previous->ClearState();
-    return previous;
+  if (AutofillPopupControllerImpl* previous_impl =
+          static_cast<AutofillPopupControllerImpl*>(previous.get());
+      previous_impl && previous_impl->delegate_.get() == delegate.get() &&
+      previous_impl->container_view() == controller_common.container_view) {
+    if (previous_impl->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
+      previous_impl->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
+    }
+    previous_impl->controller_common_ = std::move(controller_common);
+    previous_impl->form_control_ax_id_ = form_control_ax_id;
+    previous_impl->ClearState();
+    return previous_impl->GetWeakPtr();
   }
 
   if (previous) {
@@ -283,6 +286,15 @@ void AutofillPopupControllerImpl::Show(
 
     delegate_->OnPopupShown();
   }
+}
+
+void AutofillPopupControllerImpl::DisableThresholdForTesting(
+    bool disable_threshold) {
+  disable_threshold_for_testing_ = disable_threshold;
+}
+
+void AutofillPopupControllerImpl::KeepPopupOpenForTesting() {
+  keep_popup_open_for_testing_ = true;
 }
 
 bool AutofillPopupControllerImpl::

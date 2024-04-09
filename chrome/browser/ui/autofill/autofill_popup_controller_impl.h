@@ -79,31 +79,11 @@ class AutofillPopupControllerImpl
   // call. The controller will listen for keyboard input routed to
   // `web_contents` while the popup is showing, unless `web_contents` is NULL.
   static base::WeakPtr<AutofillPopupControllerImpl> GetOrCreate(
-      base::WeakPtr<AutofillPopupControllerImpl> previous,
+      base::WeakPtr<AutofillPopupController> previous,
       base::WeakPtr<AutofillPopupDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id);
-
-  // Shows the popup, or updates the existing popup with the given values.
-  virtual void Show(std::vector<Suggestion> suggestions,
-                    AutofillSuggestionTriggerSource trigger_source,
-                    AutoselectFirstSuggestion autoselect_first_suggestion);
-
-  // Updates the data list values currently shown with the popup.
-  virtual void UpdateDataListValues(base::span<const SelectOption> options);
-
-  // Informs the controller that the popup may not be hidden by stale data or
-  // interactions with native Chrome UI. This state remains active until the
-  // view is destroyed.
-  void PinView();
-
-  // Hides the popup and destroys the controller. This also invalidates
-  // `delegate_`.
-  void Hide(PopupHidingReason reason) override;
-
-  // Invoked when the view was destroyed by by someone other than this class.
-  void ViewDestroyed() override;
 
   // Handles a key press event and returns whether the event should be swallowed
   // (meaning that no other handler, in not particular the default handler, can
@@ -138,13 +118,15 @@ class AutofillPopupControllerImpl
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
   void HideSubPopup() override;
-
-  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
-
-  // Disables show thresholds. See the documentation of the member for details.
-  void DisableThresholdForTesting(bool disable_threshold) {
-    disable_threshold_for_testing_ = disable_threshold;
-  }
+  void Hide(PopupHidingReason reason) override;
+  void ViewDestroyed() override;
+  void Show(std::vector<Suggestion> suggestions,
+            AutofillSuggestionTriggerSource trigger_source,
+            AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  void DisableThresholdForTesting(bool disable_threshold) override;
+  void KeepPopupOpenForTesting() override;
+  void UpdateDataListValues(base::span<const SelectOption> options) override;
+  void PinView() override;
 
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) {
     view_ = std::move(view);

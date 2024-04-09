@@ -127,6 +127,13 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   std::vector<Suggestion> GetSuggestions() const override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
+  void Show(std::vector<Suggestion> suggestions,
+            AutofillSuggestionTriggerSource trigger_source,
+            AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  void DisableThresholdForTesting(bool disable_threshold) override;
+  void KeepPopupOpenForTesting() override;
+  void UpdateDataListValues(base::span<const SelectOption> options) override;
+  void PinView() override;
 
   void OnDeletionDialogClosed(int index, bool confirmed);
 

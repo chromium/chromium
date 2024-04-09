@@ -48,7 +48,7 @@
 namespace autofill {
 
 class AutofillOptimizationGuide;
-class AutofillPopupControllerImpl;
+class AutofillPopupController;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
@@ -255,7 +255,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void NotifyAutofillManualFallbackUsed() override;
 
   // TODO(b/320634151): Create a test API.
-  base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {
+  base::WeakPtr<AutofillPopupController> popup_controller_for_testing() {
     return popup_controller_;
   }
 #if defined(UNIT_TEST)
@@ -306,8 +306,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       payments_mandatory_reauth_manager_;
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
 
-  base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
-  FormInteractionsFlowId flow_id_{};
+  base::WeakPtr<AutofillPopupController> popup_controller_;
+  FormInteractionsFlowId flow_id_;
   base::Time flow_id_date_;
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden
