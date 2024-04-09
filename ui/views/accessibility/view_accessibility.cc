@@ -433,7 +433,7 @@ void ViewAccessibility::SetProperties(
 }
 
 void ViewAccessibility::SetIsLeaf(bool value) {
-  if (value == IsLeaf()) {
+  if (value == ViewAccessibility::IsLeaf()) {
     return;
   }
 
@@ -878,13 +878,14 @@ void ViewAccessibility::PruneSubtree() {
 void ViewAccessibility::UnpruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
+    child->GetViewAccessibility().pruned_ = false;
+
     // If we encounter a node that has already been explicitly set to be a leaf,
     // don't unprune it/its subtree. Otherwise we could end up in situations
     // where we have a node that is set to be a leaf, but has unpruned children.
     if (child->GetViewAccessibility().ViewAccessibility::IsLeaf()) {
       continue;
     }
-    child->GetViewAccessibility().pruned_ = false;
     child->GetViewAccessibility().UnpruneSubtree();
   }
 

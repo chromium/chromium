@@ -160,7 +160,7 @@ void PaintFocusBar(gfx::Canvas* canvas,
 
 void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
   auto& view_accessibility = view->GetViewAccessibility();
-  view_accessibility.OverrideIsLeaf(ignored);
+  view_accessibility.SetIsLeaf(ignored);
   view_accessibility.SetIsIgnored(ignored);
 }
 

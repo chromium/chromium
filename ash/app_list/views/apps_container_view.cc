@@ -1075,7 +1075,7 @@ void AppsContainerView::OnShown() {
   if (keyboard::KeyboardUIController::HasInstance())
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 
-  GetViewAccessibility().OverrideIsLeaf(false);
+  GetViewAccessibility().SetIsLeaf(false);
   is_active_page_ = true;
 
   // Update the continue section.
@@ -1103,7 +1103,7 @@ void AppsContainerView::OnHidden() {
   // Apps container view is shown faded behind the search results UI - hide its
   // contents from the screen reader as the apps grid is not normally
   // actionable in this state.
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 
   is_active_page_ = false;
 

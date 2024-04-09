@@ -1018,6 +1018,39 @@ TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmptyToRemoveDescription) {
             ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
+TEST_F(ViewTest, SetIsLeafUnpruneSubtreeWithLeafView) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetViewAccessibilityRole(),
+            ax::mojom::Role::kButton);
+
+  v.AddChildView(std::make_unique<TestView>());
+  auto v2 = v.children()[0];
+  v2->AddChildView(std::make_unique<TestView>());
+  auto v3 = v2->children()[0];
+
+  v2->GetViewAccessibility().SetIsLeaf(true);
+  EXPECT_EQ(v2->GetViewAccessibility().ViewAccessibility::IsLeaf(), true);
+  EXPECT_EQ(v2->GetViewAccessibility().GetIsPruned(), false);
+  EXPECT_EQ(v3->GetViewAccessibility().ViewAccessibility::IsLeaf(), false);
+  EXPECT_EQ(v3->GetViewAccessibility().GetIsPruned(), true);
+
+  // When we set the parent view to be a leaf, the child view should be pruned.
+  v.GetViewAccessibility().SetIsLeaf(true);
+  EXPECT_EQ(v.GetViewAccessibility().ViewAccessibility::IsLeaf(), true);
+  EXPECT_EQ(v2->GetViewAccessibility().GetIsPruned(), true);
+  EXPECT_EQ(v3->GetViewAccessibility().GetIsPruned(), true);
+
+  // If we unset the parent as a leaf, we should unprune the child, but it
+  // should remain as leaf since we explcitly set it as so.
+  v.GetViewAccessibility().SetIsLeaf(false);
+  EXPECT_EQ(v.GetViewAccessibility().ViewAccessibility::IsLeaf(), false);
+  EXPECT_EQ(v2->GetViewAccessibility().ViewAccessibility::IsLeaf(), true);
+  EXPECT_EQ(v2->GetViewAccessibility().GetIsPruned(), false);
+  EXPECT_EQ(v3->GetViewAccessibility().GetIsPruned(), true);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // OnBoundsChanged
 ////////////////////////////////////////////////////////////////////////////////

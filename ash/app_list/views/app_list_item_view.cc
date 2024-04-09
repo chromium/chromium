@@ -610,7 +610,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   DCHECK(view_delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 
   is_promise_app_ =
       item_weak_->GetMetadata()->app_status == AppStatus::kPending ||
