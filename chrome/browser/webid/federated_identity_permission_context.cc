@@ -67,9 +67,9 @@ bool FederatedIdentityPermissionContext::HasSharingPermission(
 }
 
 bool FederatedIdentityPermissionContext::HasSharingPermission(
-    const net::SchemefulSite& relying_party_requester,
+    const net::SchemefulSite& relying_party_embedder,
     const net::SchemefulSite& identity_provider) {
-  return sharing_context_->HasPermission(relying_party_requester,
+  return sharing_context_->HasPermission(relying_party_embedder,
                                          identity_provider);
 }
 

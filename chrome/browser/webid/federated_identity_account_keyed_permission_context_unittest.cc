@@ -294,11 +294,17 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantPermission(relying_party_requester, relying_party_embedder,
                              identity_provider, "my_account");
   EXPECT_TRUE(
-      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+      context()->HasPermission(net::SchemefulSite(relying_party_embedder),
                                net::SchemefulSite(identity_provider)));
   EXPECT_FALSE(
       context()->HasPermission(net::SchemefulSite(identity_provider),
+                               net::SchemefulSite(relying_party_embedder)));
+  EXPECT_FALSE(
+      context()->HasPermission(net::SchemefulSite(identity_provider),
                                net::SchemefulSite(relying_party_requester)));
+  EXPECT_FALSE(
+      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+                               net::SchemefulSite(identity_provider)));
 }
 
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
@@ -349,7 +355,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantPermission(relying_party_requester, relying_party_embedder,
                              identity_provider, "my_account");
   ASSERT_TRUE(
-      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+      context()->HasPermission(net::SchemefulSite(relying_party_embedder),
                                net::SchemefulSite(identity_provider)));
 
   EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
@@ -371,7 +377,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantPermission(relying_party_requester, relying_party_embedder,
                              identity_provider, account_id);
   ASSERT_TRUE(
-      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+      context()->HasPermission(net::SchemefulSite(relying_party_embedder),
                                net::SchemefulSite(identity_provider)));
 
   EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
@@ -379,7 +385,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
                   ContentSettingsPattern::FromURLToSchemefulSitePattern(
                       identity_provider.GetURL()),
                   ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                      relying_party_requester.GetURL()),
+                      relying_party_embedder.GetURL()),
                   content_settings::ContentSettingToValue(
                       ContentSetting::CONTENT_SETTING_ALLOW),
                   /*source=*/"", /*incognito=*/false)));

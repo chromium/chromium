@@ -317,7 +317,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
         FederatedIdentityPermissionContextFactory::GetForProfile(
             browser_context());
     if (fedcm_context && fedcm_context->HasSharingPermission(
-                             /*relying_party_requester=*/embedding_site,
+                             /*relying_party_embedder=*/embedding_site,
                              /*identity_provider=*/requesting_site)) {
       RecordOutcomeSample(RequestOutcome::kAllowedByFedCM);
       std::move(callback).Run(CONTENT_SETTING_ALLOW);

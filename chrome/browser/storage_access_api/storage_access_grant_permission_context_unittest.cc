@@ -711,9 +711,10 @@ class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest
 
     FederatedIdentityPermissionContextFactory::GetForProfile(profile())
         ->GrantSharingPermission(
-            /*relying_party_requester=*/url::Origin::Create(GetTopLevelURL()),
+            /*relying_party_requester=*/url::Origin::Create(
+                GURL("https://unrelated-site.test")),
             /*relying_party_embedder=*/
-            url::Origin::Create(GURL("https://unrelated-site.test")),
+            url::Origin::Create(GetTopLevelURL()),
             /*identity_provider=*/url::Origin::Create(GetRequesterURL()),
             "my_account");
   }

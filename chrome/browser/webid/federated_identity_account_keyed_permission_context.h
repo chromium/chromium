@@ -42,9 +42,14 @@ class FederatedIdentityAccountKeyedPermissionContext
   bool HasPermission(const url::Origin& relying_party_requester);
 
   // Returns whether there is an existing permission for the given (relying
-  // party requester site, identity provider site) tuple. This may be called on
+  // party embedder site, identity provider site) tuple. This may be called on
   // any thread.
-  bool HasPermission(const net::SchemefulSite& relying_party_requester,
+  //
+  // Note that this query ignores the relying_party_requester portion of the
+  // key. This means that if the sharing permission was granted to an embedded
+  // relying party (a cross-origin iframe), `HasPermission(site, site)` may
+  // return true even for non-cross-origin iframe cases.
+  bool HasPermission(const net::SchemefulSite& relying_party_embedder,
                      const net::SchemefulSite& identity_provider);
 
   // Returns whether there is an existing permission for the

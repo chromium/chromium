@@ -87,8 +87,8 @@ class FederatedIdentityPermissionContext
   void FlushScheduledSaveSettingsCalls();
 
   // Returns whether there is an existing sharing permission for the given
-  // (relying party requester site, identity provider site) pair.
-  bool HasSharingPermission(const net::SchemefulSite& relying_party_requester,
+  // (relying party embedder site, identity provider site) pair.
+  bool HasSharingPermission(const net::SchemefulSite& relying_party_embedder,
                             const net::SchemefulSite& identity_provider);
 
   // Converts existing sharing permission grants into (site, site)-keyed content

@@ -97,24 +97,24 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
 }
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
-    const net::SchemefulSite& relying_party_requester,
+    const net::SchemefulSite& relying_party_embedder,
     const net::SchemefulSite& identity_provider) {
   return base::ranges::any_of(
-      GetGrantedObjects(relying_party_requester),
+      GetAllGrantedObjects(),
       [&](const std::unique_ptr<
           permissions::ObjectPermissionContextBase::Object>& object) -> bool {
         if (!object) {
           return false;
         }
 
-        const std::string* rp_requester_origin =
-            object->value.FindString(kRpRequesterKey);
+        const std::string* rp_embedder_origin =
+            object->value.FindString(kRpEmbedderKey);
         const std::string* idp_origin =
             object->value.FindString(kSharingIdpKey);
 
-        return rp_requester_origin && idp_origin &&
-               net::SchemefulSite(GURL(*rp_requester_origin)) ==
-                   relying_party_requester &&
+        return rp_embedder_origin && idp_origin &&
+               net::SchemefulSite(GURL(*rp_embedder_origin)) ==
+                   relying_party_embedder &&
                net::SchemefulSite(GURL(*idp_origin)) == identity_provider;
       });
 }
@@ -297,11 +297,11 @@ ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
       continue;
     }
 
-    const std::string* rp_requester_origin =
-        object->value.FindString(kRpRequesterKey);
+    const std::string* rp_embedder_origin =
+        object->value.FindString(kRpEmbedderKey);
     const std::string* idp_origin = object->value.FindString(kSharingIdpKey);
 
-    if (!rp_requester_origin || !idp_origin) {
+    if (!rp_embedder_origin || !idp_origin) {
       continue;
     }
 
@@ -309,7 +309,7 @@ ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
         ContentSettingsPattern::FromURLToSchemefulSitePattern(
             GURL(*idp_origin)),
         ContentSettingsPattern::FromURLToSchemefulSitePattern(
-            GURL(*rp_requester_origin)),
+            GURL(*rp_embedder_origin)),
         content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
         /*source=*/"", browser_context_->IsOffTheRecord());
   }
