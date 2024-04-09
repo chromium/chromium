@@ -37,7 +37,7 @@ class CC_EXPORT PredictorJankTracker {
   void ResetCurrentScrollReporting();
 
   void set_scroll_jank_ukm_reporter(
-      raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter) {
+      ScrollJankUkmReporter* scroll_jank_ukm_reporter) {
     scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
   }
 
