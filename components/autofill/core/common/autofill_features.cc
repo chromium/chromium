@@ -618,14 +618,6 @@ const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
 const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
     &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 10};
 
-// If enabled, crowdsourcing considers not just the value V but also the human
-// readable text HRT of an <option value="V">HRT</option> for voting.
-// TODO(crbug.com/1395740). This is a kill switch, remove once the feature has
-// settled.
-BASE_FEATURE(kAutofillVoteForSelectOptionValues,
-             "AutofillVoteForSelectOptionValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Improves the selection of phone country codes by also considering address
 // country codes / names.
 // See GetStreetAddressForInput() in field_filling_address_util.cc for a details

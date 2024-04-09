@@ -5815,17 +5815,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.VoteForSelecteOptionValues"
-    enum="VoteForSelecteOptionValuesEvents" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs the impact of the AutofillVoteForSelectOptionValues experiment. Metrics
-    are only recorded for submitted forms (not for blur votes) to prevent double
-    counting.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"
     units="ms" expires_after="2024-12-12">
   <owner>yigu@chromium.org</owner>

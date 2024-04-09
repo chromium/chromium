@@ -127,18 +127,6 @@ std::string MakeGuid(size_t last_digit) {
   return base::StringPrintf("00000000-0000-0000-0000-%012zu", last_digit);
 }
 
-// For tests, the observed_submission is hardcoded to true.
-void DeterminePossibleFieldTypesForUpload(
-    const std::vector<AutofillProfile>& profiles,
-    const std::vector<CreditCard>& credit_cards,
-    const std::u16string& last_unlocked_credit_card_cvc,
-    const std::string& app_locale,
-    FormStructure* form) {
-  DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-      /*observed_submission=*/true, form);
-}
-
 struct ProfileMatchingTypesTestCase {
   const char* input_value;   // The value to input in the field.
   FieldTypeSet field_types;  // The expected field types to be determined.
@@ -307,105 +295,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 INSTANTIATE_TEST_SUITE_P(DeterminePossibleFieldTypesForUploadTest,
                          ProfileMatchingTypesTest,
                          testing::ValuesIn(kProfileMatchingTypesTestCases));
-
-// TODO(crbug.com/1395740). Remove parameter, once
-// kAutofillVoteForSelectOptionValues has settled on stable.
-class DeterminePossibleFieldTypesForUploadOfSelectTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-
-void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-    bool enable_autofill_vote_for_select_option_values,
-    FormControlType field_type) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(features::kAutofillVoteForSelectOptionValues,
-                                enable_autofill_vote_for_select_option_values);
-
-  // Set up a profile and no credit cards.
-  std::vector<AutofillProfile> profiles = {
-      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode)};
-  TestAddressFillData profile_info_data = GetElvisAddressFillData();
-  profile_info_data.phone = "+1 (234) 567-8901";
-  profiles[0] = FillDataToAutofillProfile(profile_info_data);
-  profiles[0].set_guid(MakeGuid(1));
-  std::vector<CreditCard> credit_cards;
-
-  // Set up the form to be tested.
-  FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  // We want the "Memphis" in <option value="2">Memphis</option> to be
-  // recognized.
-  FormFieldData city_field = CreateTestSelectOrSelectListField(
-      "label", "name", /*value=*/"2", /*autocomplete=*/"",
-      /*values=*/{"1", "2", "3"},
-      /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type);
-
-  // We want the +1 in <option value="US">USA (+1)</option> to be recognized
-  // as a phone country code. Despite the value "US", we don't want this to be
-  // recognized as a country field.
-  FormFieldData phone_country_code_field = CreateTestSelectOrSelectListField(
-      "label", "name", /*value=*/"US", /*autocomplete=*/"",
-      /*values=*/{"US", "DE"}, /*contents=*/{"USA (+1)", "Germany (+49)"},
-      field_type);
-
-  form.fields = {city_field, phone_country_code_field};
-
-  FormStructure form_structure(form);
-
-  // Validate expectations.
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
-
-  ASSERT_EQ(2U, form_structure.field_count());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVoteForSelectOptionValues)) {
-    EXPECT_EQ(form_structure.field(0)->possible_types(),
-              FieldTypeSet({ADDRESS_HOME_CITY}));
-    EXPECT_EQ(form_structure.field(1)->possible_types(),
-              FieldTypeSet({PHONE_HOME_COUNTRY_CODE}));
-  } else {
-    EXPECT_EQ(form_structure.field(0)->possible_types(),
-              FieldTypeSet({UNKNOWN_TYPE}));
-    EXPECT_EQ(form_structure.field(1)->possible_types(),
-              FieldTypeSet({ADDRESS_HOME_COUNTRY}));
-  }
-}
-
-// Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <select> element:
-// <option value="this is the value">this is the human readable part</option>
-//
-// In particular <option value="US">USA (+1)</option> is probably part of a
-// phone number country code.
-TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelect) {
-  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      FormControlType::kSelectOne);
-}
-
-// Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <selectlist> element:
-// <option value="this is the value">this is the human readable part</option>
-//
-// In particular <option value="US">USA (+1)</option> is probably part of a
-// phone number country code.
-TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelectList) {
-  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      FormControlType::kSelectList);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeterminePossibleFieldTypesForUploadOfSelectTest,
-                         testing::Bool());
 
 class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
  protected:

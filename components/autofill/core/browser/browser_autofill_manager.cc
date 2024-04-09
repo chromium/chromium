@@ -982,8 +982,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
       FROM_HERE,
       base::BindOnce(&DeterminePossibleFieldTypesForUpload,
                      std::move(copied_profiles), std::move(copied_credit_cards),
-                     last_unlocked_credit_card_cvc_, app_locale_,
-                     observed_submission, raw_form),
+                     last_unlocked_credit_card_cvc_, app_locale_, raw_form),
       std::move(call_after_determine_field_types));
 
   return true;
