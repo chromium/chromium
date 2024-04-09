@@ -501,6 +501,8 @@ src/webgpu/shader/execution/expression/call/builtin/cross.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/cross.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/degrees.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/degrees.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/derivatives.cache.ts
+src/webgpu/shader/execution/expression/call/builtin/derivatives.ts
 src/webgpu/shader/execution/expression/call/builtin/determinant.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/determinant.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/distance.cache.ts
@@ -726,6 +728,8 @@ src/webgpu/shader/validation/expression/binary/div_rem.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/all.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/any.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/arrayLength.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/asin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/asinh.spec.ts
@@ -776,6 +780,7 @@ src/webgpu/shader/validation/expression/call/builtin/reflect.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/round.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/saturate.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/select.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/shader_stage_utils.ts
 src/webgpu/shader/validation/expression/call/builtin/sign.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sin.spec.ts
