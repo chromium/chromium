@@ -29,7 +29,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
+#include "components/permissions/contexts/keyboard_lock_permission_context.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
+#include "components/permissions/contexts/pointer_lock_permission_context.h"
 #include "components/permissions/contexts/speaker_selection_permission_context.h"
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
@@ -103,6 +105,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::IDLE_DETECTION] =
       std::make_unique<IdleDetectionPermissionContext>(profile);
 
+  permission_contexts[ContentSettingsType::KEYBOARD_LOCK] =
+      std::make_unique<permissions::KeyboardLockPermissionContext>(profile);
+
   // TODO(crbug.com/1043295): Still in development for Android so we don't
   // support it on WebLayer yet.
   permission_contexts[ContentSettingsType::LOCAL_FONTS] =
@@ -126,6 +131,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // TODO(crbug.com/1091211): Move once supported on WebLayer.
   permission_contexts[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
       std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
+
+  permission_contexts[ContentSettingsType::POINTER_LOCK] =
+      std::make_unique<permissions::PointerLockPermissionContext>(profile);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // We don't support Chrome OS and Windows for WebLayer yet so only the Android

@@ -404,6 +404,16 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
         icon = show_blocked_badge ? &vector_icons::kStorageAccessOffIcon
                                   : &vector_icons::kStorageAccessIcon;
         break;
+      case ContentSettingsType::KEYBOARD_LOCK:
+        // TODO: crbug.com/324147495 - Replace with the actual icons.
+        icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
+                                  : &vector_icons::kUsbChromeRefreshIcon;
+        break;
+      case ContentSettingsType::POINTER_LOCK:
+        // TODO: crbug.com/324147495 - Replace with the actual icons.
+        icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
+                                  : &vector_icons::kUsbChromeRefreshIcon;
+        break;
       default:
         break;
     }
@@ -524,6 +534,14 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       icon = &vector_icons::kTouchpadMouseIcon;
+      break;
+    case ContentSettingsType::KEYBOARD_LOCK:
+      // TODO: crbug.com/324147495 - Replace with the actual icon.
+      icon = &vector_icons::kUsbIcon;
+      break;
+    case ContentSettingsType::POINTER_LOCK:
+      // TODO: crbug.com/324147495 - Replace with the actual icon.
+      icon = &vector_icons::kUsbIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are

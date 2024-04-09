@@ -51,6 +51,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsImagesMidSentence';
     case ContentSettingsTypes.JAVASCRIPT:
       return 'siteSettingsJavascriptMidSentence';
+    case ContentSettingsTypes.KEYBOARD_LOCK:
+      return 'siteSettingsKeyboardLockMidSentence';
     case ContentSettingsTypes.LOCAL_FONTS:
       return 'siteSettingsFontAccessMidSentence';
     case ContentSettingsTypes.MIC:
@@ -63,6 +65,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsNotificationsMidSentence';
     case ContentSettingsTypes.PAYMENT_HANDLER:
       return 'siteSettingsPaymentHandlerMidSentence';
+    case ContentSettingsTypes.POINTER_LOCK:
+      return 'siteSettingsPointerLockMidSentence';
     case ContentSettingsTypes.POPUPS:
       return 'siteSettingsPopupsMidSentence';
     case ContentSettingsTypes.PROTECTED_CONTENT:

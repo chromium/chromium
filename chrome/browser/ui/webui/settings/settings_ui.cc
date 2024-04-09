@@ -393,6 +393,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito));
 
   html_source->AddBoolean(
+      "enableKeyboardAndPointerLockPrompt",
+      base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt));
+
+  html_source->AddBoolean(
       "enableLinkedServicesSetting",
       base::FeatureList::IsEnabled(features::kLinkedServicesSetting));
 

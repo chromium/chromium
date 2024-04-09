@@ -320,6 +320,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
       // </if>
 
+      enableKeyboardAndPointerLockPrompt_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -368,6 +374,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   // <if expr="chrome_root_store_cert_management_ui">
   private enableCertManagementUIV2_: boolean;
   // </if>
+  private enableKeyboardAndPointerLockPrompt_: boolean;
 
   override ready() {
     super.ready();

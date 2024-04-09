@@ -32,6 +32,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -600,6 +601,11 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
         base::FeatureList::IsEnabled(
             features::kCapturedSurfaceControlStickyPermissions)) {
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
+    }
+
+    if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+      base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
+      base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }
 
     initialized = true;

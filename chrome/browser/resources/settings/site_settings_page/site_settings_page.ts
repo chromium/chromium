@@ -136,7 +136,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:touchpad-mouse',
       enabledLabel: 'siteSettingsCapturedSurfaceControlAllowed',
       disabledLabel: 'siteSettingsCapturedSurfaceControlBlocked',
-      shouldShow: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+      shouldShow: () =>
+          loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
     },
     {
       route: routes.SITE_SETTINGS_CLIPBOARD,
@@ -255,6 +256,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
           loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
     },
     {
+      route: routes.SITE_SETTINGS_KEYBOARD_LOCK,
+      id: Id.KEYBOARD_LOCK,
+      label: 'siteSettingsKeyboardLock',
+      // TODO: crbug.com/324147495 - Replace with the actual icon.
+      icon: 'settings:usb',
+      enabledLabel: 'siteSettingsKeyboardLockAllowed',
+      disabledLabel: 'siteSettingsKeyboardLockBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+    },
+    {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
       id: Id.LOCAL_FONTS,
       label: 'fonts',
@@ -285,6 +297,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:pdf',
       enabledLabel: 'siteSettingsPdfsAllowed',
       disabledLabel: 'siteSettingsPdfsBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_POINTER_LOCK,
+      id: Id.POINTER_LOCK,
+      label: 'siteSettingsPointerLock',
+      // TODO: crbug.com/324147495 - Replace with the actual icon.
+      icon: 'settings:usb',
+      enabledLabel: 'siteSettingsPointerLockAllowed',
+      disabledLabel: 'siteSettingsPointerLockBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
     },
     {
       route: routes.SITE_SETTINGS_POPUPS,
@@ -486,6 +509,8 @@ export class SettingsSiteSettingsPageElement extends
               Id.LOCAL_FONTS,
               Id.AUTO_PICTURE_IN_PICTURE,
               Id.CAPTURED_SURFACE_CONTROL,
+              Id.KEYBOARD_LOCK,
+              Id.POINTER_LOCK,
 
             ]),
             contentBasic: buildItemListFromIds([

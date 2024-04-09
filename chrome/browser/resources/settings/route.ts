@@ -98,6 +98,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
   r.SITE_SETTINGS_JAVASCRIPT_JIT = r.SITE_SETTINGS.createChild('v8');
+  if (loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt')) {
+    r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
+    r.SITE_SETTINGS_POINTER_LOCK = r.SITE_SETTINGS.createChild('pointerLock');
+  }
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
   r.SITE_SETTINGS_LOCATION = r.SITE_SETTINGS.createChild('location');

@@ -34,6 +34,7 @@ export enum ContentSettingsTypes {
   IMAGES = 'images',
   JAVASCRIPT = 'javascript',
   JAVASCRIPT_JIT = 'javascript-jit',
+  KEYBOARD_LOCK = 'keyboard-lock',
   LOCAL_FONTS = 'local-fonts',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI_DEVICES = 'midi-sysex',
@@ -41,6 +42,7 @@ export enum ContentSettingsTypes {
   NOTIFICATIONS = 'notifications',
   PAYMENT_HANDLER = 'payment-handler',
   PERFORMANCE = 'performance',
+  POINTER_LOCK = 'pointer-lock',
   POPUPS = 'popups',
   PRIVATE_NETWORK_DEVICES = 'private-network-devices',
   PROTECTED_CONTENT = 'protected-content',
