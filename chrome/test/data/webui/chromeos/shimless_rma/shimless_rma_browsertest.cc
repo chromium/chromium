@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -30,6 +32,9 @@ class ShimlessRmaBrowserTest : public WebUIMochaBrowserTest {
     command_line->AppendSwitch(switches::kLaunchRma);
     WebUIMochaBrowserTest::SetUpCommandLine(command_line);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kShimlessRMAOsUpdate};
 };
 
 IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, AllInputsDisabled) {
@@ -86,6 +91,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, OnboardingNetworkPage) {
 
 IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, SelectComponentsPage) {
   RunTest("chromeos/shimless_rma/onboarding_select_components_page_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, UpdatePage) {
+  RunTest("chromeos/shimless_rma/onboarding_update_page_test.js",
           "mocha.run()");
 }
 
