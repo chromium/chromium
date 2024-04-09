@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test.pb.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -32,6 +33,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -180,6 +182,12 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         ->UpdateAccountInfoForAccount(account_info);
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  bool IsSignedIn() const {
+    return identity_test_env_adaptor_->identity_test_env()
+        ->identity_manager()
+        ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
 
   OptimizationGuideKeyedService* GetOptimizationGuideKeyedService(
@@ -593,8 +601,18 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
   CheckInternalsLog("OnModelExecutionResponse");
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       PRE_EnableFeatureViaPref) {
+class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
+    : public ModelExecutionEnabledBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::switches::kExplicitBrowserSigninUIOnDesktop);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
+    PRE_EnableFeatureViaPref) {
   EnableSignin();
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
@@ -628,9 +646,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest, EnableFeatureViaPref) {
-#ifndef OS_CHROMEOS
-  EnableSignin();
+IN_PROC_BROWSER_TEST_F(
+    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
+    EnableFeatureViaPref) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(IsSignedIn());
 #endif
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
@@ -712,7 +732,10 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
       enabled_features.push_back(
           features::internal::kComposeSettingsVisibility);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    enabled_features.push_back(::switches::kExplicitBrowserSigninUIOnDesktop);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
   }
 };
 
@@ -733,8 +756,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
                        NewFeaturesEnabledWhenMainToggleEnabled) {
-#ifndef OS_CHROMEOS
-  EnableSignin();
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(IsSignedIn());
 #endif
   // The new feature should have got enabled since main toggle was on.
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));

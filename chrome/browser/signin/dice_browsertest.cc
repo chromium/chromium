@@ -396,7 +396,11 @@ class DiceBrowserTest : public InProcessBrowserTest,
         reconcilor_blocked_count_(0),
         reconcilor_unblocked_count_(0),
         reconcilor_started_count_(0) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+    // TODO(b/320650075): Adapt tests for UNO Desktop is enabled.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{switches::kUnoDesktop,
+                               switches::kExplicitBrowserSigninUIOnDesktop});
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &FakeGaia::HandleSigninURL, main_email_,
         base::BindRepeating(&DiceBrowserTest::OnSigninRequest,

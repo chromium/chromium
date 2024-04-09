@@ -74,6 +74,13 @@ void SimulateEscapeKeyPress(content::WebContents* web_content) {
       ->ForwardKeyboardEvent(event);
 }
 
+bool IsExplicitBrowserSigninExperimentOnly() {
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kExperimental) &&
+         !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kFull);
+}
+
 }  // namespace
 
 class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
@@ -496,7 +503,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Equivalent to `kInterceptionBubbleBaseHeight` default.
   bubble->SetHeightAndShowWidget(/*height=*/500);
   EXPECT_FALSE(callback_result_.has_value());
-  EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
+  if (IsExplicitBrowserSigninExperimentOnly()) {
+    EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
+  }
 
   // Take a handle on the bubble, to close it later.
   bubble_handle_ = bubble->GetHandle();
@@ -559,7 +568,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Equivalent to `kInterceptionBubbleBaseHeight` default.
   bubble->SetHeightAndShowWidget(/*height=*/500);
   EXPECT_FALSE(callback_result_.has_value());
-  EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
+  if (IsExplicitBrowserSigninExperimentOnly()) {
+    EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
+  }
 
   views::test::WidgetDestroyedWaiter closing_observer(widget);
   EXPECT_FALSE(bubble->GetAccepted());

@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
-#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 
 #include "base/containers/enum_set.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -266,7 +267,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   CoreAccountId account_id_;
 };
 
-// The feature override controls the `switches::kUnoDesktop` feature.
+// The feature override controls the
+// `switches::kExplicitBrowserSigninUIOnDesktop` uno feature.
 //
 // Main differences with Uno enabled/disabled:
 // - State of the Primary account when Sync is declined.
@@ -277,12 +279,26 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
 // behavior with the intercept and Uno.
 class SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest
     : public SigninInterceptFirstRunExperienceDialogBrowserTest,
-      public base::test::WithFeatureOverride {
+      public testing::WithParamInterface<bool> {
  public:
-  SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest()
-      : base::test::WithFeatureOverride(switches::kUnoDesktop) {}
+  SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                switches::kUnoDesktop},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                 switches::kUnoDesktop});
+    }
+  }
 
-  bool is_uno_enabled() { return IsParamFeatureEnabled(); }
+  bool is_uno_enabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Shows and closes the fre dialog.
@@ -780,5 +796,8 @@ IN_PROC_BROWSER_TEST_P(
   ExpectRecordedEvents({DialogEvent::kStart});
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
+    testing::Bool(),
+    [](auto& info) { return info.param ? "UnoEnabled" : "UnoDisabled"; });

@@ -61,6 +61,10 @@ struct ProfileMenuViewPixelTestParam {
       ProfileTypePixelTestParam::kRegular;
   SigninStatusPixelTestParam signin_status =
       SigninStatusPixelTestParam::kSignedOut;
+  // param to be removed when `switches::kExplicitBrowserSigninUIOnDesktop` is
+  // enabled by default. Also remove duplicated tests (with "_WithoutUnoDesign"
+  // appended to their name) that test the old design without the feature.
+  bool profile_menu_uno_redesign = true;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -74,6 +78,8 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     // Legacy design (to be removed)
+    {.pixel_test_param = {.test_suffix = "Regular_WithoutUnoDesign"},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "Guest"},
      .profile_type_param = ProfileTypePixelTestParam::kGuest},
@@ -83,11 +89,20 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {.pixel_test_param = {.test_suffix = "LacrosDeviceGuestSession"},
      .profile_type_param = ProfileTypePixelTestParam::kDeviceGuestSession},
 #endif
+    {.pixel_test_param = {.test_suffix = "DarkTheme_WithoutUnoDesign",
+                          .use_dark_theme = true},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
+    {.pixel_test_param = {.test_suffix = "RTL_WithoutUnoDesign",
+                          .use_right_to_left_language = true},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "RTL",
                           .use_right_to_left_language = true}},
 
     // CR2023 design
+    {.pixel_test_param = {.test_suffix = "CR2023_WithoutUnoDesign",
+                          .use_chrome_refresh_2023_style = true},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "CR2023_Guest",
@@ -105,35 +120,67 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                           .use_chrome_refresh_2023_style = true},
      .profile_type_param = ProfileTypePixelTestParam::kDeviceGuestSession},
 #endif
+    {.pixel_test_param = {.test_suffix = "CR2023_DarkTheme_WithoutUnoDesign",
+                          .use_dark_theme = true,
+                          .use_chrome_refresh_2023_style = true},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "CR2023_DarkTheme",
                           .use_dark_theme = true,
                           .use_chrome_refresh_2023_style = true}},
+    {.pixel_test_param = {.test_suffix = "CR2023_RTL_WithoutUnoDesign",
+                          .use_right_to_left_language = true,
+                          .use_chrome_refresh_2023_style = true},
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "CR2023_RTL",
                           .use_right_to_left_language = true,
                           .use_chrome_refresh_2023_style = true}},
     // Signed in tests
+    {.pixel_test_param = {.test_suffix = "SignedIn_Sync_WithoutUnoDesign"},
+     .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "SignedIn_Sync"},
      .signin_status = SigninStatusPixelTestParam::kSignedInWithSync},
+    {.pixel_test_param = {.test_suffix =
+                              "SignedIn_SyncPaused_DarkTheme_WithoutUnoDesign",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
+     .profile_menu_uno_redesign = false},
     {.pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_DarkTheme",
                           .use_dark_theme = true},
      .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused},
-    {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_RTL",
+    {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_RTL_WithoutUnoDesign",
                           .use_right_to_left_language = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+     .profile_menu_uno_redesign = false},
+    {.pixel_test_param = {.test_suffix =
+                              "SignedIn_Nosync_DarkTheme_WithoutUnoDesign",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+     .profile_menu_uno_redesign = false},
+    {.pixel_test_param =
+         {.test_suffix =
+              "SignedIn_SyncNotWorking_RTL_DarkTheme_WithoutUnoDesign",
+          .use_dark_theme = true,
+          .use_right_to_left_language = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInSyncNotWorking,
+     .profile_menu_uno_redesign = false},
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // These tests are disabled on these platforms because the maximum window
+    // height set by the operating system is smaller than the height of the
+    // dialog. The test will crash if we exceed that height.
+    {.pixel_test_param = {.test_suffix = "WebSignedIn_Chrome"},
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn},
     {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_DarkTheme",
                           .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync},
+    {.pixel_test_param = {.test_suffix = "SignedIn_Nosync_RTL",
+                          .use_right_to_left_language = true},
      .signin_status = SigninStatusPixelTestParam::kSignedInNoSync},
     {.pixel_test_param = {.test_suffix =
                               "SignedIn_SyncNotWorking_RTL_DarkTheme",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true},
      .signin_status = SigninStatusPixelTestParam::kSignedInSyncNotWorking},
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The test is disabled on these platforms because the maximum window
-    // height set by the operating system is smaller than the height of the
-    // dialog. The test will crash if we exceed that height.
-    {.pixel_test_param = {.test_suffix = "WebSignedIn_Chrome"},
-     .signin_status = SigninStatusPixelTestParam::kWebSignedIn},
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LACROS)
 };
 
@@ -145,10 +192,12 @@ class ProfileMenuViewPixelTest
  public:
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
-    if (GetParam().signin_status == SigninStatusPixelTestParam::kWebSignedIn) {
-      feature_list_.InitAndEnableFeature(
-          switches::kExplicitBrowserSigninUIOnDesktop);
-    }
+    bool should_enable_uno =
+        GetParam().signin_status == SigninStatusPixelTestParam::kWebSignedIn ||
+        GetParam().profile_menu_uno_redesign;
+
+    feature_list_.InitWithFeatureState(
+        switches::kExplicitBrowserSigninUIOnDesktop, should_enable_uno);
   }
 
   ~ProfileMenuViewPixelTest() override = default;

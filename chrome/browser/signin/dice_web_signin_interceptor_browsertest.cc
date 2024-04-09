@@ -627,11 +627,14 @@ class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
  public:
   DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest() {
     if (GetParam() == switches::ExplicitBrowserSigninPhase::kFull) {
-      feature_list_.InitAndEnableFeature(
-          switches::kExplicitBrowserSigninUIOnDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+          /*disabled_features=*/{switches::kUnoDesktop});
     } else if (GetParam() ==
                switches::ExplicitBrowserSigninPhase::kExperimental) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kUnoDesktop},
+          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
     }
   }
 
@@ -1025,8 +1028,15 @@ IN_PROC_BROWSER_TEST_F(
 // the experimental `switches::kUnoDesktop` enabled.
 class DiceWebSigninInterceptorWithBrowserSigninExperimentPhaseBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
+ public:
+  DiceWebSigninInterceptorWithBrowserSigninExperimentPhaseBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kUnoDesktop},
+        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1211,17 +1221,24 @@ IN_PROC_BROWSER_TEST_F(
       expected_bubble_shown_count_info1 + expected_bubble_shown_count_info2);
 }
 
-// Test Suite where PRE_* tests are with `switches::kUnoDesktop` disabled, and
-// regular test with `switches::kUnoDesktop` enabled, simulating users
-// transitioning in to `switches::kUnoDesktop` active.
+// Test Suite where PRE_* tests are with
+// `switches::kExplicitBrowserSigninUIOnDesktop` disabled, and regular test with
+// `switches::kExplicitBrowserSigninUIOnDesktop` enabled, simulating users
+// transitioning in to `switches::kExplicitBrowserSigninUIOnDesktop` active.
 class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
   DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest() {
     if (content::IsPreTest()) {
-      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                 switches::kUnoDesktop});
     } else {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                switches::kUnoDesktop},
+          /*disabled_features=*/{});
     }
   }
 
@@ -1309,16 +1326,24 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kExplicitBrowserSignin));
 }
 
-// Test Suite where PRE_* tests are with `switches::kUnoDesktop` enabled, and
-// regular test with `switches::kUnoDesktop` disabled. Simulating a rollback.
+// Test Suite where PRE_* tests are with
+// `switches::kExplicitBrowserSigninUIOnDesktop` enabled, and regular test with
+// `switches::kExplicitBrowserSigninUIOnDesktop` disabled. Simulating a
+// rollback.
 class DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
   DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest() {
     if (content::IsPreTest()) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                switches::kUnoDesktop},
+          /*disabled_features=*/{});
     } else {
-      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                 switches::kUnoDesktop});
     }
   }
 
