@@ -491,6 +491,74 @@ TEST_P(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
   EXPECT_TRUE(target_observer_delegate->LastEntry()->isIntersecting());
 }
 
+TEST_P(IntersectionObserverTest, DirectlyUpdateTransform) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+    body {
+      width: 500px;
+      height: 500px;
+    }
+    #container {
+      transform: translateX(100px);
+      width: 100px;
+    }
+    #target {
+      width: 10px;
+      height: 10px;
+    }
+    </style>
+    <div id=container>
+      <div id=target></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+
+  TestIntersectionObserverDelegate* target_observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* target_observer =
+      MakeGarbageCollected<IntersectionObserver>(
+          *target_observer_delegate,
+          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          IntersectionObserver::Params{
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
+
+  DummyExceptionStateForTesting exception_state;
+  target_observer->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  EXPECT_EQ(target_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(target_observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(target_observer_delegate->LastEntry()->isIntersecting());
+
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  container->SetInlineStyleProperty(CSSPropertyID::kTransform,
+                                    "translateX(300px)");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  EXPECT_EQ(target_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(target_observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(target_observer_delegate->LastEntry()->isIntersecting());
+}
+
 TEST_P(IntersectionObserverTest, ResumePostsTask) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");

@@ -259,11 +259,12 @@ String IntersectionGeometry::CachedRects::ToString() const {
                                          : t.ToString();
   };
   return String::Format(
-      "target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
+      "%d target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
       "min_to_update %s %s target_t: %s root_t: %s intersect: %d "
       "rel: %d r_scrolls_t: %d",
-      local_target_rect.ToString().c_str(), target_rect.ToString().c_str(),
-      local_root_rect.ToString().c_str(), root_rect.ToString().c_str(),
+      valid, local_target_rect.ToString().c_str(),
+      target_rect.ToString().c_str(), local_root_rect.ToString().c_str(),
+      root_rect.ToString().c_str(),
       unscrolled_unclipped_intersection_rect.ToString().c_str(),
       unclipped_intersection_rect.ToString().c_str(),
       intersection_rect.ToString().c_str(),

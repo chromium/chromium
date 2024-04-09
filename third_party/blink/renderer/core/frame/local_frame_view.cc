@@ -4903,6 +4903,7 @@ bool LocalFrameView::ExecuteAllPendingUpdates() {
         updated = true;
       }
       frame_view.pending_transform_updates_->clear();
+      frame_view.SetIntersectionObservationState(kDesired);
     }
   });
   return updated;
