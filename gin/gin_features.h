@@ -17,6 +17,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactWithStack);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplug);
 GIN_EXPORT extern const base::FeatureParam<int>
     kV8ConcurrentSparkplugMaxThreads;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8BaselineBatchCompilation);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CodeMemoryWriteProtection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplugHighPriorityThreads);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);

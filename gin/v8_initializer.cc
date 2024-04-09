@@ -297,6 +297,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8SparkplugNeedsShortBuiltinCalls,
                          "--sparkplug-needs-short-builtins",
                          "--no-sparkplug-needs-short-builtins");
+  SetV8FlagsIfOverridden(features::kV8BaselineBatchCompilation,
+                         "--baseline-batch-compilation",
+                         "--no-baseline-batch-compilation");
   SetV8FlagsIfOverridden(features::kV8ShortBuiltinCalls,
                          "--short-builtin-calls", "--no-short-builtin-calls");
   SetV8FlagsIfOverridden(features::kV8CodeMemoryWriteProtection,

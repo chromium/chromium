@@ -140,6 +140,11 @@ BASE_FEATURE(kV8SparkplugNeedsShortBuiltinCalls,
              "V8SparkplugNeedsShortBuiltinCalls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables batch compilation for Sparkplug (baseline) compilation.
+BASE_FEATURE(kV8BaselineBatchCompilation,
+             "V8BaselineBatchCompilation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables short builtin calls feature.
 BASE_FEATURE(kV8ShortBuiltinCalls,
              "V8ShortBuiltinCalls",
