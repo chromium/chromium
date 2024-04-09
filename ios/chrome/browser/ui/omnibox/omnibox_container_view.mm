@@ -117,7 +117,7 @@ const CGFloat kClearButtonSize = 28.5f;
         NSDirectionalEdgeInsetsMake(0, kOmniboxLeadingImageViewEdgeOffset, 0,
                                     kTextFieldClearButtonTrailingOffset));
 
-    if (IsRichAutocompletionEnabled()) {
+    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
       // Text scroll view.
       _textScrollView = [[UIScrollView alloc] init];
       _textScrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -155,7 +155,7 @@ const CGFloat kClearButtonSize = 28.5f;
             constraintLessThanOrEqualToAnchor:_textScrollView.widthAnchor]
       ]];
 
-    } else {  // !IsRichAutocompletionEnabled()
+    } else {  // !IsRichAutocompletionEnabled
       [_stackView addArrangedSubview:_textField];
     }
 
@@ -177,7 +177,7 @@ const CGFloat kClearButtonSize = 28.5f;
         CreateLiftEffectCirclePointerStyleProvider();
     // Do not use the system clear button. Use a custom view instead.
     _textField.clearButtonMode = UITextFieldViewModeNever;
-    if (IsRichAutocompletionEnabled()) {
+    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
       [NSLayoutConstraint activateConstraints:@[
         [_clearButton.widthAnchor constraintEqualToConstant:kClearButtonSize],
         [_clearButton.heightAnchor constraintEqualToConstant:kClearButtonSize],
@@ -197,7 +197,7 @@ const CGFloat kClearButtonSize = 28.5f;
     // Constraints.
     AddSameConstraintsToSides(_textField, _stackView,
                               LayoutSides::kTop | LayoutSides::kBottom);
-    if (IsRichAutocompletionEnabled()) {
+    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
       AddSameConstraintsToSides(_additionalTextLabel, _stackView,
                                 LayoutSides::kTop | LayoutSides::kBottom);
 
@@ -244,7 +244,7 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
-  if (IsRichAutocompletionEnabled()) {
+  if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
     _clearButton.hidden = isHidden;
   } else {
     self.textField.rightViewMode =
@@ -261,21 +261,40 @@ const CGFloat kClearButtonSize = 28.5f;
 #pragma mark - OmniboxAdditionalTextConsumer
 
 - (void)updateAdditionalText:(NSString*)additionalText {
-  CHECK(IsRichAutocompletionEnabled());
+  CHECK(IsRichAutocompletionEnabled(RichAutocompletionImplementation::kAny));
 
-  _additionalTextLabel.text = additionalText;
-  _additionalTextLabel.hidden = !additionalText.length;
-  // Update the font here as `_textField` changes font for different dynamic
-  // type. // TODO(b/325035406): Refactor dynamic type handling.
-  _additionalTextLabel.font = _textField.font;
-
-  // The placeholder text prevents the text field from hugging to a size smaller
-  // than `placeholder`. This prevents the additional text from staying flush to
-  // the text field (b/326371877).
-  if (_additionalTextLabel.hidden) {
-    _textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  if (IsRichAutocompletionEnabled(
+          RichAutocompletionImplementation::kTextField)) {
+    // Additional text in text field.
+    if (!additionalText) {
+      _textField.additionalText = nil;
+    } else {
+      NSMutableAttributedString* addditionalAttributedText =
+          [[NSMutableAttributedString alloc] initWithString:additionalText];
+      [addditionalAttributedText
+          addAttributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextSecondaryColor]
+          }
+                  range:NSMakeRange(0, addditionalAttributedText.length)];
+      _textField.additionalText = addditionalAttributedText;
+    }
   } else {
-    _textField.placeholder = nil;
+    // Additional text in Label.
+    _additionalTextLabel.text = additionalText;
+    _additionalTextLabel.hidden = !additionalText.length;
+    // Update the font here as `_textField` changes font for different dynamic
+    // type. TODO(crbug.com/325035406): Refactor dynamic type handling.
+    _additionalTextLabel.font = _textField.font;
+
+    // The placeholder text prevents the text field from hugging to a size
+    // smaller than `placeholder`. This prevents the additional text from
+    // staying flush to the text field (crbug.com/326371877).
+    if (_additionalTextLabel.hidden) {
+      _textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+    } else {
+      _textField.placeholder = nil;
+    }
   }
 }
 

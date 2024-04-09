@@ -111,6 +111,7 @@ typedef enum {
 @property(nonatomic, readonly, strong) UIColor* selectedTextBackgroundColor;
 @property(nonatomic, strong) UIColor* placeholderTextColor;
 @property(nonatomic, assign) BOOL incognito;
+@property(nonatomic, strong) NSAttributedString* additionalText;
 
 @end
 
