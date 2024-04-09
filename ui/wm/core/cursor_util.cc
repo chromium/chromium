@@ -209,7 +209,7 @@ void CreateBitmapsFromAnimatedLottie(int resource_id,
     std::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
     scoped_refptr<cc::SkottieWrapper> skottie =
-        cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
+        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
     cursor_animations[type] = std::make_unique<lottie::Animation>(skottie);
   }
   lottie::Animation* animation = cursor_animations[type].get();

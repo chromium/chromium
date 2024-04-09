@@ -245,7 +245,7 @@ void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
     std::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_id);
     scoped_refptr<cc::SkottieWrapper> skottie =
-        cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
+        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
     child_views_.step_illustration_animation_->SetAnimatedImage(
         std::make_unique<lottie::Animation>(skottie));
     child_views_.step_illustration_animation_->SizeToPreferredSize();

@@ -24,7 +24,7 @@ TEST(SkottieTransferCacheEntryTest, SerializationDeserialization) {
           kLottieDataWithoutAssets1.length());
 
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateSerializable(std::move(a_data));
+      SkottieWrapper::UnsafeCreateSerializable(std::move(a_data));
 
   // Serialize
   auto client_entry(std::make_unique<ClientSkottieTransferCacheEntry>(skottie));

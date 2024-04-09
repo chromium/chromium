@@ -141,7 +141,7 @@ gfx::ImageSkia CreateImageSkiaWithCurrentTheme(
     std::vector<uint8_t> bytes,
     const ui::ColorProvider* color_provider) {
   auto content = std::make_unique<Animation>(
-      cc::SkottieWrapper::CreateSerializable(std::move(bytes)),
+      cc::SkottieWrapper::UnsafeCreateSerializable(std::move(bytes)),
       CreateColorMap(color_provider));
   return CreateImageSkia(content.get());
 }
@@ -151,15 +151,15 @@ gfx::ImageSkia CreateImageSkiaWithCurrentTheme(
 
 gfx::ImageSkia ParseLottieAsStillImage(std::vector<uint8_t> data) {
   auto content = std::make_unique<Animation>(
-      cc::SkottieWrapper::CreateSerializable(std::move(data)));
+      cc::SkottieWrapper::UnsafeCreateSerializable(std::move(data)));
   return CreateImageSkia(content.get());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data) {
-  const gfx::Size size =
-      std::make_unique<Animation>(cc::SkottieWrapper::CreateSerializable(data))
-          ->GetOriginalSize();
+  const gfx::Size size = std::make_unique<Animation>(
+                             cc::SkottieWrapper::UnsafeCreateSerializable(data))
+                             ->GetOriginalSize();
   return ui::ImageModel::FromImageGenerator(
       base::BindRepeating(&CreateImageSkiaWithCurrentTheme, std::move(data)),
       size);

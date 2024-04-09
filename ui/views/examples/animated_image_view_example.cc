@@ -111,7 +111,7 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
     base::FilePath path(base::UTF16ToWide(file_chooser_->GetText()));
 #endif  // BUILDFLAG(IS_POSIX)
     if (base::ReadFileToString(path, &json)) {
-      auto skottie = cc::SkottieWrapper::CreateSerializable(
+      auto skottie = cc::SkottieWrapper::UnsafeCreateSerializable(
           std::vector<uint8_t>(json.begin(), json.end()));
       animated_image_view_->SetAnimatedImage(
           std::make_unique<lottie::Animation>(skottie));

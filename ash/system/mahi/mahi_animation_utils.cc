@@ -58,7 +58,7 @@ std::unique_ptr<lottie::Animation> GetLottieAnimationData(int animation_id) {
 
   std::unique_ptr<lottie::Animation> animation =
       std::make_unique<lottie::Animation>(
-          cc::SkottieWrapper::CreateSerializable(lottie_data.value()));
+          cc::SkottieWrapper::UnsafeCreateSerializable(lottie_data.value()));
 
   return animation;
 }

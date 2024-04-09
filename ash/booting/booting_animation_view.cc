@@ -73,7 +73,7 @@ void BootingAnimationView::Play() {
 }
 
 void BootingAnimationView::SetAnimatedImage(const std::string& animation_data) {
-  auto skottie = cc::SkottieWrapper::CreateSerializable(
+  auto skottie = cc::SkottieWrapper::UnsafeCreateSerializable(
       std::vector<uint8_t>(animation_data.begin(), animation_data.end()));
   if (!skottie->is_valid()) {
     LOG(ERROR) << "Invalid animation data.";

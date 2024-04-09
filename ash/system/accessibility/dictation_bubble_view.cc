@@ -159,7 +159,7 @@ class ASH_EXPORT TopRowView : public views::View {
             IDR_DICTATION_BUBBLE_ANIMATION);
     if (json.has_value()) {
       use_standby_animation_ = true;
-      auto skottie = cc::SkottieWrapper::CreateSerializable(
+      auto skottie = cc::SkottieWrapper::UnsafeCreateSerializable(
           std::vector<uint8_t>(json.value().begin(), json.value().end()));
       return views::Builder<views::AnimatedImageView>()
           .CopyAddressTo(&standby_animation_)

@@ -27,7 +27,7 @@ std::unique_ptr<lottie::Animation> GetEqualizerAnimation() {
   CHECK(lottie_data.has_value());
 
   return std::make_unique<lottie::Animation>(
-      cc::SkottieWrapper::CreateSerializable(lottie_data.value()));
+      cc::SkottieWrapper::UnsafeCreateSerializable(lottie_data.value()));
 }
 
 }  // namespace

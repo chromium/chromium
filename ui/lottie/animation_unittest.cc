@@ -219,7 +219,7 @@ class AnimationTest : public testing::Test {
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(
         gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
-    skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+    skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
         base::as_bytes(base::make_span(kData, std::strlen(kData))));
     animation_ = std::make_unique<Animation>(skottie_);
   }
@@ -338,7 +338,7 @@ class AnimationWithImageAssetsTest : public AnimationTest {
 };
 
 TEST_F(AnimationTest, InitializationAndLoadingData) {
-  skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+  skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
@@ -346,7 +346,7 @@ TEST_F(AnimationTest, InitializationAndLoadingData) {
   EXPECT_EQ(animation_->GetAnimationDuration(), kAnimationDuration);
   EXPECT_TRUE(IsStopped());
 
-  skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+  skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);

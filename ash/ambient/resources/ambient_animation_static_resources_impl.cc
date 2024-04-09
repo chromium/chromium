@@ -108,10 +108,12 @@ scoped_refptr<cc::SkottieWrapper> CreateSkottieWrapper(
   if (serializable) {
     // Create a serializable SkottieWrapper since the SkottieWrapper may have to
     // be serialized and transmitted over IPC for out-of-process rasterization.
-    animation = cc::SkottieWrapper::CreateSerializable(std::vector<uint8_t>(
-        lottie_data_bytes.begin(), lottie_data_bytes.end()));
+    animation =
+        cc::SkottieWrapper::UnsafeCreateSerializable(std::vector<uint8_t>(
+            lottie_data_bytes.begin(), lottie_data_bytes.end()));
   } else {
-    animation = cc::SkottieWrapper::CreateNonSerializable(lottie_data_bytes);
+    animation =
+        cc::SkottieWrapper::UnsafeCreateNonSerializable(lottie_data_bytes);
   }
   DCHECK(animation);
   DCHECK(animation->is_valid());

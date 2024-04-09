@@ -157,7 +157,7 @@ std::unique_ptr<lottie::Animation> GetCheckmarkAnimation(
 
   std::unique_ptr<lottie::Animation> animation =
       std::make_unique<lottie::Animation>(
-          cc::SkottieWrapper::CreateSerializable(lottie_data.value()),
+          cc::SkottieWrapper::UnsafeCreateSerializable(lottie_data.value()),
           std::move(color_map));
 
   animation->SetPlaybackSpeed(kCheckmarkAnimationPlaybackSpeed);

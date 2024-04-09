@@ -181,7 +181,8 @@ class AuthenticatorRequestBubbleDelegate
           ui::ResourceBundle::GetSharedInstance().GetLottieData(
               bubble_contents_->illustration_light_id);
       scoped_refptr<cc::SkottieWrapper> skottie =
-          cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
+          cc::SkottieWrapper::UnsafeCreateSerializable(
+              std::move(*lottie_bytes));
       auto animation = std::make_unique<views::AnimatedImageView>();
       animation->SetPreferredSize(gfx::Size(320, 106));
       animation->SetAnimatedImage(std::make_unique<lottie::Animation>(skottie));

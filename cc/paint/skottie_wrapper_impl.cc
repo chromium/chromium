@@ -393,7 +393,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 }  // namespace
 
 // static
-scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
+scoped_refptr<SkottieWrapper> SkottieWrapper::UnsafeCreateSerializable(
     std::vector<uint8_t> data) {
   base::span<const uint8_t> data_span(data);
   return base::WrapRefCounted(
@@ -401,7 +401,7 @@ scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
 }
 
 // static
-scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
+scoped_refptr<SkottieWrapper> SkottieWrapper::UnsafeCreateNonSerializable(
     base::span<const uint8_t> data) {
   return base::WrapRefCounted(
       new SkottieWrapperImpl(data,
