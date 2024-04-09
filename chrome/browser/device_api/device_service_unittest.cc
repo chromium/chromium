@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_api/device_service_impl.h"
-
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -30,18 +30,22 @@ namespace {
 
 constexpr char kDefaultAppInstallUrl[] = "https://example.com/install";
 constexpr char kTrustedUrl[] = "https://example.com/sample";
+constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
 constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
 constexpr char kUserEmail[] = "user-email@example.com";
 
+constexpr char kNotAffiliatedErrorMessage[] =
+    "This web API is not allowed if the current profile is not affiliated.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
 constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
 constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
-#endif
 
-void VerifyErrorMessageResult(blink::mojom::DeviceAttributeResultPtr result) {
-  result->is_error_message();
-}
+constexpr char kNotAllowedOriginErrorMessage[] =
+    "The current origin cannot use this web API because it is not allowed by "
+    "the DeviceAttributesAllowedForOrigins policy.";
+
+#endif
 
 }  // namespace
 
@@ -87,15 +91,24 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
     DeviceServiceImpl::Create(main_rfh(), remote_.BindNewPipeAndPassReceiver());
   }
 
-  void VerifyErrorMessageResultForAllDeviceAttributesAPIs() {
-    remote()->get()->GetDirectoryId(base::BindOnce(VerifyErrorMessageResult));
-    remote()->get()->GetHostname(base::BindOnce(VerifyErrorMessageResult));
-    remote()->get()->GetSerialNumber(base::BindOnce(VerifyErrorMessageResult));
-    remote()->get()->GetAnnotatedAssetId(
-        base::BindOnce(VerifyErrorMessageResult));
-    remote()->get()->GetAnnotatedLocation(
-        base::BindOnce(VerifyErrorMessageResult));
-    remote()->FlushForTesting();
+  void VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      const std::string& expected_error_message) {
+    base::test::TestFuture<blink::mojom::DeviceAttributeResultPtr> future;
+
+    remote()->get()->GetDirectoryId(future.GetRepeatingCallback());
+    EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
+
+    remote()->get()->GetHostname(future.GetRepeatingCallback());
+    EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
+
+    remote()->get()->GetSerialNumber(future.GetRepeatingCallback());
+    EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
+
+    remote()->get()->GetAnnotatedAssetId(future.GetRepeatingCallback());
+    EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
+
+    remote()->get()->GetAnnotatedLocation(future.GetRepeatingCallback());
+    EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
   }
 
   const AccountId& account_id() const { return account_id_; }
@@ -107,26 +120,41 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   AccountId account_id_;
 };
 
-TEST_F(DeviceAPIServiceTest, EnableServiceByDefault) {
+TEST_F(DeviceAPIServiceTest, ConnectsForTrustedApps) {
   TryCreatingService(GURL(kTrustedUrl));
   remote()->FlushForTesting();
   ASSERT_TRUE(remote()->is_connected());
 }
 
-TEST_F(DeviceAPIServiceTest, ReportErrorForDefaultUser) {
-  TryCreatingService(GURL(kTrustedUrl));
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs();
-  ASSERT_TRUE(remote()->is_connected());
-}
-
 // The service should be disabled in the Incognito mode.
-TEST_F(DeviceAPIServiceTest, IncognitoProfile) {
+TEST_F(DeviceAPIServiceTest, DoesNotConnectForIncognitoProfile) {
   profile_metrics::SetBrowserProfileType(
       profile(), profile_metrics::BrowserProfileType::kIncognito);
   TryCreatingService(GURL(kTrustedUrl));
 
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceTest, DoesNotConnectForUntrustedApps) {
+  TryCreatingService(GURL(kUntrustedUrl));
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceTest, DisconnectWhenTrustRevoked) {
+  TryCreatingService(GURL(kTrustedUrl));
+  remote()->FlushForTesting();
+  RemoveTrustedApp();
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceTest, ReportErrorForDefaultUser) {
+  TryCreatingService(GURL(kTrustedUrl));
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      kNotAffiliatedErrorMessage);
+  ASSERT_TRUE(remote()->is_connected());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -156,7 +184,8 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
 TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForUnaffiliatedUser) {
   LoginRegularUser(false);
   TryCreatingService(GURL(kTrustedUrl));
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs();
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      kNotAffiliatedErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
 }
 
@@ -165,28 +194,9 @@ TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForDisallowedOrigin) {
   TryCreatingService(GURL(kTrustedUrl));
   RemoveAllowedOrigin();
 
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs();
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      kNotAllowedOriginErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceRegularUserTest, ConnectsForTrustedApps) {
-  TryCreatingService(GURL(kTrustedUrl));
-  remote()->FlushForTesting();
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceRegularUserTest, DoesNotConnectForUntrustedApps) {
-  TryCreatingService(GURL(kUntrustedUrl));
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceRegularUserTest, DisconnectWhenTrustRevoked) {
-  TryCreatingService(GURL(kTrustedUrl));
-  remote()->FlushForTesting();
-  RemoveTrustedApp();
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
 }
 
 class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
@@ -233,7 +243,7 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
 
 // The service should be enabled if the current origin is same as the origin of
 // Kiosk app.
-TEST_F(DeviceAPIServiceWithKioskUserTest, EnableServiceForKioskOrigin) {
+TEST_F(DeviceAPIServiceWithKioskUserTest, ConnectsForKioskOrigin) {
   LoginKioskUser();
   TryCreatingService(GURL(kKioskAppUrl));
   remote()->FlushForTesting();
@@ -242,7 +252,7 @@ TEST_F(DeviceAPIServiceWithKioskUserTest, EnableServiceForKioskOrigin) {
 
 // The service should be disabled if the current origin is different from the
 // origin of Kiosk app.
-TEST_F(DeviceAPIServiceWithKioskUserTest, DisableServiceForInvalidOrigin) {
+TEST_F(DeviceAPIServiceWithKioskUserTest, DoesNotConnectForInvalidOrigin) {
   LoginKioskUser();
   TryCreatingService(GURL(kInvalidKioskAppUrl));
   remote()->FlushForTesting();
@@ -252,7 +262,7 @@ TEST_F(DeviceAPIServiceWithKioskUserTest, DisableServiceForInvalidOrigin) {
 // The service should be disabled if the current origin is different from the
 // origin of Kiosk app, even if it is trusted (force-installed).
 TEST_F(DeviceAPIServiceWithKioskUserTest,
-       DisableServiceForNonKioskTrustedOrigin) {
+       DoesNotConnectForNonKioskTrustedOrigin) {
   LoginKioskUser();
   TryCreatingService(GURL(kTrustedUrl));
   remote()->FlushForTesting();
@@ -261,7 +271,7 @@ TEST_F(DeviceAPIServiceWithKioskUserTest,
 
 // The service should be disabled if a non-PWA kiosk user is logged in.
 TEST_F(DeviceAPIServiceWithKioskUserTest,
-       DisableServiceInChromeAppKioskSession) {
+       DoesNotConnectForChromeAppKioskSession) {
   LoginChromeAppKioskUser();
 
   TryCreatingService(GURL(kKioskAppUrl));
