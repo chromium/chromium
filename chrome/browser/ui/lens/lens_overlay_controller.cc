@@ -25,6 +25,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -502,6 +503,22 @@ LensOverlayController::GetPageClassification() const {
   // SEARCH_SIDE_PANEL_SEARCHBOX
   // LENS_SIDE_PANEL_SEARCHBOX
   return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+}
+
+const std::string& LensOverlayController::GetThumbnail() const {
+  // Return the thumbnail data (data:image/) or address (chrome://image/).
+  static base::NoDestructor<std::string> thumbnail;
+  return *thumbnail;
+}
+
+const lens::LensOverlayInteractionResponse&
+LensOverlayController::GetLensResponse() const {
+  static base::NoDestructor<lens::LensOverlayInteractionResponse> response;
+  return *response;
+}
+
+void LensOverlayController::OnThumbnailRemoved() const {
+  // User removed the thumbnail. Update the state.
 }
 
 void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {

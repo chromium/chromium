@@ -201,6 +201,9 @@ class LensOverlayController : public TabStripModelObserver,
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
       const override;
+  const std::string& GetThumbnail() const override;
+  const lens::LensOverlayInteractionResponse& GetLensResponse() const override;
+  void OnThumbnailRemoved() const override;
   void OnSuggestionAccepted(const GURL& destination_url) override;
 
   // Called when the associated tab enters the foreground.

@@ -1,6 +1,7 @@
 specific_include_rules = {
   "lens_overlay_controller\.cc": [
     "+chrome/browser/ui/views/side_panel/lens",
+    "+third_party/lens_server_proto",
   ],
   "lens_overlay_controller_browsertest\.cc": [
     "+chrome/browser/ui/views/side_panel/lens",
