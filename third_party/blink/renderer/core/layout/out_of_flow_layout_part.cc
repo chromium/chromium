@@ -10,6 +10,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
@@ -234,12 +235,16 @@ class OOFCandidateStyleIterator {
     CHECK_LE(try_option_index, position_try_options_->GetOptions().size());
     const PositionTryOption& option =
         position_try_options_->GetOptions()[try_option_index];
-    if (!option.GetInsetArea().IsNone()) {
-      // TODO(crbug.com/329687279): Support inset-area() function.
-      return nullptr;
-    }
     const CSSPropertyValueSet* properties = nullptr;
-    if (const ScopedCSSName* name = option.GetPositionTryName()) {
+    if (!option.GetInsetArea().IsNone()) {
+      // This option is an inset-area(). Create a declaration block
+      // with an equivalent inset-area declaration.
+      CSSPropertyValue declaration(
+          CSSPropertyName(CSSPropertyID::kInsetArea),
+          *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
+      properties = ImmutableCSSPropertyValueSet::Create(
+          &declaration, /* length */ 1u, kHTMLStandardMode);
+    } else if (const ScopedCSSName* name = option.GetPositionTryName()) {
       const StyleRulePositionTry* rule = GetPositionTryRule(*name);
       if (!rule) {
         // @position-try option does not exist.
