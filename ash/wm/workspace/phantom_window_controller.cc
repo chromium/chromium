@@ -19,6 +19,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -140,19 +141,16 @@ void PhantomWindowController::ShowMaximizeCue() {
         window_util::GetRootWindowMatching(target_bounds_in_screen_));
     maximize_cue_widget_->Show();
   }
-  maximize_cue_widget_->SetOpacity(0);
+  maximize_cue_widget_->SetOpacity(0.f);
 
   // Starts entrance animation with fade in and moving the cue from 50%
   // higher y position to the actual y position.
   const gfx::Rect target_bounds =
-      maximize_cue_widget_->GetNativeView()->bounds();
-  const gfx::Rect starting_bounds = gfx::Rect(
-      target_bounds.x(),
-      target_bounds.y() * kMaximizeCueEntraceAnimationYPositionMoveUpFactor,
-      target_bounds.width(), target_bounds.height());
-  maximize_cue_widget_->SetBounds(starting_bounds);
-
+      maximize_cue_widget_->GetWindowBoundsInScreen();
   ui::Layer* widget_layer = maximize_cue_widget_->GetLayer();
+  widget_layer->SetTransform(gfx::Transform::MakeTranslation(
+      0,
+      -target_bounds.y() * kMaximizeCueEntraceAnimationYPositionMoveUpFactor));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -161,8 +159,9 @@ void PhantomWindowController::ShowMaximizeCue() {
       .SetDuration(kMaximizeCueAnimationDelayMs)
       .Then()
       .SetDuration(kMaximizeCueEntranceAnimationDurationMs)
-      .SetBounds(widget_layer, target_bounds, gfx::Tween::ACCEL_LIN_DECEL_100)
-      .SetOpacity(widget_layer, 1, gfx::Tween::LINEAR);
+      .SetTransform(widget_layer, gfx::Transform(),
+                    gfx::Tween::ACCEL_LIN_DECEL_100)
+      .SetOpacity(widget_layer, 1.f, gfx::Tween::LINEAR);
 }
 
 void PhantomWindowController::TransformPhantomWidgetFromSnapTopToMaximize(
@@ -171,14 +170,23 @@ void PhantomWindowController::TransformPhantomWidgetFromSnapTopToMaximize(
   target_bounds_in_screen.Inset(kPhantomWindowInsets);
   target_bounds_in_screen_ = target_bounds_in_screen;
 
-  ui::Layer* widget_layer = phantom_widget_->GetLayer();
+  // Set the bounds of the widget to `target_bounds_in_screen_`, then apply a
+  // transform so that the widget is in the same position as
+  // `old_bounds_in_screen`. Then animate to the identity transform, the target
+  // position will be `target_bounds_in_screen_`.
+  const gfx::Rect old_bounds_in_screen =
+      phantom_widget_->GetWindowBoundsInScreen();
+  phantom_widget_->SetBounds(target_bounds_in_screen_);
+  phantom_widget_->GetLayer()->SetTransform(gfx::TransformBetweenRects(
+      gfx::RectF(target_bounds_in_screen_), gfx::RectF(old_bounds_in_screen)));
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kScrimEntranceSizeAnimationDurationMs)
-      .SetBounds(widget_layer, target_bounds_in_screen,
-                 gfx::Tween::ACCEL_20_DECEL_100);
+      .SetTransform(phantom_widget_->GetLayer(), gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 gfx::Rect PhantomWindowController::GetTargetWindowBounds() const {
@@ -282,10 +290,10 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   const gfx::Rect work_area = display.work_area();
   const int maximize_cue_width = maximize_cue_view->GetPreferredSize().width();
   const int maximize_cue_y = work_area.y() + kMaximizeCueTopMargin;
-  const gfx::Rect phantom_bounds = phantom_widget_->GetNativeWindow()->bounds();
-  const gfx::Rect maximize_cue_bounds =
-      gfx::Rect(phantom_bounds.CenterPoint().x() - maximize_cue_width / 2,
-                maximize_cue_y, maximize_cue_width, kMaximizeCueHeight);
+  const gfx::Rect phantom_bounds = phantom_widget_->GetWindowBoundsInScreen();
+  const gfx::Rect maximize_cue_bounds(
+      phantom_bounds.CenterPoint().x() - maximize_cue_width / 2, maximize_cue_y,
+      maximize_cue_width, kMaximizeCueHeight);
   maximize_cue_widget->SetBounds(maximize_cue_bounds);
   return maximize_cue_widget;
 }
