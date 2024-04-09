@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
@@ -131,11 +132,16 @@ void MahiBrowserClientImpl::OnContextMenuClicked(
     context_menu_request->question = question;
   }
 
-  auto callback = base::BindOnce([](bool success) {
-    if (!success) {
-      LOG(ERROR) << "MahiBrowser::OnContextMenuClicked did not succeed.";
-    }
-  });
+  auto callback = base::BindOnce(
+      [](ButtonType button_type, bool success) {
+        if (!success) {
+          // Records the `button_type` clicking did not succeed.
+          base::UmaHistogramEnumeration(kMahiContextMenuActivatedFailed,
+                                        button_type);
+          LOG(ERROR) << "MahiBrowser::OnContextMenuClicked did not succeed.";
+        }
+      },
+      button_type);
 
 // Sends request to `MahiBrowserDelegate`.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

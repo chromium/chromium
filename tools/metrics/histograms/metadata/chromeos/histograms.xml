@@ -2249,6 +2249,26 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.ContextMenuView.Activated"
+    enum="MahiContextMenuButtonType" expires_after="2025-04-04">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when any button or clickable view in the web Mahi Context Menu view
+    is activated.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Mahi.ContextMenuView.ActivatedFailed"
+    enum="MahiContextMenuButtonType" expires_after="2025-04-04">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when clicking on any button or clickable view in the web Mahi
+    Context Menu view fails to trigger actions.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
     enum="ChromeOSMessageCenterScrollActionReason" expires_after="2024-07-28">
   <owner>leandre@chromium.org</owner>

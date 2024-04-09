@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -111,6 +112,9 @@ void MahiWebContentsManager::OnContextMenuClicked(
   }
   // Forwards the UI request to `MahiBrowserDelegate`.
   client_->OnContextMenuClicked(display_id, button_type, question);
+
+  // Records the `button_type` has been clicked.
+  base::UmaHistogramEnumeration(kMahiContextMenuActivated, button_type);
 }
 
 bool MahiWebContentsManager::IsFocusedPageDistillable() {

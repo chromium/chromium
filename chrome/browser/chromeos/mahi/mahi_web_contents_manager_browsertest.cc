@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -127,6 +128,30 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     // Then navigates to the target page.
     EXPECT_TRUE(AddTabAtIndex(0, GURL(kUrl), ui::PAGE_TRANSITION_TYPED));
+  }
+
+  void ExpectOnContextMenuClicked(bool success, ButtonType button_type) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(browser_delegate_, OnContextMenuClicked)
+        .WillOnce([&run_loop, success](
+                      crosapi::mojom::MahiContextMenuRequestPtr request,
+                      base::OnceCallback<void(bool)> callback) {
+          std::move(callback).Run(/*success=*/success);
+          run_loop.Quit();
+        });
+    {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::RunLoop run_loop_for_remote;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      fake_mahi_web_contents_manager_->OnContextMenuClicked(
+          kDisplayID, button_type,
+          /*question=*/kQuestion);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      run_loop_for_remote.RunUntilIdle();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    }
+
+    run_loop.Run();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -306,6 +331,111 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
             fake_mahi_web_contents_manager_->focused_web_content_state().url);
   EXPECT_EQ(u"data:text/html,<p>kittens!</p>",
             fake_mahi_web_contents_manager_->focused_web_content_state().title);
+}
+
+IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, ContextMenuMetrics) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::HistogramTester histogram;
+
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,
+                              0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kOutline,
+                              0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSummary,
+                              0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kQA, 0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSettings, 0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kOutline, 0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSummary, 0);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
+                              0);
+
+  // QA section.
+  // With a successful click.
+  ExpectOnContextMenuClicked(true, ButtonType::kQA);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kQA, 1);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
+                              0);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 1);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 0);
+  testing::Mock::VerifyAndClearExpectations(this);
+  // Clicking failed.
+  ExpectOnContextMenuClicked(false, ButtonType::kQA);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kQA, 2);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
+                              1);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 2);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 1);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Outline.
+  // With a successful click.
+  ExpectOnContextMenuClicked(true, ButtonType::kOutline);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kOutline,
+                              1);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kOutline, 0);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 3);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 1);
+  testing::Mock::VerifyAndClearExpectations(this);
+  // Clicking failed.
+  ExpectOnContextMenuClicked(false, ButtonType::kOutline);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kOutline,
+                              2);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kOutline, 1);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 4);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 2);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Summary button.
+  // With a successful click.
+  ExpectOnContextMenuClicked(true, ButtonType::kSummary);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSummary,
+                              1);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSummary, 0);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 5);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 2);
+  testing::Mock::VerifyAndClearExpectations(this);
+  // Clicking failed.
+  ExpectOnContextMenuClicked(false, ButtonType::kSummary);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSummary,
+                              2);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSummary, 1);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 6);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 3);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Settings button.
+  // With a successful click.
+  ExpectOnContextMenuClicked(true, ButtonType::kSettings);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,
+                              1);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSettings, 0);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 7);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 3);
+  testing::Mock::VerifyAndClearExpectations(this);
+  // Clicking failed.
+  ExpectOnContextMenuClicked(false, ButtonType::kSettings);
+  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,
+                              2);
+  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
+                              ButtonType::kSettings, 1);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 8);
+  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 4);
+  testing::Mock::VerifyAndClearExpectations(this);
 }
 
 }  // namespace mahi

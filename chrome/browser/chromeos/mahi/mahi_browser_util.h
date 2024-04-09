@@ -18,6 +18,12 @@ namespace mahi {
 
 using ActionType = crosapi::mojom::MahiContextMenuActionType;
 
+// Metrics:
+inline constexpr char kMahiContextMenuActivated[] =
+    "ChromeOS.Mahi.ContextMenuView.Activated";
+inline constexpr char kMahiContextMenuActivatedFailed[] =
+    "ChromeOS.Mahi.ContextMenuView.ActivatedFailed";
+
 // Contains the types of button existed in Mahi Menu.
 enum class ButtonType {
   kSummary = 0,

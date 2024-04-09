@@ -1294,6 +1294,13 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Settings changed"/>
 </enum>
 
+<enum name="MahiContextMenuButtonType">
+  <int value="0" label="Summary Button"/>
+  <int value="1" label="Outline"/>
+  <int value="2" label="Settings Button"/>
+  <int value="3" label="QA"/>
+</enum>
+
 <enum name="ModifierKeyDomCodes">
   <int value="0" label="MetaLeft"/>
   <int value="1" label="MetaRight"/>
