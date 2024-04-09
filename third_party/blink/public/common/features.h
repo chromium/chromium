@@ -584,6 +584,19 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeCustomMaxAuctionAdComponentsValue;
 
+// If kFledgeNumberBidderWorkletGroupByOriginContextsToKeep is enabled,
+// kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue sets the number of
+// previously-used group-by-origin contexts to keep in case they can be reused
+// in a bidder worklet. Defaulted to 1. A non-default value will only
+// be used if kCookieDeprecationFacilitatedTesting is not enabled or if
+// kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting is enabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeNumberBidderWorkletGroupByOriginContextsToKeep);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting;
+
 // Reuse a single V8 context to generate all bids in a bidder worklet.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
 // Reuse a single V8 context to score all ads in a seller worklet.

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -586,10 +587,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // SharedStorageBindings, which have raw pointers to it.
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
-    // ContextRecycler and corresponding joining origin for
-    // "group-by-origin" execution mode.
-    std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
-    url::Origin join_origin_for_origin_group_mode_;
+    // ContextRecyclers for "group-by-origin" execution mode. The number of
+    // previously-used contexts to keep track of is configured by
+    // kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.
+    base::LRUCache<url::Origin, std::unique_ptr<ContextRecycler>>
+        context_recyclers_for_origin_group_mode_;
 
     // ContextRecycler for "frozen-context" execution mode.
     std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;

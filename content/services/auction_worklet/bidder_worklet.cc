@@ -334,6 +334,24 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
   return bids;
 }
 
+size_t GetNumberOfGroupByOriginContextsToKeep() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
+    // Avoid using multiple contexts for the testing population
+    // unless otherwise specified by
+    // kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.
+    if (blink::features::
+            kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.Get() ||
+        !base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting)) {
+      return blink::features::
+          kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.Get();
+    }
+  }
+  return 1;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -715,7 +733,9 @@ BidderWorklet::V8State::V8State(
       top_window_origin_(top_window_origin),
       permissions_policy_state_(std::move(permissions_policy_state)),
       wasm_helper_url_(wasm_helper_url),
-      trusted_bidding_signals_url_(trusted_bidding_signals_url) {
+      trusted_bidding_signals_url_(trusted_bidding_signals_url),
+      context_recyclers_for_origin_group_mode_(
+          GetNumberOfGroupByOriginContextsToKeep()) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -1302,10 +1322,13 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   switch (bidder_worklet_non_shared_params.execution_mode) {
     case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
       execution_mode_string = "group-by-origin";
-      if (context_recycler_for_origin_group_mode_ &&
-          join_origin_for_origin_group_mode_ == interest_group_join_origin) {
-        context_recycler = context_recycler_for_origin_group_mode_.get();
-        reused_context = true;
+      {
+        auto it = context_recyclers_for_origin_group_mode_.Get(
+            interest_group_join_origin);
+        if (it != context_recyclers_for_origin_group_mode_.end()) {
+          context_recycler = it->second.get();
+          reused_context = true;
+        }
       }
       break;
     case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
@@ -1376,9 +1399,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     } else {
       switch (bidder_worklet_non_shared_params.execution_mode) {
         case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-          context_recycler_for_origin_group_mode_ =
-              std::move(fresh_context_recycler);
-          join_origin_for_origin_group_mode_ = interest_group_join_origin;
+          context_recyclers_for_origin_group_mode_.Put(
+              interest_group_join_origin, std::move(fresh_context_recycler));
           break;
         case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
           context_recycler_for_frozen_context_ =

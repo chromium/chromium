@@ -1085,6 +1085,18 @@ const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
     &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit",
     kMaxAdAuctionAdComponentsDefault};
 
+BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+             "FledgeBidderWorkletGroupByOriginContextsToKeep",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue{
+        &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+        "GroupByOriginContextLimit", 1};
+const base::FeatureParam<bool>
+    kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting{
+        &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+        "IncludeFacilitatedTestingGroups", false};
+
 BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
              "FledgeAlwaysReuseBidderContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
