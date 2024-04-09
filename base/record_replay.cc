@@ -497,7 +497,7 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
 }
 
 bool DependencyGraphEnabled() {
-  return IsReplaying() && FeatureEnabled("dependency-graph");
+  return IsReplaying() && !FeatureEnabled("no-dependency-graph");
 }
 
 int NewDependencyGraphNode(const char* json) {
