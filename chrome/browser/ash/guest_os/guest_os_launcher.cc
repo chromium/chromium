@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -168,18 +169,31 @@ void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
   }
 }
 
-void LaunchApplication(Profile* profile,
-                       const guest_os::GuestId& guest_id,
-                       std::string desktop_file_id,
-                       const std::vector<std::string>& files,
-                       bool display_scaled,
-                       SuccessCallback callback) {
+void LaunchApplication(
+    Profile* profile,
+    const guest_os::GuestId& guest_id,
+    guest_os::GuestOsRegistryService::Registration registration,
+    int64_t display_id,
+    const std::vector<std::string>& files,
+    SuccessCallback callback) {
+  if (registration.Terminal()) {
+    // TODO(crbug.com/853560): This could be improved by using garcon
+    // DesktopFile::GenerateArgvWithFiles().
+    std::vector<std::string> terminal_args = {
+        registration.ExecutableFileName()};
+    terminal_args.insert(terminal_args.end(), files.begin(), files.end());
+    guest_os::LaunchTerminal(profile, display_id, guest_id,
+                             /*cwd=*/std::string(), terminal_args);
+    std::move(callback).Run(true, std::string());
+    return;
+  }
+
   vm_tools::cicerone::LaunchContainerApplicationRequest request;
   request.set_owner_id(crostini::CryptohomeIdForProfile(profile));
   request.set_vm_name(guest_id.vm_name);
   request.set_container_name(guest_id.container_name);
-  request.set_desktop_file_id(std::move(desktop_file_id));
-  if (display_scaled) {
+  request.set_desktop_file_id(registration.DesktopFileId());
+  if (registration.IsScaled()) {
     request.set_display_scaling(
         vm_tools::cicerone::LaunchContainerApplicationRequest::SCALED);
   }

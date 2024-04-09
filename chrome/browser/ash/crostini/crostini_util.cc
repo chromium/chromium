@@ -101,23 +101,8 @@ void OnSharePathForLaunchApplication(
         CrostiniResult::SHARE_PATHS_FAILED);
   }
 
-  if (registration.Terminal()) {
-    // TODO(crbug.com/853560): This could be improved by using garcon
-    // DesktopFile::GenerateArgvWithFiles().
-    std::vector<std::string> terminal_args = {
-        registration.ExecutableFileName()};
-    terminal_args.insert(terminal_args.end(), args.begin(), args.end());
-    guest_os::LaunchTerminal(profile, display_id, container_id,
-                             /*cwd=*/std::string(), terminal_args);
-    OnApplicationLaunched(app_id, std::move(callback),
-                          crostini::CrostiniResult::SUCCESS, true,
-                          std::string());
-    return;
-  }
-
   guest_os::launcher::LaunchApplication(
-      profile, container_id, registration.DesktopFileId(), args,
-      registration.IsScaled(),
+      profile, container_id, std::move(registration), display_id, args,
       base::BindOnce(OnApplicationLaunched, app_id, std::move(callback),
                      crostini::CrostiniResult::UNKNOWN_ERROR));
 }

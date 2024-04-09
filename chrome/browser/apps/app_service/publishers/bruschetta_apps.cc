@@ -64,6 +64,7 @@ void OnSharePathForLaunchApplication(
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
     const guest_os::GuestId container_id,
+    int64_t display_id,
     const std::vector<std::string>& args,
     LaunchCallback callback,
     bool success,
@@ -74,8 +75,7 @@ void OnSharePathForLaunchApplication(
     return;
   }
   guest_os::launcher::LaunchApplication(
-      profile, container_id, registration.DesktopFileId(), args,
-      registration.IsScaled(),
+      profile, container_id, std::move(registration), display_id, args,
       base::BindOnce(
           [](const std::string& app_id, LaunchCallback callback, bool success,
              const std::string& failure_reason) {
@@ -127,7 +127,8 @@ void LaunchApplication(
       std::move(paths.paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                      std::move(registration), std::move(container_id),
-                     std::move(paths.launch_args), std::move(callback)));
+                     display_id, std::move(paths.launch_args),
+                     std::move(callback)));
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 
 class Profile;
@@ -29,14 +30,15 @@ using SuccessCallback =
 void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
                     LaunchCallback response_callback);
 
-// Asynchronously launches an app as specified by its desktop file id, in the
+// Asynchronously launches an app as specified by its registration, in the
 // specified guest, then runs the callback.
-void LaunchApplication(Profile* profile,
-                       const guest_os::GuestId& guest_id,
-                       std::string desktop_file_id,
-                       const std::vector<std::string>& files,
-                       bool display_scaled,
-                       SuccessCallback callback);
+void LaunchApplication(
+    Profile* profile,
+    const guest_os::GuestId& guest_id,
+    guest_os::GuestOsRegistryService::Registration registration,
+    int64_t display_id,
+    const std::vector<std::string>& files,
+    SuccessCallback callback);
 
 }  // namespace guest_os::launcher
 
