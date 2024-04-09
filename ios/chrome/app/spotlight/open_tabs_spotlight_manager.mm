@@ -569,6 +569,8 @@ const int kBatchSize = 100;
     return;
   }
 
+  [self stopObservingAllWebStates];
+
   for (Browser* browser : _browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
     webStateList->AddObserver(_webStateListObserverBridge.get());
