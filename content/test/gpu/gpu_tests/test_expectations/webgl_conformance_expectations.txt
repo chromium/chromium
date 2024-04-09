@@ -477,13 +477,7 @@ crbug.com/956134 [ angle-d3d9 intel-0x9bc5 release-x64 target-cpu-64 win ] confo
 
 ## Win / AMD RX 5500 XT failures ##
 
-crbug.com/1409858 [ win amd-0x7340 angle-d3d11 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
-crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
 
-# New extensions failing on Win/AMD
-crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/ext-clip-control.html [ Failure ]
-crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
@@ -510,16 +504,10 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
-## Win / D3D9
-crbug.com/1450353 [ amd-0x7340 angle-d3d9 passthrough release-x64 target-cpu-64 win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
-crbug.com/1450353 [ angle-d3d9 nvidia-0x2184 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/texture-mips.html [ Failure ]
-crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/more/conformance/methods.html [ Failure ]
-crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 
 # Graphite
 crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
@@ -537,13 +525,12 @@ crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuf
 
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/328100306 [ angle-metal intel-0x3e9b sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328100306 [ amd-0x67ef angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
-crbug.com/40265004 [ amd-0x67ef angle-metal mac no-clang-coverage release graphite-disabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ Failure ]
 
 ## Mac Intel ##
 
@@ -712,7 +699,6 @@ crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/gl
 crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1492234 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles passthrough arm ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-crbug.com/1492240 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
@@ -725,7 +711,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi arm angle-open
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/326490772 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #
