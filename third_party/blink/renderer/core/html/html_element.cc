@@ -1939,21 +1939,28 @@ using PopoverAncestorOptionsSet =
 
 template <typename UnaryPredicate>
 const HTMLElement* NearestMatchingAncestor(
-    const Node* node,
+    const Node* original_node,
     const PopoverAncestorOptionsSet ancestor_options,
     const UnaryPredicate get_candidate_popover) {
-  if (ancestor_options.Has(PopoverAncestorOptions::kExclusive) && node) {
-    node = FlatTreeTraversal::Parent(*node);
+  if (!original_node) {
+    return nullptr;
   }
+  bool exclusive = ancestor_options.Has(PopoverAncestorOptions::kExclusive);
+  auto* node =
+      exclusive ? FlatTreeTraversal::Parent(*original_node) : original_node;
   for (; node; node = FlatTreeTraversal::Parent(*node)) {
     auto* candidate_popover = get_candidate_popover(node);
     if (!candidate_popover || !candidate_popover->popoverOpen()) {
+      continue;
+    }
+    if (exclusive && candidate_popover == original_node) {
       continue;
     }
     if (!ancestor_options.Has(PopoverAncestorOptions::kIncludeManualPopovers) &&
         candidate_popover->PopoverType() == PopoverValueType::kManual) {
       continue;
     }
+    DCHECK(!exclusive || candidate_popover != original_node);
     return candidate_popover;
   }
   return nullptr;
@@ -2222,10 +2229,12 @@ bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
     if (ancestor == this) {
       return true;
     }
-    ancestor = FindTopmostRelatedPopover(
+    const HTMLElement* new_ancestor = FindTopmostRelatedPopover(
         *ancestor, PopoverAncestorOptionsSet{
                        PopoverAncestorOptions::kExclusive,
                        PopoverAncestorOptions::kIncludeManualPopovers});
+    DCHECK_NE(new_ancestor, ancestor);
+    ancestor = new_ancestor;
   }
   return false;
 }
