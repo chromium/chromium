@@ -3068,7 +3068,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private int getAdditionalOffsetForNtp() {
         return getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding)
-                - getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding_modern);
+                - getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding);
     }
 
     @Override

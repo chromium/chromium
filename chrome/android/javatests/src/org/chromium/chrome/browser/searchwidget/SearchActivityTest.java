@@ -88,7 +88,6 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -634,41 +633,25 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testupdateAnchorViewLayout() {
         SearchActivity searchActivity = startSearchActivity();
         View anchorView = searchActivity.getAnchorViewForTesting();
         var layoutParams = anchorView.getLayoutParams();
 
-        int expectedHeight =
+        int focusedHeight =
                 searchActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow_focused);
-        int expectedBottomPadding = 0;
-
-        Assert.assertEquals(expectedHeight, layoutParams.height);
-        Assert.assertEquals(expectedBottomPadding, anchorView.getPaddingBottom());
-    }
-
-    @Test
-    @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testupdateAnchorViewLayout_ActiveColorOn() {
-        SearchActivity searchActivity = startSearchActivity();
-        View anchorView = searchActivity.getAnchorViewForTesting();
-        var layoutParams = anchorView.getLayoutParams();
-
         int expectedHeight =
                 searchActivity
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                         + searchActivity
                                 .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.toolbar_url_focus_height_increase_active_color);
+                                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
         int expectedBottomPadding = 0;
 
+        Assert.assertEquals(expectedHeight, focusedHeight);
         Assert.assertEquals(expectedHeight, layoutParams.height);
         Assert.assertEquals(expectedBottomPadding, anchorView.getPaddingBottom());
     }

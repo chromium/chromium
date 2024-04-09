@@ -60,7 +60,7 @@ public class StatusView extends LinearLayout {
     private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
-    // The default value is 0, which matches R.dimen.location_bar_start_padding_modern.
+    // The default value is 0, which matches R.dimen.location_bar_start_padding.
     private int mTouchDelegateStartOffset;
     private int mTouchDelegateEndOffset;
 

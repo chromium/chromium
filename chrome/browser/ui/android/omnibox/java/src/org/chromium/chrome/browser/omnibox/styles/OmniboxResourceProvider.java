@@ -476,7 +476,7 @@ public class OmniboxResourceProvider {
         }
 
         return context.getResources()
-                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase_active_color);
+                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
     }
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
