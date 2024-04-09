@@ -79,6 +79,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
  private:
   friend class BluetoothLocalGattServiceFloss;
   friend class BluetoothLocalGattDescriptorFloss;
+  friend class BluetoothLocalGattServiceFlossTest;
 
   BluetoothLocalGattCharacteristicFloss(
       const device::BluetoothUUID& uuid,
