@@ -117,7 +117,6 @@ void CreateStorageDirectory(const base::FilePath& directory,
 
 // Helper function to read an image from disk.
 UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
-                                        ImageType image_type,
                                         ImageScale image_scale,
                                         const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -128,13 +127,10 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
   // reporting the image as damaged https://stackoverflow.com/q/5081297/5353
   // are fixed.
   base::FilePath file_path =
-      ImagePath(snapshot_id, image_type, image_scale, directory);
+      ImagePath(snapshot_id, IMAGE_TYPE_COLOR, image_scale, directory);
   NSString* path = base::apple::FilePathToNSString(file_path);
-  return [UIImage
-      imageWithData:[NSData dataWithContentsOfFile:path]
-              scale:(image_type == IMAGE_TYPE_GREYSCALE
-                         ? 1.0
-                         : [SnapshotImageScale floatImageScaleForDevice])];
+  return [UIImage imageWithData:[NSData dataWithContentsOfFile:path]
+                          scale:[SnapshotImageScale floatImageScaleForDevice]];
 }
 
 // Helper function to write an image to disk.
@@ -383,23 +379,7 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
   _taskRunner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
-                     IMAGE_TYPE_COLOR, _snapshotsScale, _storageDirectory),
-      std::move(completion));
-}
-
-- (void)readGreyImageWithSnapshotID:(SnapshotID)snapshotID
-                         completion:(ImageReadCompletionBlock)completion {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  DCHECK(snapshotID.valid());
-  DCHECK(completion);
-  if (!_taskRunner) {
-    std::move(completion).Run(nil);
-    return;
-  }
-  _taskRunner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
-                     IMAGE_TYPE_GREYSCALE, _snapshotsScale, _storageDirectory),
+                     _snapshotsScale, _storageDirectory),
       std::move(completion));
 }
 

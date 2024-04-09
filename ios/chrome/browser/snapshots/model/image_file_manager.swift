@@ -91,31 +91,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
   }
 
-  // Reads a grey image from disk. Reading data for UIImage is executed on the background thread and
-  // `completion` is executed on the main thread.
-  func readGreyImage(snapshotID: SnapshotIDWrapper, completion: @escaping (UIImage?) -> Void) {
-    guard
-      let imagePath = imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeGrey)
-    else {
-      completion(nil)
-      return
-    }
-
-    backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
-      let image = UIImage(contentsOfFile: imagePath.path)
-      // Call the callback on the main thread.
-      mainTaskGroup.enter()
-      DispatchQueue.main.sync { [self, image] in
-        completion(image)
-        // Do not call `backgroundTaskGroup.leave()` here. It causes a deadlock on the main thread
-        // if we call `backgroundTaskGroup.wait()` before reaching here.
-        mainTaskGroup.leave()
-      }
-      backgroundTaskGroup.leave()
-    }
-  }
-
   // Writes an image to disk.
   func write(image: UIImage?, snapshotID: SnapshotIDWrapper) {
     guard let image = image,

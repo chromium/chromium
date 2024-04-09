@@ -44,10 +44,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 - (void)readImageWithSnapshotID:(SnapshotID)snapshotID
                      completion:(ImageReadCompletionBlock)completion;
 
-// Reads a grey image from disk.
-- (void)readGreyImageWithSnapshotID:(SnapshotID)snapshotID
-                         completion:(ImageReadCompletionBlock)completion;
-
 // Writes an image to disk.
 - (void)writeImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID;
 
