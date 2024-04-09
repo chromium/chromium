@@ -391,10 +391,6 @@ class FakeRasterContextProvider
     static gpu::GpuFeatureInfo dummy_feature_info;
     return dummy_feature_info;
   }
-  gpu::gles2::GLES2Interface* ContextGL() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::raster::RasterInterface* RasterInterface() override {
     return GetInterceptingTestRasterInterface();
   }

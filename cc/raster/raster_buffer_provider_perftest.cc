@@ -106,7 +106,6 @@ class PerfContextProvider
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override {
     return gpu_feature_info_;
   }
-  gpu::gles2::GLES2Interface* ContextGL() override { return context_gl_.get(); }
   gpu::raster::RasterInterface* RasterInterface() override {
     return raster_context_.get();
   }
