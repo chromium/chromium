@@ -123,7 +123,6 @@ android_library("xr_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
-    "//device/vr/public:java",
   ]
 
   public_deps = []
