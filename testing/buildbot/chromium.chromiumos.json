@@ -1214,7 +1214,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1234,7 +1235,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1256,7 +1258,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1297,7 +1300,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1317,7 +1321,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1339,7 +1344,8 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",

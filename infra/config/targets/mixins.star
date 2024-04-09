@@ -432,6 +432,10 @@ targets.mixin(
             # Tests using the default gaia pool cannot be run by public builders.
             # These variables are fed by private bundles, thus not for public builders.
             "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+
+            # Use "hash" method to shrding of test tests. This should balance the
+            # execution time among shards in a better way.
+            "shard_method=hash",
         ],
     ),
 )
