@@ -9796,6 +9796,21 @@
             ]
         }
     ],
+    "IOSTabGroupInGrid": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupsInGrid"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabResumption": [
         {
             "platforms": [
