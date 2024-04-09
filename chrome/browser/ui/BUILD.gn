@@ -6979,6 +6979,16 @@ static_library("ui") {
     }
   }
 
+  if (chrome_root_store_cert_management_ui) {
+    sources += [
+      "webui/settings/certificate_manager_handler.cc",
+      "webui/settings/certificate_manager_handler.h",
+    ]
+
+    public_deps +=
+        [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
+  }
+
   if (use_udev) {
     deps += [ "//device/udev_linux" ]
   }

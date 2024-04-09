@@ -1,0 +1,36 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mojo module supporting the Certificate Manager V2 WebUI.
+module certificate_manager_v2.mojom;
+
+// Summary information about a certificate.
+struct SummaryCertInfo {
+  string sha256hash_hex;
+  // Human-readable name for the certificate. May be empty.
+  string display_name;
+};
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface CertificateManagerPageHandlerFactory {
+  // Create both the CertificateManagerPage and CertificateManagerPageHandler
+  // at the same time.
+  CreateCertificateManagerPageHandler(
+    pending_remote<CertificateManagerPage> page,
+    pending_receiver<CertificateManagerPageHandler> handler);
+};
+
+
+// Calls from TS -> C++  (Renderer -> Browser).
+interface CertificateManagerPageHandler {
+  // Get the trusted certs from the Chrome Root Store.
+  GetChromeRootStoreCerts() => (array<SummaryCertInfo> crs_cert_infos);
+};
+
+// Calls from C++ -> TS (Browser -> Renderer).
+interface CertificateManagerPage {
+  // TODO(crbug.com/40928765): Currently empty, add methods as needed.
+};

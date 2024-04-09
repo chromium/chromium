@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -474,6 +475,10 @@
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 namespace chrome::internal {
 
@@ -1252,6 +1257,12 @@ void PopulateChromeWebUIFrameBinders(
       ProfileCustomizationUI, settings::SettingsUI
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       >(map);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  RegisterWebUIControllerInterfaceBinder<
+      certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory,
+      settings::SettingsUI>(map);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, InternalsUI,

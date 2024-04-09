@@ -8,9 +8,14 @@
  * and Chrome Cert Management Enterprise policies launch.
  */
 
+import '//resources/cr_elements/cr_tabs/cr_tabs.js';
+import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_manager_v2.html.js';
+import type {SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
+import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 export class CertificateManagerV2Element extends PolymerElement {
   static get is() {
@@ -20,6 +25,28 @@ export class CertificateManagerV2Element extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      selectedTabIndex_: Number,
+      tabNames_: Array,
+      certificates: Array,
+    };
+  }
+
+  override ready() {
+    super.ready();
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.handler.getChromeRootStoreCerts().then((results) => {
+      this.certificates = results.crsCertInfos;
+    });
+  }
+
+  private selectedTabIndex_ = 2;
+  // TODO(crbug.com/40928765): Support localization.
+  private tabNames_: string[] =
+      ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
+  certificates: SummaryCertInfo[] = [];
 }
 
 declare global {

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/buildflags.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +22,11 @@
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/ui/webui/settings/certificate_manager_handler.h"
+#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 namespace content {
 class WebUIMessageHandler;
@@ -51,6 +57,10 @@ class SettingsUI
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public theme_color_picker::mojom::ThemeColorPickerHandlerFactory
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+    ,
+      public certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -94,6 +104,12 @@ class SettingsUI
       mojo::PendingReceiver<customize_color_scheme_mode::mojom::
                                 CustomizeColorSchemeModeHandlerFactory>
           pending_receiver);
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  void BindInterface(
+      mojo::PendingReceiver<
+          certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory>
+          pending_receiver);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
  private:
   void AddSettingsPageUIHandler(
@@ -148,6 +164,22 @@ class SettingsUI
   mojo::Receiver<customize_color_scheme_mode::mojom::
                      CustomizeColorSchemeModeHandlerFactory>
       customize_color_scheme_mode_handler_factory_receiver_{this};
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  // certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory
+  void CreateCertificateManagerPageHandler(
+      mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+          client,
+      mojo::PendingReceiver<
+          certificate_manager_v2::mojom::CertificateManagerPageHandler> handler)
+      override;
+
+  std::unique_ptr<CertificateManagerPageHandler>
+      certificate_manager_page_handler_;
+  mojo::Receiver<
+      certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory>
+      certificate_manager_handler_factory_receiver_{this};
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
