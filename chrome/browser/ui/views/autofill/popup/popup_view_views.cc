@@ -644,6 +644,10 @@ void PopupViewViews::SetSelectedCell(
     new_selected_row.SetSelectedCell(cell_index->second);
     new_selected_row.ScrollViewToVisible();
 
+    if (!controller_) {
+      // The previous SetSelectedCell() call may have hidden the popup.
+      return;
+    }
     const Suggestion& suggestion =
         controller_->GetSuggestionAt(cell_index->first);
 
