@@ -30,6 +30,8 @@ class ASH_EXPORT KeyboardBrightnessController
   void HandleKeyboardBrightnessUp() override;
   void HandleToggleKeyboardBacklight() override;
   void HandleSetKeyboardBrightness(double percent, bool gradual) override;
+  void HandleGetKeyboardBrightness(
+      base::OnceCallback<void(std::optional<double>)> callback) override;
 };
 
 }  // namespace ash

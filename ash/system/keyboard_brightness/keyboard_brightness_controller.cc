@@ -34,4 +34,10 @@ void KeyboardBrightnessController::HandleSetKeyboardBrightness(double percent,
   chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
 }
 
+void KeyboardBrightnessController::HandleGetKeyboardBrightness(
+    base::OnceCallback<void(std::optional<double>)> callback) {
+  chromeos::PowerManagerClient::Get()->GetScreenBrightnessPercent(
+      std::move(callback));
+}
+
 }  // namespace ash

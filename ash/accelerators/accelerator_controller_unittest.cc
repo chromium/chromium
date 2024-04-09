@@ -246,6 +246,11 @@ class DummyKeyboardBrightnessControlDelegate
 
   void HandleSetKeyboardBrightness(double percent, bool gradual) override {}
 
+  void HandleGetKeyboardBrightness(
+      base::OnceCallback<void(std::optional<double>)> callback) override {
+    std::move(callback).Run(100.0);
+  }
+
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
   }

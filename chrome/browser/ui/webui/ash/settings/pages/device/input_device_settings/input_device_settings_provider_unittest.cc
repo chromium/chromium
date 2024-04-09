@@ -317,6 +317,10 @@ class FakeKeyboardBrightnessControlDelegate
   void HandleSetKeyboardBrightness(double percent, bool gradual) override {
     keyboard_brightness_ = percent;
   }
+  void HandleGetKeyboardBrightness(
+      base::OnceCallback<void(std::optional<double>)> callback) override {
+    std::move(callback).Run(keyboard_brightness_);
+  }
 
   double keyboard_brightness() { return keyboard_brightness_; }
 
