@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -141,7 +140,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected View mUrlActionContainer;
     protected ImageView mToolbarShadow;
     private OptionalButtonCoordinator mOptionalButtonCoordinator;
-    private boolean mShouldShowModernizeVisualUpdate;
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
@@ -321,7 +319,6 @@ public class ToolbarPhone extends ToolbarLayout
      */
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mShouldShowModernizeVisualUpdate = OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mIsSurfacePolishOmniboxColorEnabled =
                 mIsSurfacePolishEnabled
@@ -441,9 +438,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateModernLocationBarCorners() {
-        if (!mShouldShowModernizeVisualUpdate) {
-            return;
-        }
         int nonFocusedRadius =
                 getResources()
                         .getDimensionPixelSize(R.dimen.modern_toolbar_background_corner_radius);
@@ -478,8 +472,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @param shouldUseFocusColor True if should return the color for focus state.
      */
     private @ColorInt int getToolbarDefaultColor(boolean shouldUseFocusColor) {
-        if (mShouldShowModernizeVisualUpdate
-                && (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor)) {
+        if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
             if (mDropdownListScrolled) {
                 return isIncognito()
                         ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
@@ -502,8 +495,7 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private @ColorInt int getLocationBarDefaultColorForToolbarColor(
             @ColorInt int toolbarColor, boolean shouldUseFocusColor) {
-        if (mShouldShowModernizeVisualUpdate
-                && (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor)) {
+        if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
 
             // Omnibox has same background as the Omnibox suggestion.
             return mLocationBar.getSuggestionBackgroundColor(isIncognito());
@@ -888,8 +880,7 @@ public class ToolbarPhone extends ToolbarLayout
             case VisualState.INCOGNITO:
                 return ChromeColors.getDefaultThemeColor(getContext(), true);
             case VisualState.BRAND_COLOR:
-                if (mShouldShowModernizeVisualUpdate
-                        && mLocationBar.getPhoneCoordinator().hasFocus()) {
+                if (mLocationBar.getPhoneCoordinator().hasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
                 }
                 if (mIsSurfacePolishEnabled && mIsShowingStartSurfaceHomepage) {
@@ -1200,8 +1191,7 @@ public class ToolbarPhone extends ToolbarLayout
             // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
             // the omnibox is focused. When the fake omnibox is scrolled, the color should not
             // change.
-            if (((mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus())
-                            || !isLocationBarShownInNtp)
+            if ((mLocationBar.getPhoneCoordinator().hasFocus() || !isLocationBarShownInNtp)
                     && mTabSwitcherState == STATIC_TAB) {
                 boolean usePolishedLocationBar = isLocationBarShownInGeneralNtpOrStartSurface();
                 // Add a special case for general NTP and Start Surface to the defaultColor to
@@ -3078,11 +3068,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private int getAdditionalOffsetForNtp() {
         return getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding)
-                - getResources()
-                        .getDimensionPixelSize(
-                                mShouldShowModernizeVisualUpdate
-                                        ? R.dimen.location_bar_start_padding_modern
-                                        : R.dimen.location_bar_start_padding);
+                - getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding_modern);
     }
 
     @Override
@@ -3103,20 +3089,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void onSuggestionDropdownScroll() {
-        if (!mShouldShowModernizeVisualUpdate) {
-            return;
-        }
-
         mDropdownListScrolled = true;
         updateToolbarAndLocationBarColor();
     }
 
     @Override
     public void onSuggestionDropdownOverscrolledToTop() {
-        if (!mShouldShowModernizeVisualUpdate) {
-            return;
-        }
-
         mDropdownListScrolled = false;
         updateToolbarAndLocationBarColor();
     }
