@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/protocol_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/run_on_os_login_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_menu_handling_sub_manager.h"
@@ -79,7 +80,8 @@ OsIntegrationManager::ScopedSuppressForTesting::~ScopedSuppressForTesting() {
 }
 
 bool OsIntegrationManager::AreOsHooksSuppressedForTesting() {
-  return !GetSuppressCount().IsZero();
+  // If the override is present, os integration is turned on as it is handled.
+  return !GetSuppressCount().IsZero() && !OsIntegrationTestOverride::Get();
 }
 
 OsIntegrationManager::OsIntegrationManager(
