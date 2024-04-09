@@ -33,7 +33,7 @@ constexpr int kImageGridMargin = 16;
 constexpr int kNumImageGridColumns = 2;
 
 int GetImageGridColumnWidth(int grid_width) {
-  return (grid_width - (kNumImageGridColumns - 1) * kImageGridPadding +
+  return (grid_width - (kNumImageGridColumns - 1) * kImageGridPadding -
           kImageGridMargin * 2) /
          kNumImageGridColumns;
 }
