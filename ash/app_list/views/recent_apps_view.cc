@@ -142,12 +142,13 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
     // which may be destroyed during the procedure as the function parameter
     // may bring the crash like https://crbug.com/990282.
     const std::string id = pressed_item_view->item()->id();
-    view_delegate_->ActivateItem(id, event.flags(),
-                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
     RecordAppListByCollectionLaunched(
         pressed_item_view->item()->collection_id(),
         /*is_apps_collections_page=*/false);
-    // `this` may be deleted.
+
+    // `this` may be deleted after activation.
+    view_delegate_->ActivateItem(id, event.flags(),
+                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
   }
 
  private:
