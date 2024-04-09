@@ -19,12 +19,17 @@
 #include "content/public/test/web_contents_tester.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/common/url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_switches.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -37,6 +42,15 @@ constexpr char kUserEmail[] = "user-email@example.com";
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kTrustedIwaAppId[] =
+    "ggx2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
+constexpr char kTrustedIwaAppOrigin[] =
+    "isolated-app://ggx2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
+constexpr char kUntrustedIwaAppOrigin[] =
+    "isolated-app://abc2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
 constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
@@ -44,7 +58,6 @@ constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
 constexpr char kNotAllowedOriginErrorMessage[] =
     "The current origin cannot use this web API because it is not allowed by "
     "the DeviceAttributesAllowedForOrigins policy.";
-
 #endif
 
 }  // namespace
@@ -55,11 +68,11 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    InstallTrustedApp();
+    InstallTrustedApps();
     SetAllowedOrigin();
   }
 
-  void InstallTrustedApp() {
+  virtual void InstallTrustedApps() {
     ScopedListPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kWebAppInstallForceList);
     base::Value::Dict app_policy;
@@ -67,7 +80,7 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
     update->Append(std::move(app_policy));
   }
 
-  void RemoveTrustedApp() {
+  virtual void RemoveTrustedApps() {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    base::Value::List());
   }
@@ -145,7 +158,7 @@ TEST_F(DeviceAPIServiceTest, DoesNotConnectForUntrustedApps) {
 TEST_F(DeviceAPIServiceTest, DisconnectWhenTrustRevoked) {
   TryCreatingService(GURL(kTrustedUrl));
   remote()->FlushForTesting();
-  RemoveTrustedApp();
+  RemoveTrustedApps();
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
@@ -156,6 +169,57 @@ TEST_F(DeviceAPIServiceTest, ReportErrorForDefaultUser) {
       kNotAffiliatedErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+class DeviceAPIServiceIwaTest : public DeviceAPIServiceTest {
+ public:
+  void InstallTrustedApps() override {
+    DeviceAPIServiceTest::InstallTrustedApps();
+
+    ScopedListPrefUpdate update(profile()->GetPrefs(),
+                                prefs::kIsolatedWebAppInstallForceList);
+    base::Value::Dict app_policy;
+    app_policy.Set(web_app::kPolicyWebBundleIdKey, kTrustedIwaAppId);
+    update->Append(std::move(app_policy));
+  }
+
+  void RemoveTrustedApps() override {
+    DeviceAPIServiceTest::RemoveTrustedApps();
+
+    profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
+                                   base::Value::List());
+  }
+};
+
+TEST_F(DeviceAPIServiceIwaTest, ConnectsForTrustedApps) {
+  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceIwaTest, DoesNotConnectForUntrustedApps) {
+  TryCreatingService(GURL(kUntrustedIwaAppOrigin));
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceIwaTest, DisconnectWhenTrustRevoked) {
+  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  remote()->FlushForTesting();
+  RemoveTrustedApps();
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceIwaTest, ReportErrorForDefaultUser) {
+  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+      kNotAffiliatedErrorMessage);
+  ASSERT_TRUE(remote()->is_connected());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

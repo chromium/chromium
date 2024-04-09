@@ -18,6 +18,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/common/url_constants.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -67,18 +72,43 @@ bool IsEqualToKioskOrigin(const url::Origin& origin) {
 #endif
 }
 
-// Check whether the target origin is included in the WebAppInstallForceList
-// policy.
-bool IsForceInstalledOrigin(const PrefService* prefs,
+bool IsForceInstalledIsolatedWebApp(const PrefService* prefs,
+                                    const url::Origin& origin) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (origin.scheme() != chrome::kIsolatedAppScheme) {
+    return false;
+  }
+
+  const base::Value::List& iwa_list =
+      prefs->GetList(prefs::kIsolatedWebAppInstallForceList);
+
+  return base::Contains(iwa_list, origin.host(), [](const auto& entry) {
+    return CHECK_DEREF(
+        entry.GetDict().FindString(web_app::kPolicyWebBundleIdKey));
+  });
+#else
+  return false;
+#endif
+}
+
+bool IsForceInstalledWebApp(const PrefService* prefs,
                             const url::Origin& origin) {
-  const base::Value::List& prefs_list =
+  const base::Value::List& web_app_list =
       prefs->GetList(prefs::kWebAppInstallForceList);
 
-  return base::Contains(prefs_list, origin, [](const auto& entry) {
+  return base::Contains(web_app_list, origin, [](const auto& entry) {
     std::string entry_url =
         CHECK_DEREF(entry.GetDict().FindString(web_app::kUrlKey));
     return url::Origin::Create(GURL(entry_url));
   });
+}
+
+// Check whether the target origin is included in the WebAppInstallForceList or
+// IsolatedWebAppInstallForceList policy.
+bool IsForceInstalledOrigin(const PrefService* prefs,
+                            const url::Origin& origin) {
+  return IsForceInstalledIsolatedWebApp(prefs, origin) ||
+         IsForceInstalledWebApp(prefs, origin);
 }
 
 const Profile* GetProfile(content::RenderFrameHost& host) {
@@ -131,6 +161,12 @@ DeviceServiceImpl::DeviceServiceImpl(
       prefs::kWebAppInstallForceList,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_change_registrar_.Add(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
+                          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 DeviceServiceImpl::~DeviceServiceImpl() = default;
