@@ -1822,8 +1822,16 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 //   {
 //     "destination": <The destination of the request>,
 //     "reason": <The reason for using the existing session>,
+//     "source_dependency": <Source identifier for the session>,
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_USE_EXISTING_SESSION)
+
+// This event is emitted for an existing session when an HttpStreamFactory::Job
+// is attached to the session.
+//   {
+//     "source_dependency": <Source identifier for the HttpStreamFactory::Job>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ATTACH_HTTP_STREAM_JOB_TO_EXISTING_SESSION)
 
 // This event is emitted whenever a platform notification is received that
 // could possibly trigger connection migration.

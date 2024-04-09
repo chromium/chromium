@@ -8,6 +8,7 @@
 #include <set>
 #include <tuple>
 #include <utility>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -173,13 +174,22 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   return hosts;
 }
 
-base::Value::Dict NetLogParamsQuicSessionPoolUseExistingSession(
-    const url::SchemeHostPort& destination,
-    std::string_view reason) {
-  base::Value::Dict dict;
-  dict.Set("destination", destination.Serialize());
-  dict.Set("reason", reason);
-  return dict;
+void LogUsingExistingSession(const NetLogWithSource& request_net_log,
+                             QuicChromiumClientSession* session,
+                             const url::SchemeHostPort& destination,
+                             std::string_view reason) {
+  request_net_log.AddEvent(
+      NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION, [&] {
+        base::Value::Dict dict;
+        dict.Set("destination", destination.Serialize());
+        dict.Set("reason", reason);
+        session->net_log().source().AddToEventParameters(dict);
+        return dict;
+      });
+  session->net_log().AddEventReferencingSource(
+      NetLogEventType::
+          QUIC_SESSION_POOL_ATTACH_HTTP_STREAM_JOB_TO_EXISTING_SESSION,
+      request_net_log.source());
 }
 
 }  // namespace
@@ -554,11 +564,8 @@ int QuicSessionPool::RequestSession(
   // Use active session for |session_key| if such exists.
   auto active_session = active_sessions_.find(session_key);
   if (active_session != active_sessions_.end()) {
-    net_log.AddEvent(NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION,
-                     [&] {
-                       return NetLogParamsQuicSessionPoolUseExistingSession(
-                           destination, "session key match");
-                     });
+    LogUsingExistingSession(net_log, active_session->second, destination,
+                            "session key match");
     QuicChromiumClientSession* session = active_session->second;
     request->SetSession(session->CreateHandle(std::move(destination)));
     return OK;
@@ -584,12 +591,9 @@ int QuicSessionPool::RequestSession(
       QuicChromiumClientSession* session = key_value.second;
       if (destination == all_sessions_[session].destination() &&
           session->CanPool(session_key.server_id().host(), session_key)) {
-        net_log.AddEvent(
-            NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION, [&] {
-              return NetLogParamsQuicSessionPoolUseExistingSession(
-                  destination,
-                  "session key doesn't match but an existing session can pool");
-            });
+        LogUsingExistingSession(
+            net_log, session, destination,
+            "session key doesn't match but an existing session can pool");
         request->SetSession(session->CreateHandle(std::move(destination)));
         return OK;
       }
