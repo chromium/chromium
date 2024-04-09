@@ -116,3 +116,20 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
   ShowAndVerifyUi();
 }
+
+// TODO(crbug.com/333163287): Re-enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_InvokeUi_RestrictedNotice DISABLED_InvokeUi_RestrictedNotice
+#else
+#define MAYBE_InvokeUi_RestrictedNotice InvokeUi_RestrictedNotice
+#endif
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       MAYBE_InvokeUi_RestrictedNotice) {
+  EXPECT_CALL(*mock_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kRestrictedNoticeShown));
+  EXPECT_CALL(*mock_service(),
+              PromptActionOccurred(PrivacySandboxService::PromptAction::
+                                       kRestrictedNoticeClosedNoInteraction));
+  ShowAndVerifyUi();
+}
