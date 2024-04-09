@@ -169,12 +169,6 @@ std::unique_ptr<RulesetService> RulesetService::Create(
     const RulesetConfig& config,
     PrefService* local_state,
     const base::FilePath& user_data_dir) {
-  // TODO(crbug.com/40280666): Add additional feature flag checks here for
-  // different filters.
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
-    return nullptr;
-  }
-
   // Runner for tasks critical for user experience.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
