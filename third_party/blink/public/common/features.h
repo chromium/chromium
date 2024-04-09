@@ -54,6 +54,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowBFCacheWhenClosedMediaStreamTrack);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAlwaysAllowFledgeDeprecatedRenderURLReplacements);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlignFontDisplayAutoTimeoutWithLCPGoal);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam;

@@ -61,6 +61,12 @@ BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
              "AllowBFCacheWhenClosedMediaStreamTrack",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow DeprecatedRenderURLReplacements when
+// CookieDeprecationFacilitatedTesting is enabled.
+BASE_FEATURE(kAlwaysAllowFledgeDeprecatedRenderURLReplacements,
+             "kAlwaysAllowFledgeDeprecatedRenderURLReplacements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Block all MIDI access with the MIDI_SYSEX permission
 BASE_FEATURE(kBlockMidiByDefault,
              "BlockMidiByDefault",
@@ -173,7 +179,8 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePeriodMac,
 
 // A thread pool system for effective usage of RealtimeAudioWorkletThread
 // instances.
-BASE_FEATURE(kAudioWorkletThreadPool, "AudioWorkletThreadPool",
+BASE_FEATURE(kAudioWorkletThreadPool,
+             "AudioWorkletThreadPool",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, extraction of unassociated listed elements includes elements
@@ -516,11 +523,9 @@ const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
 
 // Enabled 03/2024 on macOS (and much earlier elsewhere).
 // Keeping the feature to perform a holdback experiment.
-BASE_FEATURE(
-    kCanvas2DHibernation,
-    "Canvas2DHibernation",
-    base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
-);
+BASE_FEATURE(kCanvas2DHibernation,
+             "Canvas2DHibernation",
+             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
