@@ -69,7 +69,8 @@ gfx::Size WindowPreview::CalculatePreferredSize() const {
 void WindowPreview::Layout(PassKey) {
   gfx::Rect content_rect = GetContentsBounds();
 
-  gfx::Size title_size = title_->CalculatePreferredSize();
+  gfx::Size title_size =
+      title_->CalculatePreferredSize(views::SizeBounds(title_->width(), {}));
   int title_height_with_padding =
       kTitleLineHeight + kTitleMarginTop + kTitleMarginBottom;
   int title_width =

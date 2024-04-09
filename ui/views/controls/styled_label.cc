@@ -261,10 +261,15 @@ base::CallbackListSubscription StyledLabel::AddTextChangedCallback(
   return AddPropertyChangedCallback(&text_, std::move(callback));
 }
 
-gfx::Size StyledLabel::CalculatePreferredSize() const {
-  // Respect any existing size.  If there is none, default to a single line.
+gfx::Size StyledLabel::GetMinimumSize() const {
+  // Overload it otherwise BubbleDialogDelegateViewTest.StyledLabelTitle will
+  // fail.
   return CalculatePreferredSize(
       SizeBounds(width() == 0 ? SizeBound() : SizeBound(width()), {}));
+}
+
+gfx::Size StyledLabel::CalculatePreferredSize() const {
+  NOTREACHED_NORETURN() << "Use GetPreferredSize(SizeBounds)";
 }
 
 gfx::Size StyledLabel::CalculatePreferredSize(

@@ -113,9 +113,8 @@ views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
   //
   // If there's enough space to append the buttons, return the container view
   // that the button views should be added to.
-  if (maybe_append_buttons &&
-      (language_text_label->CalculatePreferredSize().width() +
-       kReadAndCopyButtonsWidth) <= kContentTextWidth) {
+  if (maybe_append_buttons && (language_text_label->GetPreferredSize().width() +
+                               kReadAndCopyButtonsWidth) <= kContentTextWidth) {
     views::View* box_layout_view =
         content_view_->AddChildView(CreateHorizontalBoxLayoutView());
     box_layout_view->AddChildView(std::move(language_text_label));

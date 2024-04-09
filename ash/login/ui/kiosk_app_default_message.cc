@@ -80,12 +80,14 @@ gfx::Size KioskAppDefaultMessage::CalculatePreferredSize() const {
 
   // width = left_margin + icon_width + component_distance + title_width +
   // right_margin
-  int width = icon_->CalculatePreferredSize().width() +
-              layout_provider->GetDistanceMetric(
-                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL) +
-              title_->CalculatePreferredSize().width() +
-              2 * layout_provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+  int width =
+      icon_->CalculatePreferredSize().width() +
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL) +
+      title_->CalculatePreferredSize(views::SizeBounds(title_->width(), {}))
+          .width() +
+      2 * layout_provider->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   // height = upper_margin + icon_height + lower_margin
   int height =
       kIconSize + 2 * layout_provider->GetDistanceMetric(

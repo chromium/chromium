@@ -91,7 +91,10 @@ gfx::Size SavedDeskIconView::CalculatePreferredSize() const {
   // is to have a minimum width.
   width += count_label_
                ? std::max(kIconViewSize,
-                          count_label_->CalculatePreferredSize().width())
+                          count_label_
+                              ->CalculatePreferredSize(
+                                  views::SizeBounds(count_label_->width(), {}))
+                              .width())
                : 0;
 
   return gfx::Size(width, kIconViewSize);

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -635,7 +636,7 @@ int Label::GetBaseline() const {
 }
 
 gfx::Size Label::CalculatePreferredSize() const {
-  return CalculatePreferredSize({width(), {}});
+  NOTREACHED_NORETURN() << "Use GetPreferredSize(SizeBounds)";
 }
 
 gfx::Size Label::CalculatePreferredSize(

@@ -255,7 +255,10 @@ class IndicatorPillView : public views::View {
     // ( | | text )
     // Has max width of kMaxPillWidth.
 
-    const int text_width = text_label_->CalculatePreferredSize().width();
+    const int text_width = text_label_
+                               ->CalculatePreferredSize(
+                                   views::SizeBounds(text_label_->width(), {}))
+                               .width();
     const int width = kArrowAllocatedWidth + text_width + kTextMarginNormal;
 
     return gfx::Size(std::min(width, kMaxPillWidth), kPillHeight);

@@ -378,7 +378,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
 
   // With a narrow window, we have insufficient space for the full title.
   const int narrow_title_gap =
-      window_title->CalculatePreferredSize().width() * 3 / 4;
+      window_title
+          ->GetPreferredSize(views::SizeBounds(window_title->width(), {}))
+          .width() *
+      3 / 4;
   int narrow_width =
       helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
 #if BUILDFLAG(IS_MAC)

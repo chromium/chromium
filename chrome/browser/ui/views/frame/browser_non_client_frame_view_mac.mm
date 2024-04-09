@@ -217,7 +217,9 @@ void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
   title_bounds.Inset(gfx::Insets::VH(0, title_padding));
   window_title_label.SetBoundsRect(GetCenteredTitleBounds(
       toolbar_bounds, title_bounds,
-      window_title_label.CalculatePreferredSize().width()));
+      window_title_label
+          .GetPreferredSize(views::SizeBounds(window_title_label.width(), {}))
+          .width()));
   // The background of the title area is always opaquely drawn, but when in
   // immersive fullscreen, it is drawn in a way that isn't detected by the
   // DCHECK in Label. As such, disable the DCHECK.

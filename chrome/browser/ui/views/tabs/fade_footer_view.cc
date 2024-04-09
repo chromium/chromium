@@ -81,10 +81,11 @@ void FooterRow<T>::SetContent(const ui::ImageModel& icon_image_model,
 }
 
 template <typename T>
-gfx::Size FooterRow<T>::CalculatePreferredSize() const {
+gfx::Size FooterRow<T>::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return footer_label_->GetText().empty()
              ? gfx::Size()
-             : views::View::CalculatePreferredSize();
+             : views::View::CalculatePreferredSize(available_size);
 }
 
 template <typename T>
@@ -243,8 +244,8 @@ void FooterView::SetFade(double percent) {
 }
 
 void FooterView::UpdateVisibility() {
-  SetVisible(performance_row_->CalculatePreferredSize().height() > 0 ||
-             alert_row_->CalculatePreferredSize().height() > 0);
+  SetVisible(performance_row_->CalculatePreferredSize({}).height() > 0 ||
+             alert_row_->CalculatePreferredSize({}).height() > 0);
 }
 
 using FadeWrapper_View_PerformanceRowData =

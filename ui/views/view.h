@@ -587,16 +587,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // return value is relative to the preferred height.
   virtual int GetBaseline() const;
 
-  // Get the size the View would like to be under the current bounds.
-  // If the View is never laid out before, assume it to be laid out in an
-  // unbounded space.
-  // TODO(crbug.com/1346889): Don't use this. Use the size-constrained
-  //                          GetPreferredSize(const SizeBounds&) instead.
-  gfx::Size GetPreferredSize() const;
-
   // Get the size the View would like to be given `available_size`, ignoring the
   // current bounds.
-  gfx::Size GetPreferredSize(const SizeBounds& available_size) const;
+  gfx::Size GetPreferredSize(const SizeBounds& available_size = {}) const;
 
   // Sets or unsets the size that this View will request during layout. The
   // actual size may differ. It should rarely be necessary to set this; usually

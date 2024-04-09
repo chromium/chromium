@@ -555,13 +555,6 @@ gfx::Rect View::GetAnchorBoundsInScreen() const {
   return GetBoundsInScreen();
 }
 
-gfx::Size View::GetPreferredSize() const {
-  if (preferred_size_) {
-    return *preferred_size_;
-  }
-  return CalculatePreferredSize();
-}
-
 gfx::Size View::GetPreferredSize(const SizeBounds& available_size) const {
   if (preferred_size_) {
     return *preferred_size_;
@@ -591,7 +584,7 @@ gfx::Size View::GetMinimumSize() const {
     return GetLayoutManager()->GetMinimumSize(this);
   }
 
-  return GetPreferredSize();
+  return GetPreferredSize(SizeBounds(0, 0));
 }
 
 gfx::Size View::GetMaximumSize() const {
@@ -602,7 +595,7 @@ int View::GetHeightForWidth(int w) const {
   if (HasLayoutManager()) {
     return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
   }
-  return GetPreferredSize().height();
+  return GetPreferredSize(SizeBounds(w, {})).height();
 }
 
 SizeBounds View::GetAvailableSize(const View* child) const {

@@ -319,7 +319,6 @@ class VIEWS_EXPORT Label : public View,
 
   // View:
   int GetBaseline() const override;
-  gfx::Size CalculatePreferredSize() const final;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
@@ -334,6 +333,9 @@ class VIEWS_EXPORT Label : public View,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
+  // View:
+  gfx::Size CalculatePreferredSize() const final;
+
   // Create a single RenderText instance to actually be painted.
   virtual std::unique_ptr<gfx::RenderText> CreateRenderText() const;
 

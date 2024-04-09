@@ -182,7 +182,7 @@ class VIEWS_EXPORT StyledLabel : public View {
       views::PropertyChangedCallback callback);
 
   // View:
-  gfx::Size CalculatePreferredSize() const final;
+  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -202,6 +202,9 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // Gets the first child that is a link. Returns nullptr if there isn't any.
   views::Link* GetFirstLinkForTesting();
+
+ protected:
+  gfx::Size CalculatePreferredSize() const final;
 
  private:
   struct StyleRange {
