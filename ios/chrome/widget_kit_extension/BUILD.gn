@@ -21,10 +21,6 @@ config("ios_enable_shortcuts_widget") {
   swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
 }
 
-config("ios_enable_search_passwords_widget") {
-  swiftflags = [ "-DIOS_ENABLE_SEARCH_PASSWORDS_WIDGET" ]
-}
-
 source_set("crash_helper") {
   sources = [
     "crash_helper.h",
@@ -42,6 +38,7 @@ swift_source_set("widget_kit_extension_swift") {
     "lockscreen_launcher_widget.swift",
     "main.swift",
     "quick_actions_widget.swift",
+    "search_passwords_widget.swift",
     "search_widget.swift",
     "widget_constants.swift",
   ]
@@ -85,11 +82,6 @@ swift_source_set("widget_kit_extension_swift") {
   if (ios_enable_shortcuts_widget) {
     configs += [ ":ios_enable_shortcuts_widget" ]
     sources += [ "shortcuts_widget.swift" ]
-  }
-
-  if (ios_enable_search_passwords_widget) {
-    configs += [ ":ios_enable_search_passwords_widget" ]
-    sources += [ "search_passwords_widget.swift" ]
   }
 
   frameworks = [
