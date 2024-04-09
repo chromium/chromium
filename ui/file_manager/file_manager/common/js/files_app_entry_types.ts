@@ -41,6 +41,10 @@ export type FilesAppEntryCallback = (a: FilesAppEntry) => void;
 export type FileEntryCallback = (a: FileEntry) => void;
 export type FilesAppDirEntryCallback = (a: FilesAppDirEntry) => void;
 
+// Generalized entry and directory entry definitions.
+export type UniversalEntry = FilesAppEntry|Entry;
+export type UniversalDirectory = FilesAppDirEntry|DirectoryEntry;
+
 /**
  * FilesAppEntry represents a single Entry (file, folder or root) in the Files
  * app. Previously, we used the Entry type directly, but this limits the code to

@@ -11,7 +11,7 @@ import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {isDriveRootType, isFakeEntry, isTrashEntry, readEntriesRecursively} from '../../common/js/entry_utils.js';
 import {isType} from '../../common/js/file_type.js';
-import type {EntryList, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {EntryList, UniversalDirectory, UniversalEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
@@ -27,11 +27,6 @@ import {FileListModel} from './file_list_model.js';
 import type {MetadataItem} from './metadata/metadata_item.js';
 import {type MetadataKey} from './metadata/metadata_item.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
-
-
-// Generalized entry and directory entry definitions.
-type UniversalEntry = FilesAppEntry|Entry;
-type UniversalDirectory = FilesAppDirEntry|DirectoryEntry;
 
 // Common callback types used by content scanners.
 type ScanResultCallback = (entries: UniversalEntry[]) => void;

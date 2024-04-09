@@ -10,7 +10,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {SpliceEvent} from '../../common/js/array_data_model.js';
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry, GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry, GuestOsPlaceholder, UniversalDirectory} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
@@ -21,7 +21,7 @@ import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import type {FileData, FileKey, SearchData} from '../../state/state.js';
-import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
+import {EntryType, PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
@@ -211,8 +211,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @param state latest state from the store.
    */
   private handleDirectoryState_(state: State) {
-    const currentEntry = this.getCurrentDirEntry();
-    const currentURL = currentEntry ? currentEntry.toURL() : null;
+    const currentURL = this.getCurrentFileKey();
     const newURL = state.currentDirectory ? state.currentDirectory.key : null;
 
     // Observe volume changes.
@@ -229,18 +228,36 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     // When something changed the current directory status to STARTED, Here we
     // initiate the actual change and will update to SUCCESS at the end.
     if (state.currentDirectory?.status === PropStatus.STARTED) {
-      const entry = state.allEntries[newURL!]?.entry ?? null;
+      const fileData = getFileData(state, newURL);
+      if (!fileData) {
+        console.error(
+            `Failed to find in the store the new directory key ${newURL}`);
+        this.store_.dispatch(
+            changeDirectory({toKey: newURL, status: PropStatus.ERROR}));
+        return;
+      }
+      if (fileData.type === EntryType.MATERIALIZED_VIEW) {
+        this.changeDirectoryFileData(fileData);
+        return;
+      }
 
+      const entry = fileData.entry;
       if (!entry) {
         // TODO(lucmult): Fix potential race condition in this await/then.
-        urlToEntry(newURL).then((entry) => {
-          if (!entry) {
-            console.error(`Failed to find the new directory key ${newURL}`);
-            return;
-          }
-          // Initiate the directory change.
-          this.changeDirectoryEntry(entry as DirectoryEntry);
-        });
+        urlToEntry(newURL)
+            .then((entry) => {
+              if (!entry) {
+                throw new Error(
+                    `Failed to find the new directory key ${newURL}`);
+              }
+              // Initiate the directory change.
+              this.changeDirectoryEntry(entry as DirectoryEntry);
+            })
+            .catch((error) => {
+              console.error(error);
+              this.store_.dispatch(
+                  changeDirectory({toKey: newURL, status: PropStatus.ERROR}));
+            });
         return;
       }
 
@@ -1225,6 +1242,55 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const {myFilesEntry} = getMyFiles(getStore().getState());
     return myFilesEntry;
   }
+  async changeDirectoryFileData(fileData: FileData): Promise<boolean> {
+    if (fileData.entry) {
+      const result = await new Promise<boolean>(resolve => {
+        this.changeDirectoryEntry(
+            fileData.entry as DirectoryEntry, (ret) => resolve(ret));
+      });
+      return result;
+    }
+
+    // Increment the sequence value.
+    const sequence = ++this.changeDirectorySequence_;
+    this.stopActiveSearch_();
+
+    // If there is on-going scan, cancel it.
+    if (this.currentDirContents_.isScanning()) {
+      this.currentDirContents_.cancelScan();
+    }
+
+    const unlock = await this.directoryChangeQueue_.lock();
+    try {
+      // Remove the watcher for the previous entry.
+      await this.fileWatcher_.resetWatchedEntry();
+      if (this.changeDirectorySequence_ !== sequence) {
+        return false;
+      }
+
+      const newDirectoryContents = this.createDirectoryContents_(
+          this.currentFileListContext_, undefined, fileData.key, '');
+      if (!newDirectoryContents) {
+        return false;
+      }
+
+      const previousDirEntry = this.currentDirContents_.getDirectoryEntry();
+      const previousFileKey = this.currentDirContents_.getFileKey();
+      const r = await new Promise<boolean>(
+          resolve => this.clearAndScan_(newDirectoryContents, resolve));
+      if (!r) {
+        return r;
+      }
+
+      this.finalizeChangeDirectory_(
+          previousDirEntry, previousFileKey, undefined, fileData.key);
+    } catch (error) {
+    } finally {
+      unlock();
+    }
+
+    return true;
+  }
 
   /**
    * Changes the current directory to the directory represented by
@@ -1288,38 +1354,49 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         setTimeout(queueTaskCallback, 0);
       });
 
-      // For tests that open the dialog to empty directories, everything
-      // is loaded at this point.
-      testSendMessage('directory-change-complete');
-      const previousVolumeInfo = previousDirEntry ?
-          this.volumeManager_.getVolumeInfo(previousDirEntry) :
-          null;
-      // VolumeInfo for dirEntry.
-      const currentVolumeInfo = this.getCurrentVolumeInfo();
-      const event = new CustomEvent('directory-changed', {
-        detail: {
-          previousDirEntry,
-          previousKey: previousFileKey,
-          newDirEntry: dirEntry,
-          newFileKey: dirEntry.toURL(),
-          volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
-        },
-      });
-      await currentVolumeInfo?.resolveDisplayRoot();
-      this.dispatchEvent(event);
-      if (previousDirEntry) {
-        // If we changed from a directory to another directory always clear
-        // search and search query on directory change. When the Files app is
-        // started previousDirEntry is undefined. For that case we must not
-        // clear the search query as it may be part of the starting parameters.
-        this.cachedSearch_ = {};
-        this.store_.dispatch(clearSearch());
-        this.clearLastSearchQuery();
-      }
-      // Notify the Store that the new directory has successfully changed.
-      this.store_.dispatch(changeDirectory(
-          {to: dirEntry, toKey: dirEntry.toURL(), status: PropStatus.SUCCESS}));
+      this.finalizeChangeDirectory_(
+          previousDirEntry, previousFileKey, dirEntry, dirEntry.toURL());
     });
+  }
+
+  private async finalizeChangeDirectory_(
+      previousDirEntry: UniversalDirectory|undefined,
+      previousFileKey: FileKey|undefined,
+      newDirectory: UniversalDirectory|undefined, fileKey: FileKey) {
+    // For tests that open the dialog to empty directories, everything
+    // is loaded at this point.
+    testSendMessage('directory-change-complete');
+    const previousVolumeInfo = previousDirEntry ?
+        this.volumeManager_.getVolumeInfo(previousDirEntry) :
+        null;
+    // VolumeInfo for dirEntry.
+    const currentVolumeInfo = this.getCurrentVolumeInfo();
+    const event = new CustomEvent('directory-changed', {
+      detail: {
+        previousDirEntry,
+        previousFileKey: previousFileKey,
+        newDirEntry: newDirectory,
+        newFileKey: fileKey,
+        volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
+      },
+    });
+    await currentVolumeInfo?.resolveDisplayRoot();
+    this.dispatchEvent(event);
+    if (previousDirEntry) {
+      // If we changed from a directory to another directory always clear
+      // search and search query on directory change. When the Files app is
+      // started previousDirEntry is undefined. For that case we must not
+      // clear the search query as it may be part of the starting parameters.
+      this.cachedSearch_ = {};
+      this.store_.dispatch(clearSearch());
+      this.clearLastSearchQuery();
+    }
+    // Notify the Store that the new directory has successfully changed.
+    this.store_.dispatch(changeDirectory({
+      to: newDirectory,
+      toKey: fileKey,
+      status: PropStatus.SUCCESS,
+    }));
   }
 
   /**

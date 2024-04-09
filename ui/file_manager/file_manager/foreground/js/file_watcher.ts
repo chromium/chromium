@@ -37,7 +37,7 @@ export class FileWatcher extends FilesEventTarget<FileWatcherEventMap> {
     chrome.fileManagerPrivate.onDirectoryChanged.removeListener(
         this.onDirectoryChangedBound_);
     if (this.watchedDirectoryEntry_) {
-      this.resetWatchedEntry_();
+      this.resetWatchedEntry();
     }
   }
 
@@ -76,21 +76,20 @@ export class FileWatcher extends FilesEventTarget<FileWatcherEventMap> {
    * Changes the watched directory. In case of a fake entry, the watch is
    * just released, since there is no reason to track a fake directory.
    *
-   * @param entry Directory entry to be
-   *     tracked, or the fake entry.
+   * @param entry Directory entry to be tracked, or the fake entry.
    */
   changeWatchedDirectory(entry: DirectoryEntry|FilesAppEntry): Promise<void> {
     if (!isFakeEntry(entry)) {
       return this.changeWatchedEntry_(unwrapEntry(entry) as DirectoryEntry);
     } else {
-      return this.resetWatchedEntry_();
+      return this.resetWatchedEntry();
     }
   }
 
   /**
    * Resets the watched entry. It's a best effort method.
    */
-  private resetWatchedEntry_(): Promise<void> {
+  resetWatchedEntry(): Promise<void> {
     // Run the tasks in the queue to avoid races.
     return new Promise<void>((fulfill) => {
       this.queue_.run(callback => {
@@ -148,7 +147,7 @@ export class FileWatcher extends FilesEventTarget<FileWatcherEventMap> {
       };
 
       // Reset the watched directory first, then set the new watched directory.
-      return this.resetWatchedEntry_().then(setEntryClosure);
+      return this.resetWatchedEntry().then(setEntryClosure);
     });
   }
 

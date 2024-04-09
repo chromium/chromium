@@ -538,8 +538,7 @@ export class FileManager {
     });
 
     this.directoryModel.addEventListener('directory-changed', event => {
-      this.navigationUma_!.onDirectoryChanged(
-          event.detail.newDirEntry as Entry);
+      this.navigationUma_!.onDirectoryChanged(event.detail.newDirEntry);
     });
 
     this.initCommands_();
