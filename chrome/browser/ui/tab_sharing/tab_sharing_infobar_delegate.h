@@ -119,11 +119,10 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   bool GetButtonEnabled(InfoBarButton button) const;
   std::u16string GetButtonTooltip(InfoBarButton button) const;
   int GetButtons() const;
-  // TODO(crbug.com/332050422): Remove the return-value and rename as
-  // click-producing.
-  bool Stop();
-  bool ShareThisTabInstead();
-  bool QuickNav();
+
+  void Stop();
+  void ShareThisTabInstead();
+  void QuickNav();
   void OnCapturedSurfaceControlActivityIndicatorPressed();
 
   // InfoBarDelegate:

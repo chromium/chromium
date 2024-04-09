@@ -170,27 +170,21 @@ void TabSharingInfoBar::StopButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  if (GetDelegate()->Stop()) {
-    RemoveSelf();
-  }
+  GetDelegate()->Stop();
 }
 
 void TabSharingInfoBar::ShareThisTabInsteadButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  if (GetDelegate()->ShareThisTabInstead()) {
-    RemoveSelf();
-  }
+  GetDelegate()->ShareThisTabInstead();
 }
 
 void TabSharingInfoBar::QuickNavButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  if (GetDelegate()->QuickNav()) {
-    RemoveSelf();
-  }
+  GetDelegate()->QuickNav();
 }
 
 void TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed() {

@@ -465,21 +465,18 @@ int TabSharingInfoBarDelegate::GetButtons() const {
          (csc_permission_button_ ? kCscPermission : 0);
 }
 
-bool TabSharingInfoBarDelegate::Stop() {
+void TabSharingInfoBarDelegate::Stop() {
   ui_->StopSharing();
-  return false;
 }
 
-bool TabSharingInfoBarDelegate::ShareThisTabInstead() {
+void TabSharingInfoBarDelegate::ShareThisTabInstead() {
   DCHECK(share_this_tab_instead_button_);
   share_this_tab_instead_button_->Click(infobar());
-  return false;
 }
 
-bool TabSharingInfoBarDelegate::QuickNav() {
+void TabSharingInfoBarDelegate::QuickNav() {
   DCHECK(quick_nav_button_);
   quick_nav_button_->Click(infobar());
-  return false;
 }
 
 void TabSharingInfoBarDelegate::

@@ -147,7 +147,7 @@ TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
   TabSharingInfoBarDelegate* delegate =
       static_cast<TabSharingInfoBarDelegate*>(infobar->delegate());
   EXPECT_CALL(*tab_sharing_mock_ui(), StartSharing(infobar)).Times(1);
-  EXPECT_FALSE(delegate->ShareThisTabInstead());
+  delegate->ShareThisTabInstead();
 }
 
 TEST_P(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
@@ -158,7 +158,7 @@ TEST_P(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
                       .role = TabRole::kOtherTab,
                       .can_share_instead = true});
   EXPECT_CALL(*tab_sharing_mock_ui(), StopSharing).Times(1);
-  EXPECT_FALSE(delegate->Stop());
+  delegate->Stop();
 }
 
 // Test that the infobar on the capturing tab has the correct layout:
