@@ -70,10 +70,23 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
       mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
       const std::optional<std::vector<uint8_t>>& data);
 
+  void ParseSignatureStackEntryAttributesKey(
+      uint64_t offset_in_stream,
+      const uint64_t signature_stack_entries_left,
+      mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
+      const std::optional<std::vector<uint8_t>>& data);
+
   void ParseSignatureStackEntryAttributesPublicKeyKey(
       uint64_t offset_in_stream,
       const uint64_t signature_stack_entries_left,
       mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
+      const std::optional<std::vector<uint8_t>>& data);
+
+  void ParseSignatureStackEntryAttributesPublicKeyName(
+      uint64_t offset_in_stream,
+      const uint64_t signature_stack_entries_left,
+      mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
+      const uint64_t attribute_name_length,
       const std::optional<std::vector<uint8_t>>& data);
 
   void ReadSignatureStackEntryAttributesPublicKeyValue(
@@ -93,6 +106,16 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
       uint64_t signature_stack_entries_left,
       mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
       const std::optional<std::vector<uint8_t>>& signature);
+
+  void ProcessNextSignatureBlock(uint64_t offset_in_stream,
+                                 uint64_t signature_stack_entries_left);
+
+  void SkipSignatureStackEntryValue(
+      uint64_t offset_in_stream,
+      uint64_t signature_stack_entries_left,
+      mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
+      uint64_t value_size,
+      const std::optional<std::vector<uint8_t>>& data);
 
   void RunSuccessCallback(const uint64_t offset_in_stream);
 

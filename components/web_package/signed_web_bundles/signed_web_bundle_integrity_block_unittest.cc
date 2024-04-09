@@ -51,8 +51,13 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  raw_signature_stack_entry->public_key = Ed25519PublicKey::Create(public_key);
-  raw_signature_stack_entry->signature = Ed25519Signature::Create(signature);
+
+  auto signature_info = mojom::SignatureInfoEd25519::New();
+  signature_info->public_key = Ed25519PublicKey::Create(public_key);
+  signature_info->signature = Ed25519Signature::Create(signature);
+
+  raw_signature_stack_entry->signature_info =
+      mojom::SignatureInfo::NewEd25519(std::move(signature_info));
   raw_signature_stack_entry->complete_entry_cbor = std::vector(
       std::begin(complete_entry_cbor), std::end(complete_entry_cbor));
   raw_signature_stack_entry->attributes_cbor =
@@ -102,11 +107,16 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   EXPECT_EQ(integrity_block.size_in_bytes(), 42ul);
 
   const auto& signature_stack = integrity_block.signature_stack();
+
   EXPECT_EQ(signature_stack.size(), 1ul);
-  EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
-            kEd25519PublicKey1);
-  EXPECT_EQ(signature_stack.entries()[0].signature().bytes(),
-            kEd25519Signature1);
+
+  auto* ed25519_signature =
+      absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
+          &signature_stack.entries()[0].signature());
+  ASSERT_TRUE(ed25519_signature);
+
+  EXPECT_EQ(ed25519_signature->public_key().bytes(), kEd25519PublicKey1);
+  EXPECT_EQ(ed25519_signature->signature().bytes(), kEd25519Signature1);
   EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
               ElementsAreArray(kCompleteEntryCbor1));
   EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
@@ -134,18 +144,24 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
 
   const auto& signature_stack = integrity_block.signature_stack();
   EXPECT_EQ(signature_stack.size(), 2ul);
-  EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
-            kEd25519PublicKey1);
-  EXPECT_EQ(signature_stack.entries()[0].signature().bytes(),
-            kEd25519Signature1);
+
+  auto* ed25519_signature1 =
+      absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
+          &signature_stack.entries()[0].signature());
+  ASSERT_TRUE(ed25519_signature1);
+  EXPECT_EQ(ed25519_signature1->public_key().bytes(), kEd25519PublicKey1);
+  EXPECT_EQ(ed25519_signature1->signature().bytes(), kEd25519Signature1);
   EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
               ElementsAreArray(kCompleteEntryCbor1));
   EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
               ElementsAreArray(kAttributesCbor1));
-  EXPECT_EQ(signature_stack.entries()[1].public_key().bytes(),
-            kEd25519PublicKey2);
-  EXPECT_EQ(signature_stack.entries()[1].signature().bytes(),
-            kEd25519Signature2);
+
+  auto* ed25519_signature2 =
+      absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
+          &signature_stack.entries()[1].signature());
+  ASSERT_TRUE(ed25519_signature2);
+  EXPECT_EQ(ed25519_signature2->public_key().bytes(), kEd25519PublicKey2);
+  EXPECT_EQ(ed25519_signature2->signature().bytes(), kEd25519Signature2);
   EXPECT_THAT(signature_stack.entries()[1].complete_entry_cbor(),
               ElementsAreArray(kCompleteEntryCbor2));
   EXPECT_THAT(signature_stack.entries()[1].attributes_cbor(),

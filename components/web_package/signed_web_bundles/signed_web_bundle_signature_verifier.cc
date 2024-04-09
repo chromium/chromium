@@ -189,8 +189,17 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
       .attributes_cbor = signature_stack_entry.attributes_cbor(),
   });
 
-  if (!signature_stack_entry.signature().Verify(
-          payload_to_verify, signature_stack_entry.public_key())) {
+  bool valid_signature = absl::visit(
+      base::Overloaded{
+          [&payload_to_verify](
+              const SignedWebBundleSignatureEd25519& ed25519_signature) {
+            return ed25519_signature.signature().Verify(
+                payload_to_verify, ed25519_signature.public_key());
+          },
+          [](const SignedWebBundleSignatureUnknown&) { return false; }},
+      signature_stack_entry.signature());
+
+  if (!valid_signature) {
     std::move(callback).Run(
         Error::ForInvalidSignature("The signature is invalid."));
     return;

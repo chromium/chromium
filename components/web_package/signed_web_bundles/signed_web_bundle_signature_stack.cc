@@ -5,12 +5,33 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
 namespace web_package {
+
+namespace {
+
+SignedWebBundleSignatureStackEntry CreateSignatureEntry(
+    const mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry) {
+  if (entry->signature_info->is_ed25519()) {
+    auto const& signature = entry->signature_info->get_ed25519();
+
+    return SignedWebBundleSignatureStackEntry(
+        entry->complete_entry_cbor, entry->attributes_cbor,
+        SignedWebBundleSignatureEd25519(signature->public_key,
+                                        signature->signature));
+  } else {
+    return SignedWebBundleSignatureStackEntry(
+        entry->complete_entry_cbor, entry->attributes_cbor,
+        SignedWebBundleSignatureUnknown());
+  }
+}
+}  // namespace
 
 // static
 base::expected<SignedWebBundleSignatureStack, std::string>
@@ -29,17 +50,8 @@ base::expected<SignedWebBundleSignatureStack, std::string>
 SignedWebBundleSignatureStack::Create(
     std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>&&
         raw_entries) {
-  std::vector<SignedWebBundleSignatureStackEntry> entries;
-  entries.reserve(raw_entries.size());
-  base::ranges::transform(
-      raw_entries, std::back_inserter(entries),
-      [](mojom::BundleIntegrityBlockSignatureStackEntryPtr& raw_entry) {
-        return SignedWebBundleSignatureStackEntry(
-            raw_entry->complete_entry_cbor, raw_entry->attributes_cbor,
-            raw_entry->public_key, raw_entry->signature);
-      });
-
-  return SignedWebBundleSignatureStack::Create(std::move(entries));
+  return SignedWebBundleSignatureStack::Create(
+      base::ToVector(raw_entries, &CreateSignatureEntry));
 }
 
 SignedWebBundleSignatureStack::SignedWebBundleSignatureStack(

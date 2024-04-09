@@ -22,19 +22,13 @@ SignedWebBundleIntegrityBlock::Create(
     return base::unexpected("Cannot create integrity block with a size of 0.");
   }
 
-  std::vector<SignedWebBundleSignatureStackEntry> signature_stack_entries;
-  for (const auto& raw_entry : integrity_block->signature_stack) {
-    signature_stack_entries.emplace_back(
-        raw_entry->complete_entry_cbor, raw_entry->attributes_cbor,
-        raw_entry->public_key, raw_entry->signature);
-  }
-
-  ASSIGN_OR_RETURN(
-      auto signature_stack,
-      SignedWebBundleSignatureStack::Create(signature_stack_entries),
-      [](std::string error) {
-        return "Cannot create an integrity block: " + std::move(error);
-      });
+  ASSIGN_OR_RETURN(auto signature_stack,
+                   SignedWebBundleSignatureStack::Create(
+                       std::move(integrity_block->signature_stack)),
+                   [](std::string error) {
+                     return "Cannot create an integrity block: " +
+                            std::move(error);
+                   });
 
   return SignedWebBundleIntegrityBlock(integrity_block->size,
                                        std::move(signature_stack));

@@ -73,6 +73,11 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntryAttributes(
             ErrorForTesting::kWrongSignatureStackEntryAttributeName)) {
       // Add a typo: "ee" instead of "ed".
       attributes[cbor::Value("ee25519PublicKey")] = cbor::Value(public_key);
+    } else if (errors_for_testing.Has(
+                   ErrorForTesting::
+                       kWrongSignatureStackEntryAttributeNameLength)) {
+      attributes[cbor::Value("ed25519")] = cbor::Value(public_key);
+
     } else {
       attributes[cbor::Value("ed25519PublicKey")] = cbor::Value(public_key);
     }

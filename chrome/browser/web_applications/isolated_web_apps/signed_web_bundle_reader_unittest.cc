@@ -30,6 +30,7 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -128,10 +129,14 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
                 base::OnceCallback<void(VerificationAction)>
                     verification_action_callback) {
               EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
-              EXPECT_THAT(integrity_block.signature_stack()
-                              .entries()[0]
-                              .public_key()
-                              .bytes(),
+
+              auto* ed25519_signature =
+                  absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
+                      &integrity_block.signature_stack()
+                           .entries()[0]
+                           .signature());
+              ASSERT_TRUE(ed25519_signature);
+              EXPECT_THAT(ed25519_signature->public_key().bytes(),
                           testing::ElementsAreArray(kTestPublicKey));
 
               std::move(verification_action_callback).Run(verification_action);
@@ -306,13 +311,19 @@ class SignedWebBundleReaderTest : public testing::Test {
     metadata_->primary_url = kUrl;
     metadata_->requests = std::move(items);
 
+    auto signature_info_ed25519 =
+        web_package::mojom::SignatureInfoEd25519::New();
+    signature_info_ed25519->public_key = web_package::Ed25519PublicKey::Create(
+        base::make_span(kEd25519PublicKey));
+    signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
+        base::make_span(kEd25519Signature));
+
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =
             web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
-    signature_stack_entry->public_key = web_package::Ed25519PublicKey::Create(
-        base::make_span(kEd25519PublicKey));
-    signature_stack_entry->signature = web_package::Ed25519Signature::Create(
-        base::make_span(kEd25519Signature));
+    signature_stack_entry->signature_info =
+        web_package::mojom::SignatureInfo::NewEd25519(
+            std::move(signature_info_ed25519));
 
     std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
         signature_stack;
@@ -364,10 +375,14 @@ class SignedWebBundleReaderTest : public testing::Test {
                 web_package::SignedWebBundleIntegrityBlock integrity_block,
                 base::OnceCallback<void(VerificationAction)> callback) {
               EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
-              EXPECT_THAT(integrity_block.signature_stack()
-                              .entries()[0]
-                              .public_key()
-                              .bytes(),
+
+              auto* ed25519_signature =
+                  absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
+                      &integrity_block.signature_stack()
+                           .entries()[0]
+                           .signature());
+              ASSERT_TRUE(ed25519_signature);
+              EXPECT_THAT(ed25519_signature->public_key().bytes(),
                           Eq(kEd25519PublicKey));
 
               std::move(callback).Run(verification_action);

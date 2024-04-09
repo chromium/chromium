@@ -106,6 +106,21 @@ struct Ed25519Signature {
   array<uint8, 64> bytes;
 };
 
+struct SignatureInfoEd25519 {
+  // The public key of this signature stack entry.
+  Ed25519PublicKey public_key;
+  // The signature of this signature stack entry.
+  Ed25519Signature signature;
+};
+
+struct SignatureInfoUnknown {
+};
+
+union SignatureInfo {
+  SignatureInfoUnknown unknown;
+  SignatureInfoEd25519 ed25519;
+};
+
 struct BundleIntegrityBlockSignatureStackEntry {
   // The CBOR of this signature stack entry.
   // This is needed for verification of more than one signature later, because
@@ -114,10 +129,7 @@ struct BundleIntegrityBlockSignatureStackEntry {
   array<uint8> complete_entry_cbor;
   // The CBOR of the attributes of this signature stack entry.
   array<uint8> attributes_cbor;
-  // The public key of this signature stack entry.
-  Ed25519PublicKey public_key;
-  // The signature of this signature stack entry.
-  Ed25519Signature signature;
+  SignatureInfo signature_info;
 };
 
 // Bundle's metadata, i.e. information in sections other than "responses".

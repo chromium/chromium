@@ -94,14 +94,19 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  raw_signature_stack_entry->public_key =
+
+  auto ed25519_signature_info = mojom::SignatureInfoEd25519::New();
+  ed25519_signature_info->public_key =
       *web_package::Ed25519PublicKey::Create(public_key);
-  raw_signature_stack_entry->signature =
+  ed25519_signature_info->signature =
       *web_package::Ed25519Signature::Create(signature);
+
   raw_signature_stack_entry->complete_entry_cbor = std::vector(
       std::begin(complete_entry_cbor), std::end(complete_entry_cbor));
   raw_signature_stack_entry->attributes_cbor =
       std::vector(std::begin(attributes_cbor), std::end(attributes_cbor));
+  raw_signature_stack_entry->signature_info =
+      mojom::SignatureInfo::NewEd25519(std::move(ed25519_signature_info));
   return raw_signature_stack_entry;
 }
 

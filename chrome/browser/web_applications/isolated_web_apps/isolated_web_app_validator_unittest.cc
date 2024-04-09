@@ -85,7 +85,9 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
                                                                public_key) {
       auto entry =
           web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
-      entry->public_key = public_key;
+      entry->signature_info = web_package::mojom::SignatureInfo::NewEd25519(
+          web_package::mojom::SignatureInfoEd25519::New());
+      entry->signature_info->get_ed25519()->public_key = public_key;
       return entry;
     });
 

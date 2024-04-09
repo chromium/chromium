@@ -31,7 +31,8 @@ class WebBundleSigner {
     kAdditionalSignatureStackEntryElement,
     kInvalidIntegrityBlockStructure,
     kInvalidVersion,
-    kMaxValue = kInvalidVersion
+    kWrongSignatureStackEntryAttributeNameLength,
+    kMaxValue = kWrongSignatureStackEntryAttributeNameLength
   };
 
   using ErrorsForTesting = base::EnumSet<ErrorForTesting,

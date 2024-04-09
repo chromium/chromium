@@ -12,6 +12,46 @@
 
 namespace web_package {
 
+class SignedWebBundleSignatureEd25519 {
+ public:
+  SignedWebBundleSignatureEd25519(Ed25519PublicKey public_key,
+                                  Ed25519Signature signature);
+
+  SignedWebBundleSignatureEd25519(const SignedWebBundleSignatureEd25519&) =
+      default;
+  SignedWebBundleSignatureEd25519& operator=(
+      const SignedWebBundleSignatureEd25519&) = default;
+
+  ~SignedWebBundleSignatureEd25519() = default;
+
+  bool operator==(const SignedWebBundleSignatureEd25519& other) const = default;
+  bool operator!=(const SignedWebBundleSignatureEd25519& other) const = default;
+
+  const Ed25519PublicKey& public_key() const { return public_key_; }
+  const Ed25519Signature& signature() const { return signature_; }
+
+ private:
+  Ed25519PublicKey public_key_;
+  Ed25519Signature signature_;
+};
+
+struct SignedWebBundleSignatureUnknown {
+ public:
+  SignedWebBundleSignatureUnknown() = default;
+
+  SignedWebBundleSignatureUnknown(const SignedWebBundleSignatureUnknown&) =
+      default;
+  SignedWebBundleSignatureUnknown& operator=(
+      const SignedWebBundleSignatureUnknown&) = default;
+
+  ~SignedWebBundleSignatureUnknown() = default;
+
+  bool operator==(const SignedWebBundleSignatureUnknown& other) const = default;
+};
+
+using SignedWebBundleSignature = absl::variant<SignedWebBundleSignatureUnknown,
+                                               SignedWebBundleSignatureEd25519>;
+
 // This class represents an entry on the signature stack of the integrity block
 // of a Signed Web Bundle. See the documentation of
 // `SignedWebBundleIntegrityBlock` for more details of how this class is used.
@@ -20,8 +60,7 @@ class SignedWebBundleSignatureStackEntry {
   SignedWebBundleSignatureStackEntry(
       const std::vector<uint8_t>& complete_entry_cbor,
       const std::vector<uint8_t>& attributes_cbor,
-      const Ed25519PublicKey& public_key,
-      const Ed25519Signature& signature);
+      const SignedWebBundleSignature signature);
 
   SignedWebBundleSignatureStackEntry(const SignedWebBundleSignatureStackEntry&);
   SignedWebBundleSignatureStackEntry& operator=(
@@ -32,9 +71,6 @@ class SignedWebBundleSignatureStackEntry {
   bool operator==(const SignedWebBundleSignatureStackEntry& other) const;
   bool operator!=(const SignedWebBundleSignatureStackEntry& other) const;
 
-  const Ed25519PublicKey& public_key() const { return public_key_; }
-  const Ed25519Signature& signature() const { return signature_; }
-
   const std::vector<uint8_t>& complete_entry_cbor() const {
     return complete_entry_cbor_;
   }
@@ -42,12 +78,12 @@ class SignedWebBundleSignatureStackEntry {
     return attributes_cbor_;
   }
 
+  const SignedWebBundleSignature& signature() const { return signature_; }
+
  private:
   std::vector<uint8_t> complete_entry_cbor_;
   std::vector<uint8_t> attributes_cbor_;
-
-  Ed25519PublicKey public_key_;
-  Ed25519Signature signature_;
+  SignedWebBundleSignature signature_;
 };
 
 }  // namespace web_package

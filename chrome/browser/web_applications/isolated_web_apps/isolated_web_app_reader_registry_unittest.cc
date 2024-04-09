@@ -142,13 +142,19 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     metadata_ = web_package::mojom::BundleMetadata::New();
     metadata_->requests = std::move(requests);
 
+    auto signature_info_ed25519 =
+        web_package::mojom::SignatureInfoEd25519::New();
+    signature_info_ed25519->public_key = web_package::Ed25519PublicKey::Create(
+        base::make_span(kEd25519PublicKey));
+    signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
+        base::make_span(kEd25519Signature));
+
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =
             web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
-    signature_stack_entry->public_key = web_package::Ed25519PublicKey::Create(
-        base::make_span(kEd25519PublicKey));
-    signature_stack_entry->signature = web_package::Ed25519Signature::Create(
-        base::make_span(kEd25519Signature));
+    signature_stack_entry->signature_info =
+        web_package::mojom::SignatureInfo::NewEd25519(
+            std::move(signature_info_ed25519));
 
     std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
         signature_stack;
