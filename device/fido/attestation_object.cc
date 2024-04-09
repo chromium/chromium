@@ -36,12 +36,12 @@ std::optional<AttestationObject> AttestationObject::Parse(
   const std::string& fmt = format_it->second.GetString();
 
   const auto& att_stmt_it = map.find(cbor::Value(kAttestationStatementKey));
-  if (att_stmt_it == map.end() || !att_stmt_it->second.is_map()) {
+  if (att_stmt_it == map.end()) {
     return std::nullopt;
   }
   std::unique_ptr<AttestationStatement> attestation_statement =
-      std::make_unique<OpaqueAttestationStatement>(
-          fmt, cbor::Value(att_stmt_it->second.GetMap()));
+      std::make_unique<OpaqueAttestationStatement>(fmt,
+                                                   att_stmt_it->second.Clone());
 
   const auto& auth_data_it = map.find(cbor::Value(kAuthDataKey));
   if (auth_data_it == map.end() || !auth_data_it->second.is_bytestring()) {

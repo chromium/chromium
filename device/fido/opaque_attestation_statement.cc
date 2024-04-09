@@ -14,31 +14,28 @@ namespace device {
 
 OpaqueAttestationStatement::OpaqueAttestationStatement(
     std::string attestation_format,
-    Value attestation_statement_map)
+    Value attestation_statement)
     : AttestationStatement(std::move(attestation_format)),
-      attestation_statement_map_(std::move(attestation_statement_map)) {}
+      attestation_statement_(std::move(attestation_statement)) {}
 
 OpaqueAttestationStatement::~OpaqueAttestationStatement() = default;
 
-// Returns the deep copied cbor map value of |attestation_statement_map_|.
+// Returns the deep copied CBOR value of |attestation_statement_|.
 Value OpaqueAttestationStatement::AsCBOR() const {
-  DCHECK(attestation_statement_map_.is_map());
-  Value::MapValue new_map;
-  new_map.reserve(attestation_statement_map_.GetMap().size());
-  for (const auto& map_it : attestation_statement_map_.GetMap()) {
-    new_map.try_emplace(new_map.end(), map_it.first.Clone(),
-                        map_it.second.Clone());
-  }
-  return cbor::Value(std::move(new_map));
+  return attestation_statement_.Clone();
 }
 
 bool OpaqueAttestationStatement::IsNoneAttestation() const {
-  return format_ == "none" && attestation_statement_map_.GetMap().empty();
+  return format_ == "none" && attestation_statement_.is_map() &&
+         attestation_statement_.GetMap().empty();
 }
 
 bool OpaqueAttestationStatement::IsSelfAttestation() const {
-  DCHECK(attestation_statement_map_.is_map());
-  const Value::MapValue& m(attestation_statement_map_.GetMap());
+  if (!attestation_statement_.is_map()) {
+    return false;
+  }
+
+  const Value::MapValue& m(attestation_statement_.GetMap());
   const Value alg("alg");
   const Value sig("sig");
 
@@ -53,8 +50,11 @@ bool OpaqueAttestationStatement::
 
 std::optional<base::span<const uint8_t>>
 OpaqueAttestationStatement::GetLeafCertificate() const {
-  DCHECK(attestation_statement_map_.is_map());
-  const Value::MapValue& m(attestation_statement_map_.GetMap());
+  if (!attestation_statement_.is_map()) {
+    return std::nullopt;
+  }
+
+  const Value::MapValue& m(attestation_statement_.GetMap());
   const Value x5c("x5c");
   const auto it = m.find(x5c);
   if (it == m.end() || !it->second.is_array()) {

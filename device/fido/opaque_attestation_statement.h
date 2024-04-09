@@ -18,7 +18,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) OpaqueAttestationStatement
     : public AttestationStatement {
  public:
   OpaqueAttestationStatement(std::string attestation_format,
-                             cbor::Value attestation_statement_map);
+                             cbor::Value attestation_statement);
 
   OpaqueAttestationStatement(const OpaqueAttestationStatement&) = delete;
   OpaqueAttestationStatement& operator=(const OpaqueAttestationStatement&) =
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) OpaqueAttestationStatement
   std::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:
-  cbor::Value attestation_statement_map_;
+  const cbor::Value attestation_statement_;
 };
 
 }  // namespace device

@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
       std::vector<uint8_t> attestation_object_bytes,
       bool attestation_acceptable);
 
+  // TODO: this could just take a `cbor::Value` and all the
+  // `AttestationStatement` code could be turned into a parse-on-demand
+  // pattern.
   AttestationObject(AuthenticatorData data,
                     std::unique_ptr<AttestationStatement> statement);
   AttestationObject(AttestationObject&& other);

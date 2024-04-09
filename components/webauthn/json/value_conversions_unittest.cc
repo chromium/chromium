@@ -514,6 +514,37 @@ TEST(WebAuthenticationJSONConversionTest,
 }
 
 TEST(WebAuthenticationJSONConversionTest,
+     AuthenticatorAttestationResponseCompoundAttestation) {
+  // A "compound" attestation has an attestation statement that is a CBOR array
+  // rather than a CBOR map. We previously didn't support this.
+  // (crbug.com/332755827).
+  constexpr char kJson[] = R"({
+    "rawId":"Lnc6JGTv2WBS05AsZB6xdg",
+    "authenticatorAttachment":"platform",
+    "type":"public-key",
+    "id":"Lnc6JGTv2WBS05AsZB6xdg",
+    "response":{
+      "clientDataJSON":"PGludmFsaWQ-",
+      "attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUdKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDICABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "transports":["internal"],
+      "authenticatorData":"dKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDICABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "publicKeyAlgorithm":-1},
+      "clientExtensionResults":{"credProps":{"rk":true}}})";
+
+  JSONStringValueDeserializer deserializer(kJson);
+  std::string deserialize_error;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
+  ASSERT_TRUE(value) << deserialize_error;
+
+  {
+    auto [response, error] =
+        MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
+    EXPECT_TRUE(response) << error;
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAssertionResponseFromValue) {
   // The following values appear Base64URL-encoded in `json`.
   static const std::vector<uint8_t> kAuthenticatorData =
