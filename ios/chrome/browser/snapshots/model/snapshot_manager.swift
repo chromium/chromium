@@ -99,6 +99,7 @@ import UIKit
     // Found an image in SnapshotStorage.
     if image != nil {
       completion(image)
+      return
     }
 
     // Generate an image because it doesn't exist in SnapshotStorage.
