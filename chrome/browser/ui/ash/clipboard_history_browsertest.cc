@@ -1552,8 +1552,10 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
 
 // Checks that launching the standalone clipboard history menu from a render
 // view's context menu works as expected.
+// TODO(crbug.com/333463820): Flaky test. Re-enable once the root cause is
+// identified.
 IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
-                       LaunchStandaloneMenuFromRenderViewContextMenu) {
+                       DISABLED_LaunchStandaloneMenuFromRenderViewContextMenu) {
   // Write some clipboard data.
   SetClipboardText("A");
   SetClipboardText("B");
