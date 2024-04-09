@@ -22,15 +22,15 @@ enum class MemoryReductionTaskContext {
 // run before the delay is elapsed, in the case where Chrome is about to be
 // frozen by Android. On other platforms, this is equivalent to directly posting
 // the delayed task, using the task runner.
-void PostDelayedMemoryReductionTask(
-    scoped_refptr<SequencedTaskRunner> task_runner,
-    const Location& from_here,
-    OnceClosure task,
-    base::TimeDelta delay);
+void BASE_EXPORT
+PostDelayedMemoryReductionTask(scoped_refptr<SequencedTaskRunner> task_runner,
+                               const Location& from_here,
+                               OnceClosure task,
+                               base::TimeDelta delay);
 
 // Same as above, but passes a parameter to the task, depending on how it was
 // run. On non-Android platforms, will always pass |kDelayExpired|.
-void PostDelayedMemoryReductionTask(
+void BASE_EXPORT PostDelayedMemoryReductionTask(
     scoped_refptr<SequencedTaskRunner> task_runner,
     const Location& from_here,
     OnceCallback<void(MemoryReductionTaskContext)> task,
