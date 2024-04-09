@@ -840,7 +840,9 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   ASSERT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
+// TODO(crbug.com/333488178): Flaky. Re-enable the test.
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
+                       DISABLED_ReadsSelectedTextWithSearchS) {
   std::string text = "This is some selected text";
   LoadURLAndSelectToSpeak(base::StringPrintf(
       "data:text/html;charset=utf-8,<p>Not me!</p><p>%s</p><p>Nor me!</p>",
