@@ -191,7 +191,7 @@ void RequestSender::OnNetworkFetcherComplete(
   }
 
   int retry_after_sec = -1;
-  if (original_url.SchemeIsCryptographic() && error > 0) {
+  if (original_url.SchemeIsCryptographic() && error >= 0) {
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
   }
 

@@ -154,7 +154,7 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
   // this is best effort only.
   std::wstring x_cup_server_proof;
   std::wstring etag;
-  int x_retry_after_sec = 0;
+  int x_retry_after_sec = -1;
   winhttp_network_fetcher_->QueryHeaderString(
       base::SysUTF8ToWide(
           update_client::NetworkFetcher::kHeaderXCupServerProof),
