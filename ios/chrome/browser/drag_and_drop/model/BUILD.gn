@@ -13,6 +13,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/window_activities/model",
     "//ios/web/public",
     "//net",

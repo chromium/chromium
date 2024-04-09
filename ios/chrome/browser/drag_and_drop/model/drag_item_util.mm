@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
@@ -28,6 +29,18 @@
   if (self) {
     _URL = URL;
     _title = title;
+  }
+  return self;
+}
+@end
+
+@implementation TabGroupInfo
+- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
+                       incognito:(BOOL)incognito {
+  self = [super init];
+  if (self) {
+    _tabGroup = tabGroup;
+    _incognito = incognito;
   }
   return self;
 }
@@ -68,5 +81,18 @@ UIDragItem* CreateURLDragItem(URLInfo* url_info, WindowActivityOrigin origin) {
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
   drag_item.localObject = url_info;
+  return drag_item;
+}
+
+UIDragItem* CreateTabGroupDragItem(const TabGroup* tab_group, bool incognito) {
+  if (!tab_group) {
+    return nil;
+  }
+
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:[[NSItemProvider alloc] init]];
+  TabGroupInfo* tab_group_info =
+      [[TabGroupInfo alloc] initWithTabGroup:tab_group incognito:incognito];
+  drag_item.localObject = tab_group_info;
   return drag_item;
 }

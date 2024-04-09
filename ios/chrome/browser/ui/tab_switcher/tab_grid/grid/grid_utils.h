@@ -31,4 +31,16 @@ int WebStateIndexFromGridDropItemIndex(
     NSUInteger drop_item_index,
     int previous_web_state_index = WebStateList::kInvalidIndex);
 
+// This method returns the next index in the WebStateList for the given
+// `drop_item_index` and `previous_web_state_index` using
+// `WebStateIndexFromGridDropItemIndex:`.
+// It is used to determine the next index in the WebStateList of a dropped item
+// in the grid collection view.
+// The `previous_web_state_index` is required only if the dropped item
+// originates from the same collection view.
+int WebStateIndexAfterGridDropItemIndex(
+    WebStateList* web_state_list,
+    NSUInteger drop_item_index,
+    int previous_web_state_index = WebStateList::kInvalidIndex);
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_UTILS_H_

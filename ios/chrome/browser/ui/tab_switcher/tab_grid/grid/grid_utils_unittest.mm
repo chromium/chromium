@@ -297,3 +297,97 @@ TEST_F(GridUtilsTest,
                                   /*to_index*/ destination_index);
   EXPECT_EQ("a b | [ 0 d e ] g f h c", builder.GetWebStateListDescription());
 }
+
+// Test that `WebStateIndexAfterGridDropItemIndex:` returns the correct
+// index when there is a group.
+TEST_F(GridUtilsTest,
+       WebStateIndexAfterGridDropItemIndex_group_sameCollection) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+
+  WebStateListBuilderFromDescription builder(web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  // Move "Group" before "A".
+  int next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 0,
+      /*previous_web_state_index*/ group->range().range_begin());
+  web_state_list_->MoveGroup(group,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("| [ 0 b c ] a d", builder.GetWebStateListDescription());
+
+  // Move "Group" after "A".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 1,
+      /*previous_web_state_index*/ group->range().range_begin());
+  web_state_list_->MoveGroup(group,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("| a [ 0 b c ] d", builder.GetWebStateListDescription());
+
+  // Move "Group" after "D".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 2,
+      /*previous_web_state_index*/ group->range().range_begin());
+  web_state_list_->MoveGroup(group,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("| a d [ 0 b c ]", builder.GetWebStateListDescription());
+
+  // Move "Group" before "A".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 0,
+      /*previous_web_state_index*/ group->range().range_begin());
+  web_state_list_->MoveGroup(group,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("| [ 0 b c ] a d", builder.GetWebStateListDescription());
+}
+
+// Test that `WebStateIndexAfterGridDropItemIndex:` returns the correct
+// index when there are groups and pinned tabs.
+TEST_F(GridUtilsTest,
+       WebStateIndexAfterGridDropItemIndex_pinnedAndGroup_sameCollection) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+
+  WebStateListBuilderFromDescription builder(web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c [ 0 d e f ] [ 1 g h ] i j"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  // Move "Group 0" after "Group 1".
+  int next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 2,
+      /*previous_web_state_index*/ group_0->range().range_begin());
+  web_state_list_->MoveGroup(group_0,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("a b | c [ 1 g h ] [ 0 d e f ] i j",
+            builder.GetWebStateListDescription());
+
+  // Move "Group 0" before "Group 1".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 1,
+      /*previous_web_state_index*/ group_0->range().range_begin());
+  web_state_list_->MoveGroup(group_0,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("a b | c [ 0 d e f ] [ 1 g h ] i j",
+            builder.GetWebStateListDescription());
+
+  // Move "Group 1" before "C".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 0,
+      /*previous_web_state_index*/ group_1->range().range_begin());
+  web_state_list_->MoveGroup(group_1,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("a b | [ 1 g h ] c [ 0 d e f ] i j",
+            builder.GetWebStateListDescription());
+
+  // Move "Group 1" after "J".
+  next_index = WebStateIndexAfterGridDropItemIndex(
+      web_state_list_, /*drop_item_index*/ 4,
+      /*previous_web_state_index*/ group_1->range().range_begin());
+  web_state_list_->MoveGroup(group_1,
+                             /*before_index*/ next_index);
+  EXPECT_EQ("a b | c [ 0 d e f ] i j [ 1 g h ]",
+            builder.GetWebStateListDescription());
+}

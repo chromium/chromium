@@ -129,9 +129,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, assign) web::WebStateID lastInsertedItemID;
-// Latest dragged item. This property is set when the item is
+// Latest dragged item identifier. This property is set when the item is
 // long pressed which does not always result in a drag action.
-@property(nonatomic, strong) TabSwitcherItem* draggedItem;
+@property(nonatomic, strong) GridItemIdentifier* draggedItemIdentifier;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
@@ -797,7 +797,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForItem:_draggedItem];
+  switch (_draggedItemIdentifier.type) {
+    case GridItemType::Tab:
+      [self.dragDropHandler
+          dragWillBeginForItem:_draggedItemIdentifier.tabSwitcherItem];
+      break;
+    case GridItemType::Group:
+      break;
+    case GridItemType::SuggestedActions:
+      NOTREACHED();
+      break;
+  }
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
@@ -849,11 +859,24 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // dragged.
     return @[];
   }
-  GridItemIdentifier* itemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
   if (_mode != TabGridModeSelection) {
-    _draggedItem = itemIdentifier.tabSwitcherItem;
-    UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
+    UIDragItem* dragItem;
+    _draggedItemIdentifier =
+        [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+    switch (_draggedItemIdentifier.type) {
+      case GridItemType::Tab:
+        dragItem = [self.dragDropHandler
+            dragItemForItem:_draggedItemIdentifier.tabSwitcherItem];
+        break;
+
+      case GridItemType::Group:
+        dragItem = [self.dragDropHandler
+            dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
+        break;
+      case GridItemType::SuggestedActions:
+        NOTREACHED();
+        break;
+    }
     if (!dragItem) {
       return @[];
     }
@@ -862,7 +885,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
-  [self.mutator addToSelectionItemID:itemIdentifier];
+  [self.mutator addToSelectionItemID:_draggedItemIdentifier];
   return [self.dragDropHandler allSelectedDragItems];
 }
 

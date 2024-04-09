@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 class GURL;
+class TabGroup;
 
 namespace web {
 class WebState;
@@ -39,6 +40,19 @@ class WebStateID;
 - (instancetype)init NS_UNAVAILABLE;
 @end
 
+// Information that allows the receiver to locate a tab group and also to decide
+// whether to allow a drop.
+@interface TabGroupInfo : NSObject
+// A pointer to the `tabGroup`.
+@property(nonatomic, readonly) const TabGroup* tabGroup;
+// If YES, the tab group is currently in an incognito profile.
+@property(nonatomic, assign, readonly) BOOL incognito;
+// Default initializer.
+- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
+                       incognito:(BOOL)incognito;
+- (instancetype)init NS_UNAVAILABLE;
+@end
+
 // Creates a drag item that encapsulates a tab and a user activity to move the
 // tab to a new window. If `web_state` is nil, returns nil.
 UIDragItem* CreateTabDragItem(web::WebState* web_state);
@@ -46,5 +60,9 @@ UIDragItem* CreateTabDragItem(web::WebState* web_state);
 // Creates a drag item that encapsulates an URL and a user activity to open the
 // URL in a new Chrome window.
 UIDragItem* CreateURLDragItem(URLInfo* url_info, WindowActivityOrigin origin);
+
+// Creates a drag item that encapsulates a tab group. The created drag item can
+// only be dropped in Chrome windows.
+UIDragItem* CreateTabGroupDragItem(const TabGroup* tab_group, bool incognito);
 
 #endif  // IOS_CHROME_BROWSER_DRAG_AND_DROP_MODEL_DRAG_ITEM_UTIL_H_

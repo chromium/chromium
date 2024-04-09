@@ -534,7 +534,7 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       [self moveItem:[GridItemIdentifier
                           groupIdentifier:groupMoveChange.moved_group()
                          withWebStateList:webStateList]
-          beforeWebStateIndex:groupMoveChange.moved_to_range().range_end() + 1];
+          beforeWebStateIndex:groupMoveChange.moved_to_range().range_end()];
       break;
     }
     case WebStateListChange::Type::kGroupDelete: {
@@ -1018,6 +1018,11 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
   return dragItems;
 }
 
+- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup,
+                                self.browserState->IsOffTheRecord());
+}
+
 - (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
   return [self dragItemForItemWithID:item.identifier];
 }
@@ -1052,10 +1057,21 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
                          }) == WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
+    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
 
+    // Tabs of different profiles (regular/incognito) cannot be dropped.
+    return UIDropOperationForbidden;
+  }
+  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+    TabGroupInfo* tabGroupInfo =
+        static_cast<TabGroupInfo*>(dragItem.localObject);
+    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
+    if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
+      return UIDropOperationMove;
+    }
     // Tabs of different profiles (regular/incognito) cannot be dropped.
     return UIDropOperationForbidden;
   }
@@ -1121,6 +1137,23 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       self.webStateList->MoveWebStateAt(sourceIndex, destinationWebStateIndex);
     }
     return;
+  }
+
+  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+    TabGroupInfo* tabGroupInfo =
+        static_cast<TabGroupInfo*>(dragItem.localObject);
+    // Early return if the group has been closed during the drag an drop.
+    if (!tabGroupInfo.tabGroup) {
+      return;
+    }
+    if (fromSameCollection) {
+      int sourceIndex = tabGroupInfo.tabGroup->range().range_begin();
+      int nextWebStateIndex = WebStateIndexAfterGridDropItemIndex(
+          self.webStateList, destinationIndex, sourceIndex);
+      self.webStateList->MoveGroup(tabGroupInfo.tabGroup, nextWebStateIndex);
+      return;
+    }
+    // TODO(crbug.com/331749094) : Add multi-window support.
   }
   base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
 

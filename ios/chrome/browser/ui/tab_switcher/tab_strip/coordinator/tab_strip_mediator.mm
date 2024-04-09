@@ -676,6 +676,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   return CreateTabDragItem(webState);
 }
 
+- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
+  // TODO(crbug.com/331749274): Implement this.
+  return nil;
+}
+
 - (void)dragWillBeginForItem:(TabSwitcherItem*)item {
   _dragItemID = item.identifier;
 }
@@ -693,6 +698,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
 
+    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (_browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }

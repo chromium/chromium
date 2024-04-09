@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabGroupItem;
 @class TabSwitcherItem;
 
 // A protocol for objects that handle drag and drop interactions for a
@@ -18,6 +19,11 @@
 // Note that this drag item may be dropped anywhere,
 // including within the same collection, another view, or other apps.
 - (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item;
+
+// Returns a drag item encapsulating all necessary information to perform
+// valid drop operations for the given `tabGroupItem`.
+// Note that this drag item cannot be dropped within other apps.
+- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem;
 
 // Tells the receiver that the drag session will begin for the `item`.
 - (void)dragWillBeginForItem:(TabSwitcherItem*)item;

@@ -313,6 +313,10 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   return CreateTabDragItem(webState);
 }
 
+- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
+  NOTREACHED_NORETURN() << "There is no tab groups in the pinned tabs section";
+}
+
 - (void)dragWillBeginForItem:(TabSwitcherItem*)item {
   _dragItemID = item.identifier;
 }

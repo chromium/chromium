@@ -93,3 +93,19 @@ int WebStateIndexFromGridDropItemIndex(WebStateList* web_state_list,
   }
   return web_state_index;
 }
+
+int WebStateIndexAfterGridDropItemIndex(WebStateList* web_state_list,
+                                        NSUInteger drop_item_index,
+                                        int previous_web_state_index) {
+  int web_state_index = WebStateIndexFromGridDropItemIndex(
+      web_state_list, drop_item_index, previous_web_state_index);
+
+  // When an item is moved to the right, we have to shift the `web_state_index`
+  // by one. This adjustment is necessary because UIKit excludes the dragged
+  // item from the calculation of the `drop_item_index`.
+  if (previous_web_state_index != WebStateList::kInvalidIndex &&
+      previous_web_state_index < web_state_index) {
+    web_state_index += 1;
+  }
+  return web_state_index;
+}
