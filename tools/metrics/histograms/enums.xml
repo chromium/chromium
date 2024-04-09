@@ -24176,6 +24176,7 @@ from previous Chrome versions.
   <int value="1393413889" label="SeparatePointingStickSettings:disabled"/>
   <int value="1393500952" label="EnableVirtualKeyboardUkm:disabled"/>
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
+  <int value="1393729379" label="BackToHomeAnimation:enabled"/>
   <int value="1393802350" label="InsecureDownloadWarnings:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1395175083" label="PrivacyGuide:enabled"/>
@@ -24764,6 +24765,7 @@ from previous Chrome versions.
   <int value="1660605883" label="WebPaymentAPICSP:disabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
+  <int value="1661501921" label="BackToHomeAnimation:disabled"/>
   <int value="1661870048" label="SkipUndecryptablePasswords:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
   <int value="1661965147" label="NtpWideModules:disabled"/>

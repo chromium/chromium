@@ -20,7 +20,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
@@ -98,7 +97,6 @@ public class ChromeCachedFlags {
                         HubFieldTrial.SUPPORTS_SEARCH,
                         HubFieldTrial.SUPPORTS_BOOKMARKS,
                         JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS,
-                        MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                         MinimizedFeatureUtils.ICON_VARIANT,
                         MinimizedFeatureUtils.MANUFACTURER_EXCLUDE_LIST,
                         MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS,

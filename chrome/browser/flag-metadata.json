@@ -896,6 +896,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "back-to-home-animation",
+    "owners": ["lazzzis@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 129
+  },
+  {
     "name": "background-listening",
     "owners": [
       "jiamingc@chromium.org",

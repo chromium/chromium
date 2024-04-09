@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);
 BASE_DECLARE_FEATURE(kBackGestureActivityTabProvider);
 BASE_DECLARE_FEATURE(kBackGestureMoveToBackDuringStartup);
 BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);
+BASE_DECLARE_FEATURE(kBackToHomeAnimation);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);

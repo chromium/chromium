@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -34,10 +33,6 @@ import java.util.function.Predicate;
  * to manually minimize app and close tab if necessary.
  */
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
-    public static final BooleanCachedFieldTrialParameter SYSTEM_BACK =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
-
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
 
     // An always-enabled supplier since this handler is the final step of back press handling.
@@ -217,7 +212,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         boolean isAtLeastT =
                 (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                         >= VERSION_CODES.TIRAMISU;
-        return isAtLeastT && SYSTEM_BACK.getValue();
+        return isAtLeastT && ChromeFeatureList.sBackToHomeAnimation.isEnabled();
     }
 
     static void setVersionForTesting(Integer version) {

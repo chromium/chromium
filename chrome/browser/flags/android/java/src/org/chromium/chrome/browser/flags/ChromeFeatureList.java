@@ -205,6 +205,7 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_MOVE_TO_BACK_DURING_STARTUP =
             "BackGestureMoveToBackDuringStartup";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
+    public static final String BACK_TO_HOME_ANIMATION = "BackToHomeAnimation";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
@@ -537,6 +538,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BACK_GESTURE_MOVE_TO_BACK_DURING_STARTUP, true);
     public static final CachedFlag sBackGestureRefactorAndroid =
             newCachedFlag(BACK_GESTURE_REFACTOR, true);
+    public static final CachedFlag sBackToHomeAnimation =
+            newCachedFlag(BACK_TO_HOME_ANIMATION, false);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
@@ -686,6 +689,7 @@ public abstract class ChromeFeatureList {
                     sBackGestureActivityTabProvider,
                     sBackGestureMoveToBackDuringStartup,
                     sBackGestureRefactorAndroid,
+                    sBackToHomeAnimation,
                     sBlockIntentsWhileLocked,
                     sCctAutoTranslate,
                     sCctFeatureUsage,
