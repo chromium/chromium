@@ -54,6 +54,10 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
 PreconditionState GetPreconditionStateFromAccountChildStatus(
     const signin::IdentityManager& identity_manager,
     const CoreAccountInfo& core_account_info) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableContactInfoDataTypeForChildUsers)) {
+    return PreconditionState::kPreconditionsMet;
+  }
   if (!identity_manager.AreRefreshTokensLoaded()) {
     return PreconditionState::kMustStopAndKeepData;
   }
@@ -98,7 +102,12 @@ ContactInfoModelTypeController::ContactInfoModelTypeController(
       sync_service_(sync_service),
       identity_manager_(identity_manager) {
   sync_service_observation_.Observe(sync_service_);
-  identity_manager_observer_.Observe(identity_manager_);
+  // When support for child users is not enabled, the identity observer is
+  // necessary to react to change in the supervision status.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncEnableContactInfoDataTypeForChildUsers)) {
+    identity_manager_observer_.Observe(identity_manager_);
+  }
   // When support for Dasher users is not enabled, the managed-status of the
   // account needs to be determined.
   // Note that the controller is instantiated even when there's no signed-in

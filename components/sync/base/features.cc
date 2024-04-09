@@ -100,6 +100,10 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              "SyncEnableContactInfoDataTypeForDasherUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEnableContactInfoDataTypeForChildUsers,
+             "SyncEnableContactInfoDataTypeForChildUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
