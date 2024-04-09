@@ -17,6 +17,7 @@
 
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -365,9 +366,10 @@ SECMODModule* LoadNSSModule(const char* name,
 std::string GetNSSErrorMessage() {
   std::string result;
   if (PR_GetErrorTextLength()) {
-    std::unique_ptr<char[]> error_text(new char[PR_GetErrorTextLength() + 1]);
-    PRInt32 copied = PR_GetErrorText(error_text.get());
-    result = std::string(error_text.get(), copied);
+    auto error_text =
+        base::HeapArray<char>::Uninit(PR_GetErrorTextLength() + 1);
+    PRInt32 copied = PR_GetErrorText(error_text.data());
+    result = std::string(error_text.data(), copied);
   } else {
     result = base::StringPrintf("NSS error code: %d", PR_GetError());
   }
