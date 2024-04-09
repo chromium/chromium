@@ -586,11 +586,11 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
 
         // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
         // to the WebContents.
-        verify(mWebContents, times(1))
-                .setSize(fullViewportWidth, fullViewportHeight - TOOLBAR_HEIGHT);
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(
                         mWebContents, 0, 0, fullViewportWidth, KEYBOARD_HEIGHT);
@@ -603,9 +603,9 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
         mKeyboardInsetSupplier.set(0);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
 
-        verify(mWebContents, times(1))
-                .setSize(fullViewportWidth, fullViewportHeight - TOOLBAR_HEIGHT);
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
@@ -626,8 +626,10 @@ public class CompositorViewHolderUnitTest {
         mKeyboardInsetSupplier.set(0);
 
         // Ensure updating the WebContents size doesn't dispatch a keyboard geometry event to
-        // web content.
-        verify(mWebContents, times(1)).setSize(viewportWidth, viewportHeight - TOOLBAR_HEIGHT);
+        // web content. The updateWebContentsSize call simulates the Views layout that happens as a
+        // result of the keyboard showing, which happens after the inset is set.
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        verify(mWebContents, times(1)).setSize(viewportWidth, viewportHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }

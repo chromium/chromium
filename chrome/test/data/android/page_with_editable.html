@@ -24,6 +24,11 @@
       onload = () =>{
         document.getElementById('output').innerText = metaTagContent;
       }
+
+      window.resizeEventLog = [];
+      onresize = () => {
+        window.resizeEventLog.push(window.innerHeight);
+      }
     </script>
   </head>
   <body>

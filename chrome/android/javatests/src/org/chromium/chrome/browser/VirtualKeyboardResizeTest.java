@@ -7,6 +7,8 @@ package org.chromium.chrome.browser;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
+import android.util.JsonReader;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -20,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,6 +42,11 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /** Tests the virtual keyboard's effect on resizing web pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -78,6 +86,19 @@ public class VirtualKeyboardResizeTest {
     private void startMainActivityWithURL(String url) {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
+    }
+
+    private void waitForVisualStateCallback() throws Throwable {
+        final CallbackHelper ch = new CallbackHelper();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebContents()
+                            .getMainFrame()
+                            .insertVisualStateCallback(result -> ch.notifyCalled());
+                });
+
+        ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
     }
 
     private void navigateToURL(String url) {
@@ -159,6 +180,31 @@ public class VirtualKeyboardResizeTest {
         return Integer.parseInt(
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         getWebContents(), "window.innerHeight"));
+    }
+
+    private ArrayList<Integer> getResizeEventLog() throws Throwable {
+        String jsonText =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        getWebContents(), "window.resizeEventLog");
+        JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
+        ArrayList<Integer> pageHeights = new ArrayList<Integer>();
+        try {
+            jsonReader.beginArray();
+            while (jsonReader.hasNext()) {
+                pageHeights.add(jsonReader.nextInt());
+            }
+            jsonReader.endArray();
+
+            jsonReader.close();
+        } catch (IOException exception) {
+            Assert.fail("Failed to evaluate JavaScript: " + jsonText + "\n" + exception);
+        }
+
+        return pageHeights;
+    }
+
+    private void clearResizeEventLog() throws Throwable {
+        JavaScriptUtils.executeJavaScript(getWebContents(), "window.resizeEventLog = []");
     }
 
     private double getVisualViewportHeight() throws Throwable {
@@ -513,5 +559,78 @@ public class VirtualKeyboardResizeTest {
                         .getCompositorViewHolderForTesting()
                         .getVirtualKeyboardModeForTesting(),
                 VirtualKeyboardMode.RESIZES_CONTENT);
+    }
+
+    /** Test that in overlays-content mode, the keyboard doesn't cause any transient resizes. */
+    @Test
+    @MediumTest
+    public void testNoSpuriousResizeEventOverlaysContent() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?overlays-content");
+        waitForVisualStateCallback();
+        clearResizeEventLog();
+
+        int initialHeight = getPageInnerHeight();
+
+        Assert.assertEquals(getNumGeometryChangeEvents(), 0);
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForNthGeometryChangeEvent(1);
+
+        waitForVisualStateCallback();
+
+        hideKeyboard();
+        assertWaitForNthGeometryChangeEvent(2);
+
+        waitForVisualStateCallback();
+
+        // TODO(crbug.com/40822136): Ideally we'd check that we didn't get *any* resize event since
+        // the page height isn't changing.  However, we inconsistently receive spurious resizes
+        // during page load on Android. Until that's fixed, just ensure the page height is
+        // consistent at each fired resize.
+        ArrayList<Integer> pageHeights = getResizeEventLog();
+        for (Integer pageHeight : pageHeights) {
+            Assert.assertEquals(initialHeight, pageHeight.intValue());
+        }
+    }
+
+    /** Test that in resizes-visual mode, the keyboard doesn't cause any transient resizes. */
+    @Test
+    @MediumTest
+    public void testNoSpuriousResizeEventResizesVisual() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?resizes-visual");
+        waitForVisualStateCallback();
+        clearResizeEventLog();
+
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+
+        double keyboardHeight = getKeyboardHeightDp();
+
+        // Use less than or equal since the keyboard may actually include accessories like the
+        // Autofill bar. +1 to account for device scale factor rounding.
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1));
+
+        waitForVisualStateCallback();
+
+        hideKeyboard();
+        assertWaitForVisualViewportHeight(
+                Matchers.closeTo((double) initialVVHeight, /* error= */ 1.0));
+
+        waitForVisualStateCallback();
+
+        // TODO(crbug.com/40822136): Ideally we'd check that we didn't get *any* resize event since
+        // the page height isn't changing.  However, we inconsistently receive spurious resizes
+        // during page load on Android. Additionally, visual viewport (and browser controls) updates
+        // will also induce resize events (see the TODO in WebViewImpl::ResizeWithBrowserControls).
+        // Until these issues are fixed, just ensure the page height is consistent at each fired
+        // resize.
+        ArrayList<Integer> pageHeights = getResizeEventLog();
+        for (Integer pageHeight : pageHeights) {
+            Assert.assertEquals(initialHeight, pageHeight.intValue());
+        }
     }
 }
