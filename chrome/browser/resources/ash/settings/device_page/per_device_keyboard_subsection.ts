@@ -206,13 +206,13 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
-    // Add keyboardBrightnessChange observer.
-    this.keyboardBrightnessObserverReceiver =
-        new KeyboardBrightnessObserverReceiver(this);
-    this.inputDeviceSettingsProvider.observeKeyboardBrightness(
-        this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
-
     if (this.isKeyboardBacklightControlInSettingsEnabled) {
+      // Add keyboardBrightnessChange observer.
+      this.keyboardBrightnessObserverReceiver =
+          new KeyboardBrightnessObserverReceiver(this);
+      this.inputDeviceSettingsProvider.observeKeyboardBrightness(
+          this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
+
       this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
           ?.isRgbKeyboardSupported;
