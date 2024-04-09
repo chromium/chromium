@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
 
+  // Notify the ConfigCache that QUIC proxies failed for a request, suggesting
+  // that QUIC may not work on this network.
+  virtual void QuicProxiesFailed() = 0;
+
   // Return the currently cached proxy chain lists. This contains the lists of
   // hostnames corresponding to each proxy chain that should be used. This
   // may be empty even if `IsProxyListAvailable()` returned true.

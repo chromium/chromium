@@ -1182,6 +1182,10 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   if (new_retry_info.empty())
     return;
 
+  if (proxy_delegate_) {
+    proxy_delegate_->OnSuccessfulRequestAfterFailures(new_retry_info);
+  }
+
   for (const auto& iter : new_retry_info) {
     auto existing = proxy_retry_info_.find(iter.first);
     if (existing == proxy_retry_info_.end()) {

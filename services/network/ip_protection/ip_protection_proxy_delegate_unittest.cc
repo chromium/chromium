@@ -89,6 +89,12 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     return *proxy_list_;
   }
 
+  void QuicProxiesFailed() override {
+    if (on_proxies_failed_) {
+      std::move(on_proxies_failed_).Run();
+    }
+  }
+
   bool IsProxyListAvailable() override { return proxy_list_.has_value(); }
 
   void RequestRefreshProxyList() override {
@@ -107,6 +113,10 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     on_force_refresh_proxy_list_ = std::move(on_force_refresh_proxy_list);
   }
 
+  void SetOnProxiesFailed(base::OnceClosure on_proxies_failed) {
+    on_proxies_failed_ = std::move(on_proxies_failed);
+  }
+
   void SetOnInvalidateTryAgainAfterTime(
       base::OnceClosure on_invalidate_try_again_after_time) {
     on_invalidate_try_again_after_time_ =
@@ -119,6 +129,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
   base::OnceClosure on_invalidate_try_again_after_time_;
+  base::OnceClosure on_proxies_failed_;
 };
 
 }  // namespace
@@ -699,6 +710,59 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionSuccess) {
                                        1);
   histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, true, 1);
   histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, true, 1);
+}
+
+TEST_F(IpProtectionProxyDelegateTest, OnSuccessfulRequestAfterFailures) {
+  auto check = [this](std::string_view name,
+                      const net::ProxyRetryInfoMap& proxy_retry_info_map,
+                      bool expected_call) {
+    SCOPED_TRACE(name);
+    bool on_proxies_failed_called = false;
+    auto network_service_proxy_allow_list =
+        NetworkServiceProxyAllowList::CreateForTesting(
+            /*first_party_map=*/{});
+    auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+    ipp_config_cache->SetOnProxiesFailed(
+        base::BindLambdaForTesting([&]() { on_proxies_failed_called = true; }));
+    auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                   std::move(ipp_config_cache));
+    delegate->OnSuccessfulRequestAfterFailures(proxy_retry_info_map);
+    EXPECT_EQ(expected_call, on_proxies_failed_called);
+  };
+
+  auto quic_chain1 = net::ProxyChain::ForIpProtection({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                              "proxy.com", std::nullopt),
+  });
+  auto quic_chain2 = net::ProxyChain::ForIpProtection({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                              "proxy2.com", std::nullopt),
+  });
+  auto https_chain1 = net::ProxyChain::ForIpProtection({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "proxy.com", std::nullopt),
+  });
+
+  check("Only QUIC proxies",
+        {
+            {quic_chain1, net::ProxyRetryInfo()},
+            {quic_chain2, net::ProxyRetryInfo()},
+        },
+        true);
+
+  check("Only HTTPS proxies",
+        {
+            {https_chain1, net::ProxyRetryInfo()},
+        },
+        false);
+
+  check("Mixed QUIC and HTTPS proxies",
+        {
+            {quic_chain1, net::ProxyRetryInfo()},
+            {https_chain1, net::ProxyRetryInfo()},
+            {quic_chain2, net::ProxyRetryInfo()},
+        },
+        false);
 }
 
 TEST_F(IpProtectionProxyDelegateTest, OnFallback) {

@@ -74,6 +74,8 @@ class TestProxyDelegate : public ProxyDelegate {
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override;
+  void OnSuccessfulRequestAfterFailures(
+      const ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
   void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
                              size_t chain_index,

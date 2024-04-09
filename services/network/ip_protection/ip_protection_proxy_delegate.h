@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
       const std::string& method,
       const net::ProxyRetryInfoMap& proxy_retry_info,
       net::ProxyInfo* result) override;
+  void OnSuccessfulRequestAfterFailures(
+      const net::ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
                              size_t chain_index,

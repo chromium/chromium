@@ -242,6 +242,9 @@ class TestResolveProxyDelegate : public ProxyDelegate {
     return proxy_retry_info_;
   }
 
+  void OnSuccessfulRequestAfterFailures(
+      const ProxyRetryInfoMap& proxy_retry_info) override {}
+
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
   void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
@@ -277,6 +280,11 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {}
 
+  void OnSuccessfulRequestAfterFailures(
+      const ProxyRetryInfoMap& proxy_retry_info) override {
+    last_proxy_retry_info_ = proxy_retry_info;
+  }
+
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {
     proxy_chain_ = bad_chain;
     last_proxy_fallback_net_error_ = net_error;
@@ -305,10 +313,15 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
     return last_proxy_fallback_net_error_;
   }
 
+  const ProxyRetryInfoMap& last_proxy_retry_info() const {
+    return last_proxy_retry_info_;
+  }
+
  private:
   int num_proxy_fallback_called_ = 0;
   ProxyChain proxy_chain_;
   int last_proxy_fallback_net_error_ = OK;
+  ProxyRetryInfoMap last_proxy_retry_info_;
 };
 
 using JobMap = std::map<GURL, MockAsyncProxyResolver::Job*>;
@@ -1672,6 +1685,10 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback) {
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
             test_delegate.last_proxy_fallback_net_error());
   service.SetProxyDelegate(nullptr);
+  EXPECT_EQ(1u, info.proxy_retry_info().size());
+  EXPECT_TRUE(
+      info.proxy_retry_info().contains(ProxyChain::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_HTTP, "foopy1", 8080)));
 
   TestCompletionCallback callback3;
   rv =

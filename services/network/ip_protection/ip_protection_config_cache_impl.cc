@@ -4,10 +4,13 @@
 
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
@@ -19,9 +22,49 @@
 
 namespace network {
 
+namespace {
+
+// Rewrite the proxy list to use SCHEME_QUIC. In order to fall back to HTTPS
+// quickly if QUIC is broken, the first chain is included once with
+// SCHEME_QUIC and once with SCHEME_HTTPS. The remaining chains are included
+// only with SCHEME_QUIC.
+std::vector<net::ProxyChain> MakeQuicProxyList(
+    const std::vector<net::ProxyChain>& proxy_list,
+    bool include_https_fallback = true) {
+  if (proxy_list.empty()) {
+    return proxy_list;
+  }
+  auto to_quic = [](const net::ProxyChain& proxy_chain) {
+    std::vector<net::ProxyServer> quic_servers;
+    quic_servers.reserve(proxy_chain.length());
+    for (auto& proxy_server : proxy_chain.proxy_servers()) {
+      CHECK(proxy_server.is_https());
+      quic_servers.emplace_back(net::ProxyServer::Scheme::SCHEME_QUIC,
+                                proxy_server.host_port_pair());
+    }
+    return net::ProxyChain::ForIpProtection(
+        std::move(quic_servers), proxy_chain.ip_protection_chain_id());
+  };
+
+  std::vector<net::ProxyChain> quic_proxy_list;
+  quic_proxy_list.reserve(proxy_list.size() + (include_https_fallback ? 1 : 0));
+  quic_proxy_list.push_back(to_quic(proxy_list[0]));
+  if (include_https_fallback) {
+    quic_proxy_list.push_back(proxy_list[0]);
+  }
+
+  for (size_t i = 1; i < proxy_list.size(); i++) {
+    quic_proxy_list.push_back(to_quic(proxy_list[i]));
+  }
+
+  return quic_proxy_list;
+}
+
+}  // namespace
+
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
-    mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
-        config_getter) {
+    mojo::PendingRemote<network::mojom::IpProtectionConfigGetter> config_getter)
+    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()) {
   // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
 
@@ -100,11 +143,24 @@ bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
              : false;
 }
 
+void IpProtectionConfigCacheImpl::QuicProxiesFailed() {
+  ipp_over_quic_ = false;
+}
+
 std::vector<net::ProxyChain> IpProtectionConfigCacheImpl::GetProxyChainList() {
   if (ipp_proxy_list_manager_ == nullptr) {
     return {};
   }
-  return ipp_proxy_list_manager_->ProxyList();
+  std::vector<net::ProxyChain> proxy_list =
+      ipp_proxy_list_manager_->ProxyList();
+
+  bool ipp_over_quic_only = net::features::kIpPrivacyUseQuicProxiesOnly.Get();
+  if (ipp_over_quic_ || ipp_over_quic_only) {
+    proxy_list = MakeQuicProxyList(
+        proxy_list, /*include_https_fallback=*/!ipp_over_quic_only);
+  }
+
+  return proxy_list;
 }
 
 void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {

@@ -18,6 +18,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
@@ -215,6 +216,36 @@ bool IpProtectionProxyDelegate::CheckAvailability(
     return false;
   }
   return true;
+}
+
+void IpProtectionProxyDelegate::OnSuccessfulRequestAfterFailures(
+    const net::ProxyRetryInfoMap& proxy_retry_info) {
+  if (!ipp_config_cache_) {
+    return;
+  }
+
+  // A request was successful, but one or more proxies failed. If _only_ QUIC
+  // proxies failed, then we assume this is because QUIC is not working on this
+  // network, and stop injecting QUIC proxies into the proxy list.
+  bool seen_quic = false;
+  for (const auto& chain_and_info : proxy_retry_info) {
+    const net::ProxyChain& proxy_chain = chain_and_info.first;
+    if (!proxy_chain.is_for_ip_protection()) {
+      continue;
+    }
+    const net::ProxyServer& proxy_server = proxy_chain.First();
+    if (proxy_server.is_quic()) {
+      seen_quic = true;
+    } else {
+      // A non-QUIC chain has failed.
+      return;
+    }
+  }
+
+  if (seen_quic) {
+    // Only QUIC chains failed.
+    ipp_config_cache_->QuicProxiesFailed();
+  }
 }
 
 void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,

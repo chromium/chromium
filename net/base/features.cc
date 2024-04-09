@@ -433,6 +433,16 @@ const base::FeatureParam<bool> kIpPrivacyRestrictTopLevelSiteSchemes{
     /*name=*/"IpPrivacyRestrictTopLevelSiteSchemes",
     /*default_value=*/true};
 
+const base::FeatureParam<bool> kIpPrivacyUseQuicProxies{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyUseQuicProxies",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyUseQuicProxiesOnly",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

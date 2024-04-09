@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override;
   bool IsProxyListAvailable() override;
+  void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
 
@@ -62,6 +63,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::map<network::mojom::IpProtectionProxyLayer,
            std::unique_ptr<IpProtectionTokenCacheManager>>
       ipp_token_cache_managers_;
+
+  // If true, this class will try to connect to IP Protection proxies via QUIC.
+  // Once this value becomes false, it stays false until a network change or
+  // browser restart.
+  // TODO(crbug.com/330093343): re-evaluate on network change
+  bool ipp_over_quic_;
 
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -144,6 +146,9 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     result->OverrideProxyList(proxy_info.proxy_list());
   }
 }
+
+void NetworkServiceProxyDelegate::OnSuccessfulRequestAfterFailures(
+    const net::ProxyRetryInfoMap& proxy_retry_info) {}
 
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {

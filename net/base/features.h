@@ -443,6 +443,15 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyRestrictTopLevelSiteSchemes;
 
+// If true, IP protection will attempt to use QUIC to connect to proxies,
+// falling back to HTTPS.  If false, it will only use HTTPs.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseQuicProxies;
+
+// If true, IP protection will only use QUIC to connect to proxies, with no
+// fallback to HTTPS. This is intended for development of the QUIC
+// functionality.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

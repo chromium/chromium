@@ -74,6 +74,9 @@ void TestProxyDelegate::OnResolveProxy(
   }
 }
 
+void TestProxyDelegate::OnSuccessfulRequestAfterFailures(
+    const ProxyRetryInfoMap& proxy_retry_info) {}
+
 void TestProxyDelegate::OnFallback(const ProxyChain& bad_chain, int net_error) {
 }
 
