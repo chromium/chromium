@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -46,6 +47,14 @@ void FaceGazeTestUtils::MockFaceLandmarkerResult::SetNormalizedForeheadLocation(
     double x, double y) {
   forehead_location_.Set("x", x);
   forehead_location_.Set("y", y);
+}
+
+void FaceGazeTestUtils::MockFaceLandmarkerResult::AddGestureWithConfidence(
+    const std::string& gesture,
+    double confidence) {
+  recognized_gestures_.Append(base::Value::Dict()
+                                  .Set("categoryName", gesture)
+                                  .Set("score", confidence));
 }
 
 FaceGazeTestUtils::FaceGazeTestUtils() = default;
@@ -128,9 +137,16 @@ void FaceGazeTestUtils::WaitForMousePosition(const gfx::Point& location) {
 }
 
 void FaceGazeTestUtils::InitializeBufferSizeAndAcceleration(int size) {
-  GetPrefs()->SetInteger("settings.a11y.face_gaze.cursor_smoothing", size);
-  GetPrefs()->SetBoolean("settings.a11y.face_gaze.cursor_use_acceleration",
+  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
+  GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
                          false);
+  GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::InitializeGesturesToMacros(
+    const base::Value::Dict& gestures_to_macros) {
+  GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
+                      gestures_to_macros.Clone());
   GetPrefs()->CommitPendingWrite();
 }
 
@@ -138,9 +154,11 @@ void FaceGazeTestUtils::ProcessFaceLandmarkerResult(
     const MockFaceLandmarkerResult& result) {
   std::string forehead_location_json =
       base::WriteJson(result.forehead_location()).value();
-  std::string script =
-      base::StringPrintf("faceGazeTestSupport.processFaceLandmarkerResult(%s)",
-                         forehead_location_json.c_str());
+  std::string recognized_gestures_json =
+      base::WriteJson(result.recognized_gestures()).value();
+  std::string script = base::StringPrintf(
+      "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s)",
+      forehead_location_json.c_str(), recognized_gestures_json.c_str());
   ExecuteAccessibilityCommonScript(script);
 }
 

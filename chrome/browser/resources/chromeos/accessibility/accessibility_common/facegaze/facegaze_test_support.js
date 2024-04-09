@@ -107,12 +107,14 @@ class FaceGazeTestSupport {
    * Forces FaceGaze to process a result, since tests don't have access to real
    * camera data.
    * @param {!{x: number, y: number, z: number}} foreheadLocation
+   * @param {!Array<{categoryName: string, score: number}>} recognizedGestures
    */
-  async processFaceLandmarkerResult(foreheadLocation) {
+  async processFaceLandmarkerResult(foreheadLocation, recognizedGestures) {
     const result = {
       faceBlendshapes: [{categories: []}],
       faceLandmarks: [[null, null, null, null, null, null, null, null, null]],
     };
+    result.faceBlendshapes[0].categories = recognizedGestures;
     result.faceLandmarks[0][8] = foreheadLocation;
     this.getFaceGaze_().processFaceLandmarkerResult_(result);
     this.notifyCcTests_();

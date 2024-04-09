@@ -43,6 +43,8 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     utils_->EnableFaceGaze();
     utils_->CreateFaceLandmarker();
     utils_->InitializeBufferSizeAndAcceleration(1);
+    utils_->InitializeGesturesToMacros(
+        base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37));
     SetMouseSourceDeviceId(1);
     // By default the mouse is placed at the center of the screen. To initialize
     // FaceGaze at the center of the screen, move the mouse somewhere, then
@@ -87,6 +89,23 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateMouseLocation) {
 
   // Verify mouse location.
   ASSERT_EQ(gfx::Point(360, 560),
+            display::Screen::GetScreen()->GetCursorScreenPoint());
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
+  // Move mouse to location.
+  FaceGazeTestUtils::MockFaceLandmarkerResult move_mouse_result;
+  move_mouse_result.SetNormalizedForeheadLocation(0.11, 0.21);
+  utils()->ProcessFaceLandmarkerResult(move_mouse_result);
+  utils()->TriggerMouseControllerInterval();
+  ASSERT_EQ(gfx::Point(360, 560),
+            display::Screen::GetScreen()->GetCursorScreenPoint());
+
+  // Reset the mouse to the center of the screen using a gesture.
+  FaceGazeTestUtils::MockFaceLandmarkerResult gesture_result;
+  gesture_result.AddGestureWithConfidence("jawOpen", 0.9);
+  utils()->ProcessFaceLandmarkerResult(gesture_result);
+  ASSERT_EQ(gfx::Point(600, 400),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 

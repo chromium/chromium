@@ -32,8 +32,15 @@ class FaceGazeTestUtils {
       return forehead_location_;
     }
 
+    void AddGestureWithConfidence(const std::string& gesture,
+                                  double confidence);
+    const base::Value::List& recognized_gestures() const {
+      return recognized_gestures_;
+    }
+
    private:
     base::Value::Dict forehead_location_;
+    base::Value::List recognized_gestures_;
   };
 
   FaceGazeTestUtils();
@@ -49,6 +56,8 @@ class FaceGazeTestUtils {
   void WaitForMousePosition(const gfx::Point& location);
   // Manually sets the buffer size on the FaceGaze MouseController.
   void InitializeBufferSizeAndAcceleration(int size);
+  // Initializes the gesture to macro mapping.
+  void InitializeGesturesToMacros(const base::Value::Dict& gestures_to_macros);
   // Forces FaceGaze to process `result`, since tests don't have access to real
   // camera data.
   void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);
