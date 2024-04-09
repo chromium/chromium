@@ -12,6 +12,9 @@
 // passwords via text messages) or CVC (security codes).
 @interface CardUnmaskAuthenticationCoordinator : ChromeCoordinator
 
+// Start OTP authentication.
+- (void)continueCardUnmaskWithOtpAuth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_CARD_UNMASK_AUTHENTICATION_COORDINATOR_H_

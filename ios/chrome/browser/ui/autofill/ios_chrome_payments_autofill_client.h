@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 
 class ChromeBrowserState;
@@ -20,7 +21,10 @@ class ChromeBrowserState;
 namespace autofill {
 
 class ChromeAutofillClientIOS;
+class OtpUnmaskDelegate;
 struct AutofillErrorDialogContext;
+struct CardUnmaskChallengeOption;
+enum class OtpUnmaskResult;
 
 namespace payments {
 
@@ -44,6 +48,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   // PaymentsAutofillClient:
   void CreditCardUploadCompleted(bool card_saved) override;
+  void ShowCardUnmaskOtpInputDialog(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
+  void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   void ShowAutofillErrorDialog(
       AutofillErrorDialogContext error_context) override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
@@ -65,6 +73,11 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
     return std::move(progress_dialog_controller_);
   }
 
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+  GetOtpInputDialogModel() {
+    return std::move(otp_input_dialog_controller_);
+  }
+
  private:
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 
@@ -80,6 +93,11 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       progress_dialog_controller_weak_;
 
   CardUnmaskPromptControllerImpl unmask_controller_;
+
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+      otp_input_dialog_controller_;
+  base::WeakPtr<CardUnmaskOtpInputDialogControllerImpl>
+      otp_input_dialog_controller_weak_;
 };
 
 }  // namespace payments

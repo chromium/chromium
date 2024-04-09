@@ -5,11 +5,16 @@
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_coordinator.h"
 
 #import <Foundation/Foundation.h>
+
 #import <memory>
 
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator.h"
+#import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
 @implementation OtpInputDialogCoordinator {
   // The model layer controller. This model controller provide access to model
@@ -25,21 +30,34 @@
   std::unique_ptr<OtpInputDialogMediator> _mediator;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UINavigationController*)navigationController
-                       browser:(Browser*)browser
-               modelController:
-                   (std::unique_ptr<
-                       autofill::CardUnmaskOtpInputDialogControllerImpl>)
-                       modelController {
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    _modelController = std::move(modelController);
+    autofill::ChromeAutofillClientIOS* client =
+        AutofillTabHelper::FromWebState(
+            browser->GetWebStateList()->GetActiveWebState())
+            ->autofill_client();
+    CHECK(client);
+    auto* paymentsClient = client->GetPaymentsAutofillClient();
+    CHECK(paymentsClient);
+    _modelController = paymentsClient->GetOtpInputDialogModel();
     _mediator = std::make_unique<OtpInputDialogMediator>(
         _modelController->GetImplWeakPtr());
   }
   return self;
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)start {
+  // TODO(crbug.com/324610713): Initiate the view controller.
+}
+
+- (void)stop {
+  // TODO(crbug.com/324610713): Dismiss the view controller.
 }
 
 @end

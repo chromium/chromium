@@ -1660,6 +1660,12 @@ enum class ToolbarKind {
   [self.cardUnmaskAuthenticationCoordinator start];
 }
 
+- (void)continueCardUnmaskWithOtpAuth {
+  // This assumes the card unmask authentication coordinator is already created
+  // by the showCardUnmaskAuthentication function above. Otherwise do nothing.
+  [self.cardUnmaskAuthenticationCoordinator continueCardUnmaskWithOtpAuth];
+}
+
 - (void)showPlusAddressesBottomSheet {
   self.plusAddressBottomSheetCoordinator =
       [[PlusAddressBottomSheetCoordinator alloc]

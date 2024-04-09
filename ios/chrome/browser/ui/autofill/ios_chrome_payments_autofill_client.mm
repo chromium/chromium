@@ -11,6 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -67,6 +70,24 @@ void IOSChromePaymentsAutofillClient::CloseAutofillProgressDialog(
     progress_dialog_controller_weak_->DismissDialog(
         show_confirmation_before_closing,
         std::move(no_interactive_authentication_callback));
+  }
+}
+
+void IOSChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  otp_input_dialog_controller_ =
+      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(challenge_option,
+                                                               delegate);
+  otp_input_dialog_controller_weak_ =
+      otp_input_dialog_controller_->GetImplWeakPtr();
+  [client_->commands_handler() continueCardUnmaskWithOtpAuth];
+}
+
+void IOSChromePaymentsAutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {
+  if (otp_input_dialog_controller_weak_) {
+    otp_input_dialog_controller_weak_->OnOtpVerificationResult(unmask_result);
   }
 }
 
