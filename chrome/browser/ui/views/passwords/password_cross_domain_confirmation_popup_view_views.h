@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CROSS_DOMAIN_CONFIRMATION_POPUP_VIEW_VIEWS_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -20,7 +21,11 @@ class PasswordCrossDomainConfirmationPopupViewViews
  public:
   PasswordCrossDomainConfirmationPopupViewViews(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
-      views::Widget* parent_widget);
+      views::Widget* parent_widget,
+      const GURL& domain,
+      const std::u16string& password_origin,
+      base::OnceClosure confirmation_callback,
+      base::OnceClosure cancel_callback);
 
   PasswordCrossDomainConfirmationPopupViewViews(
       const PasswordCrossDomainConfirmationPopupViewViews&) = delete;

@@ -7125,6 +7125,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION" desc="The description of the Google Password Manager's update password message when the user is signed in.">
         In Google Password Manager for <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
       </message>
+      <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_TITLE" desc="The title of the cross domain filling confirmation popup.">
+        Use your <ph name="PASSWORD_DOMAIN">$1<ex>example.com</ex> password?</ph>
+      </message>
+      <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION" desc="The description of the cross domain filling confirmation popup.">
+        You will use your <ph name="PASSWORD_DOMAIN">$1<ex>example.com</ex></ph> password on <ph name="DOMAIN">$2<ex>example.de</ex></ph>. Only use your password if you trust <ph name="DOMAIN">$2<ex>example.de</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="The confirmation button label of the cross domain filling confirmation popup.">
+        Use Password
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN" desc="In Title Case: The title of the Sign in button in the account chooser when there is one account.">
           Sign In

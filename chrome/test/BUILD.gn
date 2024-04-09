@@ -4180,6 +4180,7 @@ if (!is_android) {
         "../browser/ui/views/page_info/page_info_bubble_view_sync_browsertest.cc",
         "../browser/ui/views/page_info/safety_tip_page_info_bubble_view_browsertest.cc",
         "../browser/ui/views/passwords/password_bubble_browsertest.cc",
+        "../browser/ui/views/passwords/password_cross_domain_confirmation_popup_view_views_browsertest.cc",
         "../browser/ui/views/passwords/password_dialog_view_browsertest.cc",
         "../browser/ui/views/passwords/password_generation_popup_view_tester_views.cc",
         "../browser/ui/views/passwords/password_generation_popup_view_tester_views.h",

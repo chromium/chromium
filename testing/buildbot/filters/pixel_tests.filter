@@ -69,6 +69,7 @@ PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordBubbleBrowserTest.*
 *PasswordAutomaticSaveBubbleBrowserTest.*
+*PasswordCrossDomainConfirmationPopupViewBrowsertest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordGenerationPopupViewWithExperimentsBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*

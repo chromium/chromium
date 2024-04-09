@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 
+#include <string>
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -16,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -25,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 // Create a vector which contains only the values in |items| and no elements.
@@ -334,4 +337,18 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
       close_button_width;
   title_label->SetMaximumWidth(title_width);
   return header;
+}
+
+void EmphasizeTokens(views::Label* label,
+                     views::style::TextStyle emphasize_style,
+                     const std::vector<std::u16string>& tokens) {
+  const std::u16string& text = label->GetText();
+  for (const std::u16string& token : tokens) {
+    size_t start = text.find(token, 0);
+    while (start != std::u16string::npos) {
+      const size_t end = start + token.size();
+      label->SetTextStyleRange(emphasize_style, gfx::Range(start, end));
+      start = text.find(token, end + 1);
+    }
+  }
 }
