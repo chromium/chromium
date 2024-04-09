@@ -398,11 +398,7 @@ ExistingUserController::ExistingUserController()
 
   observed_user_manager_.Observe(user_manager::UserManager::Get());
 
-  if (ui::UserActivityDetector::Get()) {
-    ui::UserActivityDetector::Get()->AddObserver(this);
-  } else {
-    CHECK_IS_TEST();
-  }
+  ui::UserActivityDetector::Get()->AddObserver(this);
 }
 
 void ExistingUserController::Init(const user_manager::UserList& users) {
@@ -485,10 +481,7 @@ void ExistingUserController::HttpAuthDialogSupplied(
 
 ExistingUserController::~ExistingUserController() {
   HttpAuthDialog::RemoveObserver(this);
-  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
-  if (activity_detector) {
-    activity_detector->RemoveObserver(this);
-  }
+  ui::UserActivityDetector::Get()->RemoveObserver(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

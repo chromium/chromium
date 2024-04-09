@@ -240,10 +240,7 @@ void DisplayChangeObserver::OnDisplayModeChanged(
 
   // For the purposes of user activity detection, ignore synthetic mouse events
   // that are triggered by screen resizes: http://crbug.com/360634
-  ui::UserActivityDetector* user_activity_detector =
-      ui::UserActivityDetector::Get();
-  if (user_activity_detector)
-    user_activity_detector->OnDisplayPowerChanging();
+  ui::UserActivityDetector::Get()->OnDisplayPowerChanging();
 }
 
 void DisplayChangeObserver::OnDisplayModeChangeFailed(

@@ -102,13 +102,15 @@ SessionLengthLimiter::SessionLengthLimiter(Delegate* delegate,
     UpdateSessionStartTime();
   }
 
-  if (!user_activity_seen_ && ui::UserActivityDetector::Get())
+  if (!user_activity_seen_) {
     ui::UserActivityDetector::Get()->AddObserver(this);
+  }
 }
 
 SessionLengthLimiter::~SessionLengthLimiter() {
-  if (!user_activity_seen_ && ui::UserActivityDetector::Get())
+  if (!user_activity_seen_) {
     ui::UserActivityDetector::Get()->RemoveObserver(this);
+  }
 }
 
 base::TimeDelta SessionLengthLimiter::GetSessionDuration() const {
@@ -121,8 +123,7 @@ base::TimeDelta SessionLengthLimiter::GetSessionDuration() const {
 void SessionLengthLimiter::OnUserActivity(const ui::Event* event) {
   if (user_activity_seen_)
     return;
-  if (ui::UserActivityDetector::Get())
-    ui::UserActivityDetector::Get()->RemoveObserver(this);
+  ui::UserActivityDetector::Get()->RemoveObserver(this);
   user_activity_seen_ = true;
 
   PrefService* local_state = g_browser_process->local_state();

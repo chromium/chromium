@@ -17,8 +17,9 @@ IdleDetector::IdleDetector(const base::RepeatingClosure& on_idle_callback,
 IdleDetector::~IdleDetector() {
   ui::UserActivityDetector* user_activity_detector =
       ui::UserActivityDetector::Get();
-  if (user_activity_detector && user_activity_detector->HasObserver(this))
+  if (user_activity_detector->HasObserver(this)) {
     user_activity_detector->RemoveObserver(this);
+  }
 }
 
 void IdleDetector::OnUserActivity(const ui::Event* event) {
@@ -27,8 +28,11 @@ void IdleDetector::OnUserActivity(const ui::Event* event) {
 
 void IdleDetector::Start(const base::TimeDelta& timeout) {
   timeout_ = timeout;
-  if (!ui::UserActivityDetector::Get()->HasObserver(this))
-    ui::UserActivityDetector::Get()->AddObserver(this);
+  ui::UserActivityDetector* user_activity_detector =
+      ui::UserActivityDetector::Get();
+  if (!user_activity_detector->HasObserver(this)) {
+    user_activity_detector->AddObserver(this);
+  }
   ResetTimer();
 }
 
