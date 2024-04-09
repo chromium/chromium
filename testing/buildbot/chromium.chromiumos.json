@@ -1214,7 +1214,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
@@ -1235,7 +1235,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
@@ -1258,7 +1258,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
@@ -1300,7 +1300,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
@@ -1321,7 +1321,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
@@ -1344,7 +1344,7 @@
       {
         "args": [
           "tast.setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.key",
           "shard_method=hash"
         ],
         "autotest_name": "tast.chrome-from-gcs",
