@@ -8094,9 +8094,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
-    expires_after="2024-05-19">
-  <owner>cfroussios@chromium.org</owner>
+    expires_after="2025-05-19">
   <owner>thestig@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
   <summary>
     True, iff the data was not decryptable with the stored encryption key, but
     was decryptable with a key generated from an empty string. This is emitted
