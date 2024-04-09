@@ -9,6 +9,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.banners"
   sources = [
+    "java/src/org/chromium/chrome/browser/banners/AmbientBadgeManagerTest.java",
     "java/src/org/chromium/chrome/browser/banners/AppBannerManagerTest.java",
   ]
   deps = [
