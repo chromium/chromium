@@ -948,7 +948,8 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
   EXPECT_TRUE(view->search_results_view_for_testing().GetVisible());
 }
 
-TEST_F(PickerViewTest, KeepsSearchFieldQueryTextWhenClickingOnSeeMoreResults) {
+TEST_F(PickerViewTest,
+       KeepsSearchFieldQueryTextAndFocusWhenClickingOnSeeMoreResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
@@ -976,6 +977,8 @@ TEST_F(PickerViewTest, KeepsSearchFieldQueryTextWhenClickingOnSeeMoreResults) {
   EXPECT_EQ(
       view->search_field_view_for_testing().textfield_for_testing().GetText(),
       u"a");
+  EXPECT_TRUE(
+      view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 }
 
 }  // namespace
