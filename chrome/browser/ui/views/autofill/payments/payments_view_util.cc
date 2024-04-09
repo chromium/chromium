@@ -140,7 +140,9 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   // Add vertical padding to the icon and the separator so they are aligned with
   // the first line of title label. This needs to be done after we create the
   // title label, so that we can use its preferred size.
-  const int title_label_height = title_label->GetPreferredSize().height();
+  const int title_label_height =
+      title_label->GetPreferredSize(views::SizeBounds(title_label->width(), {}))
+          .height();
   icon_view_ptr->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
   // TODO(crbug.com/873140): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the right
@@ -187,7 +189,9 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred
   // size.
-  const int title_label_height = title_label->GetPreferredSize().height();
+  const int title_label_height =
+      title_label->GetPreferredSize(views::SizeBounds(title_label->width(), {}))
+          .height();
   icon_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
 

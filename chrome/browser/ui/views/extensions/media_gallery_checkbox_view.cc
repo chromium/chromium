@@ -63,7 +63,10 @@ void MediaGalleryCheckboxView::Layout(PassKey) {
   // If box layout doesn't fit, do custom layout. The secondary text should take
   // up at most half of the space and the checkbox can take up whatever is left.
   int checkbox_width = checkbox_->GetPreferredSize().width();
-  int secondary_text_width = secondary_text_->GetPreferredSize().width();
+  int secondary_text_width =
+      secondary_text_
+          ->GetPreferredSize(views::SizeBounds(secondary_text_->width(), {}))
+          .width();
   if (!secondary_text_->GetVisible())
     secondary_text_width = 0;
 

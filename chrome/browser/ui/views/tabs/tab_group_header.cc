@@ -484,7 +484,9 @@ void TabGroupHeader::VisualsChanged() {
     // TODO(crbug.com/1416895): The math of the layout in this function is done
     // arithmetically and can be hard to understand. This should instead be done
     // by a layout manager.
-    const int text_height = title_->GetPreferredSize().height();
+    const int text_height =
+        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
+            .height();
 
     const gfx::Size sync_icon_size =
         ShouldShowSyncIcon()
@@ -500,8 +502,10 @@ void TabGroupHeader::VisualsChanged() {
         (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
         sync_icon_size.width() - padding_between_label_sync_icon;
 
-    const int text_width =
-        std::min(title_->GetPreferredSize().width(), text_max_width);
+    const int text_width = std::min(
+        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
+            .width(),
+        text_max_width);
 
     // width of the content including the text label, sync icon and the padding
     // between them

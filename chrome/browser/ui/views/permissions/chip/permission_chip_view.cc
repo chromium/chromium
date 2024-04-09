@@ -80,12 +80,17 @@ void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
   animation_->SetSlideDuration(duration);
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {
-    base_width_ = label()->GetPreferredSize().width();
+    base_width_ =
+        label()
+            ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+            .width();
   } else {
     base_width_ = label()->width();
   }
 
-  if (label()->GetPreferredSize().width() < width()) {
+  if (label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width() < width()) {
     // As we're collapsing, we need to make sure that the padding is not
     // animated away.
     base_width_ += GetPadding().width();
@@ -100,10 +105,15 @@ void PermissionChipView::ResetAnimation(double value) {
   OnAnimationValueMaybeChanged();
 }
 
+// TODO(crbug.com/40232718): Use the CalculatePreferredSize(SizeBounds) method
+// to avoid double calculations.
 gfx::Size PermissionChipView::CalculatePreferredSize() const {
   const int icon_width = GetIconViewWidth();
   const int label_width =
-      label()->GetPreferredSize().width() + GetPadding().width();
+      label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width() +
+      GetPadding().width();
 
   const int width =
       base_width_ +

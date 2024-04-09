@@ -60,7 +60,8 @@ RichControlsContainerView::RichControlsContainerView() {
   // Calculate difference between label height and icon size to align icons
   // and label in the first row.
   // TODO(crbug.com/1446230): Refactor the view and use a TableLayout instead.
-  const int label_height = title_->GetPreferredSize().height();
+  const int label_height =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
   const int margin = (label_height - icon_size) / 2;
   SetDefault(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 }
@@ -136,7 +137,8 @@ gfx::Size RichControlsContainerView::CalculatePreferredSize(
   int width = GetInteriorMargin().width();
   width += labels_wrapper_->GetProperty(views::kMarginsKey)->width();
   width += icon_->GetPreferredSize().width();
-  width += title_->GetPreferredSize().width();
+  width +=
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width();
   width += controls_width_;
 
   width = std::max(width, GetMinBubbleWidth());

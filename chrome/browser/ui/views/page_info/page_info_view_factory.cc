@@ -61,6 +61,8 @@ class PageInfoSubpageView : public views::View {
     content_ = AddChildView(std::move(content));
   }
 
+  // TODO(crbug.com/40232718): Use the CalculatePreferredSize(SizeBounds) method
+  // to avoid double calculations.
   gfx::Size CalculatePreferredSize() const override {
     // Only the with of |content_| is taken into account, because the header
     // view contains site origin in the subtitle which can be very long.

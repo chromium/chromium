@@ -386,7 +386,10 @@ void IconLabelBubbleView::OnTouchUiChanged() {
 }
 
 gfx::Size IconLabelBubbleView::CalculatePreferredSize() const {
-  return GetSizeForLabelWidth(label()->GetPreferredSize().width());
+  return GetSizeForLabelWidth(
+      label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width());
 }
 
 void IconLabelBubbleView::Layout(PassKey) {

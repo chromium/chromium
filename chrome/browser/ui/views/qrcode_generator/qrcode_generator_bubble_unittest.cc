@@ -110,8 +110,10 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   // of the conditions for the label to appear are true.
   bool ErrorLabelShowing() {
     return error_label()->GetVisible() &&
-           error_label()->GetPreferredSize().height() > 0 &&
-           error_label()->GetPreferredSize().width() > 0;
+           !error_label()
+                ->GetPreferredSize(
+                    views::SizeBounds(error_label()->width(), {}))
+                .IsEmpty();
   }
 
   bool ErrorLabelHiddenAndA11yIgnored() {

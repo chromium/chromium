@@ -138,7 +138,7 @@ int ButtonPlaceholder::GetHeightForWidth(int width) const {
   // children. This is not the case here because the button is at first no
   // visible. Therefore we override GetHeightForWidth to return the preferred
   // height regardless of children being visible or not.
-  return GetPreferredSize().height();
+  return GetPreferredSize(views::SizeBounds(width, {})).height();
 }
 
 BEGIN_METADATA(ButtonPlaceholder)

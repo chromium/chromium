@@ -50,7 +50,7 @@ SkColor4f GetShadowColor(TabStrip* tab_strip) {
 gfx::Size TabScrollContainerFlexRule(const views::View* tab_strip,
                                      const views::View* view,
                                      const views::SizeBounds& size_bounds) {
-  const gfx::Size preferred_size = tab_strip->GetPreferredSize();
+  const gfx::Size preferred_size = tab_strip->GetPreferredSize(size_bounds);
   const int minimum_width = tab_strip->GetMinimumSize().width();
   const int width = std::max(
       minimum_width, size_bounds.width().min_of(preferred_size.width()));

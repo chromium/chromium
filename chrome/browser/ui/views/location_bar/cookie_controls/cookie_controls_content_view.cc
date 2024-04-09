@@ -239,7 +239,9 @@ gfx::Size CookieControlsContentView::CalculatePreferredSize() const {
   const int margins = provider->GetInsetsMetric(views::INSETS_DIALOG).left() +
                       provider->GetInsetsMetric(views::INSETS_DIALOG).right();
 
-  int title_width = title_->GetPreferredSize().width() + margins;
+  int title_width =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width() +
+      margins;
   int toggle_width = toggle_row_->GetPreferredSize().width();
 
   int desired_width =

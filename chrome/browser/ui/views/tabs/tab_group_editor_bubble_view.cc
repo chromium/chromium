@@ -375,7 +375,10 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     gfx::Insets save_group_margins = control_insets;
     const int label_height = new_tab_menu_item->GetPreferredSize().height();
     const int control_height =
-        std::max(save_group_label_->GetPreferredSize().height(),
+        std::max(save_group_label_
+                     ->GetPreferredSize(
+                         views::SizeBounds(save_group_label_->width(), {}))
+                     .height(),
                  save_group_toggle_->GetPreferredSize().height());
     save_group_margins.set_top((label_height - control_height) / 2);
     save_group_margins.set_bottom(save_group_margins.top());

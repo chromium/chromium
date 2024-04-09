@@ -192,7 +192,8 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
   otp_input_textfield_invalid_label_padding_ =
       otp_input_textfield_view->AddChildView(std::make_unique<views::View>());
   otp_input_textfield_invalid_label_padding_->SetPreferredSize(
-      otp_input_textfield_invalid_label_->GetPreferredSize());
+      otp_input_textfield_invalid_label_->GetPreferredSize(
+          views::SizeBounds(otp_input_textfield_invalid_label_->width(), {})));
 
   // Adds footer.
   footer_label_ =

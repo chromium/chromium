@@ -128,7 +128,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   remember_setting_->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(controls_spacing, 0, 0, 0));
 
-  const int title_height = title_->GetPreferredSize().height();
+  const int title_height =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
   toggle_button_ = permission_info_container->AddChildView(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
           &PageInfoPermissionContentView::OnToggleButtonPressed,

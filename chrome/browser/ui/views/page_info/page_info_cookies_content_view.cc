@@ -282,8 +282,10 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   // Set the preferred width of the label wrapper to the title width. It ensures
   // that the title isn't truncated and it prevents the container expanding to
   // try to fit the description (which should be wrapped).
-  const int title_width =
-      third_party_cookies_title_->GetPreferredSize().width();
+  const int title_width = third_party_cookies_title_
+                              ->GetPreferredSize(views::SizeBounds(
+                                  third_party_cookies_title_->width(), {}))
+                              .width();
   third_party_cookies_label_wrapper_->SetPreferredSize(gfx::Size(
       title_width,
       third_party_cookies_label_wrapper_->GetHeightForWidth(title_width)));
