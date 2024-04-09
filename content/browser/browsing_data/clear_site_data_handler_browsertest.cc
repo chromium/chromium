@@ -236,9 +236,10 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     if (cookie_partition_key) {
       cookie_line += "; Secure; Partitioned";
     }
-    std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-        cookie_partition_key));
+    std::unique_ptr<net::CanonicalCookie> cookie(
+        net::CanonicalCookie::CreateForTesting(
+            url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
+            cookie_partition_key));
 
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(

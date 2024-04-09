@@ -1746,9 +1746,8 @@ bool SetAllCookies(CookieMonster* cm, const CookieList& list) {
 bool CreateAndSetCookie(CookieStore* cs,
                         const GURL& url,
                         const std::string& cookie_line) {
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  auto cookie =
+      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now());
   if (!cookie)
     return false;
   DCHECK(cs);
@@ -1797,9 +1796,9 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   // CookieMonster::SetCanonicalCookie(), however we're using SetAllCookies() to
   // bypass the source scheme check in order to test the kUnset state which
   // would normally only happen during an existing cookie DB version upgrade.
-  std::unique_ptr<CanonicalCookie> unset_cookie1 = CanonicalCookie::Create(
-      secure_url_for_unset1, "NoSourceSchemeHttps=val", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<CanonicalCookie> unset_cookie1 =
+      CanonicalCookie::CreateForTesting(
+          secure_url_for_unset1, "NoSourceSchemeHttps=val", base::Time::Now());
   unset_cookie1->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list1 = {*unset_cookie1};
@@ -1817,9 +1816,10 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   GURL nonsecure_url_for_unset2("http://unset2.example:7");
   GURL secure_url_for_unset2("https://unset2.example:7");
 
-  std::unique_ptr<CanonicalCookie> unset_cookie2 = CanonicalCookie::Create(
-      nonsecure_url_for_unset2, "NoSourceSchemeHttp=val", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<CanonicalCookie> unset_cookie2 =
+      CanonicalCookie::CreateForTesting(nonsecure_url_for_unset2,
+                                        "NoSourceSchemeHttp=val",
+                                        base::Time::Now());
   unset_cookie2->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list2 = {*unset_cookie2};

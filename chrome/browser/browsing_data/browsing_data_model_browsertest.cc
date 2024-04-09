@@ -1644,9 +1644,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
 
   // Validate that cookie is fetched to browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-  std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
-      testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<net::CanonicalCookie> data_key =
+      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
+                                             "foo=bar; Path=/browsing_data",
+                                             base::Time::Now());
   ValidateBrowsingDataEntries(browsing_data_model.get(),
                               {{kTestHost,
                                 *(data_key.get()),
@@ -1686,9 +1687,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
 
   // Validate that cookie is fetched to browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-  std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
-      testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<net::CanonicalCookie> data_key =
+      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
+                                             "foo=bar; Path=/browsing_data",
+                                             base::Time::Now());
   ValidateBrowsingDataEntries(allowed_browsing_data_model,
                               {{kTestHost,
                                 *(data_key.get()),

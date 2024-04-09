@@ -1433,9 +1433,9 @@ TEST_P(CookieControlsUserBypassTest, CachedCookieAccessReports) {
   cookie_controls()->Update(web_contents());
 
   GURL origin1("http://google.com");
-  std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
-      origin1, "A=B", base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */));
+  std::unique_ptr<net::CanonicalCookie> cookie1(
+      net::CanonicalCookie::CreateForTesting(origin1, "A=B",
+                                             base::Time::Now()));
   ASSERT_TRUE(cookie1);
 
   // Regardless of how many times a cookie access is reported, it should only
@@ -1453,9 +1453,9 @@ TEST_P(CookieControlsUserBypassTest, CachedCookieAccessReports) {
 
   // Accessing a cookie for a different origin should however trigger an update.
   GURL origin2("http://another-google.com");
-  std::unique_ptr<net::CanonicalCookie> cookie2(net::CanonicalCookie::Create(
-      origin2, "A=B", base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */));
+  std::unique_ptr<net::CanonicalCookie> cookie2(
+      net::CanonicalCookie::CreateForTesting(origin2, "A=B",
+                                             base::Time::Now()));
   ASSERT_TRUE(cookie2);
 
   testing::Mock::VerifyAndClearExpectations(mock());

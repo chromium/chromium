@@ -5548,9 +5548,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
       extensions::ChromeExtensionCookies::Get(profile())
           ->GetCookieStoreForTesting();
   ASSERT_TRUE(cookie_store);
-  auto cookie = net::CanonicalCookie::Create(
-      ext_url, "dummy=value", base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  auto cookie = net::CanonicalCookie::CreateForTesting(ext_url, "dummy=value",
+                                                       base::Time::Now());
   cookie_store->SetCanonicalCookieAsync(
       std::move(cookie), ext_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&ExtensionCookieCallback::SetCookieCallback,
@@ -5683,9 +5682,9 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   network_context->GetCookieManager(
       cookie_manager_remote.BindNewPipeAndPassReceiver());
 
-  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      origin1, "dummy=value", base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */));
+  std::unique_ptr<net::CanonicalCookie> cc(
+      net::CanonicalCookie::CreateForTesting(origin1, "dummy=value",
+                                             base::Time::Now()));
   ASSERT_TRUE(cc.get());
 
   {

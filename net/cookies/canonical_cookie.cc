@@ -345,8 +345,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
     bool block_truncated,
-    CookieInclusionStatus* status,
-    CookieSourceType source_type) {
+    CookieSourceType source_type,
+    CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
   CookieInclusionStatus blank_status;
@@ -791,6 +791,21 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
       base::PassKey<CanonicalCookie>(), name, value, domain, path, creation,
       expiration, last_access, last_update, secure, httponly, same_site,
       priority, partition_key, source_scheme, source_port, source_type);
+}
+
+// static
+std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
+    const GURL& url,
+    const std::string& cookie_line,
+    const base::Time& creation_time,
+    std::optional<base::Time> server_time,
+    std::optional<CookiePartitionKey> cookie_partition_key,
+    bool block_truncated,
+    CookieSourceType source_type,
+    CookieInclusionStatus* status) {
+  return CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
+                                 cookie_partition_key, block_truncated,
+                                 source_type, status);
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

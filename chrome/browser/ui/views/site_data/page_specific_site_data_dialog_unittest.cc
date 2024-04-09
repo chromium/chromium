@@ -101,14 +101,11 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, CookieAccessed) {
   auto* content_settings = GetContentSettings();
 
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kCurrentUrl), "A=B",
+                                             base::Time::Now()));
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
@@ -157,10 +154,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
@@ -191,7 +186,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kThirdPartyUrl))));
@@ -246,10 +241,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
@@ -280,7 +273,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kCurrentUrl))));
@@ -340,10 +333,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
@@ -356,10 +347,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
@@ -390,7 +379,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kThirdPartyUrl))));
@@ -406,7 +395,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kCurrentUrl))));
@@ -486,9 +475,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
 TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveBrowsingData) {
   // Setup a cookie for `kCurrentUrl`.
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kCurrentUrl), "A=B",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
 
   auto allowed_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();

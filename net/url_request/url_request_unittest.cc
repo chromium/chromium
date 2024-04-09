@@ -1971,17 +1971,15 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
   replace_scheme.SetSchemeStr("https");
   GURL url = test_server.base_url().ReplaceComponents(replace_scheme);
 
-  auto cookie1 = CanonicalCookie::Create(
-      url, "AlreadySetCookie=1;Secure", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  auto cookie1 = CanonicalCookie::CreateForTesting(
+      url, "AlreadySetCookie=1;Secure", base::Time::Now());
   auto delayed_cm = std::make_unique<DelayedCookieMonster>();
   delayed_cm->SetCanonicalCookieAsync(std::move(cookie1), url,
                                       net::CookieOptions::MakeAllInclusive(),
                                       CookieStore::SetCookiesCallback());
 
-  auto cookie2 = CanonicalCookie::Create(
-      url, "AlreadySetCookie=1;Secure", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  auto cookie2 = CanonicalCookie::CreateForTesting(
+      url, "AlreadySetCookie=1;Secure", base::Time::Now());
   auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   cm->SetCanonicalCookieAsync(std::move(cookie2), url,
                               net::CookieOptions::MakeAllInclusive(),
@@ -3552,7 +3550,7 @@ TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
 
   // Set partitioned cookie with same-site partitionkey.
   {
-    auto same_site_partitioned_cookie = CanonicalCookie::Create(
+    auto same_site_partitioned_cookie = CanonicalCookie::CreateForTesting(
         create_cookie_url, "samesite_partitioned=1;Secure;Partitioned",
         base::Time::Now(), std::nullopt,
         CookiePartitionKey::FromURLForTesting(create_cookie_url));
@@ -3569,7 +3567,7 @@ TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
   // In the redirect below from site B to A, this cookie's partition key is site
   // B it should not be sent in the redirected request.
   {
-    auto cross_site_partitioned_cookie = CanonicalCookie::Create(
+    auto cross_site_partitioned_cookie = CanonicalCookie::CreateForTesting(
         create_cookie_url, "xsite_partitioned=1;Secure;Partitioned",
         base::Time::Now(), std::nullopt,
         CookiePartitionKey::FromURLForTesting(
@@ -7765,9 +7763,8 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
   network_delegate.set_block_annotate_cookies();
   {
     GURL url = test_server.GetURL("/");
-    auto cookie1 = CanonicalCookie::Create(
-        url, "cookienosamesite=1", base::Time::Now(), std::nullopt,
-        std::nullopt /* cookie_partition_key */);
+    auto cookie1 = CanonicalCookie::CreateForTesting(url, "cookienosamesite=1",
+                                                     base::Time::Now());
     base::RunLoop run_loop;
     CookieAccessResult access_result;
     cm.SetCanonicalCookieAsync(
@@ -7808,9 +7805,8 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
   // Get cookies
   {
     GURL url = test_server.GetURL("/");
-    auto cookie2 = CanonicalCookie::Create(
-        url, "cookiewithpath=1;path=/foo", base::Time::Now(), std::nullopt,
-        std::nullopt /* cookie_partition_key */);
+    auto cookie2 = CanonicalCookie::CreateForTesting(
+        url, "cookiewithpath=1;path=/foo", base::Time::Now());
     base::RunLoop run_loop;
     // Note: cookie1 from the previous testcase is still in the cookie store.
     CookieAccessResult access_result;
@@ -7954,10 +7950,9 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     auto context = context_builder->Build();
 
     auto* cm = static_cast<CookieMonster*>(context->cookie_store());
-    auto another_cookie = CanonicalCookie::Create(
-        url_requiring_auth_wo_cookies, "another_cookie=true", base::Time::Now(),
-        std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto another_cookie = CanonicalCookie::CreateForTesting(
+        url_requiring_auth_wo_cookies, "another_cookie=true",
+        base::Time::Now());
     cm->SetCanonicalCookieAsync(std::move(another_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
@@ -7984,10 +7979,9 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     // Check maybe_sent_cookies on second roundtrip.
     request->set_maybe_sent_cookies({});
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
-    auto one_more_cookie = CanonicalCookie::Create(
+    auto one_more_cookie = CanonicalCookie::CreateForTesting(
         url_requiring_auth_wo_cookies, "one_more_cookie=true",
-        base::Time::Now(), std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+        base::Time::Now());
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
@@ -8375,10 +8369,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     auto context = context_builder->Build();
 
     auto* cm = static_cast<CookieMonster*>(context->cookie_store());
-    auto another_cookie = CanonicalCookie::Create(
-        original_url, "another_cookie=true", base::Time::Now(),
-        std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto another_cookie = CanonicalCookie::CreateForTesting(
+        original_url, "another_cookie=true", base::Time::Now());
     cm->SetCanonicalCookieAsync(std::move(another_cookie), original_url,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
@@ -8402,10 +8394,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     // Check maybe_sent_cookies on second round trip
     request->set_maybe_sent_cookies({});
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
-    auto one_more_cookie = CanonicalCookie::Create(
-        original_url_wo_cookie, "one_more_cookie=true", base::Time::Now(),
-        std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto one_more_cookie = CanonicalCookie::CreateForTesting(
+        original_url_wo_cookie, "one_more_cookie=true", base::Time::Now());
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 original_url_wo_cookie,
                                 net::CookieOptions::MakeAllInclusive(),

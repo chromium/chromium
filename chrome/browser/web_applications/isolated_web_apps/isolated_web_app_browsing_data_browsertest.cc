@@ -339,9 +339,9 @@ class IsolatedWebAppBrowsingDataClearingTest
     storage_partition->GetNetworkContext()->GetCookieManager(
         cookie_manager.BindNewPipeAndPassReceiver());
 
-    auto cookie_obj = net::CanonicalCookie::Create(url, cookie_line, time,
-                                                   /*server_time=*/std::nullopt,
-                                                   cookie_partition_key);
+    auto cookie_obj = net::CanonicalCookie::CreateForTesting(
+        url, cookie_line, time,
+        /*server_time=*/std::nullopt, cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_manager->SetCanonicalCookie(*cookie_obj, url,

@@ -192,10 +192,9 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
 
 TEST_F(ExtensionCookiesTest, DecodeUTF8WithErrorHandling) {
   std::unique_ptr<net::CanonicalCookie> canonical_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL("http://test.com"), "=011Q255bNX_1!yd\203e+;path=/path\203",
-          base::Time::Now(), std::nullopt /* server_time */,
-          std::nullopt /* cookie_partition_key */));
+          base::Time::Now()));
   ASSERT_NE(nullptr, canonical_cookie.get());
   Cookie cookie =
       cookies_helpers::CreateCookie(*canonical_cookie, "some cookie store");

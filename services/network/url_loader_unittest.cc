@@ -4861,7 +4861,7 @@ TEST_F(URLLoaderTest, BlockAllCookies) {
       client()->CreateRemote());
 
   GURL cookie_url = test_server()->GetURL("/");
-  auto cc = net::CanonicalCookie::Create(
+  auto cc = net::CanonicalCookie::CreateForTesting(
       cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
@@ -4890,7 +4890,7 @@ TEST_F(URLLoaderTest, BlockOnlyThirdPartyCookies) {
       client()->CreateRemote());
 
   GURL cookie_url = test_server()->GetURL("/");
-  auto cc = net::CanonicalCookie::Create(
+  auto cc = net::CanonicalCookie::CreateForTesting(
       cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
@@ -4917,7 +4917,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
       client()->CreateRemote());
 
   GURL cookie_url = test_server()->GetURL("/");
-  auto cc = net::CanonicalCookie::Create(
+  auto cc = net::CanonicalCookie::CreateForTesting(
       cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
@@ -5402,9 +5402,8 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
     request.devtools_request_id = "TEST";
 
     GURL cookie_url = test_server()->GetURL("/");
-    auto cookie = net::CanonicalCookie::Create(
-        cookie_url, "a=b", base::Time::Now(), std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto cookie = net::CanonicalCookie::CreateForTesting(cookie_url, "a=b",
+                                                         base::Time::Now());
     url_request_context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());
@@ -5446,10 +5445,8 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
 
     // Set the path to an irrelevant url to block the cookie from sending
     GURL cookie_url = test_server()->GetURL("/");
-    auto cookie = net::CanonicalCookie::Create(
-        cookie_url, "a=b;Path=/something-else", base::Time::Now(),
-        std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto cookie = net::CanonicalCookie::CreateForTesting(
+        cookie_url, "a=b;Path=/something-else", base::Time::Now());
     url_request_context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());

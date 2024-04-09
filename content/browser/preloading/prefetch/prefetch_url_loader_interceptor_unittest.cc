@@ -350,9 +350,8 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     bool result = false;
     base::RunLoop run_loop;
 
-    std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), /*server_time=*/std::nullopt,
-        /*cookie_partition_key=*/std::nullopt));
+    std::unique_ptr<net::CanonicalCookie> cookie(
+        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now()));
     EXPECT_TRUE(cookie.get());
     EXPECT_TRUE(cookie->IsHostCookie());
 

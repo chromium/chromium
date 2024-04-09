@@ -1209,7 +1209,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
   {
     // With default settings object, setting a third-party cookie is OK.
-    auto cookie = net::CanonicalCookie::Create(
+    auto cookie = net::CanonicalCookie::CreateForTesting(
         kDefaultUrl, "A=B; SameSite=none; Secure", base::Time::Now(),
         std::nullopt /* server_time */,
         std::nullopt /* cookie_partition_key */);
@@ -1230,7 +1230,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   {
     // Not if third-party cookies are disabled, though.
     cookie_settings_.set_block_third_party_cookies(true);
-    auto cookie = net::CanonicalCookie::Create(
+    auto cookie = net::CanonicalCookie::CreateForTesting(
         kDefaultUrl, "A2=B2; SameSite=none; Secure", base::Time::Now(),
         std::nullopt /* server_time */,
         std::nullopt /* cookie_partition_key */);
@@ -1275,7 +1275,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
 
-  auto cookie = net::CanonicalCookie::Create(
+  auto cookie = net::CanonicalCookie::CreateForTesting(
       kDefaultUrl, "A=B", base::Time::Now(), std::nullopt /* server_time */,
       std::nullopt /* cookie_partition_key */);
   EXPECT_FALSE(sync_service_->SetCanonicalCookie(
@@ -1572,7 +1572,7 @@ TEST_P(RestrictedCookieManagerTest, ChangeNotificationIncludesAccessSemantics) {
 
   ASSERT_THAT(listener->observed_changes(), IsEmpty());
 
-  auto cookie = net::CanonicalCookie::Create(
+  auto cookie = net::CanonicalCookie::CreateForTesting(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
       std::nullopt, std::nullopt /* cookie_partition_key */);
 
@@ -1607,11 +1607,11 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
 
   ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
 
-  auto unspecified_cookie = net::CanonicalCookie::Create(
+  auto unspecified_cookie = net::CanonicalCookie::CreateForTesting(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
       std::nullopt, std::nullopt /* cookie_partition_key */);
 
-  auto samesite_none_cookie = net::CanonicalCookie::Create(
+  auto samesite_none_cookie = net::CanonicalCookie::CreateForTesting(
       kDefaultUrl, "samesite_none_cookie=none; SameSite=None; Secure",
       base::Time::Now(), std::nullopt, std::nullopt /* cookie_partition_key */);
 
@@ -1683,7 +1683,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
 
     // Update partitioned cookie Max-Age: None -> 7200.
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
             "Max-Age=7200",
@@ -1732,7 +1732,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
 
     // Update partitioned cookie Max-Age: 7200 -> 3600.
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned; "
             "Max-Age=3600",
@@ -1752,7 +1752,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
     service_->OverrideIsolationInfoForTesting(kIsolationInfo);
     ExpectBadMessage();
     EXPECT_FALSE(sync_service_->SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned",
             base::Time::Now(), std::nullopt /* server_time */,
@@ -1774,7 +1774,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
 
   service_->OverrideIsolationInfoForTesting(kIsolationInfo);
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-      *net::CanonicalCookie::Create(
+      *net::CanonicalCookie::CreateForTesting(
           kCookieURL,
           "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned",
           base::Time::Now(), std::nullopt /* server_time */,
@@ -1817,7 +1817,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
 
   service_->OverrideIsolationInfoForTesting(kNoncedIsolationInfo);
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-      *net::CanonicalCookie::Create(
+      *net::CanonicalCookie::CreateForTesting(
           kCookieURL, "__Host-foo=bar; Secure; SameSite=None; Path=/;",
           base::Time::Now(), std::nullopt /* server_time */,
           net::CookiePartitionKey::FromScript()),
@@ -1862,7 +1862,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
 
     // Update partitioned cookie Max-Age: None -> 7200.
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-foo=bar; Secure; SameSite=None; Path=/; Max-Age=7200",
             base::Time::Now(), std::nullopt /* server_time */,
@@ -1878,14 +1878,14 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
     // Set an unpartitioned cookie.
     service_->OverrideIsolationInfoForTesting(kUnnoncedIsolationInfo);
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-unpartitioned=123; Secure; SameSite=None; Path=/;",
-            base::Time::Now(), std::nullopt /* server_time */, std::nullopt),
+            base::Time::Now()),
         "https", false /* can_modify_httponly */));
     // Set a partitioned cookie in the unnonced partition.
     EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-bar=baz; Secure; SameSite=None; Path=/; Partitioned;",
             base::Time::Now(), std::nullopt /* server_time */,
@@ -1919,11 +1919,11 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
 
     // Update unpartitioned cookie Max-Age: None -> 7200.
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-unpartitioned=123; Secure; SameSite=None; Path=/; "
             "Max-Age=7200",
-            base::Time::Now(), std::nullopt /* server_time */, std::nullopt),
+            base::Time::Now()),
         "https", false /* can_modify_httponly */));
     // Test that the nonced partition cannot observe the change.
     second_listener->WaitForChange();
@@ -1931,11 +1931,11 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
 
     // Update unnonced partitioned cookie Max-Age: None -> 7200.
     EXPECT_TRUE(SetCanonicalCookie(
-        *net::CanonicalCookie::Create(
+        *net::CanonicalCookie::CreateForTesting(
             kCookieURL,
             "__Host-bar=baz; Secure; SameSite=None; Path=/; Partitioned; "
             "Max-Age=7200",
-            base::Time::Now(), std::nullopt /* server_time */, std::nullopt),
+            base::Time::Now()),
         "https", false /* can_modify_httponly */));
     // Test that the nonced partition cannot observe the change.
     second_listener->WaitForChange();

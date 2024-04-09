@@ -270,9 +270,9 @@ std::unique_ptr<net::CanonicalCookie> CreateCookieKey(
     const std::string& cookie_line,
     std::optional<net::CookiePartitionKey> cookie_partition_key =
         std::nullopt) {
-  return net::CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                      std::nullopt /* server_time */,
-                                      cookie_partition_key);
+  return net::CanonicalCookie::CreateForTesting(
+      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
+      cookie_partition_key);
 }
 
 void RemoveModelEntries(

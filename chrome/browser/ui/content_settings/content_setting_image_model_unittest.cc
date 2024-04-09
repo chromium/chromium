@@ -224,9 +224,8 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
   GURL origin("http://google.com");
-  std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      origin, "A=B", base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */));
+  std::unique_ptr<net::CanonicalCookie> cookie(
+      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now()));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame())

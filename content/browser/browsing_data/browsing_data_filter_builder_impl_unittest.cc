@@ -72,9 +72,9 @@ void RunTestCase(TestCase test_case,
   std::string cookie_line = "A=2";
   GURL test_url(test_case.url);
   EXPECT_TRUE(test_url.is_valid()) << test_case.url;
-  std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-      test_url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
+                                             base::Time::Now());
   EXPECT_TRUE(cookie) << cookie_line << " from " << test_case.url
                       << " is not a valid cookie";
   if (cookie) {
@@ -87,9 +87,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2;domain=") + test_url.host();
-  cookie = net::CanonicalCookie::Create(
-      test_url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
+                                                  base::Time::Now());
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -100,9 +99,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2; HttpOnly;") + test_url.host();
-  cookie = net::CanonicalCookie::Create(
-      test_url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
+                                                  base::Time::Now());
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -113,9 +111,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2; HttpOnly; Secure;") + test_url.host();
-  cookie = net::CanonicalCookie::Create(
-      test_url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
+                                                  base::Time::Now());
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -459,10 +456,11 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
 
     CookieDeletionInfo delete_info =
         network::DeletionFilterToInfo(builder.BuildCookieDeletionFilter());
-    std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-        GURL("https://www.cookie.com/"),
-        "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
-        base::Time::Now(), std::nullopt, test_case.cookie_partition_key);
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateForTesting(
+            GURL("https://www.cookie.com/"),
+            "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
+            base::Time::Now(), std::nullopt, test_case.cookie_partition_key);
     EXPECT_TRUE(cookie);
     EXPECT_EQ(test_case.should_match,
               delete_info.Matches(
@@ -1101,17 +1099,17 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       network::DeletionFilterToInfo(builder.BuildCookieDeletionFilter());
 
   // Unpartitioned cookie should NOT match.
-  std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-      GURL("https://www.cookie.com/"),
-      "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
-      std::nullopt, std::nullopt);
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateForTesting(
+          GURL("https://www.cookie.com/"),
+          "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now());
   EXPECT_TRUE(cookie);
   EXPECT_FALSE(delete_info.Matches(
       *cookie,
       net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Partitioned cookie should match.
-  cookie = net::CanonicalCookie::Create(
+  cookie = net::CanonicalCookie::CreateForTesting(
       GURL("https://www.cookie.com/"),
       "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
       base::Time::Now(), std::nullopt,
@@ -1123,7 +1121,7 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Nonced partitioned cookie should match.
-  cookie = net::CanonicalCookie::Create(
+  cookie = net::CanonicalCookie::CreateForTesting(
       GURL("https://www.cookie.com/"),
       "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
       std::nullopt,

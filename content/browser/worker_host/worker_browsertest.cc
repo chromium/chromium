@@ -196,10 +196,10 @@ class WorkerTest : public ContentBrowserTest,
             net::CookieOptions::SameSiteCookieContext::ContextType::
                 SAME_SITE_LAX));
     GURL cookie_url = ssl_server_.GetURL(host, "/");
-    std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-        cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
-        base::Time::Now(), std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateForTesting(
+            cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
+            base::Time::Now());
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
         *cookie, cookie_url, options,

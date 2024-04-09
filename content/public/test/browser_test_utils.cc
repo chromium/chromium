@@ -1995,9 +1995,10 @@ bool SetCookie(BrowserContext* browser_context,
   browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
-  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, value, base::Time::Now(), std::nullopt /* server_time */,
-      base::OptionalFromPtr(cookie_partition_key)));
+  std::unique_ptr<net::CanonicalCookie> cc(
+      net::CanonicalCookie::CreateForTesting(
+          url, value, base::Time::Now(), std::nullopt /* server_time */,
+          base::OptionalFromPtr(cookie_partition_key)));
   DCHECK(cc.get());
 
   net::CookieOptions options;

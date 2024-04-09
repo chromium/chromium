@@ -991,8 +991,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
         request_->cookie_partition_key(),
-        /*block_truncated=*/true, &returned_status,
-        net::CookieSourceType::kHTTP);
+        /*block_truncated=*/true, net::CookieSourceType::kHTTP,
+        &returned_status);
 
     std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
     if (returned_status.IsInclude()) {

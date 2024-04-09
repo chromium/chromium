@@ -114,8 +114,8 @@ void SetCookieForPartition(
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
       std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
-      /*block_truncated=*/true,
-      /*status=*/nullptr, net::CookieSourceType::kOther));
+      /*block_truncated=*/true, net::CookieSourceType::kOther,
+      /*status=*/nullptr));
   if (!cc)
     return;
 

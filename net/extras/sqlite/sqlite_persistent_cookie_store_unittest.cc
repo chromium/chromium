@@ -1244,10 +1244,8 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   EXPECT_TRUE(cookie_scheme_callback1.result());
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   GURL ftp_url("ftp://subdomain.ftperiffic.com/page/");
-  auto cookie =
-      CanonicalCookie::Create(ftp_url, "A=B; max-age=3600", base::Time::Now(),
-                              /*server_time=*/std::nullopt,
-                              /*cookie_partition_key=*/std::nullopt);
+  auto cookie = CanonicalCookie::CreateForTesting(ftp_url, "A=B; max-age=3600",
+                                                  base::Time::Now());
   cookie_monster->SetCanonicalCookieAsync(std::move(cookie), ftp_url,
                                           CookieOptions::MakeAllInclusive(),
                                           set_cookie_callback.MakeCallback());
@@ -1259,10 +1257,8 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   for (int i = 0; i < 50; ++i) {
     ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback2;
     GURL url(base::StringPrintf("http://example%d.com/", i));
-    auto canonical_cookie =
-        CanonicalCookie::Create(url, "A=B; max-age=3600", base::Time::Now(),
-                                /*server_time=*/std::nullopt,
-                                /*cookie_partition_key=*/std::nullopt);
+    auto canonical_cookie = CanonicalCookie::CreateForTesting(
+        url, "A=B; max-age=3600", base::Time::Now());
     cookie_monster->SetCanonicalCookieAsync(
         std::move(canonical_cookie), url, CookieOptions::MakeAllInclusive(),
         set_cookie_callback2.MakeCallback());
@@ -1318,10 +1314,8 @@ TEST_F(SQLitePersistentCookieStoreTest, OpsIfInitFailed) {
 
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   GURL url("http://www.example.com/");
-  auto cookie =
-      CanonicalCookie::Create(url, "A=B; max-age=3600", base::Time::Now(),
-                              /*server_time=*/std::nullopt,
-                              /*cookie_partition_key=*/std::nullopt);
+  auto cookie = CanonicalCookie::CreateForTesting(url, "A=B; max-age=3600",
+                                                  base::Time::Now());
   cookie_monster->SetCanonicalCookieAsync(std::move(cookie), url,
                                           CookieOptions::MakeAllInclusive(),
                                           set_cookie_callback.MakeCallback());
@@ -1353,10 +1347,8 @@ TEST_F(SQLitePersistentCookieStoreTest, Coalescing) {
       {{Op::kDelete, Op::kAdd, Op::kDelete}, 1u},
       {{Op::kDelete, Op::kAdd, Op::kUpdate, Op::kDelete}, 1u}};
 
-  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt);
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now());
 
   for (const TestCase& testcase : testcases) {
     Create(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
@@ -1412,15 +1404,11 @@ TEST_F(SQLitePersistentCookieStoreTest, NoCoalesceUnrelated) {
                NetLogWithSource());
   run_loop.Run();
 
-  std::unique_ptr<CanonicalCookie> cookie1 = CanonicalCookie::Create(
-      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt);
+  std::unique_ptr<CanonicalCookie> cookie1 = CanonicalCookie::CreateForTesting(
+      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now());
 
-  std::unique_ptr<CanonicalCookie> cookie2 = CanonicalCookie::Create(
-      GURL("http://not.example.com/path"), "Tasty=No", base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt);
+  std::unique_ptr<CanonicalCookie> cookie2 = CanonicalCookie::CreateForTesting(
+      GURL("http://not.example.com/path"), "Tasty=No", base::Time::Now());
 
   // Wedge the background thread to make sure that it doesn't start consuming
   // the queue.
@@ -1457,10 +1445,8 @@ TEST_P(SQLitePersistentCookieStoreExclusiveAccessTest, LockedStore) {
                NetLogWithSource());
   run_loop.Run();
 
-  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now(),
-      /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt);
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
+      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now());
 
   // Wedge the background thread to make sure that it doesn't start consuming
   // the queue.
@@ -2204,9 +2190,8 @@ class SQLitePersistentCookieStoreTest_OriginBoundCookies
   void InitializeTest() {
     InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
 
-    basic_cookie_ = CanonicalCookie::Create(
-        basic_url_, "a=b; max-age=100000", /*creation_time=*/base::Time::Now(),
-        /*server_time=*/std::nullopt, /*cookie_partition_key=*/std::nullopt);
+    basic_cookie_ = CanonicalCookie::CreateForTesting(
+        basic_url_, "a=b; max-age=100000", /*creation_time=*/base::Time::Now());
 
     http_cookie_ = std::make_unique<CanonicalCookie>(*basic_cookie_);
     http_cookie_->SetSourceScheme(CookieSourceScheme::kNonSecure);
@@ -2249,10 +2234,9 @@ TEST_F(SQLitePersistentCookieStoreTest_OriginBoundCookies,
   // Try to add another cookie that is the same as basic_cookie_ except that its
   // value is different. Value isn't considered as part of the unique constraint
   // and so this cookie won't be considered unique and should fail to be added.
-  auto basic_cookie2 = CanonicalCookie::Create(
-      basic_url_, "a=b2; max-age=100000",
-      /*creation_time=*/base::Time::Now(),
-      /*server_time=*/std::nullopt, /*cookie_partition_key=*/std::nullopt);
+  auto basic_cookie2 =
+      CanonicalCookie::CreateForTesting(basic_url_, "a=b2; max-age=100000",
+                                        /*creation_time=*/base::Time::Now());
 
   store_->AddCookie(*basic_cookie2);
 

@@ -2490,9 +2490,8 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   callback.Reset();
   GURL cookie_url(GetURLFromTemplateWithoutParameters(
       config_.doh_config.servers()[0].server_template()));
-  auto cookie = CanonicalCookie::Create(
-      cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  auto cookie = CanonicalCookie::CreateForTesting(
+      cookie_url, "test-cookie=you-still-fail", base::Time::Now());
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,
