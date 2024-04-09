@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/command_line.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -20,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "content/public/test/test_utils.h"
 
 namespace performance_manager {
 namespace v8_memory {
@@ -34,6 +36,13 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   void SetUp() override {
     GetGraphFeatures().EnableV8ContextTracker();
     Super::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Force site-per-process so the number of internal utility v8 contexts is
+    // stable.
+    content::IsolateAllSitesForTesting(command_line);
+    Super::SetUpCommandLine(command_line);
   }
 
   void ExpectCounts(size_t v8_context_count,
