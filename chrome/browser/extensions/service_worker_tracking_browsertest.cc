@@ -89,9 +89,9 @@ class ServiceWorkerHostInterceptorForWorkerStop
     if (did_stop_worker_observer_) {
       did_stop_worker_observer_.Run(extension_id, service_worker_version_id);
     }
-    // Do not call `real_service_worker_host_service_`'s
-    // `ServiceWorkerHost::DidStopServiceWorkerContext()` method to simulate
-    // that a stop notification was never sent from the renderer worker thread.
+    // Do not call the real `ServiceWorkerHost::DidStopServiceWorkerContext()`
+    // method to simulate that a stop notification was never sent from the
+    // renderer worker thread.
   }
 
  private:
@@ -193,17 +193,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
         "version": "0.1",
         "background": {
           "service_worker" : "background.js"
-        }
+        },
+        "permissions": ["webNavigation"]
       })";
-  // The extensions script listens for runtime.onInstalled.
+  // The extensions script listens for runtime.onInstalled (to detect install
+  // and worker start completion) and webNavigation.onBeforeNavigate (to
+  // realistically request worker start).
   static constexpr char kBackgroundScript[] =
       R"({
         chrome.runtime.onInstalled.addListener((details) => {
-          // Asynchronously send the message that the listener fired so that the
-          // event is considered ack'd in the browser C++ code.
-          setTimeout(() => {
-            chrome.test.sendMessage('installed listener fired');
-          }, 0);
+          chrome.test.sendMessage('installed listener fired');
+        });
+        chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+          chrome.test.sendMessage('listener fired');
         });
       })";
   TestExtensionDir test_dir;
@@ -225,19 +227,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   // extension render process). This prevents the //content layer from
   // completely shutting down the render process (which is another way that
   // eventually removes the worker from `WorkerIdSet`).
-  const GURL extension_tab_url = GURL(base::StringPrintf(
-      "%s/extension_page_tab.html", extension->url().spec().c_str()));
-  NavigateInNewTab(extension_tab_url);
+  NavigateInNewTab(extension->GetResourceURL("extension_page_tab.html"));
 
-  // Setup intercept of `ServiceWorkerHost::DidStopServiceWorkerContext()` mojom
-  // call. This simulates the worker thread being very slow/never informing the
-  // //extensions browser layer that the worker context/thread terminated.
+  // Setup intercept of `ServiceWorkerHost::DidStopServiceWorkerContext()`
+  // mojom call. This simulates the worker thread being very slow/never
+  // informing the //extensions browser layer that the worker context/thread
+  // terminated.
   std::vector<WorkerId> service_workers_for_extension =
       ProcessManager::Get(browser()->profile())
           ->GetServiceWorkersForExtension(extension->id());
   ASSERT_EQ(service_workers_for_extension.size(), 1u);
+  const WorkerId& previous_service_worker_id = service_workers_for_extension[0];
   ServiceWorkerHostInterceptorForWorkerStop stop_interceptor(
-      service_workers_for_extension[0]);
+      previous_service_worker_id);
   stop_interceptor.SetDidStopServiceWorkerContextObserver(
       base::BindLambdaForTesting([&](const ExtensionId& extension_id,
                                      int64_t service_worker_version_id) {
@@ -255,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       GetServiceWorkerContext(), /*service_worker_version_id=*/0));
 
-  // Confirm after stopping we no longer have the previous `WorkerId`.
+  // Confirm after stopping we no longer have the previous `WorkerId` registered
+  // in the ProcessManager.
   ProcessManager* process_manager = ProcessManager::Get(profile());
   ASSERT_TRUE(process_manager);
   std::vector<WorkerId> service_workers_after_stop_worker =
@@ -265,43 +268,35 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   ASSERT_EQ(service_workers_after_stop_worker.size(), 1u);
 
   // Add an observer to the task queue to detect when the new worker instance
-  // `WorkerId` is added to `WorkerIdSet`.
+  // `WorkerId` is added to `WorkerIdSet` (registered in the process manager).
   WorkerInitWaiter worker_id_added_observer(extension->id());
 
-  // Start the new instance of the worker and wait for it to start.
-  int new_worker_thread_id = -1;
-  base::RunLoop start_worker_loop;
-  ASSERT_TRUE(GetServiceWorkerContext());
-  GetServiceWorkerContext()->StartWorkerForScope(
-      /*scope=*/extension->url(),
-      /*key=*/
-      blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(extension->url())),
-      /*info_callback=*/
-      base::BindLambdaForTesting([&new_worker_thread_id, &start_worker_loop](
-                                     int64_t version_id, int process_id,
-                                     int started_worker_thread_id) {
-        new_worker_thread_id = started_worker_thread_id;
-        start_worker_loop.Quit();
-      }),
-      /*failure_callback=*/
-      base::BindLambdaForTesting(
-          [](blink::ServiceWorkerStatusCode status_code) {
-            GTEST_FAIL() << "Starting the new worker instance failed.";
-          }));
-  start_worker_loop.Run();
+  // Navigate somewhere to trigger the start of the worker to handle the
+  // webNavigation.onBeforeRequest event.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
 
-  // Wait for the new worker instance to be added to `WorkerIdSet`.
-  worker_id_added_observer.WaitForInit();
+  // Wait for the new worker instance to be added to `WorkerIdSet` (registered
+  // in the process manager).
+  {
+    SCOPED_TRACE(
+        "Waiting for worker to restart in response to extensions event.");
+    worker_id_added_observer.WaitForInit();
+  }
 
   std::vector<WorkerId> service_workers_after_restarted_worker =
       process_manager->GetServiceWorkersForExtension(extension->id());
   // TODO(crbug.com/40936639): Once this bug is fixed, enable this expect.
   // EXPECT_EQ(service_workers_after_restarted_worker.size(), 1u);
   EXPECT_EQ(service_workers_after_restarted_worker.size(), 2u);
-  // Confirm `WorkerId` being tracked is the same newly started instance above.
-  EXPECT_EQ(service_workers_after_restarted_worker.back().thread_id,
-            new_worker_thread_id);
+  // Confirm `WorkerId` being tracked seems to be a new started instance than
+  // the first one (WorkerIds are sorted by their attributes so the last is
+  // considered the newest WorkerId since it has a higher thread, or process id,
+  // etc.).
+  const WorkerId& newly_started_service_worker_id =
+      service_workers_after_restarted_worker.back();
+  EXPECT_NE(newly_started_service_worker_id, previous_service_worker_id);
 }
 
 }  // namespace
