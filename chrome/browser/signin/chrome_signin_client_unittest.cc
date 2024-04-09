@@ -215,6 +215,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings:
     case signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog:
+    case signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion:
       return true;
   }
 }
@@ -350,7 +351,9 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
     signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
     signin_metrics::ProfileSignout::kMovePrimaryAccount,
+    signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion,
 };
+
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
 const int kNumberOfObsoleteSignoutSources = 6;

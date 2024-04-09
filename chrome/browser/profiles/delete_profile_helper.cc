@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,6 +16,8 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -25,6 +28,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,6 +37,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,6 +68,38 @@ bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
   ProfileAttributesEntry* entry =
       storage->GetProfileAttributesWithPath(profile_dir);
   return entry && entry->IsEphemeral();
+}
+
+// Disables sync in order to prevent that browsing data deletions propagate
+// across devices via sync.
+void DisableSyncForProfileDeletion(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Nothing to do as the user is signed out (hence sync is guaranteed to be
+    // disabled).
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS Ash, profile deletion uses a different codepath but some
+  // browser tests do exercise this code.
+  CHECK_IS_TEST(base::NotFatalUntil::M127);
+
+  // This is believed to be unreachable (outside tests) but the stakes are quite
+  // high too, so fall back to the legacy logic just in case.
+  // TODO(crbug.com/40797392): Remove this code and replace it all with
+  // CHECK_IS_TEST() or NOTREACHED_NORETURN().
+  if (SyncServiceFactory::HasSyncService(profile)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(profile);
+    sync_service->StopAndClear();
+  }
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -352,13 +390,10 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
     // ProfileManager instead of handling shutdown here.
     profile_manager_->NotifyOnProfileMarkedForPermanentDeletion(profile);
 
-    // Disable sync for doomed profile.
-    if (SyncServiceFactory::HasSyncService(profile)) {
-      syncer::SyncService* sync_service =
-          SyncServiceFactory::GetForProfile(profile);
-      // Ensure data is cleared even if sync was already off.
-      sync_service->StopAndClear();
-    }
+    // Sign out from doomed profile to avoid that RemoveBrowsingDataForProfile()
+    // would result in deletions being propagated to the server (and other
+    // devices) via sync.
+    DisableSyncForProfileDeletion(profile);
 
     // The Profile Data doesn't get wiped until Chrome closes. Since we promised
     // that the user's data would be removed, do so immediately.
@@ -371,7 +406,6 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
 
     // Clean-up pref data that won't be cleaned up by deleting the profile dir.
     profile->GetPrefs()->OnStoreDeletionFromDisk();
-
   } else {
     // We failed to load the profile, but it's safe to delete a not yet loaded
     // Profile from disk.

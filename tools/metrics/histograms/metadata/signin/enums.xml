@@ -748,6 +748,10 @@ chromium-metrics-reviews@google.com.
     profile switch, enterprise related interception or sync merge data
     confirmation.
   </int>
+  <int value="34" label="Signed out during profile deletion">
+    The primary account might be signed out when a profile is being deleted, to
+    avoid that deletion of data propagates via sync to other devices.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

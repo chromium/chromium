@@ -112,8 +112,11 @@ enum class ProfileSignout {
   // Move primary account to another profile on sign in interception or sync
   // merge data confirmation.
   kMovePrimaryAccount = 33,
+  // Signout as part of the profile deletion procedure, to avoid that deletion
+  // of data propagates via sync.
+  kSignoutDuringProfileDeletion = 34,
   // Keep this as the last enum.
-  kMaxValue = kMovePrimaryAccount
+  kMaxValue = kSignoutDuringProfileDeletion
 };
 
 // Enum values which enumerates all access points where sign in could be
