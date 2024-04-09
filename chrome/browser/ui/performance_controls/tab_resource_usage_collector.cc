@@ -28,6 +28,7 @@ TabResourceUsageCollector::TabResourceUsageCollector()
                         .CreateScopedQuery()) {
   query_observer_.Observe(&scoped_query_);
   scoped_query_.Start(kTabResourceUsageRefreshInterval);
+  load_state_observer_.Observe(resource_coordinator::TabLoadTracker::Get());
 }
 
 TabResourceUsageCollector::~TabResourceUsageCollector() = default;
@@ -94,5 +95,14 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
     for (auto& obs : observers_) {
       obs.OnTabResourceMetricsRefreshed();
     }
+  }
+}
+
+void TabResourceUsageCollector::OnLoadingStateChange(
+    content::WebContents* web_contents,
+    LoadingState old_loading_state,
+    LoadingState new_loading_state) {
+  if (new_loading_state == LoadingState::LOADED) {
+    ImmediatelyRefreshMetrics(web_contents);
   }
 }

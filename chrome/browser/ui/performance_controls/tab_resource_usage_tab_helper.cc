@@ -27,14 +27,6 @@ void TabResourceUsageTabHelper::PrimaryPageChanged(content::Page&) {
   resource_usage_->SetMemoryUsageInBytes(0);
 }
 
-void TabResourceUsageTabHelper::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  if (render_frame_host == web_contents()->GetPrimaryMainFrame()) {
-    TabResourceUsageCollector::Get()->ImmediatelyRefreshMetrics(web_contents());
-  }
-}
-
 uint64_t TabResourceUsageTabHelper::GetMemoryUsageInBytes() {
   return resource_usage_->memory_usage_in_bytes();
 }

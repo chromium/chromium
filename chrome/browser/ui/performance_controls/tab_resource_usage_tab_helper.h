@@ -43,8 +43,6 @@ class TabResourceUsageTabHelper
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
 
   uint64_t GetMemoryUsageInBytes();
   void SetMemoryUsageInBytes(uint64_t memory_usage_bytes);
