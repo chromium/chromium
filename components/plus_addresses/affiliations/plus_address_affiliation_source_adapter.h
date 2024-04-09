@@ -19,17 +19,16 @@ class PlusAddressService;
 class PlusAddressAffiliationSourceAdapter
     : public affiliations::AffiliationSource {
  public:
-  PlusAddressAffiliationSourceAdapter(PlusAddressService* service,
-                                      AffiliationSource::Observer* observer);
+  explicit PlusAddressAffiliationSourceAdapter(PlusAddressService* service);
   ~PlusAddressAffiliationSourceAdapter() override;
 
   // AffiliationSource:
   void GetFacets(AffiliationSource::ResultCallback response_callback) override;
-  void StartObserving() override;
+  void StartObserving(AffiliationSource::Observer* observer) override;
 
  private:
   const raw_ref<PlusAddressService> service_;
-  const raw_ref<AffiliationSource::Observer> observer_;
+  raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
 };
 
 }  // namespace plus_addresses

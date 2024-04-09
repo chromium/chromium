@@ -32,9 +32,8 @@ std::optional<FacetURI> FacetURIFromPasskey(
 }  // namespace
 
 PasskeyAffiliationSourceAdapter::PasskeyAffiliationSourceAdapter(
-    webauthn::PasskeyModel* passkey_model,
-    AffiliationSource::Observer* observer)
-    : passkey_model_(passkey_model), observer_(*observer) {}
+    webauthn::PasskeyModel* passkey_model)
+    : passkey_model_(passkey_model) {}
 
 PasskeyAffiliationSourceAdapter::~PasskeyAffiliationSourceAdapter() = default;
 
@@ -53,7 +52,10 @@ void PasskeyAffiliationSourceAdapter::GetFacets(
   std::move(response_callback).Run(std::move(result));
 }
 
-void PasskeyAffiliationSourceAdapter::StartObserving() {
+void PasskeyAffiliationSourceAdapter::StartObserving(
+    AffiliationSource::Observer* observer) {
+  CHECK(!observer_);
+  observer_ = observer;
   passkey_model_observation_.Observe(passkey_model_);
 }
 

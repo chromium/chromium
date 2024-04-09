@@ -34,9 +34,8 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
             /*pref_service=*/nullptr,
             std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
             /*webdata_service=*/nullptr),
-        adapter_(std::make_unique<PlusAddressAffiliationSourceAdapter>(
-            &service_,
-            &mock_source_observer_)) {}
+        adapter_(
+            std::make_unique<PlusAddressAffiliationSourceAdapter>(&service_)) {}
 
   testing::AssertionResult ExpectAdapterToReturnFacets(
       const std::vector<FacetURI>& expected_facets) {

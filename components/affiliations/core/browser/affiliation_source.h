@@ -36,9 +36,10 @@ class AffiliationSource {
   // Requests all facets associated with the affiliations source.
   virtual void GetFacets(ResultCallback callback) = 0;
 
-  // Requests the source to start listening for changes in its underling data
-  // layer.
-  virtual void StartObserving() = 0;
+  // Requests the source to start listening for changes in its underlying data
+  // layer. Updates are then relayed to the `observer`, which is the
+  // AffiliationPrefetcher instance that owns the source.
+  virtual void StartObserving(AffiliationSource::Observer* observer) = 0;
 };
 
 }  // namespace affiliations

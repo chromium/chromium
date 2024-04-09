@@ -84,8 +84,8 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockAffiliationSourceObserver>>();
     password_store()->Init(/*prefs=*/nullptr,
                            /*affiliated_match_helper=*/nullptr);
-    adapter_ = std::make_unique<PasswordAffiliationSourceAdapter>(
-        password_store(), mock_source_observer());
+    adapter_ =
+        std::make_unique<PasswordAffiliationSourceAdapter>(password_store());
     RunUntilIdle();
   }
 
@@ -216,7 +216,7 @@ TEST_F(PasswordAffiliationSourceAdapterTest, TestDisableSourceEmptyReturn) {
 // after DisableSourceing is called.
 TEST_F(PasswordAffiliationSourceAdapterTest,
        TestDisableSourceDisablesObserving) {
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
   adapter()->DisableSource();
 
   EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
@@ -231,7 +231,7 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
   EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
 
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
 
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsAdded(ElementsAre(
@@ -246,7 +246,7 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
   EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
 
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
 
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsRemoved(ElementsAre(
@@ -261,7 +261,7 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
        SignalsAddedBeforeRemovedForPrimaryKeyUpdates) {
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
 
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
   {
     testing::InSequence in_sequence;
     EXPECT_CALL(*mock_source_observer(),
@@ -283,7 +283,7 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
 // observer is signaled for added and removed domains on each repeated login.
 TEST_F(PasswordAffiliationSourceAdapterTest,
        DuplicateCredentialsArePrefetchWithMultiplicity) {
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
   std::vector<FacetURI> expected_facets;
 
   EXPECT_CALL(*mock_source_observer(),

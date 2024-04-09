@@ -15,9 +15,8 @@ using affiliations::FacetURI;
 }
 
 PlusAddressAffiliationSourceAdapter::PlusAddressAffiliationSourceAdapter(
-    PlusAddressService* service,
-    AffiliationSource::Observer* observer)
-    : service_(*service), observer_(*observer) {}
+    PlusAddressService* service)
+    : service_(*service) {}
 
 PlusAddressAffiliationSourceAdapter::~PlusAddressAffiliationSourceAdapter() =
     default;
@@ -37,7 +36,10 @@ void PlusAddressAffiliationSourceAdapter::GetFacets(
   std::move(response_callback).Run(std::move(facets));
 }
 
-void PlusAddressAffiliationSourceAdapter::StartObserving() {
+void PlusAddressAffiliationSourceAdapter::StartObserving(
+    AffiliationSource::Observer* observer) {
+  CHECK(!observer_);
+  observer_ = observer;
   // TODO(b/324553908): Observe plus addresses changes.
 }
 

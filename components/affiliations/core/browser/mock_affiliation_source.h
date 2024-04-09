@@ -20,7 +20,7 @@ class MockAffiliationSource : public AffiliationSource {
   ~MockAffiliationSource() override;
 
   MOCK_METHOD(void, GetFacets, (ResultCallback), (override));
-  MOCK_METHOD(void, StartObserving, (), (override));
+  MOCK_METHOD(void, StartObserving, (AffiliationSource::Observer*), (override));
 
   void AddFacet(FacetURI facet);
   void RemoveFacet(FacetURI facet);

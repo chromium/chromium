@@ -121,7 +121,7 @@ void AffiliationPrefetcher::Initialize() {
 
   is_ready_ = false;
   for (std::unique_ptr<AffiliationSource>& source : pending_initializations_) {
-    source->StartObserving();
+    source->StartObserving(this);
     initialized_sources_.push_back(std::move(source));
   }
 

@@ -22,9 +22,8 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
 }  // namespace
 
 PasswordAffiliationSourceAdapter::PasswordAffiliationSourceAdapter(
-    PasswordStoreInterface* store,
-    AffiliationSource::Observer* observer)
-    : store_(store), observer_(*observer) {}
+    PasswordStoreInterface* store)
+    : store_(store) {}
 
 PasswordAffiliationSourceAdapter::~PasswordAffiliationSourceAdapter() = default;
 
@@ -39,7 +38,10 @@ void PasswordAffiliationSourceAdapter::GetFacets(
   store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
-void PasswordAffiliationSourceAdapter::StartObserving() {
+void PasswordAffiliationSourceAdapter::StartObserving(
+    AffiliationSource::Observer* observer) {
+  CHECK(!observer_);
+  observer_ = observer;
   scoped_observation_.Observe(store_);
 }
 

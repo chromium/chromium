@@ -45,8 +45,8 @@ class PasskeyAffiliationSourceAdapterTest : public testing::Test {
   void SetUp() override {
     mock_source_observer_ =
         std::make_unique<testing::StrictMock<MockAffiliationSourceObserver>>();
-    adapter_ = std::make_unique<PasskeyAffiliationSourceAdapter>(
-        test_passkey_model(), mock_source_observer());
+    adapter_ =
+        std::make_unique<PasskeyAffiliationSourceAdapter>(test_passkey_model());
   }
 
   testing::AssertionResult ExpectAdapterToReturnFacets(
@@ -120,7 +120,7 @@ TEST_F(PasskeyAffiliationSourceAdapterTest, TestNewPasskeyDownloaded) {
       GetTestPasskey(kTestRpIdFacetURIAlpha1));
   RunUntilIdle();
 
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
 
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsAdded(ElementsAre(
@@ -138,7 +138,7 @@ TEST_F(PasskeyAffiliationSourceAdapterTest, TestPasskeyDeleted) {
   test_passkey_model()->AddNewPasskeyForTesting(passkey);
   RunUntilIdle();
 
-  adapter()->StartObserving();
+  adapter()->StartObserving(mock_source_observer());
 
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsRemoved(ElementsAre(
