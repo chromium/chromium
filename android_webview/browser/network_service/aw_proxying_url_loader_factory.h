@@ -75,13 +75,24 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
+      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+      std::optional<int64_t> navigation_id);
 
   AwProxyingURLLoaderFactory(const AwProxyingURLLoaderFactory&) = delete;
   AwProxyingURLLoaderFactory& operator=(const AwProxyingURLLoaderFactory&) =
       delete;
 
   ~AwProxyingURLLoaderFactory() override;
+
+  // Allows telling the loader whether the XRW origin trial is enabled for a
+  // navigation URL. This is an optimization that avoids hopping to the UI
+  // thread before starting a request.
+  static void SetXrwResultForNavigation(
+      const GURL& url,
+      blink::mojom::ResourceType resource_type,
+      int frame_tree_node_id,
+      int64_t navigation_id);
+  static void ClearXrwResultForNavigation(int64_t navigation_id);
 
   // static
   static void CreateProxy(
@@ -91,7 +102,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
+      scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+      std::optional<int64_t> navigation_id);
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -123,6 +135,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
+
+  std::optional<int64_t> navigation_id_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 };

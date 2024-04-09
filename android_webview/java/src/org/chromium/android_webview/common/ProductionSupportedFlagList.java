@@ -956,6 +956,7 @@ public final class ProductionSupportedFlagList {
                 "Schedule DOM Timers with high precision only if their deadline is <4ms."),
         Flag.baseFeature(
                 "InputStreamOptimizations", "Enables optimizations to input stream handling."),
+        Flag.baseFeature("WebViewOptimizeXrwNavigationFlow"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

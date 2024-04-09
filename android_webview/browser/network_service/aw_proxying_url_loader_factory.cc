@@ -97,7 +97,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   ~InterceptedRequest() override;
 
-  void Restart();
+  void Restart(std::optional<bool> xrw_enabled);
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -328,17 +328,23 @@ InterceptedRequest::~InterceptedRequest() {
 
 namespace {
 
+// Map holding whether the XRW origin trial is enabled for a navigation.
+using XrwEnabledMap = std::map<int64_t, std::pair<GURL, bool>>;
+XrwEnabledMap& GetXrwEnabledMap() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  static base::NoDestructor<XrwEnabledMap> map;
+  return *map;
+}
+
 // Persistent Origin Trials can only be checked on the UI thread.
-// |result_args| is owned by a BarrierClosure that executes after this call.
-void CheckXrwOriginTrialOnUiThread(GURL request_url,
-                                   int frame_tree_node_id,
-                                   blink::mojom::ResourceType resource_type,
-                                   InterceptResponseReceivedArgs* result_args) {
+bool CheckXrwOriginTrial(const GURL& request_url,
+                         int frame_tree_node_id,
+                         blink::mojom::ResourceType resource_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::OriginTrialsControllerDelegate* delegate =
       AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
   if (!delegate)
-    return;
+    return false;
 
   // Use the request URL for main frame resources (main frame navigation).
   // Use last committed origin of outermost main frame for all other requests.
@@ -360,30 +366,49 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
     }
   }
 
-  result_args->xrw_origin_trial_enabled = delegate->IsFeaturePersistedForOrigin(
+  bool xrw_origin_trial_enabled = delegate->IsFeaturePersistedForOrigin(
       url::Origin::Create(request_url), partition_origin,
       blink::mojom::OriginTrialFeature::kWebViewXRequestedWithDeprecation,
       base::Time::Now());
   base::UmaHistogramBoolean(
       "Android.WebView.RequestedWithHeader.OriginTrialEnabled",
-      result_args->xrw_origin_trial_enabled);
+      xrw_origin_trial_enabled);
 
-  if (result_args->xrw_origin_trial_enabled &&
+  if (xrw_origin_trial_enabled &&
       (request_url.SchemeIsHTTPOrHTTPS() || request_url.SchemeIsWSOrWSS())) {
     base::UmaHistogramBoolean(
         "Android.WebView.RequestedWithHeader.PageSchemeIsCryptographic",
         request_url.SchemeIsCryptographic());
   }
+  return xrw_origin_trial_enabled;
+}
+
+// Persistent Origin Trials can only be checked on the UI thread.
+// |result_args| is owned by a BarrierClosure that executes after this call.
+void CheckXrwOriginTrialOnUiThread(GURL request_url,
+                                   int frame_tree_node_id,
+                                   blink::mojom::ResourceType resource_type,
+                                   InterceptResponseReceivedArgs* result_args) {
+  result_args->xrw_origin_trial_enabled =
+      CheckXrwOriginTrial(request_url, frame_tree_node_id, resource_type);
 }
 
 // Post a call to the UI thread to check if the XRW deprecation trial is enabled
 // for |request_url|, saving the result in |result_args|.
-// |result_args| is owned by the |done_callback|.
-void CheckXrwOriginTrialAsync(GURL request_url,
+// |result_args| is owned by the |done_callback|. If |cached_result| is present,
+// will call |done_callback| synchronously.
+void CheckXrwOriginTrialAsync(std::optional<bool> cached_result,
+                              GURL request_url,
                               int frame_tree_node_id,
                               blink::mojom::ResourceType resource_type,
                               InterceptResponseReceivedArgs* result_args,
                               base::OnceClosure done_callback) {
+  if (cached_result) {
+    result_args->xrw_origin_trial_enabled = *cached_result;
+    std::move(done_callback).Run();
+    return;
+  }
+
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&CheckXrwOriginTrialOnUiThread, std::move(request_url),
@@ -407,7 +432,7 @@ void OnShouldInterceptRequestAsyncResult(
 
 }  // namespace
 
-void InterceptedRequest::Restart() {
+void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient();
 
@@ -433,7 +458,7 @@ void InterceptedRequest::Restart() {
             std::make_unique<InterceptResponseReceivedArgs>();
 
     CheckXrwOriginTrialAsync(
-        request_.url, frame_tree_node_id_,
+        xrw_enabled, request_.url, frame_tree_node_id_,
         static_cast<blink::mojom::ResourceType>(request_.resource_type),
         intercept_response_received_args.get(),
         base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
@@ -461,7 +486,7 @@ void InterceptedRequest::Restart() {
     }
 
     CheckXrwOriginTrialAsync(
-        request_.url, frame_tree_node_id_,
+        xrw_enabled, request_.url, frame_tree_node_id_,
         static_cast<blink::mojom::ResourceType>(request_.resource_type),
         intercept_response_received_args, arg_ready_closure);
 
@@ -584,7 +609,7 @@ bool InterceptedRequest::InputStreamFailed(bool restart_needed) {
 
   input_stream_previously_failed_ = true;
   proxied_client_receiver_.reset();
-  Restart();
+  Restart(std::nullopt);
   return true;  // request restarted
 }
 
@@ -783,7 +808,7 @@ void InterceptedRequest::FollowRedirect(
   if (!target_client_)
     return;
 
-  Restart();
+  Restart(std::nullopt);
 }
 
 void InterceptedRequest::SetPriority(net::RequestPriority priority,
@@ -914,12 +939,14 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     bool intercept_only,
     std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
+    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+    std::optional<int64_t> navigation_id)
     : frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
       security_options_(security_options),
       xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
-      browser_context_handle_(std::move(browser_context_handle)) {
+      browser_context_handle_(std::move(browser_context_handle)),
+      navigation_id_(navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!(intercept_only_ && target_factory_remote));
   if (target_factory_remote) {
@@ -937,20 +964,51 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
 AwProxyingURLLoaderFactory::~AwProxyingURLLoaderFactory() = default;
 
 // static
+void AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
+    const GURL& url,
+    blink::mojom::ResourceType resource_type,
+    int frame_tree_node_id,
+    int64_t navigation_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  bool result = CheckXrwOriginTrial(url, frame_tree_node_id, resource_type);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](int64_t navigation_id, GURL url, bool result) {
+                       GetXrwEnabledMap()[navigation_id] =
+                           std::make_pair(url, result);
+                     },
+                     navigation_id, url, result));
+}
+
+// static
+void AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
+    int64_t navigation_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](int64_t navigation_id) {
+                       GetXrwEnabledMap().erase(navigation_id);
+                     },
+                     navigation_id));
+}
+
+// static
 void AwProxyingURLLoaderFactory::CreateProxy(
     int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle) {
+    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+    std::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // will manage its own lifetime
   new AwProxyingURLLoaderFactory(
       frame_tree_node_id, std::move(loader_receiver),
       std::move(target_factory_remote), false, security_options,
-      std::move(xrw_allowlist_matcher), std::move(browser_context_handle));
+      std::move(xrw_allowlist_matcher), std::move(browser_context_handle),
+      navigation_id);
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -983,6 +1041,20 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     options |= network::mojom::kURLLoadOptionBlockThirdPartyCookies;
   }
 
+  std::optional<bool> xrw_enabled;
+  if (navigation_id_) {
+    auto& map = GetXrwEnabledMap();
+    auto it = map.find(*navigation_id_);
+    if (it != map.end()) {
+      // Make sure the origin still matches for this navigation.
+      if (url::Origin::Create(it->second.first) ==
+          url::Origin::Create(request.url)) {
+        xrw_enabled = it->second.second;
+      }
+      map.erase(it);
+    }
+  }
+
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.
   InterceptedRequest* req;
@@ -1002,7 +1074,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
         intercept_only_, security_options_, xrw_allowlist_matcher_,
         browser_context_handle_);
   }
-  req->Restart();
+  req->Restart(xrw_enabled);
 }
 
 void AwProxyingURLLoaderFactory::OnTargetFactoryError() {

@@ -147,6 +147,35 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
+BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
+             "WebViewOptimizeXrwNavigationFlow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A throttle which checks if the XRW origin trial is enabled for this
+// navigation, and forwards it to the proxying loader factory.
+class XrwNavigationThrottle : public content::NavigationThrottle {
+ public:
+  explicit XrwNavigationThrottle(content::NavigationHandle* handle)
+      : NavigationThrottle(handle) {}
+  ~XrwNavigationThrottle() override {
+    AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
+        navigation_handle()->GetNavigationId());
+  }
+
+  ThrottleCheckResult WillStartRequest() override {
+    auto* handle = navigation_handle();
+    AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
+        handle->GetURL(),
+        handle->IsInOutermostMainFrame()
+            ? blink::mojom::ResourceType::kMainFrame
+            : blink::mojom::ResourceType::kSubFrame,
+        handle->GetFrameTreeNodeId(), handle->GetNavigationId());
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  const char* GetNameForLogging() override { return "XrwNavigationThrottle"; }
+};
+
 }  // anonymous namespace
 
 std::string GetProduct() {
@@ -578,6 +607,10 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
   if (safe_browsing_throttle) {
     throttles.push_back(std::move(safe_browsing_throttle));
   }
+  if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
+    throttles.push_back(
+        std::make_unique<XrwNavigationThrottle>(navigation_handle));
+  }
   return throttles;
 }
 
@@ -837,7 +870,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     new android_webview::AwProxyingURLLoaderFactory(
         frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
         true /* intercept_only */, std::nullopt /* security_options */,
-        nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle));
+        nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
+        std::nullopt /* navigation_id */);
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -852,7 +886,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                   true /* intercept_only */,
                   std::nullopt /* security_options */,
                   nullptr /* xrw_allowlist_matcher */,
-                  std::move(browser_context_handle));
+                  std::move(browser_context_handle),
+                  std::nullopt /* navigation_id */);
             },
             std::move(receiver), frame_tree_node_id,
             std::move(browser_context_handle)));
@@ -1015,7 +1050,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
                        std::move(xrw_allowlist_matcher),
-                       std::move(browser_context_handle)));
+                       std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
@@ -1030,7 +1065,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
             aw_browser_context->service_worker_xrw_allowlist_matcher(),
-            std::move(browser_context_handle)));
+            std::move(browser_context_handle), navigation_id));
   }
 }
 
