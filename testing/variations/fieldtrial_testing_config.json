@@ -625,21 +625,6 @@
             ]
         }
     ],
-    "AndroidVisibleUrlTruncationV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidVisibleUrlTruncationV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "AomVpxUseChromeThreads": [
         {
             "platforms": [
