@@ -11579,7 +11579,7 @@
                 {
                     "name": "LowDeadline",
                     "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "400"
+                        "MinorModeRestrictionsFetchDeadlineMs": "1000"
                     },
                     "enable_features": [
                         "MinorModeRestrictionsForHistorySyncOptIn"
