@@ -1813,6 +1813,7 @@ class AutomationRootNode extends AutomationNode {
     // Don't return undefined, because the id is often passed directly
     // as an argument to a native binding that expects only a valid number.
     if (id === undefined) {
+      console.warn('id of root node was undefined. Setting to -1.');
       id = -1;
     }
     return id;
@@ -2265,6 +2266,13 @@ class AtpAutomation {
     return this.desktopId_;
   }
 
+  reset() {
+    this.automationClientRemote_.disable();
+    this.desktopId_ = undefined;
+    this.desktopTree_ = undefined;
+    automationUtil.idToCallback = {};
+    AutomationRootNode.destroyAll();
+  }
 
   get desktopTree() {
     return this.desktopTree_;
@@ -2276,6 +2284,7 @@ class AtpAutomation {
     }
     if (this.desktopTree_) {
         callback(this.desktopTree_);
+        return;
     }
     return new Promise(async resolve => {
       await this.automationClientRemote_.enable().then(enableResult => {
@@ -2432,6 +2441,24 @@ automationInternal.onTreeChange.addListener(function(
     exceptionHandler.handle(
         'Error in tree change observer for ' + changeType, e);
   }
+});
+
+automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
+  const tree = AutomationRootNode.getOrCreate(treeID);
+  if (!tree) {
+    return;
+  }
+
+  for (let i = 0; i < nodeIDs.length; i++) {
+    tree.remove(nodeIDs[i]);
+  }
+});
+
+automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
+  if (!chrome.automation.desktopId) {
+    return;
+  }
+  chrome.automation.reset();
 });
 
 /**

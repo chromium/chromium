@@ -34,7 +34,9 @@ void FakeServiceClient::Enable(EnableCallback callback) {
   std::move(callback).Run(desktop_tree_id_);
 }
 
-void FakeServiceClient::Disable() {}
+void FakeServiceClient::Disable() {
+  num_disable_called_++;
+}
 
 void FakeServiceClient::EnableChildTree(const ui::AXTreeID& tree_id) {}
 

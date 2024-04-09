@@ -9,7 +9,17 @@
 namespace ax {
 
 JSTestInterface::JSTestInterface(base::OnceCallback<void(bool)> on_complete)
-    : on_complete_(std::move(on_complete)), receiver_(this) {}
+    : on_complete_(std::move(on_complete)),
+      on_checkpoint_reached_(),
+      receiver_(this) {}
+
+JSTestInterface::JSTestInterface(
+    base::OnceCallback<void(bool)> on_complete,
+    base::RepeatingCallback<void(const std::string&)> on_checkpoint_reached)
+    : on_complete_(std::move(on_complete)),
+      on_checkpoint_reached_(std::move(on_checkpoint_reached)),
+      receiver_(this) {}
+
 JSTestInterface::~JSTestInterface() = default;
 void JSTestInterface::BindReceiver(
     mojo::GenericPendingReceiver pending_receiver) {
@@ -54,6 +64,13 @@ void JSTestInterface::Disconnect() {
 
 void JSTestInterface::TestComplete(bool success) {
   std::move(on_complete_).Run(success);
+}
+
+void JSTestInterface::CheckpointReached(
+    const std::string& checkpoint_identifier) {
+  if (!on_checkpoint_reached_.is_null()) {
+    on_checkpoint_reached_.Run(checkpoint_identifier);
+  }
 }
 
 void JSTestInterface::Log(const std::string& log_string) {

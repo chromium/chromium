@@ -29,7 +29,8 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   void BindAutomationClient(
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client);
 
-  void Disable();
+  // ax::mojom::AutomationClient:
+  void Disable() override;
 
  private:
   friend class AccessibilityServiceClientTest;

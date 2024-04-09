@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -62,10 +65,27 @@ class AtpJSApiTest : public testing::Test {
     test_waiter_.Run();
   }
 
+  void WaitAtCheckpoint(const std::string& checkpoint_identifier) {
+    checkpoint_loops_[checkpoint_identifier].Run();
+  }
+
+  void SynchronizeAfterMojoCalls() {
+    // TODO(b:332620645): Implement robust synchronization mechanism for atp js
+    // tests. This loop here is necessary because the mojo call above that
+    // dispatches events needs to send data to a different thread. If the JS
+    // code ahead runs without this, it uses the cached callback containing the
+    // desktop (which is already computed after a call to
+    // chrome.automation.getDesktop), which means it picks up the old tree
+    // values without this change.
+    base::RunLoop loop;
+    loop.RunUntilIdle();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeServiceClient> client_;
   base::RunLoop test_waiter_;
+  std::map<std::string, base::RunLoop> checkpoint_loops_;
 
  private:
   // The AT type to use, this will inform which APIs are added and available
@@ -99,7 +119,17 @@ class AtpJSApiTest : public testing::Test {
             base::BindLambdaForTesting([this](bool success) {
               EXPECT_TRUE(success) << "Mojo JS was not successful";
               test_waiter_.Quit();
-            }));
+            }),
+            base::BindLambdaForTesting(
+                [this](const std::string& checkpoint_identifier) {
+                  const auto it = checkpoint_loops_.find(checkpoint_identifier);
+                  ASSERT_NE(it, checkpoint_loops_.end())
+                      << "Javascript code reached a checkpoint: "
+                      << checkpoint_identifier
+                      << " that c++ is "
+                         "not waiting on.";
+                  it->second.Quit();
+                }));
     at_controller_->AddInterfaceForTest(GetATTypeForTest(),
                                         std::move(test_interface));
 
@@ -1338,38 +1368,98 @@ TEST_F(AutomationJSApiTest, GetFocuses) {
 // Ensures that chrome.automation.addTreeChangeObserver() receives updates.
 // Note that this test is not to test all possible observer variants, but rather
 // to confirm that atp dispatches event to observers.
-// TODO(B:327035268): Implement test infrastructure to send multiple tree
-// changes. This is necessary to test correctly removing observers.
 TEST_F(AutomationJSApiTest, AutomationObservers) {
   ExecuteJS(R"JS(
     const remote = axtest.mojom.TestBindingInterface.getRemote();
-    chrome.automation.addTreeChangeObserver("allTreeChanges", function(change) {
+    const observer = function(change) {
       if (change.type == 'nodeCreated' && change.target.role == 'button') {
-        remote.testComplete(/*success=*/true);
+        remote.checkpointReached('ObserverSawFirstTreeUpdate');
       }
-    });
+
+      // If we see a textField here, it means that this observer wasn't removed
+      // correctly later on.
+      if (change.target.role == 'textField') {
+        remote.testComplete(/*success=*/false);
+      }
+    };
+    chrome.automation.addTreeChangeObserver("allTreeChanges", observer);
   )JS");
 
   std::vector<ui::AXTreeUpdate> updates;
-  updates.emplace_back();
-  auto& tree_update = updates.back();
-  tree_update.has_tree_data = true;
-  tree_update.root_id = 1;
-  auto& tree_data = tree_update.tree_data;
-  tree_data.tree_id = client_->desktop_tree_id();
-  tree_data.focus_id = 2;
-  tree_update.nodes.emplace_back();
-  auto& node_data1 = tree_update.nodes.back();
-  node_data1.id = 1;
-  node_data1.role = ax::mojom::Role::kDesktop;
-  node_data1.child_ids.push_back(2);
-  tree_update.nodes.emplace_back();
-  auto& node_data2 = tree_update.nodes.back();
-  node_data2.id = 2;
-  node_data2.role = ax::mojom::Role::kButton;
-  std::vector<ui::AXEvent> events;
-  client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
-                                   events);
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_data.focus_id = 2;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  WaitAtCheckpoint("ObserverSawFirstTreeUpdate");
+
+  ExecuteJS(R"JS(
+    chrome.automation.getDesktop(desktop => {
+      const notAbutton = desktop.firstChild;
+      if (notAbutton.role !== 'button') {
+        remote.testComplete(/*success=*/false);
+      }
+
+      chrome.automation.removeTreeChangeObserver(observer);
+      remote.checkpointReached('ObserverRemoved');
+    });
+  )JS");
+
+  WaitAtCheckpoint("ObserverRemoved");
+
+  updates.clear();
+
+  // Create a second update for the same tree that modifies a node. This update
+  // will be ignored by JS because there are no observers left. However, if
+  // there are still listeners, they will listen for the text field added node
+  // and make this test fail, defined above.
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_data.focus_id = 2;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+
+    // Only change from the first update.
+    node_data2.role = ax::mojom::Role::kTextField;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  ExecuteJS(R"JS(
+    remote.testComplete(/*success=*/true);
+  )JS");
 
   WaitForJSTestComplete();
 }
@@ -1526,6 +1616,164 @@ TEST_F(AutomationJSApiTest, OnChildTreeEvents) {
   }
 
   WaitForJSTestComplete();
+}
+
+// Ensures that when nodes are deleted, the js objects are also removed.
+TEST_F(AutomationJSApiTest, DeletedNodesAreRemovedFromTree) {
+  std::vector<ui::AXTreeUpdate> updates;
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kStaticText;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+      if (desktop.children.length !== 1) {
+        remote.testComplete(/*success=*/false);
+      }
+    remote.checkpointReached('JSTreeHasOneChild');
+    });
+  )JS");
+
+  // Wait until javascript code says it has reached this checkpoint.
+  // This is important because there are two threads running here, and it can be
+  // the case that the test thread sends all tree updates before js has the
+  // chance to see that it had one child, and then later that the child is
+  // deleted.
+  WaitAtCheckpoint("JSTreeHasOneChild");
+
+  // Delete node:
+  {
+    updates.clear();
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.node_id_to_clear = 1;
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  SynchronizeAfterMojoCalls();
+
+  ExecuteJS(R"JS(
+    chrome.automation.getDesktop(desktop => {
+      if (desktop.children.length == 0) {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+  )JS");
+
+  WaitForJSTestComplete();
+}
+
+// Ensures that when event listeners are added, once the last one is removed,
+// automation is disabled and js objects are destroyed.
+TEST_F(AutomationJSApiTest, OnAllAutomationEventListenersRemoved) {
+  std::vector<ui::AXTreeUpdate> updates;
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const listener = function() {};
+    chrome.automation.getDesktop(desktop => {
+      desktop.addEventListener('childrenChanged',       listener);
+      remote.checkpointReached('EventListenerAdded');
+    });
+  )JS");
+
+  WaitAtCheckpoint("EventListenerAdded");
+
+  updates.clear();
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data = tree_update.nodes.back();
+    node_data.id = 1;
+    node_data.role = ax::mojom::Role::kDesktop;
+    node_data.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  SynchronizeAfterMojoCalls();
+
+  ExecuteJS(R"JS(
+    chrome.automation.getDesktop(desktop => {
+      desktop.removeEventListener('childrenChanged', listener);
+    });
+  )JS");
+
+  // TODO(b:332620645): Implement robust synchronization mechanism for atp js
+  // This script runs separate from the one above so that the loop of the v8
+  // thread runs and dispatches the mojo calls to disable automation (after the
+  // last listener is removed). This causes the automation js objects to be
+  // reset.
+
+  ExecuteJS(R"JS(
+    if (chrome.automation.desktopTree === undefined) {
+      remote.testComplete(/*success=*/true);
+    }
+  )JS");
+
+  WaitForJSTestComplete();
+
+  EXPECT_EQ(client_->num_disable_called(), 1u);
 }
 
 }  // namespace ax

@@ -25,8 +25,7 @@ interface AutomationClient {
   // accessibility tree creation within the client. Calling this method
   // without calling Enable or calling it multiple times has no adverse
   // effects.
-  // TODO(b/262638176): Implement AutomationClient::Disable.
-  // Disable();
+  Disable();
 
   // Enables accessibility for a particular subtree of the client. This will
   // result in the client repeatedly calling DispatchAccessibilityEvents()
@@ -38,5 +37,5 @@ interface AutomationClient {
   // Forwards the action described by AXActionData to all clients. Actions
   // are resolved by each client based on tree id, action type and other
   // action data fields.
-   PerformAction(ax.mojom.AXActionData action_data);
+  PerformAction(ax.mojom.AXActionData action_data);
 };

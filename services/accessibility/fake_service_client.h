@@ -60,7 +60,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   // ax::mojom::AutomationClient:
   void Enable(EnableCallback callback) override;
-  void Disable();
+  void Disable() override;
   void EnableChildTree(const ui::AXTreeID& tree_id) override;
   void PerformAction(const ui::AXActionData& data) override;
 
@@ -179,11 +179,14 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  uint32_t num_disable_called() const { return num_disable_called_; }
+
  private:
   raw_ptr<mojom::AccessibilityService, DanglingUntriaged> service_;
   base::OnceClosure automation_bound_closure_;
   base::OnceCallback<void(const ui::AXActionData&)>
       perform_action_called_callback_;
+  uint32_t num_disable_called_ = 0;
 
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;

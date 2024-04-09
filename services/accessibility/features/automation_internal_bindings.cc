@@ -60,7 +60,17 @@ ui::AutomationV8Bindings* AutomationInternalBindings::GetAutomationV8Bindings()
 }
 
 void AutomationInternalBindings::NotifyTreeEventListenersChanged() {
-  // TODO(crbug.com/1357889): Implement.
+  // This task is posted because we need to wait for any pending mutations
+  // to be processed before sending the event.
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto& main_runner = base::SequencedTaskRunner::GetCurrentDefault();
+
+  // `this` is safe here because this object outlives
+  // AutomationTreeManagerOwner, which in turn generates this kind of event.
+  auto task = base::BindOnce(&AutomationInternalBindings::
+                                 MaybeSendOnAllAutomationEventListenersRemoved,
+                             base::Unretained(this));
+  main_runner->PostTask(FROM_HERE, std::move(task));
 }
 
 void AutomationInternalBindings::ThrowInvalidArgumentsException(
