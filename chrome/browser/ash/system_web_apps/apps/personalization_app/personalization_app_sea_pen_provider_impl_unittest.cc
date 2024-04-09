@@ -671,6 +671,51 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_TRUE(thumbnail_info_future.Take().is_null());
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->ClearCounts();
+  CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1, kSeaPenId2});
+
+  base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+  EXPECT_THAT(recent_images_future.Take(),
+              testing::UnorderedElementsAre(kSeaPenId1, kSeaPenId2));
+
+  // Select the recent image |kSeaPenId1| as the current wallpaper.
+  base::test::TestFuture<bool> select_wallpaper_future;
+  sea_pen_provider_remote()->SelectRecentSeaPenImage(
+      kSeaPenId1, select_wallpaper_future.GetCallback());
+  EXPECT_TRUE(select_wallpaper_future.Take());
+
+  // Delete |kSeaPenId2| from recent SeaPen images. |kSeaPenId1| is still the
+  // current wallpaper.
+  base::test::TestFuture<bool> delete_future;
+  sea_pen_provider_remote()->DeleteRecentSeaPenImage(
+      kSeaPenId2, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Take());
+
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+  EXPECT_THAT(recent_images_future.Take(),
+              testing::UnorderedElementsAre(kSeaPenId1));
+  EXPECT_EQ(WallpaperType::kSeaPen,
+            test_wallpaper_controller()->wallpaper_info()->type);
+  EXPECT_EQ(0, test_wallpaper_controller()->set_default_wallpaper_count());
+
+  // Delete |kSeaPenId2| from recent SeaPen images. Should reset to default
+  // wallpaper.
+  sea_pen_provider_remote()->DeleteRecentSeaPenImage(
+      kSeaPenId1, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Take());
+
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+  EXPECT_THAT(recent_images_future.Take(),
+              testing::ContainerEq(std::vector<uint32_t>({})));
+  EXPECT_EQ(1, test_wallpaper_controller()->set_default_wallpaper_count());
+}
+
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        ShouldShowSeaPenIntroductionDialog) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());

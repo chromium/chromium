@@ -24,6 +24,29 @@ namespace ash::personalization_app {
 
 namespace {
 
+void OnSeaPenImageDeleted(const AccountId& account_id,
+                          const uint32_t image_id,
+                          base::OnceCallback<void(bool success)> callback,
+                          bool success) {
+  if (!success) {
+    LOG(WARNING) << "Failed to delete SeaPen image.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  // Set selected wallpaper to default if the deleted image currently selected.
+  auto* wallpaper_controller = WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+  auto wallpaper_info = wallpaper_controller->GetActiveUserWallpaperInfo();
+  if (wallpaper_info.has_value() &&
+      wallpaper_info->type == WallpaperType::kSeaPen &&
+      wallpaper_info->location == base::NumberToString(image_id)) {
+    wallpaper_controller->SetDefaultWallpaper(
+        account_id, /*show_wallpaper=*/true, std::move(callback));
+  } else {
+    std::move(callback).Run(/*success=*/true);
+  }
+}
+
 void OnSeaPenImageSaved(const AccountId& account_id,
                         const uint32_t image_id,
                         base::OnceCallback<void(bool success)> callback,
@@ -115,8 +138,10 @@ void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
   DCHECK(sea_pen_wallpaper_manager);
 
-  sea_pen_wallpaper_manager->DeleteSeaPenImage(GetAccountId(profile_), id,
-                                               std::move(callback));
+  sea_pen_wallpaper_manager->DeleteSeaPenImage(
+      GetAccountId(profile_), id,
+      base::BindOnce(&OnSeaPenImageDeleted, GetAccountId(profile_), id,
+                     std::move(callback)));
 }
 
 void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
