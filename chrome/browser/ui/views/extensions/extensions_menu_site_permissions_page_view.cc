@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
@@ -43,6 +44,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -56,9 +58,6 @@ constexpr int kSiteAccessButtonsId = 0;
 constexpr size_t kOnClickButtonIndex = 0;
 constexpr size_t kOnSiteButtonIndex = 1;
 constexpr size_t kOnAllSitesButtonIndex = 2;
-
-// Same value as checkbox size in checkbox.cc.
-constexpr float kCheckboxIconDipSize = 16;
 
 // Returns the site access button in a site permissions `page`.
 std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
@@ -136,11 +135,9 @@ int GetSiteAccessButtonIndex(PermissionsManager::UserSiteAccess site_access) {
 
 // Returns the icon for the setting button.
 std::unique_ptr<views::ImageView> GetSettingsButtonIcon(int icon_size) {
-  auto settings_launch_icon =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kLaunchIcon, ui::kColorIconSecondary));
-  settings_launch_icon->SetImageSize(gfx::Size(icon_size, icon_size));
-  return settings_launch_icon;
+  return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowChromeRefreshIcon, ui::kColorIconSecondary,
+      icon_size));
 }
 
 }  // namespace
@@ -212,31 +209,28 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
             .AddChildren(
                 views::Builder<views::RadioButton>()
                     .SetText(GetSiteAccessRadioButtonText(site_access))
+                    .SetLabelStyle(views::style::STYLE_BODY_3)
+                    .SetEnabledTextColorIds(kColorExtensionsMenuText)
                     .SetGroup(kSiteAccessButtonsId)
                     // To align the radio button icon under the header back
-                    // button we need to add:
-                    //  - left back button border + icon size difference to the
-                    //  left of the icon
-                    //  - icon size difference + right back button border to the
-                    //  right of the icon, plus the  horizontal spacing to align
-                    //  the label.
+                    // button we add the back button border to the
+                    // left of the icon.
                     .SetProperty(
                         views::kMarginsKey,
-                        gfx::Insets::TLBR(
-                            0,
-                            back_button_border.left() +
-                                ((icon_size - kCheckboxIconDipSize) / 2),
-                            0, 0))
-                    .SetImageLabelSpacing(
-                        ((icon_size - kCheckboxIconDipSize) / 2) +
-                        back_button_border.right() + horizontal_spacing)
+                        gfx::Insets::TLBR(0, back_button_border.left(), 0, 0))
+                    // To align the radio button text under the header label
+                    // we add the back button border and horizontal spacing in
+                    // between the radio button icon and label.
+                    .SetImageLabelSpacing(back_button_border.right() +
+                                          horizontal_spacing)
                     .SetCallback(base::BindRepeating(
                         &ExtensionsMenuHandler::OnSiteAccessSelected,
                         base::Unretained(menu_handler), extension_id,
                         site_access)),
                 views::Builder<views::Label>()
                     .SetText(GetSiteAccessRadioButtonDescription(site_access))
-                    .SetTextStyle(views::style::STYLE_SECONDARY)
+                    .SetTextStyle(views::style::STYLE_BODY_5)
+                    .SetEnabledColorId(kColorExtensionsMenuSecondaryText)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .SetMultiLine(true)
                     .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
@@ -253,8 +247,8 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               // Add top dialog margins, since its the first element, and
-              // horizontal dialog margins. Vertical margins will be handled in
-              // between the contents.
+              // horizontal dialog margins. Vertical margins will be handled
+              // in between the contents.
               .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
                                                    dialog_insets.left(), 0,
                                                    dialog_insets.right()))
@@ -290,6 +284,9 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                                0, horizontal_spacing, 0, 0)),
                           views::Builder<views::Label>()
                               .CopyAddressTo(&extension_name_)
+                              .SetTextStyle(views::style::STYLE_HEADLINE_4)
+                              .SetEnabledColorId(
+                                  kColorExtensionsMenuSecondaryText)
                               .SetProperty(views::kMarginsKey,
                                            gfx::Insets::TLBR(
                                                0, horizontal_spacing, 0, 0)))),
@@ -307,6 +304,8 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                    gfx::Insets::VH(0, dialog_insets.left()))
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL))
+                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   create_radio_button_builder(
                       PermissionsManager::UserSiteAccess::kOnClick),
@@ -327,6 +326,8 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                               .CopyAddressTo(&toggle_label)
                               .SetText(l10n_util::GetStringUTF16(
                                   IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_LABEL))
+                              .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                              .SetEnabledColorId(kColorExtensionsMenuText)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT),
@@ -363,6 +364,9 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                               IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON),
                           /*subtitle=*/std::u16string(),
                           GetSettingsButtonIcon(icon_size)))
+                      .SetTitleTextStyle(views::style::STYLE_BODY_3_EMPHASIS,
+                                         ui::kColorDialogBackground,
+                                         kColorExtensionsMenuText)
                       // Align the hover button text by adding the dialog
                       // horizontal margins for the horizontal borders.
                       .SetBorder(views::CreateEmptyBorder(

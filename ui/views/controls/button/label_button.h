@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
@@ -342,9 +343,11 @@ class VIEWS_EXPORT LabelButtonActionViewInterface
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButton, Button)
 VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(views::style::TextStyle, LabelStyle)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
 VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)
 VIEW_BUILDER_PROPERTY(std::optional<SkColor>, EnabledTextColors)
+VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledTextColorIds)
 VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)
