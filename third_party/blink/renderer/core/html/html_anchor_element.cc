@@ -621,7 +621,7 @@ Element* HTMLAnchorElement::interestTargetElement() {
 }
 
 AtomicString HTMLAnchorElement::interestAction() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kInterestactionAttr);
   if (attribute_value && !attribute_value.IsNull() &&

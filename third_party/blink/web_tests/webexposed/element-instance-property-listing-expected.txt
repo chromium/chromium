@@ -392,6 +392,8 @@ html element area
     property host
     property hostname
     property href
+    property interestAction
+    property interestTargetElement
     property noHref
     property origin
     property password

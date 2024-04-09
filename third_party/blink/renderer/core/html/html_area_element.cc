@@ -223,6 +223,27 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     layout_image->AreaElementFocusChanged(this);
 }
 
+Element* HTMLAreaElement::interestTargetElement() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
+
+  return GetElementAttribute(html_names::kInteresttargetAttr);
+}
+
+AtomicString HTMLAreaElement::interestAction() const {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  const AtomicString& attribute_value =
+      FastGetAttribute(html_names::kInterestactionAttr);
+  if (attribute_value && !attribute_value.IsNull() &&
+      !attribute_value.empty()) {
+    return attribute_value;
+  }
+  return g_empty_atom;
+}
+
 void HTMLAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {

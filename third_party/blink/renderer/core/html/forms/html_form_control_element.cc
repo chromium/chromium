@@ -539,7 +539,7 @@ InvokeAction HTMLFormControlElement::GetInvokeAction() const {
 }
 
 AtomicString HTMLFormControlElement::interestAction() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kInterestactionAttr);
   if (attribute_value && !attribute_value.IsNull() &&
