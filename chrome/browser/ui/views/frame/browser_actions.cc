@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 
+#include <optional>
+#include <string>
+
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -61,7 +64,7 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
 
 actions::ActionItem::ActionItemBuilder SidePanelAction(
     SidePanelEntryId id,
-    int title_id,
+    std::optional<int> title_id,
     int tooltip_id,
     const gfx::VectorIcon& icon,
     actions::ActionId action_id,
@@ -75,7 +78,9 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
              SidePanelUtil::CreateToggleSidePanelActionCallback(
                  SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
-      .SetText(l10n_util::GetStringUTF16(title_id))
+      .SetText(title_id.has_value()
+                   ? l10n_util::GetStringUTF16(title_id.value())
+                   : std::u16string())
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
                                                side_panel_icon_size))
@@ -206,8 +211,7 @@ void BrowserActions::InitializeBrowserActions() {
   if (lens::features::IsLensOverlayEnabled()) {
     // TODO(b/328295358): Change title and icon when available.
     root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kLensOverlayResults,
-                        IDS_SIDE_PANEL_COMPANION_TITLE,
+        SidePanelAction(SidePanelEntryId::kLensOverlayResults, std::nullopt,
                         IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
                         vector_icons::kSearchIcon,
                         kActionSidePanelShowLensOverlayResults,
