@@ -329,17 +329,6 @@ class PersonalDataManager : public KeyedService,
   // Returns all credit cards, server and local.
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
-  // Returns local IBANs.
-  virtual std::vector<const Iban*> GetLocalIbans() const;
-  // Returns server IBANs.
-  virtual std::vector<const Iban*> GetServerIbans() const;
-  // Returns all IBANs, server and local.
-  virtual std::vector<const Iban*> GetIbans() const;
-  // Returns all IBANs, server and local. All local IBANs that share the same
-  // prefix, suffix, and length as any existing server IBAN will be considered a
-  // duplicate IBAN. These duplicate IBANs will not be returned in the list.
-  virtual std::vector<const Iban*> GetIbansToSuggest() const;
-
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
 
@@ -364,14 +353,6 @@ class PersonalDataManager : public KeyedService,
   virtual gfx::Image* GetCreditCardArtImageForUrl(
       const GURL& card_art_url) const;
 
-  // Returns the cached card art image for the |card_art_url| if it was synced
-  // locally to the client. This function is called within
-  // GetCreditCardArtImageForUrl(), but can also be called separately as an
-  // optimization for situations where a separate fetch request after trying to
-  // retrieve local card art images is not needed. If the card art image is not
-  // present in the cache, this function will return a nullptr.
-  gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
-
   // TODO(b/322170538): Deprecated. Use the functions in
   // `address_data_manager()` instead. Migrate remaining callers.
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
@@ -384,13 +365,6 @@ class PersonalDataManager : public KeyedService,
   // and ordered by frecency with the expired cards put at the end of the
   // vector.
   std::vector<CreditCard*> GetCreditCardsToSuggest() const;
-
-  // Returns the masked bank accounts that can be suggested to the user.
-  std::vector<BankAccount> GetMaskedBankAccounts() const;
-
-  // Add a bank account to the cached list of bank accounts in
-  // PaymentsDataManager.
-  void AddMaskedBankAccountForTest(const BankAccount& bank_account);
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create

@@ -1525,7 +1525,8 @@ std::vector<Iban> AutofillSuggestionGenerator::GetTouchToFillIbansToSuggest() {
   std::vector<Iban> ibans_to_suggest;
   const PersonalDataManager& personal_data =
       CHECK_DEREF(autofill_client_->GetPersonalDataManager());
-  std::vector<const Iban*> available_ibans = personal_data.GetIbansToSuggest();
+  std::vector<const Iban*> available_ibans =
+      personal_data.payments_data_manager().GetIbansToSuggest();
 
   // Rank the IBANs by ranking score (see AutoFillDataModel for details).
   base::ranges::sort(

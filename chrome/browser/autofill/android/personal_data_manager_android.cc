@@ -753,7 +753,8 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetLocalIbansForSettings(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_ibans_list;
-  for (const Iban* iban : personal_data_manager_->GetLocalIbans()) {
+  for (const Iban* iban :
+       personal_data_manager_->payments_data_manager().GetLocalIbans()) {
     j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
   }
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
@@ -789,7 +790,7 @@ ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
   std::vector<BankAccount> bank_accounts =
-      personal_data_manager_->GetMaskedBankAccounts();
+      personal_data_manager_->payments_data_manager().GetMaskedBankAccounts();
   std::transform(bank_accounts.begin(), bank_accounts.end(),
                  std::back_inserter(j_bank_accounts_list),
                  [env](const BankAccount& bank_account) {
@@ -806,7 +807,8 @@ void PersonalDataManagerAndroid::AddMaskedBankAccountForTest(
     const JavaParamRef<jobject>& jbank_account) {
   BankAccount bank_account =
       CreateNativeBankAccountFromJava(env, jbank_account);
-  personal_data_manager_->AddMaskedBankAccountForTest(bank_account);  // IN-TEST
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      bank_account);  // IN-TEST
   personal_data_manager_->NotifyPersonalDataObserver();
 }
 

@@ -390,22 +390,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
   return payments_data_manager_->GetCreditCards();
 }
 
-std::vector<const Iban*> PersonalDataManager::GetLocalIbans() const {
-  return payments_data_manager_->GetLocalIbans();
-}
-
-std::vector<const Iban*> PersonalDataManager::GetServerIbans() const {
-  return payments_data_manager_->GetServerIbans();
-}
-
-std::vector<const Iban*> PersonalDataManager::GetIbans() const {
-  return payments_data_manager_->GetIbans();
-}
-
-std::vector<const Iban*> PersonalDataManager::GetIbansToSuggest() const {
-  return payments_data_manager_->GetIbansToSuggest();
-}
-
 PaymentsCustomerData* PersonalDataManager::GetPaymentsCustomerData() const {
   return payments_data_manager_->GetPaymentsCustomerData();
 }
@@ -435,11 +419,6 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
   return payments_data_manager_->GetCreditCardArtImageForUrl(card_art_url);
 }
 
-gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
-    const GURL& card_art_url) const {
-  return payments_data_manager_->GetCachedCardArtImageForUrl(card_art_url);
-}
-
 std::vector<VirtualCardUsageData*>
 PersonalDataManager::GetVirtualCardUsageData() const {
   return payments_data_manager_->GetVirtualCardUsageData();
@@ -462,16 +441,6 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
 
 std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
   return payments_data_manager_->GetCreditCardsToSuggest();
-}
-
-std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts() const {
-  return payments_data_manager_->GetMaskedBankAccounts();
-}
-
-void PersonalDataManager::AddMaskedBankAccountForTest(
-    const BankAccount& bank_account) {
-  payments_data_manager_->masked_bank_accounts_.push_back(
-      std::make_unique<BankAccount>(bank_account));
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {

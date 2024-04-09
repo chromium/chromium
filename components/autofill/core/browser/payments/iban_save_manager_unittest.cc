@@ -230,7 +230,8 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       iban, AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
-  const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
+  const std::vector<const Iban*> ibans =
+      personal_data().payments_data_manager().GetLocalIbans();
 
   // Verify IBAN has been successfully updated with the new nickname on accept.
   ASSERT_EQ(ibans.size(), 1U);
@@ -242,26 +243,28 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferLocalSaveForTesting(iban));
-  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
+  EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       iban, AutofillClient::SaveIbanOfferUserDecision::kDeclined);
-  const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
+  const std::vector<const Iban*> ibans =
+      personal_data().payments_data_manager().GetLocalIbans();
 
-  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
+  EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferLocalSaveForTesting(iban));
-  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
+  EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       iban, AutofillClient::SaveIbanOfferUserDecision::kIgnored);
-  const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
+  const std::vector<const Iban*> ibans =
+      personal_data().payments_data_manager().GetLocalIbans();
 
-  EXPECT_TRUE(personal_data().GetLocalIbans().empty());
+  EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 }
 
 TEST_F(IbanSaveManagerTest, LocallySaveIban_NotEnoughStrikesShouldOfferToSave) {

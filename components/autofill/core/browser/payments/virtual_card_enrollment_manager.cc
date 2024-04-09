@@ -487,8 +487,9 @@ void VirtualCardEnrollmentManager::EnsureCardArtImageIsSetBeforeShowingUI() {
   // chrome sync server has not synced down the card art url yet for the card
   // just uploaded.
   gfx::Image* cached_card_art_image =
-      personal_data_manager_->GetCachedCardArtImageForUrl(
-          state_.virtual_card_enrollment_fields.credit_card.card_art_url());
+      personal_data_manager_->payments_data_manager()
+          .GetCachedCardArtImageForUrl(
+              state_.virtual_card_enrollment_fields.credit_card.card_art_url());
   if (cached_card_art_image && !cached_card_art_image->IsEmpty()) {
     // We found a card art image in the cache, so set |state_|'s
     // |virtual_card_enrollment_fields|'s |card_art_image| to it.

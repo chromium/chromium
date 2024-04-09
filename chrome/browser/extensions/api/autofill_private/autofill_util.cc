@@ -241,7 +241,8 @@ CreditCardEntryList GenerateCreditCardList(
 IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data) {
   IbanEntryList list;
-  for (const autofill::Iban* iban : personal_data.GetLocalIbans()) {
+  for (const autofill::Iban* iban :
+       personal_data.payments_data_manager().GetLocalIbans()) {
     list.push_back(IbanToIbanEntry(*iban, personal_data));
   }
 

@@ -392,6 +392,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
     is_syncing_for_test_ = is_syncing_for_test;
   }
 
+  // Add a bank account to the cached list of bank accounts in
+  // PaymentsDataManager.
+  void AddMaskedBankAccountForTest(const BankAccount& bank_account);
+
  protected:
   friend class PaymentsDataManagerTestApi;
   // TODO(b/322170538): Remove dependency.

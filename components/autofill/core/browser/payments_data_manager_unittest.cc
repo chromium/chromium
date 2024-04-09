@@ -273,14 +273,14 @@ TEST_F(PaymentsDataManagerTest, AddAndReloadServerIbans) {
   std::vector<const Iban*> expected_ibans = {&server_iban1, &server_iban2};
   personal_data_->Refresh();
   PersonalDataChangedWaiter(*personal_data_).Wait();
-  ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
+  ExpectSameElements(expected_ibans, payments_data_manager().GetServerIbans());
 
   // Reset the PersonalDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
   ResetPersonalDataManager();
 
   // Verify that we've reloaded the IBANs from the web database.
-  ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
+  ExpectSameElements(expected_ibans, payments_data_manager().GetServerIbans());
 }
 
 // Test that all (local and server) IBANs can be returned.
@@ -303,7 +303,7 @@ TEST_F(PaymentsDataManagerTest, GetIbans) {
 
   std::vector<const Iban*> all_ibans = {&local_iban1, &local_iban2,
                                         &server_iban1, &server_iban2};
-  ExpectSameElements(all_ibans, personal_data_->GetIbans());
+  ExpectSameElements(all_ibans, payments_data_manager().GetIbans());
 }
 
 // Test that deduplication works correctly when a local IBAN has a matching
@@ -334,7 +334,8 @@ TEST_F(PaymentsDataManagerTest, GetIbansToSuggest) {
 
   std::vector<const Iban*> ibans_to_suggest = {&server_iban1, &server_iban2,
                                                &local_iban2};
-  ExpectSameElements(ibans_to_suggest, personal_data_->GetIbansToSuggest());
+  ExpectSameElements(ibans_to_suggest,
+                     payments_data_manager().GetIbansToSuggest());
 }
 
 TEST_F(PaymentsDataManagerTest, AddLocalIbans) {
@@ -361,7 +362,7 @@ TEST_F(PaymentsDataManagerTest, AddLocalIbans) {
   personal_data_->AddAsLocalIban(iban2_with_different_nickname);
 
   std::vector<const Iban*> ibans = {&iban1, &iban2};
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 }
 
 TEST_F(PaymentsDataManagerTest, NoIbansAddedIfDisabled) {
@@ -375,7 +376,7 @@ TEST_F(PaymentsDataManagerTest, NoIbansAddedIfDisabled) {
   personal_data_->AddAsLocalIban(iban);
   personal_data_->AddAsLocalIban(iban1);
 
-  EXPECT_EQ(0U, personal_data_->GetLocalIbans().size());
+  EXPECT_EQ(0U, payments_data_manager().GetLocalIbans().size());
 }
 
 TEST_F(PaymentsDataManagerTest, AddingIbanUpdatesPref) {
@@ -398,7 +399,7 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalIbans) {
 
   // Verify the `iban` has been added successfully.
   std::vector<const Iban*> ibans = {&iban};
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Update the `iban` with new value.
   iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
@@ -406,7 +407,7 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalIbans) {
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ibans = {&iban};
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Update the `iban` with new nickname.
   iban.set_nickname(u"Another nickname");
@@ -414,7 +415,7 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalIbans) {
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ibans = {&iban};
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 }
 
 TEST_F(PaymentsDataManagerTest, RemoveLocalIbans) {
@@ -425,10 +426,10 @@ TEST_F(PaymentsDataManagerTest, RemoveLocalIbans) {
 
   // Verify the `iban` has been added successfully.
   std::vector<const Iban*> ibans = {&iban};
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   RemoveByGUIDFromPersonalDataManager(iban.guid());
-  EXPECT_TRUE(personal_data_->GetLocalIbans().empty());
+  EXPECT_TRUE(payments_data_manager().GetLocalIbans().empty());
 
   // Verify that removal of a GUID that doesn't exist won't crash.
   RemoveByGUIDFromPersonalDataManager(iban.guid());
@@ -451,7 +452,7 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_LocalIban) {
   test_clock.SetNow(kSomeLaterTime);
 
   // Use `local_iban`, then verify usage stats.
-  EXPECT_EQ(personal_data_->GetLocalIbans().size(), 1u);
+  EXPECT_EQ(payments_data_manager().GetLocalIbans().size(), 1u);
   payments_data_manager().RecordUseOfIban(local_iban);
   PersonalDataChangedWaiter(*personal_data_).Wait();
   histogram_tester.ExpectTotalCount(
@@ -478,7 +479,7 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
   test_clock.SetNow(kSomeLaterTime);
 
   // Use `server_iban`, then verify usage stats.
-  EXPECT_EQ(personal_data_->GetServerIbans().size(), 1u);
+  EXPECT_EQ(payments_data_manager().GetServerIbans().size(), 1u);
   payments_data_manager().RecordUseOfIban(server_iban);
   PersonalDataChangedWaiter(*personal_data_).Wait();
   histogram_tester.ExpectTotalCount(
@@ -1901,7 +1902,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
       {bank_account1, bank_account2}));
   std::vector<BankAccount> bank_accounts =
-      personal_data_->GetMaskedBankAccounts();
+      payments_data_manager().GetMaskedBankAccounts();
   // Since the PersonalDataManager was initialized before adding the masked
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
   // an empty list.
@@ -1914,7 +1915,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
 
   // Verify that no bank accounts are loaded into PersonalDataManager because
   // the experiment is turned off.
-  bank_accounts = personal_data_->GetMaskedBankAccounts();
+  bank_accounts = payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(0u, bank_accounts.size());
 }
 
@@ -1935,7 +1936,8 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_PaymentMethodsDisabled) {
 
   // Verify that no bank accounts are loaded into PersonalDataManager because
   // the AutofillPaymentMethodsEnabled pref is set to false.
-  EXPECT_THAT(personal_data_->GetMaskedBankAccounts(), testing::IsEmpty());
+  EXPECT_THAT(payments_data_manager().GetMaskedBankAccounts(),
+              testing::IsEmpty());
 }
 
 TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
@@ -1950,7 +1952,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
   // an empty list.
   std::vector<BankAccount> bank_accounts =
-      personal_data_->GetMaskedBankAccounts();
+      payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(0u, bank_accounts.size());
 
   // We need to call `Refresh()` to ensure that the BankAccounts are loaded
@@ -1958,7 +1960,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   personal_data_->Refresh();
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
-  bank_accounts = personal_data_->GetMaskedBankAccounts();
+  bank_accounts = payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(2u, bank_accounts.size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -2067,12 +2069,13 @@ TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
   ASSERT_TRUE(actual_image);
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
 
-  // TODO(crbug.com/1284788): Look into integrating with PersonalDataManagerMock
-  // and checking that PersonalDataManager::FetchImagesForUrls() does not get
-  // triggered when PersonalDataManager::GetCachedCardArtImageForUrl() is
+  // TODO(crbug.com/1284788): Look into integrating with PaymentsDataManagerMock
+  // and checking that PaymentsDataManager::FetchImagesForUrls() does not get
+  // triggered when PaymentsDataManager::GetCachedCardArtImageForUrl() is
   // called.
-  gfx::Image* cached_image = personal_data_->GetCachedCardArtImageForUrl(
-      GURL("https://www.example.com"));
+  gfx::Image* cached_image =
+      personal_data_->payments_data_manager().GetCachedCardArtImageForUrl(
+          GURL("https://www.example.com"));
   ASSERT_TRUE(cached_image);
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
 }
@@ -2260,7 +2263,7 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
 
   // Make sure everything is set up correctly.
   PersonalDataChangedWaiter(*personal_data_).Wait();
-  EXPECT_EQ(1U, personal_data_->GetLocalIbans().size());
+  EXPECT_EQ(1U, payments_data_manager().GetLocalIbans().size());
 
   // Creates a new IBAN and call `OnAcceptedLocalIbanSave()` and verify that
   // the new IBAN is saved.
@@ -2272,13 +2275,13 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
   iban1.set_record_type(Iban::kLocalIban);
 
   // Expect that the new IBAN is added.
-  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
+  ASSERT_EQ(2U, payments_data_manager().GetLocalIbans().size());
 
   std::vector<const Iban*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
   // Verify that we've loaded the IBAN from the web database.
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Creates a new `iban2` which has the same value as `iban0` but with
   // different nickname and call `OnAcceptedLocalIbanSave()`.
@@ -2295,21 +2298,21 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalIbanSave) {
   ibans.push_back(&iban1);
   ibans.push_back(&iban2);
   // Expect that the existing IBANs are updated.
-  ASSERT_EQ(2U, personal_data_->GetLocalIbans().size());
+  ASSERT_EQ(2U, payments_data_manager().GetLocalIbans().size());
 
   // Verify that we've loaded the IBANs from the web database.
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Call `OnAcceptedLocalIbanSave()` with the same iban1, verify that nothing
   // changes.
   payments_data_manager().OnAcceptedLocalIbanSave(iban1);
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 
   // Reset the PersonalDataManager. This tests that the IBANs are persisted
   // in the local web database even if the browser is re-loaded, ensuring that
   // the user can load the IBANs from the local web database on browser startup.
   ResetPersonalDataManager();
-  ExpectSameElements(ibans, personal_data_->GetLocalIbans());
+  ExpectSameElements(ibans, payments_data_manager().GetLocalIbans());
 }
 
 TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {

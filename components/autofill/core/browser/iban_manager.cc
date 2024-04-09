@@ -45,7 +45,8 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  std::vector<const Iban*> ibans = personal_data_manager_->GetIbansToSuggest();
+  std::vector<const Iban*> ibans =
+      personal_data_manager_->payments_data_manager().GetIbansToSuggest();
   if (ibans.empty()) {
     return false;
   }

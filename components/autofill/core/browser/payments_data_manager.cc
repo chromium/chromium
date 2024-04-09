@@ -1791,6 +1791,11 @@ void PaymentsDataManager::LogServerIbanLinkClicked() const {
       GetPaymentsSigninStateForMetrics());
 }
 
+void PaymentsDataManager::AddMaskedBankAccountForTest(
+    const BankAccount& bank_account) {
+  masked_bank_accounts_.push_back(std::make_unique<BankAccount>(bank_account));
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||

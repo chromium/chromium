@@ -149,7 +149,8 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 bool IbanSaveManager::MatchesExistingLocalIban(
     const Iban& import_candidate) const {
   return base::ranges::any_of(
-      personal_data_manager_->GetLocalIbans(), [&](const Iban* iban) {
+      personal_data_manager_->payments_data_manager().GetLocalIbans(),
+      [&](const Iban* iban) {
         return iban->value() == import_candidate.value();
       });
 }
@@ -157,7 +158,7 @@ bool IbanSaveManager::MatchesExistingLocalIban(
 bool IbanSaveManager::MatchesExistingServerIban(
     const Iban& import_candidate) const {
   return std::ranges::any_of(
-      personal_data_manager_->GetServerIbans(),
+      personal_data_manager_->payments_data_manager().GetServerIbans(),
       [&import_candidate](const auto& iban) {
         return iban->MatchesPrefixSuffixAndLength(import_candidate);
       });
