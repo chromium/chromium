@@ -1674,12 +1674,6 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   layout_count_for_testing_++;
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
-  if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
-    const KURL& url = document->Url();
-    if (url.IsValid()) {
-      cache->HandleLayoutComplete(document);
-    }
-  }
 
   UpdateDocumentDraggableRegions();
   ExecutePendingStickyUpdates();
@@ -3671,13 +3665,6 @@ void LocalFrameView::PropagateFrameRects() {
     frame_size_ = frame_size;
     GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(frame_size);
   }
-
-  // It's possible for changing the frame rect to not generate a layout
-  // or any other event tracked by accessibility, we've seen this with
-  // Android WebView. Ensure that the root of the accessibility tree is
-  // invalidated so that it gets the right bounding rect.
-  if (AXObjectCache* cache = ExistingAXObjectCache())
-    cache->HandleFrameRectsChanged(*GetFrame().GetDocument());
 }
 
 void LocalFrameView::ZoomChanged(float zoom_factor) {

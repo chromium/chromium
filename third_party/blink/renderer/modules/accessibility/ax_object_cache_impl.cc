@@ -3379,6 +3379,11 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       did_serialize = SerializeUpdatesAndEvents();
     }
 
+    // ***** Serialize Location Changes *****
+    if (reset_token_ && !changed_bounds_ids_.empty()) {
+      SerializeLocationChanges();
+    }
+
     // ***** Update Inspector Views *****
     // Accessibility is now clean for both documents: AXObjects can be safely
     // traversed and AXObject's properties can be safely fetched.
@@ -3454,6 +3459,8 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
     ui::AXEvent end_of_test(Root()->AXObjectID(),
                             ax::mojom::blink::Event::kEndOfTest);
     if (!IsDirty() && GetDocument().IsLoadCompleted()) {
+      // Everything is clean and the document is fully loaded, so kEndOfTest
+      // signal can be fired.
       events.emplace_back(end_of_test);
     } else {
       DLOG(ERROR) << "Had end of test event, but document is still dirty.";
@@ -3481,8 +3488,6 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
     // really occur and thus the function will return false.
     // Cancel serialization to avoid stalling pipeline.
     OnSerializationCancelled();
-  } else if (!changed_bounds_ids_.empty()) {
-    SerializeLocationChanges();
   }
 
   CHECK(serialization_in_flight_ == success);
@@ -3851,7 +3856,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kIdChanged:
       IdChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kMarkDirtyFromHandleLayout:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
       MarkAXObjectDirtyWithCleanLayout(Get(node));
       break;
@@ -4901,7 +4905,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kAriaOwnsChanged:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:
-    case TreeUpdateReason::kMarkDirtyFromHandleLayout:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
     case TreeUpdateReason::kNodeIsAttached:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
@@ -5184,6 +5187,8 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   // Clear anything about to be serialized, because everything will be
   // reserialized anyway.
   dirty_objects_.clear();
+  changed_bounds_ids_.clear();
+  cached_bounding_boxes_.clear();
 
   // Tell the serializer that everything will need to be serialized.
   DCHECK(Root());
@@ -5920,20 +5925,6 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   }
 }
 
-// TODO(accessiblity): Will be investigated to be removed. Ahmed thinks we can
-// get rid of this method and its callers and just work with the list of
-// pending location updates.
-void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  DCHECK(document);
-  // Do not fire kLayoutComplete for popup document or initial empty document.
-  if (IsPopup(*document) || IsInitialEmptyDocument(*document)) {
-    return;
-  }
-
-  DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleLayout, document);
-}
-
 void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
   if (!anchor_node)
     return;
@@ -5941,10 +5932,6 @@ void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
   DeferTreeUpdate(TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor,
                   const_cast<Node*>(anchor_node),
                   ax::mojom::blink::Event::kScrolledToAnchor);
-}
-
-void AXObjectCacheImpl::HandleFrameRectsChanged(Document& document) {
-  MarkElementDirty(&document);
 }
 
 void AXObjectCacheImpl::InvalidateBoundingBox(

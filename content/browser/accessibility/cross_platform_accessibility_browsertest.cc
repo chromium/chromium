@@ -13,13 +13,16 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -548,6 +551,76 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button3->data().role);
   EXPECT_STREQ("Button 3",
                GetAttr(button3, ax::mojom::StringAttribute::kName).c_str());
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       EnsureLocationChangesSendLocationUpdatesOnly) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <button style="position:fixed; left:0; top:0;">Button</button>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Button");
+
+  const BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_EQ(1U, body->PlatformChildCount());
+  const BrowserAccessibility* button = body->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
+  EXPECT_EQ(button->GetLocation().x(), 0);
+  EXPECT_EQ(button->GetLocation().y(), 0);
+
+  // Even though kLocationChanged looks like a Blink event, it is not actually
+  // fired by Blink. Passing this to AccessibilityNotificationWaiter will cause
+  // it to bind to OnLocationsChanged instead of HandleAXEvents.
+  AccessibilityNotificationWaiter waiter1(shell()->web_contents(),
+                                          ui::kAXModeComplete,
+                                          ax::mojom::Event::kLocationChanged);
+
+  // Ensure a normal serialization doesn't happen.
+  // When something like only locations change in a document. We want to avoid
+  // full-scale serialization as it's not required. A lightweight locations-only
+  // serialization already occurs. This check below ensures a full serialization
+  // doesn't occur. Marking objects as dirty is pretty expensive and in
+  // cases of location changes, we don't need it while we already know what
+  // changed.
+  bool received_event = false;
+  base::RunLoop run_loop;
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_impl->SetAccessibilityCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfhi, ax::mojom::Event event_type,
+          int event_target_id) {
+        received_event = true;
+        run_loop.Quit();
+      }));
+
+  // Move the button to a location and expect a location update with new
+  // coords.
+  ExecuteScript(
+      "document.querySelector('button').style.left = '100px'; "
+      "document.querySelector('button').style.top = '150px';");
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  EXPECT_EQ(button->GetLocation().x(), 100);
+  EXPECT_EQ(button->GetLocation().y(), 150);
+
+  // Since we're expecting NO calls, we need a timer to avoid waiting too long.
+  // Five seconds should be enough to fail on some builds. It's ok if test
+  // passes incorrectly on slow ones. Waiting for (30 seconds) will
+  // cost a lot of wait-time.
+  base::OneShotTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Milliseconds(5000),
+                   run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(received_event) << "Received accessibility event when location "
+                                  "changes shouldn't mark anything as dirty.";
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

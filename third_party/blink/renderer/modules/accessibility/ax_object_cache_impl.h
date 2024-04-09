@@ -276,7 +276,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void DidHideMenuListPopup(LayoutObject*) override;
   void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
-  void HandleLayoutComplete(Document*) override;
   void HandleClicked(Node*) override;
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               AccessibleNode*) override;
@@ -313,10 +312,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleScrollPositionChanged(LayoutObject*) override;
 
   void HandleScrolledToAnchor(const Node* anchor_node) override;
-
-  // Called when the frame rect changes, which can sometimes happen
-  // without producing any layout or other notifications.
-  void HandleFrameRectsChanged(Document&) override;
 
   // Invalidates the bounding box, which can be later retrieved by
   // SerializeLocationChanges.
@@ -784,7 +779,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     kEditableTextContentChanged = 8,
     kFocusableChanged = 9,
     kIdChanged = 10,
-    kMarkDirtyFromHandleLayout = 11,
     kMarkDirtyFromHandleScroll = 12,
     kNodeGainedFocus = 13,
     kNodeLostFocus = 14,

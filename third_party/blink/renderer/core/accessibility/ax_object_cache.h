@@ -150,7 +150,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void DidHideMenuListPopup(LayoutObject*) = 0;
   virtual void HandleLoadStart(Document*) = 0;
   virtual void HandleLoadComplete(Document*) = 0;
-  virtual void HandleLayoutComplete(Document*) = 0;
   virtual void HandleClicked(Node*) = 0;
   virtual void HandleValidationMessageVisibilityChanged(Node* form_control) = 0;
   virtual void HandleEventListenerAdded(Node& node,
@@ -190,10 +189,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleScrollPositionChanged(LayoutObject*) = 0;
 
   virtual void HandleScrolledToAnchor(const Node* anchor_node) = 0;
-
-  // Called when the frame rect changes, which can sometimes happen
-  // without producing any layout or other notifications.
-  virtual void HandleFrameRectsChanged(Document&) = 0;
 
   // Called when a layout object's bounding box may have changed.
   virtual void InvalidateBoundingBox(const LayoutObject*) = 0;
