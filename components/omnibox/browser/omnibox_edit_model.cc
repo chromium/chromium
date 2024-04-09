@@ -2386,13 +2386,16 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
       destination_url, is_incognito);
+// Check disabled on iOS as the platform shows a default suggestion on focus
+// (crbug.com/40061502).
+#if !BUILDFLAG(IS_IOS)
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))
       << "We should've got the notification that the user modified the "
       << "omnibox text at same time or before the most recent time the "
       << "default match changed.";
-
+#endif
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
