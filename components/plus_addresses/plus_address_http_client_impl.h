@@ -55,6 +55,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
 
   // PlusAddressHttpClient:
   void ReservePlusAddress(const url::Origin& origin,
+                          bool refresh,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
@@ -77,6 +78,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // interface methods (`ReservePlusAddress`, ...) call `GetAuthToken` with the
   // methods below passed in as the `TokenReadyCallback`.
   void ReservePlusAddressInternal(const url::Origin& origin,
+                                  bool refresh,
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
   void ConfirmPlusAddressInternal(const url::Origin& origin,

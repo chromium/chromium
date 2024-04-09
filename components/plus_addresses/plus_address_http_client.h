@@ -21,8 +21,11 @@ class PlusAddressHttpClient {
   virtual ~PlusAddressHttpClient() = default;
 
   // Initiates a request to get a plus address for use on `origin` and runs
-  // `on_completed` when the request is completed.
+  // `on_completed` when the request is completed. If `refresh` is true, then
+  // the server receives a flag that indicates that the address should be a new
+  // one and not one that the user has previously seen.
   virtual void ReservePlusAddress(const url::Origin& origin,
+                                  bool refresh,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   // Initiates a request to confirm `plus_address` for use on `origin` and runs

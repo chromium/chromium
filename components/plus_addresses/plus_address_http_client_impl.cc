@@ -212,13 +212,14 @@ PlusAddressHttpClientImpl::~PlusAddressHttpClientImpl() = default;
 
 void PlusAddressHttpClientImpl::ReservePlusAddress(
     const url::Origin& origin,
+    bool refresh,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
   GetAuthToken(
       base::BindOnce(&PlusAddressHttpClientImpl::ReservePlusAddressInternal,
-                     base::Unretained(this), origin,
+                     base::Unretained(this), origin, refresh,
                      WrapAsAutorunCallback(std::move(on_completed),
                                            base::unexpected(kSignoutError))));
 }
@@ -259,6 +260,7 @@ void PlusAddressHttpClientImpl::Reset() {
 
 void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
     const url::Origin& origin,
+    bool refresh,
     PlusAddressRequestCallback on_completed,
     std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
@@ -278,6 +280,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
 
   base::Value::Dict payload;
   payload.Set("facet", origin.Serialize());
+  payload.Set("refresh_email_address", refresh);
   std::string request_body;
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);

@@ -43,6 +43,8 @@ namespace plus_addresses {
 
 namespace {
 
+using ::testing::SizeIs;
+
 constexpr char kServerBaseUrl[] = "https://enterprise.foo/";
 constexpr char kTestScope[] = "scope";
 constexpr char kEmailAddress[] = "foo@plus.plus";
@@ -150,7 +152,7 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
 TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
-  client().ReservePlusAddress(origin, base::DoNothing());
+  client().ReservePlusAddress(origin, /*refresh=*/false, base::DoNothing());
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kToken, base::Time::Max());
 
@@ -175,6 +177,41 @@ TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
   EXPECT_EQ(*facet_entry, facet);
+}
+
+// Tests that the reserve request contains the expected data when the refresh
+// flag is set.
+TEST_F(PlusAddressHttpClientRequests,
+       ReservePlusAddress_IssuesCorrectRequestWithRefreshFlag) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
+  client().ReservePlusAddress(origin, /*refresh=*/true, base::DoNothing());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  // Validate that the V1 Create request uses the right url and requests method.
+  EXPECT_EQ(last_request().url, kFullReserveEndpoint);
+  EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kPutMethod);
+  // Validate the Authorization header includes "myToken".
+  std::string authorization_value;
+  last_request().headers.GetHeader("Authorization", &authorization_value);
+  EXPECT_EQ(authorization_value, "Bearer " + kToken);
+
+  // Validate the request payload.
+  ASSERT_NE(last_request().request_body, nullptr);
+  ASSERT_THAT(*last_request().request_body->elements(), SizeIs(1));
+  std::optional<base::Value> body =
+      base::JSONReader::Read(last_request()
+                                 .request_body->elements()
+                                 ->at(0)
+                                 .As<network::DataElementBytes>()
+                                 .AsStringPiece());
+  ASSERT_TRUE(body.has_value() && body->is_dict());
+  std::string* facet_entry = body->GetDict().FindString("facet");
+  ASSERT_NE(facet_entry, nullptr);
+  EXPECT_EQ(*facet_entry, facet);
+  EXPECT_TRUE(
+      body->GetDict().FindBool("refresh_email_address").value_or(false));
 }
 
 // Ensures the request sent by Chrome matches what we intended.
@@ -231,7 +268,8 @@ class PlusAddressCreationRequests
                            PlusAddressRequestCallback callback) {
     url::Origin origin = url::Origin::Create(GURL("https://" + profile.facet));
     if (GetParam() == PlusAddressNetworkRequestType::kReserve) {
-      client().ReservePlusAddress(origin, std::move(callback));
+      client().ReservePlusAddress(origin, /*refresh=*/false,
+                                  std::move(callback));
     } else if (GetParam() == PlusAddressNetworkRequestType::kCreate) {
       client().ConfirmPlusAddress(origin, profile.plus_address,
                                   std::move(callback));
@@ -538,7 +576,7 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
   std::string facet = origin.Serialize();
   base::test::TestFuture<const PlusProfileOrError&> future;
 
-  client().ReservePlusAddress(origin, future.GetCallback());
+  client().ReservePlusAddress(origin, /*refresh=*/false, future.GetCallback());
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kToken, base::Time::Max());
 
@@ -557,7 +595,7 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForOAuth) {
   std::string facet = origin.Serialize();
   base::test::TestFuture<const PlusProfileOrError&> future;
 
-  client().ReservePlusAddress(origin, future.GetCallback());
+  client().ReservePlusAddress(origin, /*refresh=*/false, future.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
   client().Reset();
   ASSERT_TRUE(future.IsReady());
@@ -761,8 +799,9 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ReservePlusAddress_SendsNoRequest) {
 
   EXPECT_FALSE(test_api(client()).GetServerUrlForTesting().has_value());
   // ReservePlusAddress should return without making any request when no valid
-  // `server_url` is provided.
-  client().ReservePlusAddress(origin, callback.GetCallback());
+  // `server_ur_` is provided.
+  client().ReservePlusAddress(origin, /*refresh=*/false,
+                              callback.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
   EXPECT_FALSE(callback.IsReady());
 }

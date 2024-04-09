@@ -28,7 +28,8 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
     PlusAddressRequestCallback callback) {
   switch (mode) {
     case AllocationMode::kAny: {
-      http_client_->ReservePlusAddress(origin, std::move(callback));
+      http_client_->ReservePlusAddress(origin, /*refresh=*/false,
+                                       std::move(callback));
       return;
     }
     case AllocationMode::kNewPlusAddress: {
@@ -38,10 +39,14 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
             PlusAddressRequestErrorType::kMaxRefreshesReached)));
         return;
       }
+      if (!base::FeatureList::IsEnabled(features::kPlusAddressRefresh)) {
+        std::move(callback).Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kRequestNotSupportedError)));
+        return;
+      }
       ++attempts_made;
-      // TODO(b/324557932): Implement.
-      std::move(callback).Run(base::unexpected(PlusAddressRequestError(
-          PlusAddressRequestErrorType::kRequestNotSupportedError)));
+      http_client_->ReservePlusAddress(origin, /*refresh=*/true,
+                                       std::move(callback));
       return;
     }
   }

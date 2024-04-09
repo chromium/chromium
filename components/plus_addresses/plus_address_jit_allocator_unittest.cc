@@ -4,6 +4,8 @@
 
 #include "components/plus_addresses/plus_address_jit_allocator.h"
 
+#include <utility>
+
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
@@ -20,6 +22,7 @@ namespace plus_addresses {
 
 namespace {
 
+using ::testing::_;
 using ::testing::Message;
 using ::testing::NiceMock;
 
@@ -63,16 +66,46 @@ TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshDisabled) {
   EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
 }
 
+// Tests that the allocator translates the `AllocationMode` properly into the
+// `refresh` parameter of the client.
+TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshParameterPassedOn) {
+  EXPECT_CALL(http_client(),
+              ReservePlusAddress(GetSampleOrigin1(), /*refresh=*/false, _));
+  EXPECT_CALL(http_client(),
+              ReservePlusAddress(GetSampleOrigin1(), /*refresh=*/true, _));
+  EXPECT_CALL(http_client(),
+              ReservePlusAddress(GetSampleOrigin2(), /*refresh=*/false, _));
+
+  allocator().AllocatePlusAddress(GetSampleOrigin1(),
+                                  PlusAddressAllocator::AllocationMode::kAny,
+                                  base::DoNothing());
+  allocator().AllocatePlusAddress(
+      GetSampleOrigin1(), PlusAddressAllocator::AllocationMode::kNewPlusAddress,
+      base::DoNothing());
+  allocator().AllocatePlusAddress(GetSampleOrigin2(),
+                                  PlusAddressAllocator::AllocationMode::kAny,
+                                  base::DoNothing());
+}
+
 // Tests that refreshing is only allowed `kMaxPlusAddressRefreshesPerOrigin`
 // times per origin.
 TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshLimit) {
+  // Note: In practice, this would be a different profile with each call - but
+  // the test does not need to reproduce this level of fidelity.
+  const PlusProfile kSampleProfile{.plus_address = "plus+plus123@plus.com"};
+  ON_CALL(http_client(), ReservePlusAddress(_, /*refresh=*/true, _))
+      .WillByDefault([&kSampleProfile](const url::Origin& origin, bool refresh,
+                                       PlusAddressRequestCallback cb) {
+        std::move(cb).Run(kSampleProfile);
+      });
+
   for (int i = 0; i < PlusAddressAllocator::kMaxPlusAddressRefreshesPerOrigin;
        ++i) {
     SCOPED_TRACE(Message() << "Iteration #" << (i + 1));
     EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
 
     base::MockCallback<PlusAddressRequestCallback> callback;
-    EXPECT_CALL(callback, Run(kNotSupportedError));
+    EXPECT_CALL(callback, Run(PlusProfileOrError(kSampleProfile)));
     allocator().AllocatePlusAddress(
         GetSampleOrigin1(),
         PlusAddressAllocator::AllocationMode::kNewPlusAddress, callback.Get());
@@ -91,7 +124,7 @@ TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshLimit) {
   EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin2()));
   {
     base::MockCallback<PlusAddressRequestCallback> callback;
-    EXPECT_CALL(callback, Run(kNotSupportedError));
+    EXPECT_CALL(callback, Run(PlusProfileOrError(kSampleProfile)));
     allocator().AllocatePlusAddress(
         GetSampleOrigin2(),
         PlusAddressAllocator::AllocationMode::kNewPlusAddress, callback.Get());
