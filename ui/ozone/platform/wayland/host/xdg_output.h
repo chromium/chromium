@@ -32,7 +32,7 @@ class XDGOutput {
 
   // Called after processing the wl_output.done event. Translates the received
   // state into the metrics object as part of a chained atomic update.
-  void UpdateMetrics(bool surface_submission_in_pixel_coordinates,
+  void UpdateMetrics(bool compute_scale_from_size,
                      WaylandOutput::Metrics& metrics);
 
  private:

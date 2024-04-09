@@ -36,7 +36,7 @@ void XDGOutput::HandleDone() {
   is_ready_ = !logical_size_.IsEmpty();
 }
 
-void XDGOutput::UpdateMetrics(bool surface_submission_in_pixel_coordinates,
+void XDGOutput::UpdateMetrics(bool compute_scale_from_size,
                               WaylandOutput::Metrics& metrics) {
   if (!IsReady()) {
     return;
@@ -56,7 +56,7 @@ void XDGOutput::UpdateMetrics(bool surface_submission_in_pixel_coordinates,
   }
 
   const gfx::Size logical_size = logical_size_;
-  if (surface_submission_in_pixel_coordinates && !logical_size.IsEmpty()) {
+  if (compute_scale_from_size && !logical_size.IsEmpty()) {
     const gfx::Size physical_size = metrics.physical_size;
     DCHECK(!physical_size.IsEmpty());
     const float max_physical_side =

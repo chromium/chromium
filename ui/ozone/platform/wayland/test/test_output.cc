@@ -118,9 +118,9 @@ void TestOutput::Flush() {
 
   if (aura_output_) {
     aura_output_->Flush(metrics_);
+  } else {
+    wl_output_send_done(resource());
   }
-
-  wl_output_send_done(resource());
 }
 
 void TestOutput::DestroyGlobal() {

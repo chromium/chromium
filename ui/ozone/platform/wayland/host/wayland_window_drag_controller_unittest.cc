@@ -2041,14 +2041,13 @@ TEST_P(WaylandWindowDragControllerTest,
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
-#endif
-
+#else
+// Linux shouldn't use aura shell.
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandWindowDragControllerTest,
     Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-        .aura_output_manager_protocol =
-            wl::AuraOutputManagerProtocol::kEnabledV2}));
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+#endif
 
 }  // namespace ui

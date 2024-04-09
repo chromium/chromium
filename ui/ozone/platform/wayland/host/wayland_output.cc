@@ -132,6 +132,7 @@ void WaylandOutput::InitializeXdgOutput(
 }
 
 void WaylandOutput::InitializeZAuraOutput(zaura_shell* aura_shell) {
+  // TODO(oshima): remove zaura_output_.
   DCHECK(!aura_output_);
   aura_output_ = std::make_unique<WaylandZAuraOutput>(
       zaura_shell_get_aura_output(aura_shell, output_.get()));
@@ -218,6 +219,7 @@ void WaylandOutput::DumpState(std::ostream& out) const {
 }
 
 void WaylandOutput::UpdateMetrics() {
+  CHECK(!aura_output_);
   metrics_.output_id = output_id_;
   // For the non-aura case we map the global output "name" to the display_id.
   metrics_.display_id = output_id_;
@@ -231,12 +233,7 @@ void WaylandOutput::UpdateMetrics() {
 
   if (xdg_output_) {
     xdg_output_->UpdateMetrics(
-        connection_->surface_submission_in_pixel_coordinates() ||
-            connection_->supports_viewporter_surface_scaling(),
-        metrics_);
-  }
-  if (aura_output_) {
-    aura_output_->UpdateMetrics(metrics_);
+        connection_->supports_viewporter_surface_scaling(), metrics_);
   }
 }
 
@@ -287,14 +284,12 @@ void WaylandOutput::OnDone(void* data, wl_output* output) {
     return;
   }
 
+  CHECK(!self->aura_output_);
+
   self->is_ready_ = true;
 
   if (auto& xdg_output = self->xdg_output_) {
     xdg_output->HandleDone();
-  }
-
-  if (auto& aura_output = self->aura_output_) {
-    aura_output->OnDone();
   }
 
   // Once all metrics have been received perform an atomic update on this

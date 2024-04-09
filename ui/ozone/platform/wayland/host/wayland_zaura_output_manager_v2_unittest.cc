@@ -43,9 +43,7 @@ class WaylandZAuraOutputManagerV2Test : public WaylandTestSimple {
  public:
   WaylandZAuraOutputManagerV2Test()
       : WaylandTestSimple(wl::ServerConfig{
-            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-            .aura_output_manager_protocol =
-                wl::AuraOutputManagerProtocol::kEnabledV2}) {}
+            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}) {}
 
  protected:
   // Sends metrics for a given output from the server-thread.

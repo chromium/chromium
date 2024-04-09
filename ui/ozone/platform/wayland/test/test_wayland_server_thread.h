@@ -57,7 +57,6 @@ struct DisplayDeleter {
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
-enum class AuraOutputManagerProtocol { kDisabled, kEnabledV1, kEnabledV2 };
 
 struct ServerConfig {
   TestZcrTextInputExtensionV1::Version text_input_extension_version =
@@ -71,8 +70,6 @@ struct ServerConfig {
       EnableAuraShellProtocol::kDisabled;
   bool surface_submission_in_pixel_coordinates = true;
   bool supports_viewporter_surface_scaling = false;
-  AuraOutputManagerProtocol aura_output_manager_protocol =
-      AuraOutputManagerProtocol::kDisabled;
 };
 
 class TestWaylandServerThread;

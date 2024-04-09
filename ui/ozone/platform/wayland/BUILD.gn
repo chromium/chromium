@@ -604,10 +604,6 @@ source_set("wayland_unittests") {
     "host/wayland_window_drag_controller_unittest.cc",
     "host/wayland_window_manager_unittests.cc",
     "host/wayland_window_unittest.cc",
-    "host/wayland_zaura_output_manager_unittest.cc",
-    "host/wayland_zaura_output_manager_v2_unittest.cc",
-    "host/wayland_zaura_output_unittest.cc",
-    "host/wayland_zaura_shell_unittest.cc",
     "host/wayland_zcr_color_manager_unittest.cc",
     "host/wayland_zwp_pointer_gestures_unittest.cc",
     "host/xdg_activation_unittest.cc",
@@ -658,7 +654,12 @@ source_set("wayland_unittests") {
   if (is_linux) {
     sources += [ "host/wayland_cursor_factory_unittest.cc" ]
   }
-
+  if (is_chromeos_lacros) {
+    sources += [
+      "host/wayland_zaura_output_manager_v2_unittest.cc",
+      "host/wayland_zaura_shell_unittest.cc",
+    ]
+  }
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
