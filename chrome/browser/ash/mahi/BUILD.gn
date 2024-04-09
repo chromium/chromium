@@ -27,7 +27,9 @@ source_set("unit_tests") {
     "mahi_manager_impl_unittest.cc",
   ]
   deps = [
+    "//ash:test_support",
     "//base/test:test_support",
     "//chrome/browser/ash",
+    "//content/test:test_support",
   ]
 }

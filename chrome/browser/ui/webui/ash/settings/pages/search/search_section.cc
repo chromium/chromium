@@ -320,7 +320,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
   html_source->AddBoolean(
-      "isMahiEnabled", chromeos::MahiManager::IsEnabledWithCorrectFeatureKey());
+      "isMahiEnabled",
+      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

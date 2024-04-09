@@ -8,16 +8,20 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
 // Implementation of `MahiManager`.
-class MahiManagerImpl : public chromeos::MahiManager {
+class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
  public:
   MahiManagerImpl();
 
@@ -41,14 +45,20 @@ class MahiManagerImpl : public chromeos::MahiManager {
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
+  bool IsEnabled() override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.
   void NotifyRefreshAvailability(bool available);
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
  private:
   friend class MahiManagerImplTest;
   friend class MahiManagerImplFeatureKeyTest;
+
+  void SetMahiEnabledFromPref();
 
   // Initialize required provider if it is not initialized yet.
   void MaybeInitialize();
@@ -70,6 +80,12 @@ class MahiManagerImpl : public chromeos::MahiManager {
                                 MahiAnswerQuestionCallback callback,
                                 base::Value::Dict dict,
                                 manta::MantaStatus status);
+
+  // Profile pref state of mahi.
+  bool mahi_pref_enabled_ = false;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();

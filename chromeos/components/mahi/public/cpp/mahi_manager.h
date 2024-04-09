@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   static MahiManager* Get();
 
-  static bool IsEnabledWithCorrectFeatureKey();
+  static bool IsSupportedWithCorrectFeatureKey();
 
   // Opens the Mahi Panel in the display with `display_id`.
   virtual void OpenMahiPanel(int64_t display_id) = 0;
@@ -95,6 +95,9 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   // Opens the feedback dialog.
   virtual void OpenFeedbackDialog() = 0;
+
+  // Check if the feature is enabled.
+  virtual bool IsEnabled() = 0;
 
  protected:
   MahiManager();

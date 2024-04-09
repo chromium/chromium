@@ -43,6 +43,7 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override {}
+  bool IsEnabled() override;
 
   void set_answer_text(const std::u16string& answer_text) {
     answer_text_ = answer_text;

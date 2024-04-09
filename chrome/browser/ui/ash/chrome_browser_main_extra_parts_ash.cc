@@ -207,15 +207,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     }
   }
 
-  if (chromeos::features::IsMahiEnabled()) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kUseFakeMahiManager)) {
-      mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
-    } else {
-      mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
-    }
-  }
-
   ash_shell_init_ = std::make_unique<AshShellInit>();
   ash::Shell::Get()
       ->login_unlock_throughput_recorder()
@@ -407,6 +398,15 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
   mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
 
+  if (chromeos::features::IsMahiEnabled()) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            chromeos::switches::kUseFakeMahiManager)) {
+      mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
+    } else {
+      mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
+    }
+  }
+
   did_post_browser_start_ = true;
   if (post_browser_start_callback_) {
     std::move(post_browser_start_callback_).Run();
@@ -427,6 +427,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   exo_parts_.reset();
 #endif
 
+  mahi_manager_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();
@@ -471,8 +472,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // needs to be released before destroying the profile.
   app_list_client_.reset();
   ash_shell_init_.reset();
-
-  mahi_manager_.reset();
 
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();

@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -67,7 +69,9 @@ ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
 
 namespace ash {
 
-MahiManagerImpl::MahiManagerImpl() = default;
+MahiManagerImpl::MahiManagerImpl() {
+  session_observation_.Observe(Shell::Get()->session_controller());
+}
 
 MahiManagerImpl::~MahiManagerImpl() {
   mahi_panel_widget_.reset();
@@ -75,7 +79,7 @@ MahiManagerImpl::~MahiManagerImpl() {
 }
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
-  if (!IsEnabledWithCorrectFeatureKey()) {
+  if (!IsEnabled()) {
     return;
   }
 
@@ -187,10 +191,38 @@ void MahiManagerImpl::OnContextMenuClicked(
   }
 }
 
+bool MahiManagerImpl::IsEnabled() {
+  return IsSupportedWithCorrectFeatureKey() && mahi_pref_enabled_;
+}
+
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   auto* mahi_widget = static_cast<MahiPanelWidget*>(mahi_panel_widget_.get());
   if (mahi_widget) {
     mahi_widget->NotifyRefreshAvailabilityChanged(available);
+  }
+}
+
+void MahiManagerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  CHECK(pref_service);
+  // Subscribes again to pref changes.
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      ash::prefs::kMahiEnabled,
+      base::BindRepeating(&MahiManagerImpl::SetMahiEnabledFromPref,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  SetMahiEnabledFromPref();
+}
+
+void MahiManagerImpl::SetMahiEnabledFromPref() {
+  CHECK(pref_change_registrar_);
+  CHECK(pref_change_registrar_->prefs());
+  mahi_pref_enabled_ =
+      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled);
+  if (!mahi_pref_enabled_) {
+    mahi_panel_widget_.reset();
   }
 }
 

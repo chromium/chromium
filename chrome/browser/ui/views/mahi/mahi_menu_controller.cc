@@ -28,7 +28,8 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-  if (!chromeos::MahiManager::IsEnabledWithCorrectFeatureKey()) {
+  // TODO(b:330811526): Update this when pref value in lacros is implemented.
+  if (!chromeos::MahiManager::Get()->IsSupportedWithCorrectFeatureKey()) {
     return;
   }
 

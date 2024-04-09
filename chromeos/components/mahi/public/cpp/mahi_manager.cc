@@ -28,7 +28,7 @@ MahiManager* MahiManager::Get() {
 }
 
 // static
-bool MahiManager::IsEnabledWithCorrectFeatureKey() {
+bool MahiManager::IsSupportedWithCorrectFeatureKey() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::features::IsMahiEnabled() &&
          ash::switches::IsMahiSecretKeyMatched();

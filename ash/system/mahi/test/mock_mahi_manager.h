@@ -43,6 +43,7 @@ class MockMahiManager : public chromeos::MahiManager {
               SetCurrentFocusedPageInfo,
               (crosapi::mojom::MahiPageInfoPtr),
               (override));
+  MOCK_METHOD(bool, IsEnabled, (), (override));
 };
 
 }  // namespace ash

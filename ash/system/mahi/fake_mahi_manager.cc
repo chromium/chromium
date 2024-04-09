@@ -113,4 +113,8 @@ void FakeMahiManager::OnContextMenuClicked(
   }
 }
 
+bool FakeMahiManager::IsEnabled() {
+  return true;
+}
+
 }  // namespace ash
