@@ -86,7 +86,6 @@ class MetadataDispatcher implements MetadataParserLogger {
   private request_(fileURL: string) {
     try {
       this.processOneFile(fileURL, (metadata: ParserMetadata) => {
-        console.log(metadata);
         this.postMessage('result', [fileURL, metadata]);
       });
     } catch (ex) {
