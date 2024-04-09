@@ -13,11 +13,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -82,6 +87,33 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
   CHECK(campaigns_manager);
 
   // TODO(b/318885858): Trigger nudge if nudge campaigns is matched.
+}
+
+const GURL FindActiveWebAppBrowser(Profile* profile,
+                                   const webapps::AppId& app_id) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->profile() != profile) {
+      continue;
+    }
+
+    if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+      const auto* tab_strip_model = browser->tab_strip_model();
+      if (!tab_strip_model) {
+        LOG(ERROR) << "No tab_strip_model.";
+        continue;
+      }
+
+      auto* active_web_contents = tab_strip_model->GetActiveWebContents();
+      if (!active_web_contents) {
+        LOG(ERROR) << "No active web contents.";
+        continue;
+      }
+
+      return active_web_contents->GetURL();
+    }
+  }
+
+  return GURL::EmptyGURL();
 }
 
 }  // namespace
@@ -156,6 +188,8 @@ void CampaignsManagerSession::OnInstanceUpdate(
 
   if (update.IsCreation()) {
     campaigns_manager->SetOpenedApp(app_id);
+    campaigns_manager->SetActiveUrl(
+        FindActiveWebAppBrowser(GetProfile(), app_id));
     opened_window_ = update.Window();
 
     MaybeTriggerCampaignsWhenAppOpened();
@@ -165,6 +199,7 @@ void CampaignsManagerSession::OnInstanceUpdate(
     if (app_id == campaigns_manager->GetOpenedAppId()) {
       campaigns_manager->SetOpenedApp(std::string());
       opened_window_ = nullptr;
+      active_url_ = GURL::EmptyGURL();
     }
   }
 }

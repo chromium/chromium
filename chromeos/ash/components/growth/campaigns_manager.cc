@@ -203,6 +203,10 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   }
 }
 
+void CampaignsManager::SetActiveUrl(const GURL& url) {
+  matcher_.SetActiveUrl(url);
+}
+
 void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
   CHECK(action);
 

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "url/gurl.h"
 
 class PrefService;
 
@@ -30,6 +31,9 @@ class CampaignsMatcher {
   void SetOpenedApp(const std::string& app_id);
   void SetOobeCompleteTime(base::Time time);
 
+  const GURL& active_url() const { return active_url_; }
+  void SetActiveUrl(const GURL& url);
+
   // Select the targeted campaign for the given `slot`. Returns nullptr if no
   // campaign found for the given `slot`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
@@ -44,8 +48,10 @@ class CampaignsMatcher {
   bool MatchRegisteredTime(const std::unique_ptr<TimeWindowTargeting>&
                                registered_time_targeting) const;
   bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
-  bool MatchOpenedApp(
-      std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const;
+  bool MatchOpenedApp(const std::vector<std::unique_ptr<AppTargeting>>&
+                          apps_opened_targeting) const;
+  bool MatchActiveUrlRegexes(
+      const std::vector<std::string>& active_url_regrexes) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
   bool MatchRuntimeTargeting(const RuntimeTargeting& targeting,
                              int campaign_id) const;
@@ -59,6 +65,7 @@ class CampaignsMatcher {
   raw_ptr<PrefService> local_state_ = nullptr;
   raw_ptr<PrefService> prefs_ = nullptr;
   std::string opened_app_id_;
+  GURL active_url_;
   base::Time oobe_compelete_time_;
 };
 

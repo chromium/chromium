@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // opened app targeting.
   void SetOpenedApp(const std::string& app_id);
 
+  // Set the current active URL. Used in `CampaignsMatcher` for matching
+  // URL targeting
+  void SetActiveUrl(const GURL& url);
+
   // Select action performer based on the given `action`. Action includes the
   // action type and action params for performing action.
   void PerformAction(int campaign_id, const Action* action);

@@ -299,6 +299,7 @@ class RuntimeTargeting : public TargetingBase {
       const;
   // Returns a list of apps to be matched against the current opened app.
   const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
+  const std::vector<std::string> GetActiveUrlRegexes() const;
 
   std::unique_ptr<EventsTargeting> GetEventsConfig() const;
 };

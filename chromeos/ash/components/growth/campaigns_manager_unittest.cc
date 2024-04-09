@@ -290,6 +290,17 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
+  void LoadComponentWithActiveUrlTargeting(const std::string& active_url) {
+    auto session_targeting = base::StringPrintf(R"(
+            "runtime": {
+              "activeUrlRegexes": %s
+            }
+          )",
+                                                active_url.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, session_targeting.c_str()));
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockCampaignsManagerClient mock_client_;
   base::ScopedTempDir temp_dir_;
@@ -1198,6 +1209,72 @@ TEST_F(CampaignsManagerTest,
   LoadComponentWithRegisteredTimeTargeting(
       base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
   campaigns_manager_->SetOobeCompleteTimeForTesting(now);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignActiveUrl) {
+  campaigns_manager_->SetActiveUrl(GURL("https://www.google.com/?foo=bar"));
+
+  LoadComponentWithActiveUrlTargeting(
+      R"([
+        "https://www\\.google\\.com/\\?foo=bar",
+        "https://gmail\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar2"
+    ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignActiveUrlOrRelationship) {
+  campaigns_manager_->SetActiveUrl(GURL("https://www.google.com/?foo=bar"));
+
+  LoadComponentWithActiveUrlTargeting(
+      R"([
+        "https://gmail\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar2",
+        "https://www\\.google\\.com/foo=bar"
+    ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignActiveUrlMismatch) {
+  campaigns_manager_->SetActiveUrl(GURL("https://www.google.com/?foo=bar"));
+
+  LoadComponentWithActiveUrlTargeting(
+      R"([
+        "1https://gmail\\.google\\.com/\\?foo=bar",
+        "http://www\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar2"
+    ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignActiveUrlEmptyActiveUrl) {
+  campaigns_manager_->SetActiveUrl(GURL::EmptyGURL());
+
+  LoadComponentWithActiveUrlTargeting(
+      R"([
+        "1https://gmail\\.google\\.com/\\?foo=bar",
+        "http://www\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar2"
+    ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
+  LoadComponentWithActiveUrlTargeting(
+      R"([
+        "1https://gmail\\.google\\.com/\\?foo=bar",
+        "http://www\\.google\\.com/\\?foo=bar",
+        "https://www\\.google\\.com/\\?foo=bar2"
+    ])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

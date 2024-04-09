@@ -50,6 +50,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
       session_manager_observation_{this};
 
   raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
+  GURL active_url_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

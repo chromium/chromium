@@ -8,4 +8,5 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
   "+ui/chromeos/styles/cros_tokens_color_mappings.h",
+  "+third_party/re2",
 ]

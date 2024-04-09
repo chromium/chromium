@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace growth {
 namespace {
@@ -143,6 +144,10 @@ void CampaignsMatcher::SetCampaigns(const CampaignsPerSlot* campaigns) {
 
 void CampaignsMatcher::SetOpenedApp(const std::string& app_id) {
   opened_app_id_ = app_id;
+}
+
+void CampaignsMatcher::SetActiveUrl(const GURL& url) {
+  active_url_ = url;
 }
 
 void CampaignsMatcher::SetOobeCompleteTime(base::Time time) {
@@ -330,7 +335,8 @@ bool CampaignsMatcher::MatchRegisteredTime(
 }
 
 bool CampaignsMatcher::MatchOpenedApp(
-    std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const {
+    const std::vector<std::unique_ptr<AppTargeting>>& apps_opened_targeting)
+    const {
   if (apps_opened_targeting.empty()) {
     // Campaigns matched if apps opened targeting is empty.
     return true;
@@ -345,6 +351,21 @@ bool CampaignsMatcher::MatchOpenedApp(
     }
 
     if (*app_id == opened_app_id_) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CampaignsMatcher::MatchActiveUrlRegexes(
+    const std::vector<std::string>& active_url_regrexes) const {
+  if (active_url_regrexes.empty()) {
+    // Campaigns matched if active URL targeting is empty.
+    return true;
+  }
+
+  for (const auto& url_regrex : active_url_regrexes) {
+    if (RE2::FullMatch(active_url_.spec(), url_regrex)) {
       return true;
     }
   }
@@ -446,6 +467,7 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
 
   return MatchSchedulings(targeting.GetSchedulings()) &&
          MatchOpenedApp(targeting.GetAppsOpened()) &&
+         MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes()) &&
          MatchEvents(targeting.GetEventsConfig(), campaign_id);
 }
 

@@ -78,6 +78,9 @@ inline constexpr char kSchedulingEnd[] = "end";
 inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
 inline constexpr char kAppId[] = "appId";
 
+// Active URL regexes path.
+inline constexpr char kActiveUrlRegexes[] = "activeUrlRegexes";
+
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
@@ -372,6 +375,26 @@ RuntimeTargeting::GetAppsOpened() const {
   }
 
   return app_targetings;
+}
+
+const std::vector<std::string> RuntimeTargeting::GetActiveUrlRegexes() const {
+  std::vector<std::string> active_urls_regexs;
+  const auto* active_url_regexes_value = GetListCriteria(kActiveUrlRegexes);
+  if (!active_url_regexes_value) {
+    return active_urls_regexs;
+  }
+  for (const auto& active_url_regex_value : *active_url_regexes_value) {
+    if (!active_url_regex_value.is_string()) {
+      // TODO(b/329124927): Record error.
+      LOG(ERROR) << "Invalid active url regex: "
+                 << active_url_regex_value.DebugString();
+      continue;
+    }
+
+    active_urls_regexs.push_back(active_url_regex_value.GetString());
+  }
+
+  return active_urls_regexs;
 }
 
 std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsConfig() const {

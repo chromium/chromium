@@ -30,6 +30,7 @@ component("growth") {
     "//chromeos/ui/vector_icons",
     "//components/prefs",
     "//components/version_info",
+    "//third_party/re2",
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
