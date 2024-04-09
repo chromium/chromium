@@ -191,14 +191,10 @@ template("mojolpm_fuzzer_test") {
 #   sources
 #       List of source .cc files to compile.
 #
-#   interface
-#       The mojom interface name for which to generate the mojolpm files.
-#
-#   mojom_source
-#       The mojom source file where the interface is defined.
-#
-#   remote_type
-#       The type of remote received. Can be either Remote or AssociatedRemote.
+#   interfaces
+#       List of [interface name, mojom source file, remote type] 3-element
+#       lists.
+#       The remote type must be either "Remote" or "AssociatedRemote".
 #
 #   deps
 #       List of dependencies to compile this target.
@@ -212,6 +208,11 @@ template("mojolpm_fuzzer_test") {
 # Example:
 #  mojolpm_generated_fuzzer("foo_mojolpm_fuzzer") {
 #    sources = [ "foo_mojolpm_fuzzer.cc" ]
+#
+#    interfaces = [
+#      ["InterfaceName", "//path/to/interface.mojom", "Remote"],
+#      ["AnotherInterface", "//path/to/another.mojom", "AssociatedRemote" ],
+#    ]
 #
 #    deps = [
 #      "//content/browser/foo:foo_mojolpm_fuzzer_proto",
@@ -235,14 +236,20 @@ template("mojolpm_fuzzer_test") {
 template("mojolpm_generated_fuzzer") {
   assert(defined(invoker.sources),
          "\"sources\" must be defined for $target_name")
-  assert(
-      defined(invoker.interface) && defined(invoker.mojom_source) &&
-          defined(invoker.remote_type),
-      "\"interface\", \"mojom_source\" and \"remote_type\" must be defined for $target_name")
+  assert(defined(invoker.interfaces),
+         "\"interfaces\" must be defined for $target_name")
 
   if (enable_mojom_fuzzer) {
     _target_name = target_name
     _generate_target_name = _target_name + "_mojolpm_generator_generate"
+
+    # Generates the correct argument format give invoker.interfaces.
+    _script_inputs = []
+    foreach(elt, invoker.interfaces) {
+      _script_inputs +=
+          [ rebase_path("$root_gen_dir/" + elt[0] + "-module", root_build_dir) +
+            ":" + elt[1] + ":" + elt[2] ]
+    }
 
     action(_generate_target_name) {
       testonly = true
@@ -254,11 +261,9 @@ template("mojolpm_generated_fuzzer") {
         deps += invoker.proto_deps
       }
 
-      args = [
-        "--input",
-        rebase_path("$root_gen_dir/" + invoker.mojom_source + "-module",
-                    root_build_dir) + ":" + invoker.interface + ":" +
-            invoker.remote_type,
+      args = [ "--input" ]
+      args += _script_inputs
+      args += [
         "--output_file_format",
         rebase_path("${target_gen_dir}/${_target_name}", root_build_dir),
       ]

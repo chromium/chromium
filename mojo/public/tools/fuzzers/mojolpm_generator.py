@@ -585,19 +585,21 @@ def build(interface: module.Interface,
 
       child_def_type = def_type
       if is_pending_kind(kind):
-        # kind.spec will look something like '{?}rcv:x:blink.mojom.Blob'. This
-        # is meant at fully describing the underlying type being parsed. For
-        # instance, we only care about knowing the mojom action type here,
-        # which is 'rcv' in this particular example.
-        t = kind.spec.split(':')[0].lstrip('?')
-        actions.update(
-            build_pending_actions(MojomActionType(t), kind.kind, def_type))
+        # MojoLPM doesn't generate actions when the interface has no methods.
+        if kind.kind.methods:
+          # kind.spec will look something like '{?}rcv:x:blink.mojom.Blob'. This
+          # is meant at fully describing the underlying type being parsed. For
+          # instance, we only care about knowing the mojom action type here,
+          # which is 'rcv' in this particular example.
+          t = kind.spec.split(':')[0].lstrip('?')
+          actions.update(
+              build_pending_actions(MojomActionType(t), kind.kind, def_type))
 
-        if module.IsPendingRemoteKind(
-            kind) or module.IsPendingAssociatedRemoteKind(kind):
-          child_def_type = (MojoLPMDefinitionType.EMULATED
-                            if def_type == MojoLPMDefinitionType.REMOTE else
-                            MojoLPMDefinitionType.REMOTE)
+          if module.IsPendingRemoteKind(
+              kind) or module.IsPendingAssociatedRemoteKind(kind):
+            child_def_type = (MojoLPMDefinitionType.EMULATED
+                              if def_type == MojoLPMDefinitionType.REMOTE else
+                              MojoLPMDefinitionType.REMOTE)
         kind = kind.kind
 
       assert module.IsInterfaceKind(kind) or module.IsStructKind(
@@ -611,13 +613,14 @@ def build(interface: module.Interface,
   # Since the interface is remote, we'll add an action as if it was
   # declared in the mojo interface as is:
   # Create(pending_receiver<BaseInterface>);
-  if remote_type == MojoLPMActionType.ASSOCIATED_REMOTE_ACTION:
-    action_type = MojomActionType.ASSOCIATED_RECEIVER
-  else:
-    action_type = MojomActionType.RECEIVER
-  actions.update(
-      build_pending_actions(action_type, interface,
-                            MojoLPMDefinitionType.REMOTE))
+  if interface.methods:
+    if remote_type == MojoLPMActionType.ASSOCIATED_REMOTE_ACTION:
+      action_type = MojomActionType.ASSOCIATED_RECEIVER
+    else:
+      action_type = MojomActionType.RECEIVER
+    actions.update(
+        build_pending_actions(action_type, interface,
+                              MojoLPMDefinitionType.REMOTE))
 
   handled_definitions.add(interface.qualified_name)
   __build_impl(interface, MojoLPMDefinitionType.REMOTE)
