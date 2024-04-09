@@ -75,7 +75,7 @@ void VirtualKeyboardControllerWin::OnKeyboardHidden() {
 
 void VirtualKeyboardControllerWin::ShowVirtualKeyboard() {
   TRACE_EVENT0("vk", "VirtualKeyboardControllerWin::ShowVirtualKeyboard");
-  if (auto* controller = input_method_->GetVirtualKeyboardController()) {
+  if (input_method_->GetVirtualKeyboardController()) {
     if (!virtual_keyboard_shown_) {
       virtual_keyboard_shown_ = true;
       input_method_->SetVirtualKeyboardVisibilityIfEnabled(true);

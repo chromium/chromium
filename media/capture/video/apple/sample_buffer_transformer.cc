@@ -442,8 +442,7 @@ const SampleBufferTransformer::Transformer
 SampleBufferTransformer::Transformer
 SampleBufferTransformer::GetBestTransformerForNv12Output(
     CMSampleBufferRef sample_buffer) {
-  if (CVPixelBufferRef pixel_buffer =
-          CMSampleBufferGetImageBuffer(sample_buffer)) {
+  if (CMSampleBufferGetImageBuffer(sample_buffer)) {
     return kBestTransformerForPixelBufferToNv12Output;
   }
   // When we don't have a pixel buffer (e.g. it's MJPEG or we get a SW-backed

@@ -31,7 +31,7 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
   }
 
   // NSArray
-  if (NSArray* array = base::apple::ObjCCast<NSArray>(value)) {
+  if (base::apple::ObjCCast<NSArray>(value)) {
     return base::Value(AXNSArrayToBaseValue(value, indexer));
   }
 

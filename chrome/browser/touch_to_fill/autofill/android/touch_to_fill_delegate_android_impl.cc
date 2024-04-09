@@ -205,8 +205,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   ttf_payment_method_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
-  if (std::vector<CreditCard>* cards_to_suggest =
-          absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
+  if (absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
     manager_->DidShowSuggestions(
         std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form, field);
   } else {
