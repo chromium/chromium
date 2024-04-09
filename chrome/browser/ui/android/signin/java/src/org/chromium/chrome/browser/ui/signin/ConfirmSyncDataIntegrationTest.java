@@ -150,7 +150,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, managedNewAccountName);
         onView(withId(R.id.sync_confirm_import_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).perform(click());
-        onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());
+        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onConfirm(false, true);
         verify(mListenerMock, never()).onCancel();
     }
@@ -189,7 +189,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         when(mSigninManagerMock.extractDomainName(managedNewAccountName))
                 .thenReturn(MANAGED_DOMAIN);
         startConfirmSyncFlow("", managedNewAccountName);
-        onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());
+        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onConfirm(false, true);
         verify(mListenerMock, never()).onCancel();
     }

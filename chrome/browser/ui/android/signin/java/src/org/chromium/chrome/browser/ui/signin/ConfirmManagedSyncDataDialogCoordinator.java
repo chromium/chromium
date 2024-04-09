@@ -72,8 +72,11 @@ public class ConfirmManagedSyncDataDialogCoordinator {
                                         managedDomain))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getString(R.string.policy_dialog_proceed))
+                                context.getString(R.string.continue_button))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getString(R.string.cancel))

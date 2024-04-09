@@ -43,4 +43,13 @@ found in the LICENSE file.
 
     <include layout="@layout/account_picker_bottom_sheet_continue_button" />
 
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/confirm_management_cancel_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/cancel" />
+
 </LinearLayout>

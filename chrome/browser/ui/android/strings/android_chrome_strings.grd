@@ -2390,9 +2390,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SYNC_ERROR_SERVICE_UNAVAILABLE" desc="Sync error string for service unavailable. [CHAR_LIMIT=80]">
         The service is not available; try again later.
       </message>
-      <message name="IDS_POLICY_DIALOG_PROCEED" desc="Label on the button to accept the policy dialog during sign-in. [CHAR_LIMIT=20]">
-        Accept and sign in
-      </message>
       <message name="IDS_WIPING_PROFILE_DATA_TITLE" desc="Title for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
         Clearing account data
       </message>

@@ -75,7 +75,7 @@ public class ConfirmManagedSyncDataDialogTest {
     public void testListenerOnConfirmWhenPositiveButtonClicked() {
         showManagedSyncDataDialog();
 
-        onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());
+        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
         verify(mListenerMock).onConfirm();
     }

@@ -344,7 +344,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertTrue(controller.isSheetOpen());
         Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
 
-        onView(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
+        onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
@@ -375,7 +375,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertTrue(controller.isSheetOpen());
         Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
 
-        onView(withText(R.string.cancel)).perform(click());
+        onVisibleView(withText(R.string.cancel)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
