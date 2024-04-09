@@ -107,7 +107,9 @@ void WolvicPasswordManagerClient::OnDismissed(JNIEnv* env) {
 
 void WolvicPasswordManagerClient::HandleSavePassword(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    const password_manager::PasswordForm& saved_form) {
+  password_manager::PasswordForm& saved_form) {
+  // Avoid DCHECK when adding the new ID/PW via PasswordFormManagerForUI::Update
+  saved_form.federation_origin = url::Origin::Create(GURL(saved_form.url));
   form_to_save->Update(saved_form);
   form_to_save->Save();
 }

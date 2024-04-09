@@ -157,7 +157,7 @@ class WolvicPasswordManagerClient
 
   void HandleSavePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      const password_manager::PasswordForm& saved_form);
+      password_manager::PasswordForm& saved_form);
 
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
@@ -178,7 +178,7 @@ class WolvicPasswordManagerClient
   const password_manager::SyncCredentialsFilter credentials_filter_;
 
   // A callback to be invoked when user accept to save the password.
-  base::OnceCallback<void(const password_manager::PasswordForm& saved_form)>
+  base::OnceCallback<void(password_manager::PasswordForm& saved_form)>
       save_password_callback_;
 
   // A callback to be invoked when user selects a credential.

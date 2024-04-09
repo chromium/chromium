@@ -239,7 +239,6 @@ void WolvicPasswordStoreBackend::FillMatchingLoginsAsync(
 void WolvicPasswordStoreBackend::GetGroupedMatchingLoginsAsync(
     const password_manager::PasswordFormDigest& form_digest,
     password_manager::LoginsOrErrorReply callback) {
-  DCHECK(affiliated_match_helper_);
   GetLoginsWithAffiliationsRequestHandler(
       form_digest, this, affiliated_match_helper_.get(), std::move(callback));
 }

@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "wolvic/jni_headers/PasswordForm_jni.h"
+#include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
@@ -54,15 +55,29 @@ GetPasswordFormFromJavaObject(
       Java_PasswordForm_getPassword(env, j_password_form));
   form->url = GURL(ConvertJavaStringToUTF8(
       Java_PasswordForm_getOrigin(env, j_password_form)));
-  form->action = GURL(ConvertJavaStringToUTF8(
-      Java_PasswordForm_getFormActionOrigin(env, j_password_form)));
-  form->signon_realm = ConvertJavaStringToUTF8(
-      Java_PasswordForm_getHttpRealm(env, j_password_form));
-  if (form->signon_realm.empty()) {
+
+  ScopedJavaLocalRef<jstring> jaction =
+      Java_PasswordForm_getFormActionOrigin(env, j_password_form);
+  if (jaction.obj() && env->GetStringLength(jaction.obj()) > 0) {
+    form->action = GURL(ConvertJavaStringToUTF8(env, jaction));
+  }
+
+  ScopedJavaLocalRef<jstring> jsignon_realm =
+      Java_PasswordForm_getHttpRealm(env, j_password_form);
+  if (jsignon_realm.obj() && env->GetStringLength(jsignon_realm.obj()) > 0) {
+    form->signon_realm = ConvertJavaStringToUTF8(env, jsignon_realm);
+  } else {
     form->signon_realm = password_manager::GetSignonRealm(form->url);
   }
-  form->keychain_identifier = ConvertJavaStringToUTF8(
-      Java_PasswordForm_getGuid(env, j_password_form));
+
+  ScopedJavaLocalRef<jstring> jguid =
+      Java_PasswordForm_getGuid(env, j_password_form);
+  if (jguid.obj() && env->GetStringLength(jguid.obj()) > 0) {
+    form->keychain_identifier = ConvertJavaStringToUTF8(env, jguid);
+  }
+
+  // We always use the profile store.
+  form->in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
 }
 

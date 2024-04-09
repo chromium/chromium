@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_name_set.h"
@@ -134,7 +133,6 @@ class WolvicBrowserContext : public BrowserContext,
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
-  std::unique_ptr<password_manager::AffiliationServiceImpl> affiliation_service_;
   std::unique_ptr<autofill::AutocompleteHistoryManager> autocomplete_history_manager_;
   scoped_refptr<password_manager::PasswordStore> password_store_;
   std::unique_ptr<password_manager::FieldInfoManager> field_info_manager_;

@@ -53,6 +53,7 @@
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "wolvic/browser/autocomplete/wolvic_image_decoder.h"
 #include "wolvic/browser/autocomplete/wolvic_password_store_backend.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 #include "wolvic/wolvic_permission_manager.h"
@@ -132,23 +133,9 @@ void WolvicBrowserContext::CreatePasswordStore() {
           ->GetURLLoaderFactoryForBrowserProcess();
   auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  affiliation_service_ =
-          std::make_unique<password_manager::AffiliationServiceImpl>(
-              url_loader_factory, backend_task_runner);
-
-  base::FilePath database_path =
-      GetPrefStorePath().Append(
-          password_manager::kAffiliationDatabaseFileName);
-  affiliation_service_->Init(content::GetNetworkConnectionTracker(),
-                            database_path);
-
-  auto affiliated_match_helper =
-      std::make_unique<password_manager::AffiliatedMatchHelper>(
-          affiliation_service_.get());
-
   password_store_ = new password_manager::PasswordStore(
       std::make_unique<wolvic::WolvicPasswordStoreBackend>());
-  password_store_->Init(GetPrefService(), std::move(affiliated_match_helper));
+  password_store_->Init(GetPrefService(), nullptr);
 }
 
 void WolvicBrowserContext::CreateIdentityManger() {
@@ -161,6 +148,7 @@ void WolvicBrowserContext::CreateIdentityManger() {
   params.network_connection_tracker = content::GetNetworkConnectionTracker();
   params.pref_service = GetPrefService();
   params.profile_path = GetPrefStorePath();
+  params.image_decoder = std::make_unique<wolvic::WolvicImageDecoder>();
   identity_manager_ = signin::BuildIdentityManager(&params);
 }
 
