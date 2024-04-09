@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_features.h"
@@ -37,12 +38,14 @@ TabSharingInfoBar::TabSharingInfoBar(
 
   const auto buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](TabSharingInfoBarDelegate::InfoBarButton type,
-                                 void (TabSharingInfoBar::*click_function)()) {
+                                 void (TabSharingInfoBar::*click_function)(),
+                                 int button_context =
+                                     views::style::CONTEXT_BUTTON_MD) {
     const bool use_text_color_for_icon =
         type != TabSharingInfoBarDelegate::kCscPermission;
     auto* button = AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
-        delegate_ptr->GetButtonLabel(type), views::style::CONTEXT_BUTTON_MD,
+        delegate_ptr->GetButtonLabel(type), button_context,
         use_text_color_for_icon));
     button->SetProperty(
         views::kMarginsKey,
@@ -81,7 +84,8 @@ TabSharingInfoBar::TabSharingInfoBar(
   if (buttons & TabSharingInfoBarDelegate::kCscPermission) {
     csc_permission_button_ = create_button(
         TabSharingInfoBarDelegate::kCscPermission,
-        &TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed);
+        &TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed,
+        CONTEXT_OMNIBOX_PRIMARY);
     csc_permission_button_->SetStyle(ui::ButtonStyle::kDefault);
     csc_permission_button_->SetCornerRadius(
         GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
