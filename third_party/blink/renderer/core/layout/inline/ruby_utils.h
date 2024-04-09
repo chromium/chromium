@@ -16,6 +16,7 @@ namespace blink {
 class ComputedStyle;
 class InlineItem;
 class LineInfo;
+class LogicalLineContainer;
 class LogicalLineItems;
 class PhysicalBoxFragment;
 class ShapeResultView;
@@ -142,6 +143,7 @@ class CORE_EXPORT RubyBlockPositionCalculator {
     void MaybeRecordBaseIndexes(const LogicalRubyColumn& logical_column);
     FontHeight UpdateMetrics();
     void MoveInBlockDirection(LayoutUnit offset);
+    void AddLinesTo(LogicalLineContainer& line_container) const;
 
     const HeapVector<Member<LogicalRubyColumn>>& ColumnListForTesting() const {
       return column_list_;
@@ -184,6 +186,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   RubyBlockPositionCalculator& PlaceLines(
       const LogicalLineItems& base_line_items,
       const FontHeight& line_box_metrics);
+
+  // Associate annotation lines to the specified line container. This must be
+  // called after PlaceLines().
+  RubyBlockPositionCalculator& AddLinesTo(LogicalLineContainer& line_container);
 
   const HeapVector<Member<RubyLine>, 2>& RubyLineListForTesting() const {
     return ruby_lines_;

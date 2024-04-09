@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
+#include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -996,6 +997,13 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
   return *this;
 }
 
+RubyBlockPositionCalculator& RubyBlockPositionCalculator::AddLinesTo(
+    LogicalLineContainer& line_container) {
+  for (const auto& ruby_line : ruby_lines_) {
+    ruby_line->AddLinesTo(line_container);
+  }
+  return *this;
+}
 // ================================================================
 
 RubyBlockPositionCalculator::RubyLine::RubyLine(const RubyLevel& level)
@@ -1046,6 +1054,16 @@ void RubyBlockPositionCalculator::RubyLine::MoveInBlockDirection(
     LayoutUnit offset) {
   for (auto& column : column_list_) {
     column->annotation_items->MoveInBlockDirection(offset);
+  }
+}
+
+void RubyBlockPositionCalculator::RubyLine::AddLinesTo(
+    LogicalLineContainer& line_container) const {
+  if (IsBaseLevel()) {
+    return;
+  }
+  for (const auto& column : column_list_) {
+    line_container.AddAnnotation(metrics_, *column->annotation_items);
   }
 }
 

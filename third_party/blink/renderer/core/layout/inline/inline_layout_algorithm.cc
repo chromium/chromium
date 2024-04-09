@@ -455,7 +455,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
       RubyBlockPositionCalculator()
           .GroupLines(column_list)
-          .PlaceLines(*line_box, line_box_metrics);
+          .PlaceLines(*line_box, line_box_metrics)
+          .AddLinesTo(*line_container);
     }
     line_info->SetAnnotationBlockStartAdjustment(
         SetAnnotationOverflow(*line_info, *line_box, line_box_metrics));
