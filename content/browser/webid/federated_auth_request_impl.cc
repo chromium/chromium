@@ -89,6 +89,8 @@ static constexpr double kRejectionLogNormalSigma = 1.4;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::string ComputeUrlEncodedTokenPostData(
+    RenderFrameHost& render_frame_host,
+    const url::Origin& idp_origin,
     const std::string& client_id,
     const std::string& nonce,
     const std::string& account_id,
@@ -150,7 +152,7 @@ std::string ComputeUrlEncodedTokenPostData(
     query += "mode=" + rp_mode_str;
   }
 
-  if (IsFedCmAuthzEnabled()) {
+  if (webid::IsFedCmAuthzEnabled(render_frame_host, idp_origin)) {
     // We keep the scope and response_type parameters consistenct with the OIDC
     // spec [1] to the extent that we can:
     //
@@ -1051,7 +1053,7 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     const std::optional<std::string>& account_id,
     const std::string& token,
     ResolveTokenRequestCallback callback) {
-  if (!IsFedCmAuthzEnabled()) {
+  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), origin())) {
     std::move(callback).Run(false);
     return;
   }
@@ -1336,13 +1338,14 @@ bool HasScope(const std::vector<std::string>& scope, std::string name) {
   return true;
 }
 
-// static
-bool FederatedAuthRequestImpl::ShouldMediateAuthz(
-    const std::vector<std::string>& scope) {
-  if (!IsFedCmAuthzEnabled()) {
+bool FederatedAuthRequestImpl::ShouldMediateAuthzFor(
+    const blink::mojom::IdentityProviderRequestOptions& provider) {
+  url::Origin idp_origin = url::Origin::Create(provider.config->config_url);
+  if (!webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
     return true;
   }
 
+  const auto& scope = provider.scope;
   if (scope.size() == 0) {
     // If "scope" is not passed, defaults the parameter to
     // ["sub", "name", "email" and "picture"].
@@ -1383,7 +1386,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   const GURL& idp_config_url = idp_info->provider->config->config_url;
 
-  bool request_permission = ShouldMediateAuthz(idp_info->provider->scope);
+  bool request_permission = ShouldMediateAuthzFor(*idp_info->provider);
 
   const std::string idp_for_display =
       webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
@@ -1767,7 +1770,7 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
       idp_for_display, std::vector<IdentityRequestAccount>(),
       idp_info->metadata, ClientMetadata{GURL(), GURL(), GURL()},
       idp_info->rp_context,
-      /*request_permission=*/ShouldMediateAuthz(idp_info->provider->scope),
+      /*request_permission=*/ShouldMediateAuthzFor(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
@@ -1929,7 +1932,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       RecordRawAccountsSize(accounts.size());
-      if (IsFedCmAuthzEnabled()) {
+      if (webid::IsFedCmAuthzEnabled(render_frame_host(),
+                                     url::Origin::Create(idp_config_url))) {
         FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
         if (accounts.empty()) {
           render_frame_host().AddMessageToConsole(
@@ -1979,7 +1983,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       bool need_client_metadata = false;
 
-      if (ShouldMediateAuthz(idp_info->provider->scope)) {
+      if (ShouldMediateAuthzFor(*idp_info->provider)) {
         for (const IdentityRequestAccount& account : accounts) {
           // ComputeLoginStateAndReorderAccounts() should have populated
           // IdentityRequestAccount::login_state.
@@ -2102,19 +2106,27 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   fedcm_metrics_->RecordContinueOnDialogTime(
       idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
+  url::Origin idp_origin = url::Origin::Create(idp_config_url);
+
+  IdpNetworkRequestManager::ContinueOnCallback continue_on;
+  if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+    continue_on = base::BindOnce(
+        &FederatedAuthRequestImpl::OnContinueOnResponseReceived,
+        weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
+  }
+
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
-          idp_info.provider->config->client_id, idp_info.provider->nonce,
-          account_id, is_sign_in, identity_selection_type_ != kExplicit,
-          rp_mode_, idp_info.provider->scope, idp_info.provider->responseType,
+          render_frame_host(), idp_origin, idp_info.provider->config->client_id,
+          idp_info.provider->nonce, account_id, is_sign_in,
+          identity_selection_type_ != kExplicit, rp_mode_,
+          idp_info.provider->scope, idp_info.provider->responseType,
           idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),
-      base::BindOnce(&FederatedAuthRequestImpl::OnContinueOnResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     idp_info.provider->Clone()),
+      std::move(continue_on),
       base::BindOnce(&FederatedAuthRequestImpl::RecordErrorMetrics,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
@@ -2266,16 +2278,18 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const GURL& continue_on) {
+  url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
+  // This is enforced by OnAccountSelected when we call SendTokenRequest.
+  DCHECK(webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin));
   // We only allow loading continue_on urls that are same-origin
   // with the IdP.
   // This isn't necessarily final, but seemed like a safer
   // and sufficient default for now.
   // This behavior may change in https://crbug.com/1429083
   bool is_same_origin =
-      url::Origin::Create(continue_on)
-          .IsSameOriginWith(url::Origin::Create(idp->config->config_url));
+      url::Origin::Create(continue_on).IsSameOriginWith(idp_origin);
 
-  if (!IsFedCmAuthzEnabled() || !is_same_origin || !CanShowContinueOnPopup()) {
+  if (!is_same_origin || !CanShowContinueOnPopup()) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,

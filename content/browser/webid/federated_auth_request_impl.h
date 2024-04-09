@@ -184,7 +184,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Check if the scope of the request allows the browser to mediate
   // or delegate (to the IdP) the authorization.
-  static bool ShouldMediateAuthz(const std::vector<std::string>& scope);
+  bool ShouldMediateAuthzFor(
+      const blink::mojom::IdentityProviderRequestOptions& provider);
 
   // Whether we can show the continue_on popup (not using mediation: silent,
   // etc.)

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEBID_FLAGS_H_
 #define CONTENT_BROWSER_WEBID_FLAGS_H_
 
+#include <optional>
+
 // Flags to control WebID for testing/debugging.
 
 namespace content {
@@ -12,8 +14,12 @@ namespace content {
 // IDP IdpSigninStatus API modes.
 enum class FedCmIdpSigninStatusMode { METRICS_ONLY, ENABLED };
 
-// Whether the AuthZ is enabled or not.
-bool IsFedCmAuthzEnabled();
+// Whether the authz flags has been overridden. If it has been overridden
+// to false, we should not let it be enabled using an origin trial.
+std::optional<bool> IsFedCmAuthzOverridden();
+
+// Whether the AuthZ flag is enabled or not.
+bool IsFedCmAuthzFlagEnabled();
 
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();

@@ -877,20 +877,20 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
           ? options.getDomainHintOr("")
           : "";
 
-  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
-    if (options.hasScope()) {
-      mojo_options->scope = options.scope();
+  // We do not need to check whether authz is enabled because the bindings
+  // code will check that for us due to the RuntimeEnabled= flag in the IDL.
+  if (options.hasScope()) {
+    mojo_options->scope = options.scope();
+  }
+  if (options.hasResponseType()) {
+    mojo_options->responseType = options.responseType();
+  }
+  if (options.hasParams()) {
+    HashMap<String, String> params;
+    for (const auto& pair : options.params()) {
+      params.Set(pair.first, pair.second);
     }
-    if (options.hasResponseType()) {
-      mojo_options->responseType = options.responseType();
-    }
-    if (options.hasParams()) {
-      HashMap<String, String> params;
-      for (const auto& pair : options.params()) {
-        params.Set(pair.first, pair.second);
-      }
-      mojo_options->params = std::move(params);
-    }
+    mojo_options->params = std::move(params);
   }
 
   return mojo_options;

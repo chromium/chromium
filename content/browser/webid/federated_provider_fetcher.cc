@@ -292,7 +292,8 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   }
 
   // (b)
-  if (IsFedCmAuthzEnabled() && result.wellknown.accounts.is_valid() &&
+  if (webid::IsFedCmAuthzEnabled(*render_frame_host_, idp_origin) &&
+      result.wellknown.accounts.is_valid() &&
       result.wellknown.login_url.is_valid() && result.metadata &&
       result.metadata->idp_login_url.is_valid()) {
     // Behind the AuthZ flag, it is valid for IdPs to have valid configURLs

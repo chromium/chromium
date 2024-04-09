@@ -1531,6 +1531,25 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return options;
   }
 
+  blink::mojom::IdentityProviderRequestOptionsPtr NewIDPWithScopes(
+      const std::vector<std::string>& scopes) {
+    blink::mojom::IdentityProviderRequestOptionsPtr options =
+        blink::mojom::IdentityProviderRequestOptions::New();
+    blink::mojom::IdentityProviderConfigPtr config =
+        blink::mojom::IdentityProviderConfig::New();
+    config->config_url = GURL(kProviderUrlFull);
+    config->client_id = "";
+    options->config = std::move(config);
+    options->scope = scopes;
+    return options;
+  }
+
+  // Helper to call ShouldMediateAuthzFor with the desired scopes.
+  bool ShouldMediateAuthz(const std::vector<std::string>& scopes) {
+    return federated_auth_request_impl_->ShouldMediateAuthzFor(
+        *NewIDPWithScopes(scopes));
+  }
+
   void SimulateLoginToIdP(std::string login_url = kIdpLoginUrl) {
     federated_auth_request_impl_->LoginToIdP(/*can_append_hints=*/true,
                                              GURL(kIdpUrl), GURL(login_url));
@@ -5663,19 +5682,15 @@ TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
   // A completely unknown oauth scope is being requested.
-  EXPECT_FALSE(
-      FederatedAuthRequestImpl::ShouldMediateAuthz({"calendar.readonly"}));
+  EXPECT_FALSE(ShouldMediateAuthz({"calendar.readonly"}));
   // Just the email scope is being requested.
-  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz({"email"}));
+  EXPECT_FALSE(ShouldMediateAuthz({"email"}));
   // Just the email scope and the name scope are being requested.
-  EXPECT_FALSE(
-      FederatedAuthRequestImpl::ShouldMediateAuthz({"email", "address"}));
+  EXPECT_FALSE(ShouldMediateAuthz({"email", "address"}));
   // Just the email, picture and name scopes are being requested.
-  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz(
-      {"email", "address", "phone"}));
+  EXPECT_FALSE(ShouldMediateAuthz({"email", "address", "phone"}));
   // When the basic profile scope is passed in addition to others.
-  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz(
-      {"profile", "email", "calendar.readonly"}));
+  EXPECT_FALSE(ShouldMediateAuthz({"profile", "email", "calendar.readonly"}));
 }
 
 TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthz) {
@@ -5683,18 +5698,16 @@ TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthz) {
   list.InitAndEnableFeature(features::kFedCmAuthz);
   // When scope isn't passed, we default to the basic profile authorization
   // permission.
-  EXPECT_TRUE(FederatedAuthRequestImpl::ShouldMediateAuthz({}));
+  EXPECT_TRUE(ShouldMediateAuthz({}));
   // When the basic profile authorization scope is passed explicitly.
-  EXPECT_TRUE(
-      FederatedAuthRequestImpl::ShouldMediateAuthz({"profile", "email"}));
+  EXPECT_TRUE(ShouldMediateAuthz({"profile", "email"}));
 }
 
 TEST_F(FederatedAuthRequestImplTest,
        ShouldNotMediateAuthzWithoutFeatureEnabled) {
   // Assert that we always mediate the authorization when the kFedCmAuthz
   // is not enabled.
-  EXPECT_TRUE(
-      FederatedAuthRequestImpl::ShouldMediateAuthz({"profile", "email"}));
+  EXPECT_TRUE(ShouldMediateAuthz({"profile", "email"}));
 }
 
 class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {

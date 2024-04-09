@@ -806,7 +806,8 @@ void OnTokenRequestParsed(
   }
 
   const std::string* continue_on = response->FindString(kContinueOnKey);
-  if (IsFedCmAuthzEnabled() && continue_on) {
+  // continue_on_callback is only set if authz is enabled.
+  if (continue_on_callback && continue_on) {
     GURL url = token_url.Resolve(*continue_on);
     if (url.is_valid()) {
       std::move(continue_on_callback)
