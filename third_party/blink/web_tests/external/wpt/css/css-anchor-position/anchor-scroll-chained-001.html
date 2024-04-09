@@ -2,7 +2,7 @@
 <title>Tests scroll adjustments of element anchored to another anchored element</title>
 <link rel="author" href="mailto:wangxianzhu@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/">
-<link rel="match" href="reference/anchor-scroll-chained-002.tentative-ref.html">
+<link rel="match" href="reference/anchor-scroll-chained-001-ref.html">
 <style>
 body {
   margin: 0;
@@ -13,13 +13,7 @@ div {
   height: 100px;
 }
 
-#scroller1 {
-  width: 200px;
-  height: 200px;
-  position: relative;
-}
-
-#scroller1,#scroller2 {
+#scroller {
   overflow: scroll;
 }
 
@@ -36,7 +30,6 @@ div {
   top: anchor(--a1 bottom);
   background: green;
   anchor-name: --a2;
-  z-index: 1;
 }
 
 #anchored2 {
@@ -45,24 +38,18 @@ div {
   left: anchor(--a2 left);
   top: anchor(--a2 bottom);
   background: lime;
-  z-index: 1;
 }
 
 </style>
 
-<div id="anchored2"></div>
-<div id="scroller1">
-  <div id="anchored1"></div>
-  <div style="height: 100px"></div>
-  <div id="scroller2">
-    <div style="height: 230px"></div>
-    <div id="anchor"></div>
-    <div style="height: 230px"></div>
-  </div>
-  <div style="height: 100px"></div>
+<div id="scroller">
+  <div style="height: 230px"></div>
+  <div id="anchor"></div>
+  <div style="height: 230px"></div>
 </div>
+<div id="anchored1"></div>
+<div id="anchored2"></div>
 
 <script>
-scroller1.scrollTop = 80;
-scroller2.scrollTop = 200;
+scroller.scrollTop = 200;
 </script>
