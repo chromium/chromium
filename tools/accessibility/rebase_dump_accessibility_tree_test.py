@@ -12,7 +12,9 @@ expected results of tests in:
 
 It assumes that you've already uploaded a change and the try jobs have finished.
 It collects all of the results from try jobs on all platforms and updates the
-expectation files locally. From there you can run 'git diff' to make sure all
+expectation files locally. Sometimes, this script will pull data from flaky test
+runs, especially from content/test/data/accessibility/event/*. Run 'git diff' to
+check for potentially incorrect data pulled from those tests and make sure all
 of the changes look reasonable, then upload the change for code review.
 
 Optional argument: patchset number, otherwise will default to latest patchset
