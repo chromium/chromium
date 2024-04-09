@@ -1396,6 +1396,8 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // available at no cost in an indexed format. This enables activating
   // subresource filtering, if needed, also for page loads on start-up.
   g_browser_process->subresource_filter_ruleset_service();
+  // Also enable subresource filtering for fingerprinting protection.
+  g_browser_process->fingerprinting_protection_ruleset_service();
 }
 
 void ChromeBrowserMainParts::PostBrowserStart() {

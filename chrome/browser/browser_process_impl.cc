@@ -99,6 +99,7 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1134,6 +1135,17 @@ BrowserProcessImpl::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
+subresource_filter::RulesetService*
+BrowserProcessImpl::fingerprinting_protection_ruleset_service() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!created_fingerprinting_protection_ruleset_service_ &&
+      base::FeatureList::IsEnabled(
+          features::kEnableFingerprintingProtectionBlocklist)) {
+    CreateFingerprintingProtectionRulesetService();
+  }
+  return fingerprinting_protection_ruleset_service_.get();
+}
+
 StartupData* BrowserProcessImpl::startup_data() {
   return startup_data_;
 }
@@ -1435,6 +1447,21 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
       subresource_filter::RulesetService::Create(
           subresource_filter::kSafeBrowsingRulesetConfig, local_state(),
           user_data_dir);
+}
+
+void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
+  CHECK(!fingerprinting_protection_ruleset_service_);
+  // Set this to true so that we don't retry indefinitely to
+  // create the service if there was an error.
+  created_fingerprinting_protection_ruleset_service_ = true;
+
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  fingerprinting_protection_ruleset_service_ =
+      subresource_filter::RulesetService::Create(
+          fingerprinting_protection_filter::
+              kFingerprintingProtectionRulesetConfig,
+          local_state(), user_data_dir);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

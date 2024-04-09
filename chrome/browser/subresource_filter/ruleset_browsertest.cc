@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
@@ -224,6 +225,46 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithAdTagging,
   SetRulesetToDisallowURLsWithPathSuffix("included_script.js");
   RulesetVerificationStatus dealer_status = GetRulesetVerification();
   EXPECT_EQ(RulesetVerificationStatus::kIntact, dealer_status);
+}
+
+class SubresourceFilterBrowserTestFingerprintingProtectionDisabled
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterBrowserTestFingerprintingProtectionDisabled() {
+    feature_list_.InitAndDisableFeature(
+        features::kEnableFingerprintingProtectionBlocklist);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SubresourceFilterBrowserTestFingerprintingProtectionDisabled,
+    RulesetServiceNotCreated) {
+  EXPECT_EQ(g_browser_process->fingerprinting_protection_ruleset_service(),
+            nullptr);
+}
+
+class SubresourceFilterBrowserTestFingerprintingProtectionEnabled
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterBrowserTestFingerprintingProtectionEnabled() {
+    feature_list_.InitAndEnableFeature(
+        features::kEnableFingerprintingProtectionBlocklist);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SubresourceFilterBrowserTestFingerprintingProtectionEnabled,
+    RulesetServiceCreated) {
+  RulesetService* service =
+      g_browser_process->fingerprinting_protection_ruleset_service();
+  ASSERT_NE(service, nullptr);
+  EXPECT_NE(service->GetRulesetDealer(), nullptr);
 }
 
 }  // namespace subresource_filter

@@ -116,6 +116,8 @@ class TestingBrowserProcess : public BrowserProcess {
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
+  subresource_filter::RulesetService*
+  fingerprinting_protection_ruleset_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -239,6 +241,8 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
+  std::unique_ptr<subresource_filter::RulesetService>
+      fingerprinting_protection_ruleset_service_;
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;

@@ -357,6 +357,11 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
+subresource_filter::RulesetService*
+TestingBrowserProcess::fingerprinting_protection_ruleset_service() {
+  return fingerprinting_protection_ruleset_service_.get();
+}
+
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
