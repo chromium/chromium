@@ -29,6 +29,17 @@ BluetoothLocalGattCharacteristicFloss::Create(
           static_cast<uint8_t>(properties), static_cast<uint16_t>(permissions));
   auto* characteristic = new BluetoothLocalGattCharacteristicFloss(
       uuid, floss_properties, floss_permissions, service);
+
+  if ((properties & device::BluetoothGattCharacteristic::PROPERTY_NOTIFY) ||
+      (properties & device::BluetoothGattCharacteristic::PROPERTY_INDICATE)) {
+    BluetoothLocalGattDescriptorFloss::Create(
+        device::BluetoothGattDescriptor::
+            ClientCharacteristicConfigurationUuid(),
+        device::BluetoothGattCharacteristic::PERMISSION_READ +
+            device::BluetoothGattCharacteristic::PERMISSION_READ,
+        characteristic);
+  }
+
   auto weak_ptr = characteristic->weak_ptr_factory_.GetWeakPtr();
   weak_ptr->index_ =
       service->AddCharacteristic(base::WrapUnique(characteristic));

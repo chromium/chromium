@@ -206,6 +206,16 @@ void BluetoothLocalGattDescriptorFloss::GattServerDescriptorWriteRequest(
     return;
   }
 
+  if (GetUUID() ==
+      BluetoothGattDescriptor::ClientCharacteristicConfigurationUuid()) {
+    auto status = HandleCccDescriptor(address, value);
+    if (needs_response) {
+      FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+          base::DoNothing(), address, request_id, status, offset, value);
+    }
+    return;
+  }
+
   pending_request_.emplace(GattRequest{address, request_id, offset});
   auto* device = characteristic_->service_->GetAdapter()->GetDevice(address);
   BluetoothLocalGattDescriptor* descriptor =
@@ -261,6 +271,65 @@ void BluetoothLocalGattDescriptorFloss::OnWriteRequestCallback(
       base::DoNothing(), write_request.address, write_request.request_id,
       status, write_request.offset, value);
   pending_request_.reset();
+}
+
+GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
+    std::string address,
+    std::vector<uint8_t>& value) {
+  device::BluetoothLocalGattService::Delegate* delegate =
+      characteristic_->service_->delegate_;
+  auto* device = characteristic_->service_->GetAdapter()->GetDevice(address);
+  device::BluetoothLocalGattCharacteristic* characteristic =
+      static_cast<device::BluetoothLocalGattCharacteristic*>(
+          &characteristic_.get());
+
+  if (value.size() != 2) {
+    LOG(ERROR) << __func__ << ": Value is not a valid CccdValueType";
+    return GattStatus::kCccCfgErr;
+  }
+  uint16_t notification_type = (value[1] << 8) + value[0];
+
+  auto properties = characteristic_->GetProperties();
+  switch (notification_type) {
+    case CCCD_STOP_ALL:
+      delegate->OnNotificationsStop(device, characteristic);
+      break;
+    case CCCD_START_NOTIFY:
+      if (!(properties &
+            device::BluetoothGattCharacteristic::PROPERTY_NOTIFY)) {
+        LOG(WARNING) << __func__ << ": Parent characteristic (uuid: "
+                     << characteristic_->GetUUID()
+                     << ") does not have the necessary properties to notify "
+                        "(properties: "
+                     << properties << ")";
+        return GattStatus::kCccCfgErr;
+      }
+      delegate->OnNotificationsStart(
+          device,
+          device::BluetoothGattCharacteristic::NotificationType::kNotification,
+          characteristic);
+      break;
+    case CCCD_START_INDICATE:
+      if (!(properties &
+            device::BluetoothGattCharacteristic::PROPERTY_INDICATE)) {
+        LOG(WARNING) << __func__ << ": Parent characteristic (uuid: "
+                     << characteristic_->GetUUID()
+                     << ") does not have the necessary properties to indicate "
+                        "(properties: "
+                     << properties << ")";
+        return GattStatus::kCccCfgErr;
+      }
+      delegate->OnNotificationsStart(
+          device,
+          device::BluetoothGattCharacteristic::NotificationType::kIndication,
+          characteristic);
+      break;
+    default:
+      LOG(WARNING) << __func__ << ": Value '" << notification_type
+                   << "' is not a valid CccdValueType";
+      return GattStatus::kCccCfgErr;
+  }
+  return GattStatus::kSuccess;
 }
 
 }  // namespace floss
