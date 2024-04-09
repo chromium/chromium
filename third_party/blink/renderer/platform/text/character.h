@@ -149,7 +149,8 @@ class PLATFORM_EXPORT Character {
            c == kTabulationCharacter || c == kCarriageReturnCharacter;
   }
   static bool IsLineFeed(UChar c) { return c == kNewlineCharacter; }
-  static bool IsOtherSpaceSeparator(UChar c) {
+  template <typename CharacterType>
+  static bool IsOtherSpaceSeparator(CharacterType c) {
     return c == kIdeographicSpaceCharacter;
   }
   static bool TreatAsSpace(UChar32 c) {

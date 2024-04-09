@@ -247,15 +247,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     return iterator_.get();
   }
 
-  template <typename CharacterType>
-  bool IsOtherSpaceSeparator(UChar ch) const {
-    return Character::IsOtherSpaceSeparator(ch);
-  }
-  template <LChar>
-  bool IsOtherSpaceSeparator(UChar ch) const {
-    return false;
-  }
-
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   int NextBreakablePosition(int pos, const CharacterType* str, int len) const;
   template <typename CharacterType, LineBreakType>

@@ -441,11 +441,11 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         break;
       case BreakSpaceType::kAfterEverySpace:
         if (context.last.is_space ||
-            IsOtherSpaceSeparator<CharacterType>(context.last.ch)) {
+            Character::IsOtherSpaceSeparator(context.last.ch)) {
           return i;
         }
         if ((context.current.is_space ||
-             IsOtherSpaceSeparator<CharacterType>(context.current.ch)) &&
+             Character::IsOtherSpaceSeparator(context.current.ch)) &&
             i + 1 < len) {
           return i + 1;
         }
