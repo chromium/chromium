@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@macro/default_bg_color"
-    android:padding="32dp"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
