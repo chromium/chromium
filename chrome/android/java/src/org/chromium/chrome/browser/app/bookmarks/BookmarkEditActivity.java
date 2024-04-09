@@ -250,7 +250,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         }
-        mBookmarkMoveSnackbarManager.destroy();
+        if (mBookmarkMoveSnackbarManager != null) {
+            mBookmarkMoveSnackbarManager.destroy();
+        }
         super.onDestroy();
     }
 
