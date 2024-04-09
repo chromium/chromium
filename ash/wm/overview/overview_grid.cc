@@ -3387,7 +3387,7 @@ void OverviewGrid::UpdateFeedbackButton() {
     auto contents_view = std::make_unique<PillButton>(
         base::BindRepeating(&OverviewGrid::ShowFeedbackPage,
                             base::Unretained(this)),
-        u"Send Feedback", PillButton::Type::kDefaultWithIconLeading,
+        u"Send Feedback", PillButton::Type::kDefaultElevatedWithIconLeading,
         &kFeedbackIcon);
 
     views::Widget::InitParams params;
