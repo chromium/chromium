@@ -248,8 +248,8 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback,
-      optimization_guide::proto::RequestContextMetadata*
-          request_context_metadata = nullptr) override;
+      std::optional<optimization_guide::proto::RequestContextMetadata>
+          request_context_metadata = std::nullopt) override;
 
   // Returns true if the opt-in setting should be shown for this profile for
   // given `feature`. This should only be called by settings UX.

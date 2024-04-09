@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -81,7 +82,8 @@ class MockOptGuideDecider
       const base::flat_set<OptimizationType>& optimization_types,
       RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      RequestContextMetadata* request_context_metadata = nullptr) override;
+      std::optional<RequestContextMetadata> request_context_metadata =
+          std::nullopt) override;
 
   void AddOnDemandShoppingResponse(const GURL& url,
                                    const OptimizationGuideDecision decision,

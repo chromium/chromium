@@ -250,13 +250,16 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
   std::vector<GURL> urls;
   url::GURLAndroid::JavaGURLArrayToGURLVector(env, java_gurls, &urls);
 
-  proto::RequestContextMetadata* request_context_metadata;
   int bytes_length = env->GetArrayLength(request_context_metadata_serialized);
   jbyte* bytes =
       env->GetByteArrayElements(request_context_metadata_serialized, nullptr);
   proto::RequestContextMetadata request_context_metadata_deserialized;
   request_context_metadata_deserialized.ParseFromArray(bytes, bytes_length);
-  request_context_metadata = &request_context_metadata_deserialized;
+  std::optional<optimization_guide::proto::RequestContextMetadata>
+      request_context_metadata =
+          (env->GetArrayLength(request_context_metadata_serialized) == 0)
+              ? std::nullopt
+              : std::make_optional(request_context_metadata_deserialized);
 
   optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
       urls, JavaIntArrayToOptTypesSet(env, optimization_types),

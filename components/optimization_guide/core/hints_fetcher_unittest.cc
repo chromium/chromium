@@ -110,7 +110,7 @@ class HintsFetcherTest : public testing::Test,
         /*access_token=*/std::string(), skip_cache,
         base::BindOnce(&HintsFetcherTest::OnHintsFetched,
                        base::Unretained(this)),
-        nullptr);
+        std::nullopt);
     RunUntilIdle();
     return status;
   }

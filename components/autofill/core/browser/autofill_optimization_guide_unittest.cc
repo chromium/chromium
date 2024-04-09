@@ -61,7 +61,7 @@ class MockOptimizationGuideDecider
        const base::flat_set<optimization_guide::proto::OptimizationType>&,
        optimization_guide::proto::RequestContext,
        optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       optimization_guide::proto::RequestContextMetadata*
+       std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata),
       (override));
 };

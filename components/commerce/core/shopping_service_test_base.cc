@@ -4,6 +4,8 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -104,7 +106,7 @@ void MockOptGuideDecider::CanApplyOptimizationOnDemand(
     const base::flat_set<OptimizationType>& optimization_types,
     RequestContext request_context,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-    RequestContextMetadata* request_context_metadata) {
+    std::optional<RequestContextMetadata> request_context_metadata) {
   if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
     for (const GURL& url : urls) {
       if (on_demand_shopping_responses_.find(url.spec()) ==

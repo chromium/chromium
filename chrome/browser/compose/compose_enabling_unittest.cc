@@ -92,7 +92,7 @@ class CustomMockOptimizationGuideKeyedService
        optimization_guide::proto::RequestContext request_context,
        optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
            callback,
-       optimization_guide::proto::RequestContextMetadata*
+       std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata));
 };
 
