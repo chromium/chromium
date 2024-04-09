@@ -22,12 +22,6 @@ declare_args() {
 
   # The directory where the re-client configuration files are.
   rbe_cfg_dir = "//buildtools/reclient_cfgs"
-
-  # TODO(danakj): This should live in //build/config/clang/clang.gni however the
-  # rbe.gni file is imported from BUILDCONFIG.gn, and we can't import gni stuff
-  # widely into there or we break stuff. Move this when the
-  # `rbe_bug_326584510_missing_inputs` var goes away.
-  clang_unsafe_buffers_paths = ""
 }
 
 declare_args() {
@@ -98,7 +92,8 @@ if (is_mac || is_ios) {
 # This is a comma-delimited list of paths relative to the source tree root. The
 # leading space is important, if the string is non-empty. :)
 rbe_bug_326584510_missing_inputs = ""
-if (clang_unsafe_buffers_paths != "") {
+if (defined(clang_unsafe_buffers_paths) &&
+    "$clang_unsafe_buffers_paths" != "") {
   from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
   rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
 }
