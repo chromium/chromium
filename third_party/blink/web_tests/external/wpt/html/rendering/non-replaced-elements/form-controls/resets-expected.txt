@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <input type="hidden"> - overflow
   assert_equals: expected "clip" but got "visible"
 [FAIL] <input type="text"> - overflow
@@ -38,7 +38,5 @@ Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "clip" but got "visible"
 [FAIL] <textarea> - overflow
   assert_equals: expected "visible" but got "auto"
-[FAIL] <marquee> - overflow
-  assert_equals: expected "visible" but got "hidden"
 Harness: the test ran to completion.
 

@@ -202564,6 +202564,32 @@
         {}
        ]
       ],
+      "basic-opacity-near-zero.html": [
+       "01cb5f86848f4f0e5f7faf54656a01777de63fae",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/basic-opacity-near-zero-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "basic-opacity-zero.html": [
+       "ff9d5078533980f4e0d4b244a57e271ca521e320",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/text-shadow/basic-opacity-zero-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "basic-opacity.html": [
        "a8cea6ad0e64d4e2e185d45c9a49262d33e59da0",
        [
@@ -334636,8 +334662,16 @@
        "79c3d996cff4f212d9f9c8ec5818bece45734805",
        []
       ],
+      "basic-opacity-near-zero-ref.html": [
+       "6254e4e9fc7d2e2662158b9d12fe6a8bd0ae730b",
+       []
+      ],
       "basic-opacity-ref.html": [
        "11aa6d5176b8715280447fc107c6a2cf07f3df15",
+       []
+      ],
+      "basic-opacity-zero-ref.html": [
+       "6254e4e9fc7d2e2662158b9d12fe6a8bd0ae730b",
        []
       ],
       "basic-ref.html": [
@@ -346552,10 +346586,6 @@
       []
      ],
      "insertion-removing-steps": {
-      "Node-append-meta-referrer-and-script-from-fragment.tentative-expected.txt": [
-       "0b5b0e6a49a63232c1c4cc2128990be65552f039",
-       []
-      ],
       "insertion-removing-steps-iframe.window-expected.txt": [
        "a52434e4389db97ce71166f2f9975406e5b0ed7c",
        []
@@ -365454,7 +365484,7 @@
         []
        ],
        "resets-expected.txt": [
-        "7fc83658102068e88876526d0366b25768f24d91",
+        "cf987664777a5ba05a63917ef2dcf3750fc2e4d1",
         []
        ],
        "select-sizing-001-ref.html": [
@@ -482628,7 +482658,7 @@
        ]
       ],
       "Node-append-meta-referrer-and-script-from-fragment.tentative.html": [
-       "d24779760337626697e807c085597196b7a4ca9a",
+       "e80e3b45b61d993f6ae1a5e7e916c2decb663a59",
        [
         null,
         {}
@@ -568315,6 +568345,13 @@
          {}
         ]
        ],
+       "marquee-overflow.html": [
+        "44b149952cdc97f5e4e09dbdda210966c83b2430",
+        [
+         null,
+         {}
+        ]
+       ],
        "marquee-scrollamount.html": [
         "808361a99f3aee138359e1fe1ee250a31dbe22f6",
         [
@@ -568428,7 +568465,7 @@
         ]
        ],
        "resets.html": [
-        "db21188ee37bc487312996c5afc87a8b1b57f88c",
+        "1a17aeac2d993e6e192145579b3d4c45045b4ae0",
         [
          null,
          {}
