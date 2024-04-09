@@ -970,9 +970,6 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
   const ComputedStyle& style = Style();
 
-  // TODO(crbug.com/325215738): Remove this when we're done investigating.
-  CHECK(&style);
-
   PhysicalRect ink_overflow(LocalRect());
   if (UNLIKELY(IsTableRow())) {
     // This is necessary because table-rows paints beyond border box if it
