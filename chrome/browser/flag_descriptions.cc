@@ -6727,11 +6727,6 @@ const char kIppFirstSetupForUsbPrintersDescription[] =
     "When enabled, ChromeOS attempts to setup USB printers via IPP Everywhere "
     "first, then falls back to PPD-based setup.";
 
-const char kVirtualKeyboardNewHeaderName[] =
-    "Enable new header for virtual keyboard";
-const char kVirtualKeyboardNewHeaderDescription[] =
-    "Enable new header for virtual keyboard to improve navigation.";
-
 const char kImeSystemEmojiPickerClipboardName[] =
     "System emoji picker clipboard";
 const char kImeSystemEmojiPickerClipboardDescription[] =

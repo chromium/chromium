@@ -3908,9 +3908,6 @@ extern const char kLacrosProfileMigrationForceOffDescription[];
 extern const char kLacrosProfileBackwardMigrationName[];
 extern const char kLacrosProfileBackwardMigrationDescription[];
 
-extern const char kVirtualKeyboardNewHeaderName[];
-extern const char kVirtualKeyboardNewHeaderDescription[];
-
 extern const char kHindiInscriptLayoutName[];
 extern const char kHindiInscriptLayoutDescription[];
 

@@ -539,9 +539,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "stylushandwriting",
       base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
   features.Append(GenerateFeatureFlag(
-      "newheader",
-      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
-  features.Append(GenerateFeatureFlag(
       "roundCorners", base::FeatureList::IsEnabled(
                           ash::features::kVirtualKeyboardRoundCorners)));
   features.Append(

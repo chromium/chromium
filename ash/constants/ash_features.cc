@@ -1602,11 +1602,6 @@ BASE_FEATURE(kStartAssistantAudioDecoderOnDemand,
              "StartAssistantAudioDecoderOnDemand",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable a new header bar for the ChromeOS virtual keyboard.
-BASE_FEATURE(kVirtualKeyboardNewHeader,
-             "VirtualKeyboardNewHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, used to configure the heuristic rules for some advanced IME
 // features (e.g. auto-correct).
 BASE_FEATURE(kImeRuleConfig, "ImeRuleConfig", base::FEATURE_ENABLED_BY_DEFAULT);

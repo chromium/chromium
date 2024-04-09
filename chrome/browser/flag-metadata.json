@@ -2662,11 +2662,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-cros-virtual-keyboard-new-header",
-    "owners": ["jopalmer@chromium.org", "essential-inputs-team@google.com"],
-    "expiry_milestone" : 116
-  },
-  {
     "name": "enable-cros-virtual-keyboard-round-corners",
     "owners": [ "jopalmer@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 115
