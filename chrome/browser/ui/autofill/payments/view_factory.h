@@ -60,13 +60,15 @@ base::WeakPtr<CardUnmaskOtpInputDialogView> CreateAndShowOtpInputDialog(
 // dialog is triggered when a payments window flow is started and if there was
 // no intentional user consent to open a pop-up and redirect to a payments
 // window flow. Once the dialog is accepted, it is treated as receiving user
-// consent and the payments window flow will start.
+// consent and the payments window flow will start. If the dialog is cancelled,
+// the flow will end.
 base::WeakPtr<payments::PaymentsWindowUserConsentDialog>
 CreateAndShowPaymentsWindowUserConsentDialog(
     base::WeakPtr<payments::PaymentsWindowUserConsentDialogController>
         controller,
     content::WebContents* web_contents,
-    base::OnceClosure accept_callback);
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback);
 
 }  // namespace autofill
 

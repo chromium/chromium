@@ -19,7 +19,7 @@ class PaymentsWindowUserConsentDialogControllerImplTest : public testing::Test {
   PaymentsWindowUserConsentDialogControllerImplTest() {
     controller_ =
         std::make_unique<PaymentsWindowUserConsentDialogControllerImpl>(
-            accept_callback_.Get());
+            accept_callback_.Get(), cancel_callback_.Get());
   }
 
   ~PaymentsWindowUserConsentDialogControllerImplTest() override = default;
@@ -30,6 +30,7 @@ class PaymentsWindowUserConsentDialogControllerImplTest : public testing::Test {
 
  protected:
   base::MockOnceClosure accept_callback_;
+  base::MockOnceClosure cancel_callback_;
 
  private:
   std::unique_ptr<PaymentsWindowUserConsentDialogControllerImpl> controller_;
@@ -57,6 +58,13 @@ TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
        AcceptCallbackTriggeredOnDialogAcceptance) {
   EXPECT_CALL(accept_callback_, Run);
   controller()->OnOkButtonClicked();
+}
+
+// Tests that the cancel callback is triggered when the dialog is cancelled.
+TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
+       CancelCallbackTriggeredOnDialogCancelling) {
+  EXPECT_CALL(cancel_callback_, Run);
+  controller()->OnCancelButtonClicked();
 }
 
 }  // namespace autofill::payments

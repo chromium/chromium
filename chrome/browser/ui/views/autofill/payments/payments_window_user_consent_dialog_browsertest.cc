@@ -24,7 +24,7 @@ class PaymentsWindowUserConsentDialogBrowserTest
   PaymentsWindowUserConsentDialogBrowserTest() {
     controller_ =
         std::make_unique<PaymentsWindowUserConsentDialogControllerImpl>(
-            accept_callback_.Get());
+            accept_callback_.Get(), cancel_callback_.Get());
   }
   PaymentsWindowUserConsentDialogBrowserTest(
       const PaymentsWindowUserConsentDialogBrowserTest&) = delete;
@@ -42,6 +42,7 @@ class PaymentsWindowUserConsentDialogBrowserTest
   }
 
   base::MockOnceClosure accept_callback_;
+  base::MockOnceClosure cancel_callback_;
   std::unique_ptr<PaymentsWindowUserConsentDialogControllerImpl> controller_;
 
  private:
@@ -97,10 +98,12 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                 WaitForHide(PaymentsWindowUserConsentDialogView::kTopViewId))));
 }
 
-// Ensures the UI can be shown, and verifies that cancelling the dialog hides
-// the view.
+// Ensures the UI can be shown, and verifies that cancelling the dialog runs the
+// cancel callback and hides the view.
 IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        InvokeUi_DialogCancelled) {
+  EXPECT_CALL(cancel_callback_, Run);
+
   RunTestSequence(
       TriggerDialogAndWaitForShow(
           views::DialogClientView::kCancelButtonElementId),

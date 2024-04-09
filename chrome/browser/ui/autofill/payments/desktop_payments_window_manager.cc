@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -17,12 +18,28 @@
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
+#include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace autofill::payments {
+
+namespace {
+
+gfx::Rect GetPopupSizeForVcn3ds() {
+  // The first two arguments do not matter as position gets overridden by
+  // the tab modal pop-up code. The 600x400 size of the pop-up is derived
+  // from the Mastercard and Visa 3DS developer guides.
+  //
+  // Mastercard:
+  // https://developer.mastercard.com/consent-management/documentation/tutorials/consents-tutorial/handling-3ds-auth/.
+  // Visa: https://developer.visa.com/pages/visa-3d-secure.
+  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/400);
+}
+
+}  // namespace
 
 DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
     ContentAutofillClient* client)
@@ -42,20 +59,10 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   flow_type_ = FlowType::kVcn3ds;
   vcn_3ds_context_ = std::move(context);
   if (vcn_3ds_context_->user_consent_already_given) {
-    CreatePopup(
-        vcn_3ds_context_->challenge_option.url_to_open,
-        // The first two arguments do not matter as position gets overridden by
-        // the tab modal pop-up code. The 600x400 size of the pop-up is derived
-        // from the Mastercard and Visa 3DS developer guides.
-        //
-        // Mastercard:
-        // https://developer.mastercard.com/consent-management/documentation/tutorials/consents-tutorial/handling-3ds-auth/.
-        // Visa: https://developer.visa.com/pages/visa-3d-secure.
-        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/400));
+    CreatePopup(vcn_3ds_context_->challenge_option.url_to_open,
+                GetPopupSizeForVcn3ds());
   } else {
-    // TODO(b/41490740): Implement the context.user_consent_already_given false
-    // case.
-    NOTREACHED_NORETURN();
+    ShowVcn3dsConsentDialog();
   }
 }
 
@@ -109,7 +116,6 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
 }
 
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
-  flow_type_ = FlowType::kNoFlow;
   base::expected<RedirectCompletionProof, Vcn3dsAuthenticationPopupErrorType>
       result = ParseFinalUrlForVcn3ds(web_contents()->GetVisibleURL());
   if (result.has_value()) {
@@ -131,10 +137,10 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   }
 
   // In the case of an error, we show the user an error dialog but still run the
-  // callback to let the caller know failure occurred.
+  // callback to let the caller know the flow has finished unsuccessfully.
   std::move(vcn_3ds_context_->completion_callback)
       .Run(Vcn3dsAuthenticationResponse());
-  vcn_3ds_context_.reset();
+  Reset();
 }
 
 void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
@@ -170,7 +176,7 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
   }
 
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
-  vcn_3ds_context_.reset();
+  Reset();
 }
 
 void DesktopPaymentsWindowManager::
@@ -178,7 +184,41 @@ void DesktopPaymentsWindowManager::
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->CancelRequest();
+  // In the case of the dialog cancelled, we still run the callback to let the
+  // caller know the flow has finished unsuccessfully.
+  std::move(vcn_3ds_context_->completion_callback)
+      .Run(Vcn3dsAuthenticationResponse());
+  Reset();
+}
+
+void DesktopPaymentsWindowManager::ShowVcn3dsConsentDialog() {
+  payments_window_user_consent_dialog_controller_ =
+      std::make_unique<PaymentsWindowUserConsentDialogControllerImpl>(
+          /*accept_callback=*/base::BindOnce(
+              &DesktopPaymentsWindowManager::CreatePopup,
+              weak_ptr_factory_.GetWeakPtr(),
+              vcn_3ds_context_->challenge_option.url_to_open,
+              GetPopupSizeForVcn3ds()),
+          /*cancel_callback=*/base::BindOnce(
+              &DesktopPaymentsWindowManager::OnVcn3dsConsentDialogCancelled,
+              weak_ptr_factory_.GetWeakPtr()));
+  payments_window_user_consent_dialog_controller_->ShowDialog(base::BindOnce(
+      &CreateAndShowPaymentsWindowUserConsentDialog,
+      payments_window_user_consent_dialog_controller_->GetWeakPtr(),
+      base::Unretained(&client_->GetWebContents())));
+}
+
+void DesktopPaymentsWindowManager::OnVcn3dsConsentDialogCancelled() {
+  // In the case of the dialog cancelled, we still run the callback to let the
+  // caller know the flow has finished unsuccessfully.
+  std::move(vcn_3ds_context_->completion_callback)
+      .Run(Vcn3dsAuthenticationResponse());
+  Reset();
+}
+
+void DesktopPaymentsWindowManager::Reset() {
   vcn_3ds_context_.reset();
+  flow_type_ = FlowType::kNoFlow;
 }
 
 }  // namespace autofill::payments

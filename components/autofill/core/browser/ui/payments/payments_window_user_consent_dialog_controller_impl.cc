@@ -12,8 +12,10 @@ namespace autofill::payments {
 
 PaymentsWindowUserConsentDialogControllerImpl::
     PaymentsWindowUserConsentDialogControllerImpl(
-        base::OnceClosure accept_callback)
-    : accept_callback_(std::move(accept_callback)) {}
+        base::OnceClosure accept_callback,
+        base::OnceClosure cancel_callback)
+    : accept_callback_(std::move(accept_callback)),
+      cancel_callback_(std::move(cancel_callback)) {}
 
 PaymentsWindowUserConsentDialogControllerImpl::
     ~PaymentsWindowUserConsentDialogControllerImpl() {
@@ -24,19 +26,28 @@ PaymentsWindowUserConsentDialogControllerImpl::
 
 void PaymentsWindowUserConsentDialogControllerImpl::ShowDialog(
     base::OnceCallback<base::WeakPtr<PaymentsWindowUserConsentDialog>(
+        base::OnceClosure,
         base::OnceClosure)> create_and_show_dialog_callback) {
   CHECK(!payments_window_user_consent_dialog_);
   payments_window_user_consent_dialog_ =
       std::move(create_and_show_dialog_callback)
-          .Run(base::BindOnce(
-              &PaymentsWindowUserConsentDialogControllerImpl::OnOkButtonClicked,
-              weak_ptr_factory_.GetWeakPtr()));
+          .Run(base::BindOnce(&PaymentsWindowUserConsentDialogControllerImpl::
+                                  OnOkButtonClicked,
+                              weak_ptr_factory_.GetWeakPtr()),
+               base::BindOnce(&PaymentsWindowUserConsentDialogControllerImpl::
+                                  OnCancelButtonClicked,
+                              weak_ptr_factory_.GetWeakPtr()));
   CHECK(payments_window_user_consent_dialog_);
 }
 
 void PaymentsWindowUserConsentDialogControllerImpl::OnOkButtonClicked() {
   CHECK(accept_callback_);
   std::move(accept_callback_).Run();
+}
+
+void PaymentsWindowUserConsentDialogControllerImpl::OnCancelButtonClicked() {
+  CHECK(cancel_callback_);
+  std::move(cancel_callback_).Run();
 }
 
 std::u16string PaymentsWindowUserConsentDialogControllerImpl::GetWindowTitle()

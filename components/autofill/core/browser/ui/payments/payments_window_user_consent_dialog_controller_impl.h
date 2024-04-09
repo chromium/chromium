@@ -19,8 +19,9 @@ class PaymentsWindowUserConsentDialog;
 class PaymentsWindowUserConsentDialogControllerImpl
     : public PaymentsWindowUserConsentDialogController {
  public:
-  explicit PaymentsWindowUserConsentDialogControllerImpl(
-      base::OnceClosure accept_callback);
+  PaymentsWindowUserConsentDialogControllerImpl(
+      base::OnceClosure accept_callback,
+      base::OnceClosure cancel_callback);
   PaymentsWindowUserConsentDialogControllerImpl(
       const PaymentsWindowUserConsentDialogControllerImpl&) = delete;
   PaymentsWindowUserConsentDialogControllerImpl& operator=(
@@ -30,13 +31,16 @@ class PaymentsWindowUserConsentDialogControllerImpl
   // Shows the dialog, which is a view created by
   // `create_and_show_view_callback`. The controller contains the information
   // for what to show on the view, as well as the logic for handling user
-  // interaction.
+  // interaction. The parameters of `create_and_show_dialog_callback` are the
+  // accept callback and the cancel callback, respectively.
   void ShowDialog(
       base::OnceCallback<base::WeakPtr<PaymentsWindowUserConsentDialog>(
+          base::OnceClosure,
           base::OnceClosure)> create_and_show_dialog_callback);
 
   // PaymentsWindowUserConsentDialogController:
   void OnOkButtonClicked() override;
+  void OnCancelButtonClicked() override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetDialogDescription() const override;
   std::u16string GetOkButtonLabel() const override;
@@ -49,6 +53,10 @@ class PaymentsWindowUserConsentDialogControllerImpl
   // Dialog acceptance callback. Set when `ShowDialog()` is triggered, and run
   // when `OnOkButtonClicked()` is called.
   base::OnceClosure accept_callback_;
+
+  // Dialog cancellation callback. Set when `ShowDialog()` is triggered, and run
+  // when `OnCancelButtonClicked()` is called.
+  base::OnceClosure cancel_callback_;
 
   // The view that is currently displayed to the user, if one is present,
   // nullptr otherwise. Set when `ShowDialog()` is triggered, and reset on

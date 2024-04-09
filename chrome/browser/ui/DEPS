@@ -77,5 +77,8 @@ specific_include_rules = {
   ],
   "address_bubbles_controller_interactive_uitest.cc": [
     "+chrome/browser/ui/views/autofill"
+  ],
+  "desktop_payments_window_manager_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill/payments"
   ]
 }

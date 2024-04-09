@@ -26,10 +26,12 @@ CreateAndShowPaymentsWindowUserConsentDialog(
     base::WeakPtr<payments::PaymentsWindowUserConsentDialogController>
         controller,
     content::WebContents* web_contents,
-    base::OnceClosure accept_callback) {
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
   payments::PaymentsWindowUserConsentDialogView* dialog_view =
       new payments::PaymentsWindowUserConsentDialogView(controller);
   dialog_view->SetAcceptCallback(std::move(accept_callback));
+  dialog_view->SetCancelCallback(std::move(cancel_callback));
   constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
   return dialog_view->GetWeakPtr();
 }

@@ -18,6 +18,9 @@ class PaymentsWindowUserConsentDialogController {
   // Triggers the callback that continues the payments window pop-up flow.
   virtual void OnOkButtonClicked() = 0;
 
+  // Triggers the callback that cancels the payments window pop-up flow.
+  virtual void OnCancelButtonClicked() = 0;
+
   // Returns the title of the payments window pop-up user consent dialog to be
   // displayed to the user.
   virtual std::u16string GetWindowTitle() const = 0;
