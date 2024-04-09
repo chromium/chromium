@@ -2712,6 +2712,40 @@ TEST_F(SnapGroupTest, OverviewGroupItemCreationBasic) {
   EXPECT_EQ(overview_grid->window_list().size(), 2u);
 }
 
+// Verifies that the divider doesn't appear precipitously before the exit
+// animation of the two windows in overview mode is complete, guaranteeing a
+// seamless transition. See regression at http://b/333465871.
+TEST_F(SnapGroupTest, DividerExitOverviewAnimation) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SplitViewDivider* divider = snap_group_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  ASSERT_TRUE(divider_widget->IsVisible());
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  WaitForOverviewEntered();
+  EXPECT_TRUE(divider_widget);
+  EXPECT_FALSE(divider_widget->IsVisible());
+
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN, GetEventGenerator(), 0);
+
+  // Verify that `divider_widget` remains invisible until overview exit
+  // animation is complete.
+  EXPECT_TRUE(divider_widget);
+  EXPECT_FALSE(divider_widget->IsVisible());
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(divider_widget);
+  EXPECT_TRUE(divider_widget->IsVisible());
+}
+
 // Tests that if one of the windows in a snap group gets destroyed in overview,
 // the overview group item will only host the other window. If both of the
 // windows get destroyed, the corresponding overview group item will be removed

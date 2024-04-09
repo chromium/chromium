@@ -589,7 +589,8 @@ void SplitViewDivider::RefreshStackingOrder() {
 
   base::AutoReset<bool> lock(&is_refreshing_stacking_order_, true);
 
-  if (observed_windows_.empty() || !divider_widget_) {
+  if (observed_windows_.empty() || !divider_widget_ ||
+      !divider_widget_->IsVisible()) {
     return;
   }
 

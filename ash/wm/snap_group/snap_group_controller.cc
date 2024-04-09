@@ -237,9 +237,6 @@ void SnapGroupController::OnOverviewModeStarting() {
 
 void SnapGroupController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   for (const auto& snap_group : snap_groups_) {
-    // TODO(http://b/328783493):  The divider may have been created in the
-    // snap group creation session with partial overview, avoid additional
-    // call to `ShowDivider()` on overview mode ended.
     snap_group->ShowDivider();
   }
 }
