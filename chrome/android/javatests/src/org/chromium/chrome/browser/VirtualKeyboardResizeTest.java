@@ -27,7 +27,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -83,9 +82,14 @@ public class VirtualKeyboardResizeTest {
                 });
     }
 
-    private void startMainActivityWithURL(String url) {
+    private void startMainActivityWithURL(String url) throws Throwable {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        // Ensure a compositor commit has occurred. This ensures that browser
+        // controls shown state is synced to Blink before we start querying
+        // visual viewport geometry.
+        waitForVisualStateCallback();
     }
 
     private void waitForVisualStateCallback() throws Throwable {
@@ -241,7 +245,6 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "b/330842852")
     public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
         TestThreadUtils.runOnUiThreadBlocking(
@@ -315,7 +318,6 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1405463")
     public void testVirtualKeyboardResizesVisualViewportFlag() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
@@ -347,7 +349,6 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "b/330842852")
     public void testResizesVisualMetaTag() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
 
@@ -390,7 +391,6 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "b/330842852")
     public void testResizesLayoutMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-content");
@@ -423,7 +423,6 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1429090")
     public void testOverlaysContentMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
@@ -449,7 +448,6 @@ public class VirtualKeyboardResizeTest {
     /** Test that the virtual keyboard mode is correctly set/reset on navigations. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1469918")
     public void testModeAfterNavigation() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
@@ -567,7 +565,6 @@ public class VirtualKeyboardResizeTest {
     public void testNoSpuriousResizeEventOverlaysContent() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
-        waitForVisualStateCallback();
         clearResizeEventLog();
 
         int initialHeight = getPageInnerHeight();
@@ -599,7 +596,6 @@ public class VirtualKeyboardResizeTest {
     public void testNoSpuriousResizeEventResizesVisual() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-visual");
-        waitForVisualStateCallback();
         clearResizeEventLog();
 
         int initialHeight = getPageInnerHeight();
