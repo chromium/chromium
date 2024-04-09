@@ -21,6 +21,8 @@ class KcerFactoryAsh final : public KcerFactory, ash::SessionObserver {
  public:
   static void EnsureFactoryBuilt();
 
+  static KcerFactory* GetInstance();
+
   KcerFactoryAsh();
   ~KcerFactoryAsh() override;
 

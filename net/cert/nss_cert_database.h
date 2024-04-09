@@ -205,10 +205,11 @@ class NET_EXPORT NSSCertDatabase {
 
   // Export the given certificates and private keys into a PKCS #12 blob,
   // storing into |output|.
-  // Returns the number of certificates successfully exported.
-  int ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                     const std::u16string& password,
-                     std::string* output) const;
+  // Returns the number of certificates successfully exported. NSS has to be
+  // initialized before the method is called.
+  static int ExportToPKCS12(const ScopedCERTCertificateList& certs,
+                            const std::u16string& password,
+                            std::string* output);
 
   // Uses similar logic to nsNSSCertificateDB::handleCACertDownload to find the
   // root.  Assumes the list is an ordered hierarchy with the root being either

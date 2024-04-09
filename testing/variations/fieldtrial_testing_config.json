@@ -4690,6 +4690,21 @@
             ]
         }
     ],
+    "CopyClientKeysCertsToChaps": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CopyClientKeysCertsToChaps"
+                    ]
+                }
+            ]
+        }
+    ],
     "CpssStringChange": [
         {
             "platforms": [

@@ -66,6 +66,14 @@ class KcerFactory : public ProfileKeyedServiceFactory {
       base::OnceCallback<void(base::WeakPtr<internal::KcerToken>,
                               base::WeakPtr<internal::KcerToken>)>;
 
+  // Public for Pkcs12Migrator unit tests.
+  struct KcerService : public KeyedService {
+    explicit KcerService(std::unique_ptr<internal::KcerImpl> kcer_instance);
+    ~KcerService() override;
+
+    std::unique_ptr<internal::KcerImpl> kcer;
+  };
+
   // Returns whether HighLevelChapsClient was initialized. The method is mostly
   // needed just for testing.
   static bool IsHighLevelChapsClientInitialized();
@@ -79,13 +87,6 @@ class KcerFactory : public ProfileKeyedServiceFactory {
   static void Shutdown();
 
  protected:
-  struct KcerService : public KeyedService {
-    explicit KcerService(std::unique_ptr<internal::KcerImpl> kcer_instance);
-    ~KcerService() override;
-
-    std::unique_ptr<internal::KcerImpl> kcer;
-  };
-
   KcerFactory();
   ~KcerFactory() override;
 

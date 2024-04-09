@@ -1200,6 +1200,18 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="3" label="Interact outside of shelf to hide hotseat"/>
 </enum>
 
+<enum name="KcerPkcs12MigrationEvent">
+  <int value="0" label="MigrationStarted"/>
+  <int value="1" label="NothingToMigrate"/>
+  <int value="2" label="MigrationFinishedSuccess"/>
+  <int value="3" label="MigrationFinishedFailure"/>
+  <int value="4" label="CertMigratedSuccess"/>
+  <int value="5" label="FailedToReimportCert"/>
+  <int value="6" label="ExportedPkcs12EmptyError"/>
+  <int value="7" label="FailedToGetKcerCerts"/>
+  <int value="8" label="FailedToGetNssCerts"/>
+</enum>
+
 <enum name="LacrosLaunchMode">
   <int value="0" label="Only Ash browser"/>
   <int value="1" label="Ash and Lacros browser available"/>

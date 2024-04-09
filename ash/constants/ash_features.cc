@@ -481,7 +481,8 @@ BASE_FEATURE(kContinuousOverviewScrollAnimation,
 BASE_FEATURE(kCoralFeature, "CoralFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables execution of routine for copying client keys and certs from NSS DB to
-// software backed Chaps slot.
+// software backed Chaps slot. It's only respected if the
+// EnableNssDbClientCertsRollback feature flag is disabled.
 BASE_FEATURE(kCopyClientKeysCertsToChaps,
              "CopyClientKeysCertsToChaps",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3333,7 +3334,8 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 }
 
 bool IsCopyClientKeysCertsToChapsEnabled() {
-  return base::FeatureList::IsEnabled(kCopyClientKeysCertsToChaps);
+  return !IsNssDbClientCertsRollbackEnabled() &&
+         base::FeatureList::IsEnabled(kCopyClientKeysCertsToChaps);
 }
 
 bool IsCrosPrivacyHubAppPermissionsEnabled() {

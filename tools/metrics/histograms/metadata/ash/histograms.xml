@@ -4434,6 +4434,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.KcerPkcs12Migration.Events"
+    enum="KcerPkcs12MigrationEvent" expires_after="2024-10-01">
+  <owner>miersh@google.com</owner>
+  <owner>olsa@google.com</owner>
+  <summary>
+    Tracks events related the migration of PKCS#12 certs from the NSS public
+    slot into the private slot provided by Chaps.
+  </summary>
+</histogram>
+
 <histogram name="Ash.KcerRollbackHelper.Events"
     enum="NssDbClientCertsRollbackEvent" expires_after="2025-03-05">
   <owner>miersh@google.com</owner>

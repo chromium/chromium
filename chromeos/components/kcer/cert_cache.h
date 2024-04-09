@@ -21,7 +21,6 @@ class Cert;
 namespace internal {
 
 // Cache for a collection of scoped_refptr<const Cert>-s.
-// Exported for unit tests only.
 class COMPONENT_EXPORT(KCER) CertCache {
  public:
   // Empty cache.

@@ -70,6 +70,12 @@ KcerFactoryAsh::KcerFactoryAsh() = default;
 KcerFactoryAsh::~KcerFactoryAsh() = default;
 
 // static
+KcerFactory* KcerFactoryAsh::GetInstance() {
+  EnsureFactoryBuilt();
+  return GetGlobalPointer();
+}
+
+// static
 void KcerFactoryAsh::EnsureFactoryBuilt() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetGlobalPointer()) {
