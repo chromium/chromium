@@ -18,6 +18,7 @@
 
 namespace views {
 class Textfield;
+class ImageButton;
 }
 
 namespace ash {
@@ -70,12 +71,16 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   void SetQueryText(std::u16string text);
 
   const views::Textfield& textfield_for_testing() const { return *textfield_; }
+  views::ImageButton& clear_button_for_testing() { return *clear_button_; }
 
  private:
+  void ClearButtonPressed();
+
   SearchCallback search_callback_;
   raw_ptr<PickerKeyEventHandler> key_event_handler_ = nullptr;
   raw_ptr<PickerPerformanceMetrics> performance_metrics_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<views::ImageButton> clear_button_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::View)
