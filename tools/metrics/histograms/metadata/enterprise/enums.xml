@@ -2090,6 +2090,7 @@ chromium-metrics-reviews@google.com.
   <int value="1251"
       label="GenAILocalFoundationalModelEnterprisePolicySettings"/>
   <int value="1252" label="DeviceExtensionsSystemLogEnabled"/>
+  <int value="1253" label="ChromeDataRegionSetting"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

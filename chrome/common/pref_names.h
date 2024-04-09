@@ -1882,6 +1882,15 @@ inline constexpr char kPrefHasCompletedComposeFRE[] =
     "compose_has_completed_fre";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+// Integer value controlling the data region to store covered data from Chrome.
+// By default, no preference is selected.
+// - 0: No preference
+// - 1: United States
+// - 2: Europe
+inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
