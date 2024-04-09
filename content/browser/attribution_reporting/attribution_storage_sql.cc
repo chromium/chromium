@@ -516,6 +516,17 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult::InternalError();
   }
 
+  const CommonSourceInfo& common_info = source.common_info();
+  const attribution_reporting::SourceRegistration& reg = source.registration();
+
+  ASSIGN_OR_RETURN(const auto randomized_response_data,
+                   delegate_->GetRandomizedResponse(
+                       common_info.source_type(), reg.trigger_specs,
+                       reg.max_event_level_reports, reg.event_level_epsilon),
+                   [](auto) -> StoreSourceResult {
+                     return StoreSourceResult::ExceedsMaxChannelCapacity();
+                   });
+
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
@@ -535,8 +546,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     }
     last_deleted_expired_sources_ = source_time;
   }
-
-  const CommonSourceInfo& common_info = source.common_info();
 
   const std::string serialized_source_origin =
       common_info.source_origin().Serialize();
@@ -600,20 +609,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult::InternalError();
   }
 
-  const attribution_reporting::SourceRegistration& reg = source.registration();
-
   const base::Time expiry_time = source_time + reg.expiry;
 
   const base::Time aggregatable_report_window_time =
       source_time + reg.aggregatable_report_window;
-
-  ASSIGN_OR_RETURN(const auto randomized_response_data,
-                   delegate_->GetRandomizedResponse(
-                       common_info.source_type(), reg.trigger_specs,
-                       reg.max_event_level_reports, reg.event_level_epsilon),
-                   [](auto) -> StoreSourceResult {
-                     return StoreSourceResult::ExceedsMaxChannelCapacity();
-                   });
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;

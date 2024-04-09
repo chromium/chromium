@@ -649,9 +649,12 @@ TEST_F(AttributionStorageTest, GetAttributionReportsMultipleTimes_SameResult) {
   EXPECT_EQ(first_call_reports, second_call_reports);
 }
 
-TEST_F(AttributionStorageTest, ExceedsChannelCapacity) {
-  delegate()->set_exceeds_channel_capacity_limit(true);
+TEST_F(AttributionStorageTest, ExceedsChannelCapacity_SupersedesRateLimits) {
+  delegate()->set_max_sources_per_origin(1);
+  EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status(),
+            StorableSource::Result::kSuccess);
 
+  delegate()->set_exceeds_channel_capacity_limit(true);
   EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status(),
             StorableSource::Result::kExceedsMaxChannelCapacity);
 }
