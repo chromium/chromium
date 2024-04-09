@@ -144,7 +144,7 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
 
   autofill::FormInteractionsFlowId flow_id_{};
   base::Time flow_id_date_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::vector<autofill::Suggestion> suggestions_;
   autofill::AutofillSuggestionTriggerSource trigger_source_{
       autofill::AutofillSuggestionTriggerSource::kUnspecified};
