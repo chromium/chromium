@@ -134,54 +134,6 @@ class BASE_EXPORT BigEndianReader {
   raw_span<const uint8_t> buffer_;
 };
 
-// Allows writing integers in network order (big endian) while iterating over
-// an underlying buffer. All the writing functions advance the internal pointer.
-class BASE_EXPORT BigEndianWriter {
- public:
-  // Constructs a BigEndianWriter that will write into the given buffer.
-  BigEndianWriter(span<uint8_t> buffer);
-
-  // TODO(crbug.com/40284755): Remove this overload.
-  UNSAFE_BUFFER_USAGE BigEndianWriter(char* buf, size_t len);
-
-  ~BigEndianWriter();
-
-  char* ptr() const { return reinterpret_cast<char*>(buffer_.data()); }
-  size_t remaining() const { return buffer_.size(); }
-
-  // Returns a span over all unwritten bytes.
-  span<uint8_t> remaining_bytes() const { return buffer_; }
-
-  bool Skip(size_t len);
-  // TODO(crbug.com/40284755): WriteBytes() calls should be replaced with
-  // WriteSpan().
-  bool WriteBytes(const void* buf, size_t len);
-  bool WriteU8(uint8_t value);
-  bool WriteU16(uint16_t value);
-  bool WriteU32(uint32_t value);
-  bool WriteU64(uint64_t value);
-
-  // Writes the span of bytes to the backing buffer. If there is not enough
-  // room, it writes nothing and returns false.
-  bool WriteSpan(base::span<const uint8_t> bytes);
-
-  // Writes `N` bytes to the backing buffer. If there is not enough room, it
-  // writes nothing and returns false.
-  template <size_t N>
-  bool WriteFixedSpan(base::span<const uint8_t, N> bytes) {
-    if (remaining() < N) {
-      return false;
-    }
-    auto [write, remain] = buffer_.split_at<N>();
-    write.copy_from(bytes);
-    buffer_ = remain;
-    return true;
-  }
-
- private:
-  raw_span<uint8_t> buffer_;
-};
-
 }  // namespace base
 
 #endif  // BASE_BIG_ENDIAN_H_
