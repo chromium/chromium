@@ -19,9 +19,6 @@ namespace content {
 
 namespace {
 
-using ::network::mojom::VariantsHeaderPtr;
-
-const char kAcceptLanguageLowerCase[] = "accept-language";
 const char kReduceAcceptLanguageOriginTrial[] = "ReduceAcceptLanguage";
 
 std::string GetFirstUserAcceptLanguage(
@@ -144,20 +141,12 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(parsed_headers);
 
-  if (!parsed_headers->content_language || !parsed_headers->variants_headers)
+  if (!parsed_headers->content_language || !parsed_headers->avail_language) {
     return false;
+  }
 
   if (!OriginCanReduceAcceptLanguage(request_origin))
     return false;
-
-  // Only parse and persist if the Variants headers include Accept-Language.
-  auto variants_accept_lang_iter = base::ranges::find(
-      parsed_headers->variants_headers.value(), kAcceptLanguageLowerCase,
-      &::network::mojom::VariantsHeader::name);
-  if (variants_accept_lang_iter ==
-      parsed_headers->variants_headers.value().end()) {
-    return false;
-  }
 
   std::string initial_accept_language;
   if (!request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
@@ -179,7 +168,7 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
   PersistLanguageResult persist_params = GetLanguageToPersist(
       initial_accept_language, parsed_headers->content_language.value(),
       delegate_->GetUserAcceptLanguages(),
-      (*variants_accept_lang_iter)->available_values, is_origin_trial_enabled);
+      parsed_headers->avail_language.value(), is_origin_trial_enabled);
 
   if (persist_params.language_to_persist) {
     delegate_->PersistReducedLanguage(

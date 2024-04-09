@@ -446,7 +446,7 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   CHECK(mojo::Equals(adjusted_lhs->reporting_endpoints,
                      rhs->reporting_endpoints));
   CHECK(mojo::Equals(adjusted_lhs->cookie_indices, rhs->cookie_indices));
-  CHECK(mojo::Equals(adjusted_lhs->variants_headers, rhs->variants_headers));
+  CHECK(mojo::Equals(adjusted_lhs->avail_language, rhs->avail_language));
   CHECK(mojo::Equals(adjusted_lhs->content_language, rhs->content_language));
   CHECK(mojo::Equals(adjusted_lhs->no_vary_search_with_parse_error,
                      rhs->no_vary_search_with_parse_error));

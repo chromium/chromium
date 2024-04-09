@@ -17,9 +17,9 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/avail_language_header_parser.h"
 #include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/variants_header_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
@@ -135,7 +135,7 @@ class AcceptLanguageUtilsTests : public RenderViewHostImplTestHarness {
                        ReduceAcceptLanguageUtils& reduce_language_utils,
                        const std::string& accept_language,
                        const std::string& content_language,
-                       const std::string& variants_accept_language,
+                       const std::string& avail_language,
                        bool is_origin_trial_enabled) {
     net::HttpRequestHeaders headers;
     headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
@@ -143,8 +143,8 @@ class AcceptLanguageUtilsTests : public RenderViewHostImplTestHarness {
     auto parsed_headers = network::mojom::ParsedHeaders::New();
     parsed_headers->content_language =
         network::ParseContentLanguages(content_language);
-    parsed_headers->variants_headers = network::ParseVariantsHeaders(
-        "accept-language=" + variants_accept_language);
+    parsed_headers->avail_language =
+        network::ParseAvailLanguage(avail_language);
 
     return reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
         url::Origin::Create(url), headers, parsed_headers,
@@ -363,26 +363,25 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
             url::Origin::Create(url), headers, parsed_headers));
 
     parsed_headers->content_language = network::ParseContentLanguages("en");
-    // Expect return false when parsed_headers->variants_headers is null.
+    // Expect return false when parsed_headers->avail_language is null.
     EXPECT_FALSE(
         reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
             url::Origin::Create(url), headers, parsed_headers));
 
-    parsed_headers->variants_headers = network::ParseVariantsHeaders(" ");
+    parsed_headers->avail_language = network::ParseAvailLanguage(" ");
     // Expect return false when invalid URL.
     EXPECT_FALSE(
         reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
             url::Origin::Create(GURL("ws://example.com")), headers,
             parsed_headers));
 
-    // Expect return false when parsed_headers->variants_headers has no
+    // Expect return false when parsed_headers->avail_language has no
     // accept-language values.
     EXPECT_FALSE(
         reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
             url::Origin::Create(GURL(url)), headers, parsed_headers));
 
-    parsed_headers->variants_headers =
-        network::ParseVariantsHeaders("accept-language=(en zh)");
+    parsed_headers->avail_language = network::ParseAvailLanguage("en, zh");
     // Expect return false when no initial accept-language header.
     EXPECT_FALSE(
         reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
@@ -418,52 +417,52 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
       std::string user_accept_languages;
       std::string accept_language;
       std::string content_language;
-      std::string variants_accept_language;
+      std::string avail_language;
       bool expected_resend_request;
       std::optional<std::string> expected_persisted_language;
       std::optional<std::string> expected_commit_language;
       bool is_origin_trial_enabled = false;
     } tests[] = {
         // Test cases for special language values.
-        {"en,zh", "en", "ja", "(ja unknown)", false, std::nullopt, "en"},
-        {"en,zh", "en", "ja", "(*)", true, std::nullopt, "en"},
-        {"zh,en", "", "ja", "(ja en)", true, "en", "en"},
+        {"en,zh", "en", "ja", "ja, unknown", false, std::nullopt, "en"},
+        {"en,zh", "en", "ja", "*", true, std::nullopt, "en"},
+        {"zh,en", "", "ja", "ja, en", true, "en", "en"},
         {"en,zh", "en", "ja", "INVALID", false, std::nullopt, "en"},
         // Test cases for multiple content languages
-        {"en,zh", "zh", "zh, ja", "(en zh)", false, "zh", "zh"},
-        {"en,zh", "en", "zh, en", "(en ja zh)", false, std::nullopt, "en"},
-        {"en,zh", "en", "es, ja", "(es ja zh)", true, "zh", "zh"},
+        {"en,zh", "zh", "zh, ja", "en, zh", false, "zh", "zh"},
+        {"en,zh", "en", "zh, en", "en, ja, zh", false, std::nullopt, "en"},
+        {"en,zh", "en", "zh, en", "ja, en;d, zh", false, std::nullopt, "en"},
+        {"en,zh", "en", "es, ja", "es, ja, zh", true, "zh", "zh"},
         // Test cases for base language without country code.
-        {"en,zh", "zh", "zh", "(en zh)", false, "zh", "zh"},
-        {"en,zh", "en", "zh", "(ja zh)", false, "zh", "zh"},
-        {"en,ja,zh", "en", "zh", "(ja zh)", true, "ja", "ja"},
-        {"en,zh", "en", "ja", "(ja)", false, std::nullopt, "en"},
-        {"zh,en", "zh", "ja", "(ja en)", true, "en", "en"},
+        {"en,zh", "zh", "zh", "en, zh", false, "zh", "zh"},
+        {"en,zh", "en", "zh", "ja, zh", false, "zh", "zh"},
+        {"en,ja,zh", "en", "zh", "ja, zh", true, "ja", "ja"},
+        {"en,zh", "en", "ja", "ja", false, std::nullopt, "en"},
+        {"zh,en", "zh", "ja", "ja, en", true, "en", "en"},
         // Test cases mix with base language and language with country code.
-        {"zh,en-US", "zh", "ja", "(ja en)", true, "en", "en"},
-        {"en,zh-CN", "en", "zh-cn", "(ja zh-CN)", false, "zh-CN", "zh-CN"},
-        {"en-US,zh", "en-US", "ja", "(ja en)", true, "en", "en"},
-        {"en-US,zh", "en-US", "ja", "(ja en-GB)", false, std::nullopt, "en-US"},
+        {"zh,en-US", "zh", "ja", "ja, en", true, "en", "en"},
+        {"en,zh-CN", "en", "zh-cn", "ja, zh-CN", false, "zh-CN", "zh-CN"},
+        {"en-US,zh", "en-US", "ja", "ja, en", true, "en", "en"},
+        {"en-US,zh", "en-US", "ja", "ja, en-GB", false, std::nullopt, "en-US"},
         // Test cases with language-region pair has big difference in language.
-        {"zh", "zh", "zh-HK", "(zh-HK)", false, std::nullopt, "zh"},
-        {"zh-HK", "zh-HK", "zh", "(zh)", false, std::nullopt, "zh-HK"},
-        {"zh-CN", "zh-CN", "zh-HK", "(zh-HK)", false, std::nullopt, "zh-CN"},
-        {"zh-CN,zh", "zh-CN", "zh-HK", "(zh-HK)", false, std::nullopt, "zh-CN"},
-        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "(zh-HK)", false, "zh-HK",
-         "zh-HK"},
-        {"zh-CN,zh", "zh-CN", "zh-HK", "(zh-HK zh)", true, "zh", "zh"},
-        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "(zh-HK zh-CN zh)", true,
+        {"zh", "zh", "zh-HK", "zh-HK", false, std::nullopt, "zh"},
+        {"zh-HK", "zh-HK", "zh", "zh", false, std::nullopt, "zh-HK"},
+        {"zh-CN", "zh-CN", "zh-HK", "zh-HK", false, std::nullopt, "zh-CN"},
+        {"zh-CN,zh", "zh-CN", "zh-HK", "zh-HK", false, std::nullopt, "zh-CN"},
+        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK", false, "zh-HK", "zh-HK"},
+        {"zh-CN,zh", "zh-CN", "zh-HK", "zh-HK, zh", true, "zh", "zh"},
+        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK, zh-CN, zh", true,
          std::nullopt, "zh-CN"},
-        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "(zh-HK zh zh-CN)", true,
+        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK, zh, zh-CN", true,
          std::nullopt, "zh-CN"},
         // Test cases with origin trial enable.
-        {"en,zh", "en", "ja", "(ja unknown)", false, "en", "en", true},
-        {"en,zh", "en", "ja", "(*)", true, "en", "en", true},
-        {"en,zh", "en", "zh, en", "(en ja zh)", false, "en", "en", true},
-        {"zh-HK", "zh-HK", "zh", "(zh)", false, "zh-HK", "zh-HK", true},
-        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "(zh-HK zh-CN zh)", true, "zh-CN",
+        {"en,zh", "en", "ja", "ja, unknown", false, "en", "en", true},
+        {"en,zh", "en", "ja", "*", true, "en", "en", true},
+        {"en,zh", "en", "zh, en", "en, ja, zh", false, "en", "en", true},
+        {"zh-HK", "zh-HK", "zh", "zh", false, "zh-HK", "zh-HK", true},
+        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK, zh-CN, zh", true, "zh-CN",
          "zh-CN", true},
-        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "(zh-HK zh zh-CN)", true, "zh-CN",
+        {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK, zh, zh-CN", true, "zh-CN",
          "zh-CN", true},
     };
 
@@ -477,7 +476,7 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
           url, reduce_language_utils,
           /*accept_language=*/tests[i].accept_language,
           /*content_language=*/tests[i].content_language,
-          /*variants_accept_language=*/tests[i].variants_accept_language,
+          /*avail_language=*/tests[i].avail_language,
           /*is_origin_trial_enabled=*/tests[i].is_origin_trial_enabled);
       EXPECT_EQ(tests[i].expected_resend_request, actual_resend_request)
           << "Test case " << i << ": expected resend request "
@@ -546,7 +545,7 @@ TEST_F(AcceptLanguageUtilsTests, VerifyClearAcceptLanguage) {
   ParseAndPersist(url, reduce_language_utils,
                   /*accept_language=*/"zh",
                   /*content_language=*/"es",
-                  /*variants_accept_language=*/"(es ja en-US)",
+                  /*avail_language=*/"ja, es;d, en-US",
                   /*is_origin_trial_enabled=*/false);
 
   // Verify persisted reduce accept-language is "ja".
@@ -592,7 +591,7 @@ TEST_F(AcceptLanguageUtilsTests, VerifyRemoveOriginTrialStorage) {
   ParseAndPersist(url, reduce_language_utils,
                   /*accept_language=*/"zh",
                   /*content_language=*/"es",
-                  /*variants_accept_language=*/"(es ja en-US)",
+                  /*avail_language=*/"es, ja, en-US",
                   /*is_origin_trial_enabled=*/false);
 
   network::mojom::URLResponseHead response;
@@ -744,7 +743,7 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   response_head.headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
-  // Early returns without the variants header.
+  // Early returns without the avail-language header.
   {
     throttle.BeforeWillProcessResponse(request_url, response_head,
                                        &restart_with_url_reset);
@@ -757,8 +756,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   response_head.parsed_headers = network::mojom::ParsedHeaders::New();
   response_head.parsed_headers->content_language =
       network::ParseContentLanguages("en");
-  response_head.parsed_headers->variants_headers =
-      network::ParseVariantsHeaders("accept-language=(en zh)");
+  response_head.parsed_headers->avail_language =
+      network::ParseAvailLanguage("en, zh");
   {
     response_head.did_service_worker_navigation_preload = true;
     throttle.BeforeWillProcessResponse(request_url, response_head,

@@ -34,6 +34,8 @@ component("cpp") {
   sources = [
     "attribution_utils.cc",
     "attribution_utils.h",
+    "avail_language_header_parser.cc",
+    "avail_language_header_parser.h",
     "browsing_topics_parser.cc",
     "browsing_topics_parser.h",
     "client_hints.cc",
@@ -139,8 +141,6 @@ component("cpp") {
     "url_loader_factory_builder.h",
     "url_util.cc",
     "url_util.h",
-    "variants_header_parser.cc",
-    "variants_header_parser.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
     "web_sandbox_flags.cc",
@@ -529,6 +529,7 @@ source_set("tests") {
 
   sources = [
     "attribution_utils_unittest.cc",
+    "avail_language_header_parser_unittest.cc",
     "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
     "content_language_parser_unittest.cc",
@@ -593,7 +594,6 @@ source_set("tests") {
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_loader_factory_builder_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
-    "variants_header_parser_unittest.cc",
     "web_sandbox_flags_unittests.cc",
     "x_frame_options_parser_unittest.cc",
   ]
@@ -654,8 +654,8 @@ fuzzer_test("client_hints_fuzzer") {
   ]
 }
 
-fuzzer_test("variants_header_fuzzer") {
-  sources = [ "variants_header_fuzzer.cc" ]
+fuzzer_test("avail_language_header_fuzzer") {
+  sources = [ "avail_language_header_fuzzer.cc" ]
   deps = [
     ":cpp",
     "//services/network/public/mojom:url_loader_base",

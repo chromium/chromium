@@ -250,12 +250,6 @@ blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
   }
 }
 
-blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
-  DCHECK(in);
-  return blink::VariantsHeader::New(ConvertToBlink(in->name),
-                                    ConvertToBlink(in->available_values));
-}
-
 blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
     const NoVarySearchWithParseErrorPtr& in) {
   if (!in)
@@ -306,8 +300,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->cookie_indices.has_value()
           ? std::make_optional(ConvertToBlink(in->cookie_indices.value()))
           : std::nullopt,
-      in->variants_headers.has_value()
-          ? std::make_optional(ConvertToBlink(in->variants_headers.value()))
+      in->avail_language.has_value()
+          ? std::make_optional(ConvertToBlink(in->avail_language.value()))
           : std::nullopt,
       in->content_language.has_value()
           ? std::make_optional(ConvertToBlink(in->content_language.value()))

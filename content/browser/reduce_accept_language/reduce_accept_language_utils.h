@@ -11,7 +11,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/public/mojom/variants_header.mojom.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
