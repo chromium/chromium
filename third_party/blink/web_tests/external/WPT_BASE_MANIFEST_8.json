@@ -70660,65 +70660,65 @@
        {}
       ]
      ],
-     "anchor-scroll-chained-001.tentative.html": [
-      "1235f8fad4388cc4486e6871d614d732aba12472",
+     "anchor-scroll-chained-001.html": [
+      "3a86da5f709349926d8139ba57fb9729c282d218",
       [
        null,
        [
         [
-         "/css/css-anchor-position/reference/anchor-scroll-chained-001.tentative-ref.html",
+         "/css/css-anchor-position/reference/anchor-scroll-chained-001-ref.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "anchor-scroll-chained-002.tentative.html": [
-      "9c60799e0bb40f4fed1d9e19e0091aae3d410bdb",
+     "anchor-scroll-chained-002.html": [
+      "38dadba5c83996acfcc2dc1e77157ae4ca0f5490",
       [
        null,
        [
         [
-         "/css/css-anchor-position/reference/anchor-scroll-chained-002.tentative-ref.html",
+         "/css/css-anchor-position/reference/anchor-scroll-chained-002-ref.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "anchor-scroll-chained-003.tentative.html": [
-      "b441c92bf15f4f5a3917132cfd959e3244dfa52b",
+     "anchor-scroll-chained-003.html": [
+      "6352ebbfb680dc9decc01511730075a3936f64d6",
       [
        null,
        [
         [
-         "/css/css-anchor-position/reference/anchor-scroll-chained-002.tentative-ref.html",
+         "/css/css-anchor-position/reference/anchor-scroll-chained-002-ref.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "anchor-scroll-chained-004.tentative.html": [
-      "f1765a9870f37e7f752f8cc9274319bbbe661bad",
+     "anchor-scroll-chained-004.html": [
+      "b31519f5803e247659937a6e9874d50643c74c1e",
       [
        null,
        [
         [
-         "/css/css-anchor-position/reference/anchor-scroll-chained-004.tentative-ref.html",
+         "/css/css-anchor-position/reference/anchor-scroll-chained-004-ref.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "anchor-scroll-chained-fallback.tentative.html": [
-      "d2300da818291fbf7f6f35c5e78c99b1231a5003",
+     "anchor-scroll-chained-fallback.html": [
+      "221df77b063910a5e2715031157c797a69632dc5",
       [
        null,
        [
         [
-         "/css/css-anchor-position/reference/anchor-scroll-chained-fallback.tentative-ref.html",
+         "/css/css-anchor-position/reference/anchor-scroll-chained-fallback-ref.html",
          "=="
         ]
        ],
@@ -301523,19 +301523,19 @@
        "6beb7c77e998b6750859580f910e97b005430e4b",
        []
       ],
-      "anchor-scroll-chained-001.tentative-ref.html": [
+      "anchor-scroll-chained-001-ref.html": [
        "fb858cc10527ba5a0cd17d368c3b9184f94b5592",
        []
       ],
-      "anchor-scroll-chained-002.tentative-ref.html": [
+      "anchor-scroll-chained-002-ref.html": [
        "9dde5d00f00a7ae4a768f55c4a3438d0dd110e79",
        []
       ],
-      "anchor-scroll-chained-004.tentative-ref.html": [
+      "anchor-scroll-chained-004-ref.html": [
        "22c2270ddea93e99ecd938b67ee6b0e536733cd4",
        []
       ],
-      "anchor-scroll-chained-fallback.tentative-ref.html": [
+      "anchor-scroll-chained-fallback-ref.html": [
        "0933430fc3b570c4a6ea304b38308c3c406e9f13",
        []
       ],
@@ -437235,7 +437235,7 @@
      ]
     ],
     "fedcm-disconnect.sub.https.html": [
-     "300144fa72a086f630da0a3aeb69c22e4e53bd92",
+     "2ea2d4a2599751cad941552964c700ced2f1b7cc",
      [
       null,
       {
@@ -440239,6 +440239,13 @@
        {}
       ]
      ],
+     "inset-area-in-position-try.html": [
+      "7339c4f41d21de6e8e526a2f787a57da93229eb7",
+      [
+       null,
+       {}
+      ]
+     ],
      "inset-area-interpolation.html": [
       "b09b3913531f9533e2d0d821466ecbc5cfedd23f",
       [
@@ -440418,6 +440425,13 @@
      ],
      "position-try-order-basic.html": [
       "d1c74e7b9fd76d0180379ac751a23f7405b885be",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-order-inset-area.html": [
+      "98e606a7d8fd8169efdba772883ea65d1ad22ecf",
       [
        null,
        {}
@@ -626359,7 +626373,7 @@
      ]
     ],
     "wakelock-active-document.https.window.js": [
-     "724ce091969922f937c36b427d8b3aa3d449c1e2",
+     "6de27d49ef7be8832fcdf74c17a7c2e4342e98a4",
      [
       "screen-wake-lock/wakelock-active-document.https.window.html",
       {}
@@ -670996,6 +671010,47 @@
           ]
          ],
          "timeout": "long"
+        }
+       ]
+      ],
+      "compute-arraybufferview-with-bigger-arraybuffer.https.any.js": [
+       "ddc39011813a4fb2da6a3503fb589c7dc6f2bf56",
+       [
+        "webnn/conformance_tests/gpu/compute-arraybufferview-with-bigger-arraybuffer.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
+          ],
+          [
+           "global",
+           "window,dedicatedworker"
+          ],
+          [
+           "script",
+           "../../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "webnn/conformance_tests/gpu/compute-arraybufferview-with-bigger-arraybuffer.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
+          ],
+          [
+           "global",
+           "window,dedicatedworker"
+          ],
+          [
+           "script",
+           "../../resources/utils.js"
+          ]
+         ]
         }
        ]
       ],
