@@ -104,6 +104,8 @@ WaylandWindow::~WaylandWindow() {
 
   PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 
+  ReleaseCapture();
+
   if (wayland_overlay_delegation_enabled_) {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
                                                     primary_subsurface_.get());
