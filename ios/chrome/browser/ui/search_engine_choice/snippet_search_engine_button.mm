@@ -47,12 +47,8 @@ constexpr CGFloat kChevronButtonHorizontalMargin = 2.;
 constexpr CGFloat kSeparatorThickness = 1.;
 // Duration of the snippet animation when changing state.
 constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
-// Duration of the touch animation.
-constexpr NSTimeInterval kTouchAnimationDurationInSecond = .3;
 // Alpha value for the checked background color.
 constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
-// Alpha value for the checked background color.
-constexpr NSTimeInterval kTouchBeginBackgroundColorAlpha = .5;
 
 // Returns a snippet label.
 UILabel* SnippetLabel() {
@@ -66,21 +62,14 @@ UILabel* SnippetLabel() {
   return snippetLabel;
 }
 
-// Color for selected elements.
-UIColor* GetCheckedColor() {
-  return [UIColor colorNamed:kBlueColor];
-}
-
-// Background color when the button is checked.
+// Background color for selected element.
 UIColor* GetCheckedBackgroundColor() {
-  return
-      [GetCheckedColor() colorWithAlphaComponent:kCheckedBackgroundColorAlpha];
+  return [[UIColor colorNamed:kBlueColor]
+      colorWithAlphaComponent:kCheckedBackgroundColorAlpha];
 }
-
-// Background color at the begining of the touch animation.
-UIColor* GetTouchBeginBackgroundColor() {
-  return [GetCheckedColor()
-      colorWithAlphaComponent:kTouchBeginBackgroundColorAlpha];
+// Color for the tint of the radio button of the selected element.
+UIColor* GetCheckedTintColor() {
+  return [UIColor colorNamed:kBlueColor];
 }
 
 }  // namespace
@@ -328,23 +317,9 @@ UIColor* GetTouchBeginBackgroundColor() {
 
 #pragma mark - UIView
 
-- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [super touchesBegan:touches withEvent:event];
-  self.backgroundColor = GetTouchBeginBackgroundColor();
-}
-
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesEnded:touches withEvent:event];
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kTouchAnimationDurationInSecond
-                   animations:^{
-                     weakSelf.backgroundColor = GetCheckedBackgroundColor();
-                   }];
-}
-
-- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [super touchesCancelled:touches withEvent:event];
-  self.backgroundColor = nil;
+  self.backgroundColor = GetCheckedBackgroundColor();
 }
 
 - (void)layoutSubviews {
@@ -498,7 +473,7 @@ UIColor* GetTouchBeginBackgroundColor() {
   if (_checked) {
     circleImage = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
                                              kRadioButtonImageSize);
-    _radioButtonImageView.tintColor = GetCheckedColor();
+    _radioButtonImageView.tintColor = GetCheckedTintColor();
   } else {
     circleImage =
         DefaultSymbolWithPointSize(kCircleSymbol, kRadioButtonImageSize);
