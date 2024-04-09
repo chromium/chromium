@@ -181,7 +181,15 @@ NSString* HostnameFromGURL(GURL URL) {
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
-- (void)testTabResumptionTileDisplayedForLocalTab {
+// TODO(crbug.com/333500324): Test failing on iPad device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTabResumptionTileDisplayedForLocalTab \
+  testTabResumptionTileDisplayedForLocalTab
+#else
+#define MAYBE_testTabResumptionTileDisplayedForLocalTab \
+  FLAKY_testTabResumptionTileDisplayedForLocalTab
+#endif
+- (void)MAYBE_testTabResumptionTileDisplayedForLocalTab {
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
