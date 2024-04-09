@@ -222,11 +222,7 @@ class MEDIA_EXPORT DecoderBuffer
     decrypt_config_ = std::move(decrypt_config);
   }
 
-  // If there's no data in this buffer, it represents end of stream.
-  bool end_of_stream() const {
-    return !read_only_mapping_.IsValid() && !writable_mapping_.IsValid() &&
-           !external_memory_ && !data_;
-  }
+  bool end_of_stream() const { return is_end_of_stream_; }
 
   bool is_key_frame() const {
     DCHECK(!end_of_stream());
@@ -272,6 +268,7 @@ class MEDIA_EXPORT DecoderBuffer
 
  protected:
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
+  enum class DecoderBufferType { kNormal, kEndOfStream };
 
   // Allocates a buffer of size |size| >= 0 and copies |data| into it. If |data|
   // is NULL then |data_| is set to NULL and |buffer_size_| to 0.
@@ -285,6 +282,8 @@ class MEDIA_EXPORT DecoderBuffer
   DecoderBuffer(base::WritableSharedMemoryMapping mapping, size_t size);
 
   explicit DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory);
+
+  explicit DecoderBuffer(DecoderBufferType decoder_buffer_type);
 
   virtual ~DecoderBuffer();
 
@@ -316,6 +315,9 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Whether the frame was marked as a keyframe in the container.
   bool is_key_frame_ = false;
+
+  // Whether the buffer represent the end of stream.
+  const bool is_end_of_stream_ = false;
 };
 
 }  // namespace media

@@ -201,6 +201,7 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                      bool is_key_frame,
                      Type type,
                      TrackId track_id);
+  explicit StreamParserBuffer(DecoderBufferType decoder_buffer_type);
   ~StreamParserBuffer() override;
 
   DecodeTimestamp decode_timestamp_ = kNoDecodeTimestamp;

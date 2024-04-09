@@ -48,6 +48,10 @@ DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
     : size_(external_memory->span().size()),
       external_memory_(std::move(external_memory)) {}
 
+DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
+    : is_end_of_stream_(decoder_buffer_type ==
+                        DecoderBufferType::kEndOfStream) {}
+
 DecoderBuffer::~DecoderBuffer() {
   data_.reset();
 }
@@ -114,7 +118,8 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(new DecoderBuffer(nullptr, 0));
+  return base::WrapRefCounted(
+      new DecoderBuffer(DecoderBufferType::kEndOfStream));
 }
 
 // static

@@ -14,7 +14,7 @@ namespace media {
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(
-      new StreamParserBuffer(nullptr, 0, false, DemuxerStream::UNKNOWN, 0));
+      new StreamParserBuffer(DecoderBufferType::kEndOfStream));
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
@@ -81,6 +81,9 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
   if (is_key_frame)
     set_is_key_frame(true);
 }
+
+StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type)
+    : DecoderBuffer(decoder_buffer_type) {}
 
 StreamParserBuffer::~StreamParserBuffer() = default;
 
