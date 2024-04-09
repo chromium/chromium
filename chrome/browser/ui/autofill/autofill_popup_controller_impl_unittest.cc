@@ -217,7 +217,6 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::PerformButtonActionForSuggestion;
   using AutofillPopupControllerImpl::RemoveSuggestion;
   using AutofillPopupControllerImpl::SelectSuggestion;
-  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
   MOCK_METHOD(ui::AXPlatformNode*,
               GetRootAXPlatformNodeForWebContents,
@@ -502,7 +501,7 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
 
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
-  EXPECT_CALL(client().popup_controller(manager()), OnSuggestionsChanged());
+  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
@@ -559,7 +558,7 @@ TEST_F(AutofillPopupControllerImplTest,
       .WillOnce(Return(true));
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
-  EXPECT_CALL(client().popup_controller(manager()), OnSuggestionsChanged());
+  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
