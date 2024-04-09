@@ -93,18 +93,23 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
   std::unique_ptr<content::MediaStreamUI> ui_;
 };
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
-// Helper method to validate if a runtime is forced-enabled by the command line.
-// This can be used to override a feature check.
-bool IsForcedByCommandLine(const base::CommandLine* command_line,
-                           const std::string& name) {
-  if (command_line->HasSwitch(switches::kWebXrForceRuntime)) {
-    return (base::CompareCaseInsensitiveASCII(
-                command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
-                name) == 0);
+#if BUILDFLAG(IS_ANDROID)
+// If none of the runtimes are enabled, this function will be unused.
+// This is a bit more scalable than wrapping it in all the typedefs
+[[maybe_unused]] bool IsEnabled(const base::CommandLine* command_line,
+                                const std::string& name,
+                                const base::Feature* maybe_feature = nullptr) {
+  // If we don't have a forced runtime we just need to check if the feature is
+  // enabled.
+  if (!command_line->HasSwitch(switches::kWebXrForceRuntime)) {
+    // Either we were passed a feature, in which case we need to check if it's
+    // enabled. Or we weren't, in which case the feature should be enabled.
+    return maybe_feature ? base::FeatureList::IsEnabled(*maybe_feature) : true;
   }
 
-  return false;
+  return (base::CompareCaseInsensitiveASCII(
+              command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
+              name) == 0);
 }
 #endif
 }  // namespace
@@ -129,9 +134,8 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_OPENXR)
-  if (IsForcedByCommandLine(base::CommandLine::ForCurrentProcess(),
-                            switches::kWebXrRuntimeOpenXr) ||
-      device::features::IsOpenXrEnabled()) {
+  if (IsEnabled(base::CommandLine::ForCurrentProcess(),
+                switches::kWebXrRuntimeOpenXr, &device::features::kOpenXR)) {
     providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
   }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
