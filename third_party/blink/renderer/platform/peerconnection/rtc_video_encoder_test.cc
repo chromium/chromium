@@ -51,6 +51,7 @@ using ::testing::Field;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NotNull;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
@@ -457,10 +458,9 @@ class RTCVideoEncoderTest {
         vp9.numberOfTemporalLayers = 3;
         vp9.numberOfSpatialLayers = num_spatial_layers;
         num_spatial_layers_ = num_spatial_layers;
-        constexpr int kDenom[] = {4, 2, 1};
         for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+          const int denom = 1 << (num_spatial_layers_ - (sid + 1));
           webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
-          const int denom = kDenom[sid];
           sl.width = kInputFrameWidth / denom;
           sl.height = kInputFrameHeight / denom;
           sl.maxFramerate = 24;
@@ -571,9 +571,8 @@ class RTCVideoEncoderTest {
       vp9.referenced_by_upper_spatial_layers =
           frame_num == 0 && (sid + 1 != num_spatial_layers_);
       if (metadata.key_frame) {
-        constexpr int kDenom[] = {4, 2, 1};
         for (size_t i = 0; i < num_spatial_layers_; ++i) {
-          const int denom = kDenom[i];
+          const int denom = 1 << (num_spatial_layers_ - (i + 1));
           vp9.spatial_layer_resolutions.emplace_back(
               gfx::Size(frame->coded_size().width() / denom,
                         frame->coded_size().height() / denom));
@@ -1695,6 +1694,63 @@ TEST_P(RTCVideoEncoderEncodeTest,
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
     EXPECT_THAT(config_->spatial_layers, IsEmpty());
+  }
+}
+
+TEST_P(RTCVideoEncoderEncodeTest,
+       CreateAndInitVP9ThreeLayerSvcWithTopLayerInactive) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/3);
+  tl_codec.spatialLayers[2].active = false;
+  CreateEncoder(tl_codec.codecType);
+
+  if (InitializeOnFirstFrameEnabled()) {
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    ExpectCreateInitAndDestroyVEA();
+    EXPECT_CALL(*mock_vea_, Encode).WillOnce(Return());
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_rtp_timestamp(0)
+                                       .set_timestamp_us(0)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    EXPECT_THAT(
+        *config_,
+        Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+              ElementsAre(
+                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 2)))));
+    EXPECT_THAT(
+        *config_,
+        Field(&media::VideoEncodeAccelerator::Config::input_visible_size,
+              AllOf(Property(&gfx::Size::width, kInputFrameWidth / 2),
+                    Property(&gfx::Size::height, kInputFrameHeight / 2))));
+  } else {
+    ExpectCreateInitAndDestroyVEA();
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+    EXPECT_THAT(
+        *config_,
+        Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+              ElementsAre(
+                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 2)))));
+    EXPECT_THAT(
+        *config_,
+        Field(&media::VideoEncodeAccelerator::Config::input_visible_size,
+              AllOf(Property(&gfx::Size::width, kInputFrameWidth / 2),
+                    Property(&gfx::Size::height, kInputFrameHeight / 2))));
   }
 }
 
