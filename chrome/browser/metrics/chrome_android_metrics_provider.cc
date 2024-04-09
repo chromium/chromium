@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/metrics/jni_headers/AppUpdateInfoUtils_jni.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
@@ -38,6 +39,10 @@ void EmitMultipleUserProfilesHistogram() {
           chrome::android::GetMultipleUserProfilesState();
   base::UmaHistogramEnumeration("Android.MultipleUserProfilesState",
                                 multiple_user_profiles_state);
+}
+
+void GetAppUpdateData() {
+  Java_AppUpdateInfoUtils_emitToHistogram(jni_zero::AttachCurrentThread());
 }
 
 metrics::SystemProfileProto::OS::DarkModeState ToProtoDarkModeState(
@@ -72,6 +77,9 @@ void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   const auto type = chrome::android::GetActivityType();
+
+  // Determine and emit to histogram if AppUpdate is available.
+  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(&GetAppUpdateData));
 
   // All records should be created with an activity type, even if no activity
   // type has yet been declared. If an activity type is declared before the UMA
@@ -112,8 +120,6 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   UMA_HISTOGRAM_BOOLEAN("Android.MultiWindowMode.Active",
                         chrome::android::GetIsInMultiWindowModeValue());
-  // Determine and emit to histogram if AppUpdate is available.
-  Java_AppUpdateInfoUtils_emitToHistogram(jni_zero::AttachCurrentThread());
 
   metrics::SystemProfileProto::OS* os_proto =
       uma_proto->mutable_system_profile()->mutable_os();
