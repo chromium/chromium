@@ -552,7 +552,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                              SlotSpanMetadata* slot_span,
                                              uintptr_t slot_start);
 
-  PA_ALWAYS_INLINE size_t GetSlotUsableSize(SlotSpanMetadata* slot_span) {
+  PA_ALWAYS_INLINE size_t GetSlotUsableSize(const SlotSpanMetadata* slot_span) {
     return AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize());
   }
 
@@ -1039,6 +1039,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   CreateDefaultFreeNotificationData(void* address);
   PA_ALWAYS_INLINE FreeNotificationData
   CreateFreeNotificationData(void* address) const;
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  PA_NOINLINE void QuarantineForBrp(const SlotSpanMetadata* slot_span,
+                                    void* object);
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();
@@ -1600,13 +1605,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes.
     if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs())) {
-      auto usable_size = GetSlotUsableSize(slot_span);
-      auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
-      if (PA_UNLIKELY(hook)) {
-        hook(object, usable_size);
-      } else {
-        internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
-      }
+      QuarantineForBrp(slot_span, object);
     }
 
     if (PA_UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {

@@ -1711,6 +1711,20 @@ void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
   sort_active_slot_spans_ = new_value;
 }
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+PA_NOINLINE void PartitionRoot::QuarantineForBrp(
+    const SlotSpanMetadata* slot_span,
+    void* object) {
+  auto usable_size = GetSlotUsableSize(slot_span);
+  auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
+  if (PA_UNLIKELY(hook)) {
+    hook(object, usable_size);
+  } else {
+    internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
 // Explicitly define common template instantiations to reduce compile time.
 #define EXPORT_TEMPLATE \
   template PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
