@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_NOT_IMPLEMENTED_URL_LOADER_FACTORY_H_
 
 #include "base/component_export.h"
+#include "base/location.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,7 +25,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // itself once there are no more receivers (including the receiver associated
   // with the returned mojo::PendingRemote and the receivers bound by the Clone
   // method).
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      base::Location creator_location = base::Location::Current());
 
   NotImplementedURLLoaderFactory(const NotImplementedURLLoaderFactory&) =
       delete;
@@ -47,8 +49,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // Constructs a NotImplementedURLLoaderFactory object that will self-delete
   // once all receivers disconnect (including |factory_receiver| below as well
   // as receivers that connect via the Clone method).
-  explicit NotImplementedURLLoaderFactory(
+  NotImplementedURLLoaderFactory(
+      base::Location creator_location,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  base::Location creator_location_;
 };
 
 }  // namespace network
