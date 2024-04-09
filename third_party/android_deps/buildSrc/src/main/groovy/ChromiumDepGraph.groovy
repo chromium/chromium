@@ -118,8 +118,6 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0',
             // Both -jre and -android versions are listed. Filter to only the -android ones.
             versionFilter: '-android'),
-        com_squareup_moshi_moshi_adapters: new PropertyOverride(
-            overrideLatest: true),
         com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -433,7 +431,7 @@ class ChromiumDepGraph {
                 if (overrides?.isShipped != null) {
                     dep.isShipped = overrides.isShipped
                 }
-                // if overrideLatest is truey, set it recursively on the dep and
+                // if overrideLatest is true, set it recursively on the dep and
                 // all its children. This makes it easier to manage since you do
                 // not have to set it on a whole set of old deps.
                 if (overrides?.overrideLatest) {
