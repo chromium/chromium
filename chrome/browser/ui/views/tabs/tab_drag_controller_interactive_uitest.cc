@@ -4799,8 +4799,7 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
 }  // namespace
 
 // TODO(crbug.com/333085989): Re-enable flaky tests
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CancelDragTabToWindowIn2ndDisplay \
   DISABLED_CancelDragTabToWindowIn2ndDisplay
 #else
