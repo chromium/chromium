@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/lens/search_bubble_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,7 +26,7 @@ void SearchBubbleController::Show() {
 SearchBubbleController::SearchBubbleController(Browser* browser)
     : BrowserUserData<SearchBubbleController>(*browser),
       webui_bubble_manager_(WebUIBubbleManager::Create<SearchBubbleUI>(
-          BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
+          BrowserView::GetBrowserViewForBrowser(browser)->toolbar(),
           browser->profile(),
           GURL(chrome::kChromeUILensSearchBubbleURL),
           IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE,

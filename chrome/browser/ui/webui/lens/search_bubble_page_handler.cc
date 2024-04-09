@@ -4,15 +4,27 @@
 
 #include "chrome/browser/ui/webui/lens/search_bubble_page_handler.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/color/color_provider.h"
+
 namespace lens {
 
 SearchBubblePageHandler::SearchBubblePageHandler(
     TopChromeWebUIController* webui_controller,
     mojo::PendingReceiver<lens::mojom::SearchBubblePageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::SearchBubblePage> page)
-    : webui_controller_(webui_controller),
+    mojo::PendingRemote<lens::mojom::SearchBubblePage> page,
+    content::WebContents* web_contents,
+    ThemeService* theme_service)
+    : web_contents_(web_contents),
+      theme_service_(theme_service),
+      webui_controller_(webui_controller),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {}
+      page_(std::move(page)) {
+  CHECK(web_contents_);
+  CHECK(theme_service_);
+  SetTheme();
+}
 
 SearchBubblePageHandler::~SearchBubblePageHandler() = default;
 
@@ -20,6 +32,33 @@ void SearchBubblePageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder) {
     embedder->ShowUI();
+  }
+}
+
+void SearchBubblePageHandler::CloseUI() {
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
+}
+
+lens::mojom::ThemePtr MakeTheme(const ui::ColorProvider& color_provider,
+                                ThemeService* theme_service) {
+  auto theme = lens::mojom::Theme::New();
+  theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
+  theme->text_color = color_provider.GetColor(kColorNewTabPageText);
+  if (!theme_service->GetIsGrayscale() &&
+      theme_service->GetUserColor().has_value()) {
+    theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
+  }
+  theme->is_dark = !color_utils::IsDark(theme->text_color);
+  return theme;
+}
+
+void SearchBubblePageHandler::SetTheme() {
+  if (web_contents_) {
+    page_->SetTheme(
+        MakeTheme(web_contents_->GetColorProvider(), theme_service_));
   }
 }
 

@@ -1,1 +1,61 @@
-<div>Hello World!</div>
+<style include="cr-icons">
+#container {
+  display: flex;
+}
+
+#header {
+  app-region: drag;
+  flex: 1;
+  padding: 16px 0 16px;
+}
+
+:host-context([dir='ltr']) #header {
+  padding-left: 48px;
+}
+
+:host-context([dir='rtl']) #header {
+  padding-right: 48px;
+}
+
+#logo {
+  forced-color-adjust: none;
+  height: 30px;
+  margin: auto;
+  width: 92px;
+}
+
+:host([single-colored]) #logo {
+  -webkit-mask-image: url(cr_components/searchbox/icons/google_logo.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 92px;
+  background-color: var(--search-bubble-fg-color);
+}
+
+:host(:not([single-colored])) #logo {
+  background-image: url(cr_components/searchbox/icons/google_logo.svg);
+  background-repeat: no-repeat;
+  background-size: 92px;
+}
+
+
+#closeButton {
+  --cr-icon-button-fill-color: var(--search-bubble-fg-color);
+  --cr-icon-button-icon-size: 24px;
+  margin: 16px 0 16px;
+}
+
+:host-context([dir='ltr']) #closeButton {
+  margin-right: 16px;
+}
+
+:host-context([dir='rtl']) #closeButton {
+  margin-left: 16px;
+}
+</style>
+<div id="container" style="--search-bubble-fg-color: [[logoColor_]];">
+  <div id="header">
+    <div id="logo"></div>
+  </div>
+  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}"
+    on-click="onClose_"></cr-icon-button>
+</div>

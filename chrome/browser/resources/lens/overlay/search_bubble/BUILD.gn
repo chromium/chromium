@@ -12,12 +12,18 @@ build_webui("build") {
 
   static_files = [ "search_bubble.html" ]
 
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ "//ui/webui/resources/cr_components/searchbox/icons:chrome_branded_build_grdp" ]
+    extra_grdp_files = [ "$root_gen_dir/ui/webui/resources/cr_components/searchbox/icons/chrome_branded_resources.grdp" ]
+  }
+
   web_component_files = [ "search_bubble_app.ts" ]
 
   non_web_component_files = [ "search_bubble_proxy.ts" ]
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
