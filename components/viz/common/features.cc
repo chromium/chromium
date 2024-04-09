@@ -65,6 +65,10 @@ BASE_FEATURE(kDelegatedCompositing,
 #endif
 );
 
+BASE_FEATURE(kRenderPassDrawnRect,
+             "RenderPassDrawnRect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVideoDetectorIgnoreNonVideos,
              "VideoDetectorIgnoreNonVideos",
              base::FEATURE_ENABLED_BY_DEFAULT);

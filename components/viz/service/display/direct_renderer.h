@@ -258,7 +258,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool CanSkipRenderPass(const AggregatedRenderPass* render_pass) const;
   void UseRenderPass(const AggregatedRenderPass* render_pass);
   gfx::Rect ComputeScissorRectForRenderPass(
-      const AggregatedRenderPass* render_pass) const;
+      const AggregatedRenderPass* render_pass);
 
   void DoDrawPolygon(const DrawPolygon& poly,
                      const gfx::Rect& render_pass_scissor,
@@ -270,6 +270,13 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       AggregatedRenderPassId render_pass_id) const;
   const std::optional<gfx::RRectF> BackdropFilterBoundsForPass(
       AggregatedRenderPassId render_pass_id) const;
+
+  virtual void SetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id,
+      const gfx::Rect& drawn_rect) {}
+
+  virtual gfx::Rect GetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id);
 
   // Private interface implemented by subclasses for use by DirectRenderer.
   virtual bool CanPartialSwap() = 0;
@@ -284,6 +291,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       const AggregatedRenderPassId& render_pass_id) const = 0;
   virtual gfx::Size GetRenderPassBackingPixelSize(
       const AggregatedRenderPassId& render_pass_id) = 0;
+
   virtual void BindFramebufferToOutputSurface() = 0;
   virtual void BindFramebufferToTexture(
       const AggregatedRenderPassId render_pass_id) = 0;
@@ -354,6 +362,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   // Whether partial swap can be used.
   bool use_partial_swap_ = false;
+
+  // Whether render pass drawn rect functionality can be used. This means we
+  // will be tracking the drawn area of a render pass to determine what needs to
+  // be redrawn every frame.
+  bool use_render_pass_drawn_rect_ = false;
 
   // A map from RenderPass id to the single quad present in and replacing the
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive

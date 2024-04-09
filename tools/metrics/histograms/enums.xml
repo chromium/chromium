@@ -17629,6 +17629,7 @@ from previous Chrome versions.
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
+  <int value="-1534702850" label="RenderPassDrawnRect:disabled"/>
   <int value="-1534613092" label="WebAppSystemMediaControlsWin:disabled"/>
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
@@ -23105,6 +23106,7 @@ from previous Chrome versions.
   <int value="917941036" label="SystemEmojiPickerJellySupport:enabled"/>
   <int value="918046854" label="NtlmV2Enabled:disabled"/>
   <int value="918608729" label="finch-seed-min-download-period"/>
+  <int value="919493441" label="RenderPassDrawnRect:enabled"/>
   <int value="919605713"
       label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
   <int value="920563204" label="AndroidHatsRefactor:enabled"/>

@@ -520,6 +520,33 @@ class SkiaRenderer::VizDebuggerLog {
   }
 };
 
+SkiaRenderer::RenderPassBacking::RenderPassBacking() = default;
+
+SkiaRenderer::RenderPassBacking::RenderPassBacking(
+    const SkiaRenderer::RenderPassBacking&) = default;
+
+SkiaRenderer::RenderPassBacking& SkiaRenderer::RenderPassBacking::operator=(
+    const SkiaRenderer::RenderPassBacking&) = default;
+
+SkiaRenderer::RenderPassBacking::RenderPassBacking(
+    gfx::Size size,
+    bool generate_mipmap,
+    gfx::ColorSpace color_space,
+    RenderPassAlphaType alpha_type,
+    SharedImageFormat format,
+    gpu::Mailbox mailbox,
+    bool is_root,
+    bool is_scanout,
+    bool scanout_dcomp_surface)
+    : size(size),
+      generate_mipmap(generate_mipmap),
+      color_space(color_space),
+      alpha_type(alpha_type),
+      format(format),
+      mailbox(mailbox),
+      is_root(is_root),
+      is_scanout(is_scanout),
+      scanout_dcomp_surface(scanout_dcomp_surface) {}
 // chrome style prevents this from going in skia_renderer.h, but since it
 // uses std::optional, the style also requires it to have a declared ctor
 SkiaRenderer::BatchedQuadState::BatchedQuadState() = default;
@@ -1056,6 +1083,8 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
           base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
 #endif
       is_using_raw_draw_(features::IsUsingRawDraw()) {
+  use_render_pass_drawn_rect_ =
+      base::FeatureList::IsEnabled(features::kRenderPassDrawnRect);
   DCHECK(skia_output_surface_);
   lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
 
@@ -3621,11 +3650,11 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
 
   render_pass_backings_.emplace(
       render_pass_id,
-      RenderPassBacking({requirements.size, requirements.generate_mipmap,
-                         requirements.color_space, requirements.alpha_type,
-                         requirements.format, mailbox, is_root,
-                         requirements.is_scanout,
-                         requirements.scanout_dcomp_surface}));
+      RenderPassBacking(requirements.size, requirements.generate_mipmap,
+                        requirements.color_space, requirements.alpha_type,
+                        requirements.format, mailbox, is_root,
+                        requirements.is_scanout,
+                        requirements.scanout_dcomp_surface));
 }
 
 void SkiaRenderer::FlushOutputSurface() {
@@ -4125,6 +4154,22 @@ gfx::Size SkiaRenderer::GetRenderPassBackingPixelSize(
   auto it = render_pass_backings_.find(render_pass_id);
   DCHECK(it != render_pass_backings_.end());
   return it->second.size;
+}
+
+gfx::Rect SkiaRenderer::GetRenderPassBackingDrawnRect(
+    const AggregatedRenderPassId& render_pass_id) {
+  auto it = render_pass_backings_.find(render_pass_id);
+  CHECK(it != render_pass_backings_.end());
+  return it->second.drawn_rect;
+}
+
+void SkiaRenderer::SetRenderPassBackingDrawnRect(
+    const AggregatedRenderPassId& render_pass_id,
+    const gfx::Rect& drawn_rect) {
+  auto it = render_pass_backings_.find(render_pass_id);
+  CHECK(it != render_pass_backings_.end());
+  it->second.drawn_rect = drawn_rect;
+  return;
 }
 
 void SkiaRenderer::SetDelegatedInkPointRendererSkiaForTest(

@@ -611,6 +611,9 @@ extern const char kEnableRawDrawDescription[];
 extern const char kEnableDelegatedCompositingName[];
 extern const char kEnableDelegatedCompositingDescription[];
 
+extern const char kEnableRenderPassDrawnRectName[];
+extern const char kEnableRenderPassDrawnRectDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kEnablePixPaymentsName[];
 extern const char kEnablePixPaymentsDescription[];
