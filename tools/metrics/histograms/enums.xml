@@ -16809,6 +16809,7 @@ from previous Chrome versions.
   <int value="-1909702940" label="WebXRARModule:disabled"/>
   <int value="-1909356390"
       label="OverlayScrollbarFlashAfterAnyScrollUpdate:enabled"/>
+  <int value="-1908551313" label="MahiDebugging:enabled"/>
   <int value="-1907565048" label="HtmlBaseUsernameDetector:disabled"/>
   <int value="-1907342706" label="ReadItLaterInMenu:disabled"/>
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
@@ -17585,6 +17586,7 @@ from previous Chrome versions.
   <int value="-1555375841" label="FedCmRpContext:enabled"/>
   <int value="-1554921134"
       label="OmniboxRemoveSuggestionHeaderChevron:disabled"/>
+  <int value="-1554661751" label="MahiDebugging:disabled"/>
   <int value="-1553477903" label="ash-disable-text-filtering-in-overview-mode"/>
   <int value="-1553280810" label="PromoBrowserCommands:enabled"/>
   <int value="-1552898031" label="SingleTabMode:enabled"/>

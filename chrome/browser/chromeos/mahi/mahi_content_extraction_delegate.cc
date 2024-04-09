@@ -5,10 +5,13 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
@@ -18,18 +21,48 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "url/gurl.h"
+
+#if DCHECK_IS_ON()
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#endif
 
 namespace mahi {
 
 namespace {
 // The word count threshold for a distillable page.
 static constexpr int kWordCountThreshold = 50;
+
+#if DCHECK_IS_ON()
+// Save the contents to the `Download` directory. This function is used for
+// debugging only, and should never be used in production.
+void SaveContentToDiskOnWorker(const base::FilePath& download_path,
+                               const GURL& url,
+                               std::u16string contents) {
+  std::string file_name;
+  base::ReplaceChars(url.spec(), "/", "", &file_name);
+  const base::FilePath content_filepath =
+      download_path.Append("mahi/" + file_name);
+
+  base::CreateDirectory(content_filepath.DirName());
+  base::WriteFile(content_filepath, base::UTF16ToUTF8(contents));
+}
+#endif
 }  // namespace
 
 MahiContentExtractionDelegate::MahiContentExtractionDelegate(
     base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
         distillable_check_callback)
-    : distillable_check_callback_(std::move(distillable_check_callback)) {
+    : distillable_check_callback_(std::move(distillable_check_callback)),
+      io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   // Do not bind to the services if mahi is not enabled.
   if (!chromeos::features::IsMahiEnabled()) {
     return;
@@ -104,7 +137,7 @@ void MahiContentExtractionDelegate::ExtractContent(
       base::BindOnce(&MahiContentExtractionDelegate::OnGetContent,
                      weak_pointer_factory_.GetWeakPtr(),
                      web_content_state.page_id, client_id,
-                     std::move(callback)));
+                     web_content_state.url, std::move(callback)));
 }
 
 void MahiContentExtractionDelegate::CheckDistillablity(
@@ -145,8 +178,21 @@ void MahiContentExtractionDelegate::OnGetContentSize(
 void MahiContentExtractionDelegate::OnGetContent(
     const base::UnguessableToken& page_id,
     const base::UnguessableToken& client_id,
+    const GURL& url,
     GetContentCallback callback,
     mojom::ExtractionResponsePtr response) {
+#if DCHECK_IS_ON()
+  // It's for debugging purpose, and save the extracted contents into disk.
+  if (chromeos::features::IsMahiDebuggingEnabled()) {
+    base::FilePath download_path = DownloadPrefs::FromBrowserContext(
+                                       ProfileManager::GetActiveUserProfile())
+                                       ->DownloadPath();
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SaveContentToDiskOnWorker, download_path,
+                                  url, response->contents));
+  }
+#endif
+
   crosapi::mojom::MahiPageContentPtr page_content =
       crosapi::mojom::MahiPageContent::New(
           /*client_id=*/client_id,

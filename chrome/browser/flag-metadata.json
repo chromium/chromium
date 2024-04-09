@@ -5477,6 +5477,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "mahi-debugging",
+    "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "mahi-feature-key",
     "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
     "expiry_milestone": 135
