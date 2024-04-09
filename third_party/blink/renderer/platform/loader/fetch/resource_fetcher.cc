@@ -284,6 +284,38 @@ std::unique_ptr<TracedValue> CreateTracedValueForUnusedEarlyHintsPreload(
   return value;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BoostImagePriorityReason {
+  kFirstN = 0,
+  kLcppForSmallImage = 1,
+  kLcppForNotSmallImage = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+
+void MaybeRecordBoostImagePriorityReason(const bool is_first_n,
+                                         const bool is_potentially_lcp_element,
+                                         const bool is_small_image) {
+  std::optional<BoostImagePriorityReason> reason;
+
+  if (is_first_n && !is_potentially_lcp_element) {
+    reason = BoostImagePriorityReason::kFirstN;
+  } else if (!is_first_n && is_potentially_lcp_element) {
+    reason = is_small_image ? BoostImagePriorityReason::kLcppForSmallImage
+                            : BoostImagePriorityReason::kLcppForNotSmallImage;
+  } else if (is_first_n && is_potentially_lcp_element) {
+    reason = BoostImagePriorityReason::kBoth;
+  }
+
+  // We do not record `!is_first_n && !is_potentially_lcp_element` case since
+  // the image was not boosted in such cases.
+  if (reason) {
+    base::UmaHistogramEnumeration("Blink.LCPP.BoostImagePriorityReason",
+                                  *reason);
+  }
+}
+
 }  // namespace
 
 ResourceFetcherInit::ResourceFetcherInit(
@@ -501,7 +533,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
 
   priority = AdjustImagePriority(priority, type, resource_request,
                                  speculative_preload_type, is_link_preload,
-                                 resource_width, resource_height);
+                                 resource_width, resource_height,
+                                 is_potentially_lcp_element);
 
   if (properties_->IsSubframeDeprioritizationEnabled()) {
     if (!properties_->IsOutermostMainFrame()) {
@@ -582,34 +615,39 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriorityHelper(
 
 // Boost the priority for the first N not-small images from the preload scanner
 ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
-    ResourceLoadPriority priority_so_far,
-    ResourceType type,
+    const ResourceLoadPriority priority_so_far,
+    const ResourceType type,
     const ResourceRequestHead& resource_request,
-    FetchParameters::SpeculativePreloadType speculative_preload_type,
-    bool is_link_preload,
+    const FetchParameters::SpeculativePreloadType speculative_preload_type,
+    const bool is_link_preload,
     const std::optional<float> resource_width,
-    const std::optional<float> resource_height) {
+    const std::optional<float> resource_height,
+    const bool is_potentially_lcp_element) {
+  if (type != ResourceType::kImage) {
+    return priority_so_far;
+  }
+
   ResourceLoadPriority new_priority = priority_so_far;
+
+  // If the width or height is available, determine if it is a "small" image
+  // where "small" is any image that covers less than 10,000px^2.
+  // If a size can not be determined then it defaults to "not small"
+  // and gets the relevant priority boost.
+  bool is_small_image = false;
+  if (resource_width && resource_height) {
+    float image_area = resource_width.value() * resource_height.value();
+    if (image_area <= small_image_max_size_) {
+      is_small_image = true;
+    }
+  } else if (resource_width && resource_width == 0) {
+    is_small_image = true;
+  } else if (resource_height && resource_height == 0) {
+    is_small_image = true;
+  }
 
   if (speculative_preload_type ==
           FetchParameters::SpeculativePreloadType::kInDocument &&
-      type == ResourceType::kImage && !is_link_preload &&
-      boosted_image_count_ < boosted_image_target_) {
-    // If the width or height is available, determine if it is a "small" image
-    // where "small" is any image that covers less than 10,000px^2.
-    // If a size can not be determined then it defaults to "not small"
-    // and gets the relevant priority boost.
-    bool is_small_image = false;
-    if (resource_width && resource_height) {
-      float image_area = resource_width.value() * resource_height.value();
-      if (image_area <= small_image_max_size_) {
-        is_small_image = true;
-      }
-    } else if (resource_width && resource_width == 0) {
-      is_small_image = true;
-    } else if (resource_height && resource_height == 0) {
-      is_small_image = true;
-    }
+      !is_link_preload && boosted_image_count_ < boosted_image_target_) {
     // Count all candidate images
     if (!is_small_image) {
       ++boosted_image_count_;
@@ -621,6 +659,13 @@ ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
         new_priority = ResourceLoadPriority::kMedium;
       }
     }
+  }
+
+  // Only records HTTP family URLs (e.g. Exclude data URLs).
+  if (resource_request.Url().ProtocolIsInHTTPFamily()) {
+    MaybeRecordBoostImagePriorityReason(priority_so_far != new_priority,
+                                        is_potentially_lcp_element,
+                                        is_small_image);
   }
 
   return new_priority;

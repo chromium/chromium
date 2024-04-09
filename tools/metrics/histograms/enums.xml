@@ -2524,6 +2524,20 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Yes"/>
 </enum>
 
+<enum name="BoostImagePriorityReason">
+  <int value="0"
+      label="kFirstN: Only because the image was located in the first N
+             images. (N is defined by `kBoostImagePriorityImageCount`)"/>
+  <int value="1"
+      label="kLcpp.ForSmallImage: Only because the image was predicted as a
+             LCP, and the image was small."/>
+  <int value="2"
+      label="kLcpp.ForNotSmallImage: Only because the image was predicted as
+             a LCP, and the image was not small."/>
+  <int value="3"
+      label="kBoth: Because the image was boosted by kFirstN and kLcpp."/>
+</enum>
+
 <enum name="BottomSheet.StateChangeReason">
   <int value="0" label="None"/>
   <int value="1" label="Swipe"/>

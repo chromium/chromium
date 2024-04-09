@@ -413,13 +413,14 @@ class PLATFORM_EXPORT ResourceFetcher
       ResourcePriority::VisibilityStatus,
       const FetchParameters& params);
   ResourceLoadPriority AdjustImagePriority(
-      ResourceLoadPriority priority_so_far,
-      ResourceType type,
+      const ResourceLoadPriority priority_so_far,
+      const ResourceType type,
       const ResourceRequestHead& resource_request,
-      FetchParameters::SpeculativePreloadType speculative_preload_type,
-      bool is_link_preload,
+      const FetchParameters::SpeculativePreloadType speculative_preload_type,
+      const bool is_link_preload,
       const std::optional<float> resource_width,
-      const std::optional<float> resource_height);
+      const std::optional<float> resource_height,
+      const bool is_potentially_lcp_element);
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to

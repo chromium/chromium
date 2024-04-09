@@ -2845,6 +2845,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.BoostImagePriorityReason"
+    enum="BoostImagePriorityReason" expires_after="2024-07-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the reason for the image boost when image fetch priority was
+    increased in ResourceFetcher. Currently there are two major ways to increase
+    the image fetch priority. This UMA helps us to understand which way is more
+    common.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.CrossOriginLcpImage" enum="Boolean"
     expires_after="2024-09-01">
   <owner>alexnj@chromium.org</owner>
