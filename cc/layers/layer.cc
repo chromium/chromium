@@ -165,8 +165,7 @@ void Layer::SetLayerTreeHost(LayerTreeHost* host) {
   }
 
   // See comment in layer.h to learn why this assignment is so weird.
-  raw_ptr<LayerTreeHost> host_ptr(host);
-  swap(host_ptr, const_cast<raw_ptr<LayerTreeHost>&>(layer_tree_host_));
+  const_cast<raw_ptr<LayerTreeHost>&>(layer_tree_host_) = host;
 
   if (property_tree_indices_invalid)
     InvalidatePropertyTreesIndices();
