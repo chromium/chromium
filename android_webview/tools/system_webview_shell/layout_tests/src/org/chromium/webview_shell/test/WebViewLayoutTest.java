@@ -6,8 +6,8 @@ package org.chromium.webview_shell.test;
 
 import android.os.Bundle;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -96,10 +96,13 @@ public class WebViewLayoutTest {
     public void setUp() {
         mActivityTestRule.launchActivity(null);
         mTestActivity = mActivityTestRule.getActivity();
-        Bundle arguments = InstrumentationRegistry.getArguments();
-        if (arguments != null) {
+        try {
+            Bundle arguments = InstrumentationRegistry.getArguments();
             String modeArgument = arguments.getString("mode");
-            mRebaseLine = modeArgument != null ? modeArgument.equals(MODE_REBASELINE) : false;
+            mRebaseLine = MODE_REBASELINE.equals(modeArgument);
+        } catch (IllegalStateException exception) {
+            Log.w(TAG, "Got no instrumentation arguments", exception);
+            mRebaseLine = false;
         }
     }
 
