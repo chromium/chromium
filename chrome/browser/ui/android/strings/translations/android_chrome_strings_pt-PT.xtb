@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Mover para aqui</translation>
 <translation id="1014147525163127655">Não existem chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquise com a sua voz rapidamente. Para editar este atalho, toque sem soltar.</translation>
+<translation id="1017104654974573432">Selecione um problema</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">A enviar para <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Limpar também dados destes sites e apps?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="10614374240317010">Nunca guardadas</translation>
 <translation id="107147699690128016">Se alterar a extensão do ficheiro, este pode ser aberto numa aplicação diferente e representar um risco para o seu dispositivo.</translation>
+<translation id="1082920045291562218">Partilhar com página de feedback do resumo fechada</translation>
 <translation id="1089606299949659462">Revisão concluída!</translation>
 <translation id="1095761715416917775">Certifique-se de que pode aceder sempre aos seus dados de sincronização</translation>
 <translation id="1100066534610197918">Abrir num novo sep. no grupo</translation>
@@ -557,6 +559,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Não permitir</translation>
 <translation id="4042941173059740150">Continue para o <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grupo sem nome</translation>
 <translation id="4044708993631234325">Secção inferior</translation>
 <translation id="405365679581583349">Atualize os Serviços do Google Play</translation>
 <translation id="405399507749852140">Obtenha alertas se o preço descer em qualquer site</translation>
@@ -628,6 +631,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="4404568932422911380">Sem marcadores</translation>
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4405636711880428279">Remover o seu cartão virtual?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> separadores</translation>
 <translation id="4409271659088619928">O seu motor de pesquisa é o <ph name="DSE" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4425140285732600465">A monitorizar o preço. Obtenha alertas se o preço descer em qualquer site.</translation>
@@ -1070,6 +1074,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6595046016124923392">As imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6621391692573306628">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos</translation>
+<translation id="6625890511281718257">Partilhar com página de feedback do resumo</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a Navegação anónima</translation>
 <translation id="6636623428211296678">Explore mais definições abaixo ou conclua agora</translation>
@@ -1108,6 +1113,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Lista de dispositivos com os quais quer partilhar um separador aberta a meia altura.</translation>
 <translation id="6770602306803890733">Melhora a segurança para si e todas as pessoas na Web.</translation>
+<translation id="6773061896687011391">O URL da página sobre a qual está a dar feedback vai ser enviado pela Google e pode ser revisto por humanos para melhorar esta funcionalidade</translation>
 <translation id="6775840696761158817">Quando tocar ou escrever na barra de endereço ou caixa de pesquisa, vai ver sugestões do motor de pesquisa predefinido. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="6785476624617658922">Termos de Utilização Adicionais do Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Abra um novo separador rapidamente. Para editar este atalho, aceda às Definições.</translation>
@@ -1411,6 +1417,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8135406045838672858">Os PDFs transferidos são abertos automaticamente com a app <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google.</translation>
 <translation id="8163820386638255770">Para usar e guardar palavras-passe na sua Conta Google, valide a sua identidade</translation>
+<translation id="8171286197772512427">Partilhar com página de feedback do resumo aberta</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Faltam <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Falta 1 dia</translation>

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Perkelti čia</translation>
 <translation id="1014147525163127655">Šiame įrenginyje nėra jokių slaptažodžių, skirtų <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
+<translation id="1017104654974573432">Problemos pasirinkimas</translation>
 <translation id="1024113959924243553">„Chrome“ kūrėjams</translation>
 <translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="103269572468856066">Taip pat išvalyti duomenis iš šių svetainių ir programų?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Esate neprisijungę. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="10614374240317010">Niekada neišsaugota</translation>
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
+<translation id="1082920045291562218">Bendrinimas su suvestinės atsiliepimų lapu uždarytas</translation>
 <translation id="1089606299949659462">Peržiūra baigta!</translation>
 <translation id="1095761715416917775">Galimybė visada pasiekti sinchronizuotus duomenis</translation>
 <translation id="1100066534610197918">Atidar. naujame grup. skirtuke</translation>
@@ -557,6 +559,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}many{# val.}other{# val.}}</translation>
 <translation id="4035877632587724847">Neleisti</translation>
 <translation id="4042941173059740150">Eikite į „<ph name="SITE_ETLD_PLUS_ONE" />“ su „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“</translation>
+<translation id="404352903042073578">Grupė be pavadinimo</translation>
 <translation id="4044708993631234325">Apatinis lapas</translation>
 <translation id="405365679581583349">„Google Play“ paslaugų atnaujinimas</translation>
 <translation id="405399507749852140">Gaukite įspėjimus, jei kaina bus sumažinta bet kurioje svetainėje</translation>
@@ -628,6 +631,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4404568932422911380">Nėra jokių žymių</translation>
 <translation id="4405224443901389797">Perkelti į…</translation>
 <translation id="4405636711880428279">Pašalinti virtualiąją kortelę?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ir dar tiek skirtukų: <ph name="TAB_COUNT" /></translation>
 <translation id="4409271659088619928">Jūsų paieškos variklis yra „<ph name="DSE" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="4415276339145661267">„Google“ paskyros tvarkymas</translation>
 <translation id="4425140285732600465">Kaina stebima. Gaukite įspėjimus, jei kaina bus sumažinta bet kurioje svetainėje.</translation>
@@ -1070,6 +1074,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6595046016124923392">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus.</translation>
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
 <translation id="6621391692573306628">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ abiejuose įrenginiuose</translation>
+<translation id="6625890511281718257">Bendrinti su suvestinės atsiliepimų lapu</translation>
 <translation id="6627583120233659107">Redaguoti aplanką</translation>
 <translation id="6633067410344541938">Atrakinti inkognito režimą</translation>
 <translation id="6636623428211296678">Galite toliau peržiūrėti daugiau nustatymų arba baigti dabar</translation>
@@ -1108,6 +1113,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Įrenginių, su kuriais reikia bendrinti skirtuką, sąrašas atidarytas (pusė aukščio).</translation>
 <translation id="6770602306803890733">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą</translation>
+<translation id="6773061896687011391">Puslapio, apie kurį pateikiate atsiliepimą, URL bus siunčiamas „Google“ ir jį galės peržiūrėti žmonės, siekiant patobulinti šią funkciją</translation>
 <translation id="6775840696761158817">Kai palieskite ar vesite tekstą adreso juostoje ar paieškos laukelyje, bus rodomi numatytojo paieškos variklio pasiūlymai. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="6785476624617658922">„Chrome“ ir „Chrome“ OS papildomos paslaugų teikimo sąlygos</translation>
 <translation id="6795633245022906657">Sparčiai atidarykite naują skirtuką. Jei norite redaguoti šį spartųjį klavišą, eikite į skiltį „Nustatymai“.</translation>
@@ -1411,6 +1417,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8135406045838672858">Atsisiųsti PDF failai automatiškai atidaromi naudojant „<ph name="APP_NAME" />“</translation>
 <translation id="8137562778192957619">Jums nereikės prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje.</translation>
 <translation id="8163820386638255770">Jei norite naudoti ir saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
+<translation id="8171286197772512427">Bendrinimas su suvestinės atsiliepimų lapu atidarytas</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8186512483418048923">Liko failų: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Liko 1 d.</translation>

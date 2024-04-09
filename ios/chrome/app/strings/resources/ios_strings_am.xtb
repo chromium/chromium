@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">የይለፍ ቃል ተቀድቷል።</translation>
 <translation id="2626236249646841566">ግንኙነትዎን ይፈትሹ እና እንደገና ለመግባት ይሞክሩ።</translation>
 <translation id="2637313651144986786">ትሮችን ይፈልጉ...</translation>
+<translation id="2640733327287333451">ምንም የተጠቃሚ ስም የለም ••••••</translation>
 <translation id="2648721026697078500">መቼም አታንቀሳቅስ</translation>
 <translation id="2648803196158606475">የተነበቡትን ሰርዝ</translation>
 <translation id="2664621323652615289">አቁም</translation>
@@ -1280,6 +1281,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7569588934989281656">በትሮች መካከል ለመቀያየር የትር ድርድሩን ማንሸራተት ይችላሉ።</translation>
 <translation id="7582857256643797524">ይህ ቅንብር በመሣሪያዎ ላይ ነቅቷል</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
+<translation id="7598439272585186139">ተጨማሪ ደኅንነት ያግኙ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">የይለፍ ቃልን ሰርዝ</translation>

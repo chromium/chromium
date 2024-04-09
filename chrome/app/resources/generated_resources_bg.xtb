@@ -697,7 +697,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Разбирам, че изтеглянето ще навреди на компютъра ми</translation>
 <translation id="1535228823998016251">Силно</translation>
-<translation id="1535597783576881392">Това ръководство ви информира какви възможности за избор имате, така че Chrome да работи по желания от вас начин</translation>
 <translation id="1535753739390684432">Слушайте конкретен текст, прочетен на глас. Първо изберете иконата на „Прочитане на глас“ в долната част на екрана, а след това откройте текст.</translation>
 <translation id="1536754031901697553">Връзката се прекратява...</translation>
 <translation id="1536883206862903762">Това действие ще деактивира разширенията и ще възстанови безопасните стандартни настройки. Разделите, файловете и „бисквитките“ ще бъдат запазени. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -4928,7 +4927,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4716483597559580346">Powerwash за повишаване на сигурността</translation>
 <translation id="4716715661140829720">Няма достатъчно място в хранилището</translation>
 <translation id="471759229191973607">Промяна на темата</translation>
-<translation id="4718046540206070045">Повече от браузър</translation>
 <translation id="4722735765955348426">Парола за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> споделя екрана ви.</translation>
 <translation id="4722989931633062466">Сайтове без разрешение за показване на подкани за вход от трети страни</translation>
@@ -5613,7 +5611,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
 <translation id="5271578170655641944">Искате ли да премахнете достъпа до Google Диск?</translation>
 <translation id="5273806377963980154">Редактиране на URL адреса на сайта</translation>
-<translation id="5273966423195882879">Цвят въз основа на темата</translation>
 <translation id="5275084684151588738">Потребителски речници</translation>
 <translation id="5275100789567222478">Включване само когато нивото на батерията е <ph name="PERCENT" />% или по-малко</translation>
 <translation id="5275338516105640560">Бутон за запазената група раздели</translation>
@@ -9621,7 +9618,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8356197132883132838">„<ph name="TITLE" />“ – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Вече сте регистрирали това устройство. Няма нужда да го правите отново.</translation>
 <translation id="8357388086258943206">Грешка при инсталирането на Linux</translation>
-<translation id="8357591920094529889">Това ръководство ви информира какви възможности за избор имате, докато използвате Chrome. Също така то ви помага да направите избора си, така че браузърът да работи по желания от вас начин.</translation>
 <translation id="8358685469073206162">Да се възстановят ли страниците?</translation>
 <translation id="8358912028636606457">Предаването на звук от раздел не се поддържа на това устройство.</translation>
 <translation id="835951711479681002">Запазване в профила ви в Google</translation>
@@ -9685,7 +9681,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8399282673057829204">Преглед на паролата</translation>
 <translation id="839949601275221554">Възникна грешка в устройството. Рестартирайте го и опитайте отново.</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
-<translation id="8403618281196981152">Вашите данни в Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> може да проверява паролите ви, когато ги запазите</translation>
 <translation id="8405046151008197676">Вижте най-важното от най-новата актуализация</translation>
 <translation id="8405118833120731611">{0,plural, =1{Затваряне на този потребителски профил}other{Затваряне на този потребителски профил (# прозореца)}}</translation>

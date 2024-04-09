@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">ไอคอนสี<ph name="COLOR_NAME" />ของกลุ่มแท็บ</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_ONE" /> แท็บ}other{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="3194464645767632461">การให้คะแนน</translation>
 <translation id="3291470810748040983">คุณจะได้รับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>

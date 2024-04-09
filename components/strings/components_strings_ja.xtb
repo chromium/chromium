@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12x16 インチ</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1181381397492575884">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
+<translation id="1185343831726846924">仮想カードを有効にできないことの確認</translation>
 <translation id="1186201132766001848">パスワードを確認</translation>
 <translation id="1187430513518041110">自動車、乗り物</translation>
 <translation id="1190491977647722791">紙（重量）</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> インチ</translation>
 <translation id="1574714699824202614">お支払い方法を確認しています</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1579189948231786790">このサイトは組織によってブロックされています</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">無期限</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">生態学、環境</translation>
 <translation id="2452837234288608067">候補を生成できませんでした。もう一度お試しください。</translation>
 <translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
+<translation id="2461822463642141190">現在</translation>
 <translation id="2462932596748424101">ソーシャル ネットワーク</translation>
 <translation id="2463739503403862330">入力する</translation>
 <translation id="2465688316154986572">ステープル</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">この PDF にアクセスできません。検索+M キーを押してコンテキスト メニューを開き、[PDF からテキストを抽出] をオンにしてください</translation>
 <translation id="2818338148457093657">美容サービス、スパ</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
-<translation id="2824549017793319782">選択すると、アドレスバーに検索キーワードを直接入力します</translation>
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2833637280516285136">ラジオのトーク番組</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">画像の X 軸移動</translation>
 <translation id="3807709094043295184">クラシック ロック、オールディーズ</translation>
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
+<translation id="380865868633614173">カード情報を保存しています</translation>
 <translation id="3810770279996899697">パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3812398568375898177">ChromeOS での Android アプリのパフォーマンスを改善する重要な更新です。</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">プロトコルの形式が無効です。</translation>
 <translation id="5222812217790122047">メールアドレスは必須です</translation>
 <translation id="5228269245420405804">遠隔学習</translation>
+<translation id="5230428804606340145">他の金融口座の管理</translation>
 <translation id="5230733896359313003">配送先住所</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">アカウントに保存</translation>
 <translation id="5239119062986868403">一般的な価格</translation>
 <translation id="5239623327352565343">位置情報が許可されています</translation>
+<translation id="5241048084654737238">カード情報を保存できないことの確認</translation>
 <translation id="5242610955375133957">ドライフィルム</translation>
 <translation id="5244521145258281926">[Google アカウントを管理] ボタンです。実行すると、Google アカウントで情報、プライバシー、セキュリティを管理できます</translation>
 <translation id="5244732203286792411">読み込んでいます...
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">製本（上綴じ）</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5269999699920406580">システム全体に適用される機能は所有者（<ph name="OWNER_EMAIL" />）のみが設定できます</translation>
+<translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」は「<ph name="DATA_CONTROLS_RESTRICTION" />」のサポートされている条件ではありません</translation>
 <translation id="5273658854610202413">警告: このポリシーは統合可能な辞書ポリシーに含まれていないため、PolicyDictionaryMultipleSourceMergeList ポリシーで指定されているとおりには統合されませんでした。</translation>
 <translation id="5279286380302340275">ダウンロードを管理</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> を使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}other{<ph name="FEATURE_NAME" /> を使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}}</translation>
 <translation id="7160999678034985039">作業内容を保存し、準備ができたら更新を開始してください。</translation>
 <translation id="7163295244162773898">{0,plural, =1{機密ファイルをコピーしますか？}other{機密ファイルをコピーしますか？}}</translation>
+<translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」はこのプラットフォームではサポートされていない制限です</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">統合された値</translation>
 <translation id="7175097078723125014">住所を編集するオプションが選択されました</translation>
@@ -3246,6 +3253,7 @@
 <translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7311837626618954149">Chromium では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。</translation>
+<translation id="7313107491291103073">あなたの組織ではこのサイトはポリシーに違反している可能性があるものとして報告されています。</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
 <translation id="7323804146520582233">「<ph name="SECTION" />」セクションを非表示にする</translation>
@@ -3572,6 +3580,7 @@
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
 <translation id="7894280532028510793">タイプミスでない場合は、<ph name="BEGIN_LINK" />ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7×9 インチ封筒</translation>
+<translation id="7908648876066812348">仮想カードを有効にしています</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="791551905239004656">お絵かき、塗り絵</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
@@ -4080,6 +4089,7 @@
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="8874824191258364635">有効なクレジット カード番号を入力してください</translation>
 <translation id="8877780815363510165">釣り</translation>
+<translation id="888117890813270681">「<ph name="DATA_CONTROLS_RESTRICTION" />」を「<ph name="DATA_CONTROLS_LEVEL" />」に設定できません</translation>
 <translation id="8884537526797090108">機密コンテンツは録画できません</translation>
 <translation id="8888187300091017436">マットレス</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> を管理し、挿入またはかざされたスマートカードにアクセスできるようにします。</translation>

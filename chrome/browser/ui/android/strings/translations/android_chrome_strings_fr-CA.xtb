@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Déplacer ici</translation>
 <translation id="1014147525163127655">Il n'existe aucune clé d'accès pour <ph name="ORIGIN" /> sur cet appareil</translation>
 <translation id="1016498331642356377">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
+<translation id="1017104654974573432">Sélectionner un problème</translation>
 <translation id="1024113959924243553">Chrome pour les développeurs</translation>
 <translation id="1028699632127661925">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="103269572468856066">Supprimer aussi les données de ces sites et de ces applis?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, il peut s'ouvrir dans une application différente et poser un risque pour votre appareil.</translation>
+<translation id="1082920045291562218">Partager avec la feuille de commentaires récapitulative fermée</translation>
 <translation id="1089606299949659462">Vérification terminée!</translation>
 <translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données de synchronisation</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
@@ -557,6 +559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Ne pas autoriser</translation>
 <translation id="4042941173059740150">Continuer jusqu'à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Groupe sans nom</translation>
 <translation id="4044708993631234325">Page de contenu en bas de l'écran</translation>
 <translation id="405365679581583349">Mettez à jour les services Google Play</translation>
 <translation id="405399507749852140">Obtenez des alertes si le prix est réduit sur un site</translation>
@@ -628,6 +631,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
 <translation id="4405636711880428279">Retirer votre carte virtuelle?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> et <ph name="TAB_COUNT" /> autres onglets</translation>
 <translation id="4409271659088619928">Vous utilisez <ph name="DSE" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
@@ -1070,6 +1074,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6595046016124923392">Les images sont envoyées à Google afin d'améliorer les descriptions pour vous.</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils</translation>
+<translation id="6625890511281718257">Partager avec la feuille de commentaires récapitulative</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6633067410344541938">Déverrouiller le mode de navigation privée</translation>
 <translation id="6636623428211296678">Explorez plus de paramètres ci-dessous ou terminez maintenant</translation>
@@ -1108,6 +1113,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">La liste d'appareils avec lesquels partager un onglet est ouverte à la mi-hauteur.</translation>
 <translation id="6770602306803890733">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
+<translation id="6773061896687011391">L'URL de la page pour laquelle vous envoyez des commentaires sera envoyée par Google et pourra être examinée par des humains pour améliorer cette fonctionnalité</translation>
 <translation id="6775840696761158817">Lorsque vous touchez la barre d'adresse ou le champ de recherche ou que vous tapez du texte à l'intérieur, vous verrez des suggestions de votre moteur de recherche par défaut. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
@@ -1411,6 +1417,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8135406045838672858">Les fichiers PDF téléchargés s'ouvrent automatiquement avec <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
 <translation id="8163820386638255770">Pour utiliser et enregistrer des mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
+<translation id="8171286197772512427">Partager avec la feuille de commentaires récapitulative ouverte</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>

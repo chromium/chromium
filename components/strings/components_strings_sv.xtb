@@ -783,6 +783,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2452098632681057184">Ekologi och miljö</translation>
 <translation id="2452837234288608067">Det gick inte att hjälpa till med det. Försök igen.</translation>
 <translation id="2456755709261364512">Batteriet måste vara laddat över <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2462932596748424101">Sociala nätverk</translation>
 <translation id="2463739503403862330">Fyll i</translation>
 <translation id="2465688316154986572">Häftning</translation>
@@ -952,7 +953,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2814184336982254349">Denna PDF är inte tillgänglig. Tryck på Sök + M för att öppna snabbmenyn och aktivera Extrahera text från PDF</translation>
 <translation id="2818338148457093657">Skönhetsvård och spa</translation>
 <translation id="2820957248982571256">Söker …</translation>
-<translation id="2824549017793319782">Välj för att skriva sökningen direkt i adressfältet</translation>
 <translation id="2824775600643448204">Adress- och sökfält</translation>
 <translation id="2826760142808435982">Anslutningen är krypterad och verifieras med <ph name="CIPHER" /> och använder <ph name="KX" /> som nyckelutbytesmekanism.</translation>
 <translation id="2833637280516285136">Pratradio</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Попередній перегляд зображення</translation>
 <translation id="1611649489706141841">уперед</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Скористатися темою</translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
 <translation id="1622402072367425417">сяючі бульбашки</translation>
 <translation id="1626590945318984973">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
 <translation id="2324354238778375592">Плаваюче вікно</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
-<translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">Стілець</translation>
 <translation id="2358070305000735383">Вікно редагування "<ph name="DESCRIPTION" />" відкрито.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">оливковому</translation>
 <translation id="8373046809163484087">Використовувати набори кольорів, які відповідають фоновому малюнку</translation>
 <translation id="8380114448424469341">Закріпити вікно <ph name="DIRECTION" /> на половину екрана</translation>
+<translation id="8391349326751432483">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Закрийте вкладки й додатки, щоб звільнити пам’ять.</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
 <translation id="8403988360557588704">Картина на тему "<ph name="ART_FEATURE" />" в стилі <ph name="ART_MOVEMENT" /></translation>

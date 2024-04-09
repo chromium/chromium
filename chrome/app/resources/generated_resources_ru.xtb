@@ -699,7 +699,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> и <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Я понимаю, что скачиваемый файл может навредить моему компьютеру</translation>
 <translation id="1535228823998016251">Громко</translation>
-<translation id="1535597783576881392">Это руководство поможет настроить Chrome под себя.</translation>
 <translation id="1535753739390684432">Читать вслух выбранный текст. Чтобы воспользоваться функцией, нажмите на значок "Озвучивание при нажатии" внизу экрана и выделите нужный текст.</translation>
 <translation id="1536754031901697553">Отключение...</translation>
 <translation id="1536883206862903762">Будут отключены расширения и восстановлены безопасные стандартные настройки. Вкладки и файлы, в том числе cookie, будут сохранены. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4917,7 +4916,6 @@
 <translation id="4716483597559580346">Обновите систему безопасности с помощью Powerwash</translation>
 <translation id="4716715661140829720">Недостаточно места</translation>
 <translation id="471759229191973607">Сменить тему</translation>
-<translation id="4718046540206070045">Больше чем браузер</translation>
 <translation id="4722735765955348426">Пароль аккаунта пользователя <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Приложению <ph name="APP_NAME" /> предоставлен доступ к вашему экрану.</translation>
 <translation id="4722989931633062466">Запретить предложения войти в аккаунт через сторонние сервисы</translation>
@@ -5602,7 +5600,6 @@
 <translation id="5269977353971873915">Печать не выполнена</translation>
 <translation id="5271578170655641944">Закрыть доступ к Google Диску?</translation>
 <translation id="5273806377963980154">Изменить URL сайта</translation>
-<translation id="5273966423195882879">Цвет зависит от темы</translation>
 <translation id="5275084684151588738">Пользовательские словари</translation>
 <translation id="5275100789567222478">Включать, когда уровень заряда батареи составляет <ph name="PERCENT" /> % или меньше</translation>
 <translation id="5275338516105640560">Кнопка сохраненных групп вкладок</translation>
@@ -8772,7 +8769,7 @@
 <translation id="77381465218432215">Показывать диакритические знаки и специальные символы</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="7742706086992565332">Вы можете настроить масштаб страницы для просмотра определенных сайтов.</translation>
-<translation id="7742726773290359702">{NUM_SITES,plural, =1{Найден один раскрытый пароль.}one{Найден {NUM_SITES} раскрытый пароль.}few{Найдено {NUM_SITES} раскрытых пароля.}many{Найдено {NUM_SITES} раскрытых паролей.}other{Найдено {NUM_SITES} раскрытого пароля.}}</translation>
+<translation id="7742726773290359702">{NUM_SITES,plural, =1{Найден 1 раскрытый пароль.}one{Найден {NUM_SITES} раскрытый пароль.}few{Найдено {NUM_SITES} раскрытых пароля.}many{Найдено {NUM_SITES} раскрытых паролей.}other{Найдено {NUM_SITES} раскрытого пароля.}}</translation>
 <translation id="7742879569460013116">Отправить ссылку</translation>
 <translation id="774377079771918250">Выберите, где сохранить пароль</translation>
 <translation id="7744047395460924128">Просмотр истории печати</translation>
@@ -9614,7 +9611,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
 <translation id="8356409598322585307">Вы уже регистрировали это устройство.</translation>
 <translation id="8357388086258943206">Ошибка при установке Linux</translation>
-<translation id="8357591920094529889">Это руководство поможет вам разобраться в важных настройках Chrome и сделать браузер удобнее для себя.</translation>
 <translation id="8358685469073206162">Восстановить страницы?</translation>
 <translation id="8358912028636606457">Трансляция аудио из вкладки не поддерживается на этом устройстве</translation>
 <translation id="835951711479681002">Сохранить в аккаунте Google</translation>
@@ -9678,7 +9674,6 @@
 <translation id="8399282673057829204">Показать пароль</translation>
 <translation id="839949601275221554">Произошла ошибка. Перезагрузите устройство и повторите попытку.</translation>
 <translation id="8401432541486058167">Укажите PIN-код, связанный с вашей смарт-картой.</translation>
-<translation id="8403618281196981152">Ваши данные в Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> сможет проверить ваши пароли, когда вы сохраните их</translation>
 <translation id="8405046151008197676">Изучите основную информацию о последнем обновлении.</translation>
 <translation id="8405118833120731611">{0,plural, =1{Закрыть все окна этого профиля (1)}one{Закрыть все окна этого профиля (#)}few{Закрыть все окна этого профиля (#)}many{Закрыть все окна этого профиля (#)}other{Закрыть все окна этого профиля (#)}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Ekarri hona</translation>
 <translation id="1014147525163127655">Gailu honetan ez dago <ph name="ORIGIN" /> webgunearen sarbide-gakorik</translation>
 <translation id="1016498331642356377">Bilatu bizkor ahotsa erabilita. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
+<translation id="1017104654974573432">Hautatu arazo bat</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="103269572468856066">Webgune eta aplikazio hauetako datuak ere garbitu nahi dituzu?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Ez zaude konektatuta Internetera. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
 <translation id="107147699690128016">Fitxategi-luzapena aldatzen baduzu, baliteke fitxategia beste aplikazio batean irekitzea eta zure gailuan kalteak eragitea.</translation>
+<translation id="1082920045291562218">Laburpenari buruzko oharrak partekatzeko orria itxi da</translation>
 <translation id="1089606299949659462">Osatu duzu berrikuspena!</translation>
 <translation id="1095761715416917775">Izan beti sinkronizatutako datuetarako sarbidea</translation>
 <translation id="1100066534610197918">Ireki beste fitxa bat taldean</translation>
@@ -557,6 +559,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="4034817413553209278">{HOURS,plural, =1{# ordu}other{# ordu}}</translation>
 <translation id="4035877632587724847">Ez eman baimenik</translation>
 <translation id="4042941173059740150">Sartu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
+<translation id="404352903042073578">Izenik gabeko taldea</translation>
 <translation id="4044708993631234325">Pantailaren behealdean ainguratutako orria</translation>
 <translation id="405365679581583349">Eguneratu Google Play Services</translation>
 <translation id="405399507749852140">Jaso alertak webguneren batean prezioa jaisten bada</translation>
@@ -628,6 +631,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="4404568932422911380">Ez dago laster-markarik</translation>
 <translation id="4405224443901389797">Eraman hona…</translation>
 <translation id="4405636711880428279">Txartel birtuala kendu nahi duzu?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> eta beste <ph name="TAB_COUNT" /> fitxa</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
@@ -1070,6 +1074,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6595046016124923392">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudiak Google-ri.</translation>
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainontzeko erabiltzaileentzat.</translation>
 <translation id="6621391692573306628">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bi gailuetan</translation>
+<translation id="6625890511281718257">Laburpenari buruzko oharrak partekatzeko orria</translation>
 <translation id="6627583120233659107">Editatu karpeta</translation>
 <translation id="6633067410344541938">Desblokeatu ezkutuko modua</translation>
 <translation id="6636623428211296678">Arakatu ezarpen gehiago hemen behean edo amaitu orain</translation>
@@ -1108,6 +1113,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Fitxa partekatzeko hautatutako gailuen zerrenda altuera erdian irekita dago.</translation>
 <translation id="6770602306803890733">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainontzeko erabiltzaileentzat.</translation>
+<translation id="6773061896687011391">Oharretan aipatutako orriaren URLa bidaliko du Google-k, eta baliteke gizakiek berrikustea, eginbidea hobetzeko</translation>
 <translation id="6775840696761158817">Helbide-barra edo bilaketa-koadroa sakatzen edo bertan zerbait idazten duzunean, zure bilatzaile lehenetsiaren iradokizunak ikusiko dituzu. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="6785476624617658922">Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak</translation>
 <translation id="6795633245022906657">Ireki fitxa bat bizkor. Lasterbide hau editatzeko, joan ezarpenetara.</translation>
@@ -1411,6 +1417,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8135406045838672858">Deskargatutako PDFak <ph name="APP_NAME" /> bidez irekitzen dira automatikoki</translation>
 <translation id="8137562778192957619">Ez duzu pasahitza gogoratu beharko. Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="8163820386638255770">Pasahitzak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
+<translation id="8171286197772512427">Laburpenari buruzko oharrak partekatzeko orria ireki da</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fitxategi gelditzen dira</translation>
 <translation id="8190358571722158785">Egun bat gelditzen da</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
+<translation id="1618566998877964907">এটা থীম ব্যৱহাৰ কৰক</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1622402072367425417">উজ্জ্বল বাবল</translation>
 <translation id="1626590945318984973">শ্বৰ্টকাট উপলব্ধ নহয়। ফাংশ্বন আৰু <ph name="META_KEY" /> কী ব্যৱহাৰ নকৰাকৈ এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">এৰি যোৱা হৈছে</translation>
 <translation id="2324354238778375592">ওপঙা</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">চকী</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" />ৰ বাবে সম্পাদনাৰ ডায়লগ খোলা আছে।</translation>
@@ -845,6 +845,8 @@
 <translation id="5946538341867151940">আপুনি এতিয়ালৈকে সংযুক্ত হোৱা নাই। যদি আপোনাৰ ম'বাইলৰ বাহকে এটা কাষ্টম এপিএন চুপাৰিছ কৰে, "+ নতুন এপিএন" বাছনি কৰি এপিএনৰ তথ্যখিনি দিয়ক</translation>
 <translation id="5947266287934282605">যদি মাহটোৰ শেষৰ দিনটো এই দিনটোৰ আগৰ, ডেটা মাহটোৰ শেষ দিনটোত ৰিছেট কৰা হ’ব</translation>
 <translation id="5948460390109837040">কুকুৰ</translation>
+<translation id="594989847980441553">AIৰ জৰিয়তে কোনো প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ "সৃষ্টি কৰক" বাছনি কৰক।
+        সৃষ্টি কৰা আটাইবোৰ প্ৰতিচ্ছবি ইয়াত স্বয়ংক্ৰিয়ভাৱে দেখা পোৱা যাব।</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">প্ৰৱাল</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
@@ -1275,6 +1277,7 @@
 <translation id="8372667721254470022">জলফাইৰঙী</translation>
 <translation id="8373046809163484087">আপোনাৰ ৱালপেপাৰৰ সৈতে মিলা ৰঙৰ ছেট ব্যৱহাৰ কৰক</translation>
 <translation id="8380114448424469341">স্ক্ৰীনৰ <ph name="DIRECTION" /> ফালৰ আধা অংশত ৱিণ্ড’ ড’ক কৰক</translation>
+<translation id="8391349326751432483">মেম’ৰী পৰীক্ষণ চলাবলৈ আপোনাক অতি কমেও ৫০০ এমবি খালী ঠাই লাগিব। মেম’ৰী খালী কৰিবলৈ টেব আৰু এপ্‌সমূহ বন্ধ কৰক।</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" />টো এণ্টাৰপ্ৰাইজে পৰিচালনা কৰে</translation>
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />ৰ শৈলীৰ <ph name="ART_FEATURE" />ৰ এখন পেইণ্টিং</translation>

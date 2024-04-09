@@ -183,6 +183,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="132301787627749051">Nach Bild aus Zwischenablage suchen</translation>
 <translation id="1323433172918577554">Mehr anzeigen</translation>
 <translation id="132390688737681464">Adressen speichern und ausfüllen</translation>
+<translation id="1325412080783393306">Weitere Kaufoptionen suchen</translation>
 <translation id="1325749054628832887">Die Funktion „Werbethemen“ ist nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne diese Funktion Werbung zeigen. Diese ist aber möglicherweise weniger interessant für dich. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="LINK_END" /></translation>
 <translation id="1329916999021038454">Bericht senden</translation>
 <translation id="1330449323196174374">Linksseitige Fensterfaltung</translation>
@@ -782,6 +783,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2452098632681057184">Ökologie und Umwelt</translation>
 <translation id="2452837234288608067">Dabei konnten wir nicht helfen. Bitte versuche es noch einmal.</translation>
 <translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
+<translation id="2461822463642141190">Aktuell</translation>
 <translation id="2462932596748424101">Soziale Netzwerke</translation>
 <translation id="2463739503403862330">Ausfüllen</translation>
 <translation id="2465688316154986572">Heften</translation>
@@ -951,7 +953,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2814184336982254349">Auf diese PDF-Datei kann nicht zugegriffen werden. Drücke die Suchtaste + „M“, um das Kontextmenü zu öffnen, und aktiviere „Text aus PDF extrahieren“.</translation>
 <translation id="2818338148457093657">Schönheitsbehandlungen und Wellness</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
-<translation id="2824549017793319782">Auswählen, um Suchbegriff direkt in die Adressleiste einzugeben</translation>
 <translation id="2824775600643448204">Adress- und Suchleiste</translation>
 <translation id="2826760142808435982">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt und authentifiziert und verwendet <ph name="KX" /> als Mechanismus für den Schlüsselaustausch.</translation>
 <translation id="2833637280516285136">Diskussionen im Radio</translation>
@@ -1184,6 +1185,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3286372614333682499">Hochformat</translation>
 <translation id="3287510313208355388">Herunterladen, sobald eine Internetverbindung besteht</translation>
 <translation id="3288238092761586174"><ph name="URL" /> muss möglicherweise zusätzliche Schritte ausführen, um deine Zahlung zu bestätigen</translation>
+<translation id="3289578402369490638">Von anderen Onlineshops</translation>
 <translation id="3293642807462928945">Weitere Informationen zur "<ph name="POLICY_NAME" />"-Richtlinie</translation>
 <translation id="3295444047715739395">Passwörter in den Chrome-Einstellungen ansehen und verwalten</translation>
 <translation id="3299098170013242198">Windows Hello ist zum Ausfüllen von Passwörtern aktiviert</translation>

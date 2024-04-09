@@ -103,6 +103,7 @@
 <translation id="1178821169867863726">‏‎12 x 16 انچ</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1181381397492575884">‏Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔ <ph name="LINK" /> کی ترتیبات ملاحظہ کریں۔</translation>
+<translation id="1185343831726846924">ورچوئل کارڈ کی توثیق کرنے کی سہولت کو آن نہیں کیا جا سکتا</translation>
 <translation id="1186201132766001848">پاس ورڈز چیک کریں</translation>
 <translation id="1187430513518041110">آٹوز اور گاڑیاں</translation>
 <translation id="1190491977647722791">کاغذ (ہیوی ویٹ)</translation>
@@ -325,6 +326,7 @@
 <translation id="1572765991610098222">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> انچ</translation>
 <translation id="1574714699824202614">ادائیگی کے طریقے کی توثیق ہو رہی ہے</translation>
 <translation id="1576277203042721907">خریداری کی بصیرتیں</translation>
+<translation id="1579189948231786790">آپ کی تنظیم نے اس سائٹ کو مسدود کر دیا ہے</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">مدت ختم نہیں ہوتی ہے</translation>
 <translation id="1583429793053364125">یہ ویب صفحہ ڈسپلے کرتے ہوئے کچھ غلط ہو گیا۔</translation>
@@ -784,6 +786,7 @@
 <translation id="2452098632681057184">ایکولوجی اور ماحول</translation>
 <translation id="2452837234288608067">اس میں مدد نہیں کر سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2456755709261364512">آپ کی بیٹری <ph name="REQUIRED_BATTERY_PRECENT" />فیصد سے زیادہ چارج ہونی چاہیے</translation>
+<translation id="2461822463642141190">حالیہ</translation>
 <translation id="2462932596748424101">سوشل نیٹ ورکس</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
 <translation id="2465688316154986572">سٹیپل</translation>
@@ -953,7 +956,6 @@
 <translation id="2814184336982254349">‏یہ PDF ناقابل رسائی ہے۔ سیاق و سباق کا مینو کھولنے کے لیے search پلس m دبائیں اور "PDF سے ٹیکسٹ نکالیں" کو آن کریں۔</translation>
 <translation id="2818338148457093657">بیوٹی سروسز اور اسپاس</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
-<translation id="2824549017793319782">اپنی تلاش کو براہ راست ایڈریس بار میں ٹائپ کرنے کے لیے منتخب کریں</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
 <translation id="2826760142808435982">کنکشن کو <ph name="CIPHER" /> کا استعمال کر کے مرموز کیا گیا ہے اور اس کی توثیق کی گئی ہے اور یہ کلید کے تبادلہ کے طریقہ کار کے بطور <ph name="KX" /> کا استعمال کرتا ہے۔</translation>
 <translation id="2833637280516285136">ٹاک ریڈیو</translation>
@@ -1477,6 +1479,7 @@
 <translation id="3807366285948165054">‏تصویر X شفٹ</translation>
 <translation id="3807709094043295184">کلاسک راک اور پرانے گانے</translation>
 <translation id="3807873520724684969">نقصان دہ مواد مسدود ہے۔</translation>
+<translation id="380865868633614173">کارڈ کی معلومات محفوظ ہو رہی ہے</translation>
 <translation id="3810770279996899697">‏پاس ورڈ مینیجر کو MacOS Keychain تک رسائی درکار ہے</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="3812398568375898177">‏یہ ایک اہم اپ ڈیٹ ہے جو ChromeOS پر Android ایپس کی کارکردگی کو بہتر بناتی ہے۔</translation>
@@ -2183,6 +2186,7 @@
 <translation id="5217759126664161410">پروٹوکول کا فارمیٹ غلط ہے۔</translation>
 <translation id="5222812217790122047">ای میل مطلوب ہے</translation>
 <translation id="5228269245420405804">فاصلاتی تعلیم</translation>
+<translation id="5230428804606340145">دیگر مالیاتی اکاؤنٹس کا نظم کریں</translation>
 <translation id="5230733896359313003">ترسیل کا پتہ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2190,6 +2194,7 @@
 <translation id="5238301240406177137">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="5239119062986868403">عمومی قیمت</translation>
 <translation id="5239623327352565343">مقام کی اجازت ہے</translation>
+<translation id="5241048084654737238">کارڈ سے متعلق معلومات کی توثیق کے عمل کو محفوظ نہیں کیا جا سکتا</translation>
 <translation id="5242610955375133957">ڈرائی فلم</translation>
 <translation id="5244521145258281926">‏Google اکاؤنٹ کا نظم کریں، اپنے Google اکاؤنٹ میں اپنی معلومات، رازداری اور سیکیورٹی کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="5244732203286792411">لوڈ ہو رہی ہے…
@@ -2205,6 +2210,7 @@
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
 <translation id="5269999699920406580">جو خصوصیات پورے سسٹم پر لاگو ہوتی ہیں وہ صرف مالک کے ذریعے سیٹ کی جا سکتی ہیں: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" کے لیے "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ایک تعاون یافتہ شرط نہیں ہے</translation>
 <translation id="5273658854610202413">‏وراننگ: اس پالیسی کو PolicyDictionaryMultipleSourceMergeList کی پالیسی کی وضاحت کے مطابق ضم نہیں کیا گیا ہے کیوں کہ یہ لغت کی ان پالیسیوں کا حصہ نہیں ہے جنہیں ضم کیا جا سکے۔</translation>
 <translation id="5279286380302340275">ڈاؤن لوڈز کا نظم کریں</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3177,6 +3183,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> کا استعمال کرتے ہوئے اس فائل کو بھیجنے کے لیے، اپنے آلے پر (<ph name="DISK_SPACE_SIZE" />) اسپیس خالی کریں}other{<ph name="FEATURE_NAME" /> کا استعمال کرتے ہوئے اس فائلز کو بھیجنے کے لیے، اپنے آلے پر (<ph name="DISK_SPACE_SIZE" />) اسپیس خالی کریں}}</translation>
 <translation id="7160999678034985039">براہ کرم اپنا کام محفوظ کریں اور جب آپ تیار ہوں تو اپ ڈیٹ شروع کریں۔</translation>
 <translation id="7163295244162773898">{0,plural, =1{رازدارانہ فائل کو کاپی کریں؟}other{رازدارانہ فائلز کو کاپی کریں؟}}</translation>
+<translation id="7168625890036931112">اس پلیٹ فارم پر "<ph name="DATA_CONTROLS_RESTRICTION" />" ایک تعاون یافتہ پابندی نہیں ہے</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">ضم کردہ</translation>
 <translation id="7175097078723125014">پتے میں ترمیم کریں اختیار منتخب کیا گیا</translation>
@@ -3249,6 +3256,7 @@
 <translation id="7310392214323165548">آلہ جلدی ہی ری سٹارٹ ہو جائے گا</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7311837626618954149">‏Chromium سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔</translation>
+<translation id="7313107491291103073">آپ کی تنظیم نے اس سائٹ کو پرچم زد کیا ہے کیونکہ یہ پالیسی کی خلاف ورزی کر سکتی ہے۔</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">کنکشن سے متعلق مدد</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" سیکشن چھپائیں</translation>
@@ -3574,6 +3582,7 @@
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
 <translation id="7894280532028510793">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="7901831439558593470">‏‎7 x 9 انچ لفافہ</translation>
+<translation id="7908648876066812348">ورچوئل کارڈ آن کیا جا رہا ہے</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، ترتیبات میں Chrome سیفٹی چیک صفحہ پر جانے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="791551905239004656">نقاشی اور رنگ آمیزی</translation>
 <translation id="7916162853251942238">فلیکسو بیس</translation>
@@ -4081,6 +4090,7 @@
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8874824191258364635">ایک درست کارڈ نمبر درج کریں</translation>
 <translation id="8877780815363510165">ماہی گیری</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" کو "<ph name="DATA_CONTROLS_LEVEL" />" پر سیٹ نہیں کیا جا سکتا</translation>
 <translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="8888187300091017436">گدے</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> کو کنٹرول کر کے قابل رسائی اسمارٹ کارڈ تک رسائی حاصل کریں۔</translation>

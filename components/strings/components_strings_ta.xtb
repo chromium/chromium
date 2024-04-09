@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 இன்ச்</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1181381397492575884">நீங்கள் உலாவும்போது உங்களைக் கண்காணிப்பதற்காக மூன்றாம் தரப்புக் குக்கீகளைத் தளங்கள் பயன்படுத்துவதை Chrome தடுக்கும். அமைப்புகளுக்குச் சென்று <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">விர்ச்சுவல் கார்டை இயக்க முடியாது என்பதை உறுதிப்படுத்துகிறது</translation>
 <translation id="1186201132766001848">கடவுச்சொற்களைச் சோதித்துப் பார்க்கவும்</translation>
 <translation id="1187430513518041110">வாகனங்கள்</translation>
 <translation id="1190491977647722791">ஹெவிவெயிட் காகிதம்</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> இன்ச்</translation>
 <translation id="1574714699824202614">பேமெண்ட் முறையைச் சரிபார்க்கிறது</translation>
 <translation id="1576277203042721907">ஷாப்பிங் புள்ளிவிவரங்கள்</translation>
+<translation id="1579189948231786790">இந்தத் தளத்தை உங்கள் நிறுவனம் தடுத்துள்ளது</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">காலாவதியாகாது</translation>
 <translation id="1583429793053364125">இந்த இணையப்பக்கத்தைக் காட்டும்போது ஏதோ தவறு ஏற்பட்டது.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">சூழலியல் மற்றும் சுற்றுச்சூழல்</translation>
 <translation id="2452837234288608067">அது குறித்து உதவ முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="2456755709261364512"><ph name="REQUIRED_BATTERY_PRECENT" />% அளவைவிடக் கூடுதலாக உங்கள் சாதனம் சார்ஜ் ஆகியிருக்க வேண்டும்</translation>
+<translation id="2461822463642141190">தற்போது</translation>
 <translation id="2462932596748424101">சமூக வலைத்தளங்கள்</translation>
 <translation id="2463739503403862330">நிரப்பு</translation>
 <translation id="2465688316154986572">ஸ்டேப்பில்</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">இந்த PDFஐ அணுக முடியவில்லை. Search + m அழுத்தி சூழல் மெனுவைத் திறந்து, "PDF ஃபைலில் இருந்து வார்த்தைகளைப் பிரித்தெடு" என்பதை இயக்கவும்.</translation>
 <translation id="2818338148457093657">அழகுச் சேவைகள் &amp; ஸ்பாக்கள்</translation>
 <translation id="2820957248982571256">ஸ்கேன் செய்கிறது...</translation>
-<translation id="2824549017793319782">முகவரிப் பட்டியில் உங்கள் தேடலை நேரடியாக டைப் செய்ய தேர்ந்தெடுக்கவும்</translation>
 <translation id="2824775600643448204">முகவரி மற்றும் தேடல் பட்டி</translation>
 <translation id="2826760142808435982">இந்த இணைப்பு <ph name="CIPHER" /> ஐப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்பட்டு அங்கீகரிக்கப்பட்டது, ஒரு முக்கிய பரிமாற்ற செயல்முறையாக <ph name="KX" /> ஐப் பயன்படுத்துகிறது.</translation>
 <translation id="2833637280516285136">பேசுவதற்கான ரேடியோ</translation>
@@ -1471,6 +1473,7 @@
 <translation id="3807366285948165054">இமேஜ் X ஷிஃப்ட்</translation>
 <translation id="3807709094043295184">கிளாசிக் ராக் &amp; பழைய பாடல்கள்</translation>
 <translation id="3807873520724684969">தீங்கிழைக்கும் உள்ளடக்கம் தடுக்கப்பட்டது.</translation>
+<translation id="380865868633614173">கார்டு தகவலைச் சேமிக்கிறது</translation>
 <translation id="3810770279996899697">Password Managerருக்கு MacOS Keychain அணுகல் தேவை</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3812398568375898177">ChromeOSஸில் Android ஆப்ஸின் செயல்திறனை மேம்படுத்தும் மிகவும் முக்கியமான புதுப்பிப்பு இது.</translation>
@@ -2177,6 +2180,7 @@
 <translation id="5217759126664161410">நெறிமுறை வடிவம் தவறானது.</translation>
 <translation id="5222812217790122047">மின்னஞ்சல் தேவை</translation>
 <translation id="5228269245420405804">தொலைதூரக் கல்வி</translation>
+<translation id="5230428804606340145">பிற நிதிக் கணக்குகளை நிர்வகியுங்கள்</translation>
 <translation id="5230733896359313003">ஷிப்பிங் முகவரி</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2184,6 +2188,7 @@
 <translation id="5238301240406177137">கணக்கில் சேமி</translation>
 <translation id="5239119062986868403">வழக்கமான விலை</translation>
 <translation id="5239623327352565343">இருப்பிட அனுமதி வழங்கப்பட்டது</translation>
+<translation id="5241048084654737238">கார்டு தகவலைச் சேமிக்க முடியவில்லை என்பதை உறுதிப்படுத்துகிறது</translation>
 <translation id="5242610955375133957">டிரை ஃபிலிம்</translation>
 <translation id="5244521145258281926">Google கணக்கை நிர்வகிப்பதற்கான பட்டன். உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்க இதை இயக்குங்கள்</translation>
 <translation id="5244732203286792411">தொடங்குகிறது...
@@ -2199,6 +2204,7 @@
 <translation id="5266128565379329178">பைண்டு டாப்</translation>
 <translation id="5269225904387178860">குவாட் பஞ்ச் பாட்டம்</translation>
 <translation id="5269999699920406580">சிஸ்டம் முழுவதிலும் பயன்படுத்தப்படும் அம்சங்களை உரிமையாளரால் மட்டுமே அமைக்க முடியும்: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" நிபந்தனையை "<ph name="DATA_CONTROLS_RESTRICTION" />க்குப்" பயன்படுத்த முடியாது</translation>
 <translation id="5273658854610202413">எச்சரிக்கை: இது ஒன்றிணைக்கப்படக்கூடிய டிக்‌ஷனரி கொள்கைகளைச் சேர்ந்ததல்ல என்பதால் PolicyDictionaryMultipleSourceMergeList கொள்கையில் குறிப்பிட்டுள்ளபடி ஒன்றிணைக்கப்படவில்லை.</translation>
 <translation id="5279286380302340275">பதிவிறக்கங்களை நிர்வகிக்கவும்</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3169,6 +3175,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைலை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}other{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைல்களை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}}</translation>
 <translation id="7160999678034985039">உங்கள் பணியைச் சேமித்து, தயாரானதும் புதுப்பிப்பைத் தொடங்குங்கள்.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
+<translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" கட்டுப்பாட்டை இந்தப் பிளாட்ஃபார்மில் பயன்படுத்த முடியாது</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
 <translation id="7174545416324379297">ஒன்றிணைக்கப்பட்டது</translation>
 <translation id="7175097078723125014">முகவரியை திருத்தும் விருப்பம் தேர்ந்தெடுக்கப்பட்டது</translation>
@@ -3241,6 +3248,7 @@
 <translation id="7310392214323165548">சாதனம் விரைவில் மீண்டும் தொடங்கும்</translation>
 <translation id="7311244614769792472">முடிவுகள் எதுவுமில்லை</translation>
 <translation id="7311837626618954149">நீங்கள் உலாவும்போது உங்களைக் கண்காணிப்பதற்காக மூன்றாம் தரப்புக் குக்கீகளைத் தளங்கள் பயன்படுத்துவதை Chromium தடுக்கும்.</translation>
+<translation id="7313107491291103073">இந்தத் தளம் கொள்கையை மீறக்கூடும் என்பதால் உங்கள் நிறுவனம் இதைக் கொடியிட்டுள்ளது.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">இணைப்பிற்கான உதவி</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" பிரிவை மறைக்கும்</translation>
@@ -3566,6 +3574,7 @@
 <translation id="7888575728750733395">அச்சு ரென்டரிங் இன்டென்ட்</translation>
 <translation id="7894280532028510793">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">என்வெலப் 7 x 9 இன்ச்</translation>
+<translation id="7908648876066812348">விர்ச்சுவல் கார்டை இயக்குகிறது</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, அமைப்புகளில் உள்ள Chrome பாதுகாப்புச் சரிபார்ப்பு பக்கத்திற்குச் செல்ல, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்தவும்</translation>
 <translation id="791551905239004656">படம் வரைதல் மற்றும் வண்ணம் தீட்டுதல்</translation>
 <translation id="7916162853251942238">ஃபிளெக்ஸோ பேஸ்</translation>
@@ -4073,6 +4082,7 @@
 <translation id="8874790741333031443">மூன்றாம் தரப்புக் குக்கீகளைத் தற்காலிகமாக அனுமதிக்கவும், இதனால் உலாவல் பாதுகாப்பு குறைந்தாலும் தள அம்சங்கள் எதிர்பார்த்தபடி நன்கு செயல்பட வாய்ப்புள்ளது.</translation>
 <translation id="8874824191258364635">சரியான கார்டு எண்ணை உள்ளிடவும்</translation>
 <translation id="8877780815363510165">மீன்பிடித்தல்</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" ஐ "<ph name="DATA_CONTROLS_LEVEL" />க்கு" அமைக்க முடியாது</translation>
 <translation id="8884537526797090108">ரகசியமான உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="8888187300091017436">மெத்தைகள்</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> ஐக் கட்டுப்படுத்தி, அது அணுகக்கூடிய ஸ்மார்ட் கார்டுக்கான அணுகலைப் பெற விரும்புகிறது.</translation>

@@ -694,7 +694,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">E kuptoj që ky shkarkim do ta dëmtojë kompjuterin tim</translation>
 <translation id="1535228823998016251">I lartë</translation>
-<translation id="1535597783576881392">Ky udhëzues të ndihmon të kuptosh zgjedhjet e tua, në mënyrë që Chrome të funksionojë ashtu si dëshiron ti</translation>
 <translation id="1535753739390684432">Dëgjoje tekstin specifik të lexuar me zë të lartë. Në fillim zgjidh ikonën e veçorisë "Zgjidh që të thuhet" në fund të ekranit dhe më pas thekso tekstin.</translation>
 <translation id="1536754031901697553">Po shkëputet...</translation>
 <translation id="1536883206862903762">Kjo do të çaktivizojë shtesat dhe do t'i rivendosë cilësimet te parazgjedhjet e sigurta. Skedat, skedarët dhe kukit do të ruhen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -2207,7 +2206,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2629227353894235473">Zhvillo aplikacione të Android</translation>
 <translation id="2629437048544561682">Pastro kanavacën</translation>
 <translation id="2631498379019108537">Shfaq opsionet e hyrjes në raft</translation>
-<translation id="2632176111713971407">Sajtet mund të kërkojnë për të lëvizur dhe zmadhuar skedat e ndara</translation>
+<translation id="2632176111713971407">Sajtet mund të kërkojnë që të lëvizin dhe zmadhojnë skedat e ndara</translation>
 <translation id="2633212996805280240">Të hiqet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nuk mund ta përfundonte instalimin, por do të vazhdojë të ekzekutohet nga imazhi i diskut.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -4913,7 +4912,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4716483597559580346">Powerwash për më shumë siguri</translation>
 <translation id="4716715661140829720">Nuk ka hapësirë ruajtëse të mjaftueshme</translation>
 <translation id="471759229191973607">Ndrysho temën</translation>
-<translation id="4718046540206070045">Më shumë se një shfletues</translation>
 <translation id="4722735765955348426">Fjalëkalimi për <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> po ndan ekranin tënd.</translation>
 <translation id="4722989931633062466">Nuk lejohet që të shfaqen kërkesat për identifikimin nga palë të treta</translation>
@@ -5598,7 +5596,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5269977353971873915">Printimi dështoi</translation>
 <translation id="5271578170655641944">Të hiqet qasje te "Disku i Google"?</translation>
 <translation id="5273806377963980154">Modifiko URL-në e sajtit</translation>
-<translation id="5273966423195882879">Ngjyra bazuar te tema</translation>
 <translation id="5275084684151588738">Fjalorët e përdoruesit</translation>
 <translation id="5275100789567222478">Aktivizoje vetëm kur bateria është në <ph name="PERCENT" />% ose në një nivel më të ulët</translation>
 <translation id="5275338516105640560">Butoni i grupit të skedave të ruajtura</translation>
@@ -9602,7 +9599,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">E ke regjistruar tashmë këtë pajisje. Nuk është e nevojshme ta regjistrosh përsëri.</translation>
 <translation id="8357388086258943206">Gabim në instalimin e Linux</translation>
-<translation id="8357591920094529889">Ky udhëzues të ndihmon të kuptosh zgjedhjet e rëndësishme që ke kur përdor Chrome. Dhe ai të ndihmon të bësh këto zgjedhje, në mënyrë që Chrome të funksionojë siç dëshiron ti.</translation>
 <translation id="8358685469073206162">Dëshiron të restaurosh faqet?</translation>
 <translation id="8358912028636606457">Transmetimi i audios së skedës nuk mbështetet në këtë pajisje.</translation>
 <translation id="835951711479681002">Ruaje në "Llogarinë tënde të Google"</translation>
@@ -9666,7 +9662,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8399282673057829204">Shiko fjalëkalimin</translation>
 <translation id="839949601275221554">Pajisja ndeshi një gabim. Rinise pajisjen dhe provo përsëri.</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
-<translation id="8403618281196981152">Të dhënat e tua në Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
 <translation id="8405118833120731611">{0,plural, =1{Mbylle këtë profil}other{Mbylle këtë profil (# dritare)}}</translation>

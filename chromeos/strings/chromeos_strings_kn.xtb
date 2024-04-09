@@ -112,6 +112,7 @@
 <translation id="160633243685262989">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1611649489706141841">ಮುಂದೆ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
+<translation id="1618566998877964907">ಥೀಮ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
 <translation id="1622402072367425417">ಪ್ರಜ್ವಲಿಸುವ ಗುಳ್ಳೆಗಳು</translation>
 <translation id="1626590945318984973">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಫಂಕ್ಷನ್ ಮತ್ತು <ph name="META_KEY" /> ಕೀಗಳನ್ನು ಬಳಸದೆಯೇ ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಒಂದನ್ನು ಒತ್ತಿ.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2324354238778375592">ಫ್ಲೋಟ್</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">ಸಮೀಪದ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2346474577291266260">ಅತ್ಯುತ್ತಮ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">ಕುರ್ಚಿ</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಎಡಿಟ್ ಡೈಲಾಗ್ ತೆರೆದಿದೆ.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">ಆಲಿವ್</translation>
 <translation id="8373046809163484087">ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಬಣ್ಣದ ಸೆಟ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="8380114448424469341">ಸ್ಕ್ರೀನ್‌ನ <ph name="DIRECTION" /> ನಲ್ಲಿನ ಅರ್ಧಭಾಗದಲ್ಲಿ ವಿಂಡೋ ಡಾಕ್ ಮಾಡಿ</translation>
+<translation id="8391349326751432483">ಮೆಮೊರಿ ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡಲು ನಿಮಗೆ ಕನಿಷ್ಠ 500 MB ಉಚಿತ ಸ್ಥಳಾವಕಾಶ ಬೇಕಾಗುತ್ತದೆ. ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಲು, ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ.</translation>
 <translation id="8395584934117017006">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="8398927464629426868">ಸಾಧನವು ಪ್ರಸ್ತುತವಾಗಿ ಚಾರ್ಜ್ ಅಥವಾ ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವ ದರ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ಶೈಲಿಯಲ್ಲಿ <ph name="ART_FEATURE" /> ನ ಚಿತ್ರಕಲೆ</translation>

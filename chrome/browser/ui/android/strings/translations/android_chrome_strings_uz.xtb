@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Bu yerga koʻchirish</translation>
 <translation id="1014147525163127655">Bu qurilmada <ph name="ORIGIN" /> uchun hech qanday kod mavjud emas</translation>
 <translation id="1016498331642356377">Ovoz bilan tezda qidiring. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
+<translation id="1017104654974573432">Muammoni tanlang</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Bu sayt va ilovalarning maʼlumotlari ham tozalansinmi?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Internetga ulanmagansiz. Internetni tekshiring va qayta urining.</translation>
 <translation id="10614374240317010">Parollar saqlanmaydigan saytlar</translation>
 <translation id="107147699690128016">Agar fayl kengaytmasi oʻzgartirilsa, fayl boshqa ilovada ochilishi va qurilmaga zarar yetkazishi mumkin.</translation>
+<translation id="1082920045291562218">Xulosa sahifasini ulashish oynasi yopildi</translation>
 <translation id="1089606299949659462">Tekshirildi!</translation>
 <translation id="1095761715416917775">Sinxronlangan axborotlarni doim ocha olishingizni tekshiring</translation>
 <translation id="1100066534610197918">Guruhda yangi varaqda ochish</translation>
@@ -557,6 +559,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="4034817413553209278">{HOURS,plural, =1{# soat}other{# soat}}</translation>
 <translation id="4035877632587724847">Rad etish</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan <ph name="SITE_ETLD_PLUS_ONE" />ni davom ettirish</translation>
+<translation id="404352903042073578">Nomsiz guruh</translation>
 <translation id="4044708993631234325">Quyi ekran</translation>
 <translation id="405365679581583349">Google Play xizmatlarini yangilash</translation>
 <translation id="405399507749852140">Har qaysi saytda narxi tushganda xabar olish</translation>
@@ -628,6 +631,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="4404568932422911380">Hech qanday xatcho‘p yo‘q</translation>
 <translation id="4405224443901389797">Boshqa joyga olish…</translation>
 <translation id="4405636711880428279">Virtual karta olib tashlansinmi?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> va yana <ph name="TAB_COUNT" /> ta varaq</translation>
 <translation id="4409271659088619928">Qidiruv tizimingiz: <ph name="DSE" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
 <translation id="4425140285732600465">Narxi kuzatiladi. Har qaysi saytda narxi tushganda xabar olish.</translation>
@@ -1070,6 +1074,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6595046016124923392">Tavsiflarini yaxshilash uchun rasmlar Googlega yuborildi.</translation>
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6621391692573306628">Bu varaqni boshqa qurilmaga yuborish uchun har ikki qurilmada Chrome hisobiga kiring</translation>
+<translation id="6625890511281718257">Xulosa sahifasini ulashish</translation>
 <translation id="6627583120233659107">Jildni tahrirlash</translation>
 <translation id="6633067410344541938">Inkognito qulfini ochish</translation>
 <translation id="6636623428211296678">Quyida koʻproq sozlamalarni varaqlang yoki hozir yakunlang</translation>
@@ -1108,6 +1113,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Yarim hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="6770602306803890733">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi</translation>
+<translation id="6773061896687011391">Siz xabar qilayotgan sahifaning URL manzili Googlega yuboriladi va bu funksiyani yaxshilash uchun xodimlar tomonidan tekshirilishi mumkin.</translation>
 <translation id="6775840696761158817">Manzillar qatori yoki qidiruv oynasi bosilganda yoki matn kiritilganda asosiy qidiruv tizimi takliflari chiqadi. Inkognito rejimda bu funksiya ishlamaydi.</translation>
 <translation id="6785476624617658922">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
 <translation id="6795633245022906657">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>
@@ -1411,6 +1417,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8135406045838672858">Yuklab olingan PDF fayllar avtomatik <ph name="APP_NAME" /> ilovasida ochiladi</translation>
 <translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
 <translation id="8163820386638255770">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
+<translation id="8171286197772512427">Xulosa sahifasini ulashish oynasi ochildi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ta fayl qoldi</translation>
 <translation id="8190358571722158785">1 kun qoldi</translation>

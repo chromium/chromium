@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Mută aici</translation>
 <translation id="1014147525163127655">Nu există chei de acces pentru <ph name="ORIGIN" /> pe acest dispozitiv</translation>
 <translation id="1016498331642356377">Caută rapid cu ajutorul vocii. Pentru a edita comanda rapidă, atinge-o lung.</translation>
+<translation id="1017104654974573432">Selectează o problemă</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Ștergi și datele de la aceste site-uri și aplicații?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Ești offline. Verifică-ți conexiunea la internet și încearcă din nou.</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
+<translation id="1082920045291562218">Opțiunea Distribuie cu foaia de feedback pentru rezumat a fost închisă</translation>
 <translation id="1089606299949659462">Examinare finalizată!</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
@@ -557,6 +559,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="4034817413553209278">{HOURS,plural, =1{O oră}few{# ore}other{# de ore}}</translation>
 <translation id="4035877632587724847">Nu permite</translation>
 <translation id="4042941173059740150">Continuă la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grup nedenumit</translation>
 <translation id="4044708993631234325">Foaia din partea de jos</translation>
 <translation id="405365679581583349">Actualizează serviciile Google Play</translation>
 <translation id="405399507749852140">Primește alerte dacă prețul scade pe orice site</translation>
@@ -628,6 +631,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="4404568932422911380">Niciun marcaj</translation>
 <translation id="4405224443901389797">Mută în…</translation>
 <translation id="4405636711880428279">Elimini cardul virtual?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> și încă <ph name="TAB_COUNT" /> file</translation>
 <translation id="4409271659088619928">Motorul tău de căutare este <ph name="DSE" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="4415276339145661267">Gestionează-ți Contul Google</translation>
 <translation id="4425140285732600465">Se urmărește prețul. Primește alerte dacă prețul scade pe orice site.</translation>
@@ -1070,6 +1074,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6595046016124923392">Imaginile sunt trimise la Google pentru îmbunătățirea descrierilor.</translation>
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
 <translation id="6621391692573306628">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive</translation>
+<translation id="6625890511281718257">Distribuie cu foaia de feedback pentru rezumat</translation>
 <translation id="6627583120233659107">Editați dosarul</translation>
 <translation id="6633067410344541938">Deblochează modul incognito</translation>
 <translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
@@ -1108,6 +1113,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Lista de dispozitive pe care să trimiți o filă este deschisă la jumătate din înălțime.</translation>
 <translation id="6770602306803890733">Îmbunătățește securitatea pe web pentru tine și toți ceilalți</translation>
+<translation id="6773061896687011391">Adresa URL a paginii pentru care trimiți feedback va fi trimisă de Google și poate fi examinată de oameni pentru a îmbunătăți această funcție</translation>
 <translation id="6775840696761158817">Când dai clic sau introduci text în bara de adrese sau în caseta de căutare, se vor afișa sugestii de la motorul de căutare prestabilit. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="6785476624617658922">Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS</translation>
 <translation id="6795633245022906657">Deschide rapid o filă nouă. Pentru a edita comanda rapidă, accesează setările.</translation>
@@ -1411,6 +1417,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8135406045838672858">Fișierele PDF descărcate se deschid automat cu <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nu va trebui să reții parola. Ea se va salva în Managerul de parole Google.</translation>
 <translation id="8163820386638255770">Confirmă-ți identitatea pentru a folosi și a salva parole în Contul Google</translation>
+<translation id="8171286197772512427">Opțiunea Distribuie cu foaia de feedback pentru rezumat a fost deschisă</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fișiere rămase</translation>
 <translation id="8190358571722158785">1 zi rămasă</translation>

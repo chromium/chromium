@@ -112,6 +112,7 @@
 <translation id="160633243685262989">படத்தின் மாதிரிக்காட்சி</translation>
 <translation id="1611649489706141841">அடுத்த பக்கம்</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
+<translation id="1618566998877964907">தீமினைப் பயன்படுத்துங்கள்</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
 <translation id="1622402072367425417">ஒளிரும் குமிழ்கள்</translation>
 <translation id="1626590945318984973">ஷார்ட்கட் இல்லை. ஃபங்க்ஷன் மற்றும் <ph name="META_KEY" /> பட்டன்களைப் பயன்படுத்தாமல் புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">தவிர்க்கப்பட்டது</translation>
 <translation id="2324354238778375592">மிதக்கும் பட்டன்</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">நாற்காலி</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> ஐத் திருத்துவதற்கான உரையாடல் திறக்கப்பட்டுள்ளது.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">ஆலிவ்</translation>
 <translation id="8373046809163484087">உங்கள் வால்பேப்பருக்கு ஏற்ற வண்ணத் தொகுப்புகளைப் பயன்படுத்தலாம்</translation>
 <translation id="8380114448424469341">திரையின் <ph name="DIRECTION" /> பக்கப் பாதியில் சாளரத்தை டாக் செய்யும்</translation>
+<translation id="8391349326751432483">நினைவகச் சோதனையை இயக்க, குறைந்தது 500 மெ.பை. சேமிப்பிடம் காலியாக இருக்க வேண்டும். நினைவகத்தைக் காலியாக்க, பக்கங்களையும் ஆப்ஸையும் மூடவும்.</translation>
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ஸ்டைலில் <ph name="ART_FEATURE" /> இன் ஓவியம்</translation>

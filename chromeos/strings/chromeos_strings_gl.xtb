@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Mostrar vista previa da imaxe</translation>
 <translation id="1611649489706141841">adiante</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
 <translation id="1622402072367425417">burbullas brillantes</translation>
 <translation id="1626590945318984973">O atallo non está dispoñible. Preme un novo atallo sen usar as teclas de función nin <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
 <translation id="2324354238778375592">Flotante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
-<translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">cadeira</translation>
 <translation id="2358070305000735383">O cadro de diálogo de edición de <ph name="DESCRIPTION" /> está aberto.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">verde oliva</translation>
 <translation id="8373046809163484087">Usa conxuntos de cores que combinen co teu fondo de pantalla</translation>
 <translation id="8380114448424469341">Fixar ventá na seguinte metade da pantalla: <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">Como mínimo, precísanse 500 MB de espazo para executar unha proba de memoria. Para liberar memoria, pecha pestanas e aplicacións.</translation>
 <translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
 <translation id="8403988360557588704">Cadro dunha paisaxe (<ph name="ART_FEATURE" />) en estilo <ph name="ART_MOVEMENT" />.</translation>

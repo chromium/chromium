@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014147525163127655">Non hai ningunha clave de acceso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Buscar rapidamente coa voz. Para editar este atallo, mantén premido o botón.</translation>
+<translation id="1017104654974573432">Selecciona un problema</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Queres borrar tamén os datos destes sitios e aplicacións?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="107147699690128016">Se cambias a extensión do ficheiro, é posible que este se abra nunha aplicación diferente e supoña un perigo para o teu dispositivo.</translation>
+<translation id="1082920045291562218">Pechouse a folla para compartir comentarios sobre o resumo</translation>
 <translation id="1089606299949659462">Completaches a revisión</translation>
 <translation id="1095761715416917775">Asegúrate de poder acceder sempre aos teus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir pestana nova nun grupo</translation>
@@ -557,6 +559,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Non permitir</translation>
 <translation id="4042941173059740150">Continúa ata <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grupo sen nome</translation>
 <translation id="4044708993631234325">Panel inferior</translation>
 <translation id="405365679581583349">Actualiza os servizos de Google Play</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
@@ -628,6 +631,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4404568932422911380">Non hai marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405636711880428279">Queres quitar a tarxeta virtual?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e <ph name="TAB_COUNT" /> pestanas máis</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
@@ -1070,6 +1074,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6595046016124923392">As imaxes envíanse a Google coa finalidade de mellorar as descricións para ti.</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6621391692573306628">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos</translation>
+<translation id="6625890511281718257">Folla para compartir comentarios sobre o resumo</translation>
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6633067410344541938">Desbloquear modo de incógnito</translation>
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
@@ -1108,6 +1113,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">A lista de dispositivos cos que compartir unha pestana está aberta a media pantalla.</translation>
 <translation id="6770602306803890733">Mellora a túa seguranza e a do resto dos usuarios da Web</translation>
+<translation id="6773061896687011391">Google enviará o URL da páxina sobre a que vas compartir comentarios. Pode someterse a un proceso de revisión manual para mellorar a función</translation>
 <translation id="6775840696761158817">Cando toques ou escribas na barra de enderezos ou na caixa de busca, verás suxestións do teu buscador predeterminado. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="6785476624617658922">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>
@@ -1411,6 +1417,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8135406045838672858">Os PDF descargados abriranse automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google.</translation>
 <translation id="8163820386638255770">Para usar e gardar os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
+<translation id="8171286197772512427">Abriuse a folla para compartir comentarios sobre o resumo</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>

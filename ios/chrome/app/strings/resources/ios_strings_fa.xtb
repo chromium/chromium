@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2626236249646841566">اتصال خود را بررسی کنید و دوباره به سیستم وارد شوید.</translation>
 <translation id="2637313651144986786">جستجوی برگه‌ها…</translation>
+<translation id="2640733327287333451">بدون نام کاربری ••••••</translation>
 <translation id="2648721026697078500">هرگز منتقل نشود</translation>
 <translation id="2648803196158606475">حذف خوانده‌شده‌ها</translation>
 <translation id="2664621323652615289">توقف</translation>
@@ -1280,6 +1281,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7569588934989281656">با تند کشیدن نوار برگه می‌توانید بین برگه‌ها جابه‌جا شوید.</translation>
 <translation id="7582857256643797524">این تنظیم در دستگاه شما فعال است</translation>
 <translation id="7583004045319035904">برای باز کردن قفل «برگه‌های ناشناس» از <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> استفاده کنید.</translation>
+<translation id="7598439272585186139">امنیت بیشتری داشته باشید</translation>
 <translation id="7600965453749440009">هرگز <ph name="LANGUAGE" /> ترجمه نشود</translation>
 <translation id="7603852183842204213">پنجره‌های بازشوی مسدود (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف گذرواژه</translation>

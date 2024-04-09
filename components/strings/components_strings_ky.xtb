@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 дюйм</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1181381397492575884">Chrome сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт. <ph name="LINK" /> үчүн параметрлерге өтүңүз.</translation>
+<translation id="1185343831726846924">Виртуалдык картаны ырастоону күйгүзүүгө болбойт</translation>
 <translation id="1186201132766001848">Сырсөздөрдү текшерүү</translation>
 <translation id="1187430513518041110">Машиналар жана унаалар</translation>
 <translation id="1190491977647722791">Кагаз (оор капталган)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм</translation>
 <translation id="1574714699824202614">Төлөм ыкмасы ырасталууда</translation>
 <translation id="1576277203042721907">Соода статистикасы</translation>
+<translation id="1579189948231786790">Уюмуңуз бул сайтты бөгөттөп койгон</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Мөөнөтү чектелген эмес</translation>
 <translation id="1583429793053364125">Бул веб-баракча жүктөлүп жатканда бир жерден ката кетти.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">Экология жана айлана-чөйрөнү коргоо</translation>
 <translation id="2452837234288608067">Ишке ашкан жок. Кайра аракет кылыңыз.</translation>
 <translation id="2456755709261364512">Батареяңыздын кубаты <ph name="REQUIRED_BATTERY_PRECENT" />% жогору болушу керек</translation>
+<translation id="2461822463642141190">Учурда</translation>
 <translation id="2462932596748424101">Социалдык тармактар</translation>
 <translation id="2463739503403862330">Толтуруу</translation>
 <translation id="2465688316154986572">Илмек</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">Бул PDF жеткиликсиз. Издөө + m баскычтарын басып, мазмундук менюну ачыңыз. Андан соң "PDF файлынан текст чыгаруу" дегенди күйгүзүңүз</translation>
 <translation id="2818338148457093657">Сулуулук кызматтары жана спалар</translation>
 <translation id="2820957248982571256">Скандалууда…</translation>
-<translation id="2824549017793319782">Тапкыңыз келген нерсенин түрүн түздөн-түз дарек тилкесинен тандаңыз</translation>
 <translation id="2824775600643448204">Дарек жана издөө тилкеси</translation>
 <translation id="2826760142808435982">Бул туташуу <ph name="CIPHER" /> аркылуу шифрленип, аныктыгы текшерилген жана муну <ph name="KX" /> алмаштыруу механизми катары колдонот.</translation>
 <translation id="2833637280516285136">Сүйлөшүүчү радио</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">X сүрөтүн жылдыруу</translation>
 <translation id="3807709094043295184">Классикалык рок жана эски ырлар</translation>
 <translation id="3807873520724684969">Зыянкеч мазмун бөгөттөлдү.</translation>
+<translation id="380865868633614173">Картанын маалыматы сакталууда</translation>
 <translation id="3810770279996899697">Сырсөздөрдү башкаргыч MacOS Keychain'ге мүмкүнчүлүк алышы керек</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="3812398568375898177">Бул ChromeOS тутумундагы Android колдонмолорунун майнаптуулугун жогорулата турган маанилүү жаңыртуу.</translation>
@@ -2180,6 +2183,7 @@
 <translation id="5217759126664161410">Протоколдун форматы жараксыз.</translation>
 <translation id="5222812217790122047">Электрондук почта дареги талап кылынат</translation>
 <translation id="5228269245420405804">Аралыктан окутуу</translation>
+<translation id="5230428804606340145">Башка каржы аккаунттарын тескөө</translation>
 <translation id="5230733896359313003">Жөнөтүү дареги</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2187,6 +2191,7 @@
 <translation id="5238301240406177137">Аккаунтта сактоо</translation>
 <translation id="5239119062986868403">Адаттагы баасы</translation>
 <translation id="5239623327352565343">Жайгашкан жери аныктоого уруксат берилди</translation>
+<translation id="5241048084654737238">Картанын маалыматы сакталбаганы ырасталды</translation>
 <translation id="5242610955375133957">Кургак тасма</translation>
 <translation id="5244521145258281926">"Google аккаунтун башкаруу" баскычы. Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу үчүн иштетиңиз</translation>
 <translation id="5244732203286792411">Жүктөлүүдө...
@@ -2202,6 +2207,7 @@
 <translation id="5266128565379329178">Жогорку жагын байлоо</translation>
 <translation id="5269225904387178860">Төмөнкү жагын төрт жолу тешүү</translation>
 <translation id="5269999699920406580">Кеңири тутумду колдонгон функцияларды <ph name="OWNER_EMAIL" /> ээси гана коё алат</translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" "<ph name="DATA_CONTROLS_RESTRICTION" />" үчүн колдоого алынган шарт эмес</translation>
 <translation id="5273658854610202413">Эскертүү: Бул эреже PolicyDictionaryMultipleSourceMergeList саясатында белгиленгендей бириктирилген жок, себеби ал бириктириле турган сөздүк эрежелеринин бөлүгү эмес.</translation>
 <translation id="5279286380302340275">Жүктөлүп алынгандарды башкаруу</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Бул файлды <ph name="FEATURE_NAME" /> аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}other{Бул файлдарды <ph name="FEATURE_NAME" /> аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}}</translation>
 <translation id="7160999678034985039">Ишиңизди сактап, даяр болгондо жаңыртыңыз.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Купуя файлды көчүрөсүзбү?}other{Купуя файлдарды көчүрөсүзбү?}}</translation>
+<translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" бул платформада колдоого алынган чектөө эмес</translation>
 <translation id="717330890047184534">GAIA идентификатору:</translation>
 <translation id="7174545416324379297">Бириктирилди</translation>
 <translation id="7175097078723125014">Даректи түзөтүү параметри тандалды</translation>
@@ -3245,6 +3252,7 @@
 <translation id="7310392214323165548">Түзмөк бир аздан кийин өчүп күйөт</translation>
 <translation id="7311244614769792472">Эч нерсе табылган жок</translation>
 <translation id="7311837626618954149">Chromium сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.</translation>
+<translation id="7313107491291103073">Уюмуңуз бул сайт эрежелерди бузуп жатканы тууралуу кабарлады.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Туташуу боюнча жардам алуу</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлүгүн жашыруу</translation>
@@ -3570,6 +3578,7 @@
 <translation id="7888575728750733395">Басып чыгаруу аралыгы</translation>
 <translation id="7894280532028510793">Эгер туура жазылса, <ph name="BEGIN_LINK" />Тармактагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюйм</translation>
+<translation id="7908648876066812348">Виртуалдык карта күйгүзүлүүдө</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Жөндөөлөрдөгү Chrome коопсуздук текшерүү барагына өтүү үчүн Tab, анан Enter баскычын басыңыз</translation>
 <translation id="791551905239004656">Сүрөт тартуу жана боёо</translation>
 <translation id="7916162853251942238">Флексо басып чыгаруу үчүн негиз</translation>
@@ -4077,6 +4086,7 @@
 <translation id="8874790741333031443">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азыраак корголот, бирок сайттын функциялары ойдогудай иштеши мүмкүн.</translation>
 <translation id="8874824191258364635">Жарактуу карточканын номерин киргизиңиз</translation>
 <translation id="8877780815363510165">Балык уулоо</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" "<ph name="DATA_CONTROLS_LEVEL" />" үчүн тууралоого болбойт</translation>
 <translation id="8884537526797090108">Купуя мазмунду жаздырууга болбойт</translation>
 <translation id="8888187300091017436">Матрастар</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> тескеп, аны менен иштей турган акылдуу картаны пайдалануу мүмкүнчүлүгүн алыңыз</translation>

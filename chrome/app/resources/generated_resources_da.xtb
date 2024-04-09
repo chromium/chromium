@@ -701,7 +701,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Jeg har forstået, at denne download kan skade min computer</translation>
 <translation id="1535228823998016251">Højt</translation>
-<translation id="1535597783576881392">Denne vejledning hjælper dig med at forstå dine valg, så Chrome kan fungere på den måde, der passer dig bedst</translation>
 <translation id="1535753739390684432">Få oplæst en bestemt tekst. Start med at vælge ikonet for Tekstoplæsning nederst på skærmen, og fremhæv derefter teksten.</translation>
 <translation id="1536754031901697553">Afbryder forbindelsen...</translation>
 <translation id="1536883206862903762">Dette deaktiverer udvidelser og nulstiller dine indstillinger, så du får de sikre standardindstillinger. Faner, filer og cookies bevares. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -4932,7 +4931,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
 <translation id="4716715661140829720">Der er ikke nok lagerplads</translation>
 <translation id="471759229191973607">Skift tema</translation>
-<translation id="4718046540206070045">Mere end en browser</translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler din skærm.</translation>
 <translation id="4722989931633062466">Har ikke tilladelse til vise loginmeddelelser fra tredjeparter</translation>
@@ -5617,7 +5615,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
 <translation id="5271578170655641944">Vil du fjerne adgangen til Google Drev?</translation>
 <translation id="5273806377963980154">Rediger websitets webadresse</translation>
-<translation id="5273966423195882879">Farve baseret på tema</translation>
 <translation id="5275084684151588738">Brugerordbøger</translation>
 <translation id="5275100789567222478">Aktivér kun, når batteriniveauet er på <ph name="PERCENT" /> % eller lavere</translation>
 <translation id="5275338516105640560">Knappen Fanegruppe blev gemt</translation>
@@ -9625,7 +9622,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du har allerede registreret denne enhed. Du behøver ikke at registrere den igen.</translation>
 <translation id="8357388086258943206">Der opstod en fejl under installationen af Linux</translation>
-<translation id="8357591920094529889">Denne vejledning hjælper dig med at forstå vigtige valg, du kan foretage, når du bruger Chrome. Og den hjælper dig med at træffe disse valg, så Chrome kan fungere på den måde, der passer dig bedst.</translation>
 <translation id="8358685469073206162">Vil du gendanne siderne?</translation>
 <translation id="8358912028636606457">Det er ikke muligt at caste lyd fra faner på denne enhed.</translation>
 <translation id="835951711479681002">Gem på din Google-konto</translation>
@@ -9689,7 +9685,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8399282673057829204">Se adgangskode</translation>
 <translation id="839949601275221554">Der opstod en fejl på enheden. Genstart din enhed, og prøv igen.</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
-<translation id="8403618281196981152">Dine data i Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
 <translation id="8405118833120731611">{0,plural, =1{Luk denne profil}one{Luk denne profil (# vindue)}other{Luk denne profil (# vinduer)}}</translation>

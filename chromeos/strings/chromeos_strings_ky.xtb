@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Сүрөттү алдын ала көрүү</translation>
 <translation id="1611649489706141841">багыттоо</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бери колдонулган трафик</translation>
+<translation id="1618566998877964907">Теманы колдонуу</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
 <translation id="1622402072367425417">жаркыраган көбүктөр</translation>
 <translation id="1626590945318984973">Ыкчам баскыч жеткиликсиз. <ph name="META_KEY" /> жана функциялык баскычтары жок жаңы ыкчам баскычты басыңыз.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">ӨТКӨРҮЛҮП ЖИБЕРИЛДИ</translation>
 <translation id="2324354238778375592">Калкыма</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2346474577291266260">Эң жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">отургуч</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> түзөтүү диалогу ачылды.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">зайтун</translation>
 <translation id="8373046809163484087">Тушкагазыңызга туура келген түстөрдүн топтомдорун колдонуңуз</translation>
 <translation id="8380114448424469341">Терезени экрандын <ph name="DIRECTION" /> жактагы жарымына бекитүү</translation>
+<translation id="8391349326751432483">Эстутумду сыноо үчүн кеминде 500 Мб бош орун керек. Эстутумда орун бошотуу үчүн өтмөктөр менен колдонмолорду жабыңыз.</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стилинде тартылган <ph name="ART_FEATURE" /> сүрөтү</translation>

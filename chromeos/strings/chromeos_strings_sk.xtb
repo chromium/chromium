@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Zobraziť ukážku obrázka</translation>
 <translation id="1611649489706141841">dopredu</translation>
 <translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Použitie motívu</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1622402072367425417">žiariace bubliny</translation>
 <translation id="1626590945318984973">Skratka nie je k dispozícii. Stlačte novú skratku bez použitia funkčných klávesov a klávesov <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
 <translation id="2324354238778375592">Plávajúce</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">stolička</translation>
 <translation id="2358070305000735383">Dialógové okno na úpravu opisu <ph name="DESCRIPTION" /> je otvorené.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">olivovom</translation>
 <translation id="8373046809163484087">Použite skupiny farieb, ktoré zodpovedajú vašej tapete</translation>
 <translation id="8380114448424469341">Ukotviť okno na <ph name="DIRECTION" /> polovici obrazovky</translation>
+<translation id="8391349326751432483">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Ak chcete uvoľniť pamäť, zavrite karty a aplikácie.</translation>
 <translation id="8395584934117017006">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
 <translation id="8403988360557588704">Maľba <ph name="ART_FEATURE" /> v štýle <ph name="ART_MOVEMENT" /></translation>

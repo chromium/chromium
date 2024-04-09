@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">ここに移動</translation>
 <translation id="1014147525163127655">このデバイスに <ph name="ORIGIN" /> のパスキーがありません</translation>
 <translation id="1016498331642356377">音声ですばやく検索します。このショートカットを編集するには、長押ししてください。</translation>
+<translation id="1017104654974573432">問題を選択する</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> に送信しています...</translation>
 <translation id="103269572468856066">これらのサイトやアプリのデータも削除しますか？</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">オフラインです。インターネット接続を確認してから、もう一度お試しください。</translation>
 <translation id="10614374240317010">常に保存しない</translation>
 <translation id="107147699690128016">ファイル拡張子を変更すると、ファイルが別のアプリケーションで開かれる可能性があり、場合によってはデバイスに損害が生じます。</translation>
+<translation id="1082920045291562218">サマリー フィードバック シートでの共有が閉じられました</translation>
 <translation id="1089606299949659462">確認が終わりました</translation>
 <translation id="1095761715416917775">同期データに常にアクセスできるようにしてください</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
@@ -558,6 +560,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
 <translation id="4035877632587724847">許可しない</translation>
 <translation id="4042941173059740150">引き続き <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
+<translation id="404352903042073578">名前のないグループ</translation>
 <translation id="4044708993631234325">ボトムシート</translation>
 <translation id="405365679581583349">Google Play 開発者サービスの更新</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
@@ -629,6 +632,7 @@
 <translation id="4404568932422911380">ブックマークがありません</translation>
 <translation id="4405224443901389797">移動…</translation>
 <translation id="4405636711880428279">仮想カードを削除しますか？</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" />、他 <ph name="TAB_COUNT" /> 個のタブ</translation>
 <translation id="4409271659088619928">検索エンジンは <ph name="DSE" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="4415276339145661267">Google アカウントの管理</translation>
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
@@ -1071,6 +1075,7 @@
 <translation id="6595046016124923392">説明文を生成するために画像が Google に送信されます。</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6621391692573306628">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください</translation>
+<translation id="6625890511281718257">サマリー フィードバック シートでの共有</translation>
 <translation id="6627583120233659107">フォルダを編集</translation>
 <translation id="6633067410344541938">シークレット モードのロックを解除</translation>
 <translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
@@ -1109,6 +1114,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />、<ph name="EMAIL" />。</translation>
 <translation id="6767294960381293877">タブを共有するデバイスのリストが画面の下半分に表示されました。</translation>
 <translation id="6770602306803890733">すべてのウェブユーザーの安全性を高めます</translation>
+<translation id="6773061896687011391">フィードバックを送信していただいたページの URL は Google に送信され、この機能の改善のため、人間が確認する場合があります</translation>
 <translation id="6775840696761158817">アドレスバーまたは検索ボックスをタップするか、入力すると、デフォルトの検索エンジンから候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="6785476624617658922">Chrome および Chrome OS 追加利用規約</translation>
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>
@@ -1412,6 +1418,7 @@
 <translation id="8135406045838672858">ダウンロードした PDF を <ph name="APP_NAME" /> で自動的に開きます</translation>
 <translation id="8137562778192957619">このパスワードを覚えておく必要はありません。パスワードは Google パスワード マネージャーに保存されます。</translation>
 <translation id="8163820386638255770">Google アカウントでパスワードを使用、保存するには、本人確認を行ってください</translation>
+<translation id="8171286197772512427">サマリー フィードバック シートでの共有が開かれました</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">残り <ph name="FILES" /> ファイル</translation>
 <translation id="8190358571722158785">残り 1 日</translation>

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Presunúť sem</translation>
 <translation id="1014147525163127655">V tomto zariadení nie sú žiadne prístupové kľúče pre aplikáciu <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Skratka na rýchle vyhľadávanie hlasom. Ak ju chcete upraviť, pridržte ju.</translation>
+<translation id="1017104654974573432">Výber problému</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Odosiela sa do zariadenia <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Chcete vymazať dáta aj z týchto webov a aplikácií?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Ste offline. Skontrolujte internetové pripojenie a skúste to znova.</translation>
 <translation id="10614374240317010">Nikdy neukladať</translation>
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
+<translation id="1082920045291562218">Hárok zdieľania so súhrnnou spätnou väzbou bol zavretý</translation>
 <translation id="1089606299949659462">Kontrola bola dokončená.</translation>
 <translation id="1095761715416917775">Zaistite, aby ste mali neustály prístup k svojim údajom synchronizácie</translation>
 <translation id="1100066534610197918">Otvoriť v skupine na novej karte</translation>
@@ -557,6 +559,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4034817413553209278">{HOURS,plural, =1{# hod.}few{# hod.}many{# hod.}other{# hod.}}</translation>
 <translation id="4035877632587724847">Nepovoliť</translation>
 <translation id="4042941173059740150">Pokračujte na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Nepomenovaná skupina</translation>
 <translation id="4044708993631234325">Dolný hárok</translation>
 <translation id="405365679581583349">Aktualizujte Služby Google Play</translation>
 <translation id="405399507749852140">Dostávajte upozornenia, keď cena na ľubovoľnom webe poklesne</translation>
@@ -628,6 +631,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4404568932422911380">Žiadne záložky</translation>
 <translation id="4405224443901389797">Presunúť do…</translation>
 <translation id="4405636711880428279">Chcete virtuálnu kartu odstrániť?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> a ďalšie karty (<ph name="TAB_COUNT" />)</translation>
 <translation id="4409271659088619928">Používate vyhľadávač <ph name="DSE" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4425140285732600465">Cenu sledujete. Dostávajte upozornenia, keď na ľubovoľnom webe poklesne.</translation>
@@ -1070,6 +1074,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6595046016124923392">Obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu.</translation>
 <translation id="661266467055912436">Zvyšuje zabezpečenie na internete pre vás aj ostatných.</translation>
 <translation id="6621391692573306628">Ak chcete túto kartu odoslať do iného zariadenia, prihláste v oboch zariadeniach do Chromu</translation>
+<translation id="6625890511281718257">Hárok zdieľania so súhrnnou spätnou väzbou</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6633067410344541938">Odblokovať režim inkognito</translation>
 <translation id="6636623428211296678">Preskúmajte ďalšie nastavenia nižšie alebo dokončite kontrolu</translation>
@@ -1108,6 +1113,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Zoznam zariadení, s ktorými sa má zdieľať karta, je otvorený na polovičnú výšku.</translation>
 <translation id="6770602306803890733">Zvyšuje zabezpečenie pre vás aj ostatných na internete</translation>
+<translation id="6773061896687011391">Webovú adresu stránky, ku ktorej poskytujete spätnú väzbu, odošle Google. Môžu ju skontrolovať ľudia s cieľom zlepšiť túto funkciu</translation>
 <translation id="6775840696761158817">Keď klepnete na panel s adresou či vyhľadávacie pole alebo doň začnete zadávať, budú sa vám zobrazovať návrhy z predvoleného vyhľadávača. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="6785476624617658922">Dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS</translation>
 <translation id="6795633245022906657">Skratka na rýchle otvorenie novej karty. Ak chcete skratku upraviť, prejdite do Nastavení.</translation>
@@ -1411,6 +1417,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8135406045838672858">Stiahnuté súbory PDF sa automaticky otvoria pomocou aplikácie <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete musieť pamätať. Uloží sa do Správcu hesiel Google.</translation>
 <translation id="8163820386638255770">Ak chcete používať a ukladať heslá vo svojom účte Google, overte svoju totožnosť</translation>
+<translation id="8171286197772512427">Hárok zdieľania so súhrnnou spätnou väzbou bol otvorený</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Zostávajúce súbory: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Zostáva: 1 d</translation>

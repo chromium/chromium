@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="3008554597174452548">Parar de monitorar o produto</translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Ícone <ph name="COLOR_NAME" /> do grupo de guias</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Você tem <ph name="TABS_COUNT_ONE" /> guia arquivada}one{Você tem <ph name="TABS_COUNT_MANY" /> guia arquivada}other{Você tem <ph name="TABS_COUNT_MANY" /> guias arquivadas}}</translation>
 <translation id="3194464645767632461">nota</translation>
 <translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>

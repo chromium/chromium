@@ -112,6 +112,7 @@
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">ใช้ธีม</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1622402072367425417">ลูกโป่งเรืองแสง</translation>
 <translation id="1626590945318984973">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยไม่ใช้ฟังก์ชันและแป้น<ph name="META_KEY" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">ข้าม</translation>
 <translation id="2324354238778375592">ลอย</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">เก้าอี้</translation>
 <translation id="2358070305000735383">กล่องโต้ตอบการแก้ไขสำหรับ <ph name="DESCRIPTION" /> เปิดอยู่</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">เขียวมะกอก</translation>
 <translation id="8373046809163484087">ใช้ชุดสีที่เข้ากับวอลเปเปอร์</translation>
 <translation id="8380114448424469341">ตรึงหน้าต่างไว้กับครึ่งด้าน<ph name="DIRECTION" />ของหน้าจอ</translation>
+<translation id="8391349326751432483">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ปิดแท็บและแอปเพื่อเพิ่มหน่วยความจำ</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8403988360557588704">รูปภาพ <ph name="ART_FEATURE" /> ในรูปแบบ <ph name="ART_MOVEMENT" /></translation>

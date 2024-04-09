@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1611649489706141841">következő</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
+<translation id="1618566998877964907">Téma használata</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1622402072367425417">ragyogó buborékok</translation>
 <translation id="1626590945318984973">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot a funkció- és <ph name="META_KEY" /> billentyűk használata nélkül.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">KIHAGYVA</translation>
 <translation id="2324354238778375592">Lebegő</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">szék</translation>
 <translation id="2358070305000735383">A(z) <ph name="DESCRIPTION" /> szerkesztésére szolgáló párbeszédpanel meg van nyitva.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">olajzöld</translation>
 <translation id="8373046809163484087">A háttérképhez illeszkedő színkészletek használata</translation>
 <translation id="8380114448424469341">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali felén</translation>
+<translation id="8391349326751432483">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Memória felszabadításához zárjon be lapokat és alkalmazásokat.</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
 <translation id="8403988360557588704">Festmény a következőről: <ph name="ART_FEATURE" /> <ph name="ART_MOVEMENT" /> stílusban</translation>

@@ -783,6 +783,7 @@
 <translation id="2452098632681057184">Экология и окружающая среда</translation>
 <translation id="2452837234288608067">Не удалось выполнить этот запрос. Повторите попытку.</translation>
 <translation id="2456755709261364512">Уровень заряда батареи должен быть выше <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2461822463642141190">Сейчас</translation>
 <translation id="2462932596748424101">Социальные сети</translation>
 <translation id="2463739503403862330">Заполнить</translation>
 <translation id="2465688316154986572">Скоба</translation>
@@ -952,7 +953,6 @@
 <translation id="2814184336982254349">Этот файл PDF недоступен. Нажмите Поиск + M, чтобы открыть контекстное меню, и включите функцию "Извлекать текст из файлов PDF".</translation>
 <translation id="2818338148457093657">Салоны красоты и спа-центры</translation>
 <translation id="2820957248982571256">Поиск…</translation>
-<translation id="2824549017793319782">Выберите, чтобы ввести запрос прямо в адресной строке.</translation>
 <translation id="2824775600643448204">Адресная строка и строка поиска</translation>
 <translation id="2826760142808435982">Соединение зашифровано и проверено с помощью <ph name="CIPHER" />. В качестве механизма обмена ключами используется <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Ток-шоу на радио</translation>

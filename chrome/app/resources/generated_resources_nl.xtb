@@ -698,7 +698,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ik begrijp dat deze download schadelijk is voor mijn computer</translation>
 <translation id="1535228823998016251">Luid</translation>
-<translation id="1535597783576881392">Met deze gids krijg je meer inzicht in je keuzes, zodat Chrome werkt zoals jij dat wilt.</translation>
 <translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1536883206862903762">Hiermee zet je extensies uit en zet je de instellingen terug naar veilige standaardwaarden. Tabbladen, bestanden en cookies blijven bewaard. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -4922,7 +4921,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4716483597559580346">Powerwash voor extra beveiliging</translation>
 <translation id="4716715661140829720">Niet genoeg opslagruimte</translation>
 <translation id="471759229191973607">Thema wijzigen</translation>
-<translation id="4718046540206070045">Meer dan een browser</translation>
 <translation id="4722735765955348426">Wachtwoord voor <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deelt je scherm.</translation>
 <translation id="4722989931633062466">Geen toestemming om externe inlogprompts te tonen</translation>
@@ -5607,7 +5605,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5269977353971873915">Afdrukken mislukt</translation>
 <translation id="5271578170655641944">Toegang tot Google Drive intrekken?</translation>
 <translation id="5273806377963980154">Site-URL bewerken</translation>
-<translation id="5273966423195882879">Kleur op basis van thema</translation>
 <translation id="5275084684151588738">Gebruikerswoordenboeken</translation>
 <translation id="5275100789567222478">Alleen aanzetten als mijn batterijlading <ph name="PERCENT" />% of minder is</translation>
 <translation id="5275338516105640560">Knop Tabbladgroep opgeslagen</translation>
@@ -9610,7 +9607,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Je hebt dit apparaat al geregistreerd. Je hoeft dit niet opnieuw te doen.</translation>
 <translation id="8357388086258943206">Fout bij installeren van Linux</translation>
-<translation id="8357591920094529889">Met deze gids krijg je meer inzicht in belangrijke keuzes die je kunt maken als je Chrome gebruikt. Ook vind je hulp om die keuzes te maken, zodat Chrome werkt zoals jij dat wilt.</translation>
 <translation id="8358685469073206162">Pagina's herstellen?</translation>
 <translation id="8358912028636606457">Het casten van tabbladgeluid wordt niet ondersteund op dit apparaat.</translation>
 <translation id="835951711479681002">Opslaan in je Google-account</translation>
@@ -9674,7 +9670,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8399282673057829204">Wachtwoord bekijken</translation>
 <translation id="839949601275221554">Er is een fout opgetreden op het apparaat. Start het apparaat opnieuw op en probeer het nogmaals.</translation>
 <translation id="8401432541486058167">Geef de pincode op die hoort bij je smartkaart.</translation>
-<translation id="8403618281196981152">Je gegevens in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan je wachtwoorden checken als je ze opslaat</translation>
 <translation id="8405046151008197676">Ontvang de hoogtepunten van de nieuwste update</translation>
 <translation id="8405118833120731611">{0,plural, =1{Dit profiel sluiten}other{Dit profiel sluiten (# vensters)}}</translation>

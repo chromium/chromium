@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 დუიმი</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1181381397492575884">Chrome უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით. <ph name="LINK" /> თუ გსურთ, ეწვიეთ პარამეტრებს.</translation>
+<translation id="1185343831726846924">ვირტუალური ბარათის გააქტიურების შეუძლებლობის დადასტურება</translation>
 <translation id="1186201132766001848">პაროლების შემოწმება</translation>
 <translation id="1187430513518041110">ავტომობილები და ტრანსპორტი</translation>
 <translation id="1190491977647722791">ქაღალდი (მძიმე)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი</translation>
 <translation id="1574714699824202614">მიმდინარეობს გადახდის მეთოდის დადასტურება</translation>
 <translation id="1576277203042721907">Shopping insights</translation>
+<translation id="1579189948231786790">ეს საიტი დაბლოკილია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">ვადა არ ეწურება</translation>
 <translation id="1583429793053364125">ამ ვებგვერდის ჩვენებისას პრობლემა წარმოიქმნა.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">ეკოლოგია და გარემოს დაცვა</translation>
 <translation id="2452837234288608067">ამ კუთხით ვერ დაგეხმარებით. ცადეთ ხელახლა.</translation>
 <translation id="2456755709261364512">ბატარეის დონე უნდა იყოს მინიმუმ <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="2462932596748424101">სოციალური ქსელები</translation>
 <translation id="2463739503403862330">შევსება</translation>
 <translation id="2465688316154986572">დასტეპლერება</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">ამ PDF-ზე წვდომა შეუძლებელია. დააჭირეთ კლავიშთა კომბინაციას Search + m, რომ გახსნათ კონტექსტური მენიუ და აირჩიოთ „ტექსტის ამოღება PDF-იდან“.</translation>
 <translation id="2818338148457093657">სილამაზის მომსახურება და სპები</translation>
 <translation id="2820957248982571256">მიმდინარეობს სკანირება...</translation>
-<translation id="2824549017793319782">აირჩიეთ, საძიებო მოთხოვნა პირდაპირ მისამართთა ზოლში რომ აკრიფოთ</translation>
 <translation id="2824775600643448204">მისამართი და ძიების ზოლი</translation>
 <translation id="2826760142808435982">კავშირი დაშიფრულია და ავთენტიფიცირებულია <ph name="CIPHER" />-ის გამოყენებით, იგი იყენებს <ph name="KX" />-ს, როგორც კოდის გაცვლის მექანიზმს.</translation>
 <translation id="2833637280516285136">რადიოსაუბრები</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">სურათის წანაცვლება X ღერძზე</translation>
 <translation id="3807709094043295184">კლასიკური როკი და ძველი ჰიტები</translation>
 <translation id="3807873520724684969">დაიბლოკა საზიანო კონტენტი.</translation>
+<translation id="380865868633614173">მიმდინარეობს ბარათის ინფორმაციის შენახვა</translation>
 <translation id="3810770279996899697">პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="3812398568375898177">ეს არის კრიტიკულად მნიშვნელოვანი განახლება, რომელიც აუმჯობესებს Android აპების წარმადობას ChromeOS-ზე.</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">პროტოკოლის ფორმატი არასწორია.</translation>
 <translation id="5222812217790122047">აუცილებელია ელფოსტის მითითება</translation>
 <translation id="5228269245420405804">დისტანციური სწავლება</translation>
+<translation id="5230428804606340145">სხვა ფინანსური ანგარიშების მართვა</translation>
 <translation id="5230733896359313003">მიწოდების მისამართი</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">ანგარიშში შენახვა</translation>
 <translation id="5239119062986868403">ტიპური ფასი</translation>
 <translation id="5239623327352565343">მდებარეობაზე წვდომა დაშვებულია</translation>
+<translation id="5241048084654737238">ბარათის ინფორმაციის შენახვის შეუძლებლობის დადასტურება</translation>
 <translation id="5242610955375133957">მშრალი აფსკი</translation>
 <translation id="5244521145258281926">Google ანგარიშის მართვა, თქვენს Google ანგარიშში თქვენი ინფორმაციის, კონფიდენციალურობისა და უსაფრთხოების სამართავად გაააქტიურეთ ის</translation>
 <translation id="5244732203286792411">მიმდინარეობს ჩატვირთვა...
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">აკინძვა ზემოთ</translation>
 <translation id="5269225904387178860">ოთხმაგად გახვრეტა ქვემოთ</translation>
 <translation id="5269999699920406580">იმ ფუნქციების დაყენება, რომლებიც გამოიყენება სისტემის მასშტაბით, შეუძლია მხოლოდ მფლობელს: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ არ არის მხარდაჭერილი პირობა „<ph name="DATA_CONTROLS_RESTRICTION" />“-ისთვის</translation>
 <translation id="5273658854610202413">გაფრთხილება: ეს წესები არ გაერთიანებულა „PolicyDictionaryMultipleSourceMergeList“ წესებში აღწერილის შესაბამისად, ვინაიდან ისინი არ არის ლექსიკონების ისეთი წესების ნაწილი, რომლებიც შეიძლება გაერთიანდეს.</translation>
 <translation id="5279286380302340275">ჩამოტვირთვების მართვა</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{ამ ფაილის გასაგზავნად <ph name="FEATURE_NAME" /> რომ გამოიყენოთ, გაათავისუფლეთ მეხსიერება (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ამ ფაილების გასაგზავნად <ph name="FEATURE_NAME" /> რომ გამოიყენოთ, გაათავისუფლეთ მეხსიერება (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
 <translation id="7160999678034985039">შეინახეთ თქვენი ნამუშევარი და დაიწყეთ განახლება, როცა მზად იქნებით.</translation>
 <translation id="7163295244162773898">{0,plural, =1{გსურთ კონფიდენციალური ფაილის კოპირება?}other{გსურთ კონფიდენციალური ფაილების კოპირება?}}</translation>
+<translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ არ არის მხარდაჭერილი შეზღუდვა ამ პლატფორმაზე</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">გაერთიანებული</translation>
 <translation id="7175097078723125014">არჩეული იყო მისამართის რედაქტირების ვარიანტი</translation>
@@ -3246,6 +3253,7 @@
 <translation id="7310392214323165548">მოწყობილობა ძალიან მალე გადაიტვირთება</translation>
 <translation id="7311244614769792472">შედეგები ვერ მოიძებნა</translation>
 <translation id="7311837626618954149">Chromium უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით.</translation>
+<translation id="7313107491291103073">თქვენმა ორგანიზაციამ დროშით მონიშნა ეს საიტი, რადგან ის, შესაძლოა, წესებს არღვევდეს.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">კავშირთან დაკავშირებული დახმარება</translation>
 <translation id="7323804146520582233">სექციის „<ph name="SECTION" />“ დამალვა</translation>
@@ -3571,6 +3579,7 @@
 <translation id="7888575728750733395">ბეჭდვის რენდერის სქემა</translation>
 <translation id="7894280532028510793">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ ქსელის დიაგნოსტიკა<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">კონვერტი 7 x 9 დუიმი</translation>
+<translation id="7908648876066812348">მიმდინარეობს ვირტუალური ბარათის გააქტიურება</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, პარამეტრებში Chrome-ის უსაფრთხოების შემოწმების გვერდზე გადასასვლელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="791551905239004656">ხატვა და გაფერადება</translation>
 <translation id="7916162853251942238">ფლექსოგრაფიული ბაზა</translation>
@@ -4078,6 +4087,7 @@
 <translation id="8874790741333031443">ცადეთ მესამე მხარის ქუქი-ჩანაწერების დროებით დაშვება, რაც ნიშნავს, რომ ვების დათვალიერებისას ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები უფრო დიდი ალბათობით იმუშავებს მოლოდინისამებრ.</translation>
 <translation id="8874824191258364635">შეიყვანეთ ბარათის სწორი ნომერი</translation>
 <translation id="8877780815363510165">თევზჭერა</translation>
+<translation id="888117890813270681">„<ph name="DATA_CONTROLS_RESTRICTION" />“-ისთვის ვერ განისაზღვრება „<ph name="DATA_CONTROLS_LEVEL" />“</translation>
 <translation id="8884537526797090108">კონფიდენციალური კონტენტის ჩაწერა ვერ მოხერხდება</translation>
 <translation id="8888187300091017436">მატრასები</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" />-ის მართვა და მისთვის ხელმისაწვდომ გონიერ ბარათზე წვდომის მიღება.</translation>

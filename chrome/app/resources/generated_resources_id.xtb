@@ -700,7 +700,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Saya memahami bahwa hasil download ini akan membahayakan komputer saya</translation>
 <translation id="1535228823998016251">Nyaring</translation>
-<translation id="1535597783576881392">Panduan ini membantu Anda memahami pilihan Anda, sehingga Chrome dapat berfungsi sesuai keinginan Anda</translation>
 <translation id="1535753739390684432">Dengarkan teks tertentu dibacakan secara lisan. Pilih ikon Klik untuk Diucapkan di bagian bawah layar terlebih dulu, lalu tandai teks.</translation>
 <translation id="1536754031901697553">Memutuskan sambungan...</translation>
 <translation id="1536883206862903762">Tindakan ini akan menonaktifkan ekstensi dan mereset setelan Anda ke setelan default yang aman. Tab, file, dan cookie akan disimpan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -4931,7 +4930,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4716483597559580346">Powerwash untuk keamanan tambahan</translation>
 <translation id="4716715661140829720">Ruang penyimpanan tidak cukup</translation>
 <translation id="471759229191973607">Ubah tema</translation>
-<translation id="4718046540206070045">Lebih dari sekadar browser</translation>
 <translation id="4722735765955348426">Sandi untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berbagi layar Anda.</translation>
 <translation id="4722989931633062466">Tidak diizinkan untuk menampilkan perintah login pihak ketiga</translation>
@@ -5616,7 +5614,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5269977353971873915">Gagal Mencetak</translation>
 <translation id="5271578170655641944">Hapus akses Google Drive?</translation>
 <translation id="5273806377963980154">Edit URL situs</translation>
-<translation id="5273966423195882879">Warna berdasarkan tema</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
 <translation id="5275100789567222478">Aktifkan hanya saat baterai <ph name="PERCENT" />% atau lebih rendah</translation>
 <translation id="5275338516105640560">Tombol Grup Tab Tersimpan</translation>
@@ -9622,7 +9619,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Anda sudah mendaftarkan perangkat ini. Anda tidak perlu mendaftarkannya lagi.</translation>
 <translation id="8357388086258943206">Error saat menginstal Linux</translation>
-<translation id="8357591920094529889">Panduan ini membantu Anda memahami pilihan penting yang Anda miliki ketika menggunakan Chrome. Pantuan ini membantu Anda membuat pilihan tersebut, sehingga Chrome berfungsi sesuai keinginan Anda.</translation>
 <translation id="8358685469073206162">Pulihkan halaman?</translation>
 <translation id="8358912028636606457">Mentransmisikan audio tab tidak didukung di perangkat ini.</translation>
 <translation id="835951711479681002">Simpan di Akun Google Anda</translation>
@@ -9686,7 +9682,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8399282673057829204">Lihat sandi</translation>
 <translation id="839949601275221554">Terjadi error pada perangkat. Mulai ulang perangkat Anda dan coba lagi.</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
-<translation id="8403618281196981152">Data Anda di Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> dapat memeriksa sandi saat Anda menyimpannya</translation>
 <translation id="8405046151008197676">Dapatkan sorotan dari update terakhir</translation>
 <translation id="8405118833120731611">{0,plural, =1{Tutup profil ini}other{Tutup profil ini (# jendela)}}</translation>

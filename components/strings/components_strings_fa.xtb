@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">۱۶ × ۱۲ اینچ</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1181381397492575884">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند. برای <ph name="LINK" />، به تنظیمات بروید.</translation>
+<translation id="1185343831726846924">درستی‌سنجی کارت مجازی روشن نشد</translation>
 <translation id="1186201132766001848">بررسی گذرواژه‌ها</translation>
 <translation id="1187430513518041110">اتومبیل و وسایل نقلیه</translation>
 <translation id="1190491977647722791">کاغذ (سنگین)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ</translation>
 <translation id="1574714699824202614">درحال تأیید روش پرداخت</translation>
 <translation id="1576277203042721907">اطلاعات آماری خرید</translation>
+<translation id="1579189948231786790">سازمانتان این سایت را مسدود کرده است</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">منقضی نمی‌شود</translation>
 <translation id="1583429793053364125">هنگام نمایش این صفحه وب مشکلی پیش آمد.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">بوم‌شناسی و محیط زیست</translation>
 <translation id="2452837234288608067">در این مورد نمی‌توانم کمک کنم. دوباره امتحان کنید.</translation>
 <translation id="2456755709261364512">شارژ باتری باید بیشتر از <ph name="REQUIRED_BATTERY_PRECENT" />٪ باشد</translation>
+<translation id="2461822463642141190">فعلی</translation>
 <translation id="2462932596748424101">شبکه‌های اجتماعی</translation>
 <translation id="2463739503403862330">تکمیل</translation>
 <translation id="2465688316154986572">منگنه</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">‏این فایل PDF غیرقابل‌دسترس است. برای باز کردن منوِ زمینه‌ای و روشن کردن «استخراج نوشتار از PDF»، کلید جستجو و m را فشار دهید.</translation>
 <translation id="2818338148457093657">خدمات زیبایی و اسپا</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
-<translation id="2824549017793319782">برای تایپ کردن مستقیم عبارت جستجو در نوار نشانی، انتخاب کنید</translation>
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
 <translation id="2833637280516285136">رادیو بحث و گفتگو</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">‏تغییر جهت تصویر حول محور X</translation>
 <translation id="3807709094043295184">راک کلاسیک و موسیقی قدیمی</translation>
 <translation id="3807873520724684969">محتوای مضر مسدود شد.</translation>
+<translation id="380865868633614173">درحال ذخیره اطلاعات کارت</translation>
 <translation id="3810770279996899697">‏«مدیر گذرواژه» باید به MacOS Keychain دسترسی داشته باشد</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3812398568375898177">‏این به‌روزرسانی ضروری است و عملکرد برنامه‌های Android را در ChromeOS بهبود می‌بخشد.</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">قالب پروتکل نامعتبر است.</translation>
 <translation id="5222812217790122047">ایمیل ضروری است</translation>
 <translation id="5228269245420405804">آموزش ازراه‌دور</translation>
+<translation id="5230428804606340145">مدیریت حساب‌های مالی دیگر</translation>
 <translation id="5230733896359313003">نشانی ارسال کالا</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="5239119062986868403">قیمت معمول</translation>
 <translation id="5239623327352565343">مکان مجاز است</translation>
+<translation id="5241048084654737238">درستی‌سنجی اطلاعات کارت ذخیره نشد</translation>
 <translation id="5242610955375133957">فیلم خشک</translation>
 <translation id="5244521145258281926">‏مدیریت «حساب Google»؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، آن را فعال کنید</translation>
 <translation id="5244732203286792411">درحال بار کردن…
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">به‌هم چسباندن از بالا</translation>
 <translation id="5269225904387178860">چهار سوراخ در پایین</translation>
 <translation id="5269999699920406580">فقط مالک می‌تواند ویژگی‌هایی را که در کل سیستم اعمال می‌شود تنظیم کند: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">‫«<ph name="DATA_CONTROLS_ATTRIBUTE" />» وضعیت پشتیبانی شده‌ای برای «<ph name="DATA_CONTROLS_RESTRICTION" />» نیست</translation>
 <translation id="5273658854610202413">‏هشدار: این خط‌مشی طبق آنچه در خط‌مشی PolicyDictionaryMultipleSourceMergeList مشخص شده ادغام نشد، زیرا بخشی از خط‌مشی‌های فهرستی نیست که بتواند ادغام شود.</translation>
 <translation id="5279286380302340275">مدیریت بارگیری‌ها</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{برای ارسال این فایل بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}one{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}other{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}}</translation>
 <translation id="7160999678034985039">لطفاً کارتان را ذخیره کنید و وقتی آماده شدید، به‌روزرسانی را شروع کنید.</translation>
 <translation id="7163295244162773898">{0,plural, =1{فایل محرمانه کپی شود؟}one{فایل محرمانه کپی شود؟}other{فایل‌های محرمانه کپی شود؟}}</translation>
+<translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» محدودیت پشتیبانی‌شده‌ای در این پلاتفرم نیست</translation>
 <translation id="717330890047184534">‏شناسه Gaia:</translation>
 <translation id="7174545416324379297">ادغام شد</translation>
 <translation id="7175097078723125014">گزینه ویرایش نشانی انتخاب شد</translation>
@@ -3246,6 +3253,7 @@
 <translation id="7310392214323165548">دستگاه به‌زودی بازراه‌اندازی خواهد شد</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7311837626618954149">‏Chromium سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند.</translation>
+<translation id="7313107491291103073">سازمانتان این سایت را پرچم‌گذاری کرده است، زیرا ممکن است یکی از خط‌مشی‌ها را نقض کند.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">راهنمای اتصال</translation>
 <translation id="7323804146520582233">پنهان کردن بخش «<ph name="SECTION" />»</translation>
@@ -3571,6 +3579,7 @@
 <translation id="7888575728750733395">هدف پرداز چاپ</translation>
 <translation id="7894280532028510793">اگر املا صحیح است، <ph name="BEGIN_LINK" />«عیب‌یابی شبکه» را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">پاکت ۹×۷ اینچی</translation>
+<translation id="7908648876066812348">درحال روشن کردن کارت مجازی</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای رفتن به صفحه بررسی ایمنی Chrome در تنظیمات، کلید «جهش» و سپس «ورود» را فشار دهید.</translation>
 <translation id="791551905239004656">نقاشی و رنگ‌آمیزی</translation>
 <translation id="7916162853251942238">پایه فلکسو</translation>
@@ -4078,6 +4087,7 @@
 <translation id="8874790741333031443">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="8874824191258364635">شماره کارت معتبری وارد کنید</translation>
 <translation id="8877780815363510165">ماهی‌گیری</translation>
+<translation id="888117890813270681">‫«<ph name="DATA_CONTROLS_RESTRICTION" />» را نمی‌توان روی «<ph name="DATA_CONTROLS_LEVEL" />» تنظیم کرد</translation>
 <translation id="8884537526797090108">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="8888187300091017436">تشک</translation>
 <translation id="8890048757975398817">‫<ph name="READERNAME" /> کنترل شود و دسترسی به کارت هوشمند دردسترس آن مجاز شود؟</translation>

@@ -700,7 +700,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Я разумею, што гэта спампоўка пашкодзіць камп'ютару</translation>
 <translation id="1535228823998016251">Гучна</translation>
-<translation id="1535597783576881392">У гэтым дапаможніку вы знойдзеце інфармацыю па эфектыўным выкарыстанні Chrome у адпаведнасці са сваімі наладамі</translation>
 <translation id="1535753739390684432">Тэксты для вас могуць зачытвацца ўслых. Для гэтага вам трэба спачатку націснуць на значок "Чытаць уголас" уверсе экрана, а затым вылучыць тэкст.</translation>
 <translation id="1536754031901697553">Адключэнне...</translation>
 <translation id="1536883206862903762">Пашырэнні будуць адключаны, а налады скінуты да бяспечных стандартных значэнняў. Укладкі і файлы (у тым ліку cookie) будуць захаваны. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -4914,7 +4913,6 @@
 <translation id="4716483597559580346">Выканаць Powerwash для павышэння бяспекі</translation>
 <translation id="4716715661140829720">Не хапае месца ў сховішчы</translation>
 <translation id="471759229191973607">Змяніць тэму</translation>
-<translation id="4718046540206070045">Больш чым браўзер</translation>
 <translation id="4722735765955348426">Пароль карыстальніка <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> абагульвае ваш экран.</translation>
 <translation id="4722989931633062466">Не дазволена паказваць запыты на ўваход ад старонніх сэрвісаў</translation>
@@ -5599,7 +5597,6 @@
 <translation id="5269977353971873915">Збой друку</translation>
 <translation id="5271578170655641944">Выдаліць доступ да Google Дыска?</translation>
 <translation id="5273806377963980154">Змяніць URL-адрас сайта</translation>
-<translation id="5273966423195882879">Колер на аснове тэмы</translation>
 <translation id="5275084684151588738">Карыстальніцкія слоўнікі</translation>
 <translation id="5275100789567222478">Уключаць, толькі калі ўзровень зараду акумулятара будзе складаць <ph name="PERCENT" />% або менш</translation>
 <translation id="5275338516105640560">Кнопка захаванай групы ўкладак</translation>
@@ -9607,7 +9604,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Вы ўжо зарэгістравалі гэту прыладу. Яе не трэба рэгістраваць зноў.</translation>
 <translation id="8357388086258943206">Памылка ўсталявання Linux</translation>
-<translation id="8357591920094529889">Дзякуючы гэтаму дапаможніку вы зможаце разабрацца ў важных наладах Chrome і зрабіць браўзер зручнейшым для сябе.</translation>
 <translation id="8358685469073206162">Аднавіць старонкі?</translation>
 <translation id="8358912028636606457">Гэта прылада не падтрымлівае трансляцыю аўдыя з укладкі.</translation>
 <translation id="835951711479681002">Захаваць ва Уліковым запісе Google</translation>
@@ -9671,7 +9667,6 @@
 <translation id="8399282673057829204">Паглядзець пароль</translation>
 <translation id="839949601275221554">На прыладзе адбылася памылка. Перазапусціце прыладу і паўтарыце спробу.</translation>
 <translation id="8401432541486058167">Укажыце PIN-код, звязаны з разумнай карткай.</translation>
-<translation id="8403618281196981152">Вашы даныя ў Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> можа правяраць толькі захаваныя паролі</translation>
 <translation id="8405046151008197676">Атрымайце асноўную інфармацыю пра апошняе абнаўленне</translation>
 <translation id="8405118833120731611">{0,plural, =1{Закрыць гэты профіль}one{Закрыць гэты профіль (# акно)}few{Закрыць гэты профіль (# акны)}many{Закрыць гэты профіль (# акон)}other{Закрыць гэты профіль (# акна)}}</translation>

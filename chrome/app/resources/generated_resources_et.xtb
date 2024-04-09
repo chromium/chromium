@@ -700,7 +700,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Mõistan, et see allalaadimine ohustab mu arvutit</translation>
 <translation id="1535228823998016251">Vali</translation>
-<translation id="1535597783576881392">See juhend aitab teil oma valikuid mõista, et Chrome töötaks teie soovitud moel</translation>
 <translation id="1535753739390684432">Konkreetne tekst loetakse ette. Kõigepealt valige ekraani allosas funktsiooni Vali ja kuula ikoon ning seejärel tõstke tekst esile.</translation>
 <translation id="1536754031901697553">Ühenduse katkestamine …</translation>
 <translation id="1536883206862903762">See keelab laiendused ja lähtestab seaded ohututele vaikeväärtustele. Vahelehed, failid ja küpsised säilitatakse. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -4921,7 +4920,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4716483597559580346">Powerwash suurendab turvalisust</translation>
 <translation id="4716715661140829720">Salvestusruumi pole piisavalt</translation>
 <translation id="471759229191973607">Teema muutmine</translation>
-<translation id="4718046540206070045">Rohkem kui brauser</translation>
 <translation id="4722735765955348426">Kasutaja <ph name="USERNAME" /> parool</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> jagab teie ekraani.</translation>
 <translation id="4722989931633062466">Kolmanda osapoole sisselogimisviipasid pole lubatud kuvada</translation>
@@ -5606,7 +5604,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5269977353971873915">Printimine nurjus</translation>
 <translation id="5271578170655641944">Kas eemaldada juurdepääs Google Drive'ile?</translation>
 <translation id="5273806377963980154">Saidi URL-i muutmine</translation>
-<translation id="5273966423195882879">Värv põhineb teemal</translation>
 <translation id="5275084684151588738">Kasutaja sõnastikud</translation>
 <translation id="5275100789567222478">Lülita sisse ainult siis, kui aku tase on <ph name="PERCENT" />% või alla selle</translation>
 <translation id="5275338516105640560">Nupp Salvestatud vahelehegrupp</translation>
@@ -9613,7 +9610,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Olete selle seadme juba registreerinud. Teil ei ole vaja seda uuesti registreerida.</translation>
 <translation id="8357388086258943206">Viga Linuxi installimisel</translation>
-<translation id="8357591920094529889">See juhend aitab teil mõista olulisi valikuid, mis teil on Chrome'i kasutamisel. Ja see aitab teil neid valikuid teha, et Chrome töötaks nii, nagu soovite.</translation>
 <translation id="8358685469073206162">Kas taastada lehed?</translation>
 <translation id="8358912028636606457">Ülekandevahelehe heli selles seadmes ei toetata.</translation>
 <translation id="835951711479681002">Salvesta minu Google'i kontole</translation>
@@ -9677,7 +9673,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8399282673057829204">Kuva parool</translation>
 <translation id="839949601275221554">Seadmes ilmnes viga. Taaskäivitage seade ja proovige uuesti.</translation>
 <translation id="8401432541486058167">Sisestage oma kiipkaardi PIN-kood.</translation>
-<translation id="8403618281196981152">Teie andmed Chrome'is</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="8405046151008197676">Vaadake viimase värskenduse esiletõstetud teavet</translation>
 <translation id="8405118833120731611">{0,plural, =1{Sule see profiil}other{Sule see profiil (# akent)}}</translation>

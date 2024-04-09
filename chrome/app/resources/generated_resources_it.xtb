@@ -697,7 +697,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> e <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Sono consapevole che questo download danneggerà il mio computer</translation>
 <translation id="1535228823998016251">Alto</translation>
-<translation id="1535597783576881392">Questa guida ti aiuta a comprendere le tue scelte, per fare in modo che Chrome funzioni come vuoi</translation>
 <translation id="1535753739390684432">Attiva la lettura ad alta voce di testo specifico. Seleziona prima l'icona Seleziona per ascoltare nella parte inferiore dello schermo, quindi evidenzia il testo.</translation>
 <translation id="1536754031901697553">Disconnessione…</translation>
 <translation id="1536883206862903762">In questo modo le estensioni verranno disattivate e verranno ripristinate le impostazioni predefinite sicure. Schede, file e cookie verranno conservati. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -4915,7 +4914,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4716483597559580346">Powerwash per maggiore sicurezza</translation>
 <translation id="4716715661140829720">Spazio di archiviazione insufficiente</translation>
 <translation id="471759229191973607">Cambia tema</translation>
-<translation id="4718046540206070045">Molto più di un browser</translation>
 <translation id="4722735765955348426">Password di <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sta condividendo il tuo schermo.</translation>
 <translation id="4722989931633062466">Non autorizzati a mostrare richieste di accesso di terze parti</translation>
@@ -5600,7 +5598,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5271578170655641944">Vuoi rimuovere l'accesso a Google Drive?</translation>
 <translation id="5273806377963980154">Modifica l'URL del sito</translation>
-<translation id="5273966423195882879">Colore basato sul tema</translation>
 <translation id="5275084684151588738">Dizionari utente</translation>
 <translation id="5275100789567222478">Attiva solo quando la batteria è al <ph name="PERCENT" />% o meno</translation>
 <translation id="5275338516105640560">Pulsante Gruppo di schede salvato</translation>
@@ -9604,7 +9601,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Hai già registrato questo dispositivo. Non è necessario registrarlo di nuovo.</translation>
 <translation id="8357388086258943206">Errore durante l'installazione di Linux</translation>
-<translation id="8357591920094529889">Questa guida ti aiuta a comprendere le opzioni importanti disponibili durante l'utilizzo di Chrome e ti aiuta a fare queste scelte, in modo che Chrome funzioni come vuoi tu.</translation>
 <translation id="8358685469073206162">Ripristinare le pagine?</translation>
 <translation id="8358912028636606457">La trasmissione dell'audio della scheda non è supportata su questo dispositivo.</translation>
 <translation id="835951711479681002">Salva nel tuo Account Google</translation>
@@ -9668,7 +9664,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8399282673057829204">Visualizza password</translation>
 <translation id="839949601275221554">Si è verificato un errore con il dispositivo. Riavvia il dispositivo e riprova.</translation>
 <translation id="8401432541486058167">Specifica il PIN associato alla tua smart card.</translation>
-<translation id="8403618281196981152">I tuoi dati in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> può controllare le tue password se le salvi</translation>
 <translation id="8405046151008197676">Scopri le novità principali dell'ultimo aggiornamento</translation>
 <translation id="8405118833120731611">{0,plural, =1{Chiudi questo profilo}other{Chiudi questo profilo (# finestre)}}</translation>

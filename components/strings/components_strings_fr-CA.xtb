@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 po x 16 po</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1181381397492575884">Chrome empêche les sites d'utiliser des témoins tiers pour vous suivre pendant votre navigation. Accédez aux paramètres pour <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">La confirmation de la carte virtuelle ne peut pas être activée</translation>
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
 <translation id="1187430513518041110">Voitures et véhicules</translation>
 <translation id="1190491977647722791">Papier (épais)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> po x <ph name="HEIGHT" /> po</translation>
 <translation id="1574714699824202614">Vérification du mode de paiement en cours…</translation>
 <translation id="1576277203042721907">Perspectives d'achat</translation>
+<translation id="1579189948231786790">Ce site a été signalé par votre organisation</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Sans date d'expiration</translation>
 <translation id="1583429793053364125">Une erreur s'est produite lors de l'affichage de cette page Web.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">Écologie et environnement</translation>
 <translation id="2452837234288608067">Impossible de vous aider avec cette requête. Réessayez.</translation>
 <translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2461822463642141190">Actuelle</translation>
 <translation id="2462932596748424101">Réseaux sociaux</translation>
 <translation id="2463739503403862330">Remplir</translation>
 <translation id="2465688316154986572">Agrafe</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">Ce fichier PDF est inaccessible. Appuyez sur Recherche et « m » pour ouvrir le menu contextuel et activez « extraire le texte du fichier PDF »</translation>
 <translation id="2818338148457093657">Services de beauté et spas</translation>
 <translation id="2820957248982571256">Recherche en cours…</translation>
-<translation id="2824549017793319782">Sélectionnez-la pour entrer votre recherche directement dans la barre d'adresse</translation>
 <translation id="2824775600643448204">Barre d'adresse et de recherche</translation>
 <translation id="2826760142808435982">La connexion est chiffrée et authentifiée avec la clé <ph name="CIPHER" />. La méthode d'échange de clés utilisée est <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Radio interactive</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807709094043295184">Rock classique et vieux succès</translation>
 <translation id="3807873520724684969">Contenu nuisible bloqué.</translation>
+<translation id="380865868633614173">Enregistrement des informations de la carte en cours…</translation>
 <translation id="3810770279996899697">Le gestionnaire de mots de passe doit accéder au trousseau macOS</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3812398568375898177">Il s'agit d'une mise à jour essentielle qui améliore les performances des applications Android sur ChromeOS.</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">Format de protocole incorrect.</translation>
 <translation id="5222812217790122047">Adresse de courriel obligatoire</translation>
 <translation id="5228269245420405804">Apprentissage à distance</translation>
+<translation id="5230428804606340145">Gérer d'autres comptes financiers</translation>
 <translation id="5230733896359313003">Adresse de livraison</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="5239119062986868403">Prix habituel</translation>
 <translation id="5239623327352565343">Accès à la position autorisé</translation>
+<translation id="5241048084654737238">Les informations de confirmation de la carte ne peuvent pas être enregistrées</translation>
 <translation id="5242610955375133957">Pellicule sèche</translation>
 <translation id="5244521145258281926">Bouton Gérer le compte Google, activez-le pour gérer vos informations, votre confidentialité et votre sécurité dans votre compte Google</translation>
 <translation id="5244732203286792411">Chargement en cours…
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
 <translation id="5269999699920406580">Seul le propriétaire suivant peut définir les fonctionnalités qui s'appliquent à tout le système : <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">« <ph name="DATA_CONTROLS_ATTRIBUTE" /> » n'est pas une condition prise en charge pour « <ph name="DATA_CONTROLS_RESTRICTION" /> »</translation>
 <translation id="5273658854610202413">Avertissement : Cette politique n'a pas été fusionnée, tel que cela est indiqué dans la politique PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des politiques de dictionnaire pouvant être fusionnées.</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Pour envoyer ce fichier au moyen de <ph name="FEATURE_NAME" />, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier au moyen de <ph name="FEATURE_NAME" />, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers au moyen de <ph name="FEATURE_NAME" />, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="7160999678034985039">Veuillez enregistrer votre travail et lancer la mise à jour lorsque vous êtes prêt.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copier un fichier confidentiel?}one{Copier un fichier confidentiel?}other{Copier des fichiers confidentiels?}}</translation>
+<translation id="7168625890036931112">« <ph name="DATA_CONTROLS_RESTRICTION" /> » n'est pas une restriction prise en charge sur cette plateforme</translation>
 <translation id="717330890047184534">Identifiant Gaia :</translation>
 <translation id="7174545416324379297">Fusionnées</translation>
 <translation id="7175097078723125014">L'option Modifier l'adresse a été sélectionnée</translation>
@@ -3246,6 +3253,7 @@ Détails supplémentaires :
 <translation id="7310392214323165548">L'appareil va redémarrer sous peu</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7311837626618954149">Chromium empêche les sites d'utiliser des témoins tiers pour vous suivre pendant votre navigation.</translation>
+<translation id="7313107491291103073">Votre organisation a signalé ce site, car il pourrait enfreindre une politique.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide pour la connexion</translation>
 <translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
@@ -3571,6 +3579,7 @@ Détails supplémentaires :
 <translation id="7888575728750733395">Intention de rendu d'impression</translation>
 <translation id="7894280532028510793">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter les diagnostics de réseau<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Enveloppe 7 x 9 po</translation>
+<translation id="7908648876066812348">Activation de la carte virtuelle en cours…</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour accéder à la page de la Vérification de sécurité de Chrome dans les paramètres</translation>
 <translation id="791551905239004656">Dessin et coloriage</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
@@ -4078,6 +4087,7 @@ Détails supplémentaires :
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les témoins tiers, ce qui signifie que la navigation est moins protégée, mais que les fonctionnalités des sites sont plus susceptibles de fonctionner comme prévu.</translation>
 <translation id="8874824191258364635">Entrez un numéro de carte valide</translation>
 <translation id="8877780815363510165">Pêche</translation>
+<translation id="888117890813270681">« <ph name="DATA_CONTROLS_RESTRICTION" /> » ne peut pas être défini sur « <ph name="DATA_CONTROLS_LEVEL" /> »</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer du contenu confidentiel</translation>
 <translation id="8888187300091017436">Matelas</translation>
 <translation id="8890048757975398817">Contrôler <ph name="READERNAME" /> et accéder à la carte à puce qui lui est accessible.</translation>

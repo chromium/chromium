@@ -695,7 +695,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Başa düşürəm ki, bu endirmə kompüterimə zərər verəcək</translation>
 <translation id="1535228823998016251">Ucadan</translation>
-<translation id="1535597783576881392">Təlimat Chrome-un istədiyiniz kimi işləməsi üçün seçimlərinizi anlamağa kömək edir</translation>
 <translation id="1535753739390684432">Xüsusi mətnin ucadan səsləndirilməsinə qulaq asın. Əvvəlcə ekranınızın aşağısındakı "Seçib danışın" ikonasını seçin, sonra mətni vurğulayın.</translation>
 <translation id="1536754031901697553">Ayrılır...</translation>
 <translation id="1536883206862903762">Artırmalar deaktiv ediləcək və ayarlar təhlükəsiz defoltlara sıfırlanacaq. Tab, fayl və kukilər saxlanacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -4912,7 +4911,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4716483597559580346">Əlavə təhlükəsizlik üçün fabrika sıfırlaması</translation>
 <translation id="4716715661140829720">Yaddaş yeri yetərli deyil</translation>
 <translation id="471759229191973607">Temanı dəyişin</translation>
-<translation id="4718046540206070045">Brauzerdən üstün</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> üçün parol</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekranınızı paylaşır</translation>
 <translation id="4722989931633062466">Üçüncü tərəfin giriş sorğularını göstərməyə icazə verilmir</translation>
@@ -5597,7 +5595,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5269977353971873915">Çap alınmadı</translation>
 <translation id="5271578170655641944">Google Diskə giriş silinsin?</translation>
 <translation id="5273806377963980154">Sayt keçidini redaktə edin</translation>
-<translation id="5273966423195882879">Temaya əsaslanan rəng</translation>
 <translation id="5275084684151588738">İstifadəçi Lüğətləri</translation>
 <translation id="5275100789567222478">Yalnız enerji <ph name="PERCENT" />% və ya daha az olduqda aktiv edin</translation>
 <translation id="5275338516105640560">Saxlanmış Tab Qrupu düyməsi</translation>
@@ -9600,7 +9597,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Bu cihazı artıq qeydiyyatdan keçirmisiniz. Onu yenidən qeydiyyatdan keçirməyə ehtiyac yoxdur.</translation>
 <translation id="8357388086258943206">Linux quraşdırılarkən xəta baş verdi</translation>
-<translation id="8357591920094529889">Bu təlimat Chrome ilə əlçatan olan vacib seçimləri izah edir. Chrome-u fərdiləşdirməyə kömək edir.</translation>
 <translation id="8358685469073206162">Səhifələr bərpa edilsin?</translation>
 <translation id="8358912028636606457">Bu cihazda tab yayımı zamanı audio dəstəklənmir.</translation>
 <translation id="835951711479681002">Google Hesabınızda saxlayın</translation>
@@ -9664,7 +9660,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8399282673057829204">Parola baxın</translation>
 <translation id="839949601275221554">Cihazda xəta oldu. Cihazı yenidən başladın və təkrar cəhd edin.</translation>
 <translation id="8401432541486058167">Smart kartınızla əlaqəli PIN daxil edin.</translation>
-<translation id="8403618281196981152">Chrome-da data</translation>
 <translation id="8403807918453631441">Parollarınızı yadda saxladıqda <ph name="BRAND" /> onları yoxlaya bilər</translation>
 <translation id="8405046151008197676">Ən yeni güncəlləmə ilə bağlı yenilikləri əldə edin</translation>
 <translation id="8405118833120731611">{0,plural, =1{Bu profili bağlayın}other{Bu profili bağlayın (# pəncərə)}}</translation>

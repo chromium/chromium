@@ -93,7 +93,7 @@
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer blev kopieret.</translation>
 <translation id="174173592514158117">Vis alle Play-mapper</translation>
 <translation id="1742316578210444689">Hebræisk translitteration</translation>
-<translation id="1747761757048858544">Hollandsk (Holland)</translation>
+<translation id="1747761757048858544">Nederlandsk (Nederlandene)</translation>
 <translation id="174937106936716857">Samlet antal filer</translation>
 <translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører ChromeOS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
@@ -643,7 +643,7 @@
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Der er kommet nye søgefunktioner</translation>
-<translation id="5926082595146149752">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
+<translation id="5926082595146149752">Nederlandsk (Nederlandene) med amerikansk internationalt computertastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivér efter konfiguration af enhed</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
@@ -679,7 +679,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
-<translation id="6241349547798190358">Hollandsk (Belgien)</translation>
+<translation id="6241349547798190358">Nederlandsk (Belgien)</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>
 <translation id="6271903698064569429">Der kan ikke uploades filer, fordi "<ph name="SHARED_DRIVE_NAME" />" ikke har nok lagerplads.</translation>

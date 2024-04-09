@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12x16인치</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1181381397492575884">Chrome에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 사이트를 차단합니다. <ph name="LINK" />하려면 설정으로 이동하세요.</translation>
+<translation id="1185343831726846924">가상 카드 사용 설정할 수 없음 확인</translation>
 <translation id="1186201132766001848">비밀번호 확인</translation>
 <translation id="1187430513518041110">자동차</translation>
 <translation id="1190491977647722791">용지(중량)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" />인치</translation>
 <translation id="1574714699824202614">결제 수단 확인 중</translation>
 <translation id="1576277203042721907">쇼핑 통계</translation>
+<translation id="1579189948231786790">조직에서 차단한 사이트입니다.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">만료되지 않음</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">생태학 및 환경</translation>
 <translation id="2452837234288608067">이와 관련해 도움을 드릴 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2456755709261364512">배터리가 <ph name="REQUIRED_BATTERY_PRECENT" />% 이상 충전되어 있어야 합니다.</translation>
+<translation id="2461822463642141190">현재</translation>
 <translation id="2462932596748424101">소셜 네트워크</translation>
 <translation id="2463739503403862330">입력</translation>
 <translation id="2465688316154986572">스테이플</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">이 PDF에 액세스할 수 없습니다. 검색 + m 키를 눌러 컨텍스트 메뉴를 열고 'PDF에서 텍스트 추출'을 사용 설정합니다</translation>
 <translation id="2818338148457093657">뷰티 서비스 및 스파</translation>
 <translation id="2820957248982571256">검색 중...</translation>
-<translation id="2824549017793319782">선택하여 주소 표시줄에 직접 검색어 입력</translation>
 <translation id="2824775600643448204">주소창 및 검색창</translation>
 <translation id="2826760142808435982">이 연결은 <ph name="CIPHER" />을(를) 사용하여 암호화되고 인증되며 <ph name="KX" />을(를) 키 교환 매커니즘으로 사용합니다.</translation>
 <translation id="2833637280516285136">라디오 토크쇼</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">이미지 X 시프트</translation>
 <translation id="3807709094043295184">클래식 록 및 고전 록</translation>
 <translation id="3807873520724684969">유해한 콘텐츠 차단됨</translation>
+<translation id="380865868633614173">카드 정보 저장 중</translation>
 <translation id="3810770279996899697">비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3812398568375898177">이번 업데이트는 ChromeOS에서 Android 앱의 성능을 개선하는 중요한 업데이트입니다.</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">프로토콜 형식이 잘못되었습니다.</translation>
 <translation id="5222812217790122047">이메일은 필수입니다.</translation>
 <translation id="5228269245420405804">원격 교육</translation>
+<translation id="5230428804606340145">기타 금융 계좌 관리</translation>
 <translation id="5230733896359313003">배송지 주소</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">계정에 저장</translation>
 <translation id="5239119062986868403">일반 가격</translation>
 <translation id="5239623327352565343">위치 허용됨</translation>
+<translation id="5241048084654737238">카드 정보를 저장할 수 없음 확인</translation>
 <translation id="5242610955375133957">드라이 필름</translation>
 <translation id="5244521145258281926">Google 계정 관리 버튼, Google 계정에서 정보, 개인 정보 보호, 보안 설정을 관리하려면 활성화하세요.</translation>
 <translation id="5244732203286792411">로드 중입니다.
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">상단 바인드</translation>
 <translation id="5269225904387178860">하단 4공 펀칭</translation>
 <translation id="5269999699920406580">시스템 전체에 적용되는 기능은 소유자(<ph name="OWNER_EMAIL" />)만 설정할 수 있습니다.</translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />"은(는) "<ph name="DATA_CONTROLS_RESTRICTION" />"에 지원되는 조건이 아닙니다.</translation>
 <translation id="5273658854610202413">경고: 이 정책은 병합 가능한 사전 정책의 일부가 아니므로 PolicyDictionaryMultipleSourceMergeList 정책에 명시된 대로 병합되지 않았습니다.</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> 기능을 사용하여 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{<ph name="FEATURE_NAME" /> 기능을 사용하여 이러한 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="7160999678034985039">작업을 저장하고 준비가 되면 업데이트를 시작하세요.</translation>
 <translation id="7163295244162773898">{0,plural, =1{기밀 파일을 복사하시겠습니까?}other{기밀 파일을 복사하시겠습니까?}}</translation>
+<translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />"은(는) 이 플랫폼에서 지원되는 제한이 아닙니다.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">병합됨</translation>
 <translation id="7175097078723125014">주소 수정 옵션이 선택됨</translation>
@@ -3246,6 +3253,7 @@
 <translation id="7310392214323165548">기기가 곧 다시 시작됩니다</translation>
 <translation id="7311244614769792472">검색결과 없음</translation>
 <translation id="7311837626618954149">Chromium에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 사이트를 차단합니다.</translation>
+<translation id="7313107491291103073">정책 위반 가능성이 있는 사이트이므로 조직에서 신고했습니다.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">연결 도움말</translation>
 <translation id="7323804146520582233">‘<ph name="SECTION" />’ 섹션 숨기기</translation>
@@ -3570,6 +3578,7 @@
 <translation id="7888575728750733395">인쇄 렌더링 인텐트</translation>
 <translation id="7894280532028510793">철자가 올바르다면 <ph name="BEGIN_LINK" />네트워크 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="7901831439558593470">봉투 7 x 9 in</translation>
+<translation id="7908648876066812348">가상 카드 사용 설정 중</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 설정의 Chrome 안전 확인 페이지로 이동</translation>
 <translation id="791551905239004656">그리기 및 컬러링</translation>
 <translation id="7916162853251942238">Flexo 베이스</translation>
@@ -4077,6 +4086,7 @@
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
 <translation id="8877780815363510165">낚시</translation>
+<translation id="888117890813270681">'<ph name="DATA_CONTROLS_RESTRICTION" />'을(를) '<ph name="DATA_CONTROLS_LEVEL" />'(으)로 설정할 수 없습니다.</translation>
 <translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="8888187300091017436">매트리스</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" />를 제어하고 액세스할 수 있도록 스마트 카드 액세스 권한을 얻습니다.</translation>

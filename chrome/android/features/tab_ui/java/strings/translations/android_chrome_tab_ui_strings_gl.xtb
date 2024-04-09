@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Quitar do grupo</translation>
 <translation id="3008554597174452548">Deter seguimento do produto</translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Icona de cor <ph name="COLOR_NAME" /> do grupo de pestanas</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Tes <ph name="TABS_COUNT_ONE" /> pestana arquivada}other{Tes <ph name="TABS_COUNT_MANY" /> pestanas arquivadas}}</translation>
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3291470810748040983">Recibirás unha alerta cando haxa un prezo máis baixo nunha das pestanas que tes abertas</translation>

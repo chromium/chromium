@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">समूह से हटाएं</translation>
 <translation id="3008554597174452548">प्रॉडक्ट को ट्रैक करना बंद करें</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> की कीमत <ph name="PRICE_DROP" /> कम हुई है</translation>
+<translation id="3078350928901129212">टैब ग्रुप के कलर आइकॉन का रंग <ph name="COLOR_NAME" /> है</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{आपके पास संग्रहित किया गया <ph name="TABS_COUNT_ONE" /> टैब है}one{आपके पास संग्रहित किया गया <ph name="TABS_COUNT_MANY" /> टैब है}other{आपके पास संग्रहित किए गए <ph name="TABS_COUNT_MANY" /> टैब हैं}}</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3291470810748040983">खोले गए टैब में मौजूद किसी आइटम की कीमत में कमी होने पर आपको सूचना मिलेगी</translation>

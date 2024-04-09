@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">ወደዚህ አንቀሳቅስ</translation>
 <translation id="1014147525163127655">በዚህ መሣሪያ ላይ ለ<ph name="ORIGIN" /> ምንም የይለፍ ቁልፎች የሉም</translation>
 <translation id="1016498331642356377">በድምጽዎ በፍጥነት ይፈልጉ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
+<translation id="1017104654974573432">አንድ ችግር ይምረጡ</translation>
 <translation id="1024113959924243553">Chrome ገንቢ</translation>
 <translation id="1028699632127661925">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
 <translation id="103269572468856066">ከእነዚህ ጣቢያዎች እና መተግበሪያዎች የመጣ ውሂብም ይጽዳ?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">ከመስመር ውጭ ነዎት። የበይነመረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="10614374240317010">በጭራሽ አልተቀመጠም</translation>
 <translation id="107147699690128016">የፋይል ቅጥያውን ከቀየሩት ፋይሉ በተለየ መተግበሪያ ሊከፈት ይችላል፣ እና መሣሪያዎን ሊጎዳ ይችላል።</translation>
+<translation id="1082920045291562218">ከማጠቃለያ ግብረመልስ ሉህ ጋር አጋራ ተዘግቷል</translation>
 <translation id="1089606299949659462">ግምገማ ተጠናቋል!</translation>
 <translation id="1095761715416917775">የስምረት ውሂብዎን ሁልጊዜ መድረስ እንደሚችሉ ያረጋግጡ</translation>
 <translation id="1100066534610197918">በቡድን ውስጥ አዲስ ትር ይክፈቱ</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ሰዓ}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
 <translation id="4035877632587724847">አትፍቀድ</translation>
 <translation id="4042941173059740150">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይቀጥሉ</translation>
+<translation id="404352903042073578">ያልተሰየመ ቡድን</translation>
 <translation id="4044708993631234325">የግርጌ ሉህ</translation>
 <translation id="405365679581583349">Google Play አገልግሎቶችን ያዘምኑ</translation>
 <translation id="405399507749852140">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">ምንም ዕልባቶች የሉም</translation>
 <translation id="4405224443901389797">ውሰድ ወደ…</translation>
 <translation id="4405636711880428279">ምናባዊ ካርድዎ ይወገድ?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> እና <ph name="TAB_COUNT" /> ሌሎች ትሮች</translation>
 <translation id="4409271659088619928">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">ለእርስዎ መግለጫዎችን ለማሻሻል ምስሎች ወደ Google ይላካሉ።</translation>
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6621391692573306628">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ ሁለቱም መሣሪያዎች ላይ ወደ Chrome ይግቡ</translation>
+<translation id="6625890511281718257">ከማጠቃለያ ግብረመልስ ሉህ ጋር አጋራ</translation>
 <translation id="6627583120233659107">አቃፊ አርትዕ</translation>
 <translation id="6633067410344541938">ማንነት የማያሳውቅን ክፈት</translation>
 <translation id="6636623428211296678">ተጨማሪ ቅንብሮችን ከታች ያስሱ ወይም አሁን ይጨርሱ</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />፣ <ph name="EMAIL" />።</translation>
 <translation id="6767294960381293877">በግማሽ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="6770602306803890733">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል</translation>
+<translation id="6773061896687011391">ግብረመልስ የሚሰጡበት ገጽ ዩአርኤል በGoogle ይላካል እና ይህንን ባህሪ ለማሻሻል በሰዎች ሊገመገም ይችላል</translation>
 <translation id="6775840696761158817">የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑ ውስጥ መታ ሲያደርጉ ወይም ሲተይቡ ከእርስዎ ነባሪ የፍለጋ ፕሮግራም ጥቆማዎችን ይመለከታሉ። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="6785476624617658922">የChrome እና የChromeOS ተጨማሪ አገልግሎት ውል</translation>
 <translation id="6795633245022906657">አዲስ ትር በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858">የወረዱ PDFዎች በራስ-ሰር በ<ph name="APP_NAME" /> ይከፈታሉ</translation>
 <translation id="8137562778192957619">ይህን የይለፍ ቃል ማስታወስ አያስፈልግዎትም። በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="8163820386638255770">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="8171286197772512427">ከማጠቃለያ ግብረመልስ ሉህ ጋር አጋራ ተከፍቷል</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ፋይሎች ይቀራሉ</translation>
 <translation id="8190358571722158785">1 ቀን ይቀራል</translation>

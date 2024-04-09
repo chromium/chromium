@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
 <translation id="1611649489706141841">fremover</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Bruk et tema</translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
 <translation id="1622402072367425417">glødende bobler</translation>
 <translation id="1626590945318984973">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som ikke inneholder funksjonstastene eller <ph name="META_KEY" />-tasten.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">HOPPET OVER</translation>
 <translation id="2324354238778375592">Løsne</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
-<translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">stol</translation>
 <translation id="2358070305000735383">Dialogboksen for redigering for <ph name="DESCRIPTION" /> er åpen.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">oliven</translation>
 <translation id="8373046809163484087">Bruk fargesett som matcher bakgrunnen</translation>
 <translation id="8380114448424469341">Forankre vinduet på <ph name="DIRECTION" /> halvdel av skjermen</translation>
+<translation id="8391349326751432483">Du må ha minst 500 MB ledig for å kjøre en minnetest. For å frigjøre minne, lukk faner og apper.</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8403988360557588704">Et maleri av <ph name="ART_FEATURE" /> i stilen <ph name="ART_MOVEMENT" /></translation>

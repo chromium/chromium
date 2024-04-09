@@ -1820,7 +1820,6 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2413899611035194909">Afficher les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
-<translation id="2419114151067000328">Les utilisateurs ne pourront pas accéder aux caractéristiques du produit.</translation>
 <translation id="2420958105721932612">Cette règle permet de configurer l'installation d'une appli. AVAILABLE : l'appli n'est pas installée automatiquement, mais l'utilisateur peut l'installer. Il s'agit du paramètre par défaut si cette règle n'est pas configurée. FORCE_INSTALLED : l'appli est installée automatiquement, et l'utilisateur ne peut pas la désinstaller. BLOCKED : l'appli est bloquée et ne peut pas être installée. Si elle a été installée d'après une règle précédente, elle sera désinstallée.</translation>
 <translation id="2421400544595297401">Ne pas autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3332,7 +3331,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
-<translation id="361046511337768385">Autoriser l'activation des caractéristiques du produit</translation>
 <translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
       Si cette règle est définie sur "False", l'écran n'est pas affiché.
       Si cette règle est définie sur "True", l'écran est affiché.</translation>
@@ -5332,7 +5330,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
 À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.</translation>
 <translation id="5362531528507578966">Permet d'ignorer le mode d'impression d'images de fond par défaut.</translation>
-<translation id="5363412016871318326">Les utilisateurs pourront accéder aux caractéristiques du produit.</translation>
 <translation id="5365476955714838841">Paramètres de ligne de commande pour le navigateur secondaire.</translation>
 <translation id="5365946944967967336">Afficher le bouton Accueil sur la barre d'outils</translation>
 <translation id="5366977351895725771">Si cette règle est associée à la valeur "false", la création de comptes utilisateur supervisés par cet utilisateur est désactivée. Les utilisateurs supervisés existants restent disponibles.
@@ -8816,9 +8813,6 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
-<translation id="810509972572344398">Si cette règle est activée ou n'est pas configurée, les caractéristiques du produit seront disponibles pour les utilisateurs.
-
-Si elle est désactivée, elles ne seront pas disponibles.</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
 

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">انتقال به اینجا</translation>
 <translation id="1014147525163127655">هیچ گذرکلیدی برای <ph name="ORIGIN" /> در این دستگاه وجود ندارد</translation>
 <translation id="1016498331642356377">به‌سرعت با صدایتان جستجو کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
+<translation id="1017104654974573432">مشکل را انتخاب کنید</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">آفلاین هستید. اتصال اینترنت را بررسی و دوباره امتحان کنید.</translation>
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
+<translation id="1082920045291562218">برگ هم‌رسانی بازخورد درباره خلاصه بسته شد</translation>
 <translation id="1089606299949659462">بازبینی تکمیل شد!</translation>
 <translation id="1095761715416917775">مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید</translation>
 <translation id="1100066534610197918">باز کردن در برگه جدید در گروه</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ساعت}one{# ساعت}other{# ساعت}}</translation>
 <translation id="4035877632587724847">مجاز نیست</translation>
 <translation id="4042941173059740150">ادامه <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">گروه بدون نام</translation>
 <translation id="4044708993631234325">برگ زیرین</translation>
 <translation id="405365679581583349">‏به‌روزرسانی «خدمات Google Play»</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
 <translation id="4405224443901389797">انتقال به…</translation>
 <translation id="4405636711880428279">کارت مجازی حذف شود؟</translation>
+<translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و <ph name="TAB_COUNT" /> برگه دیگر</translation>
 <translation id="4409271659088619928">موتور جستجوی شما <ph name="DSE" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، دستورالعمل‌های آن موتور جستجو را ببینید.</translation>
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
 <translation id="4425140285732600465">درحال پیگیری قیمت هستید. اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید.</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">‏تصاویر به Google ارسال می‌شوند تا توضیحات برایتان بهبود یابند.</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6621391692573306628">‏برای ارسال این برگه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید</translation>
+<translation id="6625890511281718257">برگ هم‌رسانی بازخورد درباره خلاصه</translation>
 <translation id="6627583120233659107">ویرایش پوشه</translation>
 <translation id="6633067410344541938">باز کردن قفل «حالت ناشناس»</translation>
 <translation id="6636623428211296678">در بخش زیر تنظیمات بیشتری را کاوش کنید یا همین‌حالا کارتان را به‌پایان برسانید</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">فهرست نیمه‌باز دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد.</translation>
 <translation id="6770602306803890733">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد</translation>
+<translation id="6773061896687011391">‏نشانی وب صفحه‌ای که درباره آن بازخورد ارائه می‌کنید توسط Google ارسال خواهد شد و ممکن است افرادی آن را برای بهبود این ویژگی بازبینی کنند</translation>
 <translation id="6775840696761158817">وقتی روی نوار نشانی یا چارگوش جستجو ضربه می‌زنید یا در آن‌ها تایپ می‌کنید، پیشنهادهایی از موتور جستجوی پیش‌فرض خواهید دید. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="6785476624617658922">‏شرایط خدمات تکمیلی Chrome و ChromeOS</translation>
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858">‏فایل‌های PDF بارگیری‌شده به‌طور خودکار با <ph name="APP_NAME" /> باز می‌شود</translation>
 <translation id="8137562778192957619">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» ذخیره خواهد شد.</translation>
 <translation id="8163820386638255770">‏برای ذخیره کردن گذرواژه‌ها در «حساب Google» خود و استفاده از آن‌ها، هویتتان را به‌تأیید برسانید</translation>
+<translation id="8171286197772512427">برگ هم‌رسانی بازخورد درباره خلاصه باز شد</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فایل باقی مانده است</translation>
 <translation id="8190358571722158785">۱ روز باقی‌مانده است</translation>

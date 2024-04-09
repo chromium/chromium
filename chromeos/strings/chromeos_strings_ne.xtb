@@ -257,7 +257,6 @@
 <translation id="2323506179655536734">स्किप गरिएको छ</translation>
 <translation id="2324354238778375592">फ्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">कुर्सी</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> को सम्पादन गर्ने डायलग खुला छ।</translation>
@@ -845,6 +844,8 @@
 <translation id="5946538341867151940">तपाईंले अझै नेटवर्क कनेक्ट गर्नुभएको छैन। तपाईंको मोबाइलको सेवा प्रदायकले कस्टम APN प्रयोग गर्न सिफारिस गरेका खण्डमा "+ नयाँ APN" चयन गरी APN सम्बन्धी जानकारी हाल्नुहोस्</translation>
 <translation id="5947266287934282605">यो महिनाको अन्तिम दिन यो दिनभन्दा अघि नै परेका खण्डमा यो महिनाको अन्तिम दिनमा डेटा रिसेट गरिने छ</translation>
 <translation id="5948460390109837040">कुकुरहरू</translation>
+<translation id="594989847980441553">AI प्रयोग गरी फोटो बनाउन "बनाउनुहोस्" चयन गर्नुहोस्।
+        बनाइएका सबै फोटोहरू यहाँ स्वतः देखिने छन्।</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
 <translation id="5975130252842127517">कोरल</translation>
 <translation id="5984145644188835034">डिफल्ट वालपेपर</translation>

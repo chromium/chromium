@@ -699,7 +699,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ຂ້ອຍເຂົ້າໃຈວ່າການດາວໂຫຼດນີ້ອາດເປັນອັນຕະລາຍກັບຄອມພິວເຕີຂອງຂ້ອຍ</translation>
 <translation id="1535228823998016251">ດັງ</translation>
-<translation id="1535597783576881392">ຄຳແນະນໍານີ້ຊ່ວຍໃຫ້ທ່ານເຂົ້າໃຈທາງເລືອກຂອງທ່ານ, ເພື່ອໃຫ້ Chrome ເຮັດວຽກຕາມທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="1535753739390684432">ຟັງຂໍ້ຄວາມສະເພາະທີ່ອ່ານອອກສຽງ. ທໍາອິດ, ໃຫ້ເລືອກໄອຄອນເລືອກເພື່ອເວົ້າຢູ່ດ້ານລຸ່ມຂອງໜ້າຈໍທ່ານ, ຈາກນັ້ນໃຫ້ໄຮໄລ້ຂໍ້ຄວາມ.</translation>
 <translation id="1536754031901697553">ກຳລັງຕັດການເຊື່ອມຕໍ່...</translation>
 <translation id="1536883206862903762">ນີ້ຈະເປັນການປິດການນຳໃຊ້ສ່ວນຂະຫຍາຍ ແລະ ຣີເຊັດການຕັ້ງຄ່າຂອງທ່ານໃຫ້ເປັນຄ່າເລີ່ມຕົ້ນທີ່ປອດໄພ. ແຖບ, ໄຟລ໌ ແລະ ຄຸກກີ້ຈະຖືກເກັບຮັກສາໄວ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -4939,7 +4938,6 @@
 <translation id="4716483597559580346">Powerwash ເພື່ອຄວາມປອດໄພເພີ່ມຂຶ້ນ</translation>
 <translation id="4716715661140829720">ພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ</translation>
 <translation id="471759229191973607">ປ່ຽນຮູບແບບສີສັນ</translation>
-<translation id="4718046540206070045">ຫຼາຍກວ່າໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="4722735765955348426">ລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ກໍາລັງແຊຣ໌ໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="4722989931633062466">ບໍ່ອະນຸຍາດໃຫ້ສະແດງຂໍ້ຄວາມເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມ</translation>
@@ -5624,7 +5622,6 @@
 <translation id="5269977353971873915">ພິມບໍ່ສໍາເລັດ</translation>
 <translation id="5271578170655641944">ລຶບສິດເຂົ້າເຖິງ Google Drive ອອກບໍ?</translation>
 <translation id="5273806377963980154">ແກ້ໄຈ URL ເວັບໄຊ</translation>
-<translation id="5273966423195882879">ສີຕາມຮູບແບບສີສັນ</translation>
 <translation id="5275084684151588738">ວັດຈະນານຸກົມຜູ້ໃຊ້</translation>
 <translation id="5275100789567222478">ເປີດໃຊ້ສະເພາະກໍລະນີທີ່ແບັດເຕີຣີຂອງຂ້ອຍເຫຼືອ <ph name="PERCENT" />% ຫຼື ຕ່ຳກວ່າເທົ່ານັ້ນ</translation>
 <translation id="5275338516105640560">ປຸ່ມກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
@@ -9630,7 +9627,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">ທ່ານລົງທະບຽນອຸປະກອນນີ້ຮຽບຮ້ອຍແລ້ວ. ທ່ານບໍ່ຈຳເປັນຕ້ອງລົງທະບຽນມັນອີກຄັ້ງ.</translation>
 <translation id="8357388086258943206">ເກີດຄວາມຜິດພາດໃນການຕິດຕັ້ງ Linux</translation>
-<translation id="8357591920094529889">ຄຳແນະນຳນີ້ຊ່ວຍໃຫ້ທ່ານເຂົ້າໃຈທາງເລືອກທີ່ສຳຄັນທີ່ທ່ານມີເມື່ອທ່ານໃຊ້ Chrome. ແລະ ມັນຊ່ວຍໃຫ້ທ່ານເລືອກສິ່ງເຫຼົ່ານັ້ນ, ເພື່ອໃຫ້ Chrome ເຮັດວຽກຕາມທີ່ທ່ານຕ້ອງການ.</translation>
 <translation id="8358685469073206162">ຮື້ຟື້ນໜ້າຄືນບໍ?</translation>
 <translation id="8358912028636606457">ບໍ່ຮອງຮັບການສົ່ງສັນຍານສຽງແຖບໃນອຸປະກອນນີ້.</translation>
 <translation id="835951711479681002">ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
@@ -9694,7 +9690,6 @@
 <translation id="8399282673057829204">ເບິ່ງລະຫັດຜ່ານ</translation>
 <translation id="839949601275221554">ອຸປະກອນພົບຂໍ້ຜິດພາດ. ກະລຸນາຣີສະຕາດອຸປະກອນຂອງທ່ານ ແລ້ວລອງໃໝ່.</translation>
 <translation id="8401432541486058167">ໃຫ້ PIN ທີ່ເຊື່ອມໂຍງກັບບັດອັດສະລິຍະຂອງທ່ານ.</translation>
-<translation id="8403618281196981152">ຂໍ້ມູນຂອງທ່ານໃນ Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້</translation>
 <translation id="8405046151008197676">ຮັບໄຮໄລ້ຈາກການອັບເດດຫຼ້າສຸດ</translation>
 <translation id="8405118833120731611">{0,plural, =1{ປິດໂປຣໄຟລ໌ນີ້}other{ປິດໂປຣໄຟລ໌ນີ້ (# ໜ້າຈໍ)}}</translation>

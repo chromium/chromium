@@ -697,7 +697,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我瞭解這個下載項目可能損害我的電腦</translation>
 <translation id="1535228823998016251">大聲</translation>
-<translation id="1535597783576881392">你可以透過這份指南瞭解各項選擇，讓 Chrome 依照所需方式運作</translation>
 <translation id="1535753739390684432">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後醒目顯示所需文字。</translation>
 <translation id="1536754031901697553">正在中斷連線…</translation>
 <translation id="1536883206862903762">這麼做會停用擴充功能，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -4914,7 +4913,6 @@
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
 <translation id="4716715661140829720">儲存空間不足。</translation>
 <translation id="471759229191973607">變更主題</translation>
-<translation id="4718046540206070045">不只是瀏覽器</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用你的畫面。</translation>
 <translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
@@ -5599,7 +5597,6 @@
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5271578170655641944">要移除 Google 雲端硬碟存取權嗎？</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
-<translation id="5273966423195882879">根據主題設定顏色</translation>
 <translation id="5275084684151588738">使用者字典</translation>
 <translation id="5275100789567222478">只在電池電量為 <ph name="PERCENT" />% 以下時開啟</translation>
 <translation id="5275338516105640560">「已儲存至分頁群組」按鈕</translation>
@@ -9602,7 +9599,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">你已註冊這部裝置，因此不必再次註冊。</translation>
 <translation id="8357388086258943206">安裝 Linux 時發生錯誤</translation>
-<translation id="8357591920094529889">本指南可協助你瞭解使用 Chrome 時可執行哪些重要選擇，並協助你做出合適的選擇，讓 Chrome 按照你期望的方式運作。</translation>
 <translation id="8358685469073206162">你要還原網頁嗎？</translation>
 <translation id="8358912028636606457">這個裝置不支援分頁音訊投放功能。</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
@@ -9666,7 +9662,6 @@
 <translation id="8399282673057829204">查看密碼</translation>
 <translation id="839949601275221554">裝置發生錯誤。請重新啟動裝置，然後再試一次。</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
-<translation id="8403618281196981152">你在 Chrome 中的資料</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />可以檢查你儲存的密碼</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8405118833120731611">{0,plural, =1{關閉這個設定檔}other{關閉這個設定檔 (# 個視窗)}}</translation>

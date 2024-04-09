@@ -700,7 +700,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ek verstaan dat hierdie aflaai my rekenaar sal benadeel</translation>
 <translation id="1535228823998016251">Hard</translation>
-<translation id="1535597783576881392">Hierdie gids help jou om jou keuses te verstaan sodat Chrome werk soos jy wil hê dit moet</translation>
 <translation id="1535753739390684432">Hoor hoe spesifieke teks hardop gelees word. Kies eerstens die Hardoplees-ikoon aan die onderkant van jou skerm en merk dan die teks.</translation>
 <translation id="1536754031901697553">Ontkoppel tans …</translation>
 <translation id="1536883206862903762">Dit sal uitbreidings deaktiveer en jou instellings na veilige verstekke terugstel. Oortjies, lêers en webkoekies sal bewaar word. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
@@ -4931,7 +4930,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4716483597559580346">Powerwash vir bykomende sekuriteit</translation>
 <translation id="4716715661140829720">Te min bergingspasie</translation>
 <translation id="471759229191973607">Verander tema</translation>
-<translation id="4718046540206070045">Meer as ’n blaaier</translation>
 <translation id="4722735765955348426">Wagwoord vir <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deel tans jou skerm.</translation>
 <translation id="4722989931633062466">Word nie toegelaat om derdeparty-aanmeldingporboodskappe te wys nie</translation>
@@ -5616,7 +5614,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
 <translation id="5271578170655641944">Verwyder Google Drive-toegang?</translation>
 <translation id="5273806377963980154">Wysig werf-URL</translation>
-<translation id="5273966423195882879">Kleur gebaseer op tema</translation>
 <translation id="5275084684151588738">Gebruikerwoordeboeke</translation>
 <translation id="5275100789567222478">Skakel slegs aan wanneer my battery op <ph name="PERCENT" />% of laer is</translation>
 <translation id="5275338516105640560">Gestoorde Oortjiegroep-knoppie</translation>
@@ -9622,7 +9619,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Jy het hierdie toestel reeds geregistreer. Jy hoef dit nie weer te registreer nie.</translation>
 <translation id="8357388086258943206">Kon nie Linux installeer nie</translation>
-<translation id="8357591920094529889">Hierdie gids help jou om die belangrike keuses wat jy het terwyl jy Chrome gebruik, te verstaan. En dit help jou om daardie keuses te maak sodat Chrome werk soos jy wil hê dit moet.</translation>
 <translation id="8358685469073206162">Stel bladsye terug?</translation>
 <translation id="8358912028636606457">Die uitsaai van oortjieoudio word nie op hierdie toestel gesteun nie.</translation>
 <translation id="835951711479681002">Stoor in jou Google-rekening</translation>
@@ -9686,7 +9682,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8399282673057829204">Bekyk wagwoord</translation>
 <translation id="839949601275221554">Die toestel het ’n fout teëgekom. Herbegin jou toestel en probeer weer.</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
-<translation id="8403618281196981152">Jou data in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
 <translation id="8405046151008197676">Kry hoogtepunte van die jongste opdatering</translation>
 <translation id="8405118833120731611">{0,plural, =1{Maak hierdie profiel toe}other{Maak hierdie profiel (# vensters) toe}}</translation>

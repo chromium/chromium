@@ -112,6 +112,7 @@
 <translation id="160633243685262989">پیش‌دید کردن تصویر</translation>
 <translation id="1611649489706141841">هدایت</translation>
 <translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">استفاده از زمینه</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1622402072367425417">حباب‌های درخشان</translation>
 <translation id="1626590945318984973">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و <ph name="META_KEY" /> فشار دهید.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">رد شد</translation>
 <translation id="2324354238778375592">شناور</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
-<translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2346474577291266260">عالی (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">صندلی</translation>
 <translation id="2358070305000735383">کادر گفتگوی ویرایش <ph name="DESCRIPTION" /> باز است.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">زیتونی</translation>
 <translation id="8373046809163484087">از مجموعه‌های رنگ مطابق با کاغذدیواری‌تان استفاده کنید</translation>
 <translation id="8380114448424469341">پنجره را از نیمه سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
+<translation id="8391349326751432483">برای اجرای «آزمایش حافظه»، به حداقل ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن حافظه، برنامه‌ها و برگه‌ها را ببندید.</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8403988360557588704">نقاشی <ph name="ART_FEATURE" /> به‌سبک <ph name="ART_MOVEMENT" /></translation>

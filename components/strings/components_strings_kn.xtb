@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 ಇಂಚು</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1181381397492575884">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಕ್ಕೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ Chrome ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ. <ph name="LINK" /> ಗೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
+<translation id="1185343831726846924">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ದೃಢೀಕರಣವನ್ನು ಆನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1186201132766001848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1187430513518041110">ಆಟೋಗಳು ಮತ್ತು ವಾಹನಗಳು</translation>
 <translation id="1190491977647722791">ಕಾಗದ (ಭಾರೀ ತೂಕದ)</translation>
@@ -323,6 +324,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ಇಂಚು</translation>
 <translation id="1574714699824202614">ಪಾವತಿ ವಿಧಾನವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1576277203042721907">ಶಾಪಿಂಗ್ ಒಳನೋಟಗಳು</translation>
+<translation id="1579189948231786790">ಈ ಸೈಟ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">ಅವಧಿ ಮುಕ್ತಾಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="1583429793053364125">ಈ ವೆಬ್‌ಪುಟವನ್ನು ಪ್ರದರ್ಶಿಸುವಾಗ ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452837234288608067">ಈ ಕುರಿತು ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2456755709261364512">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯು <ph name="REQUIRED_BATTERY_PRECENT" />%
  % ಗಿಂತ ಹೆಚ್ಚು ಚಾರ್ಜ್ ಆಗಿರಬೇಕು</translation>
+<translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="2462932596748424101">ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="2463739503403862330">ಭರ್ತಿ ಮಾಡು</translation>
 <translation id="2465688316154986572">ಸ್ಟೇಪಲ್ ಮಾಡಿ</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">ಈ PDF ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಂದರ್ಭದ ಮೆನು ತೆರೆಯಲು ಹುಡುಕಾಟ ಮತ್ತು m ಕೀಯನ್ನು ಒತ್ತಿ ನಂತರ "PDF ನಿಂದ ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಿರಿ" ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2818338148457093657">ಸೌಂದರ್ಯ ಸೇವೆಗಳು ಮತ್ತು ಸ್ಪಾಗಳು</translation>
 <translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
-<translation id="2824549017793319782">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಪದವನ್ನು ನೇರವಾಗಿ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಟೈಪ್ ಮಾಡಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2824775600643448204">ವಿಳಾಸ ಹಾಗೂ ಹುಡುಕಾಟ ಪಟ್ಟಿ</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ಬಳಸಿಕೊಂಡು ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ದೃಢೀಕರಿಸಲಾಗಿದೆ ಮತ್ತು <ph name="KX" /> ಅನ್ನು ಕೀ ವಿನಿಮಯ ಯಾಂತ್ರಿಕತೆಯಂತೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="2833637280516285136">ಮಾತನಾಡುವ ರೇಡಿಯೊ</translation>
@@ -1472,6 +1474,7 @@
 <translation id="3807366285948165054">ಚಿತ್ರ X ಶಿಫ್ಟ್</translation>
 <translation id="3807709094043295184">ಕ್ಲಾಸಿಕ್ ರಾಕ್ ಮತ್ತು ಹಳೆಯ ಹಾಡುಗಳು</translation>
 <translation id="3807873520724684969">ಹಾನಿಕಾರಕ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
+<translation id="380865868633614173">ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3810770279996899697">Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3812398568375898177">ಇದು ChromeOS ನಲ್ಲಿ Android ಆ್ಯಪ್‌ಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸುವ ನಿರ್ಣಾಯಕ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ.</translation>
@@ -2178,6 +2181,7 @@
 <translation id="5217759126664161410">ಅಮಾನ್ಯ ಪ್ರೊಟೊಕಾಲ್ ಫಾರ್ಮ್ಯಾಟ್.</translation>
 <translation id="5222812217790122047">ಇಮೇಲ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5228269245420405804">ದೂರ ಶಿಕ್ಷಣ</translation>
+<translation id="5230428804606340145">ಇತರ ಹಣಕಾಸು ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5230733896359313003">ಶಿಪ್ಪಿಂಗ್ ವಿಳಾಸ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2185,6 +2189,7 @@
 <translation id="5238301240406177137">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="5239119062986868403">ಸಾಮಾನ್ಯ ಬೆಲೆ</translation>
 <translation id="5239623327352565343">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="5241048084654737238">ಕಾರ್ಡ್ ಮಾಹಿತಿ ದೃಢೀಕರಿಸುವುದನ್ನು ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5242610955375133957">ಡ್ರೈ ಫಿಲ್ಮ್</translation>
 <translation id="5244521145258281926">Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5244732203286792411">ಲೋಡ್ ಆಗುತ್ತಿದೆ...
@@ -2200,6 +2205,7 @@
 <translation id="5266128565379329178">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="5269225904387178860">ಕೆಳಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="5269999699920406580">ಸಿಸ್ಟಮ್‌ನಾದ್ಯಂತ ಅನ್ವಯವಾಗುವ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ಹೊಂದಿಸಬಹುದು: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ಗೆ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ಬೆಂಬಲಿತ ಸ್ಥಿತಿಯಲ್ಲ</translation>
 <translation id="5273658854610202413">ಎಚ್ಚರಿಕೆ: ಈ ಕಾರ್ಯನೀತಿಯನ್ನು PolicyDictionaryMultipleSourceMergeList ಕಾರ್ಯನೀತಿಯಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಿರುವಂತೆ ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ವಿಲೀನಗೊಳಿಸಬಹುದಾದ ನಿಘಂಟಿನ ಕಾರ್ಯನೀತಿಗಳ ಭಾಗವಾಗಿಲ್ಲ.</translation>
 <translation id="5279286380302340275">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3171,6 +3177,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್ ಅನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}one{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}other{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}}</translation>
 <translation id="7160999678034985039">ನಿಮ್ಮ ಕೆಲಸವನ್ನು ಉಳಿಸಿ ಮತ್ತು ನೀವು ಸಿದ್ಧರಾದಾಗ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ನಕಲಿಸಬೇಕೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸಬೇಕೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸಬೇಕೇ?}}</translation>
+<translation id="7168625890036931112">ಈ ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್‌ನಲ್ಲಿ "<ph name="DATA_CONTROLS_RESTRICTION" />" ಬೆಂಬಲಿತ ನಿರ್ಬಂಧವಲ್ಲ</translation>
 <translation id="717330890047184534">Gaia ಐಡಿ:</translation>
 <translation id="7174545416324379297">ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7175097078723125014">ವಿಳಾಸವನ್ನು ಎಡಿಟ್ ಮಾಡುವ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
@@ -3243,6 +3250,7 @@
 <translation id="7310392214323165548">ಸಾಧನವನ್ನು ಶೀಘ್ರದಲ್ಲೇ ಮರುಪ್ರಾರಂಭಿಸಲಾಗುವುದು</translation>
 <translation id="7311244614769792472">ಯಾವ ಫಲಿತಾಂಶಗಳೂ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7311837626618954149">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಕ್ಕೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ Chromium ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
+<translation id="7313107491291103073">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಸೈಟ್ ಅನ್ನು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ, ಏಕೆಂದರೆ ಇದು ನೀತಿಯನ್ನು ಉಲ್ಲಂಘಿಸಬಹುದು.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ಸಂಪರ್ಕ ಸಹಾಯ</translation>
 <translation id="7323804146520582233">ಈ "<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -3567,6 +3575,7 @@
 <translation id="7888575728750733395">ಪ್ರಿಂಟ್ ಸಲ್ಲಿಕೆ ಉದ್ದೇಶ</translation>
 <translation id="7894280532028510793">ಕಾಗುಣಿತ ಸರಿಯಾಗಿದ್ದರೆ, <ph name="BEGIN_LINK" />ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌‌ ರನ್ ಮಾಡಿ ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">ಎನ್ವಲಪ್ 7 x 9 ಇಂಚು</translation>
+<translation id="7908648876066812348">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆ ಪುಟಕ್ಕೆ ಹೋಗಲು Tab ಒತ್ತಿರಿ ನಂತರ Enter ಬಟನ್ ಒತ್ತಿರಿ</translation>
 <translation id="791551905239004656">ಚಿತ್ರಬಿಡಿಸುವಿಕೆ ಮತ್ತು ಬಣ್ಣಹಚ್ಚುವಿಕೆ</translation>
 <translation id="7916162853251942238">ಫ್ಲೆಕ್ಸೊ ಬೇಸ್</translation>
@@ -4075,6 +4084,7 @@
 <translation id="8874790741333031443">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ, ಅಂದರೆ ಬ್ರೌಸಿಂಗ್ ಕಡಿಮೆ ಸಂರಕ್ಷಿತವಾಗಿದೆ, ಆದರೆ ಸೈಟ್‌ನ ಫೀಚರ್‌ಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ.</translation>
 <translation id="8874824191258364635">ಮಾನ್ಯವಾದ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8877780815363510165">ಮೀನುಗಾರಿಕೆ</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_LEVEL" />" ಗೆ "<ph name="DATA_CONTROLS_RESTRICTION" />" ಅನ್ನು ಸೆಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8884537526797090108">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8888187300091017436">ಹಾಸಿಗೆಗಳು</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> ಅನ್ನು ನಿಯಂತ್ರಿಸಿ ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಇರುವ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಪಡೆಯಿರಿ.</translation>

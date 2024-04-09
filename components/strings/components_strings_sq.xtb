@@ -452,7 +452,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1812527064848182527">peizazh</translation>
 <translation id="1812975699435941848">Arsim dhe trajnime në fushën e mjekësisë</translation>
 <translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
-<translation id="1816436748874040213">Mund të kërkojë për të lëvizur dhe zmadhuar skedat e ndara</translation>
+<translation id="1816436748874040213">Mund të kërkojë që të lëvizë dhe zmadhojë skedat e ndara</translation>
 <translation id="1818522458013171885">Zhblloko</translation>
 <translation id="1818585559878922121">Filma dokumentarë</translation>
 <translation id="182139138257690338">shkarkimet automatike</translation>
@@ -783,6 +783,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2452098632681057184">Ekologjia dhe mjedisi</translation>
 <translation id="2452837234288608067">Nuk mund të të ndihmoja me këtë. Provo përsëri.</translation>
 <translation id="2456755709261364512">Bateria duhet të karikohet mbi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">Rryma</translation>
 <translation id="2462932596748424101">Rrjetet sociale</translation>
 <translation id="2463739503403862330">Plotëso</translation>
 <translation id="2465688316154986572">Kapje me tel</translation>
@@ -952,7 +953,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2814184336982254349">Kjo PDF është e paarritshme. Shtyp kërko + m për të hapur menynë kontekstuale dhe aktivizo "nxirr tekstin nga skedari PDF"</translation>
 <translation id="2818338148457093657">Shërbime estetike dhe llixha</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
-<translation id="2824549017793319782">Zgjidh për të shkruar kërkimin tënd drejtpërdrejt në shiritin e adresave</translation>
 <translation id="2824775600643448204">Shiriti i adresës dhe i kërkimit</translation>
 <translation id="2826760142808435982">Lidhja është e enkriptuar dhe e vërtetuar me <ph name="CIPHER" /> dhe përdor <ph name="KX" /> si mekanizëm kryesor shkëmbimi.</translation>
 <translation id="2833637280516285136">Radio me bashkëbisedime</translation>

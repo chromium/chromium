@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">ย้ายมาที่นี่</translation>
 <translation id="1014147525163127655">ไม่มีพาสคีย์สำหรับ <ph name="ORIGIN" /> บนอุปกรณ์นี้</translation>
 <translation id="1016498331642356377">ค้นหาด้วยเสียงอย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
+<translation id="1017104654974573432">เลือกปัญหา</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">กำลังส่งไปที่ <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">ล้างข้อมูลเว็บไซต์และแอปเหล่านี้ด้วยไหม</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">คุณออฟไลน์อยู่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="107147699690128016">หากคุณเปลี่ยนนามสกุลไฟล์ ไฟล์นั้นอาจเปิดในแอปพลิเคชันอื่นและเป็นอันตรายต่ออุปกรณ์ของคุณ</translation>
+<translation id="1082920045291562218">แชร์โดยปิดชีตความคิดเห็นสรุปไว้</translation>
 <translation id="1089606299949659462">ตรวจสอบเรียบร้อยแล้ว</translation>
 <translation id="1095761715416917775">ตรวจสอบว่าคุณเข้าถึงข้อมูลที่ซิงค์ไว้ได้เสมอ</translation>
 <translation id="1100066534610197918">เปิดในแท็บใหม่ในกลุ่ม</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ชม.}other{# ชม.}}</translation>
 <translation id="4035877632587724847">ไม่อนุญาต</translation>
 <translation id="4042941173059740150">ใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ต่อไป</translation>
+<translation id="404352903042073578">กลุ่มที่ไม่มีชื่อ</translation>
 <translation id="4044708993631234325">Bottom Sheet</translation>
 <translation id="405365679581583349">อัปเดตบริการ Google Play</translation>
 <translation id="405399507749852140">รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">ไม่มีบุ๊กมาร์ก</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>
 <translation id="4405636711880428279">นำบัตรเสมือนออกใช่ไหม</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> และอีก <ph name="TAB_COUNT" /> แท็บ</translation>
 <translation id="4409271659088619928">เครื่องมือค้นหาของคุณคือ <ph name="DSE" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">ระบบจะส่งรูปภาพมายัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6621391692573306628">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
+<translation id="6625890511281718257">แชร์ด้วยชีตความคิดเห็นสรุป</translation>
 <translation id="6627583120233659107">แก้ไขโฟลเดอร์</translation>
 <translation id="6633067410344541938">ปลดล็อกเซสชันที่ไม่ระบุตัวตน</translation>
 <translation id="6636623428211296678">สำรวจดูการตั้งค่าเพิ่มเติมด้านล่างหรือสิ้นสุดการตรวจสอบเลย</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
 <translation id="6767294960381293877">รายการอุปกรณ์ที่จะแชร์แท็บด้วยเปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="6770602306803890733">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
+<translation id="6773061896687011391">Google จะส่ง URL ของหน้าที่คุณแสดงความคิดเห็น และเจ้าหน้าที่อาจตรวจสอบ URL ดังกล่าวเพื่อปรับปรุงฟีเจอร์นี้</translation>
 <translation id="6775840696761158817">เมื่อแตะหรือพิมพ์ในแถบที่อยู่หรือช่องค้นหา คุณจะเห็นคำแนะนำจากเครื่องมือค้นหาเริ่มต้น ตัวเลือกนี้จะปิดในโหมดไม่ระบุตัวตน</translation>
 <translation id="6785476624617658922">ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS</translation>
 <translation id="6795633245022906657">เปิดแท็บใหม่อย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858">PDF ที่ดาวน์โหลดจะเปิดด้วย <ph name="APP_NAME" /> โดยอัตโนมัติ</translation>
 <translation id="8137562778192957619">คุณไม่ต้องจำรหัสผ่านนี้ เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8163820386638255770">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
+<translation id="8171286197772512427">แชร์โดยเปิดชีตความคิดเห็นสรุปไว้</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">เหลืออีก <ph name="FILES" /> ไฟล์</translation>
 <translation id="8190358571722158785">เหลือ 1 วัน</translation>

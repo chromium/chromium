@@ -112,6 +112,7 @@
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
 <translation id="1611649489706141841">आगे जाएं</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
+<translation id="1618566998877964907">किसी थीम का इस्तेमाल करें</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1622402072367425417">ग्लोइिंग बबल्स</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नहीं है. फ़ंक्शन और <ph name="META_KEY" /> बटनों के बिना, नए शॉर्टकट का इस्तेमाल करें.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
 <translation id="2324354238778375592">फ़्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
-<translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">कुर्सी</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> के लिए, बदलाव करने का डायलॉग बॉक्स खुला है.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">ऑलिव</translation>
 <translation id="8373046809163484087">अपने वॉलपेपर से मेल खाने वाले रंग के सेट का इस्तेमाल करें</translation>
 <translation id="8380114448424469341">डॉक विंडो को <ph name="DIRECTION" /> ओर स्क्रीन के आधे हिस्से पर रखें</translation>
+<translation id="8391349326751432483">मेमोरी टेस्ट करने के लिए, 500 एमबी खाली मेमोरी की जगह होनी चाहिए. मेमोरी खाली करने के लिए, टैब और ऐप्लिकेशन बंद करें.</translation>
 <translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ मैनेज करता है</translation>
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> स्टाइल में बनी <ph name="ART_FEATURE" /> की पेंटिंग</translation>

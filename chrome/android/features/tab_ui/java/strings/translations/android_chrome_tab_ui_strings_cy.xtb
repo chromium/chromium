@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Tynnu o'r grŵp</translation>
 <translation id="3008554597174452548">Stopio olrhain y cynnyrch</translation>
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Eicon lliw grŵp tab <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Mae gennych <ph name="TABS_COUNT_ONE" /> tab wedi'i archifo}zero{Mae gennych <ph name="TABS_COUNT_MANY" /> tab wedi'u harchifo}two{Mae gennych <ph name="TABS_COUNT_MANY" /> dab wedi'u harchifo}few{Mae gennych <ph name="TABS_COUNT_MANY" /> thab wedi'u harchifo}many{Mae gennych <ph name="TABS_COUNT_MANY" /> thab wedi'u harchifo}other{Mae gennych <ph name="TABS_COUNT_MANY" /> tab wedi'u harchifo}}</translation>
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3291470810748040983">Byddwch yn cael hysbysiad pan fydd pris is mewn tab sydd ar agor</translation>

@@ -694,7 +694,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Comprendo que esta descarga dañará mi computadora</translation>
 <translation id="1535228823998016251">Alto</translation>
-<translation id="1535597783576881392">Esta guía te ayudará a comprender tus elecciones para que Chrome funcione como quieres</translation>
 <translation id="1535753739390684432">Escucha un texto específico en voz alta. Primero, elige el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto.</translation>
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1536883206862903762">Esta acción inhabilitará las extensiones y restablecerá tu configuración a valores predeterminados seguros. Se conservarán las pestañas, los archivos y las cookies. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -1120,7 +1119,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1828901632669367785">Imprimir utilizando el diálogo del sistema…</translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="1829192082282182671">Alejar</translation>
-<translation id="1830550083491357902">No has accedido.</translation>
+<translation id="1830550083491357902">No has accedido</translation>
 <translation id="1831848493690504725">No podemos comunicarnos con Google a través de la red conectada. Prueba elegir otra red o revisa tu configuración de red o proxy (si usas un proxy).</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
@@ -4912,7 +4911,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
 <translation id="4716715661140829720">No hay suficiente espacio de almacenamiento</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
-<translation id="4718046540206070045">Más que un navegador</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No se pueden mostrar mensajes de acceso de terceros</translation>
@@ -5597,7 +5595,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5271578170655641944">¿Quieres quitar el acceso a Google Drive?</translation>
 <translation id="5273806377963980154">Editar la URL del sitio</translation>
-<translation id="5273966423195882879">Color según el tema</translation>
 <translation id="5275084684151588738">Diccionarios del usuario</translation>
 <translation id="5275100789567222478">Activar solo cuando la batería esté al <ph name="PERCENT" />% o menos</translation>
 <translation id="5275338516105640560">Botón para el grupo de pestañas guardadas</translation>
@@ -9604,7 +9601,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
 <translation id="8356409598322585307">Ya registraste este dispositivo. No es necesario que vuelvas a hacerlo.</translation>
 <translation id="8357388086258943206">Error al instalar Linux</translation>
-<translation id="8357591920094529889">Esta guía te ayuda a comprender las opciones importantes que tienes cuando usas Chrome. Además, te ayuda a tomar decisiones para que Chrome funcione como quieres.</translation>
 <translation id="8358685469073206162">¿Restaurar las páginas?</translation>
 <translation id="8358912028636606457">La transmisión de audio de la pestaña no es compatible con este dispositivo.</translation>
 <translation id="835951711479681002">Guardar en tu Cuenta de Google</translation>
@@ -9668,7 +9664,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8399282673057829204">Ver contraseña</translation>
 <translation id="839949601275221554">El dispositivo detectó un error. Reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="8401432541486058167">Proporciona el PIN asociado a tu tarjeta inteligente.</translation>
-<translation id="8403618281196981152">Tus datos en Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> puede revisar tus contraseñas cuando las guardas</translation>
 <translation id="8405046151008197676">Conoce las novedades de la última actualización</translation>
 <translation id="8405118833120731611">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>

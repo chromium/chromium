@@ -1832,7 +1832,6 @@ Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2413899611035194909">Mostra opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
-<translation id="2419114151067000328">La funzionalità delle specifiche del prodotto non sarà disponibile per gli utenti.</translation>
 <translation id="2420958105721932612">Consente di specificare la modalità di installazione di un'app. AVAILABLE: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questo criterio non viene specificato. FORCE_INSTALLED: l'app viene installata automaticamente e l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a un criterio precedente, verrà disinstallata.</translation>
 <translation id="2421400544595297401">Non consentire a utenti non affiliati di utilizzare app per Android</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3362,7 +3361,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
-<translation id="361046511337768385">Consenti l'attivazione della funzionalità delle specifiche del prodotto</translation>
 <translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
       Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
       Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
@@ -5378,7 +5376,6 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 
 A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
-<translation id="5363412016871318326">La funzionalità delle specifiche del prodotto sarà disponibile per gli utenti.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="5366977351895725771">Se questa norma è impostata su false, la creazione di utenti supervisionati da parte di questo utente sarà disabilitata. Gli eventuali utenti supervisionati esistenti saranno comunque disponibili.
@@ -8902,9 +8899,6 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
-<translation id="810509972572344398">Se questo criterio viene attivato o se non viene configurato, le specifiche di prodotto saranno disponibili per gli utenti.
-
-Se questo criterio viene disattivato, le specifiche del prodotto non saranno disponibili.</translation>
 <translation id="8109762054721090517">Modello per l'<ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Consente di configurare il tempo di inattività del dispositivo in secondi che deve trascorrere prima di mostrare il salvaschermo per la schermata di blocco.
 

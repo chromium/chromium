@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Вилучити з групи</translation>
 <translation id="3008554597174452548">Вимкнути відстеження товару</translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">Значок кольору "<ph name="COLOR_NAME" />" для групи вкладок</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{У вас <ph name="TABS_COUNT_ONE" /> заархівована вкладка}one{У вас <ph name="TABS_COUNT_MANY" /> заархівована вкладка}few{У вас <ph name="TABS_COUNT_MANY" /> заархівовані вкладки}many{У вас <ph name="TABS_COUNT_MANY" /> заархівованих вкладок}other{У вас <ph name="TABS_COUNT_MANY" /> заархівованої вкладки}}</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Premik sem</translation>
 <translation id="1014147525163127655">V tej napravi ni ključev za dostop za aplikacijo <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
+<translation id="1017104654974573432">Izbira težave</translation>
 <translation id="1024113959924243553">Chrome za razvijalce</translation>
 <translation id="1028699632127661925">Pošiljanje v napravo <ph name="DEVICE_NAME" /> ...</translation>
 <translation id="103269572468856066">Želite izbrisati tudi podatke s teh mest in iz aplikacij?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Nimate vzpostavljene povezave. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="10614374240317010">Nikoli shranjeno</translation>
 <translation id="107147699690128016">Če spremenite pripono datoteke, se lahko datoteka odpre v drugem programu in je lahko morebitno škodljiva za vašo napravo.</translation>
+<translation id="1082920045291562218">Zaprto deljenje s povzetkom povratnih informacij</translation>
 <translation id="1089606299949659462">Pregled je končan!</translation>
 <translation id="1095761715416917775">Poskrbite, da boste ves čas lahko dostopali do podatkov sinhronizacije</translation>
 <translation id="1100066534610197918">Odpri nov zavihek v skupini</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}two{# h}few{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Ne dovoli</translation>
 <translation id="4042941173059740150">Naprej na <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Neimenovana skupina</translation>
 <translation id="4044708993631234325">List na dnu zaslona</translation>
 <translation id="405365679581583349">Posodobite storitve Google Play</translation>
 <translation id="405399507749852140">Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">Ni zaznamkov</translation>
 <translation id="4405224443901389797">Premakni v …</translation>
 <translation id="4405636711880428279">Želite odstraniti navidezno kartico?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> in še toliko zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="4409271659088619928">Vaš iskalnik je <ph name="DSE" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
 <translation id="4425140285732600465">Spremljanje cene. Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
@@ -1070,6 +1074,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6595046016124923392">Slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
 <translation id="6621391692573306628">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
+<translation id="6625890511281718257">Deljenje z listom s povzetkom povratnih informacij</translation>
 <translation id="6627583120233659107">Uredi mapo</translation>
 <translation id="6633067410344541938">Odkleni anonimni način</translation>
 <translation id="6636623428211296678">Spodaj lahko raziščete več nastavitev ali zaključite zdaj.</translation>
@@ -1108,6 +1113,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Seznam naprav, s katerimi želite deliti zavihek, odprt pri polovični višini.</translation>
 <translation id="6770602306803890733">Izboljšuje varnost za vas in vse druge v spletu</translation>
+<translation id="6773061896687011391">URL strani, za katero pošiljate povratne informacije, pošlje Google in morda ga zaradi izboljšanja te funkcije pregledajo ljudje</translation>
 <translation id="6775840696761158817">Ko se dotaknete naslovne vrstice ali iskalnega polja ali vnesete besedilo vanju, se prikažejo predlogi privzetega iskalnika. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="6785476624617658922">Dodatni pogoji za Google Chrome in Chrome OS</translation>
 <translation id="6795633245022906657">Hitro odprite nov zavihek. To bližnjico lahko uredite v nastavitvah.</translation>
@@ -1411,6 +1417,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8135406045838672858">Prenesene datoteke PDF se samodejno odprejo z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Tega gesla si vam ne bo treba zapomniti. Shranjeno bo v Googlovem upravitelju gesel.</translation>
 <translation id="8163820386638255770">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi</translation>
+<translation id="8171286197772512427">Odprto deljenje s povzetkom povratnih informacij</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Še toliko datotek: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Še 1 dan</translation>

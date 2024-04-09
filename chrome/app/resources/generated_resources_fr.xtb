@@ -698,7 +698,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Je comprends que ce téléchargement peut endommager mon ordinateur</translation>
 <translation id="1535228823998016251">Fort</translation>
-<translation id="1535597783576881392">Ce guide vous aide à comprendre vos choix, afin que Chrome fonctionne comme vous le souhaitez</translation>
 <translation id="1535753739390684432">En bas de l'écran, sélectionnez l'icône Sélectionner pour écouter, puis mettez en surbrillance le texte qui vous sera lu à voix haute</translation>
 <translation id="1536754031901697553">Déconnexion…</translation>
 <translation id="1536883206862903762">Cette action désactivera les extensions et rétablira vos paramètres par défaut sécurisés. Les onglets, les fichiers et les cookies seront conservés. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -4916,7 +4915,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4716483597559580346">Powerwash pour plus de sécurité</translation>
 <translation id="4716715661140829720">Espace de stockage insuffisant</translation>
 <translation id="471759229191973607">Modifier le thème</translation>
-<translation id="4718046540206070045">Bien plus qu'un navigateur</translation>
 <translation id="4722735765955348426">Mot de passe associé à <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Votre écran est partagé par le biais de l'application <ph name="APP_NAME" />.</translation>
 <translation id="4722989931633062466">Non autorisé(s) à afficher des invites de connexion tierces</translation>
@@ -5601,7 +5599,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5269977353971873915">Échec de l'impression</translation>
 <translation id="5271578170655641944">Supprimer l'accès à Google Drive ?</translation>
 <translation id="5273806377963980154">Modifier l'URL du site</translation>
-<translation id="5273966423195882879">Couleur basée sur le thème</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
 <translation id="5275100789567222478">Activer uniquement lorsque le niveau de la batterie est inférieur ou égal à <ph name="PERCENT" /> %</translation>
 <translation id="5275338516105640560">Bouton "Groupe d'onglets enregistré"</translation>
@@ -9611,7 +9608,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Vous avez déjà enregistré cet appareil. Il n'est pas nécessaire de l'enregistrer à nouveau.</translation>
 <translation id="8357388086258943206">Erreur lors de l'installation de Linux</translation>
-<translation id="8357591920094529889">Ce guide vous aide à comprendre les choix importants qui s'offrent à vous lorsque vous utilisez Chrome. Il vous aide aussi dans ces choix pour que Chrome fonctionne comme vous le souhaitez.</translation>
 <translation id="8358685469073206162">Restaurer les pages ?</translation>
 <translation id="8358912028636606457">Impossible de caster le contenu audio de l'onglet sur cet appareil.</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
@@ -9675,7 +9671,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
 <translation id="839949601275221554">Une erreur s'est produite. Veuillez redémarrer votre appareil et réessayer.</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
-<translation id="8403618281196981152">Vos données dans Chrome</translation>
 <translation id="8403807918453631441">Le <ph name="BRAND" /> peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
 <translation id="8405046151008197676">Découvrez les nouveautés de la dernière mise à jour</translation>
 <translation id="8405118833120731611">{0,plural, =1{Fermer ce profil}one{Fermer ce profil (# fenêtre)}other{Fermer ce profil (# fenêtres)}}</translation>

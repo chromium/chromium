@@ -380,6 +380,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="168693727862418163">Nie udało się zweryfikować tej wartości zasady względem jej schematu. Będzie ona ignorowana.</translation>
 <translation id="168841957122794586">Certyfikat serwera ma słaby klucz kryptograficzny.</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
+<translation id="1691425742011409472">blokada wskaźnika</translation>
 <translation id="1692622044604477956">Recenzje filmów i repertuary kin</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />W jaki sposób możesz zarządzać swoimi danymi:<ph name="END_BOLD" /> Chrome automatycznie usuwa tematy, które mają ponad 4 tygodnie. Jeśli będziesz nadal przeglądać strony, powiązane z nimi tematy mogą ponownie pojawić się na liście. W dowolnej chwili w ustawieniach Chrome możesz też zablokować tematy, których nie chcesz udostępniać stronom odwiedzanym w Chrome, oraz wyłączyć tematy reklam.</translation>
 <translation id="1697532407822776718">Wszystko gotowe.</translation>
@@ -729,6 +730,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2337852623177822836">Ustawienie kontrolowane przez administratora</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> chce się sparować</translation>
 <translation id="2346319942568447007">Skopiowany obraz</translation>
+<translation id="2349056830177284083">Blokada klawiatury</translation>
 <translation id="2349957959687031096">Przycisk Otwórz kartę incognito; aktywuj, aby przeglądać prywatnie na nowej karcie incognito</translation>
 <translation id="2350796302381711542">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" /> zamiast usługi <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
@@ -785,6 +787,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2452098632681057184">Ekologia i środowisko</translation>
 <translation id="2452837234288608067">Nie udało się pomóc. Spróbuj ponownie.</translation>
 <translation id="2456755709261364512">Poziom naładowania baterii musi przekraczać <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2462932596748424101">Sieci społecznościowe</translation>
 <translation id="2463739503403862330">Wpisz</translation>
 <translation id="2465688316154986572">Zszywka</translation>
@@ -944,6 +947,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Połączenie zostało zresetowane.</translation>
 <translation id="2786008859124691917">Rowery i akcesoria</translation>
+<translation id="2791955793407772554">Blokada wskaźnika</translation>
 <translation id="2792012897584536778">Administratorzy tego urządzenia skonfigurowali certyfikaty zabezpieczeń, dzięki którym mogą zobaczyć zawartość stron internetowych, które odwiedzasz.</translation>
 <translation id="2794233252405721443">Strona zablokowana</translation>
 <translation id="2794629552137076216">Szkło (powierzchniowe)</translation>
@@ -954,7 +958,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2814184336982254349">Ten plik PDF jest niedostępny. Naciśnij klawisz wyszukiwania + M, aby otworzyć menu kontekstowe, i włącz „Wyodrębnianie tekstu z pliku PDF”</translation>
 <translation id="2818338148457093657">Usługi kosmetyczne i spa</translation>
 <translation id="2820957248982571256">Skanuję…</translation>
-<translation id="2824549017793319782">Wybierz, aby wpisać zapytanie bezpośrednio w pasku adresu</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Radiowe programy publicystyczne</translation>
@@ -1103,6 +1106,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3121994479408824897">Wejdź na <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etykiety (trwałe)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> jest teraz Twoją domyślną wyszukiwarką</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – szukaj w: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Usługi dla firm</translation>
 <translation id="3141093262818886744">Otwórz mimo to</translation>
 <translation id="3141641372357166056">Brak decyzji w sprawie zgody</translation>
@@ -1428,12 +1432,14 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3711895659073496551">Wstrzymaj</translation>
 <translation id="3712006010833051684">Koperta nr 10</translation>
 <translation id="3712624925041724820">Brak wolnych licencji</translation>
+<translation id="3713277100229669269">Teraz możesz zobaczyć korzyści z karty, zanim zapłacisz</translation>
 <translation id="371420189621607696">Zawody w grach komputerowych</translation>
 <translation id="3714633008798122362">kalendarz sieciowy</translation>
 <translation id="3714780639079136834">Włącz komórkową transmisję danych lub Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3715545959749027023">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane, awarie przeglądarki lub kart oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na danym urządzeniu i w Chrome.</translation>
 <translation id="3715597595485130451">Połączenie z siecią Wi-Fi</translation>
+<translation id="3716622997181469465">blokada klawiatury</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sprawdź serwer proxy, zaporę sieciową i konfigurację DNS<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Podczas aktualizacji przez 10 minut nie będzie można korzystać z urządzenia.</translation>
 <translation id="372429172604983730">Aplikacje, które mogą wywoływać ten błąd, to na przykład programy antywirusowe, zapory sieciowe oraz oprogramowanie do filtrowania ruchu w sieci lub obsługi serwera proxy.</translation>
@@ -3518,6 +3524,7 @@ Dodatkowe informacje:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Dostosuj rozmiary i kroje czcionek w Chrome</translation>
 <translation id="7752995774971033316">Niezarządzany</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – czatuj z <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Po rozpoczęciu aktualizacji Twoje karty i aplikacje w Chrome zostaną zamknięte</translation>
 <translation id="7755287808199759310">Może ją dla Ciebie odblokować Twój rodzic</translation>
 <translation id="7755624218968747854">Rolka główna</translation>

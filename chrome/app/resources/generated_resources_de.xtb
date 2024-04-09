@@ -694,7 +694,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ich verstehe, dass dieser Download schädlich für meinen Computer ist</translation>
 <translation id="1535228823998016251">Laut</translation>
-<translation id="1535597783576881392">In dieser Anleitung erfährst du mehr über deine Möglichkeiten, damit Chrome so funktioniert, wie du es möchtest</translation>
 <translation id="1535753739390684432">Du kannst dir Text vorlesen lassen. Wähle zuerst unten auf dem Bildschirm das Symbol „Vorlesen“ aus und markiere dann den entsprechenden Text.</translation>
 <translation id="1536754031901697553">Verbindung wird getrennt…</translation>
 <translation id="1536883206862903762">Dadurch werden Erweiterungen deaktiviert und deine Einstellungen auf die Standardeinstellungen zurückgesetzt, um dein Gerät besser zu schützen. Tabs, Dateien und Cookies bleiben erhalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -1063,6 +1062,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
+<translation id="1798335429200675510">Klicke mit der rechten Maustaste in ein Textfeld, um Vorschläge zu erstellen oder vorhandene Texte zu optimieren, die auf Google AI basieren. Derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
@@ -1457,6 +1457,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
 <translation id="2088564884469682888">Eingebauter TrackPoint</translation>
 <translation id="208928984520943006">Du kannst jederzeit von unten nach oben wischen, um den Startbildschirm aufzurufen.</translation>
+<translation id="2089550919269323883">Die Installation von <ph name="VM_NAME" /> wird durch eine Unternehmensrichtlinie blockiert. Wende dich an deinen Systemadministrator. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="2089925163047119068">ODER</translation>
 <translation id="2090165459409185032">Besuche die folgende Seite, um deine Kontoinformationen wiederzuherstellen: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Stellt automatisch eine Verbindung her, wenn du dich anmeldest.</translation>
@@ -1500,6 +1501,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2113479184312716848">&amp;Datei öffnen...</translation>
 <translation id="2113921862428609753">Zugriff auf Zertifizierungsstelleninformationen</translation>
+<translation id="2114145607116268663">Installation nicht möglich, Neustart erforderlich. Starte deinen Computer neu und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">&amp;Frame neu laden</translation>
 <translation id="2114413269775311385">Dieses Konto mit Android-Apps verwenden. Berechtigungen für Android-Apps lassen sich in den <ph name="LINK_BEGIN" />App-Einstellungen<ph name="LINK_END" /> verwalten.</translation>
 <translation id="2114820389966440614">„Aktuelle Highlights“ und andere Erinnerungen hier ansehen</translation>
@@ -2665,6 +2667,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="2979639724566107830">In neuem Fenster öffnen</translation>
 <translation id="2979893796619951531">Website ausschließen</translation>
+<translation id="2981033191524548279">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" />. Dieser Fehler lässt sich möglicherweise durch einen Neustart und einen neuen Versuch beheben.</translation>
 <translation id="2981113813906970160">Großen Cursor verwenden</translation>
 <translation id="2983102365694924129">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist deaktiviert.</translation>
 <translation id="2983373101216420412">Akkustand des Case bei <ph name="PERCENTAGE" /> %.</translation>
@@ -4336,6 +4339,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4275397969489577657">Ereignisstream-Protokollierung aktivieren</translation>
 <translation id="4275788652681621337">Seitenleiste schließen</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
+<translation id="4276856098224910511">Installation nicht möglich, Betriebssystemupdate steht aus. Führe alle ausstehenden Betriebssystemupdates aus, starte das Gerät neu und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-Konfigurationsquelle</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Berechtigungen von 1 Website entfernt}other{Berechtigungen von {NUM_SITES} Websites entfernt}}</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
@@ -4544,6 +4548,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4426490308207168518">Feedback geben oder Problem melden</translation>
 <translation id="4426508677408162512">Alle Lesezeichen</translation>
 <translation id="4426513927906544654">Inhaltsempfehlungen erhalten</translation>
+<translation id="4426857487270413362">Die Installationsdateien konnten nicht heruntergeladen werden. Prüfe deine Internetverbindung und ob du genügend freien Speicherplatz hast, und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
@@ -4906,7 +4911,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4716483597559580346">Powerwash für mehr Sicherheit</translation>
 <translation id="4716715661140829720">Nicht genügend Speicherplatz</translation>
 <translation id="471759229191973607">Design ändern</translation>
-<translation id="4718046540206070045">Mehr als nur ein Browser</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
 <translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
@@ -5145,6 +5149,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4899696330053002588">Enthält Werbung</translation>
 <translation id="490031510406860025">Auf dieser Website nicht zugelassen</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz, Zeilensprung</translation>
+<translation id="490056871160016482">Websites verwenden diese Funktion, um eine immersive Vollbildnutzung unabhängig von Nutzergesten anzubieten</translation>
 <translation id="4900652253009739885">Der einzige Schalter, der „Auswählen“ zugewiesen ist, kann nicht entfernt werden. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="4901154724271753917">Kürzlich geschlossene Tabs maximieren</translation>
 <translation id="4901309472892185668">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus.</translation>
@@ -5590,7 +5595,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
 <translation id="5271578170655641944">Google Drive-Zugriff entfernen?</translation>
 <translation id="5273806377963980154">Website-URL bearbeiten</translation>
-<translation id="5273966423195882879">Farbe basierend auf Design</translation>
 <translation id="5275084684151588738">Meine Wörterbücher</translation>
 <translation id="5275100789567222478">Nur bei einem Akkustand von <ph name="PERCENT" /> % oder niedriger aktivieren</translation>
 <translation id="5275338516105640560">Schaltfläche „Gespeicherte Tabgruppe“</translation>
@@ -7160,6 +7164,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6517227424170598783">Verknüpfung „<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />“ entfernen?</translation>
 <translation id="6517382055541687102">Das ausgewählte Gerät wurde zu „<ph name="DEVICE_NAME" />“ geändert</translation>
 <translation id="6517420300299531857">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst. Dafür wird Speicherplatz von ungefähr <ph name="REQUIRED_SPACE" /> belegt. Momentan ist Speicherplatz von <ph name="FREE_SPACE_AVAILABLE" /> verfügbar.</translation>
+<translation id="651753338596587143">Beim Installieren von DLC-Abhängigkeiten ist ein Fehler aufgetreten. Starte das Gerät neu. Wenn das Problem weiterhin besteht, gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="6517709704288360414">Dein Gerät funktioniert dann möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten. Das Deaktivieren von Updates beeinträchtigt eventuell auch deinen Anspruch, rechtliche Forderungen zu stellen, falls Probleme auftreten sollten.</translation>
 <translation id="6518014396551869914">Bild ko&amp;pieren</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
@@ -7607,6 +7612,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6847125920277401289">Zum Fortfahren Speicherplatz freigeben</translation>
 <translation id="6848388270925200958">Zurzeit können einige deiner Karten nur auf diesem Gerät verwendet werden</translation>
 <translation id="6848716236260083778">Bitte dein Kind, den Fingerabdrucksensor zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck deines Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
+<translation id="6849623577495734856">Symbolleistensymbole</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
 <translation id="6851181413209322061">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese Einstellung wird vom Inhaber erzwungen. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
 <translation id="6851497530878285708">App aktiviert</translation>
@@ -8364,6 +8370,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7456142309650173560">Dev</translation>
 <translation id="7456774706094330779">Erweitertes Vorabladen</translation>
 <translation id="7456847797759667638">Adresse öffnen...</translation>
+<translation id="7457027286267861992">Nicht genügend Speicherplatz. Gib Speicherplatz frei und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{einen Link}other{# Links}}</translation>
 <translation id="7458168200501453431">Verwendet dieselbe Rechtschreibprüfung wie die Google Suche. Der in den Browser eingegebene Text wird an Google gesendet.</translation>
 <translation id="7458715171471938198">Apps wiederherstellen?</translation>
@@ -9591,7 +9598,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du hast dieses Gerät bereits registriert. Es muss nicht noch einmal registriert werden.</translation>
 <translation id="8357388086258943206">Fehler beim Installieren von Linux</translation>
-<translation id="8357591920094529889">In dieser Anleitung werden die Möglichkeiten erklärt, die du in Chrome hast. Außerdem erfährst du, welche Anpassungen du vornehmen kannst, damit Chrome so funktioniert, wie du es möchtest.</translation>
 <translation id="8358685469073206162">Seiten wiederherstellen?</translation>
 <translation id="8358912028636606457">Das Audio-Streaming von einem Tab wird auf diesem Gerät nicht unterstützt.</translation>
 <translation id="835951711479681002">Im Google-Konto speichern</translation>
@@ -9655,7 +9661,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8399282673057829204">Passwort anzeigen</translation>
 <translation id="839949601275221554">Auf dem Gerät ist ein Fehler aufgetreten. Bitte starte dein Gerät neu und versuch es noch einmal.</translation>
 <translation id="8401432541486058167">Gib die PIN für deine Smartcard an.</translation>
-<translation id="8403618281196981152">Meine Daten in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8405118833120731611">{0,plural, =1{Dieses Profil schließen}other{Dieses Profil schließen (# Fenster)}}</translation>
@@ -10159,6 +10164,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8787752878731558379">Hilf uns, Chrome zu verbessern, indem du uns mitteilst, warum du Drittanbieter-Cookies zulässt</translation>
 <translation id="8791157330927639737">Weitere Informationen zum Aktualisieren</translation>
 <translation id="8791534160414513928">Bei Browserzugriffen eine „Do Not Track“-Anforderung mitsenden</translation>
+<translation id="8793390639824829328">Websites nutzen diese Funktion zum Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="879413103056696865">Während der Hotspot aktiviert ist, wird dein <ph name="PHONE_NAME" /> Folgendes tun:</translation>
 <translation id="8795916974678578410">Neues Fenster</translation>
 <translation id="8796919761992612392">Chrome a&amp;npassen</translation>
@@ -10650,6 +10656,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9150045010208374699">Deine Kamera verwenden</translation>
 <translation id="9150079578948279438">Das Profil konnte nicht entfernt werden. Bitte versuche es noch einmal oder wende sich an den technischen Support.</translation>
 <translation id="9150860646299915960">Linux-Container aktualisieren</translation>
+<translation id="915112772806845021">Websites verwenden diese Funktion, um automatisch den Bild-im-Bild-Modus zu aktivieren. So kannst du ein Video weiter ansehen und hast auf dem Bildschirm gleichzeitig Platz für andere Aufgaben.</translation>
 <translation id="9151249085738989067">ChromeVox-Stimme je nach Sprache automatisch wechseln</translation>
 <translation id="9151906066336345901">Ende</translation>
 <translation id="9153274276370926498">Lacros-Systeminformationen</translation>

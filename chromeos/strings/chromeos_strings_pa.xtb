@@ -112,6 +112,7 @@
 <translation id="160633243685262989">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1611649489706141841">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ਤੋਂ ਡਾਟਾ ਵਰਤੋਂ</translation>
+<translation id="1618566998877964907">ਕੋਈ ਥੀਮ ਵਰਤੋ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1622402072367425417">ਚਮਕਦੇ ਬੁਲਬੁਲੇ</translation>
 <translation id="1626590945318984973">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਫੰਕਸ਼ਨ ਅਤੇ <ph name="META_KEY" /> ਕੁੰਜੀਆਂ ਨੂੰ ਵਰਤੇ ਬਿਨਾਂ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">ਛੱਡ ਦਿੱਤਾ</translation>
 <translation id="2324354238778375592">ਫ਼ਲੋਟ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">ਨੇੜਲੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਲੱਭਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2346474577291266260">ਸ਼ਾਨਦਾਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">ਕੁਰਸੀ</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> ਲਈ ਸੰਪਾਦਨ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">ਜੈਤੂਨ ਰੰਗਾ</translation>
 <translation id="8373046809163484087">ਆਪਣੇ ਵਾਲਪੇਪਰ ਨਾਲ ਮੇਲ ਖਾਂਦੇ ਰੰਗ ਦੇ ਸੈੱਟਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8380114448424469341">ਸਕ੍ਰੀਨ ਦੇ <ph name="DIRECTION" /> ਅੱਧੇ ਹਿੱਸੇ 'ਤੇ ਵਿੰਡੋ ਨੂੰ ਡੌਕ ਕਰੋ</translation>
+<translation id="8391349326751432483">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ 500 MB ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਮੈਮੋਰੀ ਖਾਲੀ ਕਰਨ ਲਈ, ਟੈਬਾਂ ਅਤੇ ਐਪਾਂ ਬੰਦ ਕਰੋ।</translation>
 <translation id="8395584934117017006">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8398927464629426868">ਉਹ ਦਰ ਜਿਸ 'ਤੇ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਚਾਰਜ ਜਾਂ ਡਿਸਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ਸ਼ੈਲੀ ਵਿੱਚ <ph name="ART_FEATURE" /> ਦੀ ਇੱਕ ਪੇਂਟਿੰਗ</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Vista previa de imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1622402072367425417">burbujas brillantes</translation>
 <translation id="1626590945318984973">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas sin usar la tecla de función ni la tecla <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">SALTADA</translation>
 <translation id="2324354238778375592">Flotar</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
-<translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">silla</translation>
 <translation id="2358070305000735383">El cuadro de diálogo de edición de <ph name="DESCRIPTION" /> está abierto.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">verde oliva</translation>
 <translation id="8373046809163484087">Usa conjuntos de colores que combinen con tu fondo de pantalla</translation>
 <translation id="8380114448424469341">Anclar ventana en la mitad <ph name="DIRECTION" /> de la pantalla</translation>
+<translation id="8391349326751432483">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar memoria, cierra pestañas y aplicaciones.</translation>
 <translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8403988360557588704">Pintura de <ph name="ART_FEATURE" /> con estilo <ph name="ART_MOVEMENT" /></translation>

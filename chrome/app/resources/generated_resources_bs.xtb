@@ -703,7 +703,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Jasno mi je da ovo preuzimanje može oštetiti moj računar</translation>
 <translation id="1535228823998016251">Glasno</translation>
-<translation id="1535597783576881392">Ovaj vodič vam pojašnjava vaše izbore kako bi Chrome funkcionirao onako kako želite</translation>
 <translation id="1535753739390684432">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst.</translation>
 <translation id="1536754031901697553">Prekidanje veze…</translation>
 <translation id="1536883206862903762">Ovim će se onemogućiti ekstenzije i postavke vratiti na sigurne zadane. Zadržat će se kartice, fajlovi i kolačići. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -4939,7 +4938,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4716483597559580346">Powerwash za dodatnu sigurnost</translation>
 <translation id="4716715661140829720">Nema dovoljno prostora za pohranu</translation>
 <translation id="471759229191973607">Promijeni temu</translation>
-<translation id="4718046540206070045">Više od preglednika</translation>
 <translation id="4722735765955348426">Lozinka za korisničko ime <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> dijeli vaš ekran</translation>
 <translation id="4722989931633062466">Nije dozvoljeno prikazivati upite za prijavu trećih strana</translation>
@@ -5624,7 +5622,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5269977353971873915">Štampanje nije uspjelo</translation>
 <translation id="5271578170655641944">Ukloniti pristup Google Disku?</translation>
 <translation id="5273806377963980154">Uredite URL web lokacije</translation>
-<translation id="5273966423195882879">Boja zasnovana na temi</translation>
 <translation id="5275084684151588738">Korisnikovi rječnici</translation>
 <translation id="5275100789567222478">Uključi samo kada je baterija na <ph name="PERCENT" />% ili niže</translation>
 <translation id="5275338516105640560">Dugme sačuvane grupe kartica</translation>
@@ -9639,7 +9636,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Već ste registrirali ovaj uređaj. Ne morate ga ponovo registrirati.</translation>
 <translation id="8357388086258943206">Greška prilikom instaliranja Linuxa</translation>
-<translation id="8357591920094529889">Ovaj vodič vam pomaže da shvatite važne izbore koje imate dok koristite Chrome. Pomaže vam i da odlučite prilikom odabira tako da Chrome funkcionira onako kako želite.</translation>
 <translation id="8358685469073206162">Vratiti stranice?</translation>
 <translation id="8358912028636606457">Emitiranje zvuka kartice nije podržano na ovom uređaju.</translation>
 <translation id="835951711479681002">Sačuvajte na Google računu</translation>
@@ -9703,7 +9699,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8399282673057829204">Prikaži lozinku</translation>
 <translation id="839949601275221554">Došlo je do greške na uređaju. Ponovo pokrenite uređaj i pokušajte ponovo.</translation>
 <translation id="8401432541486058167">Unesite PIN koji je povezan s vašom pametnom karticom.</translation>
-<translation id="8403618281196981152">Vaši podaci u Chromeu</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="8405046151008197676">Otkrijte istaknute novosti o najnovijem ažuriranju</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zatvori profil}one{Zatvori profil (# prozor)}few{Zatvori profil (# prozora)}other{Zatvori profil (# prozora)}}</translation>

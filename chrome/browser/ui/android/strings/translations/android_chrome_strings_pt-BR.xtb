@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Mover para cá</translation>
 <translation id="1014147525163127655">Não há chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquisar rapidamente usando sua voz. Para editar este atalho, toque e pressione.</translation>
+<translation id="1017104654974573432">Selecione um problema</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando para este dispositivo: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Remover também dados desses sites e apps?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Você está off-line. Verifique sua conexão de Internet e tente de novo.</translation>
 <translation id="10614374240317010">Nunca salvas</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
+<translation id="1082920045291562218">Compartilhar com a página de feedback do resumo fechada</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
 <translation id="1100066534610197918">Abrir em nova guia no grupo</translation>
@@ -557,6 +559,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Não permitir</translation>
 <translation id="4042941173059740150">Acesse <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grupo sem nome</translation>
 <translation id="4044708993631234325">Página inferior</translation>
 <translation id="405365679581583349">Atualizar o Google Play Services</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
@@ -628,6 +631,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="4404568932422911380">Nenhum favorito</translation>
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4405636711880428279">Remover seu cartão virtual?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> guias</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
@@ -1071,6 +1075,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6595046016124923392">As imagens são enviadas para o Google e, assim, podemos melhorar as descrições para você.</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6621391692573306628">Para enviar esta guia a outro dispositivo, faça login no Chrome nos dois aparelhos</translation>
+<translation id="6625890511281718257">Compartilhar com a página de feedback do resumo</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a navegação anônima</translation>
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
@@ -1109,6 +1114,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Lista de dispositivos com os quais é possível compartilhar uma guia aberta na metade da altura.</translation>
 <translation id="6770602306803890733">Melhora a segurança para você e para todos na Web</translation>
+<translation id="6773061896687011391">O URL da página sobre a qual você está dando feedback será enviado ao Google e poderá ser revisado por humanos para melhorar o recurso</translation>
 <translation id="6775840696761158817">Quando você toca ou digita na barra de endereço ou na caixa de pesquisa, sugestões do seu mecanismo de pesquisa padrão aparecem. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="6785476624617658922">Termos de Serviço adicionais do Google Chrome e do ChromeOS</translation>
 <translation id="6795633245022906657">Abrir rapidamente uma nova guia. Para editar esse atalho, acesse as Configurações.</translation>
@@ -1412,6 +1418,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8135406045838672858">Os PDFs baixados são abertos automaticamente com o <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Você não precisa se lembrar dessa senha. Ela vai ficar salva no Gerenciador de senhas do Google.</translation>
 <translation id="8163820386638255770">Confirme sua identidade para usar e salvar senhas na sua Conta do Google</translation>
+<translation id="8171286197772512427">Compartilhar com a página de feedback do resumo aberta</translation>
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> arquivos restantes</translation>
 <translation id="8190358571722158785">Um dia restante</translation>

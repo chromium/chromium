@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">برداشتن از گروه</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">نماد رنگ گروه برگه <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه بایگانی‌شده دارید}one{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}other{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}}</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3291470810748040983">وقتی در یکی از برگه‌های باز، قیمت کمتری وجود داشت، اعلان دریافت خواهید کرد</translation>

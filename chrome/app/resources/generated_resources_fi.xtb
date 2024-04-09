@@ -700,7 +700,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ymmärrän, että lataus vahingoittaa tietokonettani</translation>
 <translation id="1535228823998016251">Äänekäs</translation>
-<translation id="1535597783576881392">Tämä opas auttaa sinua ymmärtämään valintojasi, jotta Chrome toimii haluamallasi tavalla</translation>
 <translation id="1535753739390684432">Kuuntele tietty teksti ääneen luettuna. Valitse ensin Teksti puhuttuna ‐kuvake näytön alareunasta ja korosta sitten tekstiä.</translation>
 <translation id="1536754031901697553">Katkaistaan yhteyttä...</translation>
 <translation id="1536883206862903762">Tämä poistaa laajennukset käytöstä ja palauttaa asetuksesi turvallisiin oletusasetuksiin. Välilehdet, tiedostot ja evästeet säilytetään. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -4927,7 +4926,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4716483597559580346">Paranna suojausta powerwashin avulla</translation>
 <translation id="4716715661140829720">Ei tarpeeksi tallennustilaa</translation>
 <translation id="471759229191973607">Vaihda teema</translation>
-<translation id="4718046540206070045">Monipuolinen selain</translation>
 <translation id="4722735765955348426">Salasana: <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> jakaa näyttösi.</translation>
 <translation id="4722989931633062466">Kolmannen osapuolen kirjautumiskehotuksia ei saa näyttää</translation>
@@ -5612,7 +5610,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5269977353971873915">Tulostus epäonnistui</translation>
 <translation id="5271578170655641944">Poistetaanko Google Driven pääsy?</translation>
 <translation id="5273806377963980154">Muokkaa sivuston URL-osoitetta</translation>
-<translation id="5273966423195882879">Teemaan perustuva väri</translation>
 <translation id="5275084684151588738">Käyttäjän sanakirjat</translation>
 <translation id="5275100789567222478">Laita päälle vain, kun akkua on jäljellä <ph name="PERCENT" /> % tai vähemmän</translation>
 <translation id="5275338516105640560">Välilehtiryhmän painike tallennettu</translation>
@@ -9618,7 +9615,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Olet jo rekisteröinyt tämän laitteen. Sitä ei tarvitse rekisteröidä uudelleen.</translation>
 <translation id="8357388086258943206">Virhe asennettaessa Linuxia</translation>
-<translation id="8357591920094529889">Tästä oppaasta saat tietoa tärkeistä valinnoista, joita teet käyttäessäsi Chromea. Sen avulla voit tehdä valintoja, joiden avulla Chrome toimii haluamallasi tavalla.</translation>
 <translation id="8358685469073206162">Palautetaanko sivut?</translation>
 <translation id="8358912028636606457">Tämä laite ei tue välilehden äänten striimausta.</translation>
 <translation id="835951711479681002">Tallenna Google-tilillesi</translation>
@@ -9682,7 +9678,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8399282673057829204">Katso salasana</translation>
 <translation id="839949601275221554">Laitteessa tapahtui virhe. Käynnistä laite uudelleen ja yritä uudelleen.</translation>
 <translation id="8401432541486058167">Ilmoita älykorttiisi liittyvä PIN-koodi.</translation>
-<translation id="8403618281196981152">Datasi Chromessa</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="8405046151008197676">Katso uusimman päivityksen parhaat palat</translation>
 <translation id="8405118833120731611">{0,plural, =1{Sulje tämä profiili}other{Sulje tämä profiili (# ikkunaa)}}</translation>

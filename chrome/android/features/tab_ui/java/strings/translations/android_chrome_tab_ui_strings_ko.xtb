@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="3008554597174452548">제품 추적 중지</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> 탭 그룹 색상 아이콘</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{보관처리된 탭이 <ph name="TABS_COUNT_ONE" />개 있습니다}other{보관처리된 탭이 <ph name="TABS_COUNT_MANY" />개 있습니다}}</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>

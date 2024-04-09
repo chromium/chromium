@@ -700,7 +700,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Jag är medveten om att den nedladdade filen är skadlig för datorn</translation>
 <translation id="1535228823998016251">Hög</translation>
-<translation id="1535597783576881392">Med den här guiden får du hjälp att förstå dina val, så att Chrome fungerar som du vill</translation>
 <translation id="1535753739390684432">Få utvald text uppläst. Välj först textuppläsningsikonen längst ned på skärmen och markera sedan texten.</translation>
 <translation id="1536754031901697553">Kopplar från …</translation>
 <translation id="1536883206862903762">Detta gör att tillägg inaktiveras och inställningarna återställs till säkra standardinställningar. Flikar, filer och cookies bevaras. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -4931,7 +4930,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4716483597559580346">Gör en powerwash för ökad säkerhet</translation>
 <translation id="4716715661140829720">Det finns inte tillräckligt med lagringsutrymme</translation>
 <translation id="471759229191973607">Byt tema</translation>
-<translation id="4718046540206070045">Mer än en webbläsare</translation>
 <translation id="4722735765955348426">Lösenord för <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> delar din skärm.</translation>
 <translation id="4722989931633062466">Får inte visa inloggningsmeddelanden hos tredje part</translation>
@@ -5616,7 +5614,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5271578170655641944">Ta bort åtkomst till Google Drive?</translation>
 <translation id="5273806377963980154">Redigera webbadress</translation>
-<translation id="5273966423195882879">Färg utifrån tema</translation>
 <translation id="5275084684151588738">Egna ordlistor</translation>
 <translation id="5275100789567222478">Aktivera endast när batterinivån är på <ph name="PERCENT" /> % eller lägre</translation>
 <translation id="5275338516105640560">Knapp för sparad flikgrupp</translation>
@@ -9623,7 +9620,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du har redan registrerat den här enheten. Du behöver inte registrera den igen.</translation>
 <translation id="8357388086258943206">Det gick inte att installera Linux</translation>
-<translation id="8357591920094529889">Den här guiden hjälper dig att förstå viktiga val du kan göra när du använder Chrome. Den hjälper dig även att göra valen så att Chrome fungerar som du vill.</translation>
 <translation id="8358685469073206162">Vill du återställa sidorna?</translation>
 <translation id="8358912028636606457">Den här enheten har inte stöd för att casta ljud från en flik.</translation>
 <translation id="835951711479681002">Spara i Google-kontot</translation>
@@ -9687,7 +9683,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8399282673057829204">Visa lösenord</translation>
 <translation id="839949601275221554">Ett fel uppstod på enheten. Starta om enheten och försök igen.</translation>
 <translation id="8401432541486058167">Ange den pinkod som är kopplad till ditt smartkort.</translation>
-<translation id="8403618281196981152">Din data i Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="8405046151008197676">Läs det viktigaste om den senaste uppdateringen</translation>
 <translation id="8405118833120731611">{0,plural, =1{Stäng den här profilen}other{Stäng den här profilen (# fönster)}}</translation>

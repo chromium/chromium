@@ -699,7 +699,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ברור לי שההורדה הזו תזיק למחשב שלי</translation>
 <translation id="1535228823998016251">גבוהה</translation>
-<translation id="1535597783576881392">‏המדריך הזה יעזור לך להבין את הבחירות שלך, כדי ש-Chrome יפעל באופן הרצוי לך</translation>
 <translation id="1535753739390684432">האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט.</translation>
 <translation id="1536754031901697553">מתנתק...</translation>
 <translation id="1536883206862903762">‏הפעולה הזו תשבית תוספים ותאפס את ההגדרות לברירות מחדל בטוחות. הכרטיסיות, הקבצים וקובצי ה-Cookie יישמרו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -1505,7 +1504,7 @@
 <translation id="2101225219012730419">גרסה:</translation>
 <translation id="2102396546234652240">לא לאפשר לאתרים להשתמש במיקרופון</translation>
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
-<translation id="2104166991923847969">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
+<translation id="2104166991923847969">השבתה אוטומטית של הנקודה לשיתוף אינטרנט</translation>
 <translation id="2105809836724866556">ההסתרה של <ph name="MODULE_TITLE" /> בוצעה</translation>
 <translation id="2108204112555497972">התבצעה בדיקה לפני <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
@@ -4932,7 +4931,6 @@
 <translation id="4716483597559580346">‏ביצוע Powerwash להגברת האבטחה</translation>
 <translation id="4716715661140829720">אין מספיק נפח אחסון</translation>
 <translation id="471759229191973607">שינוי העיצוב</translation>
-<translation id="4718046540206070045">יותר מדפדפן</translation>
 <translation id="4722735765955348426">הסיסמה של <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> משתף את המסך שלך.</translation>
 <translation id="4722989931633062466">לא מורשים להציג בקשות כניסה של צד שלישי</translation>
@@ -5617,7 +5615,6 @@
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
 <translation id="5271578170655641944">‏להסיר את הגישה ל-Google Drive?</translation>
 <translation id="5273806377963980154">עריכה של כתובת האתר</translation>
-<translation id="5273966423195882879">הצבע מבוסס על העיצוב</translation>
 <translation id="5275084684151588738">מילוני משתמש</translation>
 <translation id="5275100789567222478">הפעלה רק כשרמת הטעינה של הסוללה היא <ph name="PERCENT" />% או פחות</translation>
 <translation id="5275338516105640560">לחצן של קבוצת הכרטיסיות שנשמרה</translation>
@@ -9629,7 +9626,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">כבר רשמת את המכשיר הזה. אין צורך לרשום אותו שוב.</translation>
 <translation id="8357388086258943206">‏שגיאה בהתקנת Linux</translation>
-<translation id="8357591920094529889">‏המדריך הזה יעזור לך להבין את אפשרויות הבחירה החשובות שזמינות במהלך השימוש ב-Chrome. הוא גם יעזור לך לקבל את ההחלטות האלה כדי ש-Chrome יפעל באופן הרצוי לך.</translation>
 <translation id="8358685469073206162">האם לשחזר את הדפים?</translation>
 <translation id="8358912028636606457">מכשיר זה אינו תומך בהעברת האודיו של הכרטיסייה.</translation>
 <translation id="835951711479681002">‏שמירה בחשבון Google שלך</translation>
@@ -9693,7 +9689,6 @@
 <translation id="8399282673057829204">הצגת הסיסמה</translation>
 <translation id="839949601275221554">אירעה שגיאה במכשיר. צריך להפעיל אותו מחדש ולנסות שוב.</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
-<translation id="8403618281196981152">‏הנתונים שלך ב-Chrome</translation>
 <translation id="8403807918453631441">ל<ph name="BRAND" /> יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
 <translation id="8405118833120731611">{0,plural, =1{סגירת הפרופיל הזה}one{סגירת הפרופיל הזה (# חלונות)}two{סגירת הפרופיל הזה (# חלונות)}other{סגירת הפרופיל הזה (# חלונות)}}</translation>

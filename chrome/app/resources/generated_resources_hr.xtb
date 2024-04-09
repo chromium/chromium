@@ -700,7 +700,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Shvaćam da će to preuzimanje oštetiti moje računalo</translation>
 <translation id="1535228823998016251">Glasno</translation>
-<translation id="1535597783576881392">Ovaj vodič pruža vam uvid u vaše odabire kako bi Chrome funkcionirao kako želite</translation>
 <translation id="1535753739390684432">Poslušajte naglas pročitani tekst. Prvo odaberite ikonu Odabira za govor pri dnu zaslona, a zatim istaknite tekst.</translation>
 <translation id="1536754031901697553">Prekidanje veze...</translation>
 <translation id="1536883206862903762">Time će se onemogućiti proširenja i vaše postavke vratiti na sigurne zadane vrijednosti. Sačuvat će se kartice, datoteke i kolačići. <ph name="LINK_BEGIN" />Saznaj više<ph name="LINK_END" /></translation>
@@ -4927,7 +4926,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4716483597559580346">Powerwash za dodatnu sigurnost</translation>
 <translation id="4716715661140829720">Nema dovoljno prostora za pohranu</translation>
 <translation id="471759229191973607">Promijenite temu</translation>
-<translation id="4718046540206070045">Više od preglednika</translation>
 <translation id="4722735765955348426">Zaporka za <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> dijeli vaš zaslon.</translation>
 <translation id="4722989931633062466">Nije dopušteno prikazivanje upita za prijavu treće strane</translation>
@@ -5612,7 +5610,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5269977353971873915">Ispis nije uspio</translation>
 <translation id="5271578170655641944">Želite li ukloniti pristup Google diska?</translation>
 <translation id="5273806377963980154">Uredite URL web-lokacije</translation>
-<translation id="5273966423195882879">Boja na temelju teme</translation>
 <translation id="5275084684151588738">Korisnički rječnici</translation>
 <translation id="5275100789567222478">Uključi samo kad je baterija na <ph name="PERCENT" />% ili niže</translation>
 <translation id="5275338516105640560">Gumb spremljene grupe kartica</translation>
@@ -9624,7 +9621,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Već ste registrirali ovaj uređaj. Ne morate ga ponovo registrirati.</translation>
 <translation id="8357388086258943206">Došlo je do pogreške prilikom instaliranja Linuxa</translation>
-<translation id="8357591920094529889">Ovaj vam vodič pomaže da shvatite važne izbore koji vam se pružaju prilikom upotrebe Chromea. Pomaže vam i da ih lakše odaberete kako bi Chrome funkcionirao onako kako želite.</translation>
 <translation id="8358685469073206162">Želite li vratiti stranice?</translation>
 <translation id="8358912028636606457">Kartica audio sustava za emitiranje nije podržana na ovom uređaju.</translation>
 <translation id="835951711479681002">Spremi na Google račun</translation>
@@ -9688,7 +9684,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8399282673057829204">Prikaži zaporku</translation>
 <translation id="839949601275221554">Uređaj je naišao na pogrešku. Ponovo pokrenite uređaj i pokušajte opet.</translation>
 <translation id="8401432541486058167">Unesite PIN za pametnu karticu.</translation>
-<translation id="8403618281196981152">Vaši podaci u Chromeu</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> može provjeriti vaše zaporke kad ih spremite</translation>
 <translation id="8405046151008197676">Primite najzanimljivije dijelove najnovijeg ažuriranja</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zatvori ovaj profil}one{Zatvori ovaj profil (# prozor)}few{Zatvori ovaj profil (# prozora)}other{Zatvori ovaj profil (# prozora)}}</translation>

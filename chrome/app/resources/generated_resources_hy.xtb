@@ -699,7 +699,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ես գիտակցում եմ, որ այս ներբեռնումը կվնասի իմ համակարգիչը</translation>
 <translation id="1535228823998016251">Բարձր</translation>
-<translation id="1535597783576881392">Այս ուղեցույցը կօգնի ձեզ կարգավորել Chrome-ն ըստ ձեր ցանկության</translation>
 <translation id="1535753739390684432">Հնչեցրեք ընդգծված տեքստը։ Նախ էկրանի ներքևում սեղմեք «Ընտրեք և լսեք» պատկերակը, ապա ընդգծեք տեքստը։</translation>
 <translation id="1536754031901697553">Անջատվում է…</translation>
 <translation id="1536883206862903762">Ընդլայնումները կանջատվեն, և կվերականգնվեն անվտանգ կանխադրված կարգավորումները։ Ներդիրները, ֆայլերը և քուքիները կպահպանվեն։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -4913,7 +4912,6 @@
 <translation id="4716483597559580346">Powerwash լրացուցիչ անվտանգության համար</translation>
 <translation id="4716715661140829720">Բավարար տարածք չկա</translation>
 <translation id="471759229191973607">Փոխել թեման</translation>
-<translation id="4718046540206070045">Ավելին, քան դիտարկիչ</translation>
 <translation id="4722735765955348426">Գաղտնաբառ <ph name="USERNAME" />-ի համար</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />-ը համօգտագործում է ձեր էկրանը:</translation>
 <translation id="4722989931633062466">Արգելվում է ցույց տալ երրորդ կողմերի ծառայությունների միջոցով մուտքի փորձերը</translation>
@@ -5599,7 +5597,6 @@
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
 <translation id="5271578170655641944">Հեռացնե՞լ Google Drive-ի օգտագործման թույլտվությունը</translation>
 <translation id="5273806377963980154">Փոփոխել կայքի URL-ը</translation>
-<translation id="5273966423195882879">Գույնի վրա հիմնված թեմա</translation>
 <translation id="5275084684151588738">Օգտատիրոջ բառարաններ</translation>
 <translation id="5275100789567222478">Միացնել, միայն երբ մարտկոցի լիցքը <ph name="PERCENT" />% կամ ավելի քիչ է մնացել</translation>
 <translation id="5275338516105640560">«Պահված ներդիրների խումբ» կոճակ</translation>
@@ -9602,7 +9599,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Դուք արդեն գրանցել եք այս սարքը։ Այն նորից գրանցելու կարիք չկա։</translation>
 <translation id="8357388086258943206">Լինուքսը տեղադրելիս սխալ առաջացավ</translation>
-<translation id="8357591920094529889">Այս ուղեցույցը կօգնի ձեզ հասկանալ կարևոր կարգավորումները, որոնք ընտրում եք՝ Chrome-ից օգտվելիս։ Այն նաև կօգնի ընտրել այդ կարգավորումները, որպեսզի Chrome-ը սկսի աշխատել ձեզ հարմար ձևով։</translation>
 <translation id="8358685469073206162">Վերականգնե՞լ էջերը:</translation>
 <translation id="8358912028636606457">Ներդիրի ձայնի հեռարձակումն այս սարքում չի աջակցվում:</translation>
 <translation id="835951711479681002">Պահել իմ Google հաշվում</translation>
@@ -9666,7 +9662,6 @@
 <translation id="8399282673057829204">Ցույց տալ գաղտնաբառը</translation>
 <translation id="839949601275221554">Սարքում սխալ առաջացավ։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
-<translation id="8403618281196981152">Ձեր տվյալները Chrome-ում</translation>
 <translation id="8403807918453631441">«<ph name="BRAND" />» գործառույթը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
 <translation id="8405118833120731611">{0,plural, =1{Փակել այս պրոֆիլը}one{Փակել այս պրոֆիլը (# պատուհան)}other{Փակել այս պրոֆիլը (# պատուհան)}}</translation>

@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Fanegruppeikon med <ph name="COLOR_NAME" /> farge</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> arkivert fane}other{Du har <ph name="TABS_COUNT_MANY" /> arkiverte faner}}</translation>
 <translation id="3194464645767632461">vurdering</translation>
 <translation id="3291470810748040983">Du blir varslet når det finnes en lavere pris på en åpen fane</translation>

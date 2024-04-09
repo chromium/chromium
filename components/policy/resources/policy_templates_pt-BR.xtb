@@ -1869,7 +1869,6 @@ Se esta política for definida, o usuário não poderá modificar o valor.
 Se esta política não for definida, a tela de privacidade ficará desativada inicialmente, mas poderá ser controlada pelo usuário.</translation>
 <translation id="2413899611035194909">Mostrar opções de acessibilidade no menu da bandeja do sistema na tela de login</translation>
 <translation id="2415715982424988916">Explorar (compatível desde a versão 91)</translation>
-<translation id="2419114151067000328">O recurso de especificações do produto não vai ficar disponível para os usuários.</translation>
 <translation id="2420958105721932612">Especifica como um app é instalado. AVAILABLE: o app não será instalado automaticamente, mas o usuário poderá fazer isso de forma manual. Se a política não for especificada, esse será o valor padrão. FORCE_INSTALLED: o app será instalado automaticamente, e o usuário não poderá desinstalá-lo. BLOCKED: o app fica bloqueado e não pode ser instalado. Se tiver sido instalado em uma política anterior, ele será desinstalado.</translation>
 <translation id="2421400544595297401">Não permitir o acesso de usuários não afiliados aos apps Android</translation>
 <translation id="2421677964966613267">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem executar o plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3055,6 +3054,7 @@ Se a política for definida como "Desativada", os arquivos baixados não serão 
 Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300441638895109781">Atualizar automaticamente o fluxo de autenticação no ChromeOS</translation>
 <translation id="3300784749135986828">Ativar ou desativar a <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Ativar extensão de insights</translation>
 <translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
@@ -3128,6 +3128,7 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3380801667330555918">Mudar a configuração pré-preenchida para tíquetes do Kerberos</translation>
 <translation id="338149029069528354">Não apagar dados locais de usuários</translation>
 <translation id="3381968327636295719">Usar o navegador de host por padrão</translation>
+<translation id="3387117557265712991">Desativar a criptografia vinculada ao aplicativo</translation>
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o histórico de navegação será salvo.</translation>
@@ -3421,7 +3422,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
-<translation id="361046511337768385">Permitir que o recurso de especificações do produto seja ativado</translation>
 <translation id="3616490235694929053">Esta política controla se a tela de configuração do tamanho de exibição é mostrada ao usuário durante o primeiro login.
       Se ela for definida como falsa, a tela não será mostrada.
       Se definida como verdadeira, a tela será mostrada.</translation>
@@ -5521,7 +5521,6 @@ Se a política não for definida, nenhuma exceção a <ph name="URL_BLOCKLIST_PO
 
 Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política também vai oferecer suporte ao modo headless.</translation>
 <translation id="5362531528507578966">Modifica o modo de impressão de gráficos de segundo plano padrão.</translation>
-<translation id="5363412016871318326">O recurso de especificações do produto vai ficar disponível para os usuários.</translation>
 <translation id="5365476955714838841">Parâmetros de linha de comando para o navegador alternativo.</translation>
 <translation id="5365946944967967336">Exibir o botão da Página inicial na barra de ferramentas</translation>
 <translation id="5366977351895725771">Se definida como falsa, a criação de usuários supervisionados por este usuário será desativada. Quaisquer usuários supervisionados existentes permanecerão disponíveis.
@@ -5943,6 +5942,15 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será desativado.</translation>
 <translation id="5673254755365419402">Ativar o recurso Proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Se a política for definida como verdadeira, o Google receberá relatórios sobre eventos importantes e acionados por políticas relacionados à instalação de extensões. Se a política for definida como falsa, nenhum evento será capturado. Se ela não for definida, o valor padrão será verdadeiro.</translation>
+<translation id="5673780539191375049">Define o intervalo de tempo (em minutos) usado para atualizar automaticamente o fluxo de autenticação do usuário no dispositivo <ph name="PRODUCT_OS_NAME" />. Esta política é introduzida para processar a validade de alguns serviços usados em fluxos de autenticação quando o dispositivo fica inativo por algum tempo.
+
+Quando ela for deixada sem definição ou o valor for zero, o fluxo de autenticação não será atualizado.
+
+Quando for definida com um valor positivo, o fluxo de autenticação será atualizado automaticamente no intervalo definido.
+
+O intervalo máximo possível é de uma semana (10.080 minutos).
+
+Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.</translation>
 <translation id="5676740747107495269">Exibir opções de acessibilidade no menu da bandeja do sistema, na tela de login</translation>
 <translation id="5679540979548648200">Impede que os usuários deste dispositivo usem sideload com adb e forçará um Powerwash se o sideload já tiver sido ativado</translation>
 <translation id="5681258683432554972">Configuração padrão de pop-ups</translation>
@@ -9150,9 +9158,6 @@ Aviso: recomendamos que você deixe as atualizações automáticas ativadas para
 <translation id="8102854005031553638">O visualizador de PDF usa o renderizador AGG.</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
-<translation id="810509972572344398">Se esta política for ativada ou deixada sem definição, as especificações do produto ficarão disponíveis para os usuários.
-
-Se a política for desativada, as especificações do produto não ficarão disponíveis.</translation>
 <translation id="8109762054721090517">Modelo do <ph name="IPP_ATTRIBUTE" /><ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configura por quantos segundos o dispositivo precisa ficar inativo antes de mostrar o protetor na tela de bloqueio.
 
@@ -9578,6 +9583,7 @@ configurados.</translation>
 
       Observação: para administradores do <ph name="MS_WIN_NAME" />, a ativação dessa configuração só funciona em máquinas com o Windows 7. Para versões mais recentes, é necessário implantar um arquivo de "associações de aplicativo padrão", que torna o <ph name="PRODUCT_NAME" /> o gerenciador dos protocolos <ph name="HTTPS_PROTOCOL" /> e <ph name="HTTP_PROTOCOL" /> e, opcionalmente, o protocolo <ph name="FTP_PROTOCOL" /> e outros formatos de arquivo. Consulte a Ajuda do Google Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
 <translation id="8441105784056442638">Ativar o recurso de restauração completa</translation>
+<translation id="8444157920689124099">Ativar a criptografia vinculada ao aplicativo</translation>
 <translation id="8445576299806775661">Depois de cada atualização importante de versão, o Chrome criará um snapshot de certas partes dos dados de navegação do usuário para uso em caso de reversão de emergência da versão. Se uma reversão de emergência for feita para uma versão da qual o usuário tem um snapshot correspondente, os dados serão restaurados. Isso permite que o usuário retenha essas configurações na forma de favoritos e dados de preenchimento automático.
 
       Se essa política não for definida, o valor padrão 3 será usado.
@@ -10639,6 +10645,11 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="984365509386992443">Quando esta política for ativada ou deixada sem definição, o usuário poderá receber pesquisas relacionadas ao recurso Navegação segura.
 Quando ela for desativada, o usuário não vai receber essas pesquisas.</translation>
 <translation id="985148612300045106">A tecla de acesso rápido/pesquisa pode mudar o comportamento das teclas de função, e essa configuração não pode ser modificada pelos usuários.</translation>
+<translation id="986223659726677100">Se a política for ativada ou deixada sem definição, as chaves de criptografia usadas para armazenamento local de dados serão vinculadas ao <ph name="PRODUCT_NAME" /> sempre que possível.
+
+Se ela for desativada, a segurança do <ph name="PRODUCT_NAME" /> será prejudicada, já que apps desconhecidos e potencialmente hostis podem recuperar chaves de criptografia usadas para proteger dados.
+
+Desative a política apenas se houver problemas de compatibilidade, por exemplo: outros aplicativos precisam de acesso legítimo aos dados do <ph name="PRODUCT_NAME" />, espera-se que os dados criptografados do usuário sejam totalmente portáteis entre computadores diferentes ou a integridade e o local dos arquivos executáveis do <ph name="PRODUCT_NAME" /> não são consistentes.</translation>
 <translation id="987261962216071510">Permitir apenas logins em navegação como visitante</translation>
 <translation id="987975731398348803">Se a política for ativada ou deixada sem definição, os dispositivos registrados vão informar a lista de usuários que fizeram login recentemente.
 

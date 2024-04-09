@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Flytt hit</translation>
 <translation id="1014147525163127655">Det finnes ingen passnøkler for <ph name="ORIGIN" /> på denne enheten</translation>
 <translation id="1016498331642356377">Søk raskt med stemmen din. Trykk og hold for å redigere denne snarveien.</translation>
+<translation id="1017104654974573432">Velg et problem</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="103269572468856066">Vil du også slette data fra disse nettstedene og appene?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
 <translation id="10614374240317010">Aldri lagret</translation>
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
+<translation id="1082920045291562218">Arket for tilbakemelding om deling med sammendrag er lukket</translation>
 <translation id="1089606299949659462">Gjennomgangen er fullført.</translation>
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
 <translation id="1100066534610197918">Åpne i en ny fane i en gruppe</translation>
@@ -557,6 +559,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="4034817413553209278">{HOURS,plural, =1{# t}other{# t}}</translation>
 <translation id="4035877632587724847">Ikke tillat</translation>
 <translation id="4042941173059740150">Fortsett til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Gruppe uten navn</translation>
 <translation id="4044708993631234325">Felt nederst</translation>
 <translation id="405365679581583349">Oppdater Google Play-tjenester</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>
@@ -628,6 +631,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="4404568932422911380">Ingen bokmerker</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
 <translation id="4405636711880428279">Vil du fjerne det virtuelle kortet ditt?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> og <ph name="TAB_COUNT" /> faner til</translation>
 <translation id="4409271659088619928">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4425140285732600465">Sporer prisen. Du får varsler hvis prisen settes ned på noe nettsted.</translation>
@@ -1070,6 +1074,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6595046016124923392">Bildene blir sendt til Google for å gjøre beskrivelsene bedre.</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
+<translation id="6625890511281718257">Ark for tilbakemelding om deling med sammendrag</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6633067410344541938">Lås opp inkognitomodus</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
@@ -1108,6 +1113,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="6767294960381293877">Listen over enheter du kan dele faner med, er åpnet i halv høyde.</translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
+<translation id="6773061896687011391">Nettadressen til siden du gir tilbakemelding om, sendes av Google og kan bli gjennomgått av mennesker for å gjøre denne funksjonen bedre</translation>
 <translation id="6775840696761158817">Når du trykker eller skriver i adressefeltet eller søkefeltet, ser du forslag fra standardsøkemotoren din. Dette er av i Inkognito.</translation>
 <translation id="6785476624617658922">Tilleggsvilkår for bruk av Chrome og ChromeOS</translation>
 <translation id="6795633245022906657">Åpner raskt en ny fane. For å redigere denne snarveien, gå til Innstillinger.</translation>
@@ -1411,6 +1417,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8135406045838672858">Nedlastede PDF-filer åpnes automatisk med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring.</translation>
 <translation id="8163820386638255770">For å bruke og lagre passord i Google-kontoen din, bekreft at det er deg</translation>
+<translation id="8171286197772512427">Arket for tilbakemelding om deling med sammendrag er åpnet</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer gjenstår</translation>
 <translation id="8190358571722158785">1 dag igjen</translation>

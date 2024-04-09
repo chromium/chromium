@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">여기로 이동</translation>
 <translation id="1014147525163127655">이 기기에 <ph name="ORIGIN" />의 패스키가 없습니다</translation>
 <translation id="1016498331642356377">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
+<translation id="1017104654974573432">문제 선택하기</translation>
 <translation id="1024113959924243553">Chrome 개발자</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">현재 오프라인 상태입니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
+<translation id="1082920045291562218">요약 의견 시트와 공유 닫힘</translation>
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
 <translation id="4035877632587724847">허용 안함</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 계속하기</translation>
+<translation id="404352903042073578">이름이 지정되지 않은 그룹</translation>
 <translation id="4044708993631234325">하단 시트</translation>
 <translation id="405365679581583349">Google Play 서비스 업데이트</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">북마크 없음</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
 <translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 외 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="6625890511281718257">요약 의견 시트와 공유</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
+<translation id="6773061896687011391">의견을 제공하시는 페이지의 URL은 Google에서 전송되며 기능 개선을 위해 담당자가 검토할 수 있습니다.</translation>
 <translation id="6775840696761158817">주소 표시줄이나 검색창을 탭하거나 입력하면 기본 검색엔진에서 추천 검색어가 표시됩니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="6785476624617658922">Chrome 및 ChromeOS 추가 서비스 약관</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858">다운로드한 PDF가 <ph name="APP_NAME" /> 앱에서 자동으로 열립니다</translation>
 <translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="8163820386638255770">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
+<translation id="8171286197772512427">요약 의견 시트와 공유 열림</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8190358571722158785">1일 남음</translation>

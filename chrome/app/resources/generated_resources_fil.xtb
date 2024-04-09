@@ -701,7 +701,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Nauunawaan kong makakasama sa aking computer ang pag-download na ito</translation>
 <translation id="1535228823998016251">Malakas</translation>
-<translation id="1535597783576881392">Tinutulungan ka ng gabay na ito na maunawaan ang iyong mga pinili, para gumana ang Chrome sa paraang gusto mo</translation>
 <translation id="1535753739390684432">Marinig na binabasa nang malakas ang partikular na text. Una, piliin ang icon na Select-to-speak sa ibaba ng iyong screen, pagkatapos ay i-highlight ang text.</translation>
 <translation id="1536754031901697553">Nagdidiskonekta...</translation>
 <translation id="1536883206862903762">Idi-disable nito ang mga extension at ire-reset ang iyong mga setting sa mga ligtas na default. Mapapanatili ang mga tab, file, at cookies. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -4932,7 +4931,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4716483597559580346">Powerwash para sa pinaigting na seguridad</translation>
 <translation id="4716715661140829720">Hindi sapat ang storage space</translation>
 <translation id="471759229191973607">Baguhin ang tema</translation>
-<translation id="4718046540206070045">Higit pa sa isang browser</translation>
 <translation id="4722735765955348426">Password ni <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Ibinabahagi ng <ph name="APP_NAME" /> ang iyong screen.</translation>
 <translation id="4722989931633062466">Hindi pinapayagang magpakita ng mga third-party na prompt sa pag-sign in</translation>
@@ -5617,7 +5615,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
 <translation id="5271578170655641944">Alisin ang access sa Google Drive?</translation>
 <translation id="5273806377963980154">I-edit ang URL ng site</translation>
-<translation id="5273966423195882879">Kulay na nakabatay sa tema</translation>
 <translation id="5275084684151588738">Mga Diksyunaryo ng User</translation>
 <translation id="5275100789567222478">I-on lang kapag nasa <ph name="PERCENT" />% o mas mababa ang aking baterya</translation>
 <translation id="5275338516105640560">Button na Na-save na Grupo ng Tab</translation>
@@ -9626,7 +9623,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Naiparehistro mo na ang device na ito. Hindi mo na ito kailangang iparehistro ulit.</translation>
 <translation id="8357388086258943206">Nagkaroon ng error sa pag-install ng Linux</translation>
-<translation id="8357591920094529889">Tutulungan ka ng gabay na ito na maunawaan ang mahahalagang opsyong mayroon ka habang ginagamit mo ang Chrome. At tutulungan ka nitong pumili, para gumana ang Chrome sa paraang gusto mo.</translation>
 <translation id="8358685469073206162">Ipanumbalik ang mga page?</translation>
 <translation id="8358912028636606457">Hindi sinusuportahan sa device na ito ang pag-cast ng audio ng tab.</translation>
 <translation id="835951711479681002">I-save sa iyong Google Account</translation>
@@ -9690,7 +9686,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8399282673057829204">Tingnan ang password</translation>
 <translation id="839949601275221554">Nagka-error sa device. Paki-restart ang iyong device at subukan ulit.</translation>
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
-<translation id="8403618281196981152">Ang iyong data sa Chrome</translation>
 <translation id="8403807918453631441">Masusuri ng <ph name="BRAND" /> ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="8405046151008197676">Kunin ang mga highlight mula sa pinakabagong update</translation>
 <translation id="8405118833120731611">{0,plural, =1{Isara ang profile na ito}one{Isara ang profile na ito (# window)}other{Isara ang profile na ito (# na window)}}</translation>

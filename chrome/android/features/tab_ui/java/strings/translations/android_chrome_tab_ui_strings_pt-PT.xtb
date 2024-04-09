@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="3008554597174452548">Deixar de monitorizar produto</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">Ícone da cor do grupo de separadores <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador arquivado}other{Tem <ph name="TABS_COUNT_MANY" /> separadores arquivados}}</translation>
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>

@@ -699,7 +699,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Chápu, že stažení tohoto souboru poškodí můj počítač</translation>
 <translation id="1535228823998016251">Hlasité</translation>
-<translation id="1535597783576881392">Tento průvodce vám pomůže porozumět vašim možnostem, aby prohlížeč Chrome fungoval tak, jak chcete</translation>
 <translation id="1535753739390684432">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text.</translation>
 <translation id="1536754031901697553">Odpojování...</translation>
 <translation id="1536883206862903762">Tímto deaktivujete rozšíření a resetujete nastavení na bezpečné výchozí hodnoty. Karty, soubory a cookies zůstanou zachovány. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -4916,7 +4915,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4716483597559580346">Kvůli lepšímu zabezpečení zařízení vyčistěte pomocí funkce Powerwash</translation>
 <translation id="4716715661140829720">Nedostatek místa v úložišti</translation>
 <translation id="471759229191973607">Změnit motiv</translation>
-<translation id="4718046540206070045">Více než jen prohlížeč</translation>
 <translation id="4722735765955348426">Heslo uživatele <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sdílí vaši obrazovku.</translation>
 <translation id="4722989931633062466">Zákaz zobrazovat výzvy třetích stran k přihlášení</translation>
@@ -5601,7 +5599,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5269977353971873915">Tisk se nezdařil</translation>
 <translation id="5271578170655641944">Odebrat přístup k Disku Google?</translation>
 <translation id="5273806377963980154">Upravit URL webu</translation>
-<translation id="5273966423195882879">Barva podle motivu</translation>
 <translation id="5275084684151588738">Uživatelské slovníky</translation>
 <translation id="5275100789567222478">Zapnout, pouze když zbývá <ph name="PERCENT" /> % nebo méně baterie</translation>
 <translation id="5275338516105640560">Tlačítko uložené skupiny karet</translation>
@@ -9608,7 +9605,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Toto zařízení jste již zaregistrovali. Není potřeba ho registrovat znovu.</translation>
 <translation id="8357388086258943206">Při instalaci systému Linux došlo k chybě</translation>
-<translation id="8357591920094529889">Tato příručka vám pomůže pochopit důležité volby, které při používání Chromu máte. Také vám pomůže vybrat správnou možnost, aby Chrome fungoval podle vašich požadavků.</translation>
 <translation id="8358685469073206162">Obnovit stránky?</translation>
 <translation id="8358912028636606457">Odesílání zvuku karty na tomto zařízení není podporováno.</translation>
 <translation id="835951711479681002">Uložit do účtu Google</translation>
@@ -9672,7 +9668,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8399282673057829204">Zobrazit heslo</translation>
 <translation id="839949601275221554">V zařízení došlo k chybě. Restartujte zařízení a zkuste to znovu.</translation>
 <translation id="8401432541486058167">Zadejte kód PIN přidružený k vaší chytré kartě.</translation>
-<translation id="8403618281196981152">Vaše data v Chromu</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> může hesla zkontrolovat, pouze když si je uložíte</translation>
 <translation id="8405046151008197676">Zobrazit hlavní změny v poslední aktualizaci</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zavřít tento profil}few{Zavřít tento profil (# okna)}many{Zavřít tento profil (# okna)}other{Zavřít tento profil (# oken)}}</translation>

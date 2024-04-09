@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">ইয়ালৈ আনক</translation>
 <translation id="1014147525163127655"><ph name="ORIGIN" />ৰ বাবে এই ডিভাইচটোত কোনো পাছকী নাই</translation>
 <translation id="1016498331642356377">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
+<translation id="1017104654974573432">এটা সমস্যা বাছনি কৰক</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="103269572468856066">এই ছাইট আৰু এপৰ পৰাও ডেটা মচিবনে?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="10614374240317010">কেতিয়াও ছেভ কৰা নহয়</translation>
 <translation id="107147699690128016">আপুনি যদি ফাইল এক্সটেনশ্বন সলনি কৰে ফাইলটো হয়তো বেলেগ এটা এপ্লিকেশ্বনত খুলিব আৰু সেয়া আপোনাৰ ডিভাইচটোৰ বাবে এক সম্ভাব্য বিপদ হ’ব পাৰে।</translation>
+<translation id="1082920045291562218">সাৰাংশৰ ওপৰত মতামত শ্বেয়াৰ কৰা শ্বীট বন্ধ কৰা আছে</translation>
 <translation id="1089606299949659462">পৰ্যালোচনা সম্পূৰ্ণ হ’ল!</translation>
 <translation id="1095761715416917775">নিশ্চিত হৈ লওক যে আপুনি যাতে নিজৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পাৰে</translation>
 <translation id="1100066534610197918">গোটৰ নতুন টেবত খোলক</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4035877632587724847">অনুমতি নিদিব</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />লৈ অব্যাহত ৰাখক</translation>
+<translation id="404352903042073578">নামবিহীন গোট</translation>
 <translation id="4044708993631234325">তলৰ শ্বীট</translation>
 <translation id="405365679581583349">Google Play সেৱাসমূহ আপডে’ট কৰক</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">কোনো বুকমাৰ্ক নাই</translation>
 <translation id="4405224443901389797">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
 <translation id="4405636711880428279">আপোনাৰ ভাৰ্ছুৱেল কাৰ্ডখন আঁতৰাবনে?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> আৰু অন্য <ph name="TAB_COUNT" /> টা টেব</translation>
 <translation id="4409271659088619928">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4425140285732600465">মূল্য ট্ৰেক কৰাটো সক্ষম কৰা হ’ল। কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক।</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ প্ৰতিচ্ছবিসমূহ পঠিওৱা হয়।</translation>
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>
 <translation id="6621391692573306628">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromeত ছাইন ইন কৰক</translation>
+<translation id="6625890511281718257">সাৰাংশৰ ওপৰত মতামত শ্বেয়াৰ কৰা শ্বীট</translation>
 <translation id="6627583120233659107">ফ’ল্ডাৰ সম্পাদনা কৰক</translation>
 <translation id="6633067410344541938">ইনক’গনিট’ আনলক কৰক</translation>
 <translation id="6636623428211296678">তলত অধিক ছেটিং অন্বেষণ কৰক অথবা এতিয়া শেষ কৰক</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
 <translation id="6767294960381293877">টেব এটা শ্বেয়াৰ কৰিবলৈ আধাকৈ খোল খোৱা ডিভাইচসমূহৰ সূচী।</translation>
 <translation id="6770602306803890733">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে</translation>
+<translation id="6773061896687011391">আপুনি মতামত প্ৰদান কৰা পৃষ্ঠাটোৰ URLটো Googleএ পঠিয়াব আৰু এই সুবিধাটো উন্নত কৰিবলৈ সেইবোৰ মানুহৰ দ্বাৰা পৰ্যালোচনা কৰা হ’ব পাৰে</translation>
 <translation id="6775840696761158817">যেতিয়া আপুনি ঠিকনাৰ বাৰ অথবা সন্ধান বাকচত টিপে অথবা টাইপ কৰে, আপুনি আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনৰ পৰা পৰামৰ্শ দেখা পাব। এয়া ইনক’গনিট’ ম’ডত অফ কৰা আছে।</translation>
 <translation id="6785476624617658922">Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী</translation>
 <translation id="6795633245022906657">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858"><ph name="APP_NAME" />ৰ জৰিয়তে ডাউনল’ড কৰা PDF স্বয়ংক্ৰিয়ভাৱে খোলে</translation>
 <translation id="8137562778192957619">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নহ’ব। এইটো Google Password Managerত ছেভ কৰা হ’ব।</translation>
 <translation id="8163820386638255770">আপোনাৰ Google একাউণ্টত পাছৱৰ্ড ব্যৱহাৰ আৰু ছেভ কৰিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
+<translation id="8171286197772512427">সাৰাংশৰ ওপৰত মতামত শ্বেয়াৰ কৰা শ্বীট খোলা আছে</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>
 <translation id="8190358571722158785">১ দিন বাকী আছে</translation>

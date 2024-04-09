@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Pré-visualizar imagem</translation>
 <translation id="1611649489706141841">avançar</translation>
 <translation id="1615335640928990664">Utilização de dados desde <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Use um tema</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1622402072367425417">balões brilhantes</translation>
 <translation id="1626590945318984973">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">IGNORADO</translation>
 <translation id="2324354238778375592">Flutuante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
-<translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">cadeira</translation>
 <translation id="2358070305000735383">A caixa de diálogo de edição de <ph name="DESCRIPTION" /> está aberta.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">verde-seco</translation>
 <translation id="8373046809163484087">Use conjuntos de cores que combinem com a sua imagem de fundo</translation>
 <translation id="8380114448424469341">Ancorar a janela na metade <ph name="DIRECTION" /> do ecrã</translation>
+<translation id="8391349326751432483">Precisa de, pelo menos, 500 MB livres para executar um teste de memória. Para libertar memória, feche separadores e apps.</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerido pela empresa.</translation>
 <translation id="8398927464629426868">A velocidade de carregamento ou descarregamento atual do dispositivo.</translation>
 <translation id="8403988360557588704">Uma pintura de um(a) <ph name="ART_FEATURE" /> ao estilo <ph name="ART_MOVEMENT" /></translation>

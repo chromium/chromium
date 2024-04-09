@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Aperçu de l'image</translation>
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Utiliser un thème</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1622402072367425417">bulles lumineuses</translation>
 <translation id="1626590945318984973">Raccourci non accessible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction et de <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">IGNORÉ</translation>
 <translation id="2324354238778375592">Superposer</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
-<translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">chaise</translation>
 <translation id="2358070305000735383">La boîte de dialogue de modification pour <ph name="DESCRIPTION" /> est ouverte.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Utiliser des ensembles de couleurs qui correspondent à votre fond d'écran</translation>
 <translation id="8380114448424469341">Ancrer la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
+<translation id="8391349326751432483">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de la mémoire, fermez les onglets et les applications.</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8403988360557588704">Une peinture d'un(e) <ph name="ART_FEATURE" /> dans le style <ph name="ART_MOVEMENT" /></translation>

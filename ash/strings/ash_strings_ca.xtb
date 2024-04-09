@@ -1110,7 +1110,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
 <translation id="5314489738835854379">Retrocedeix per les finestres</translation>
-<translation id="5315931444962548795">Activa el Bluetooth per descobrir punts d'accés Wi‐Fi disponibles a prop</translation>
 <translation id="5316716239522500219">Projecta els monitors</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
@@ -1707,7 +1706,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ha canviat a una resolució de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). A causa de les limitacions d'amplada de banda dels ports, la pantalla no admet una resolució de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Si no ho confirmes, la configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7659861092419699379">S'han tancat l'escriptori i les finestres</translation>
-<translation id="7660160718439869192">Veuràs <ph name="NAME" /> als dispositius vinculats a <ph name="EMAIL" /></translation>
+<translation id="7660160718439869192">Veuràs <ph name="NAME" /> als dispositius enllaçats a <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7670953955701272011">Obre aquesta data a Google Calendar</translation>
 <translation id="7671610481353807627">Les aplicacions estan ordenades per color</translation>

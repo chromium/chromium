@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
 <translation id="3008554597174452548">Stabdyti produkto stebėjimą</translation>
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> skirtukų grupės spalvos piktograma</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Turite <ph name="TABS_COUNT_ONE" /> suarchyvuotą skirtuką}one{Turite <ph name="TABS_COUNT_MANY" /> suarchyvuotą skirtuką}few{Turite <ph name="TABS_COUNT_MANY" /> suarchyvuotus skirtukus}many{Turite <ph name="TABS_COUNT_MANY" /> suarchyvuoto skirtuko}other{Turite <ph name="TABS_COUNT_MANY" /> suarchyvuotų skirtukų}}</translation>
 <translation id="3194464645767632461">įvertinimas</translation>
 <translation id="3291470810748040983">Gausite įspėjimą, kai atidarytame skirtuke bus sumažinta kaina</translation>

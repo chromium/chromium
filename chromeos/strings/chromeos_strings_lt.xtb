@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Temos naudojimas</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1622402072367425417">šviečiantys burbulai</translation>
 <translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">PRALEISTA</translation>
 <translation id="2324354238778375592">Užslinkti</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
-<translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">kėdė</translation>
 <translation id="2358070305000735383">„<ph name="DESCRIPTION" />“ redagavimo dialogo langas atidarytas.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">alyvuogių spalvos</translation>
 <translation id="8373046809163484087">Naudokite spalvų rinkinius, atitinkančius ekrano foną</translation>
 <translation id="8380114448424469341">Įstatyti langą <ph name="DIRECTION" /> ekrano pusėje</translation>
+<translation id="8391349326751432483">Norint atlikti atminties bandymą, reikia bent 500 MB laisvos vietos. Kad atlaisvintumėte atminties, uždarykite skirtukus ir programas.</translation>
 <translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8403988360557588704">Paveikslas, kuriame vaizduojama: <ph name="ART_FEATURE" />, šiuo stiliumi: <ph name="ART_MOVEMENT" /></translation>

@@ -102,6 +102,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1178821169867863726">12 x 16 palcev</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1181381397492575884">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve za <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Potrjevanje navidezne kartice ni mogoče vklopiti</translation>
 <translation id="1186201132766001848">Preveri gesla</translation>
 <translation id="1187430513518041110">Avtomobili in vozila</translation>
 <translation id="1190491977647722791">Paper (Heavyweight)</translation>
@@ -324,6 +325,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> palcev</translation>
 <translation id="1574714699824202614">Preverjanje plačilnega sredstva</translation>
 <translation id="1576277203042721907">Vpogledi v Nakupovanje</translation>
+<translation id="1579189948231786790">To spletno mesto je blokirala vaša organizacija</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Ne poteče</translation>
 <translation id="1583429793053364125">Med prikazom spletne strani je prišlo do napake.</translation>
@@ -783,6 +785,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2452098632681057184">Ekologija in okolje</translation>
 <translation id="2452837234288608067">Pri tem vam nismo mogli pomagati. Poskusite znova.</translation>
 <translation id="2456755709261364512">Baterija mora imeti več kot <ph name="REQUIRED_BATTERY_PRECENT" /> % energije</translation>
+<translation id="2461822463642141190">Trenutno</translation>
 <translation id="2462932596748424101">Družbena omrežja</translation>
 <translation id="2463739503403862330">Izpolni</translation>
 <translation id="2465688316154986572">Spenjanje</translation>
@@ -952,7 +955,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2814184336982254349">Ta datoteka PDF ni dostopna. Pritisnite tipko za iskanje plus m, če želite odpreti kontekstni meni, in vklopite možnost »Pridobivanje besedila iz PDF-ja«</translation>
 <translation id="2818338148457093657">Lepotilne storitve in zdravilišča</translation>
 <translation id="2820957248982571256">Iskanje ...</translation>
-<translation id="2824549017793319782">Izberite, če želite iskalno poizvedbo vnesti neposredno v naslovno vrstico</translation>
 <translation id="2824775600643448204">Naslovna in iskalna vrstica</translation>
 <translation id="2826760142808435982">Za šifriranje in preverjanje pristnosti povezave se uporablja <ph name="CIPHER" />, kot mehanizem za izmenjavo ključev pa <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Pogovorne radijske postaje</translation>
@@ -1475,6 +1477,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3807366285948165054">Zamike slike v X</translation>
 <translation id="3807709094043295184">Klasični rock in stare uspešnice</translation>
 <translation id="3807873520724684969">Škodljiva vsebina je bila blokirana.</translation>
+<translation id="380865868633614173">Shranjevanje podatkov o kartici</translation>
 <translation id="3810770279996899697">Upravitelj gesel potrebuje dostop do shrambe poverilnic Keychain sistema macOS</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3812398568375898177">To je nujna posodobitev, ki prinaša izboljšanje delovanja aplikacij za Android v sistemu ChromeOS.</translation>
@@ -2181,6 +2184,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5217759126664161410">Neveljavna oblika protokola.</translation>
 <translation id="5222812217790122047">E-poštni naslov je obvezen</translation>
 <translation id="5228269245420405804">Učenje na daljavo</translation>
+<translation id="5230428804606340145">Upravljanje drugih finančnih računov</translation>
 <translation id="5230733896359313003">Naslov za pošiljanje</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5238301240406177137">Shrani v račun</translation>
 <translation id="5239119062986868403">Običajna cena</translation>
 <translation id="5239623327352565343">Lokacija je dovoljena</translation>
+<translation id="5241048084654737238">Potrjevanja podatkov o kartici ni mogoče shraniti</translation>
 <translation id="5242610955375133957">Dry Film</translation>
 <translation id="5244521145258281926">Upravljanje računa Google, aktivirajte, če želite upravljati podatke, zasebnost in varnost v računu Google</translation>
 <translation id="5244732203286792411">Nalaganje …
@@ -2203,6 +2208,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5266128565379329178">Vezava zgoraj</translation>
 <translation id="5269225904387178860">Četverno luknjanje spodaj</translation>
 <translation id="5269999699920406580">Funkcije, ki se uporabijo v celotnem sistemu, lahko nastavi samo lastnik: <ph name="OWNER_EMAIL" />.</translation>
+<translation id="5271381225185906340">»<ph name="DATA_CONTROLS_ATTRIBUTE" />« ni podprt pogoj za element »<ph name="DATA_CONTROLS_RESTRICTION" />«</translation>
 <translation id="5273658854610202413">Opozorilo: ta pravilnik ni bil združen, kot je določeno v pravilniku PolicyDictionaryMultipleSourceMergeList, ker ne sodi k pravilnikom o slovarjih, ki jih je mogoče združiti.</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Če želite poslati to datoteko s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}one{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}two{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}few{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}other{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Shranite delo in začnite posodobitev, ko boste pripravljeni.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Želite kopirati zaupno datoteko?}one{Želite kopirati zaupne datoteke?}two{Želite kopirati zaupne datoteke?}few{Želite kopirati zaupne datoteke?}other{Želite kopirati zaupne datoteke?}}</translation>
+<translation id="7168625890036931112">»<ph name="DATA_CONTROLS_RESTRICTION" />« ni podprta omejitev na tej platformi</translation>
 <translation id="717330890047184534">ID za Gaio:</translation>
 <translation id="7174545416324379297">Združeno</translation>
 <translation id="7175097078723125014">Izbrana je bila možnost za urejanje naslova</translation>
@@ -3246,6 +3253,7 @@ Dodatne podrobnosti:
 <translation id="7310392214323165548">Naprava se bo kmalu znova zagnala</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7311837626618954149">Chromium spletnim mestom onemogoči uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem.</translation>
+<translation id="7313107491291103073">Vaša organizacija je označila to spletno mesto, ker morda krši pravilnik.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoč pri povezavi</translation>
 <translation id="7323804146520582233">Skrij razdelek »<ph name="SECTION" />«</translation>
@@ -3571,6 +3579,7 @@ Dodatne podrobnosti:
 <translation id="7888575728750733395">Namen upodabljanja tiskanja</translation>
 <translation id="7894280532028510793">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Kuverta 7 x 9 palcev</translation>
+<translation id="7908648876066812348">Vklapljanje navidezne kartice</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite v nastavitvah odpreti stran za varnostno preverjanje v Chromu</translation>
 <translation id="791551905239004656">Risanje in barvanje</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
@@ -4078,6 +4087,7 @@ Dodatne podrobnosti:
 <translation id="8874790741333031443">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite brskanja, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
 <translation id="8874824191258364635">Vnesite veljavno številko kartice</translation>
 <translation id="8877780815363510165">Ribarjenje</translation>
+<translation id="888117890813270681">Elementa »<ph name="DATA_CONTROLS_RESTRICTION" />« ni mogoče nastaviti na »<ph name="DATA_CONTROLS_LEVEL" />«</translation>
 <translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
 <translation id="8888187300091017436">Vzmetnice</translation>
 <translation id="8890048757975398817">Upravljati <ph name="READERNAME" /> in pridobiti dostop do pametne kartice, do katere dostopa.</translation>

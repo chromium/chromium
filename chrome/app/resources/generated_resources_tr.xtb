@@ -697,7 +697,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Bu indirme işleminin bilgisayarıma zarar vereceğini anlıyorum</translation>
 <translation id="1535228823998016251">Yüksek sesli</translation>
-<translation id="1535597783576881392">Bu kılavuz, seçimlerinizi anlamanıza yardımcı olarak Chrome'un istediğiniz şekilde çalışmasını sağlar</translation>
 <translation id="1535753739390684432">Seçilen metni sesli dinleyin. Ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın.</translation>
 <translation id="1536754031901697553">Bağlantı kesiliyor...</translation>
 <translation id="1536883206862903762">Bu işlem, uzantıları devre dışı bırakır ve ayarlarınızı güvenli varsayılan ayarlara sıfırlar. Sekmeler, dosyalar ve çerezler korunur. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -4913,7 +4912,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4716483597559580346">Daha fazla güvenlik için Powerwash işlemini uygulayın</translation>
 <translation id="4716715661140829720">Yeterli depolama alanı yok</translation>
 <translation id="471759229191973607">Temayı değiştir</translation>
-<translation id="4718046540206070045">Tarayıcıdan daha fazlası</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> için şifre</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekranınızı paylaşıyor.</translation>
 <translation id="4722989931633062466">Üçüncü taraf oturum açma istemleri göstermesine izin verilmeyen siteler</translation>
@@ -5598,7 +5596,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5269977353971873915">Yazdırma Başarısız</translation>
 <translation id="5271578170655641944">Google Drive erişimi kaldırılsın mı?</translation>
 <translation id="5273806377963980154">Site URL'sini düzenle</translation>
-<translation id="5273966423195882879">Temaya göre renk</translation>
 <translation id="5275084684151588738">Kullanıcı Sözlükleri</translation>
 <translation id="5275100789567222478">Yalnızca şarjım %<ph name="PERCENT" /> veya daha azken etkinleştir</translation>
 <translation id="5275338516105640560">Kayıtlı sekme grubu düğmesi</translation>
@@ -9605,7 +9602,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Bu cihazı zaten kaydettirdiniz. Tekrar kaydettirmeniz gerekmez.</translation>
 <translation id="8357388086258943206">Linux yüklenirken hata oluştu</translation>
-<translation id="8357591920094529889">Bu kılavuz, Chrome'u kullanırken yapabileceğiniz önemli seçimleri anlamanıza yardımcı olur. Ayrıca, bu seçimleri yapmanıza da yardımcı olarak Chrome'un istediğiniz şekilde çalışmasını sağlar.</translation>
 <translation id="8358685469073206162">Sayfalar geri yüklensin mi?</translation>
 <translation id="8358912028636606457">Sekme sesinin yayınlanması bu cihazda desteklenmiyor.</translation>
 <translation id="835951711479681002">Google Hesabınızda kaydedin</translation>
@@ -9669,7 +9665,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8399282673057829204">Şifreyi göster</translation>
 <translation id="839949601275221554">Cihaz bir hatayla karşılaştı. Lütfen cihazınızı yeniden başlatın ve tekrar deneyin.</translation>
 <translation id="8401432541486058167">Akıllı kartınızla ilişkilendirilen PIN'i girin.</translation>
-<translation id="8403618281196981152">Chrome'daki verileriniz</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="8405046151008197676">En yeni güncellemeden öne çıkanları alın</translation>
 <translation id="8405118833120731611">{0,plural, =1{Bu profili kapat}other{Bu profili kapat (# pencere)}}</translation>

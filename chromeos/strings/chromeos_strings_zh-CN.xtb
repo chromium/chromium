@@ -112,6 +112,7 @@
 <translation id="160633243685262989">预览图片</translation>
 <translation id="1611649489706141841">前进</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
+<translation id="1618566998877964907">使用主题</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1622402072367425417">发光气泡</translation>
 <translation id="1626590945318984973">此快捷键不可用。请在不使用功能键和<ph name="META_KEY" />键的情况下按一个新快捷键。</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">已跳过</translation>
 <translation id="2324354238778375592">悬浮</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">椅子</translation>
 <translation id="2358070305000735383">“<ph name="DESCRIPTION" />”的修改对话框处于打开状态。</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">橄榄绿</translation>
 <translation id="8373046809163484087">使用与您的壁纸相得益彰的颜色组合</translation>
 <translation id="8380114448424469341">将窗口固定在屏幕<ph name="DIRECTION" />半侧</translation>
+<translation id="8391349326751432483">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放内存，请关闭标签页和应用。</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />风格的<ph name="ART_FEATURE" />绘画</translation>

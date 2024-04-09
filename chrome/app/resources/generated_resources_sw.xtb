@@ -697,7 +697,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ninafahamu kwamba faili hii itaathiri kompyuta yangu</translation>
 <translation id="1535228823998016251">Ya juu</translation>
-<translation id="1535597783576881392">Mwongozo huu hukusaidia uelewe uteuzi wako, ili Chrome ifanye kazi jinsi unavyopenda</translation>
 <translation id="1535753739390684432">Sikiliza maandishi mahususi yakisomwa kwa sauti. Kwanza, chagua aikoni ya kipengele cha Chagua ili Izungumze kwenye sehemu ya chini ya skrini, kisha uangazie maandishi.</translation>
 <translation id="1536754031901697553">Inatenganisha...</translation>
 <translation id="1536883206862903762">Hatua hii itazima viendelezi na kubadilisha mipangilio yako iwe chaguomsingi salama. Vichupo, faili na vidakuzi vitahifadhiwa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -4926,7 +4925,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4716483597559580346">Tumia Powerwash kuimarisha usalama</translation>
 <translation id="4716715661140829720">Nafasi ya kuhifadhi haitoshi</translation>
 <translation id="471759229191973607">Badilisha mandhari</translation>
-<translation id="4718046540206070045">Zaidi ya kivinjari</translation>
 <translation id="4722735765955348426">Nenosiri la <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> inashiriki skrini yako.</translation>
 <translation id="4722989931633062466">Zisizoruhusiwa kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa watoa huduma wengine</translation>
@@ -5611,7 +5609,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
 <translation id="5271578170655641944">Ungependa kuondoa idhini ya kufikia Hifadhi ya Google?</translation>
 <translation id="5273806377963980154">Badilisha URL ya tovuti</translation>
-<translation id="5273966423195882879">Rangi inayolingana na mandhari</translation>
 <translation id="5275084684151588738">Kamusi za Mtumiaji</translation>
 <translation id="5275100789567222478">Iwake tu betri yangu inapokuwa na asilimia <ph name="PERCENT" /> au chache zaidi</translation>
 <translation id="5275338516105640560">Kitufe cha Kikundi cha Vichupo Vilivyohifadhiwa</translation>
@@ -9619,7 +9616,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Tayari umesajili kifaa hiki. Huhitaji kukisajili tena.</translation>
 <translation id="8357388086258943206">Hitilafu imetokea wakati wa kusakinisha Linux</translation>
-<translation id="8357591920094529889">Mwongozo huu hukusaidia uelewe chaguo muhimu ulizonazo kadiri unavyotumia Chrome. Na hukusaidia uteue chaguo hizo, ili Chrome ifanye kazi jinsi unavyopenda.</translation>
 <translation id="8358685469073206162">Rejesha kurasa?</translation>
 <translation id="8358912028636606457">Sauti haitoki wakati unatuma kichupo kwenye kifaa hiki</translation>
 <translation id="835951711479681002">Hifadhi kwenye Akaunti yako ya Google</translation>
@@ -9683,7 +9679,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8399282673057829204">Angalia nenosiri</translation>
 <translation id="839949601275221554">Kifaa kimekumbana na hitilafu. Tafadhali zima kisha uwashe kifaa chako na ujaribu tena.</translation>
 <translation id="8401432541486058167">Weka PIN inayohusiana na kadi yako mahiri.</translation>
-<translation id="8403618281196981152">Data yako kwenye Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kinaweza kukagua manenosiri yako ukiyahifadhi</translation>
 <translation id="8405046151008197676">Pata muhtasari kutoka kwenye sasisho la hivi punde</translation>
 <translation id="8405118833120731611">{0,plural, =1{Funga wasifu huu}other{Funga wasifu huu (madirisha #)}}</translation>

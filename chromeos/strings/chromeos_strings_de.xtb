@@ -48,6 +48,7 @@
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1232610416724362657">Wasserfall</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
+<translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1274654146705270731">Orangen</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">Diagnose-App</translation>
 <translation id="175763766237925754">Gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">Schnell die Tasten wechseln</translation>
 <translation id="1768959921651994223">Authentifizierungstyp</translation>
 <translation id="1776228893584526149">Farbton für Hintergrund</translation>
 <translation id="1777913922912475695">Brücke</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">weiter Ozean</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
+<translation id="2082932131694554252">Zugewiesene Taste</translation>
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
 <translation id="2102231663024125441">Textbearbeitung</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
@@ -253,7 +257,6 @@
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
 <translation id="2324354238778375592">Unverankert</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">Stuhl</translation>
 <translation id="2358070305000735383">Dialogfeld „Bearbeiten“ für <ph name="DESCRIPTION" /> ist geöffnet.</translation>
@@ -304,6 +307,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> ausgewählt</translation>
+<translation id="2645380101799517405">Steuerelemente</translation>
 <translation id="2652403576514495859">Spracheingabe aktivieren oder deaktivieren</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2656001153562991489">Exklusiv bei Chromebook Plus</translation>
@@ -334,6 +338,7 @@
 <translation id="2875812231449496375">Wenn du diese Einstellung aktivierst, wird die Darstellung dieses Hintergrunds optimiert. Du kannst die Einstellung jederzeit wieder deaktivieren.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="2880569433548999039">Cloud Flow-Bildschirmschoner</translation>
+<translation id="2882230315487799269">KI-Prompt anpassen</translation>
 <translation id="2888298276507578975">Gib einen Prompt wie „schreib eine Dankesnachricht“ ein</translation>
 <translation id="2890557891229184386">Tropeninsel</translation>
 <translation id="2895772081848316509">dunkel</translation>
@@ -445,7 +450,9 @@
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
 <translation id="361575905210396100">Vielen Dank für dein Feedback</translation>
 <translation id="3621072146987826699">Elefanten</translation>
+<translation id="3632040286124154621">Guter Vorschlag</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
+<translation id="3644695927181369554">Unpassender Vorschlag</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
 <translation id="3661106764436337772">Schneller und mit mehr Sicherheit schreiben</translation>
 <translation id="3662461537616691585">burgunderrot und rotbraun</translation>
@@ -455,10 +462,12 @@
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
 <translation id="3715651196924935218">Status „Unverankert“ beenden</translation>
+<translation id="3716250181321371108">Steuerelement erstellen</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="3771294271822695279">Videodateien</translation>
+<translation id="3780740315729837296">Tastenbelegung zuweisen</translation>
 <translation id="3784455785234192852">Sperre</translation>
 <translation id="3785643128701396311">Pixel-Art</translation>
 <translation id="3790109258688020991">Pointillismus</translation>
@@ -488,6 +497,7 @@
 <translation id="3916998944874125962">Screenshot aufnehmen</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
+<translation id="3934185438132762746">Nicht zugewiesen: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3954678691475912818">Der Gerätetyp ist unbekannt.</translation>
@@ -510,6 +520,7 @@
 <translation id="4054683689023980771">Bild wird heruntergeladen</translation>
 <translation id="4063039537646912479">hellblau</translation>
 <translation id="4070799384363688067">Anime</translation>
+<translation id="4086271957099059213">Weiteres Steuerelement erstellen</translation>
 <translation id="4091002263446255071">romantisch</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
@@ -611,6 +622,7 @@
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="4650608062294027130">Umschalttaste rechts</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
+<translation id="4655868084888499342">Bild als Hintergrund festgelegt</translation>
 <translation id="4661249927038176904">Surreal</translation>
 <translation id="4664651912255946953">Fell</translation>
 <translation id="4665014895760275686">Hersteller</translation>
@@ -618,6 +630,7 @@
 <translation id="467715984478005772">Verdacht auf Firewall</translation>
 <translation id="4691278870498629773">Angehalten – Fach fehlt</translation>
 <translation id="469379815867856270">Signalstärke</translation>
+<translation id="4697260493945012995">Steuerelementtyp auswählen</translation>
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
@@ -858,6 +871,7 @@
 <translation id="6108952804512516814">Mit KI erstellen</translation>
 <translation id="6112878310391905610">Diese Einstellung wird von deinen Administratoren verwaltet</translation>
 <translation id="6113701710518389813">Aufwärtspfeil</translation>
+<translation id="6116005346231504406">Erstes Steuerelement erstellen</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> weitere Alben</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Dienst für die Chrome OS-Eingabemethoden</translation>
@@ -1046,6 +1060,7 @@
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7144954474087165241">Pagode</translation>
+<translation id="7147557737960578492">Durch Auswahl einer anderen Taste neu zuweisen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7154020516215182599">Gib uns Feedback oder beschreibe das Problem. Teile uns nach Möglichkeit auch mit, wie wir das Problem reproduzieren können.</translation>
 <translation id="7155037718620478619">Weitere APNs suchen</translation>
@@ -1091,6 +1106,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7344788170842919262">erdig</translation>
+<translation id="7346768383111016081">Steuerelement auf der Spielaktion platzieren, um über die Tastatur zu spielen</translation>
 <translation id="7353413232959255829">Suchergebnis <ph name="LIST_POSITION" /> von <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Drücke die Eingabetaste, um die Tastenkombination aufzurufen.</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="73631062356239394">Diagnosedaten teilen</translation>
@@ -1285,6 +1301,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">Teehaus</translation>
 <translation id="8538236298648811558">Powered by Google AI</translation>
+<translation id="8550364285433943656">Platziere die Steuerelemente auf Spielaktionen, um über die Tastatur zu spielen</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
@@ -1403,6 +1420,7 @@
 <translation id="9189000703457422362">Über automatisch erkannte APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
+<translation id="921080052717160800">Bild als Kamerahintergrund festgelegt</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
 <translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>

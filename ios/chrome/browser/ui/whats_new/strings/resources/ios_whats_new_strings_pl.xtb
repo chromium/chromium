@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1533488253335887280">Łatwy i bezpieczny dostęp do haseł z ekranu głównego.</translation>
+<translation id="1590550141045148182">Możesz otwierać i zamykać karty według własnego uznania.</translation>
+<translation id="2036020471903443693">Karta będzie przypięta u dołu ekranu.</translation>
+<translation id="2984477737332162971">Przejdź do otwartych kart.</translation>
+<translation id="3595188309555410362">Jeśli masz karty, które od jakiegoś czasu nie były używane, zostaną one przeniesione do sekcji Nieaktywne karty.</translation>
+<translation id="3941788408634637840">Kliknij Nieaktywne karty (jeśli są dostępne).</translation>
+<translation id="3942215673032261195">Możesz przypiąć swoje ulubione strony internetowe, aby mieć do nich później łatwy dostęp.</translation>
+<translation id="4196935312151003338">W menu wybierz „Przypnij kartę”.</translation>
+<translation id="4497631794981705027">Naciśnij i przytrzymaj ekran główny.</translation>
+<translation id="463279609093232564">W lewym górnym rogu ekranu kliknij +.</translation>
+<translation id="5604467549230434026">W polu Widżety wyszukiwania wpisz Chrome.</translation>
+<translation id="5639067007765618198">Widżet Menedżera haseł Google</translation>
 <translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
 <translation id="5979837087407522202">Szukaj haseł</translation>
+<translation id="6109989197058801417">Naciśnij i przytrzymaj kartę, którą chcesz przypiąć.</translation>
+<translation id="639614003069108254">Wybierz Menedżera haseł i kliknij Dodaj widżet.</translation>
+<translation id="6905308710260460250">Przypięte karty</translation>
+<translation id="720206380500582061">Ustawieniami nieaktywnych kart możesz zarządzać w sekcji Ustawienia &gt; Karty.</translation>
 <translation id="8077675488769462025">Nieaktywne karty</translation>
+<translation id="8602952180069641300">Przewiń stronę Karty do góry.</translation>
+<translation id="979990360845983227">Nieużywane od co najmniej 14 dni</translation>
 </translationbundle>

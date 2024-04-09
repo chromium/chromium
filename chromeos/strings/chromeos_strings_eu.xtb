@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
+<translation id="1618566998877964907">Erabili gai bat</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1622402072367425417">burbuila distiratsuekin</translation>
 <translation id="1626590945318984973">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat funtzio- eta <ph name="META_KEY" /> teklarik erabili gabe.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">SALTATUTA</translation>
 <translation id="2324354238778375592">Leiho gainerakorra</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetootha</translation>
 <translation id="2346474577291266260">Bikaina (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">Aulkia</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> editatzeko leihoa irekita dago.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">oliba-koloreko</translation>
 <translation id="8373046809163484087">Erabili horma-paperarekin bat datozen kolore sortak</translation>
 <translation id="8380114448424469341">Ainguratu leihoa pantailaren <ph name="DIRECTION" /> erdian</translation>
+<translation id="8391349326751432483">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Memorian tokia egiteko, itxi fitxak eta aplikazioak.</translation>
 <translation id="8395584934117017006">Enpresa batek kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
 <translation id="8403988360557588704"><ph name="ART_FEATURE" /> baten margolan bat, estilo honetan: <ph name="ART_MOVEMENT" /></translation>

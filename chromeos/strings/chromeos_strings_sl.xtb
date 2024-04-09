@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Predogled slike</translation>
 <translation id="1611649489706141841">naprej</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Uporaba teme</translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
 <translation id="1622402072367425417">žareči oblački</translation>
 <translation id="1626590945318984973">Bližnjica ni na voljo. Pritisnite novo bližnjico brez uporabe funkcijskih tipk in tipk <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2324354238778375592">Plavajoči gumb</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
-<translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2346474577291266260">Odlična (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">stol</translation>
 <translation id="2358070305000735383">Pogovorno okno za urejanje za element <ph name="DESCRIPTION" /> je odprto.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">olivna</translation>
 <translation id="8373046809163484087">Uporabite nabore barv, ki se ujemajo z zaslonskim ozadjem</translation>
 <translation id="8380114448424469341">Sidranje okna na polovici zaslona <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">Če želite izvajati preizkus pomnilnika, potrebujete najmanj 500 MB prostora. Če želite sprostiti pomnilnik, zaprite zavihke in aplikacije.</translation>
 <translation id="8395584934117017006">To napravo <ph name="DEVICE_TYPE" /> upravlja podjetje.</translation>
 <translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
 <translation id="8403988360557588704">Na sliki je <ph name="ART_FEATURE" /> v slogu »<ph name="ART_MOVEMENT" />«</translation>

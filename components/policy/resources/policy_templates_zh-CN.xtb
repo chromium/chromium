@@ -1811,7 +1811,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果您未设置此政策，那么隐私保护屏最初会处于停用状态，但用户可以控制该功能。</translation>
 <translation id="2413899611035194909">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
 <translation id="2415715982424988916">探索（自 91 版起受支持）</translation>
-<translation id="2419114151067000328">用户将无法使用商品规格功能。</translation>
 <translation id="2420958105721932612">指定相应应用的安装方式。AVAILABLE：系统不会自动安装该应用，但用户可以安装它。如果您未指定此政策，该选项即是默认设置。FORCE_INSTALLED：系统会自动安装该应用，而且用户无法卸载它。BLOCKED：该应用已被屏蔽且无法安装。如果已根据先前的政策安装了该应用，系统会卸载它。</translation>
 <translation id="2421400544595297401">不允许独立用户使用 Android 应用</translation>
 <translation id="2421677964966613267">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法运行 <ph name="FLASH_PLUGIN_NAME" /> 插件。
@@ -2953,6 +2952,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 这些限制适用于通过网页内容以及“下载链接”菜单选项触发的下载，但不适用于保存或下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。
 
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
+<translation id="3300441638895109781">在 ChromeOS 上自动重新加载身份验证流程</translation>
 <translation id="3300784749135986828">启用或停用“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能。</translation>
 <translation id="3301698868852716692">启用数据洞见扩展程序</translation>
 <translation id="3302829897293005699">如果此政策已启用或未设置，已注册的设备将会报告当前自助服务终端会话的相关信息（例如应用 ID 和版本）。
@@ -3026,6 +3026,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3380801667330555918">为 Kerberos 票据更改预填充配置</translation>
 <translation id="338149029069528354">不清除本地用户数据</translation>
 <translation id="3381968327636295719">默认情况下托管主机浏览器</translation>
+<translation id="3387117557265712991">停用应用绑定加密</translation>
 <translation id="3387211681524224831">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，用户则无法更改相关设置。
 
       如果此政策已停用或未设置，系统将会保存浏览记录。</translation>
@@ -3318,7 +3319,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3606571057705314194">在浏览器启动时停用个人资料选择器</translation>
 <translation id="3608206578291537084">启用加密报告管道</translation>
 <translation id="3608281460204780443">在 <ph name="PRODUCT_OS_NAME" /> 启动器和新标签页中显示 Chrome 应用商店的图标</translation>
-<translation id="361046511337768385">允许启用商品规格功能</translation>
 <translation id="3616490235694929053">此政策用于控制是否让系统在用户首次登录期间向其显示“显示大小”设置界面。
       如果此政策设为 false，系统将不会显示“显示大小”设置界面。
       如果此政策设为 true，系统将会显示“显示大小”设置界面。</translation>
@@ -5307,7 +5307,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
-<translation id="5363412016871318326">用户将可以使用商品规格功能。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
 <translation id="5365946944967967336">在工具栏上显示“主页”按钮</translation>
 <translation id="5366977351895725771">如果此政策的值设置为 False，此用户将无法创建受监管用户。不过，所有目前受监管的用户账号仍然可供访问。
@@ -5721,6 +5720,15 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策已停用，系统会关闭 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="5673254755365419402">启用 <ph name="PRIVACY_SANDBOX_NAME" /> 数字“指纹”收集保护功能。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
+<translation id="5673780539191375049">设置在 <ph name="PRODUCT_OS_NAME" /> 设备上自动重新加载用户身份验证流程的时间间隔（以分钟为单位）。我们引入此政策的目的是应对设备处于空闲状态一段时间后，身份验证流程中使用的某些服务的过期问题。
+
+如果此政策未设置或值为零，身份验证流程将永远不会重新加载。
+
+如果此政策设为正值，身份验证流程将按设定的时间间隔自动重新加载。
+
+可能的重新加载间隔时间最长为一周（10080 分钟）。
+
+此政策既会影响登录流程，也会影响锁屏身份验证流程。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
 <translation id="5679540979548648200">禁止此设备的用户使用 ADB 旁加载；如果先前已启用旁加载，就对设备强制执行 Powerwash</translation>
 <translation id="5681258683432554972">默认弹出式窗口设置</translation>
@@ -8764,9 +8772,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8102854005031553638">PDF 查看器使用 AGG 渲染程序。</translation>
 <translation id="8102913158860568230">默认 mediastream 设置</translation>
 <translation id="8104962233214241919">自动选择这些网站的客户端证书</translation>
-<translation id="810509972572344398">如果此政策已启用或未设置，用户将可以看到商品规格。
-
-如果此政策已停用，用户将无法看到商品规格。</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /><ph name="INTERNET_PRINTING_PROTOCOL" /><ph name="IPP_ATTRIBUTE" />专用模板</translation>
 <translation id="8111331908123507719">配置设备的空闲时间，也就是等到设备闲置多久（以秒为单位）之后系统才会在锁定屏幕上显示屏保。
 
@@ -9180,6 +9185,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       <ph name="MS_WIN_NAME" /> 管理员需要注意：只能在运行 Windows 7 的设备中开启此设置。在运行更高版本的设备中，您必须部署一个“默认应用关联”文件，使 <ph name="PRODUCT_NAME" /> 成为 <ph name="HTTPS_PROTOCOL" /> 和 <ph name="HTTP_PROTOCOL" /> 协议的处理程序（也可成为 <ph name="FTP_PROTOCOL" /> 协议和其他文件格式的处理程序）。请参阅 Chrome 帮助文章 ( https://support.google.com/chrome?p=make_chrome_default_win )。</translation>
 <translation id="8441105784056442638">启用“完全还原”功能</translation>
+<translation id="8444157920689124099">启用应用绑定加密</translation>
 <translation id="8445576299806775661">每次实施完重大版本更新后，Chrome 都会为用户浏览数据的某些部分创建快照，以供日后执行紧急版本回滚时使用。如果对某个版本执行了紧急回滚，且用户拥有与此版本对应的快照，系统便会恢复相应快照中的数据。这就使得用户能够继续拥有自己的书签和自动填充数据等设置。
 
       如果此政策未设置，系统将会使用默认值（即 3）
@@ -10193,6 +10199,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="984365509386992443">如果已启用或未设置此政策，用户可能会收到与“安全浏览”功能相关的调查问卷。
 如果已停用此政策，用户将不会收到与“安全浏览”功能相关的调查问卷。</translation>
 <translation id="985148612300045106">启动器键/搜索键将能够更改功能键的行为，但用户无法更改此设置。</translation>
+<translation id="986223659726677100">如果此政策已启用或未设置，系统会尽可能将用于本地数据存储的加密密钥绑定到 <ph name="PRODUCT_NAME" />。
+
+如果此政策已停用，未知的潜在恶意应用便可检索用于保护数据的加密密钥，因此会对 <ph name="PRODUCT_NAME" /> 的安全性产生不利影响。
+
+请仅在存在兼容性问题时停用此政策，例如：其他应用需要合法访问 <ph name="PRODUCT_NAME" /> 的数据，加密的用户数据需要在不同计算机之间完全传输，或 <ph name="PRODUCT_NAME" /> 可执行文件的完整性和位置信息不一致。</translation>
 <translation id="987261962216071510">仅允许通过浏览器访客模式登录</translation>
 <translation id="987975731398348803">如果此政策已启用或未设置，已注册的设备将会以列表形式报告近期登录过的设备用户。
 

@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 นิ้ว</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1181381397492575884">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ ไปที่การตั้งค่าเพื่อ<ph name="LINK" /></translation>
+<translation id="1185343831726846924">เปิดการยืนยันบัตรเสมือน (Virtual Card) ไม่ได้</translation>
 <translation id="1186201132766001848">ตรวจสอบรหัสผ่าน</translation>
 <translation id="1187430513518041110">รถยนต์และยานพาหนะ</translation>
 <translation id="1190491977647722791">กระดาษ (น้ำหนักมาก)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> นิ้ว</translation>
 <translation id="1574714699824202614">กําลังยืนยันวิธีการชําระเงิน</translation>
 <translation id="1576277203042721907">ข้อมูลเชิงลึกเกี่ยวกับ Shopping</translation>
+<translation id="1579189948231786790">องค์กรของคุณบล็อกเว็บไซต์นี้</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">ไม่มีวันหมดอายุ</translation>
 <translation id="1583429793053364125">มีสิ่งผิดปกติเกิดขึ้นในขณะที่แสดงหน้าเว็บนี้</translation>
@@ -452,7 +454,7 @@
 <translation id="1812527064848182527">แนวนอน</translation>
 <translation id="1812975699435941848">การศึกษาด้านสุขภาพและการฝึกอบรมทางการแพทย์</translation>
 <translation id="1813414402673211292">นำออกข้อมูลที่เรียกดู</translation>
-<translation id="1816436748874040213">ขอเลื่อนและซูมแท็บที่แชร์ได้</translation>
+<translation id="1816436748874040213">สามารถขอเลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="1818522458013171885">เลิกบล็อก</translation>
 <translation id="1818585559878922121">ภาพยนตร์สารคดี</translation>
 <translation id="182139138257690338">การดาวน์โหลดอัตโนมัติ</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">ระบบนิเวศและสิ่งแวดล้อม</translation>
 <translation id="2452837234288608067">ยังช่วยเรื่องนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="2456755709261364512">ต้องชาร์จแบตเตอรี่ให้มากกว่า <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2462932596748424101">โซเชียลเน็ตเวิร์ก</translation>
 <translation id="2463739503403862330">กรอกข้อมูล</translation>
 <translation id="2465688316154986572">เย็บด้วยลวดเย็บกระดาษ</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">ไม่สามารถเข้าถึง PDF นี้ กด "ค้นหา" และ m เพื่อเปิดเมนูตามบริบทและเปิดใช้ "ดึงข้อความจาก PDF"</translation>
 <translation id="2818338148457093657">บริการด้านความงามและสปา</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
-<translation id="2824549017793319782">เลือกเพื่อพิมพ์คำค้นหาในแถบที่อยู่โดยตรง</translation>
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
 <translation id="2826760142808435982">การเชื่อมต่อถูกเข้ารหัสและรับรองความถูกต้องโดยใช้ <ph name="CIPHER" /> และใช้ <ph name="KX" /> เป็นกลไกการแลกเปลี่ยนคีย์</translation>
 <translation id="2833637280516285136">รายการวิทยุ</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">เปลี่ยนตำแหน่งรูปภาพตามแกน X</translation>
 <translation id="3807709094043295184">ร็อกคลาสสิกและเพลงเก่า</translation>
 <translation id="3807873520724684969">บล็อกเนื้อหาอันตรายแล้ว</translation>
+<translation id="380865868633614173">กำลังบันทึกข้อมูลบัตร</translation>
 <translation id="3810770279996899697">เครื่องมือจัดการรหัสผ่านต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="3812398568375898177">การอัปเดตนี้สำคัญต่อการปรับปรุงประสิทธิภาพของแอป Android ใน ChromeOS</translation>
@@ -2180,6 +2183,7 @@
 <translation id="5217759126664161410">รูปแบบโปรโตคอลไม่ถูกต้อง</translation>
 <translation id="5222812217790122047">ต้องระบุอีเมล</translation>
 <translation id="5228269245420405804">การเรียนรู้ทางไกล</translation>
+<translation id="5230428804606340145">จัดการบัญชีการเงินอื่นๆ</translation>
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2187,6 +2191,7 @@
 <translation id="5238301240406177137">บันทึกในบัญชี</translation>
 <translation id="5239119062986868403">ราคาปกติ</translation>
 <translation id="5239623327352565343">อนุญาตให้เข้าถึงตําแหน่ง</translation>
+<translation id="5241048084654737238">บันทึกการยืนยันข้อมูลบัตรไม่ได้</translation>
 <translation id="5242610955375133957">ฟิล์มแห้ง</translation>
 <translation id="5244521145258281926">จัดการบัญชี Google เปิดใช้งานเพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
 <translation id="5244732203286792411">กำลังโหลด...
@@ -2202,6 +2207,7 @@
 <translation id="5266128565379329178">เย็บเล่มด้านบน</translation>
 <translation id="5269225904387178860">เจาะรูด้านล่าง 4 รู</translation>
 <translation id="5269999699920406580">ฟีเจอร์ที่ใช้กับทั้งระบบจะตั้งค่าได้โดยเจ้าของเท่านั้น: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ไม่ใช่เงื่อนไขที่รองรับสำหรับ "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">คำเตือน: ระบบไม่ได้รวมนโยบายนี้ตามที่ระบุในนโยบาย PolicyDictionaryMultipleSourceMergeList เพราะไม่ใช่ส่วนหนึ่งของนโยบายพจนานุกรมที่รวมได้</translation>
 <translation id="5279286380302340275">จัดการการดาวน์โหลด</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{หากต้องการส่งไฟล์นี้โดยใช้<ph name="FEATURE_NAME" /> โปรดเพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}other{หากต้องการส่งไฟล์เหล่านี้โดยใช้<ph name="FEATURE_NAME" /> โปรดเพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}}</translation>
 <translation id="7160999678034985039">โปรดบันทึกงานและเริ่มอัปเดตเมื่อพร้อม</translation>
 <translation id="7163295244162773898">{0,plural, =1{คัดลอกไฟล์ลับใช่ไหม}other{คัดลอกไฟล์ลับใช่ไหม}}</translation>
+<translation id="7168625890036931112">แพลตฟอร์มนี้ไม่รองรับข้อจำกัด "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="717330890047184534">รหัส GAIA:</translation>
 <translation id="7174545416324379297">รวมแล้ว</translation>
 <translation id="7175097078723125014">เลือกตัวเลือกแก้ไขที่อยู่แล้ว</translation>
@@ -3245,6 +3252,7 @@
 <translation id="7310392214323165548">อุปกรณ์จะรีสตาร์ทเร็วๆ นี้</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7311837626618954149">Chromium บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ</translation>
+<translation id="7313107491291103073">องค์กรของคุณแจ้งว่าเว็บไซต์นี้อาจละเมิดนโยบาย</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ความช่วยเหลือในการเชื่อมต่อ</translation>
 <translation id="7323804146520582233">ซ่อนส่วน "<ph name="SECTION" />"</translation>
@@ -3570,6 +3578,7 @@
 <translation id="7888575728750733395">การปรับค่าสีการพิมพ์</translation>
 <translation id="7894280532028510793">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
 <translation id="7901831439558593470">Envelope 7 x 9 นิ้ว</translation>
+<translation id="7908648876066812348">กำลังเปิดบัตรเสมือน (Virtual Card)</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="791551905239004656">การวาดภาพและระบายสี</translation>
 <translation id="7916162853251942238">เฟล็กโซเบส</translation>
@@ -4078,6 +4087,7 @@
 <translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="8877780815363510165">การตกปลา</translation>
+<translation id="888117890813270681">ตั้งค่า "<ph name="DATA_CONTROLS_RESTRICTION" />" เป็น "<ph name="DATA_CONTROLS_LEVEL" />" ไม่ได้</translation>
 <translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="8888187300091017436">ฟูก</translation>
 <translation id="8890048757975398817">ควบคุม <ph name="READERNAME" /> และรับสิทธิ์เข้าถึงสมาร์ทการ์ดที่เครื่องอ่านบัตรดังกล่าวเข้าถึงได้</translation>

@@ -258,7 +258,6 @@
 <translation id="2323506179655536734">POMINIĘTO</translation>
 <translation id="2324354238778375592">Pływający</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2346474577291266260">Świetna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">krzesła</translation>
 <translation id="2358070305000735383">Okno edytowania elementów: <ph name="DESCRIPTION" /> jest otwarte.</translation>
@@ -846,6 +845,8 @@
 <translation id="5946538341867151940">Nie masz jeszcze połączenia. Jeśli Twój operator komórkowy zaleca niestandardowy punkt APN, wpisz informacje o APN, wybierając „+ Nowy APN”</translation>
 <translation id="5947266287934282605">Jeśli ostatni dzień miesiąca przypada przed tym dniem, dane zostaną zresetowane w ostatnim dniu miesiąca.</translation>
 <translation id="5948460390109837040">psy</translation>
+<translation id="594989847980441553">Wybierz „Utwórz”, aby utworzyć obraz za pomocą AI.
+        Wszystkie utworzone obrazy automatycznie pojawią się w tym miejscu.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koralowy</translation>
 <translation id="5984145644188835034">Domyślna tapeta</translation>

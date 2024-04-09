@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Previzualizează imaginea</translation>
 <translation id="1611649489706141841">înainte</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Folosește o temă</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1622402072367425417">bule strălucitoare</translation>
 <translation id="1626590945318984973">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și <ph name="META_KEY" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">OMIS</translation>
 <translation id="2324354238778375592">Suprapus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">scaun</translation>
 <translation id="2358070305000735383">Caseta de dialog de editare pentru <ph name="DESCRIPTION" /> este deschisă.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">oliv</translation>
 <translation id="8373046809163484087">Folosește seturi de culori care se potrivesc cu imaginea de fundal</translation>
 <translation id="8380114448424469341">Andochează fereastra pe jumătatea <ph name="DIRECTION" /> din ecran</translation>
+<translation id="8391349326751432483">Ai nevoie de minimum 500 MB de spațiu disponibil pentru a rula un test de memorie. Pentru a elibera memoria, închide filele și aplicațiile.</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
 <translation id="8403988360557588704">Pictură cu <ph name="ART_FEATURE" /> în stilul <ph name="ART_MOVEMENT" /></translation>

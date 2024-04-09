@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Symud yma</translation>
 <translation id="1014147525163127655">Does dim codau pas ar gyfer <ph name="ORIGIN" /> ar y ddyfais hon</translation>
 <translation id="1016498331642356377">Chwilio yn gyflym â'ch llais. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
+<translation id="1017104654974573432">Dewiswch fater</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Wthi'n anfon i <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Clirio'r data o'r gwefannau ac apiau hyn hefyd?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">Rydych chi all-lein. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="107147699690128016">Os byddwch yn newid yr estyniad ffeil, gall y ffeil agor mewn apiau gwahanol ac mae'n bosib y bydd yn berygl i'ch dyfais.</translation>
+<translation id="1082920045291562218">Rhannu gyda thaflen adborth gryno ar gau</translation>
 <translation id="1089606299949659462">Adolygiad wedi'i gwblhau!</translation>
 <translation id="1095761715416917775">Gwnewch yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni</translation>
 <translation id="1100066534610197918">Agor mewn tab a grŵp newydd</translation>
@@ -557,6 +559,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="4034817413553209278">{HOURS,plural, =1{# awr}zero{# awr}two{# awr}few{# awr}many{# awr}other{# awr}}</translation>
 <translation id="4035877632587724847">Peidio â chaniatáu</translation>
 <translation id="4042941173059740150">Parhau at <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grŵp dienw</translation>
 <translation id="4044708993631234325">Dalen waelod</translation>
 <translation id="405365679581583349">Diweddaru gwasanaethau Google Play</translation>
 <translation id="405399507749852140">Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan</translation>
@@ -628,6 +631,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="4404568932422911380">Dim nodau tudalen</translation>
 <translation id="4405224443901389797">Symud i…</translation>
 <translation id="4405636711880428279">Tynnu eich cerdyn rhithwir?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> a <ph name="TAB_COUNT" /> o dabiau eraill</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="4415276339145661267">Rheoli'ch Cyfrif Google</translation>
 <translation id="4425140285732600465">Yn dilyn y pris. Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan.</translation>
@@ -1070,6 +1074,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6595046016124923392">Anfonir lluniau at Google i wella disgrifiadau i chi.</translation>
 <translation id="661266467055912436">Yn gwella diogelwch i chi a phawb ar y we.</translation>
 <translation id="6621391692573306628">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chrome ar y ddwy ddyfais</translation>
+<translation id="6625890511281718257">Rhannu gyda thaflen adborth gryno</translation>
 <translation id="6627583120233659107">Golygu'r ffolder</translation>
 <translation id="6633067410344541938">Datgloi Anhysbys</translation>
 <translation id="6636623428211296678">Gallwch archwilio rhagor o osodiadau isod neu orffen nawr</translation>
@@ -1108,6 +1113,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">Agorodd rhestr o ddyfeisiau i rannu tab â nhw ar hanner uchder.</translation>
 <translation id="6770602306803890733">Mae'n gwella diogelwch i chi a phawb ar y we</translation>
+<translation id="6773061896687011391">Bydd URL y dudalen rydych yn darparu adborth ar ei chyfer yn cael ei anfon gan Google a gall gael ei adolygu gan bobl i wella'r nodwedd hon</translation>
 <translation id="6775840696761158817">Pan fyddwch yn tapio neu'n teipio yn y bar cyfeiriad neu'r blwch chwilio, byddwch yn gweld awgrymiadau o'ch peiriant chwilio diofyn. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="6785476624617658922">Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS</translation>
 <translation id="6795633245022906657">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
@@ -1411,6 +1417,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8135406045838672858">Mae ffeiliau PDF sydd wedi'u lawrlwytho yn agor yn awtomatig gyda <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau Google.</translation>
 <translation id="8163820386638255770">I ddefnyddio a chadw cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
+<translation id="8171286197772512427">Rhannu gyda thaflen adborth gryno ar agor</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Mae <ph name="FILES" /> ffeil ar ôl</translation>
 <translation id="8190358571722158785">1 diwrnod ar ôl</translation>

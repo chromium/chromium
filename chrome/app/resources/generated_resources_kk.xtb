@@ -694,7 +694,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Бұл жүктеп алудың компьютеріме зиян келтіретінін білемін.</translation>
 <translation id="1535228823998016251">Қатты</translation>
-<translation id="1535597783576881392">Бұл гид таңдауларыңызды түсінуге көмектеседі, осылайша Chrome сіз қалағандай жұмыс істейді</translation>
 <translation id="1535753739390684432">Дауыстап оқылатын мәтінді тыңдаңыз. Алдымен экранның төменгі жағындағы Select to Speak белгішесін басыңыз, одан кейін мәтінді ерекшелеңіз.</translation>
 <translation id="1536754031901697553">Ажыратылуда…</translation>
 <translation id="1536883206862903762">Кеңейтімдер өшіріледі және параметрлер қауіпсіз әдепкі мәндеріне қайтарылады. Қойындылар, файлдар мен cookie файлдары сақталады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
@@ -4912,7 +4911,6 @@
 <translation id="4716483597559580346">Қосымша қауіпсіздік үшін Powerwash функциясын қолдану</translation>
 <translation id="4716715661140829720">Жад көлемі жеткіліксіз</translation>
 <translation id="471759229191973607">Тақырыпты өзгерту</translation>
-<translation id="4718046540206070045">Браузерден артық</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> құпия сөзі</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> экраныңызды бөлісуде.</translation>
 <translation id="4722989931633062466">Аккаунтқа үшінші тарап арқылы кіру хабарларының көрсетілуіне рұқсат бермеу</translation>
@@ -5597,7 +5595,6 @@
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
 <translation id="5271578170655641944">Google Drive қызметін пайдалану рұқсатын өшіру керек пе?</translation>
 <translation id="5273806377963980154">Сайттың URL мекенжайын өңдеу</translation>
-<translation id="5273966423195882879">Тақырыпқа негізделген түс</translation>
 <translation id="5275084684151588738">Пайдаланушы сөздіктері</translation>
 <translation id="5275100789567222478">Тек батареямның заряды <ph name="PERCENT" />%-дан аз болғанда қосу</translation>
 <translation id="5275338516105640560">"Қойындылар тобы" түймесі сақталды.</translation>
@@ -9598,7 +9595,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Бұл сайтты тіркеп қойғансыз. Қайта тіркеудің қажеті жоқ.</translation>
 <translation id="8357388086258943206">Linux жүйесін орнату кезінде қате шықты</translation>
-<translation id="8357591920094529889">Бұл гид Chrome браузерін пайдалану кезіндегі маңызды таңдауларды түсінуге көмектеседі. Ол осы таңдауларыңызды жасауға көмектеседі, осылайша Chrome браузері қалағаныңыздай жұмыс істейді.</translation>
 <translation id="8358685469073206162">Беттерді қалпына келтіресіз бе?</translation>
 <translation id="8358912028636606457">Бұл құрылғыда қойынды аудиосының дыбысы шықпайды.</translation>
 <translation id="835951711479681002">Google аккаунтында сақтау</translation>
@@ -9662,7 +9658,6 @@
 <translation id="8399282673057829204">Құпия сөзді көру</translation>
 <translation id="839949601275221554">Құрылғыда бір қате пайда болды. Құрылғыны өшіріп қосып, әрекетті қайталаңыз.</translation>
 <translation id="8401432541486058167">Смарт картаңызбен байланыстырылған PIN кодын көрсетіңіз.</translation>
-<translation id="8403618281196981152">Chrome браузеріндегі деректеріңіз</translation>
 <translation id="8403807918453631441">Құпия сөздер сақталған кезде, <ph name="BRAND" /> оларды тексере алады</translation>
 <translation id="8405046151008197676">Ең соңғы нұсқаға қатысты негізгі ақпарат алыңыз.</translation>
 <translation id="8405118833120731611">{0,plural, =1{Бұл профильді жабу}other{Бұл профильді (# терезені) жабу}}</translation>

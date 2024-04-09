@@ -696,7 +696,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">હું સમજું છું કે આ ડાઉનલોડથી મારા કમ્પ્યુટરને નુકસાન પહોંચશે</translation>
 <translation id="1535228823998016251">મોટો અવાજ</translation>
-<translation id="1535597783576881392">આ ગાઇડ તમને તમારી પસંદગીઓને સમજવામાં સહાય કરે છે કે જેથી Chrome તમે ઇચ્છો તે રીતે કાર્ય કરે</translation>
 <translation id="1535753739390684432">ચોક્કસ ટેક્સ્ટને મોટેથી વંચાતી સાંભળો. પહેલા, તમારી સ્ક્રીન પર સૌથી નીચે 'સાંભળવા માટે પસંદ કરો' આઇકન પસંદ કરો, પછી ટેક્સ્ટ હાઇલાઇટ કરો.</translation>
 <translation id="1536754031901697553">ડિસ્કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="1536883206862903762">આમ કરવાથી એક્સ્ટેન્શન બંધ કરવામાં આવશે અને તમારા સેટિંગને સલામત ડિફૉલ્ટ પર રીસેટ કરવામાં આવશે. ટૅબ, ફાઇલો અને કુકી જાળવી રાખવામાં આવશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -4922,7 +4921,6 @@
 <translation id="4716483597559580346">વધારાની સુરક્ષા માટે પાવરવૉશ</translation>
 <translation id="4716715661140829720">પર્યાપ્ત સ્ટોરેજ સ્પેસ નથી</translation>
 <translation id="471759229191973607">થીમ બદલો</translation>
-<translation id="4718046540206070045">બ્રાઉઝર કરતાં વધુ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> માટેનો પાસવર્ડ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> તમારી સ્ક્રીનને શેર કરી રહી છે.</translation>
 <translation id="4722989931633062466">ત્રીજા પક્ષના સાઇન-ઇન માટેના સંકેતો બતાવવાની મંજૂરી નથી</translation>
@@ -5607,7 +5605,6 @@
 <translation id="5269977353971873915">પ્રિન્ટ કાઢવામાં નિષ્ફળ</translation>
 <translation id="5271578170655641944">Google Drive પરના ઍક્સેસ કાઢી નાખીએ?</translation>
 <translation id="5273806377963980154">સાઇટના URLમાં ફેરફાર કરો</translation>
-<translation id="5273966423195882879">થીમ આધારિત રંગ</translation>
 <translation id="5275084684151588738">વપરાશકર્તા શબ્દકોશો</translation>
 <translation id="5275100789567222478">જ્યારે મારી બૅટરી <ph name="PERCENT" />% અથવા ઓછી હોય, માત્ર ત્યારે જ ચાલુ કરો</translation>
 <translation id="5275338516105640560">સાચવેલા ટૅબ ગ્રૂપનું બટન</translation>
@@ -9616,7 +9613,6 @@ USB ડિવાઇસ</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">તમે પહેલેથી જ આ ડિવાઇસ રજિસ્ટર કરાવ્યું છે. તમારે ફરીથી રજિસ્ટર કરવાની જરૂર નથી.</translation>
 <translation id="8357388086258943206">Linux ઇન્સ્ટૉલ કરતી વખતે ભૂલ આવી</translation>
-<translation id="8357591920094529889">તમે જેમ-જેમ Chromeનો ઉપયોગ કરો છો તેમ-તેમ આ ગાઇડ તમને તમારી મહત્ત્વની પસંદગીઓને સમજવામાં સહાય કરે છે. અને તે પસંદગીઓ કરવામાં આ તમારી સહાય કરે છે, જેથી Chrome તમે ઇચ્છો તે રીતે કાર્ય કરે.</translation>
 <translation id="8358685469073206162">પેજને રિસ્ટોર કરીએ?</translation>
 <translation id="8358912028636606457">આ ડિવાઇસ પર ટૅબ ઑડિયો કાસ્ટ કરવાની સુવિધા નથી.</translation>
 <translation id="835951711479681002">તમારા Google એકાઉન્ટમાં સાચવો</translation>
@@ -9680,7 +9676,6 @@ USB ડિવાઇસ</translation>
 <translation id="8399282673057829204">પાસવર્ડ જુઓ</translation>
 <translation id="839949601275221554">ડિવાઇસમાં ભૂલ આવી. કૃપા કરીને તમારું ડિવાઇસ ફરી શરૂ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="8401432541486058167">તમારા સ્માર્ટ કાર્ડ સાથે સંકળાયેલો હોય તે પિન પ્રદાન કરો.</translation>
-<translation id="8403618281196981152">Chromeમાં તમારો ડેટા</translation>
 <translation id="8403807918453631441">જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે <ph name="BRAND" /> તેને ચેક કરી શકે છે</translation>
 <translation id="8405046151008197676">એકદમ નવી અપડેટની હાઇલાઇટ મેળવો</translation>
 <translation id="8405118833120731611">{0,plural, =1{આ પ્રોફાઇલ બંધ કરો}one{આ પ્રોફાઇલ બંધ કરો (# windows)}other{આ પ્રોફાઇલ બંધ કરો (# windows)}}</translation>

@@ -700,7 +700,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Tôi hiểu rằng tệp tải xuống này sẽ gây hại cho máy tính của tôi</translation>
 <translation id="1535228823998016251">Lớn</translation>
-<translation id="1535597783576881392">Hướng dẫn này giúp bạn hiểu được các lựa chọn mà bạn có để Chrome hoạt động theo cách bạn muốn</translation>
 <translation id="1535753739390684432">Nghe văn bản cụ thể được đọc thành tiếng. Trước tiên, hãy chọn biểu tượng Chọn để nói ở cuối màn hình, sau đó bôi đen phần văn bản bạn muốn nghe.</translation>
 <translation id="1536754031901697553">Đang ngắt kết nối...</translation>
 <translation id="1536883206862903762">Tính năng này sẽ tắt các tiện ích và đặt lại chế độ cài đặt về chế độ mặc định, tức là chế độ an toàn. Thẻ, tệp và cookie sẽ được giữ nguyên. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -4931,7 +4930,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4716483597559580346">Powerwash giúp tăng cường bảo mật</translation>
 <translation id="4716715661140829720">Không đủ không gian lưu trữ</translation>
 <translation id="471759229191973607">Thay đổi chủ đề</translation>
-<translation id="4718046540206070045">Không chỉ là trình duyệt</translation>
 <translation id="4722735765955348426">Mật khẩu của <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> đang chia sẻ màn hình của bạn.</translation>
 <translation id="4722989931633062466">Không được phép đưa ra lời nhắc đăng nhập qua bên thứ ba</translation>
@@ -5616,7 +5614,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5271578170655641944">Xoá quyền truy cập vào Google Drive?</translation>
 <translation id="5273806377963980154">Chỉnh sửa URL của trang web</translation>
-<translation id="5273966423195882879">Màu sắc dựa trên giao diện</translation>
 <translation id="5275084684151588738">Từ điển người dùng</translation>
 <translation id="5275100789567222478">Chỉ bật khi pin ở mức <ph name="PERCENT" />% trở xuống</translation>
 <translation id="5275338516105640560">Nút Nhóm thẻ đã lưu</translation>
@@ -9625,7 +9622,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Bạn đã đăng ký thiết bị này. Bạn không phải đăng ký lại.</translation>
 <translation id="8357388086258943206">Lỗi khi cài đặt Linux</translation>
-<translation id="8357591920094529889">Hướng dẫn này giúp bạn hiểu những lựa chọn quan trọng dành cho bạn khi sử dụng Chrome. Hướng dẫn sẽ giúp bạn đưa ra các lựa chọn đó để Chrome hoạt động theo cách bạn muốn.</translation>
 <translation id="8358685469073206162">Bạn có muốn khôi phục trang không?</translation>
 <translation id="8358912028636606457">Thiết bị này không hỗ trợ truyền âm thanh của thẻ.</translation>
 <translation id="835951711479681002">Lưu trong Tài khoản Google</translation>
@@ -9689,7 +9685,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8399282673057829204">Xem mật khẩu</translation>
 <translation id="839949601275221554">Thiết bị đã gặp lỗi. Vui lòng khởi động lại thiết bị rồi thử lại.</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
-<translation id="8403618281196981152">Dữ liệu của bạn trong Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="8405046151008197676">Xem những điểm nổi bật của bản cập nhật mới nhất</translation>
 <translation id="8405118833120731611">{0,plural, =1{Đóng hồ sơ này}other{Đóng hồ sơ này (# cửa sổ)}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014147525163127655">No hay claves de acceso para <ph name="ORIGIN" /> en este dispositivo</translation>
 <translation id="1016498331642356377">Busca rápidamente con la voz. Para editar este acceso directo, mantenlo pulsado.</translation>
+<translation id="1017104654974573432">Selecciona un problema</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">¿Borrar también datos de estos sitios y aplicaciones?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">No tienes conexión. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="10614374240317010">Contraseñas que nunca se guardan</translation>
 <translation id="107147699690128016">Si cambias la extensión del archivo, el archivo podría abrirse en una aplicación diferente y convertirse en un riesgo potencial para tu dispositivo.</translation>
+<translation id="1082920045291562218">Compartir con la hoja de comentarios sobre el resumen cerrada</translation>
 <translation id="1089606299949659462">Revisión completada</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
@@ -557,6 +559,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">No permitir</translation>
 <translation id="4042941173059740150">Sigue usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="404352903042073578">Grupo sin nombre</translation>
 <translation id="4044708993631234325">Hoja inferior</translation>
 <translation id="405365679581583349">Actualiza los Servicios de Google Play</translation>
 <translation id="405399507749852140">Recibe alertas si el precio baja en algún sitio</translation>
@@ -628,6 +631,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="4404568932422911380">No hay marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405636711880428279">¿Quitar tu tarjeta visual?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
 <translation id="4409271659088619928">Usas el buscador <ph name="DSE" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4425140285732600465">Siguiendo precio. Recibe alertas si el precio baja en algún sitio.</translation>
@@ -1070,6 +1074,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6595046016124923392">Las imágenes se envían a Google para mejorar las descripciones que recibes.</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos</translation>
+<translation id="6625890511281718257">Compartir con la hoja de comentarios sobre el resumen</translation>
 <translation id="6627583120233659107">Editar carpeta</translation>
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>
 <translation id="6636623428211296678">Consulta más ajustes a continuación o termina ahora</translation>
@@ -1108,6 +1113,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que puedes compartir una pestaña está abierta a media altura.</translation>
 <translation id="6770602306803890733">Mejora tu seguridad y la de todos los usuarios en la Web</translation>
+<translation id="6773061896687011391">La URL de la página sobre la que estás enviando comentarios se enviará a Google y es posible que un equipo de personas la revise para mejorar esta función</translation>
 <translation id="6775840696761158817">Cuando toques o escribas en la barra de direcciones o en el cuadro de búsqueda, aparecerán sugerencias de tu buscador predeterminado. Esta opción está desactivada en el modo Incógnito.</translation>
 <translation id="6785476624617658922">Términos del Servicio Adicionales de Chrome y ChromeOS</translation>
 <translation id="6795633245022906657">Abre una pestaña nueva rápidamente. Para editar esta combinación de teclas, ve a Configuración.</translation>
@@ -1411,6 +1417,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8135406045838672858">Los PDFs descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google.</translation>
 <translation id="8163820386638255770">Para usar y guardar contraseñas en tu cuenta de Google, verifica tu identidad</translation>
+<translation id="8171286197772512427">Compartir con la hoja de comentarios sobre el resumen abierta</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8186512483418048923">Archivos restantes: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Queda 1 día</translation>

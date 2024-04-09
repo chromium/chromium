@@ -785,6 +785,7 @@
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
 <translation id="2456755709261364512">Батерија мора да се напуни изнад <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">Актуелно</translation>
 <translation id="2462932596748424101">Друштвене мреже</translation>
 <translation id="2463739503403862330">Попуни</translation>
 <translation id="2465688316154986572">Спајање</translation>
@@ -954,7 +955,6 @@
 <translation id="2814184336982254349">Не можете да приступите овом PDF-у. Притисните тастер за претрагу и m да бисте отворили контекстуални мени и укључите „издвоји текст из PDF-а“</translation>
 <translation id="2818338148457093657">Козметичке и спа услуге</translation>
 <translation id="2820957248982571256">Скенира се...</translation>
-<translation id="2824549017793319782">Изаберите да бисте претрагу унели директно у траку за адресу</translation>
 <translation id="2824775600643448204">Трака за адресу и претрагу</translation>
 <translation id="2826760142808435982">Веза је шифрована и њена аутентичност је потврђена помоћу <ph name="CIPHER" /> и користи <ph name="KX" /> као механизам за размену шифара.</translation>
 <translation id="2833637280516285136">Радио-емисије са гостима</translation>

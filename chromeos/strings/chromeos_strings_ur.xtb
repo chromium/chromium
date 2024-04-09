@@ -112,6 +112,7 @@
 <translation id="160633243685262989">تصویر کا پیش منظر دیکھیں</translation>
 <translation id="1611649489706141841">فارورڈ کریں</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
+<translation id="1618566998877964907">تھیم کا استعمال کریں</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
 <translation id="1622402072367425417">چمکتے ہوئے بلبلے</translation>
 <translation id="1626590945318984973">شارٹ کٹ دستیاب نہیں ہے۔ فنکشن اور <ph name="META_KEY" /> کی کلیدیں استعمال کیے بغیر نیا شارٹ کٹ دبائیں۔</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">نظر انداز کردہ</translation>
 <translation id="2324354238778375592">فلوٹ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">کرسی</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> کے لیے ترمیم کا ڈائیلاگ کھلا ہے۔</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">زیتون</translation>
 <translation id="8373046809163484087">اس رنگ کے سیٹس کا استعمال کریں جو آپ کے وال پیپر سے مماثل ہوں</translation>
 <translation id="8380114448424469341">اسکرین کے <ph name="DIRECTION" /> طرف موجود آدھے حصے پر ونڈو ڈاک کریں</translation>
+<translation id="8391349326751432483">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 جگہ کا خالی ہونا ضروری ہے۔ میموری خالی کرنے کے لیے، ٹیبز اور ایپس کو بند کریں۔</translation>
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
 <translation id="8403988360557588704"><ph name="ART_FEATURE" /> کے طرز میں <ph name="ART_MOVEMENT" /> کی پینٹنگ</translation>

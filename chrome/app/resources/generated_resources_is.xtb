@@ -701,7 +701,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ég geri mér grein fyrir því að þetta niðurhal mun skaða tölvuna mína</translation>
 <translation id="1535228823998016251">Hátt</translation>
-<translation id="1535597783576881392">Þessar leiðbeiningar auðvelda þér að skilja það sem þú velur svo Chrome virki eins og þér hentar best</translation>
 <translation id="1535753739390684432">Heyra tiltekinn texta í upplestri. Veldu fyrst táknið „Textaupplestur“ neðst á skjánum og yfirstrikaðu síðan textann.</translation>
 <translation id="1536754031901697553">Aftengir ...</translation>
 <translation id="1536883206862903762">Þetta slekkur á viðbótum og endurstillir tækið á öruggar, sjálfgefnar stillingar. Flipar, skrár og fótspor varðveitast. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -4932,7 +4931,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4716483597559580346">Djúphreinsun fyrir aukið öryggi</translation>
 <translation id="4716715661140829720">Ekki nægt geymslurými</translation>
 <translation id="471759229191973607">Skipta um þema</translation>
-<translation id="4718046540206070045">Meira en bara vafri</translation>
 <translation id="4722735765955348426">Aðgangsorð fyrir <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deilir skjánum þínum.</translation>
 <translation id="4722989931633062466">Ekki heimilt að sýna tilkynningar um innskráningu þriðja aðila</translation>
@@ -5617,7 +5615,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5269977353971873915">Prentun mistókst</translation>
 <translation id="5271578170655641944">Fjarlægja aðgang að Google Drive?</translation>
 <translation id="5273806377963980154">Breyta vefslóð vefsvæðis</translation>
-<translation id="5273966423195882879">Litur í samræmi við þema</translation>
 <translation id="5275084684151588738">Orðabækur notanda</translation>
 <translation id="5275100789567222478">Aðeins kveikja þegar rafhleðslan er <ph name="PERCENT" />% eða minni</translation>
 <translation id="5275338516105640560">Hnappur fyrir vistaðan flipahóp</translation>
@@ -9624,7 +9621,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Þú hefur þegar skráð þetta tæki. Þú þarft ekki að skrá það aftur.</translation>
 <translation id="8357388086258943206">Villa við að setja upp Linux</translation>
-<translation id="8357591920094529889">Þessar leiðbeiningar auðvelda þér að skilja mikilvæga valkosti sem þú hefur þegar þú notar Chrome. Þær hjálpa þér einnig að velja valkosti þannig að Chrome virki eins og þér hentar best.</translation>
 <translation id="8358685469073206162">Endurheimta síður?</translation>
 <translation id="8358912028636606457">Þetta tæki styður ekki útsendingu á hljóði flipa.</translation>
 <translation id="835951711479681002">Vista á Google reikningnum þínum</translation>
@@ -9688,7 +9684,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8399282673057829204">Sýna aðgangsorð</translation>
 <translation id="839949601275221554">Villa kom upp í tæki. Endurræstu tækið og reyndu aftur.</translation>
 <translation id="8401432541486058167">Sláðu inn PIN-númerið fyrir snjallkortið þitt.</translation>
-<translation id="8403618281196981152">Gögnin þín í Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="8405046151008197676">Fá það helsta úr nýjustu uppfærslunni</translation>
 <translation id="8405118833120731611">{0,plural, =1{Loka þessum prófíl}one{Loka þessum prófíl (# gluggi)}other{Loka þessum prófíl (# gluggar)}}</translation>

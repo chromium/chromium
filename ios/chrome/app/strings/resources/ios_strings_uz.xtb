@@ -136,6 +136,7 @@
 <translation id="1687475363370981210">Hammasi o‘qildi</translation>
 <translation id="1689333818294560261">Nik</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p tanlandi</translation>
+<translation id="1710698977900873766">Kuchaytirilgan himoyani yoqish</translation>
 <translation id="1713777106376424209">Yetkazib beriladi:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> saytiga ishonsangiz, kirish uchun saqlangan parolingizni ishlatishingiz mumkin.</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
@@ -311,6 +312,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2625189173221582860">Parol nusxalandi</translation>
 <translation id="2626236249646841566">Internet aloqasini tekshiring va qaytadan kirish uchun urining</translation>
 <translation id="2637313651144986786">Varaqlar ichidan qidirish</translation>
+<translation id="2640733327287333451">Loginsiz ••••••</translation>
 <translation id="2648721026697078500">Hech qachon koʻchirilmasin</translation>
 <translation id="2648803196158606475">O‘qilganlarni o‘chirish</translation>
 <translation id="2664621323652615289">Toʻxtatish</translation>
@@ -1280,6 +1282,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7569588934989281656">Varaqlarni almashtirish uchun varaqlar panelini varaqlang.</translation>
 <translation id="7582857256643797524">Bu sozlama qurilmada yoqilgan</translation>
 <translation id="7583004045319035904">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan oching.</translation>
+<translation id="7598439272585186139">Xavfsizlikni oshirish</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> tili hech qachon tarjima qilinmasin</translation>
 <translation id="7603852183842204213">Qalqib chiquvchi oynalar bloklandi (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Parolni olib tashlash</translation>

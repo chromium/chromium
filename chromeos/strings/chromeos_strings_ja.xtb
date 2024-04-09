@@ -112,6 +112,7 @@
 <translation id="160633243685262989">プレビュー画像</translation>
 <translation id="1611649489706141841">進む</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
+<translation id="1618566998877964907">テーマを使用</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
 <translation id="1622402072367425417">輝く泡</translation>
 <translation id="1626590945318984973">このショートカットは使用できません。ファンクション キーと <ph name="META_KEY" /> キーを使わない新しいショートカットを押してください。</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">スキップ</translation>
 <translation id="2324354238778375592">フロート表示</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="2347064478402194325">椅子</translation>
 <translation id="2358070305000735383">「<ph name="DESCRIPTION" />」の編集ダイアログが開いています。</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">オリーブ色</translation>
 <translation id="8373046809163484087">壁紙に合ったカラーセットを使用できます</translation>
 <translation id="8380114448424469341">ウィンドウを画面の <ph name="DIRECTION" /> の半分に固定</translation>
+<translation id="8391349326751432483">メモリテストを実行するには 500 MB 以上の空き容量が必要です。メモリを解放するには、タブとアプリを閉じてください。</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> スタイルの <ph name="ART_FEATURE" /> の絵画</translation>

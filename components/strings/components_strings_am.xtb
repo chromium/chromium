@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 ኢንች</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1181381397492575884">ጣቢያዎች እርስዎ በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ Chrome ያግዳቸዋል። ለ<ph name="LINK" /> ቅንብሮችን ይጎብኙ።</translation>
+<translation id="1185343831726846924">ምናባዊ ካርድን ማረጋገጥ ሊበራ አይችልም</translation>
 <translation id="1186201132766001848">የይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="1187430513518041110">መኪናዎች እና ተሸከርካሪዎች</translation>
 <translation id="1190491977647722791">ወረቀት (ከባድ ክብደት)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ኢንች</translation>
 <translation id="1574714699824202614">የክፍያ ዘዴን በማረጋገጥ ላይ</translation>
 <translation id="1576277203042721907">የሸመታ ግንዛቤዎች</translation>
+<translation id="1579189948231786790">ይህ ጣቢያ በድርጅትዎ ታግዷል</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">ጊዜው አላለፈም</translation>
 <translation id="1583429793053364125">ይህን ድረ-ገፅ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">ሥነ ምህዳር እና አካባቢ</translation>
 <translation id="2452837234288608067">በዚህ ላይ ማገዝ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="2456755709261364512">ባትሪዎ ከ<ph name="REQUIRED_BATTERY_PRECENT" />% በላይ ኃይል መሙላት አለበት</translation>
+<translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2462932596748424101">ማኅበራዊ አውታረ መረቦች</translation>
 <translation id="2463739503403862330">ሙላ</translation>
 <translation id="2465688316154986572">ስቴፕለር ምታ</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">ይህ PDF ተደራሽ አይደለም። ተገቢ ሁኔታ ምናሌን ለመክፈት ፍለጋ ሲደመር mን ይጫኑ እና «ከPDF ላይ ጽሁፍ አውጣ» የሚለውን ያብሩ</translation>
 <translation id="2818338148457093657">የውበት አገልግሎቶች እና ስፓዎች</translation>
 <translation id="2820957248982571256">በመቃኘት ላይ...</translation>
-<translation id="2824549017793319782">ፍለጋዎን በአድራሻ አሞሌው ላይ በቀጥታ ለመተየብ ይምረጡ</translation>
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
 <translation id="2826760142808435982">ግንኙነቱ የተመሰጠረ እና <ph name="CIPHER" />ን በመጠቀም የተረጋገጠ ነው፣ እና <ph name="KX" />ን እንደ የቁልፍ መቀያየሪያ ስልት ይጠቀምበታል።</translation>
 <translation id="2833637280516285136">የንግግር ሬዲዮ</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">የምስል X ፈረቃ</translation>
 <translation id="3807709094043295184">የቆየ ተወዳጅ ሮክ እና አንጋፋዎች</translation>
 <translation id="3807873520724684969">ጎጂ ይዘት ታግዷል።</translation>
+<translation id="380865868633614173">የካርድ መረጃ በማስቀመጥ ላይ</translation>
 <translation id="3810770279996899697">የሚስጥር ቁልፍ አስተዳዳሪ የ MacOS Keychain መዳረሻ ያስፈልገዋል</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="3812398568375898177">ይህ በChromeOS ላይ የAndroid መተግበሪያዎችን አፈጻጸም የሚያሻሽል ወሳኝ ዝማኔ ነው።</translation>
@@ -2180,6 +2183,7 @@
 <translation id="5217759126664161410">ልክ ያልኾነ የፕሮቶኮል ቅርጸት።</translation>
 <translation id="5222812217790122047">ኢሜይል ያስፈልጋል</translation>
 <translation id="5228269245420405804">የርቀት ትምህርት</translation>
+<translation id="5230428804606340145">ሌሎች የፋይናንስ መለያዎችን ያስተዳድሩ</translation>
 <translation id="5230733896359313003">የሚላክበት አድራሻ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2187,6 +2191,7 @@
 <translation id="5238301240406177137">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="5239119062986868403">የተለመደ ዋጋ</translation>
 <translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
+<translation id="5241048084654737238">የካርድ መረጃ ማረጋገጥን ማስቀመጥ አይቻልም</translation>
 <translation id="5242610955375133957">ደረቅ ፊልም</translation>
 <translation id="5244521145258281926">የGoogle መለያ ያስተዳድሩ፣ በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ለማስተዳደር ያግብሩ</translation>
 <translation id="5244732203286792411">በመጫን ላይ...
@@ -2202,6 +2207,7 @@
 <translation id="5266128565379329178">ከላይ ጠርዝ</translation>
 <translation id="5269225904387178860">አራቴ ከታች ብሳ</translation>
 <translation id="5269999699920406580">በመላው ስርዓት ላይ የሚተገበሩ ባህሪያት በባለቤቱ ብቻ ነው ሊዋቀሩ የሚችሉት፦ <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />» ለ«<ph name="DATA_CONTROLS_RESTRICTION" />» የሚደገፍ ሁኔታ አይደለም</translation>
 <translation id="5273658854610202413">ማስጠንቀቂያ፦ ይህ መመሪያ ሊዋሃዱ የሚችሉ የመዝገበ-ቃላት መመሪያዎች አካል ስላልሆነ በPolicyDictionaryMultipleSourceMergeList መመሪያ ላይ በተገለጸው መሠረትት አልተዋሃደም።</translation>
 <translation id="5279286380302340275">ውርዶችን ያቀናብሩ</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{ይህንን ፋይል <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}other{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}}</translation>
 <translation id="7160999678034985039">እባክዎ ሥራዎን ያስቀምጡ እና ዝግጁ ሲሆኑ ዝማኔውን ያስጀምሩ።</translation>
 <translation id="7163295244162773898">{0,plural, =1{ምስጢራዊ ፋይሉ ይቀዳ?}one{ምስጢራዊ ፋይሉ ይቀዳ?}other{ምስጢራዊ ፋይሎቹ ይቀዱ?}}</translation>
+<translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» በዚህ መድረክ ላይ የሚደገፍ ገደብ አይደለም</translation>
 <translation id="717330890047184534">የGaia መታወቂያ፦</translation>
 <translation id="7174545416324379297">ተዋህደዋል</translation>
 <translation id="7175097078723125014">የአድራሻ አርትዕ ያድርጉ አማራጭ ተመርጧል</translation>
@@ -3245,6 +3252,7 @@
 <translation id="7310392214323165548">መሣሪያው በጣም በቅርቡ እንደገና ይጀምራል</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
 <translation id="7311837626618954149">ጣቢያዎች እርስዎ በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ Chromium ያግዳቸዋል።</translation>
+<translation id="7313107491291103073">ድርጅትዎ ይህንን ጣቢያ መመሪያ ሊጥስ እንደሚችል ተጠቁሟል።</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">የግንኙነት እገዛ</translation>
 <translation id="7323804146520582233">የ«<ph name="SECTION" />» ክፍሉን ሰርዝ</translation>
@@ -3570,6 +3578,7 @@
 <translation id="7888575728750733395">የህትመት ምስል ሥራ ሐሳብ</translation>
 <translation id="7894280532028510793">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የአውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="7901831439558593470">7 x 9 ኢንች ፖስታ</translation>
+<translation id="7908648876066812348">ምናባዊ ካርድ በማብራት ላይ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ቅንብሮች ውስጥ ወዳለው የChrome የደህንነት ፍተሻ ገፅ ለመሄድ Tab በመቀጠል Enter ይጫኑ</translation>
 <translation id="791551905239004656">ሥዕል መሳል እና ማቅለም</translation>
 <translation id="7916162853251942238">ፍሌክሶ ቤዝ</translation>
@@ -4078,6 +4087,7 @@
 <translation id="8874790741333031443">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="8874824191258364635">የሚሰራ የካርድ ቁጥር ያስገቡ</translation>
 <translation id="8877780815363510165">አሳ ማጥመድ</translation>
+<translation id="888117890813270681">«<ph name="DATA_CONTROLS_RESTRICTION" />» ወደ «<ph name="DATA_CONTROLS_LEVEL" />» ሊዋቀር አይችልም</translation>
 <translation id="8884537526797090108">ሚስጥራዊ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="8888187300091017436">ፍራሾች</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" />ን ይቆጣጠሩ እና ሊደረስበት የሚችል ዘመናዊ ካርድ መዳረሻ ያግኙ።</translation>

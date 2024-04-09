@@ -701,7 +701,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">আমি বুঝতে পারছি এই ডাউনলোডটি আমার কম্পিউটারের ক্ষতি করবে</translation>
 <translation id="1535228823998016251">জোরে</translation>
-<translation id="1535597783576881392">এই গাইড আপনাকে নিজের পছন্দ বুঝতে সাহায্য করবে, যাতে আপনি যেভাবে চান Chrome সেভাবে কাজ করতে পারে</translation>
 <translation id="1535753739390684432">নির্দিষ্ট কিছু টেক্সট জোরে শুনুন। প্রথমে, স্ক্রিনের নিচে থাকা 'বাছুন ও শুনুন' আইকন বেছে নিন, তারপরে টেক্সট হাইলাইট করুন।</translation>
 <translation id="1536754031901697553">ডিসকানেক্ট করা হচ্ছে...</translation>
 <translation id="1536883206862903762">এর ফলে এক্সটেনশন বন্ধ করা হবে এবং আপনার ডিভাইসের সেটিংসকে সুরক্ষিত ডিফল্ট সেটিংসে রিসেট করা হবে। এই সময় ট্যাব, ফাইল এবং কুকি সেভ করা হবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -4933,7 +4932,6 @@
 <translation id="4716483597559580346">অতিরিক্ত নিরাপত্তার জন্য পাওয়ারওয়াশ</translation>
 <translation id="4716715661140829720">পর্যাপ্ত স্টোরেজের জায়গা নেই</translation>
 <translation id="471759229191973607">থিম পরিবর্তন করুন</translation>
-<translation id="4718046540206070045">ব্রাউজারের থেকেও অনেক বেশি কিছু</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />-এর পাসওয়ার্ড</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> আপনার স্ক্রিন ভাগ করছে৷</translation>
 <translation id="4722989931633062466">থার্ড-পার্টির সাইন-ইন প্রম্পট দেখানোর অনুমতি নেই</translation>
@@ -5618,7 +5616,6 @@
 <translation id="5269977353971873915">প্রিন্ট করা যায়নি</translation>
 <translation id="5271578170655641944">Google Drive-এর অ্যাক্সেস সরিয়ে দেবেন?</translation>
 <translation id="5273806377963980154">সাইটের URL এডিট করুন</translation>
-<translation id="5273966423195882879">থিমের উপর ভিত্তি করে রঙ</translation>
 <translation id="5275084684151588738">ব্যবহারকারী অভিধান</translation>
 <translation id="5275100789567222478">ব্যাটারির চার্জ <ph name="PERCENT" />% বা তার কম থাকলে তবেই এই মোড চালু করতে হবে</translation>
 <translation id="5275338516105640560">সেভ করা ট্যাব গ্রুপ বোতাম</translation>
@@ -9628,7 +9625,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">আপনি এই ডিভাইসে আগেই রেজিস্টার করেছেন। আপনাকে আর এটি রেজিস্টার করতে হবে না।</translation>
 <translation id="8357388086258943206">Linux ইনস্টল করার সময় সমস্যা হচ্ছে</translation>
-<translation id="8357591920094529889">আপনি Chrome ব্যবহার করেন বলে, এই গাইড আপনাকে গুরুত্বপূর্ণ বিকল্প বুঝতে সাহায্য করে। আপনি ঠিক যেভাবে চান Chrome যাতে সেইভাবে কাজ করে তার জন্য এটি আপনাকে সেইসব বিকল্প বেছে নিতে সাহায্য করে।</translation>
 <translation id="8358685469073206162">পৃষ্ঠাগুলি পুনরুদ্ধার করবেন?</translation>
 <translation id="8358912028636606457">এই ডিভাইসে ট্যাব থেকে অডিও কাস্ট করার সুবিধা নেই।</translation>
 <translation id="835951711479681002">আপনার Google অ্যাকাউন্টে সেভ করুন</translation>
@@ -9692,7 +9688,6 @@
 <translation id="8399282673057829204">পাসওয়ার্ড দেখুন</translation>
 <translation id="839949601275221554">ডিভাইসে কিছু সমস্যা হয়েছে। ডিভাইস রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
-<translation id="8403618281196981152">Chrome-এ আপনার ডেটা</translation>
 <translation id="8403807918453631441">আপনি পাসওয়ার্ড সেভ করলে <ph name="BRAND" /> সেটি চেক করতে পারবে</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
 <translation id="8405118833120731611">{0,plural, =1{এই প্রোফাইল বন্ধ করুন}one{এই প্রোফাইল বন্ধ করুন (#টি উইন্ডো)}other{এই প্রোফাইল বন্ধ করুন (#টি উইন্ডো)}}</translation>

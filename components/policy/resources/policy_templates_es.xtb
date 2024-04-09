@@ -1819,7 +1819,6 @@ Si se asigna un valor a esta política, el usuario no podrá anularlo.
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
-<translation id="2419114151067000328">La función de especificaciones de producto no estará disponible para los usuarios.</translation>
 <translation id="2420958105721932612">Especifica cómo se instala una aplicación. AVAILABLE: la aplicación no se instalará automáticamente, pero el usuario podrá instalarla. Si no se asigna ningún valor a esta política, este será el predeterminado. FORCE_INSTALLED: la aplicación se instalará automáticamente y el usuario no podrá desinstalarla. BLOCKED: la aplicación estará bloqueada y no se podrá instalar. Si la aplicación se instaló cuando estaba vigente una política anterior, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2421677964966613267">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
@@ -2966,6 +2965,7 @@ Si la política se inhabilita, Navegación segura no analizará los archivos que
 Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace" del menú. No se aplican a la opción para guardar o descargar de la página actual ni a la opción para guardar como PDF de las opciones de impresión.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300441638895109781">Volver a cargar automáticamente el flujo de autenticación en ChromeOS</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Habilitar extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
@@ -3043,6 +3043,7 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
 <translation id="3380801667330555918">Cambiar la configuración rellenada previamente de los tickets de Kerberos</translation>
 <translation id="338149029069528354">No borrar los datos de usuario locales</translation>
 <translation id="3381968327636295719">Utilizar el navegador del host de forma predeterminada</translation>
+<translation id="3387117557265712991">Inhabilitar el cifrado para aplicaciones</translation>
 <translation id="3387211681524224831">Si la política se habilita, no se almacenará el historial de navegación y se inhabilitará la sincronización de pestañas. Los usuarios no pueden cambiar esta opción.
 
       Si esta política se inhabilita o no se define, se guardará el historial de navegación.</translation>
@@ -3340,7 +3341,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
-<translation id="361046511337768385">Permitir que se habilite la función de especificaciones de producto</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra al usuario la pantalla de configuración del tamaño de visualización durante el primer inicio de sesión
       Si se le asigna el valor false, no se mostrará la pantalla de configuración del tamaño de visualización.
       Si le asigna el valor true, se mostrará la pantalla de configuración del tamaño de visualización.</translation>
@@ -5350,7 +5350,6 @@ Si no se define esta política, no se permitirán excepciones de <ph name="URL_B
 
 A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite esta política en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
-<translation id="5363412016871318326">La función de especificaciones de producto estará disponible para los usuarios.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
 <translation id="5366977351895725771">Si se establece el valor "false", el usuario no podrá crear usuarios supervisados, pero seguirán estando disponibles los usuarios supervisados creados anteriormente.
@@ -5769,6 +5768,15 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
 Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5673254755365419402">Habilitar la función de protección contra la recogida de huellas digitales de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si se le asigna el valor "True" a esta política, se enviarán a Google informes de los principales eventos de instalación de extensiones activados por la política. Si se le asigna el valor "False", no se enviará información de ninguno de estos eventos. Si no se le asigna ningún valor a esta política, el valor predeterminado será "True".</translation>
+<translation id="5673780539191375049">Define el intervalo de tiempo (en minutos) utilizado para volver a cargar automáticamente el flujo de autenticación del usuario en su dispositivo <ph name="PRODUCT_OS_NAME" />. Esta política se introduce para gestionar el vencimiento de algunos servicios utilizados en flujos de autenticación cuando el dispositivo permanece inactivo durante un tiempo.
+
+Si no se define esta política o se le asigna el valor cero, el flujo de autenticación nunca se volverá a cargar.
+
+Si se le asigna un valor positivo a esta política, el flujo de autenticación se volverá a cargar automáticamente siguiendo el intervalo definido.
+
+El intervalo de recarga máximo es de una semana (10.080 minutos).
+
+Esta política afecta a los flujos de autenticación de inicio de sesión y de bloqueo de pantalla.</translation>
 <translation id="5676740747107495269">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="5679540979548648200">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb y ejecuta la función Powerwash de manera forzada en el dispositivo si ya se había habilitado previamente la instalación de fuente desconocida</translation>
 <translation id="5681258683432554972">Configuración de ventanas emergentes predeterminada</translation>
@@ -8859,9 +8867,6 @@ Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas
 <translation id="8102854005031553638">El visor de PDFs usa el renderizador de AGG</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
-<translation id="810509972572344398">Si se habilita esta política o no se define, las especificaciones de producto estarán disponibles para los usuarios.
-
-Si se inhabilita, las especificaciones de producto no estarán disponibles.</translation>
 <translation id="8109762054721090517">Plantilla del <ph name="IPP_ATTRIBUTE" /> de <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configura el tiempo (en segundos) durante el que el dispositivo deberá permanecer inactivo para que se muestre el salvapantallas de la pantalla de bloqueo.
 
@@ -9284,6 +9289,7 @@ Si la política no se define o el valor es 0, al ir a una URL designada se abrir
 
       Nota para los administradores de <ph name="MS_WIN_NAME" />: Si se activa este ajuste, solo funcionará en dispositivos con Windows 7. Para versiones de Windows posteriores, tendrás que implementar un archivo de "asociaciones de aplicaciones predeterminadas" que haga que <ph name="PRODUCT_NAME" /> gestione los protocolos <ph name="HTTPS_PROTOCOL" /> y <ph name="HTTP_PROTOCOL" /> (y, opcionalmente, el protocolo <ph name="FTP_PROTOCOL" /> y otros formatos de archivo). Consulta la Ayuda de Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
 <translation id="8441105784056442638">Habilitar la función de restauración completa</translation>
+<translation id="8444157920689124099">Habilitar el cifrado para aplicaciones</translation>
 <translation id="8445576299806775661">Después de cada actualización importante de versión, Chrome creará una instantánea de algunos datos de navegación del usuario para usarla en caso de que se realice una restauración de versión de emergencia posteriormente. Si se realiza una restauración de emergencia y se instala una versión de la que el usuario tiene la instantánea correspondiente, se restaurarán los datos de dicha instantánea. Esto permite a los usuarios conservar ajustes como los marcadores y los datos de Autocompletar.
 
       Si no se establece esta política, se usará el valor predeterminado, que es "3".
@@ -10332,6 +10338,11 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="984365509386992443">Si se habilita esta política o no se define, el usuario podrá recibir encuestas relacionadas con Navegación segura.
 Si se inhabilita esta política, el usuario no recibirá encuestas relacionadas con Navegación segura.</translation>
 <translation id="985148612300045106">El menú de aplicaciones/la tecla de búsqueda podrán cambiar el comportamiento de las teclas de función, y los usuarios no podrán cambiar este ajuste.</translation>
+<translation id="986223659726677100">Si se habilita esta política o no se define, las claves de cifrado usadas para el almacenamiento de datos locales se vincularán a <ph name="PRODUCT_NAME" /> siempre que sea posible.
+
+Si se inhabilita esta política, se reducirá la seguridad de <ph name="PRODUCT_NAME" />, ya que las aplicaciones desconocidas y potencialmente hostiles podrán obtener las claves de cifrado utilizadas para proteger los datos.
+
+Desactiva la política únicamente si hay problemas de compatibilidad; por ejemplo, si otras aplicaciones necesitan un acceso legítimo a los datos de <ph name="PRODUCT_NAME" />, si se espera que los datos de usuario cifrados sean completamente transferibles entre diferentes ordenadores o si la integridad y la ubicación de los archivos ejecutables de <ph name="PRODUCT_NAME" /> no son coherentes.</translation>
 <translation id="987261962216071510">Solo permitir que se inicie sesión en el navegador con el modo Invitado</translation>
 <translation id="987975731398348803">Si se habilita esta política o no se define, los dispositivos registrados informarán sobre la lista de usuarios de dispositivos que hayan iniciado sesión recientemente.
 

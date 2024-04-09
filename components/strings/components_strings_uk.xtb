@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 дюйм.</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181381397492575884">Chrome забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті. Перейдіть у налаштування, щоб <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Підтвердити, що віртуальну картку не вдалося ввімкнути</translation>
 <translation id="1186201132766001848">Перевірити паролі</translation>
 <translation id="1187430513518041110">Автомобілі й інший транспорт</translation>
 <translation id="1190491977647722791">Папір (щільний)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм.</translation>
 <translation id="1574714699824202614">Підтвердження способу оплати</translation>
 <translation id="1576277203042721907">Статистика покупок</translation>
+<translation id="1579189948231786790">Ваша організація заблокувала цей сайт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Без строку дії</translation>
 <translation id="1583429793053364125">Під час завантаженння цієї сторінки сталася помилка.</translation>
@@ -783,6 +785,7 @@
 <translation id="2452098632681057184">Екологія і довкілля</translation>
 <translation id="2452837234288608067">Не вдалося допомогти із цим запитом. Повторіть спробу.</translation>
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2461822463642141190">Зараз</translation>
 <translation id="2462932596748424101">Соціальні мережі</translation>
 <translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465688316154986572">Скріпити</translation>
@@ -952,7 +955,6 @@
 <translation id="2814184336982254349">Цей файл PDF недоступний. Натисніть комбінацію клавіш "пошук + m", щоб відкрити контекстне меню, і ввімкніть опцію "Видобути текст із файлу PDF".</translation>
 <translation id="2818338148457093657">Косметичні процедури й спа</translation>
 <translation id="2820957248982571256">Сканування…</translation>
-<translation id="2824549017793319782">Натисніть, щоб ввести пошуковий запит безпосередньо в адресному рядку</translation>
 <translation id="2824775600643448204">Адресний і пошуковий рядок</translation>
 <translation id="2826760142808435982">З’єднання зашифровано й автентифіковано з використанням шифру <ph name="CIPHER" /> і використовує механізм обміну ключами <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Розмовні передачі на радіо</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Горизонтальне положення зображення</translation>
 <translation id="3807709094043295184">Класичний рок і ретро</translation>
 <translation id="3807873520724684969">Заблоковано шкідливий вміст.</translation>
+<translation id="380865868633614173">Зберігання даних картки</translation>
 <translation id="3810770279996899697">Менеджеру паролів потрібен доступ до додатка Ключар у MacOS</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="3812398568375898177">Це важливе оновлення, яке покращує продуктивність додатків для Android у ChromeOS.</translation>
@@ -2181,6 +2184,7 @@
 <translation id="5217759126664161410">Недійсний формат протоколу.</translation>
 <translation id="5222812217790122047">Укажіть електронну адресу</translation>
 <translation id="5228269245420405804">Дистанційне навчання</translation>
+<translation id="5230428804606340145">Керувати іншими фінансовими рахунками</translation>
 <translation id="5230733896359313003">Адреса доставки</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2188,6 +2192,7 @@
 <translation id="5238301240406177137">Зберегти в обліковому записі</translation>
 <translation id="5239119062986868403">Звичайна ціна</translation>
 <translation id="5239623327352565343">Доступ до геоданих дозволено</translation>
+<translation id="5241048084654737238">Підтвердити, що дані картки не вдалося зберегти</translation>
 <translation id="5242610955375133957">Суха плівка</translation>
 <translation id="5244521145258281926">Кнопка "Керувати обліковим записом Google"; активуйте, щоб керувати своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
 <translation id="5244732203286792411">Завантаження…
@@ -2203,6 +2208,7 @@
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
 <translation id="5269999699920406580">Функції, які застосовуються до всієї системи, може налаштовувати лише власник: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">Умова <ph name="DATA_CONTROLS_ATTRIBUTE" /> не підтримується для правила <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Застереження: це правило не об'єднано, як указано в PolicyDictionaryMultipleSourceMergeList, оскільки воно не є частиною правил щодо словників, які можна об'єднувати.</translation>
 <translation id="5279286380302340275">Керувати завантаженнями</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Щоб надіслати цей файл за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}one{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}few{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}many{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}other{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Збережіть дані й почніть оновлення, коли будете готові.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Скопіювати конфіденційний файл?}one{Скопіювати конфіденційні файли?}few{Скопіювати конфіденційні файли?}many{Скопіювати конфіденційні файли?}other{Скопіювати конфіденційні файли?}}</translation>
+<translation id="7168625890036931112">Обмеження <ph name="DATA_CONTROLS_RESTRICTION" /> не підтримується на цій платформі</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
 <translation id="7174545416324379297">Об'єднано</translation>
 <translation id="7175097078723125014">Вибрано опцію "Редагувати адресу"</translation>
@@ -3246,6 +3253,7 @@
 <translation id="7310392214323165548">Невдовзі пристрій перезапуститься</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7311837626618954149">Chromium забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті.</translation>
+<translation id="7313107491291103073">Ваша організація поскаржилася на цей сайт, оскільки він може порушувати правила.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Довідка щодо з’єднання</translation>
 <translation id="7323804146520582233">Сховати розділ "<ph name="SECTION" />"</translation>
@@ -3571,6 +3579,7 @@
 <translation id="7888575728750733395">Команда обробки друку</translation>
 <translation id="7894280532028510793">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюймів</translation>
+<translation id="7908648876066812348">Увімкнення віртуальної картки</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть клавішу Tab, а потім – Enter, щоб перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="791551905239004656">Малювання й розмальовки</translation>
 <translation id="7916162853251942238">Флексографічна основа</translation>
@@ -4079,6 +4088,7 @@
 <translation id="8874790741333031443">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
 <translation id="8877780815363510165">Рибальство</translation>
+<translation id="888117890813270681">Для правила <ph name="DATA_CONTROLS_RESTRICTION" /> не можна вказати значення <ph name="DATA_CONTROLS_LEVEL" /></translation>
 <translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="8888187300091017436">Матраци</translation>
 <translation id="8890048757975398817">керувати пристроєм читання карт <ph name="READERNAME" /> і отримати доступ до смарт-карти, з якою він взаємодіє.</translation>

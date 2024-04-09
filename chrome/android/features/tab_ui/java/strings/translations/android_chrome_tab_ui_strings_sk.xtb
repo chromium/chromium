@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
 <translation id="3008554597174452548">Prestať sledovať výrobok</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pokles ceny produktu <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Farebná ikona skupiny kariet: <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> archivovanú kartu}few{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}many{You have <ph name="TABS_COUNT_MANY" /> archived tabs}other{Máte <ph name="TABS_COUNT_MANY" /> archivovaných kariet}}</translation>
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>

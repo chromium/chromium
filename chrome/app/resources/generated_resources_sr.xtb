@@ -697,7 +697,6 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Разумем да је ово преузимање штетно за рачунар</translation>
 <translation id="1535228823998016251">Гласно</translation>
-<translation id="1535597783576881392">Овај водич вам помаже да разумете изабране опције да би Chrome радио онако како желите</translation>
 <translation id="1535753739390684432">Слушајте читање одређеног текста наглас. Прво изаберите икону Изаберите за говор у дну екрана, па истакните текст.</translation>
 <translation id="1536754031901697553">Веза се прекида...</translation>
 <translation id="1536883206862903762">Овим ћете онемогућити додатке и ресетовати подешавања на безбедне подразумеване вредности. Картице, фајлови и колачићи се чувају. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -4922,7 +4921,6 @@
 <translation id="4716483597559580346">Powerwash ради веће безбедности</translation>
 <translation id="4716715661140829720">Нема довољно меморијског простора</translation>
 <translation id="471759229191973607">Промени тему</translation>
-<translation id="4718046540206070045">Више од прегледача</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> дели екран.</translation>
 <translation id="4722989931633062466">Приказивање упита за пријављивање треће стране није дозвољено</translation>
@@ -5607,7 +5605,6 @@
 <translation id="5269977353971873915">Штампање није успело</translation>
 <translation id="5271578170655641944">Желите да уклоните приступ Google диску?</translation>
 <translation id="5273806377963980154">Измените URL сајта</translation>
-<translation id="5273966423195882879">Боја је заснована на теми</translation>
 <translation id="5275084684151588738">Кориснички речници</translation>
 <translation id="5275100789567222478">Укључи само када је батерија на <ph name="PERCENT" />% или нижа</translation>
 <translation id="5275338516105640560">Дугме сачуване групе картица</translation>
@@ -9622,7 +9619,6 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Већ сте регистровали овај уређај. Не морате поново да га региструјете.</translation>
 <translation id="8357388086258943206">Грешка при инсталирању Linux-а</translation>
-<translation id="8357591920094529889">Овај водич вам помаже да разумете важне опције које имате док користите Chrome. Помаже вам и да изаберете те опције, да би Chrome радио онако како желите.</translation>
 <translation id="8358685469073206162">Желите ли да вратите странице?</translation>
 <translation id="8358912028636606457">Пребацивање звука картице није подржано на овом уређају.</translation>
 <translation id="835951711479681002">Сачувај на Google налогу</translation>
@@ -9686,7 +9682,6 @@
 <translation id="8399282673057829204">Прикажи лозинку</translation>
 <translation id="839949601275221554">Дошло је до грешке на уређају. Рестартујте уређај и пробајте поново.</translation>
 <translation id="8401432541486058167">Наведите PIN који је повезан са паметном картицом.</translation>
-<translation id="8403618281196981152">Подаци у Chrome-у</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> може да проверава лозинке када их сачувате</translation>
 <translation id="8405046151008197676">Погледајте резиме најновијег ажурирања</translation>
 <translation id="8405118833120731611">{0,plural, =1{Затвори овај профил}one{Затвори овај профил (# прозор)}few{Затвори овај профил (# прозора)}other{Затвори овај профил (# прозора)}}</translation>

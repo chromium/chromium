@@ -4,6 +4,7 @@
 <translation id="1011749477052068769">येथे हलवा</translation>
 <translation id="1014147525163127655">या डिव्हाइसवर <ph name="ORIGIN" /> साठी कोणत्याही पासकी नाहीत</translation>
 <translation id="1016498331642356377">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
+<translation id="1017104654974573432">समस्‍या निवडा</translation>
 <translation id="1024113959924243553">Chrome डेव्हलपर</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
 <translation id="103269572468856066">डेटासुद्धा साफ करायचा?</translation>
@@ -14,6 +15,7 @@
 <translation id="1058669287135776095">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="10614374240317010">कधीही सेव्ह न केलेले</translation>
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
+<translation id="1082920045291562218">सारांशाच्या फीडबॅकची शीट बंद असताना शेअर करा</translation>
 <translation id="1089606299949659462">पुनरावलोकन पूर्ण झाले आहे!</translation>
 <translation id="1095761715416917775">तुम्हाला तुमचा सिंक डेटा नेहमी अ‍ॅक्सेस करता येईल याची खात्री करा</translation>
 <translation id="1100066534610197918">गटामधील नवीन टॅबमध्ये उघडा</translation>
@@ -557,6 +559,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4035877632587724847">अनुमती देऊ नका</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवा</translation>
+<translation id="404352903042073578">निनावी गट</translation>
 <translation id="4044708993631234325">तळाशी असलेली शीट</translation>
 <translation id="405365679581583349">Google Play सेवा अपडेट करा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
@@ -628,6 +631,7 @@
 <translation id="4404568932422911380">कोणतेही बुकमार्क नाहीत</translation>
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
 <translation id="4405636711880428279">तुमचे व्हर्च्युअल कार्ड काढून टाकायचे का?</translation>
+<translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> आणि आणखी <ph name="TAB_COUNT" /> टॅब</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
@@ -1070,6 +1074,7 @@
 <translation id="6595046016124923392">तुम्हाला दिसत असलेली वर्णने सुधारण्यासाठी इमेज Google कडे पाठवल्या जातात.</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
+<translation id="6625890511281718257">सारांशाच्या फीडबॅकच्या शीटसह शेअर करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
 <translation id="6633067410344541938">गुप्त मोड अनलॉक करा</translation>
 <translation id="6636623428211296678">खालील दिलेल्या आणखी सेटिंग्ज एक्सप्लोर करा आणि आता पूर्ण करा</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="6767294960381293877">अर्ध्या उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="6770602306803890733">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते</translation>
+<translation id="6773061896687011391">हे वैशिष्ट्य सुधारण्यासाठी Google द्वारे तुम्ही फीडबॅक देत असलेल्या पेजची URL पाठवली जाईल आणि तिचे मानवी परीक्षण केले जाऊ शकेल</translation>
 <translation id="6775840696761158817">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्सवर टॅप अथवा टाइप करता, तेव्हा तुम्हाला तुमच्या डीफॉल्ट शोध इंजीनमधील सूचना दिसतील. हे गुप्त मोड मध्ये बंद असते.</translation>
 <translation id="6785476624617658922">Chrome आणि ChromeOS च्या अतिरिक्त सेवा अटी</translation>
 <translation id="6795633245022906657">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
@@ -1411,6 +1417,7 @@
 <translation id="8135406045838672858">डाउनलोड केलेल्या PDFs <ph name="APP_NAME" /> सह आपोआप उघडतात</translation>
 <translation id="8137562778192957619">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="8163820386638255770">तुमच्या Google खाते मध्ये पासवर्ड वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
+<translation id="8171286197772512427">सारांशाच्या फीडबॅकची शीट उघडलेली असताना शेअर करा</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फाइल शिल्लक</translation>
 <translation id="8190358571722158785">1 दिवस शिल्लक</translation>

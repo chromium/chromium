@@ -112,6 +112,7 @@
 <translation id="160633243685262989">미리보기 이미지</translation>
 <translation id="1611649489706141841">앞으로</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
+<translation id="1618566998877964907">테마 사용하기</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1622402072367425417">빛나는 버블</translation>
 <translation id="1626590945318984973">단축키를 사용할 수 없습니다. 기능 키와 <ph name="META_KEY" /> 키를 사용하지 않고 새로운 단축키를 누르세요.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">건너뜀</translation>
 <translation id="2324354238778375592">플로팅</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
-<translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">의자</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> 수정 대화상자가 열렸습니다.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">올리브색</translation>
 <translation id="8373046809163484087">배경화면에 어울리는 색상 조합을 사용하세요.</translation>
 <translation id="8380114448424469341">화면의 <ph name="DIRECTION" /> 절반에 창 고정</translation>
+<translation id="8391349326751432483">메모리 테스트를 실행하려면 500MB 이상의 용량이 남아 있어야 합니다. 메모리를 확보하려면 탭과 앱을 닫으세요.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> 스타일의 <ph name="ART_FEATURE" /> 그림</translation>

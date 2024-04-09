@@ -112,6 +112,7 @@
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
+<translation id="1618566998877964907">थीम वापरा</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1622402072367425417">चमकणारे बुडबुडे</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नाही. फंक्शन आणि <ph name="META_KEY" /> की न वापरता नवीन शॉर्टकट प्रेस करा.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">वगळली</translation>
 <translation id="2324354238778375592">फ्लोट करा</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">खुर्ची</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> साठी संपादित करा डायलॉग उघडा आहे.</translation>
@@ -1275,6 +1275,7 @@
 <translation id="8372667721254470022">ऑलिव्ह</translation>
 <translation id="8373046809163484087">तुमच्या वॉलपेपरशी जुळणाऱ्या रंगाचे संच वापरा</translation>
 <translation id="8380114448424469341">स्क्रीनच्या <ph name="DIRECTION" /> अर्ध्या भागात विंडो डॉक करा</translation>
+<translation id="8391349326751432483">मेमरीसंबंधित चाचणी रन करण्यासाठी तुमच्याकडे किमान ५०० MB जागा मोकळी असणे आवश्यक आहे. मेमरी मोकळी करण्यासाठी, टॅब आणि ॲप्स बंद करा.</translation>
 <translation id="8395584934117017006">हे <ph name="DEVICE_TYPE" /> एंटरप्राइझद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> शैलीमध्ये <ph name="ART_FEATURE" /> याचे पेंटिंग</translation>

@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Elimină din grup</translation>
 <translation id="3008554597174452548">Nu mai urmări produsul</translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Pictograma de culoare pentru grupul de file <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă arhivată}few{Ai <ph name="TABS_COUNT_MANY" /> file arhivate}other{Ai <ph name="TABS_COUNT_MANY" /> de file arhivate}}</translation>
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>

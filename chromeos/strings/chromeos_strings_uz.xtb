@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Rasmga razm solish</translation>
 <translation id="1611649489706141841">oldinga</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sanasidan keyingi trafik sarfi</translation>
+<translation id="1618566998877964907">Mavzu ishlatish</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1622402072367425417">yorqin pufaklar</translation>
 <translation id="1626590945318984973">Tezkor tugma ishlamayapti. Funksiya va <ph name="META_KEY" /> tugmachalarini bosmasdan qayta urinib koʻring.</translation>
@@ -257,7 +258,6 @@
 <translation id="2323506179655536734">TASHLAB KETILDI</translation>
 <translation id="2324354238778375592">Pufakli</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2347064478402194325">kursi</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> uchun tahrirlash oynasi ochiq.</translation>
@@ -845,6 +845,8 @@
 <translation id="5946538341867151940">Hali ulanmadi. Agar mobil aloqa operatoringiz boshqa APNni tavsiya qilsa, “+ Yangi APN” bandini tanlash orqali APN maʼlumotlarini kiriting.</translation>
 <translation id="5947266287934282605">Oyning oxirgi kuni tanlangan sanadan avval boʻlsa, trafik oyning oxirgi kunida nollanadi.</translation>
 <translation id="5948460390109837040">itlar</translation>
+<translation id="594989847980441553">AI yordamida rasm yaratish uchun "Yaratish" bandini tanlang
+        Yaratilgan barcha rasmlar shu yerda avtomatik chiqadi.</translation>
 <translation id="5972388717451707488">Tizimni yangilash</translation>
 <translation id="5975130252842127517">marjon</translation>
 <translation id="5984145644188835034">Standart fon rasmi</translation>
@@ -1275,6 +1277,7 @@
 <translation id="8372667721254470022">zaytun</translation>
 <translation id="8373046809163484087">Fonga mos ranglar majmuasidan foydalaning</translation>
 <translation id="8380114448424469341">Oynani yarim ekran <ph name="DIRECTION" /> mahkamlash</translation>
+<translation id="8391349326751432483">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Xotiradan joy ochish uchun varaqlar va ilovalarni yoping.</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
 <translation id="8403988360557588704">Tasvir – <ph name="ART_FEATURE" />, uslub – <ph name="ART_MOVEMENT" /></translation>

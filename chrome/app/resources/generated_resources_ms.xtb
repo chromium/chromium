@@ -701,7 +701,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Saya faham bahawa muat turun ini akan membahayakan komputer saya</translation>
 <translation id="1535228823998016251">Lantang</translation>
-<translation id="1535597783576881392">Panduan ini membantu anda memahami pilihan anda supaya Chrome berfungsi dengan cara yang anda mahukan</translation>
 <translation id="1535753739390684432">Dengar teks tertentu dibaca dengan suara lantang. Mula-mula, pilih ikon Pilih untuk bercakap di bahagian bawah skrin anda, kemudian serlahkan teks.</translation>
 <translation id="1536754031901697553">Memutuskan sambungan...</translation>
 <translation id="1536883206862903762">Tindakan ini akan melumpuhkan sambungan dan menetapkan semula tetapan anda kepada lalai selamat. Tab, fail dan kuki akan dikekalkan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -4940,7 +4939,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4716483597559580346">Powerwash untuk keselamatan tambahan</translation>
 <translation id="4716715661140829720">Ruang storan tidak mencukupi</translation>
 <translation id="471759229191973607">Tukar tema</translation>
-<translation id="4718046540206070045">Bukan sekadar penyemak imbas</translation>
 <translation id="4722735765955348426">Kata laluan untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berkongsi skrin anda.</translation>
 <translation id="4722989931633062466">Tidak dibenarkan untuk memaparkan gesaan log masuk pihak ketiga</translation>
@@ -5625,7 +5623,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5269977353971873915">Cetakan Gagal</translation>
 <translation id="5271578170655641944">Alih keluar akses Google Drive?</translation>
 <translation id="5273806377963980154">Edit URL laman</translation>
-<translation id="5273966423195882879">Warna berdasarkan tema</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
 <translation id="5275100789567222478">Hidupkan hanya apabila bateri pada kadar <ph name="PERCENT" />% atau lebih rendah</translation>
 <translation id="5275338516105640560">Butang Kumpulan Tab Disimpan</translation>
@@ -9637,7 +9634,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Anda telah mendaftarkan peranti ini. Anda tidak perlu mendaftarkannya semula.</translation>
 <translation id="8357388086258943206">Ralat semasa memasang Linux</translation>
-<translation id="8357591920094529889">Panduan ini membantu anda memahami pilihan penting yang anda miliki semasa anda menggunakan Chrome. Dan panduan ini membantu anda membuat pilihan tersebut, supaya Chrome berfungsi seperti yang anda mahukan.</translation>
 <translation id="8358685469073206162">Pulihkan halaman?</translation>
 <translation id="8358912028636606457">Ciri menghantar audio tab tidak disokong pada peranti ini.</translation>
 <translation id="835951711479681002">Simpan dalam Google Account anda</translation>
@@ -9701,7 +9697,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8399282673057829204">Lihat kata laluan</translation>
 <translation id="839949601275221554">Peranti mengalami ralat. Sila mulakan semula peranti anda dan cuba lagi.</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
-<translation id="8403618281196981152">Data anda dalam Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> boleh menyemak kata laluan anda yang disimpan</translation>
 <translation id="8405046151008197676">Dapatkan sorotan daripada kemas kini terbaharu</translation>
 <translation id="8405118833120731611">{0,plural, =1{Tutup profil ini}other{Tutup profil ini (# tetingkap)}}</translation>
