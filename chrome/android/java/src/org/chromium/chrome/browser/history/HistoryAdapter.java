@@ -329,7 +329,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         clearBrowsingDataButtonContainer.findViewById(
                                 R.id.clear_browsing_data_button);
 
-        if (mManager.isAppSpecificHistory()) {
+        if (mManager.launchedForApp()) {
             ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
 
             mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
@@ -383,7 +383,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private void updatePrivacyDisclaimerText() {
         Context context = mPrivacyDisclaimerTextView.getContext();
         CharSequence text;
-        if (mManager.isAppSpecificHistory()) {
+        if (mManager.launchedForApp()) {
             if (!hasPrivacyDisclaimers()) {
                 text = context.getResources().getString(R.string.android_app_history_open_full);
             } else {
@@ -411,7 +411,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
         if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
-        if (mManager.isAppSpecificHistory()) {
+        if (mManager.launchedForApp()) {
             args.add(mHistoryOpenInChromeHeaderItem);
         }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
@@ -435,7 +435,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** Set text of privacy disclaimer and visibility of its container. */
     void setPrivacyDisclaimer() {
         boolean shouldShowPrivacyDisclaimers =
-                (hasPrivacyDisclaimers() || mManager.isAppSpecificHistory())
+                (hasPrivacyDisclaimers() || mManager.launchedForApp())
                         && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
 
         // Prevent from refreshing the recycler view if header visibility is not changed.

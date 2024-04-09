@@ -119,7 +119,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private LargeIconBridge mLargeIconBridge;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private boolean mShouldShowPrivacyDisclaimers;
-    private boolean mAppSpecificHistory;
+    private boolean mLaunchedForApp;
     private PrefChangeRegistrar mPrefChangeRegistrar;
     private String mAppId;
 
@@ -143,7 +143,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param historyProvider Provider of methods for querying and managing browsing history.
      * @param appId The ID of the application from which the history activity is launched, passed as
      *     the client package name.
-     * @param appSpecificHistory Whether app specific history features should be utilized.
+     * @param launchedForApp Whether history UI is launched for app-specific history.
      */
     public HistoryContentManager(
             @NonNull Activity activity,
@@ -157,7 +157,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable Supplier<Tab> tabSupplier,
             HistoryProvider historyProvider,
             String appId,
-            boolean appSpecificHistory) {
+            boolean launchedForApp) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -170,7 +170,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                         || UiUtils.isHardwareKeyboardAttached();
         mAppId = appId;
-        mAppSpecificHistory = appSpecificHistory;
+        mLaunchedForApp = launchedForApp;
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
@@ -366,15 +366,15 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     /**
      * @return True if history UI was launched for the app-specific mode.
      */
-    boolean isAppSpecificHistory() {
-        return ChromeFeatureList.sAppSpecificHistory.isEnabled() && mAppSpecificHistory;
+    boolean launchedForApp() {
+        return ChromeFeatureList.sAppSpecificHistory.isEnabled() && mLaunchedForApp;
     }
 
     /** returns whether the info header will be available for user upon request. */
     boolean isInfoHeaderAvailable() {
         // Info header becomes available when history was launched for app-specific mode
         // or a set of conditions for privacy disclaimer are all met.
-        return isAppSpecificHistory() || hasPrivacyDisclaimers();
+        return launchedForApp() || hasPrivacyDisclaimers();
     }
 
     /** Called after a user clicks the privacy disclaimer link. */
@@ -420,7 +420,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
         if (mIsSeparateActivity) {
             // Only history entries are loaded into the existing tab.
-            if (isAppSpecificHistory() && !createNewTab) {
+            if (launchedForApp() && !createNewTab) {
                 Intent intent = new Intent(ACTION_VIEW, Uri.parse(url.getSpec()));
                 intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
                 mActivity.setResult(Activity.RESULT_OK, intent);

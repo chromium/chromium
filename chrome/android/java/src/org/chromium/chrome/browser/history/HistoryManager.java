@@ -120,7 +120,7 @@ public class HistoryManager
      * @param umaRecorder Records UMA user action/histograms.
      * @param clientPackageName Package name of the client the history UI is launched on top of.
      * @param shouldShowClearData Whether the 'Clear browsing data' button should be shown.
-     * @param appSpecificHistory Whether app specific history features should be used.
+     * @param launchedForApp Whether history UI is launched for app-specific history.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
@@ -133,7 +133,7 @@ public class HistoryManager
             @NonNull HistoryUmaRecorder umaRecorder,
             @Nullable String clientPackageName,
             boolean shouldShowClearData,
-            boolean appSpecificHistory) {
+            boolean launchedForApp) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -179,7 +179,7 @@ public class HistoryManager
                         tabSupplier,
                         historyProvider,
                         clientPackageName,
-                        appSpecificHistory);
+                        launchedForApp);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 
@@ -193,14 +193,12 @@ public class HistoryManager
                         mSelectableListLayout.initializeToolbar(
                                 R.layout.history_toolbar,
                                 mSelectionDelegate,
-                                appSpecificHistory
-                                        ? R.string.menu_web_history
-                                        : R.string.menu_history,
+                                launchedForApp ? R.string.menu_web_history : R.string.menu_history,
                                 R.id.normal_menu_group,
                                 R.id.selection_mode_menu_group,
                                 this,
                                 isSeparateActivity,
-                                appSpecificHistory);
+                                launchedForApp);
         mToolbar.setManager(this);
         mToolbar.setPrefService(UserPrefs.get(profile));
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);

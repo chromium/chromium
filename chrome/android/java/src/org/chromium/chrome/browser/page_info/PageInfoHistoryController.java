@@ -95,7 +95,7 @@ public class PageInfoHistoryController
                         mTabSupplier,
                         new BrowsingHistoryBridge(profile),
                         null,
-                        /* appSpecificHistory= */ false);
+                        /* launchedForApp= */ false);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
