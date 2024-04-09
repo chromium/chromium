@@ -1,11 +1,9 @@
-apalanki@google.com
-benwgold@google.com
 hujasonx@google.com
-nguyenbryan@google.com
+jdonnelly@chromium.org
 juanmojica@google.com
 mercerd@google.com
+nguyenbryan@google.com
 stanfield@google.com
-yusuyoutube@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
