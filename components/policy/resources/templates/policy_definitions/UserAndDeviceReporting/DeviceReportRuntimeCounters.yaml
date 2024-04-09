@@ -15,7 +15,7 @@ items:
 - caption: Do not report device runtime counters
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - xuhong@chromium.org
 schema:
   type: boolean

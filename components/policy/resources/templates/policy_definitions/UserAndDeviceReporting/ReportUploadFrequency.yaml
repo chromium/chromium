@@ -9,7 +9,7 @@ example_value: 10800000
 features:
   dynamic_refresh: true
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 schema:
   minimum: 60000
