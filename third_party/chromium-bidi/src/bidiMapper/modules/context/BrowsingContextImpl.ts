@@ -636,6 +636,20 @@ export class BrowsingContextImpl {
     );
 
     if (cdpNavigateResult.errorText) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+          params: {
+            context: this.id,
+            navigation: cdpNavigateResult.loaderId ?? null,
+            timestamp: BrowsingContextImpl.getTimestamp(),
+            url,
+          },
+        },
+        this.id
+      );
+
       throw new UnknownErrorException(cdpNavigateResult.errorText);
     }
 
