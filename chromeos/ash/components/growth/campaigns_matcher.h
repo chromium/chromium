@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 
+#include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
@@ -27,6 +28,7 @@ class CampaignsMatcher {
 
   const std::string& opened_app_id() const { return opened_app_id_; }
   void SetOpenedApp(const std::string& app_id);
+  void SetOobeCompleteTime(base::Time time);
 
   // Select the targeted campaign for the given `slot`. Returns nullptr if no
   // campaign found for the given `slot`.
@@ -57,6 +59,7 @@ class CampaignsMatcher {
   raw_ptr<PrefService> local_state_ = nullptr;
   raw_ptr<PrefService> prefs_ = nullptr;
   std::string opened_app_id_;
+  base::Time oobe_compelete_time_;
 };
 
 }  // namespace growth

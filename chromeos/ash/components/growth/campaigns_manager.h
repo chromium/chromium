@@ -84,6 +84,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void NotifyEventForTargeting(growth::CampaignEvent event,
                                const std::string& id);
 
+  void SetOobeCompleteTimeForTesting(base::Time time);
+
  private:
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
@@ -95,6 +97,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // path.
   void OnCampaignsLoaded(base::OnceClosure load_callback,
                          std::optional<base::Value::Dict> campaigns);
+
+  // Triggered when loading OOBE timestamp completed.
+  void OnOobeTimestampLoaded(base::OnceClosure load_callback,
+                             base::Time oobe_time);
 
   // Notify observers that campaigns are loaded and CampaignsManager is ready
   // to query.

@@ -145,6 +145,10 @@ void CampaignsMatcher::SetOpenedApp(const std::string& app_id) {
   opened_app_id_ = app_id;
 }
 
+void CampaignsMatcher::SetOobeCompleteTime(base::Time time) {
+  oobe_compelete_time_ = time;
+}
+
 void CampaignsMatcher::SetPrefs(PrefService* prefs) {
   prefs_ = prefs;
 }
@@ -320,9 +324,9 @@ bool CampaignsMatcher::MatchRegisteredTime(
     return true;
   }
 
-  const auto& registered_time =
-      local_state_->GetTime(ash::prefs::kDeviceRegisteredTime);
-  return MatchTimeWindow(*registered_time_targeting, registered_time);
+  // TODO: b/333458177 - The `oobe_complete_time_` is not available when testing
+  // in x11 emulator. Add support make it testable in x11 emulator.
+  return MatchTimeWindow(*registered_time_targeting, oobe_compelete_time_);
 }
 
 bool CampaignsMatcher::MatchOpenedApp(

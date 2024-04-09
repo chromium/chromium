@@ -1123,10 +1123,10 @@ TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargeting) {
   const auto now = base::Time::Now();
   auto start = now;
   auto end = now + base::Seconds(5);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
       R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
       end.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1135,9 +1135,9 @@ TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargetingStartOnly) {
   const auto now = base::Time::Now();
   auto start = now;
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(
       base::StringPrintf(R"({"start": %f})", start.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1146,9 +1146,9 @@ TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargetingStartOnly) {
 TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargetingEndOnly) {
   const auto now = base::Time::Now();
   auto end = now + base::Seconds(5);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(
       base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1159,10 +1159,10 @@ TEST_F(CampaignsManagerTest,
   const auto now = base::Time::Now();
   auto start = now + base::Seconds(5);
   auto end = now + base::Seconds(10);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
       R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
       end.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1172,10 +1172,10 @@ TEST_F(CampaignsManagerTest,
   const auto now = base::Time::Now();
   auto start = now - base::Seconds(2);
   auto end = now - base::Seconds(1);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
       R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
       end.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1184,9 +1184,9 @@ TEST_F(CampaignsManagerTest,
        GetCampaignWithRegisteredTimeTargetingStartOnlyMismatch) {
   const auto now = base::Time::Now();
   auto start = now + base::Seconds(5);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(
       base::StringPrintf(R"({"start": %f})", start.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1195,9 +1195,9 @@ TEST_F(CampaignsManagerTest,
        GetCampaignWithRegisteredTimeTargetingEndOnlyMismatch) {
   const auto now = base::Time::Now();
   auto end = now - base::Seconds(5);
-  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
   LoadComponentWithRegisteredTimeTargeting(
       base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
+  campaigns_manager_->SetOobeCompleteTimeForTesting(now);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

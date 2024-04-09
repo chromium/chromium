@@ -35,6 +35,9 @@ inline constexpr char kEventKey[] = "event_to_be_cleared";
 inline constexpr char kEventTemplate[] =
     "name:%s;comparator:any;window:365;storage:365";
 
+inline constexpr char kOobeCompleteFlagFilePath[] =
+    "/home/chronos/.oobe_completed";
+
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
   std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
@@ -101,6 +104,17 @@ std::string GetEventName(growth::CampaignEvent event, const std::string& id) {
 
   std::string event_name_with_id = base::StringPrintf(event_name, id.c_str());
   return growth::kGrowthCampaignsEventNamePrefix + event_name_with_id;
+}
+
+// Gets the Oobe timestamp on a sequence that allows file-access.
+base::Time GetOobeTimestampBackground() {
+  base::File::Info file_info;
+  if (base::GetFileInfo(base::FilePath(kOobeCompleteFlagFilePath),
+                        &file_info)) {
+    return file_info.creation_time;
+  }
+
+  return base::Time::Min();
 }
 
 }  // namespace
@@ -278,6 +292,18 @@ void CampaignsManager::OnCampaignsLoaded(
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
   matcher_.SetCampaigns(&campaigns_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetOobeTimestampBackground),
+      base::BindOnce(&CampaignsManager::OnOobeTimestampLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(load_callback)));
+}
+
+void CampaignsManager::OnOobeTimestampLoaded(base::OnceClosure load_callback,
+                                             base::Time oobe_time) {
+  matcher_.SetOobeCompleteTime(oobe_time);
+
   campaigns_loaded_ = true;
 
   std::move(load_callback).Run();
@@ -288,6 +314,10 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::SetOobeCompleteTimeForTesting(base::Time time) {
+  matcher_.SetOobeCompleteTime(time);
 }
 
 void CampaignsManager::RegisterTrialForCampaign(
