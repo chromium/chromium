@@ -29,6 +29,7 @@ build_webui("build") {
     "tab_organization_failure.ts",
     "tab_organization_group.ts",
     "tab_organization_in_progress.ts",
+    "tab_organization_new_badge.ts",
     "tab_organization_not_started.ts",
     "tab_organization_not_started_image.ts",
     "tab_organization_page.ts",

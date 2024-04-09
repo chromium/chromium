@@ -134,7 +134,7 @@
     <template is="dom-repeat" items="[[tabDatas_]]">
       <template is="dom-if"
           if="[[showNewTabSectionHeader_(index, firstNewTabIndex)]]">
-        <div class="divider"></div>
+        <tab-organization-new-badge></tab-organization-new-badge>
       </template>
       <tab-search-item class="mwb-list-item" data="[[item]]"
           role="option"

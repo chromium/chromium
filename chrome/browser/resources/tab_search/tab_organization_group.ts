@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './strings.m.js';
+import './tab_organization_new_badge.js';
 import './tab_organization_results_actions.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
