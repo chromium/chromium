@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/overloaded.h"
@@ -50,6 +51,7 @@
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/features.h"
 #include "device/fido/network_context_factory.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -775,6 +777,18 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   return new_secrets;
 }
 
+std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider() {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnUseInsecureSoftwareUnexportableKeys)) {
+    return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+  }
+  crypto::UnexportableKeyProvider::Config config;
+#if BUILDFLAG(IS_MAC)
+  config.keychain_access_group = kUserVerifyingKeyKeychainAccessGroup;
+#endif  // BUILDFLAG(IS_MAC)
+  return crypto::GetUnexportableKeyProvider(std::move(config));
+}
+
 crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
   crypto::UserVerifyingKeyProvider::Config config;
@@ -1247,13 +1261,8 @@ class EnclaveManager::StateMachine {
             [](std::optional<std::vector<uint8_t>> key_id,
                std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key)
                 -> Event {
-#if BUILDFLAG(IS_WIN)
-              auto provider = crypto::GetUnexportableKeyProvider(
-                  crypto::UnexportableKeyProvider::Config());
-#else
-              auto provider =
-                  crypto::GetSoftwareUnsecureUnexportableKeyProvider();
-#endif
+              std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+                  GetUnexportableKeyProvider();
               if (!provider) {
                 return Failure();
               }
@@ -2248,16 +2257,11 @@ void EnclaveManager::GetHardwareKeyForSignature(
       base::BindOnce(
           [](std::string wrapped_hardware_private_key)
               -> std::unique_ptr<crypto::UnexportableSigningKey> {
-#if BUILDFLAG(IS_WIN)
-            auto provider = crypto::GetUnexportableKeyProvider(
-                crypto::UnexportableKeyProvider::Config());
+            std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+                GetUnexportableKeyProvider();
             if (!provider) {
               return nullptr;
             }
-#else
-            auto provider =
-                crypto::GetSoftwareUnsecureUnexportableKeyProvider();
-#endif
             return provider->FromWrappedSigningKeySlowly(
                 ToVector(wrapped_hardware_private_key));
           },

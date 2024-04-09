@@ -133,6 +133,11 @@ BASE_DECLARE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator);
 
+// Use insecure software unexportable keys to authenticate to the enclave.
+// For development purposes only.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
