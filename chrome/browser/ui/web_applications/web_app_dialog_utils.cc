@@ -97,7 +97,7 @@ void OnManifestFetchedShowCrosDialog(
     args->screenshots.push_back(std::move(dialog_screenshot));
   }
 
-  dialog_handle->Show(
+  dialog_handle->ShowApp(
       profile, initiator_web_contents->GetTopLevelNativeWindow(),
       std::move(args),
       icon.square_size_px.has_value() ? icon.square_size_px.value() : 0,

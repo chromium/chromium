@@ -29,18 +29,25 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   AppInstallDialog(const AppInstallDialog&) = delete;
   AppInstallDialog& operator=(const AppInstallDialog&) = delete;
 
-  // Displays the dialog.
-  void Show(Profile* profile,
-            gfx::NativeWindow parent,
-            mojom::DialogArgsPtr args,
-            int icon_width,
-            bool is_icon_maskable,
-            std::string expected_app_id,
-            base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
+  // Displays the dialog with app info.
+  void ShowApp(
+      Profile* profile,
+      gfx::NativeWindow parent,
+      mojom::DialogArgsPtr args,
+      int icon_width,
+      bool is_icon_maskable,
+      std::string expected_app_id,
+      base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
+
+  // Displays the dialog with an error message that there's no app info.
+  void ShowNoAppError(gfx::NativeWindow parent,
+                      base::OnceClosure try_again_callback);
+
   void OnIconDownloaded(int icon_width,
                         bool is_icon_maskable,
                         const gfx::Image& icon);
   void OnLoadIcon(apps::IconValuePtr icon_value);
+
   // Callers must call this once the install has finished, passing in the app_id
   // if the installation succeeded or a nullptr if it failed.
   void SetInstallComplete(const std::string* app_id);
@@ -71,6 +78,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   std::unique_ptr<apps::AlmanacIconCache> icon_cache_;
   raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
+  base::OnceClosure try_again_callback_;
 
   base::WeakPtrFactory<AppInstallDialog> weak_factory_{this};
 };

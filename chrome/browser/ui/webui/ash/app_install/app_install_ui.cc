@@ -36,16 +36,19 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"close", IDS_CLOSE},
       {"install", IDS_INSTALL},
       {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
-      {"openApp", IDS_OPEN_APP},
-      {"appDetails", IDS_APP_DETAILS},
-      {"installingApp", IDS_INSTALLING_APP},
-      {"appInstalled", IDS_APP_INSTALLED},
+      {"openApp", IDS_APP_INSTALL_DIALOG_OPEN_APP_BUTTON_LABEL},
+      {"appDetails", IDS_APP_INSTALL_DIALOG_APP_DETAILS_TEXT},
+      {"installingApp", IDS_APP_INSTALL_DIALOG_INSTALLING_APP_TITLE},
+      {"appInstalled", IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE},
+      {"noAppData", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE},
+      {"tryAgain", IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL},
   };
 
   source->AddLocalizedStrings(kStrings);
-  source->AddString("installAppToDevice",
-                    l10n_util::GetStringFUTF8(IDS_INSTALL_DIALOG_TITLE,
-                                              ui::GetChromeOSDeviceName()));
+  source->AddString(
+      "installAppToDevice",
+      l10n_util::GetStringFUTF8(IDS_APP_INSTALL_DIALOG_INSTALL_TITLE,
+                                ui::GetChromeOSDeviceName()));
 
   webui::SetupWebUIDataSource(
       source,
@@ -74,6 +77,11 @@ void AppInstallDialogUI::SetDialogCallback(
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 }
 
+void AppInstallDialogUI::SetTryAgainCallback(
+    base::OnceClosure try_again_callback) {
+  try_again_callback_ = std::move(try_again_callback);
+}
+
 void AppInstallDialogUI::SetInstallComplete(const std::string* app_id) {
   if (!page_handler_) {
     return;
@@ -100,8 +108,8 @@ void AppInstallDialogUI::CreatePageHandler(
   page_handler_ = std::make_unique<AppInstallPageHandler>(
       Profile::FromWebUI(web_ui()), std::move(dialog_args_),
       std::move(expected_app_id_), std::move(dialog_accepted_callback_),
-      std::move(receiver),
-      base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)));
+      base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)),
+      std::move(try_again_callback_), std::move(receiver));
 }
 
 void AppInstallDialogUI::CloseDialog() {

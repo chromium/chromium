@@ -45,14 +45,16 @@ AppInstallPageHandler::AppInstallPageHandler(
     mojom::DialogArgsPtr args,
     std::string expected_app_id,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
-    mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
-    CloseDialogCallback close_dialog_callback)
+    CloseDialogCallback close_dialog_callback,
+    base::OnceClosure try_again_callback,
+    mojo::PendingReceiver<mojom::PageHandler> pending_page_handler)
     : profile_{profile},
       dialog_args_{std::move(args)},
       expected_app_id_(expected_app_id),
       dialog_accepted_callback_{std::move(dialog_accepted_callback)},
-      receiver_{this, std::move(pending_page_handler)},
-      close_dialog_callback_{std::move(close_dialog_callback)} {
+      close_dialog_callback_{std::move(close_dialog_callback)},
+      try_again_callback_{std::move(try_again_callback)},
+      receiver_{this, std::move(pending_page_handler)} {
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Shown"));
 
@@ -65,8 +67,7 @@ AppInstallPageHandler::AppInstallPageHandler(
 AppInstallPageHandler::~AppInstallPageHandler() = default;
 
 void AppInstallPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
-  std::move(callback).Run(dialog_args_ ? dialog_args_.Clone()
-                                       : mojom::DialogArgs::New());
+  std::move(callback).Run(dialog_args_.Clone());
 }
 
 void AppInstallPageHandler::CloseDialog() {
@@ -129,6 +130,12 @@ void AppInstallPageHandler::LaunchApp() {
       base::UserMetricsAction("ChromeOS.AppInstallDialog.AppLaunched"));
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
       app_id_, ui::EF_NONE, apps::LaunchSource::kFromInstaller);
+}
+
+void AppInstallPageHandler::TryAgain() {
+  if (try_again_callback_) {
+    std::move(try_again_callback_).Run();
+  }
 }
 
 }  // namespace ash::app_install

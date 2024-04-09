@@ -30,6 +30,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   void SetExpectedAppId(std::string expected_app_id);
   void SetDialogCallback(
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
+  void SetTryAgainCallback(base::OnceClosure try_again_callback);
   void SetInstallComplete(const std::string* app_id);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
@@ -50,6 +51,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   mojom::DialogArgsPtr dialog_args_;
   std::string expected_app_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
+  base::OnceClosure try_again_callback_;
   std::unique_ptr<AppInstallPageHandler> page_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};

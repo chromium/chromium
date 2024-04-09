@@ -257,22 +257,29 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     std::optional<AppInstallData> data) {
   std::optional<AppInstallResult> result =
       [&]() -> std::optional<AppInstallResult> {
-    if (!data) {
-      return AppInstallResult::kAlmanacFetchFailed;
-    }
+    gfx::NativeWindow parent =
+        anchor_window.has_value() &&
+                !anchor_window_tracker->WasNativeWindowDestroyed()
+            ? anchor_window.value()
+            : nullptr;
 
-    if (data->package_id != expected_package_id) {
-      return AppInstallResult::kAppDataCorrupted;
+    if (!data || data->package_id != expected_package_id) {
+      if (ash::app_install::AppInstallDialog::IsEnabled()) {
+        ash::app_install::AppInstallDialog::CreateDialog()->ShowNoAppError(
+            parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
+                                   weak_ptr_factory_.GetWeakPtr(), surface,
+                                   expected_package_id, anchor_window,
+                                   base::DoNothing()));
+      }
+      return data ? AppInstallResult::kAppDataCorrupted
+                  : AppInstallResult::kAlmanacFetchFailed;
     }
 
     switch (expected_package_id.app_type()) {
       case AppType::kWeb:
         if (const auto* web_app_data =
                 absl::get_if<WebAppInstallData>(&data->app_type_data)) {
-          if (base::FeatureList::IsEnabled(
-                  chromeos::features::kCrosWebAppInstallDialog) ||
-              ash::app_install::AppInstallPageHandler::
-                  GetAutoAcceptForTesting()) {
+          if (ash::app_install::AppInstallDialog::IsEnabled()) {
             ash::app_install::mojom::DialogArgsPtr args =
                 ash::app_install::mojom::DialogArgs::New();
             args->url = web_app_data->document_url;
@@ -291,12 +298,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
             webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
                 ash::app_install::AppInstallDialog::CreateDialog();
-            gfx::NativeWindow parent =
-                anchor_window.has_value() &&
-                        !anchor_window_tracker->WasNativeWindowDestroyed()
-                    ? anchor_window.value()
-                    : nullptr;
-            dialog->Show(
+            dialog->ShowApp(
                 &*profile_, parent, std::move(args),
                 data->icon ? data->icon->width_in_pixels : 0,
                 data->icon ? data->icon->is_masking_allowed : false,

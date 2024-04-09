@@ -22,6 +22,7 @@ enum DialogState {
   INSTALL = 'install',
   INSTALLING = 'installing',
   INSTALLED = 'installed',
+  NO_DATA = 'no_data',
 }
 
 interface StateData {
@@ -51,6 +52,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private proxy = BrowserProxy.getInstance();
+  private initPromise: Promise<boolean>;
   private dialogStateDataMap: Record<DialogState, StateData>;
 
   constructor() {
@@ -60,7 +62,7 @@ class AppInstallDialogElement extends HTMLElement {
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
-    this.initDynamicContent();
+    this.initPromise = this.initContent();
 
     this.dialogStateDataMap = {
       [DialogState.INSTALL]: {
@@ -72,7 +74,7 @@ class AppInstallDialogElement extends HTMLElement {
           labelId: 'install',
           handler: (event: MouseEvent) => this.onInstallButtonClick(event),
           handleOnce: true,
-          iconIdQuery: '#install-icon',
+          iconIdQuery: '#action-icon-install',
         },
         cancelButtonLabelId: 'cancel',
       },
@@ -85,7 +87,7 @@ class AppInstallDialogElement extends HTMLElement {
           disabled: true,
           labelId: 'installing',
           handler() {},
-          iconIdQuery: '#installing-icon',
+          iconIdQuery: '#action-icon-installing',
         },
         cancelButtonLabelId: 'cancel',
       },
@@ -97,17 +99,41 @@ class AppInstallDialogElement extends HTMLElement {
         actionButton: {
           labelId: 'openApp',
           handler: () => this.onOpenAppButtonClick(),
-          iconIdQuery: '#installed-icon',
+          iconIdQuery: '#action-icon-open-app',
         },
         cancelButtonLabelId: 'close',
+      },
+      [DialogState.NO_DATA]: {
+        title: {
+          iconIdQuery: '#title-icon-error',
+          labelId: 'noAppData',
+        },
+        actionButton: {
+          labelId: 'tryAgain',
+          handler: () => this.onTryAgainButtonClick(),
+          handleOnce: true,
+          iconIdQuery: '#action-icon-try-again',
+        },
+        cancelButtonLabelId: 'cancel',
       },
     };
   }
 
-  async initDynamicContent() {
+  async initContent() {
+    const cancelButton = this.$<Button>('.cancel-button');
+    assert(cancelButton);
+    cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
+
+    const contentCard = this.$<HTMLElement>('#content-card');
+    contentCard.style.visibility = 'hidden';
+
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
-      assert(dialogArgs.args);
+      if (!dialogArgs.args) {
+        return false;
+      }
+
+      contentCard.style.visibility = 'visible';
 
       const nameElement = this.$<HTMLParagraphElement>('#name');
       assert(nameElement);
@@ -136,9 +162,11 @@ class AppInstallDialogElement extends HTMLElement {
         this.$<HTMLImageElement>('#screenshot')
             .setAttribute('auto-src', dialogArgs.args.screenshots[0].url.url);
       }
+
+      return true;
     } catch (e) {
-      // TODO(crbug.com/1488697) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
+      return false;
     }
   }
 
@@ -150,12 +178,10 @@ class AppInstallDialogElement extends HTMLElement {
     return Array.from(this.shadowRoot!.querySelectorAll(query));
   }
 
-  connectedCallback(): void {
-    const cancelButton = this.$<Button>('.cancel-button');
-    assert(cancelButton);
-    cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
-
-    this.changeDialogState(DialogState.INSTALL);
+  async connectedCallback(): Promise<void> {
+    const initSuccess = await this.initPromise;
+    this.changeDialogState(
+        initSuccess ? DialogState.INSTALL : DialogState.NO_DATA);
   }
 
   private onCancelButtonClick(): void {
@@ -183,6 +209,13 @@ class AppInstallDialogElement extends HTMLElement {
 
   private async onOpenAppButtonClick() {
     this.proxy.handler.launchApp();
+    this.proxy.handler.closeDialog();
+  }
+
+  private async onTryAgainButtonClick() {
+    this.proxy.handler.tryAgain();
+    // TODO(b/333460441): Run the retry logic within the same dialog instead of
+    // creating a new one.
     this.proxy.handler.closeDialog();
   }
 

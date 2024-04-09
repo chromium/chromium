@@ -55,7 +55,7 @@ AppInstallDialog::AppInstallDialog()
 
 AppInstallDialog::~AppInstallDialog() = default;
 
-void AppInstallDialog::Show(
+void AppInstallDialog::ShowApp(
     Profile* profile,
     gfx::NativeWindow parent,
     mojom::DialogArgsPtr args,
@@ -83,10 +83,11 @@ void AppInstallDialog::Show(
   }
   args->screenshots = std::move(filtered_screenshots);
 
+  args->description = base::UTF16ToUTF8(gfx::TruncateString(
+      base::UTF8ToUTF16(args->description), webapps::kMaximumDescriptionLength,
+      gfx::CHARACTER_BREAK));
+
   dialog_args_ = std::move(args);
-  dialog_args_->description = base::UTF16ToUTF8(gfx::TruncateString(
-      base::UTF8ToUTF16(dialog_args_->description),
-      webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK));
 
   icon_cache_ =
       std::make_unique<apps::AlmanacIconCache>(profile_.get()->GetProfileKey());
@@ -94,6 +95,13 @@ void AppInstallDialog::Show(
       dialog_args_->icon_url,
       base::BindOnce(&AppInstallDialog::OnIconDownloaded,
                      weak_factory_.GetWeakPtr(), icon_width, is_icon_maskable));
+}
+
+void AppInstallDialog::ShowNoAppError(gfx::NativeWindow parent,
+                                      base::OnceClosure try_again_callback) {
+  try_again_callback_ = std::move(try_again_callback);
+  ShowSystemDialog(parent);
+  RepositionNearTopOf(parent);
 }
 
 void AppInstallDialog::OnIconDownloaded(int icon_width,
@@ -133,13 +141,15 @@ void AppInstallDialog::SetInstallComplete(const std::string* app_id) {
 }
 
 void AppInstallDialog::OnDialogShown(content::WebUI* webui) {
-  DCHECK(dialog_args_);
-  DCHECK(dialog_accepted_callback_);
+  CHECK_EQ(bool{dialog_args_}, bool{dialog_accepted_callback_});
+  CHECK_NE(bool{dialog_args_}, bool{try_again_callback_});
+
   SystemWebDialogDelegate::OnDialogShown(webui);
   dialog_ui_ = static_cast<AppInstallDialogUI*>(webui->GetController());
   dialog_ui_->SetDialogArgs(dialog_args_.Clone());
   dialog_ui_->SetExpectedAppId(std::move(expected_app_id_));
   dialog_ui_->SetDialogCallback(std::move(dialog_accepted_callback_));
+  dialog_ui_->SetTryAgainCallback(std::move(try_again_callback_));
 }
 
 void AppInstallDialog::CleanUpDialogIfNotShown() {
@@ -197,33 +207,36 @@ constexpr int kDividerHeight = 1;
 
 void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
   int height = kMinimumDialogHeight;
-  // TODO(b/329515116): Adjust height for long URLs that wrap multiple
-  // lines.
-  if (dialog_args_->description.length()) {
-    const gfx::FontList font_list =
-        TypographyProvider::Get()->ResolveTypographyToken(
-            TypographyToken::kCrosAnnotation1);
-    float description_width = gfx::GetStringWidth(
-        base::UTF8ToUTF16(dialog_args_->description), font_list);
-    int num_lines = std::ceil(description_width / kDescriptionContainerWidth);
-    height += (kDescriptionLineHeight * num_lines);
-  }
-  if (!dialog_args_->screenshots.empty()) {
-    // TODO(b/329515116): This won't work when we show more than one screenshot,
-    // if the screenshots are different sizes.
-    // The screenshot is displayed at a width of 408px, so calculate the
-    // height given that width.
-    CHECK(dialog_args_->screenshots[0]->size.width() != 0);
-    height += std::ceil(dialog_args_->screenshots[0]->size.height() /
-                        (dialog_args_->screenshots[0]->size.width() /
-                         float(kDescriptionContainerWidth)));
-    height += kScreenshotPadding;
-  }
-  if (dialog_args_->description.length() ||
-      !dialog_args_->screenshots.empty()) {
-    height += kDividerHeight;
-    // The description padding is there even when there is no description.
-    height += kDescriptionVerticalPadding;
+
+  if (dialog_args_) {
+    // TODO(b/329515116): Adjust height for long URLs that wrap multiple
+    // lines.
+    if (dialog_args_->description.length()) {
+      const gfx::FontList font_list =
+          TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation1);
+      float description_width = gfx::GetStringWidth(
+          base::UTF8ToUTF16(dialog_args_->description), font_list);
+      int num_lines = std::ceil(description_width / kDescriptionContainerWidth);
+      height += (kDescriptionLineHeight * num_lines);
+    }
+    if (!dialog_args_->screenshots.empty()) {
+      // TODO(b/329515116): This won't work when we show more than one
+      // screenshot, if the screenshots are different sizes. The screenshot is
+      // displayed at a width of 408px, so calculate the height given that
+      // width.
+      CHECK(dialog_args_->screenshots[0]->size.width() != 0);
+      height += std::ceil(dialog_args_->screenshots[0]->size.height() /
+                          (dialog_args_->screenshots[0]->size.width() /
+                           float(kDescriptionContainerWidth)));
+      height += kScreenshotPadding;
+    }
+    if (dialog_args_->description.length() ||
+        !dialog_args_->screenshots.empty()) {
+      height += kDividerHeight;
+      // The description padding is there even when there is no description.
+      height += kDescriptionVerticalPadding;
+    }
   }
 
   size->SetSize(SystemWebDialogDelegate::kDialogWidth, height);

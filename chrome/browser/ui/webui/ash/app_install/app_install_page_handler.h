@@ -33,8 +33,9 @@ class AppInstallPageHandler : public mojom::PageHandler {
       mojom::DialogArgsPtr args,
       std::string expected_app_id,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
-      mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
-      CloseDialogCallback close_dialog_callback);
+      CloseDialogCallback close_dialog_callback,
+      base::OnceClosure try_again_callback,
+      mojo::PendingReceiver<mojom::PageHandler> pending_page_handler);
 
   AppInstallPageHandler(const AppInstallPageHandler&) = delete;
   AppInstallPageHandler& operator=(const AppInstallPageHandler&) = delete;
@@ -48,15 +49,17 @@ class AppInstallPageHandler : public mojom::PageHandler {
   void CloseDialog() override;
   void InstallApp(InstallAppCallback callback) override;
   void LaunchApp() override;
+  void TryAgain() override;
 
  private:
   raw_ptr<Profile> profile_;
   mojom::DialogArgsPtr dialog_args_;
   std::string expected_app_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
-  mojo::Receiver<mojom::PageHandler> receiver_;
-  CloseDialogCallback close_dialog_callback_;
   InstallAppCallback install_app_callback_;
+  CloseDialogCallback close_dialog_callback_;
+  base::OnceClosure try_again_callback_;
+  mojo::Receiver<mojom::PageHandler> receiver_;
   std::string app_id_;
 
   base::WeakPtrFactory<AppInstallPageHandler> weak_ptr_factory_{this};

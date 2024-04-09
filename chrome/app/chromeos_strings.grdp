@@ -7452,20 +7452,26 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- App install dialog -->
-  <message name="IDS_OPEN_APP" desc="Button label in the app install dialog that opens the app that was just installed.">
+  <message name="IDS_APP_INSTALL_DIALOG_OPEN_APP_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
     Open app
   </message>
-  <message name="IDS_APP_DETAILS" desc="Label in the app install dialog that is displayed in front of the app URL to give the user information about the app.">
+  <message name="IDS_APP_INSTALL_DIALOG_APP_DETAILS_TEXT" desc="Label in the app install dialog that is displayed in front of the app URL to give the user information about the app.">
     App details:
   </message>
-  <message name="IDS_INSTALL_DIALOG_TITLE" desc="Title shown in the app install dialog asking the user if they want to install the app on their device.">
+  <message name="IDS_APP_INSTALL_DIALOG_INSTALL_TITLE" desc="Title shown in the app install dialog asking the user if they want to install the app on their device.">
     Install app on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_INSTALLING_APP" desc="Title shown in the app install dialog after the user has confirmed they want to install the app. It is only displayed for a couple of seconds while the app installs.">
+  <message name="IDS_APP_INSTALL_DIALOG_INSTALLING_APP_TITLE" desc="Title shown in the app install dialog after the user has confirmed they want to install the app. It is only displayed for a couple of seconds while the app installs.">
     Installing app...
   </message>
-  <message name="IDS_APP_INSTALLED" desc="Title shown in the app install dialog after the app has finished installing.">
+  <message name="IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE" desc="Title shown in the app install dialog after the app has finished installing.">
     App installed
+  </message>
+  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE" desc="Title shown in the app install dialog when there is no app data.">
+    Could not download app data
+  </message>
+  <message name="IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
+    Try again
   </message>
 
   <!-- Extended Updates Dialog -->

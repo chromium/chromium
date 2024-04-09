@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
+
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -19,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,6 +58,29 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  std::string GetTitle(content::WebContents* web_contents) {
+    return content::EvalJs(web_contents, R"(
+      document.querySelector('app-install-dialog').shadowRoot
+              .querySelector('#title').textContent
+    )")
+        .ExtractString();
+  }
+
+  std::string GetActionButton(content::WebContents* web_contents) {
+    return content::EvalJs(web_contents, R"(
+      document.querySelector('app-install-dialog').shadowRoot
+              .querySelector('.action-button').label
+    )")
+        .ExtractString();
+  }
+
+  [[nodiscard]] bool ClickActionButton(content::WebContents* web_contents) {
+    return content::ExecJs(web_contents, R"(
+      document.querySelector('app-install-dialog').shadowRoot
+              .querySelector('.action-button').click();
+    )");
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -76,47 +105,25 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   content::WebContents* web_contents = GetWebContentsFromDialog();
 
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('#title') ===
-        'Install app to your Chromebook';
-  )"));
+  EXPECT_TRUE(base::StartsWith(GetTitle(web_contents), "Install app on your"));
 
   // Click the install button.
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog')
-            .shadowRoot.querySelector('.action-button').click();
-  )"));
+  EXPECT_TRUE(ClickActionButton(web_contents));
 
   // Make sure the button goes through the 'Installing' state.
-  while (!content::EvalJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('.action-button').label.includes('Installing');)")
-              .ExtractBool()) {
-  }
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('#title') === 'Installing app...';
-  )"));
+  while (GetActionButton(web_contents) != "Installing")
+    ;
+  EXPECT_TRUE(base::StartsWith(GetTitle(web_contents), "Installing app"));
 
   // Wait for the button text to say "Open app", which means it knows the app
   // was installed successfully.
-  while (!content::EvalJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('.action-button').label.includes('Open app');)")
-              .ExtractBool()) {
-  }
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('#title') === 'App installed';
-  )"));
+  while (GetActionButton(web_contents) != "Open app")
+    ;
+  EXPECT_EQ(GetTitle(web_contents), "App installed");
 
   // Click the open app button and expect the dialog was closed.
   content::WebContentsDestroyedWatcher watcher(web_contents);
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('.action-button').click();
-  )"));
+  EXPECT_TRUE(ClickActionButton(web_contents));
   watcher.Wait();
 
   // Expect the app is opened.
@@ -138,17 +145,19 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   base::WeakPtr<AppInstallDialog> dialog_handle =
       AppInstallDialog::CreateDialog();
 
-  dialog_handle->Show(
-      browser()->profile(), browser()->window()->GetNativeWindow(),
-      /* dialog_args= */ ash::app_install::mojom::DialogArgs::New(),
-      /* icon_width= */ 0, /* is_icon_maskable= */ true,
-      /* expected_app_id= */ "",
-      base::BindOnce(
-          [](base::WeakPtr<AppInstallDialog> dialog_handle,
-             bool dialog_accepted) {
-            dialog_handle->SetInstallComplete(nullptr);
-          },
-          dialog_handle));
+  auto args = ash::app_install::mojom::DialogArgs::New();
+  args->url = GURL("https://example.org");
+  dialog_handle->ShowApp(browser()->profile(),
+                         browser()->window()->GetNativeWindow(),
+                         /* dialog_args= */ std::move(args),
+                         /* icon_width= */ 0, /* is_icon_maskable= */ true,
+                         /* expected_app_id= */ "",
+                         base::BindOnce(
+                             [](base::WeakPtr<AppInstallDialog> dialog_handle,
+                                bool dialog_accepted) {
+                               dialog_handle->SetInstallComplete(nullptr);
+                             },
+                             dialog_handle));
 
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
@@ -156,26 +165,38 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   content::WebContents* web_contents = GetWebContentsFromDialog();
 
   // Click the install button.
-  EXPECT_TRUE(content::ExecJs(web_contents, R"(
-    document.querySelector('app-install-dialog')
-            .shadowRoot.querySelector('.action-button').click();
-  )"));
+  EXPECT_TRUE(ClickActionButton(web_contents));
 
   // Make sure the button goes through the 'Installing' state.
-  while (!content::EvalJs(web_contents, R"(
-    document.querySelector('app-install-dialog').shadowRoot
-            .querySelector('.action-button').label.includes('Installing');)")
-              .ExtractBool()) {
-  }
+  while (GetActionButton(web_contents) != "Installing")
+    ;
 
   // Wait for the button text to say "Install", which means it knows the install
   // has failed.
-  while (!content::EvalJs(web_contents, R"(
-    text = document.querySelector('app-install-dialog').shadowRoot
-                   .querySelector('.action-button').label;
-    text.includes('Install') && !text.includes('Installing');)")
-              .ExtractBool()) {
-  }
+  while (GetActionButton(web_contents) != "Install")
+    ;
+}
+
+IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->AppInstallService().InstallApp(
+      apps::AppInstallSurface::kAppInstallUriUnknown,
+      apps::PackageId(apps::AppType::kWeb, "invalid"),
+      /*anchor_window=*/std::nullopt,
+      /*callback=*/base::DoNothing());
+
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromDialog();
+
+  EXPECT_EQ(GetTitle(web_contents), "Could not download app data");
+  EXPECT_EQ(GetActionButton(web_contents), "Try again");
 }
 
 }  // namespace ash::app_install
