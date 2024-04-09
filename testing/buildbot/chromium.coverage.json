@@ -15718,6 +15718,7 @@
         "test_id_prefix": "ninja://chrome/test:ash_crosapi_tests/"
       },
       {
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

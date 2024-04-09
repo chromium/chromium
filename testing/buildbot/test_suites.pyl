@@ -4448,6 +4448,7 @@
         'ci_only': True,
       },
       'ash_unittests': {
+        'ci_only': True,
         'swarming': {
           'shards': 5,
         },
