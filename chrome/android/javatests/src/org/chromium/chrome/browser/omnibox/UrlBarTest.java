@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -556,6 +557,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Disabled because of b/333536371")
     public void testUrlTextChangeListener() {
         UrlBar.UrlTextChangeListener listener = Mockito.mock(UrlBar.UrlTextChangeListener.class);
         mUrlBar.setUrlTextChangeListener(listener);
