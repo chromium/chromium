@@ -32,6 +32,13 @@ namespace blink {
 
 namespace {
 
+// We usually use the text decoration thickness to determine how far
+// ink-skipped text decorations should be away from the glyph
+// contours. Cap this at 5 CSS px in each direction when thickness
+// growths larger than that. A value of 13 closely matches FireFox'
+// implementation.
+constexpr float kDecorationClipMaxDilation = 13;
+
 class SelectionStyleScope {
   STACK_ALLOCATED();
 
@@ -65,6 +72,30 @@ SelectionStyleScope::~SelectionStyleScope() {
   if (styles_are_equal_)
     return;
   SVGResources::ClearPaints(layout_object_, &selection_style_);
+}
+
+sk_sp<cc::DrawLooper> CreateDrawLooper(
+    const ShadowList* shadow_list,
+    DrawLooperBuilder::ShadowAlphaMode alpha_mode,
+    const Color& current_color,
+    mojom::blink::ColorScheme color_scheme,
+    TextPainter::ShadowMode shadow_mode) {
+  DrawLooperBuilder draw_looper_builder;
+
+  // ShadowList nullptr means there are no shadows.
+  if (shadow_mode != TextPainter::kTextProperOnly && shadow_list) {
+    for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
+      const ShadowData& shadow = shadow_list->Shadows()[i];
+      draw_looper_builder.AddShadow(
+          shadow.Offset(), shadow.Blur(),
+          shadow.GetColor().Resolve(current_color, color_scheme),
+          DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
+    }
+  }
+  if (shadow_mode != TextPainter::kShadowsOnly) {
+    draw_looper_builder.AddUnmodifiedContent();
+  }
+  return draw_looper_builder.DetachDrawLooper();
 }
 
 void UpdateGraphicsContext(GraphicsContext& context,
@@ -118,7 +149,7 @@ void UpdateGraphicsContext(GraphicsContext& context,
     // when building a looper (cf. CRC2DState::ShadowAndForegroundDrawLooper).
     if (text_style.shadow || shadow_mode == TextPainter::kShadowsOnly) {
       state_saver.SaveIfNeeded();
-      context.SetDrawLooper(TextPainter::CreateDrawLooper(
+      context.SetDrawLooper(CreateDrawLooper(
           text_style.shadow.get(), DrawLooperBuilder::kShadowIgnoresAlpha,
           text_style.current_color, text_style.color_scheme, shadow_mode));
     }
@@ -173,7 +204,7 @@ void PrepareTextShadow(const ShadowList* text_shadows,
   if (!text_shadows) {
     return;
   }
-  flags.setLooper(TextPainter::CreateDrawLooper(
+  flags.setLooper(CreateDrawLooper(
       text_shadows, DrawLooperBuilder::kShadowRespectsAlpha,
       style.VisitedDependentColor(GetCSSPropertyColor()),
       style.UsedColorScheme(), TextPainter::kBothShadowsAndTextProper));
@@ -431,10 +462,24 @@ void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
   }
 }
 
-void TextPainter::PaintDecorationLine(const TextDecorationInfo& decoration_info,
-                                      const Color& line_color,
-                                      const TextPaintStyle& text_style) {
+void TextPainter::PaintDecorationLine(
+    const TextDecorationInfo& decoration_info,
+    const Color& line_color,
+    const TextFragmentPaintInfo* fragment_paint_info) {
   DecorationLinePainter decoration_painter(graphics_context_, decoration_info);
+  if (fragment_paint_info &&
+      decoration_info.TargetStyle().TextDecorationSkipInk() ==
+          ETextDecorationSkipInk::kAuto) {
+    // In order to ignore intersects less than 0.5px, inflate by -0.5.
+    gfx::RectF decoration_bounds = decoration_info.Bounds();
+    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
+    ClipDecorationsStripe(
+        *fragment_paint_info,
+        decoration_info.InkSkipClipUpper(decoration_bounds.y()),
+        decoration_bounds.height(),
+        std::min(decoration_info.ResolvedThickness(),
+                 kDecorationClipMaxDilation));
+  }
 
   if (svg_text_paint_state_.has_value() &&
       !decoration_info.HasDecorationOverride()) {
@@ -453,46 +498,20 @@ void TextPainter::PaintDecorationLine(const TextDecorationInfo& decoration_info,
   }
 }
 
-// static
-sk_sp<cc::DrawLooper> TextPainter::CreateDrawLooper(
-    const ShadowList* shadow_list,
-    DrawLooperBuilder::ShadowAlphaMode alpha_mode,
-    const Color& current_color,
-    mojom::blink::ColorScheme color_scheme,
-    TextPainter::ShadowMode shadow_mode) {
-  DrawLooperBuilder draw_looper_builder;
-
-  // ShadowList nullptr means there are no shadows.
-  if (shadow_mode != TextPainter::kTextProperOnly && shadow_list) {
-    for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
-      const ShadowData& shadow = shadow_list->Shadows()[i];
-      draw_looper_builder.AddShadow(
-          shadow.Offset(), shadow.Blur(),
-          shadow.GetColor().Resolve(current_color, color_scheme),
-          DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
-    }
-  }
-  if (shadow_mode != TextPainter::kShadowsOnly) {
-    draw_looper_builder.AddUnmodifiedContent();
-  }
-  return draw_looper_builder.DetachDrawLooper();
-}
-
-Vector<gfx::RectF> TextPainter::GetDecorationStripeIntercepts(
+void TextPainter::ClipDecorationsStripe(
     const TextFragmentPaintInfo& fragment_paint_info,
     float upper,
     float stripe_width,
-    float dilation) const {
+    float dilation) {
   if (fragment_paint_info.from >= fragment_paint_info.to ||
       !fragment_paint_info.shape_result)
-    return Vector<gfx::RectF>();
+    return;
 
   Vector<Font::TextIntercept> text_intercepts;
   font_.GetTextIntercepts(fragment_paint_info, graphics_context_.FillFlags(),
                           std::make_tuple(upper, upper + stripe_width),
                           text_intercepts);
 
-  Vector<gfx::RectF> stripe_intercepts;
   for (auto intercept : text_intercepts) {
     gfx::PointF clip_origin(text_origin_);
     gfx::RectF clip_rect(
@@ -510,11 +529,8 @@ Vector<gfx::RectF> TextPainter::GetDecorationStripeIntercepts(
     if (!gfx::RectFToSkRect(clip_rect).isFinite()) {
       continue;
     }
-
-    stripe_intercepts.push_back(clip_rect);
+    graphics_context_.ClipOut(clip_rect);
   }
-
-  return stripe_intercepts;
 }
 
 void TextPainter::PaintSvgTextFragment(

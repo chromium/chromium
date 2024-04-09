@@ -111,6 +111,13 @@ bool TextCombinePainter::ShouldPaint(const LayoutTextCombine& text_combine) {
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
 }
 
+void TextCombinePainter::ClipDecorationsStripe(const TextFragmentPaintInfo&,
+                                               float upper,
+                                               float stripe_width,
+                                               float dilation) {
+  // Nothing to do.
+}
+
 void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
                                            const Font& emphasis_mark_font) {
   DCHECK_NE(style_.GetTextEmphasisMark(), TextEmphasisMark::kNone);

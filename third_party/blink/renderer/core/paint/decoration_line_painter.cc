@@ -55,22 +55,21 @@ bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
 
 void DecorationLinePainter::DrawLineForText(
     GraphicsContext& context,
-    const gfx::RectF& line_rect,
+    const gfx::PointF& pt,
+    float width,
     const StyledStrokeData& styled_stroke,
     const AutoDarkMode& auto_dark_mode,
     const cc::PaintFlags* paint_flags) {
+  if (width <= 0) {
+    return;
+  }
+
+  gfx::RectF line_rect = DecorationRect(pt, width, styled_stroke.Thickness());
+
   auto stroke_style = styled_stroke.Style();
   DCHECK_NE(stroke_style, kWavyStroke);
-
   if (ShouldUseStrokeForTextLine(stroke_style)) {
     auto [start, end] = GetSnappedPointsForTextLine(line_rect);
-    // GraphicsContext::DrawLine() assumes start and end points are different.
-    // Stripe intercepts by text-decoration-skip-ink leads to line_rect with
-    // zero width, which results to the same start and end points. We need to
-    // handle this case.
-    if (start == end) {
-      return;
-    }
     context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
                      paint_flags);
   } else {
@@ -82,13 +81,12 @@ void DecorationLinePainter::DrawLineForText(
     } else {
       // Avoid anti-aliasing lines. Currently, these are always horizontal.
       // Round to nearest pixel to match text and other content.
-      gfx::RectF snapped_line_rect = SnapYAxis(line_rect);
+      line_rect = SnapYAxis(line_rect);
 
       cc::PaintFlags flags = context.FillFlags();
       // Text lines are drawn using the stroke color.
       flags.setColor(context.StrokeFlags().getColor4f());
-      context.DrawRect(gfx::RectFToSkRect(snapped_line_rect), flags,
-                       auto_dark_mode);
+      context.DrawRect(gfx::RectFToSkRect(line_rect), flags, auto_dark_mode);
     }
   }
 }
@@ -132,64 +130,18 @@ void DecorationLinePainter::Paint(const Color& color,
       context_.SetShouldAntialias(decoration_info_.ShouldAntialias());
       [[fallthrough]];
     default:
-      gfx::RectF line_rect_without_intercepts =
-          DecorationRect(decoration_info_.StartPoint(),
-                         decoration_info_.Width(), styled_stroke.Thickness());
-      Vector<gfx::RectF> separated_line_rects = GetRectsForTextLine(
-          line_rect_without_intercepts, decoration_info_.GetStripeIntercepts());
-
-      for (const auto& line_rect : separated_line_rects) {
-        DrawLineForText(context_, line_rect, styled_stroke, auto_dark_mode,
-                        flags);
-      }
+      DrawLineForText(context_, decoration_info_.StartPoint(),
+                      decoration_info_.Width(), styled_stroke, auto_dark_mode,
+                      flags);
 
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
-        gfx::RectF line_rect_without_intercepts_for_double = DecorationRect(
-            decoration_info_.StartPoint() +
-                gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
-            decoration_info_.Width(), styled_stroke.Thickness());
-        Vector<gfx::RectF> separated_line_rects_for_double =
-            GetRectsForTextLine(line_rect_without_intercepts_for_double,
-                                decoration_info_.GetStripeIntercepts());
-
-        for (const auto& line_rect : separated_line_rects_for_double) {
-          DrawLineForText(context_, line_rect, styled_stroke, auto_dark_mode,
-                          flags);
-        }
+        DrawLineForText(context_,
+                        decoration_info_.StartPoint() +
+                            gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
+                        decoration_info_.Width(), styled_stroke, auto_dark_mode,
+                        flags);
       }
   }
-}
-
-Vector<gfx::RectF> DecorationLinePainter::GetRectsForTextLine(
-    const gfx::RectF line_rect_without_intercepts,
-    const Vector<gfx::RectF>& stripe_intercepts) {
-  if (line_rect_without_intercepts.width() <= 0) {
-    return Vector<gfx::RectF>();
-  }
-
-  Vector<gfx::RectF> line_rects;
-  if (!stripe_intercepts.empty()) {
-    gfx::PointF current = line_rect_without_intercepts.origin();
-    for (const auto& intercept : stripe_intercepts) {
-      // We previously used non-anti-aliased clipping for the stripe intercepts.
-      // Snap the left and right edges of the intercept to match this behavior,
-      // so that we do not need to rebaseline all tests.
-      float snapped_intercept_x = base::ClampRound(intercept.x());
-      float snapped_intercept_right = base::ClampRound(intercept.right());
-
-      gfx::RectF line_rect =
-          DecorationRect(current, snapped_intercept_x - current.x(),
-                         line_rect_without_intercepts.height());
-      line_rects.push_back(line_rect);
-      current = gfx::PointF(snapped_intercept_right, current.y());
-    }
-    line_rects.push_back(DecorationRect(
-        current, line_rect_without_intercepts.right() - current.x(),
-        line_rect_without_intercepts.height()));
-  } else {
-    line_rects.push_back(line_rect_without_intercepts);
-  }
-  return line_rects;
 }
 
 void DecorationLinePainter::PaintWavyTextDecoration(
@@ -211,25 +163,8 @@ void DecorationLinePainter::PaintWavyTextDecoration(
   GraphicsContextStateSaver state_saver(context_);
   context_.SetShouldAntialias(true);
   context_.Translate(origin.x(), origin.y());
-
-  gfx::RectF line_rect_without_intercepts = decoration_info_.WavyPaintRect();
-  // Rect from TextDecorationInfo::WavyPaintRect() still has the origin at the
-  // (0, 0). So, we need to translate the intercepts by the origin of the actual
-  // wave bound in order to align the coordinates.
-  const Vector<gfx::RectF>& stripe_intercepts =
-      decoration_info_.GetStripeIntercepts();
-  Vector<gfx::RectF> translated_stripe_intercepts;
-  for (const auto& intercept : stripe_intercepts) {
-    translated_stripe_intercepts.push_back(
-        gfx::RectF(intercept.x() - origin.x(), intercept.y() - origin.y(),
-                   intercept.width(), intercept.height()));
-  }
-  Vector<gfx::RectF> separated_line_rects = GetRectsForTextLine(
-      line_rect_without_intercepts, translated_stripe_intercepts);
-
-  for (const auto& line_rect : separated_line_rects) {
-    context_.DrawRect(gfx::RectFToSkRect(line_rect), flags, auto_dark_mode);
-  }
+  context_.DrawRect(gfx::RectFToSkRect(decoration_info_.WavyPaintRect()), flags,
+                    auto_dark_mode);
 }
 
 }  // namespace blink

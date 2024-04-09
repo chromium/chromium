@@ -5,15 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_PAINTER_H_
 
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
-#include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
@@ -23,7 +20,6 @@ class Font;
 class GraphicsContext;
 class LayoutObject;
 class LayoutSVGInlineText;
-class ShadowList;
 class TextDecorationInfo;
 enum class TextEmphasisPosition : unsigned;
 struct AutoDarkMode;
@@ -106,22 +102,9 @@ class CORE_EXPORT TextPainter {
                          DOMNodeId node_id,
                          const AutoDarkMode& auto_dark_mode);
 
-  static sk_sp<cc::DrawLooper> CreateDrawLooper(
-      const ShadowList* shadow_list,
-      DrawLooperBuilder::ShadowAlphaMode alpha_mode,
-      const Color& current_color,
-      mojom::blink::ColorScheme color_scheme,
-      ShadowMode shadow_mode);
-
-  Vector<gfx::RectF> GetDecorationStripeIntercepts(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      float upper,
-      float stripe_width,
-      float dilation) const;
-
   void PaintDecorationLine(const TextDecorationInfo& decoration_info,
                            const Color& line_color,
-                           const TextPaintStyle& text_style);
+                           const TextFragmentPaintInfo* fragment_paint_info);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
@@ -151,6 +134,11 @@ class CORE_EXPORT TextPainter {
   void PaintSvgTextFragment(const TextFragmentPaintInfo&,
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
+
+  virtual void ClipDecorationsStripe(const TextFragmentPaintInfo&,
+                                     float upper,
+                                     float stripe_width,
+                                     float dilation);
 
   GraphicsContext& graphics_context_;
   const SvgContextPaints* svg_context_paints_;

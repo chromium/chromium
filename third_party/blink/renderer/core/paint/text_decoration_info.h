@@ -30,19 +30,6 @@ class Font;
 class InlinePaintContext;
 class SimpleFontData;
 class TextDecorationOffset;
-class TextPainter;
-struct TextFragmentPaintInfo;
-
-namespace {
-
-// We usually use the text decoration thickness to determine how far
-// ink-skipped text decorations should be away from the glyph
-// contours. Cap this at 5 CSS px in each direction when thickness
-// growths larger than that. A value of 13 closely matches FireFox'
-// implementation.
-inline constexpr float kDecorationClipMaxDilation = 13;
-
-}  // anonymous namespace
 
 enum class ResolvedUnderlinePosition {
   kNearAlphabeticBaselineAuto,
@@ -120,13 +107,6 @@ class CORE_EXPORT TextDecorationInfo {
   void SetOverlineLineData(const TextDecorationOffset& decoration_offset);
   void SetLineThroughLineData();
   void SetSpellingOrGrammarErrorLineData(const TextDecorationOffset&);
-
-  const Vector<gfx::RectF>& GetStripeIntercepts() const {
-    return stripe_intercepts_;
-  }
-  void SetSkipInkIntercepts(const TextPainter text_painter,
-                            const TextFragmentPaintInfo* fragment_paint_info);
-  void ClearSkipInkIntercepts() { stripe_intercepts_ = Vector<gfx::RectF>(); }
 
   // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
@@ -267,8 +247,6 @@ class CORE_EXPORT TextDecorationInfo {
   };
   LineData line_data_;
   std::optional<Color> highlight_override_;
-
-  Vector<gfx::RectF> stripe_intercepts_;
 };
 
 }  // namespace blink

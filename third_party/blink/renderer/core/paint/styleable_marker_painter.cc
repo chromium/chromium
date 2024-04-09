@@ -194,17 +194,13 @@ void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
     }
     context.SetStrokeColor(marker_color);
 
-    if (width > 0) {
-      gfx::RectF line_rect(
-          gfx::PointF(box_origin.left + start,
-                      (box_origin.top + logical_height.ToInt() - line_thickness)
-                          .ToFloat()),
-          gfx::SizeF(width, styled_stroke.Thickness()));
-
-      DecorationLinePainter::DrawLineForText(
-          context, line_rect, styled_stroke,
-          PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
-    }
+    DecorationLinePainter::DrawLineForText(
+        context,
+        gfx::PointF(box_origin.left + start,
+                    (box_origin.top + logical_height.ToInt() - line_thickness)
+                        .ToFloat()),
+        width, styled_stroke,
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   } else {
     // For wavy underline format we use this logic that is very similar to
     // spelling/grammar squiggles format. Only applicable for composition
