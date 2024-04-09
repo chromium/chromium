@@ -193,7 +193,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
+// TODO(crbug.com/331581190): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestCTUpdate DISABLED_TestCTUpdate
+#else
+#define MAYBE_TestCTUpdate TestCTUpdate
+#endif
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, MAYBE_TestCTUpdate) {
   const std::string kLog1OperatorName = "log operator 1";
   std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
       crypto::ECPrivateKey::Create();
