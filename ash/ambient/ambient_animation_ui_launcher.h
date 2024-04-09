@@ -20,8 +20,6 @@
 
 namespace ash {
 
-class AmbientAnimationMetricsRecorder;
-
 // Launches |AmbientTheme::kFeelTheBreeze| or |AmbientTheme::kFloatOnBy|
 // determined by the Ambient UI Settings. Display the animated screen saver with
 // photos from the selected albums or the cached photos. The animation themes
@@ -62,7 +60,6 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
-  std::unique_ptr<AmbientAnimationMetricsRecorder> animation_metrics_recorder_;
 };
 
 }  // namespace ash

@@ -530,23 +530,6 @@ chromium-metrics-reviews@google.com.
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.MultiScreenOffset.{Settings}" units="ms"
-    expires_after="2024-04-23">
-  <owner>esum@google.com</owner>
-  <owner>xiaohuic@chromium.org</owner>
-  <summary>
-    Only applies to multi-screen use cases in ambient mode. Records the offset
-    observed between {Settings} animations' timestamps when rendering on
-    multiple screens. Ideally, this would be 0, but small imperceptible offsets
-    are acceptable (under .1 seconds). The offset recorded here is the absolute
-    difference in milliseconds between the animation with the smallest and
-    largest timestamp. The metric is emitted after every single animation frame
-    in ambient mode (there is a high volume). For single-screen use cases, this
-    metric is inactive.
-  </summary>
-  <token key="Settings" variants="AmbientUiSettings"/>
-</histogram>
-
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
     expires_after="2024-08-25">
   <owner>cowmoo@google.com</owner>

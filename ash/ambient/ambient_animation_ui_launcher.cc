@@ -9,7 +9,6 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/ambient/metrics/ambient_animation_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
@@ -60,8 +59,6 @@ void AmbientAnimationUiLauncher::Initialize(InitializationCallback on_done) {
                            ->ambient_controller()
                            ->ambient_weather_controller()
                            ->CreateScopedRefresher();
-  animation_metrics_recorder_ =
-      std::make_unique<AmbientAnimationMetricsRecorder>(current_ui_settings_);
   ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
   GetAmbientPhotoController()->StartScreenUpdate();
 }
@@ -71,14 +68,13 @@ std::unique_ptr<views::View> AmbientAnimationUiLauncher::CreateView() {
       view_delegate_, &progress_tracker_,
       AmbientAnimationStaticResources::Create(current_ui_settings_,
                                               /*serializable=*/true),
-      animation_metrics_recorder_.get(), &frame_rate_controller_);
+      &frame_rate_controller_);
 }
 
 void AmbientAnimationUiLauncher::Finalize() {
   photo_controller_.StopScreenUpdate();
   ambient_backend_model_observer_.Reset();
   weather_refresher_.reset();
-  animation_metrics_recorder_.reset();
 }
 
 AmbientBackendModel* AmbientAnimationUiLauncher::GetAmbientBackendModel() {
