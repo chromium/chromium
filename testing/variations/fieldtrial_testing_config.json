@@ -6286,6 +6286,21 @@
             ]
         }
     ],
+    "DipsOnForegroundSequence": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DipsOnForegroundSequence"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableBlackHoleOnNoNewNetwork": [
         {
             "platforms": [

@@ -48,6 +48,11 @@ namespace {
 // Controls whether UKM metrics are collected for DIPS.
 BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the database requests are executed on a foreground sequence.
+BASE_FEATURE(kDipsOnForegroundSequence,
+             "DipsOnForegroundSequence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 RedirectCategory ClassifyRedirect(SiteDataAccessType access,
                                   bool has_interaction) {
   switch (access) {
@@ -231,6 +236,9 @@ void DIPSService::Shutdown() {
 }
 
 scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
+  if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
+    return base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  }
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::ThreadPolicy::PREFER_BACKGROUND});
