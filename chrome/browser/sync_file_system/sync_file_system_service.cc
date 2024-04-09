@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/sync_file_system/sync_direction.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
+#include "chrome/browser/sync_file_system/sync_file_status.h"
 #include "chrome/browser/sync_file_system/sync_process_runner.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
@@ -108,30 +111,6 @@ std::string SyncFileStatusToString(SyncFileStatus sync_file_status) {
       chrome_apps::api::SyncFileStatusToExtensionEnum(sync_file_status));
 }
 
-// Gets called repeatedly until every SyncFileStatus has been mapped.
-void DidGetFileSyncStatusForDump(
-    const base::Value::List& files,
-    size_t* num_results,
-    SyncFileSystemService::DumpFilesCallback& callback,
-    base::Value::Dict* file,
-    SyncStatusCode sync_status_code,
-    SyncFileStatus sync_file_status) {
-  DCHECK(num_results);
-
-  if (file)
-    file->Set("status", SyncFileStatusToString(sync_file_status));
-
-  // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files.size());
-  if (++*num_results < files.size())
-    return;
-
-  // `callback` is a DumpFilesCallback, which should only be called
-  // once. The callback will only be called a single time, even though
-  // `DidGetFileSyncStatusForDump()` is called more than once.
-  std::move(callback).Run(files.Clone());
-}
-
 // We need this indirection because WeakPtr can only be bound to methods
 // without a return value.
 LocalChangeProcessor* GetLocalChangeProcessorAdapter(
@@ -140,6 +119,12 @@ LocalChangeProcessor* GetLocalChangeProcessorAdapter(
   if (!service)
     return nullptr;
   return service->GetLocalChangeProcessor(origin);
+}
+
+void SetFileStatusFromSyncStatus(base::Value::Dict* file,
+                                 SyncStatusCode,
+                                 SyncFileStatus status) {
+  file->Set("status", SyncFileStatusToString(status));
 }
 
 }  // namespace
@@ -563,32 +548,28 @@ void SyncFileSystemService::DidDumpFiles(const GURL& origin,
     return;
   }
 
-  base::Value::List& files = dump_files;
+  // Place `dump_files` onto the heap to ensure pointer stability.
+  auto files = std::make_unique<base::Value::List>(std::move(dump_files));
+  auto* unowned_files = files.get();
 
-  using AccumulateFileSyncStatusCallback = base::RepeatingCallback<void(
-      base::Value::Dict*, SyncStatusCode, SyncFileStatus)>;
-
-  // |accumulate_callback| should only call |callback| once.
-  AccumulateFileSyncStatusCallback accumulate_callback =
-      base::BindRepeating(&DidGetFileSyncStatusForDump, std::move(dump_files),
-                          base::Owned(std::make_unique<size_t>(0)),
-                          base::OwnedRef(std::move(callback)));
+  base::RepeatingClosure accumulate_callback = base::BarrierClosure(
+      unowned_files->size(), base::BindOnce(
+                                 [](DumpFilesCallback callback,
+                                    std::unique_ptr<base::Value::List> files) {
+                                   std::move(callback).Run(std::move(*files));
+                                 },
+                                 std::move(callback), std::move(files)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (base::Value& file : files) {
-    const base::Value::Dict* file_dict = file.GetIfDict();
-    const std::string* path_string =
-        file_dict ? file_dict->FindString("path") : nullptr;
-    if (!path_string) {
-      NOTREACHED();
-      accumulate_callback.Run(nullptr, SYNC_FILE_ERROR_FAILED,
-                              SYNC_FILE_STATUS_UNKNOWN);
-      continue;
-    }
-    base::FilePath file_path = base::FilePath::FromUTF8Unsafe(*path_string);
+  for (base::Value& file : *unowned_files) {
+    const auto& path = CHECK_DEREF(file.GetDict().FindString("path"));
+    base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path);
     FileSystemURL url = CreateSyncableFileSystemURL(origin, file_path);
-    GetFileSyncStatus(url,
-                      base::BindOnce(accumulate_callback, &file.GetDict()));
+    // `file` pointer is safe to pass here as its lifetime is bound to the
+    // `callback` above.
+    GetFileSyncStatus(
+        url, base::BindOnce(&SetFileStatusFromSyncStatus, &file.GetDict())
+                 .Then(accumulate_callback));
   }
 }
 
