@@ -162,8 +162,10 @@ void CRWSaveOrderFile() {
   BOOL success = CRWDedupAndSaveOrderFile(@"app", allFunctions);
   if (success) {
     DLOG(WARNING) << "ORDER_FILE_DUMPED\n";
+    exit(0);
   } else {
     DLOG(WARNING) << "ORDER_FILE_DUMP_FAILED\n";
+    exit(1);
   }
 }
 
