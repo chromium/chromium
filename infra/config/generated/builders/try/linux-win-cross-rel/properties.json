@@ -41,8 +41,7 @@
           "builder": "linux-win-cross-rel",
           "project": "chromium"
         }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-win-cross-rel/targets"
+      ]
     }
   },
   "$build/reclient": {
