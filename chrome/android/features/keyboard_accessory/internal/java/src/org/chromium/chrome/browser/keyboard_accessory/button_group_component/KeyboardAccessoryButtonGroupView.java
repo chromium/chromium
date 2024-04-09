@@ -54,6 +54,8 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_width));
         button.setMaxHeight(
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_size));
+        button.setMinimumWidth(button.getMaxWidth());
+        button.setMinimumHeight(button.getMaxHeight());
         button.setPaddingRelative(
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding),
                 0,
