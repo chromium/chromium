@@ -1700,10 +1700,50 @@ TEST_F(PaymentsDataManagerTest,
   // Disable autofill payment card benefits pref and check that no benefits
   // are returned.
   prefs::SetPaymentCardBenefits(prefs_.get(), false);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
   ASSERT_EQ(0U, test_api(personal_data_->payments_data_manager())
                     .GetCreditCardBenefitsCount());
+}
+
+// Tests that card benefits are not saved in PaymentsDataManager if the card
+// benefits pref is disabled.
+TEST_F(PaymentsDataManagerTest,
+       OnAutofillPaymentsCardBenefits_PrefIsOff_BenefitsAreNotReturned) {
+  prefs::SetPaymentCardBenefits(prefs_.get(), false);
+
+  // Add the card benefits to the web database.
+  std::vector<CreditCardBenefit> card_benefits;
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  CreditCardCategoryBenefit category_benefit =
+      test::GetActiveCreditCardCategoryBenefit();
+  CreditCardMerchantBenefit merchant_benefit =
+      test::GetActiveCreditCardMerchantBenefit();
+  card_benefits.push_back(flat_rate_benefit);
+  card_benefits.push_back(category_benefit);
+  card_benefits.push_back(merchant_benefit);
+  SetCreditCardBenefits(card_benefits);
+
+  // Refresh to load the card benefits from the web database. Make sure no card
+  // benefits are saved to PaymentsDataManager.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  ASSERT_EQ(0u, test_api(personal_data_->payments_data_manager())
+                    .GetCreditCardBenefitsCount());
+
+  // Ensure no card benefits are returned.
+  EXPECT_EQ(
+      std::nullopt,
+      personal_data_->payments_data_manager().GetFlatRateBenefitByInstrumentId(
+          flat_rate_benefit.linked_card_instrument_id()));
+  EXPECT_EQ(std::nullopt,
+            personal_data_->payments_data_manager()
+                .GetMerchantBenefitByInstrumentIdAndOrigin(
+                    merchant_benefit.linked_card_instrument_id(),
+                    *merchant_benefit.merchant_domains().begin()));
+  EXPECT_EQ(std::nullopt, personal_data_->payments_data_manager()
+                              .GetCategoryBenefitByInstrumentIdAndCategory(
+                                  category_benefit.linked_card_instrument_id(),
+                                  category_benefit.benefit_category()));
 }
 
 #if !BUILDFLAG(IS_IOS)
