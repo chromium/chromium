@@ -846,11 +846,8 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
                                            ui::MenuSourceType source_type) {
   // Show birch bar context menu in clamshell mode Overview without a partial
   // split screen.
-  // TODO(http://325963519): remove the tablet mode restriction when tablet mode
-  // birch bar is implemented.
   if (features::IsForestFeatureEnabled() &&
       OverviewController::Get()->InOverviewSession() &&
-      !display::Screen::GetScreen()->InTabletMode() &&
       !split_view_overview_session_) {
     root_window_menu_model_adapter_ = BuildBirchMenuModelAdapter(source_type);
   } else {
