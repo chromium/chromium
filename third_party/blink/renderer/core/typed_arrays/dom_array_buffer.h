@@ -91,6 +91,17 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   void Trace(Visitor*) const override;
 
+  bool IsDetached() const override;
+
+  v8::Local<v8::Object> AssociateWithWrapper(
+      v8::Isolate* isolate,
+      const WrapperTypeInfo* wrapper_type_info,
+      v8::Local<v8::Object> wrapper) override;
+
+  bool has_non_main_world_wrappers() const {
+    return has_non_main_world_wrappers_;
+  }
+
  private:
   v8::Maybe<bool> TransferDetachable(v8::Isolate*,
                                      v8::Local<v8::Value> detach_key,
@@ -101,6 +112,8 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // support only v8::String as the detach key type. It's also convenient that
   // we can write `array_buffer->SetDetachKey(isolate, "my key")`.
   TraceWrapperV8Reference<v8::String> detach_key_;
+
+  bool has_non_main_world_wrappers_ = false;
 };
 
 }  // namespace blink
