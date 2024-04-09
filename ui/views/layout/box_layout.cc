@@ -683,9 +683,14 @@ int BoxLayout::GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
   SizeBound avaible_main_size =
       std::max<SizeBound>(0, bounds.main() - data.total_size.main());
 
+  // Label is a special view that can be shrunk even when its flex value is 0.
+  // When the flex value is 0, current_padding must be 0, because
+  // current_padding is the extra available space distributed to
+  // subviews proportional to their flex values. But if there is
+  // insufficient space at this time. We should need shrink.
+  DCHECK(box_child.flex > 0 || current_padding == 0);
   bool need_shrink = current_padding < 0 ||
-                     (box_child.flex > 0 &&
-                      avaible_main_size < box_child.preferred_size.main());
+                     avaible_main_size < box_child.preferred_size.main();
   if (need_shrink) {
     avaible_main_size = std::max<SizeBound>(
         0, avaible_main_size.min_of(box_child.preferred_size.main() +
@@ -697,7 +702,8 @@ int BoxLayout::GetActualMainSizeAndUpdateChildPreferredSizeIfNeeded(
         GetPreferredSizeForView(
             child_layout.child_view,
             NormalizedSizeBounds(avaible_main_size, cross_axis_size)));
-    return avaible_main_size.value();
+    return box_child.flex > 0 ? avaible_main_size.value()
+                              : box_child.preferred_size.main();
   } else {
     return box_child.preferred_size.main() + current_padding;
   }
