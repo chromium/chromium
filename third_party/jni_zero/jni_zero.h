@@ -276,6 +276,8 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Constructor for other JavaRef types.
   explicit ScopedJavaLocalRef(const JavaRef<T>& other) { Reset(other); }
 
+  ScopedJavaLocalRef(JNIEnv* env, const JavaRef<T>& other) { Reset(other); }
+
   // Assumes that |obj| is a local reference to a Java object and takes
   // ownership of this local reference.
   // TODO(torne): make legitimate uses call Adopt() instead, and make this
@@ -399,6 +401,10 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
 
   // Conversion constructor for other JavaRef types.
   explicit ScopedJavaGlobalRef(const JavaRef<T>& other) { Reset(other); }
+
+  ScopedJavaGlobalRef(JNIEnv* env, const JavaRef<T>& other) {
+    JavaRef<T>::SetNewGlobalRef(env, other.obj());
+  }
 
   // Create a new global reference to the object.
   // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
