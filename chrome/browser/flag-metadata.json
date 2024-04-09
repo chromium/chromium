@@ -2887,8 +2887,29 @@
   },
   {
     "name": "enable-expkit-text-classifier",
+    // This flags is use for 'confidence_score_threshold' only.
     "owners": [ "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-expkit-text-classifier-address",
+    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-expkit-text-classifier-date",
+    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-expkit-text-classifier-email",
+    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "enable-expkit-text-classifier-phonenumber",
+    "owners": [ "djean@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-external-display-hdr10",

@@ -408,34 +408,27 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
 };
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierDate[] = {
-    {"date", "true"}};
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAddress[] = {
-    {"address", "true"}};
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierPhoneNumber[] = {
-    {"phonenumber", "true"}};
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierEmail[] = {
-    {"email", "true"}};
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierOneTap[] = {
-    {"onetap", "true"}};
-const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAll[] = {
-    {"date", "true"},
-    {"address", "true"},
-    {"phonenumber", "true"},
-    {"email", "true"}};
-const FeatureEntry::FeatureVariation kEnableExpKitTextClassifierVariations[] = {
-    {"Enabled for all entities", kEnableExpKitTextClassifierAll,
-     std::size(kEnableExpKitTextClassifierAll), nullptr},
-    {"Enabled for date", kEnableExpKitTextClassifierDate,
-     std::size(kEnableExpKitTextClassifierDate), nullptr},
-    {"Enabled for address", kEnableExpKitTextClassifierAddress,
-     std::size(kEnableExpKitTextClassifierAddress), nullptr},
-    {"Enabled for phonenumber", kEnableExpKitTextClassifierPhoneNumber,
-     std::size(kEnableExpKitTextClassifierPhoneNumber), nullptr},
-    {"Enabled for email", kEnableExpKitTextClassifierEmail,
-     std::size(kEnableExpKitTextClassifierEmail), nullptr},
-    {"Enabled for One Tap mode", kEnableExpKitTextClassifierOneTap,
-     std::size(kEnableExpKitTextClassifierOneTap), nullptr}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAddressOneTap[] = {
+    {kTextClassifierAddressParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierAddressVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierAddressOneTap,
+         std::size(kEnableExpKitTextClassifierAddressOneTap), nullptr}};
+
+const FeatureEntry::FeatureParam
+    kEnableExpKitTextClassifierPhoneNumberOneTap[] = {
+        {kTextClassifierPhoneNumberParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierPhoneNumberVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierPhoneNumberOneTap,
+         std::size(kEnableExpKitTextClassifierPhoneNumberOneTap), nullptr}};
+
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierEmailOneTap[] = {
+    {kTextClassifierEmailParameterName, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableExpKitTextClassifierEmailVariations[] = {
+        {"Long-Press and One-Tap", kEnableExpKitTextClassifierEmailOneTap,
+         std::size(kEnableExpKitTextClassifierEmailOneTap), nullptr}};
 
 const FeatureEntry::FeatureParam kTabInactivityThresholdOneWeek[] = {
     {kTabInactivityThresholdParameterName,
@@ -937,13 +930,33 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"intents-on-viewport", flag_descriptions::kEnableViewportIntentsName,
      flag_descriptions::kEnableViewportIntentsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableViewportIntents)},
-    {"enable-expkit-text-classifier",
-     flag_descriptions::kEnableExpKitTextClassifierName,
-     flag_descriptions::kEnableExpKitTextClassifierDescription,
+    {"enable-expkit-text-classifier-date",
+     flag_descriptions::kEnableExpKitTextClassifierDateName,
+     flag_descriptions::kEnableExpKitTextClassifierDateDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableExpKitTextClassifierDate)},
+    {"enable-expkit-text-classifier-address",
+     flag_descriptions::kEnableExpKitTextClassifierAddressName,
+     flag_descriptions::kEnableExpKitTextClassifierAddressDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifier,
-                                    kEnableExpKitTextClassifierVariations,
-                                    "ExpKitTextClassifier")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableExpKitTextClassifierAddress,
+         kEnableExpKitTextClassifierAddressVariations,
+         "ExpKitTextClassifierAddress")},
+    {"enable-expkit-text-classifier-phonenumber",
+     flag_descriptions::kEnableExpKitTextClassifierPhoneNumberName,
+     flag_descriptions::kEnableExpKitTextClassifierPhoneNumberDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableExpKitTextClassifierPhoneNumber,
+         kEnableExpKitTextClassifierPhoneNumberVariations,
+         "ExpKitTextClassifierPhoneNumber")},
+    {"enable-expkit-text-classifier-email",
+     flag_descriptions::kEnableExpKitTextClassifierEmailName,
+     flag_descriptions::kEnableExpKitTextClassifierEmailDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifierEmail,
+                                    kEnableExpKitTextClassifierEmailVariations,
+                                    "ExpKitTextClassifierEmail")},
     {"one-tap-experience-maps", flag_descriptions::kOneTapForMapsName,
      flag_descriptions::kOneTapForMapsDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(web::features::kOneTapForMaps,

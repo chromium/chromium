@@ -225,10 +225,25 @@ extern const char kMeasurementsDescription[];
 extern const char kEnableViewportIntentsName[];
 extern const char kEnableViewportIntentsDescription[];
 
-// Title and description for the flag to enable text classifier entity detection
-// in experience kit for different entity types.
-extern const char kEnableExpKitTextClassifierName[];
-extern const char kEnableExpKitTextClassifierDescription[];
+// Title and description for the flag to enable text classifier date detection
+// in experience kit.
+extern const char kEnableExpKitTextClassifierDateName[];
+extern const char kEnableExpKitTextClassifierDateDescription[];
+
+// Title and description for the flag to enable text classifier address
+// detection in experience kit.
+extern const char kEnableExpKitTextClassifierAddressName[];
+extern const char kEnableExpKitTextClassifierAddressDescription[];
+
+// Title and description for the flag to enable text classifier phone number
+// detection in experience kit.
+extern const char kEnableExpKitTextClassifierPhoneNumberName[];
+extern const char kEnableExpKitTextClassifierPhoneNumberDescription[];
+
+// Title and description for the flag to enable text classifier email
+// detection in experience kit.
+extern const char kEnableExpKitTextClassifierEmailName[];
+extern const char kEnableExpKitTextClassifierEmailDescription[];
 
 // Title and description for the flag to enable parental controls from Family
 // Link on iOS.
