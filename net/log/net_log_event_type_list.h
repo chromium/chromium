@@ -1254,15 +1254,6 @@ EVENT_TYPE(HTTP_STREAM_JOB_INIT_CONNECTION)
 //   }
 EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_JOB)
 
-// Identifies the NetLogSource() for the QuicSessionPool::Job that the
-// HttpStreamFactory::Job was attached to.
-// The event parameters are:
-//  {
-//      "source_dependency": <Source identifier for the QuicSessionPool::Job
-//                            to which we were attached>,
-//  }
-EVENT_TYPE(HTTP_STREAM_JOB_BOUND_TO_QUIC_SESSION_POOL_JOB)
-
 // Identifies the NetLogSource() for the Request that the Job was attached to.
 // The event parameters are:
 //   {
@@ -1857,26 +1848,44 @@ EVENT_TYPE(QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
 //     "host": <The origin hostname that the Job serves>,
 //     "port": <The origin port>,
 //     "privacy_mode": <The privacy mode of the Job>,
+//     "proxy_chain": <The proxy chain of the Job>
 //     "network_anonymization_key": <The NetworkAnonymizationKey of the Job>,
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB)
 
-// Identifies the NetLogSource() for the HttpStreamFactory::Job that the Job was
-// attached to.
+// Identifies the NetLogSource() requesting the Job. A Job may serve multiple
+// sources.
+//
 // The event parameters are:
 //  {
-//     "source_dependency": <Source identifier for the HttpStreamFactory::Job to
+//     "source_dependency": <Source identifier for the NetLogSource to
 //                           which we were attached>,
 //  }
-EVENT_TYPE(QUIC_SESSION_POOL_JOB_BOUND_TO_HTTP_STREAM_JOB)
+EVENT_TYPE(QUIC_SESSION_POOL_JOB_BOUND_TO)
 
-// Measures the time taken to establish a QUIC connection.
+// Identifies the NetLogSource() for the QuicSessionPool::Job that the
+// this source was bound to.
+// The event parameters are:
+//  {
+//      "source_dependency": <Source identifier for the QuicSessionPool::Job
+//                            to which we were attached>,
+//  }
+EVENT_TYPE(BOUND_TO_QUIC_SESSION_POOL_JOB)
+
+// Measures the time taken by a DirectJob to establish a QUIC connection.
 // The event parameters are:
 //  {
 //     "require_confirmation": <True if we require handshake confirmation
 //                              in the connection>
 //  }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_CONNECT)
+
+// Measures the time taken by a ProxyJob to establish a connection to its
+// endpoint through the proxy.
+EVENT_TYPE(QUIC_SESSION_POOL_PROXY_JOB_CONNECT)
+
+// Measures the time taken by a ProxyJob to establish a session to the proxy.
+EVENT_TYPE(QUIC_SESSION_POOL_PROXY_JOB_CREATE_PROXY_SESSION)
 
 // This event indicates that the connection on the default network has failed
 // before the handshake completed and a new connection on the alternate network
@@ -1894,6 +1903,14 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_NO_MATCH)
 
 // This event indicates that stale host matches with fresh resolution.
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_MATCHED)
+
+// This event indicates that a QuicSessionPool::Job has created a session.
+//
+// The event parameters are:
+//   {
+//      "source_dependency": <Source identifier for session that was used>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_JOB_RESULT)
 
 // ------------------------------------------------------------------------
 // quic::QuicSession

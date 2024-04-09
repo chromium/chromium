@@ -47,6 +47,7 @@
 #include "net/quic/quic_connectivity_monitor.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
+#include "net/quic/quic_proxy_datagram_client_socket.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
@@ -491,6 +492,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
  private:
   class Job;
   class DirectJob;
+  class ProxyJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
   class SessionAttempt;
@@ -547,6 +549,18 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                          const NetLogWithSource& net_log,
                          raw_ptr<QuicChromiumClientSession>* session,
                          handles::NetworkHandle* network);
+  int CreateSessionOnProxyStream(
+      CompletionOnceCallback callback,
+      const QuicSessionAliasKey& key,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      bool require_confirmation,
+      IPEndPoint local_address,
+      IPEndPoint proxy_peer_address,
+      std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+      std::string user_agent,
+      const NetLogWithSource& net_log,
+      raw_ptr<QuicChromiumClientSession>* session);
   void FinishCreateSession(CompletionOnceCallback callback,
                            const QuicSessionAliasKey& key,
                            quic::ParsedQuicVersion quic_version,

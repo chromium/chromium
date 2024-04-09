@@ -28,6 +28,7 @@ namespace net {
 // retry on an alternate network if the system supports non-default networks.
 class QuicSessionPool::SessionAttempt {
  public:
+  // Create a SessionAttempt for a direct connection.
   SessionAttempt(Job* job,
                  IPEndPoint ip_endpoint,
                  ConnectionEndpointMetadata metadata,
@@ -38,6 +39,14 @@ class QuicSessionPool::SessionAttempt {
                  bool retry_on_alternate_network_before_handshake,
                  bool use_dns_aliases,
                  std::set<std::string> dns_aliases);
+  // Create a SessionAttempt for a connection proxied over the given stream.
+  SessionAttempt(Job* job,
+                 IPEndPoint local_endpoint,
+                 IPEndPoint proxy_peer_endpoint,
+                 quic::ParsedQuicVersion quic_version,
+                 int cert_verify_flags,
+                 std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+                 const HttpUserAgentSettings* http_user_agent_settings);
 
   ~SessionAttempt();
 
@@ -74,6 +83,7 @@ class QuicSessionPool::SessionAttempt {
   void OnCryptoConnectComplete(int rv);
 
   const raw_ptr<Job> job_;
+
   const IPEndPoint ip_endpoint_;
   const ConnectionEndpointMetadata metadata_;
   const quic::ParsedQuicVersion quic_version_;
@@ -84,6 +94,11 @@ class QuicSessionPool::SessionAttempt {
   const bool retry_on_alternate_network_before_handshake_;
   const bool use_dns_aliases_;
   std::set<std::string> dns_aliases_;
+
+  // Fields only used for session attempts to a proxy.
+  std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream_;
+  const raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
+  const IPEndPoint local_endpoint_;
 
   State next_state_ = State::kNone;
   bool in_loop_ = false;

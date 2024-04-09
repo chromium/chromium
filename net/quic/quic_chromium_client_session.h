@@ -553,6 +553,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // the server and the current network support QUIC, as HTTP fallback can't
   // trigger (or at least will take longer) after a QUIC stream has successfully
   // been created.
+  //
+  // For situations where no host resolution took place (such as a proxied
+  // connection), the `dns_resolution_*_time` arguments should be equal and
+  // the current time, and `endpoint_result` should be an empty value, with an
+  // empty address list.
   QuicChromiumClientSession(
       quic::QuicConnection* connection,
       std::unique_ptr<DatagramClientSocket> socket,

@@ -51,6 +51,10 @@ class QuicTestPacketMaker {
 
   void set_hostname(const std::string& host);
 
+  void set_use_priority_header(const bool use_priority_header) {
+    use_priority_header_ = use_priority_header;
+  }
+
   void set_connection_id(const quic::QuicConnectionId& connection_id) {
     connection_id_ = connection_id;
   }

@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -60,6 +61,7 @@
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool_direct_job.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/quic/quic_session_pool_proxy_job.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_performance_watcher.h"
@@ -574,13 +576,7 @@ int QuicSessionPool::RequestSession(
   // Associate with active job to |session_key| if such exists.
   auto active_job = active_jobs_.find(session_key);
   if (active_job != active_jobs_.end()) {
-    const NetLogWithSource& job_net_log = active_job->second->net_log();
-    job_net_log.AddEventReferencingSource(
-        NetLogEventType::QUIC_SESSION_POOL_JOB_BOUND_TO_HTTP_STREAM_JOB,
-        net_log.source());
-    net_log.AddEventReferencingSource(
-        NetLogEventType::HTTP_STREAM_JOB_BOUND_TO_QUIC_SESSION_POOL_JOB,
-        job_net_log.source());
+    active_job->second->AssociateWithNetLogSource(net_log);
     active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
   }
@@ -613,16 +609,25 @@ int QuicSessionPool::RequestSession(
   // If a proxy is in use, then a traffic annotation is required.
   if (!session_key.proxy_chain().is_direct()) {
     DCHECK(proxy_annotation_tag);
-    DCHECK(http_user_agent_settings);
   }
 
   QuicSessionAliasKey key(destination, session_key);
-  std::unique_ptr<Job> job = std::make_unique<DirectJob>(
-      this, quic_version, host_resolver_, key,
-      CreateCryptoConfigHandle(session_key.network_anonymization_key()),
-      params_.retry_on_alternate_network_before_handshake, priority,
-      use_dns_aliases, session_key.require_dns_https_alpn(), cert_verify_flags,
-      net_log);
+  std::unique_ptr<Job> job;
+  if (session_key.proxy_chain().is_direct()) {
+    job = std::make_unique<DirectJob>(
+        this, quic_version, host_resolver_, std::move(key),
+        CreateCryptoConfigHandle(session_key.network_anonymization_key()),
+        params_.retry_on_alternate_network_before_handshake, priority,
+        use_dns_aliases, session_key.require_dns_https_alpn(),
+        cert_verify_flags, net_log);
+  } else {
+    job = std::make_unique<ProxyJob>(
+        this, quic_version, std::move(key), *proxy_annotation_tag,
+        http_user_agent_settings,
+        CreateCryptoConfigHandle(session_key.network_anonymization_key()),
+        priority, cert_verify_flags, net_log);
+  }
+  job->AssociateWithNetLogSource(net_log);
   int rv = job->Run(base::BindOnce(&QuicSessionPool::OnJobComplete,
                                    weak_factory_.GetWeakPtr(), job.get()));
   if (rv == ERR_IO_PENDING) {
@@ -1281,7 +1286,6 @@ int QuicSessionPool::CreateSessionSync(
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
-  TRACE_EVENT0(NetTracingCategory(), "QuicSessionPool::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(
@@ -1321,7 +1325,6 @@ int QuicSessionPool::CreateSessionAsync(
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
-  TRACE_EVENT0(NetTracingCategory(), "QuicSessionPool::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(
@@ -1339,6 +1342,56 @@ int QuicSessionPool::CreateSessionAsync(
   return ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
                                    socket_ptr, std::move(peer_address),
                                    *network, key.session_key().socket_tag());
+}
+
+int QuicSessionPool::CreateSessionOnProxyStream(
+    CompletionOnceCallback callback,
+    const QuicSessionAliasKey& key,
+    quic::ParsedQuicVersion quic_version,
+    int cert_verify_flags,
+    bool require_confirmation,
+    IPEndPoint local_address,
+    IPEndPoint proxy_peer_address,
+    std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+    std::string user_agent,
+    const NetLogWithSource& net_log,
+    raw_ptr<QuicChromiumClientSession>* session) {
+  // Use the host and port from the proxy server along with the example URI
+  // template in https://datatracker.ietf.org/doc/html/rfc9298#section-2.
+  const ProxyChain& proxy_chain = key.session_key().proxy_chain();
+  const ProxyServer& last_proxy = proxy_chain.Last();
+  const quic::QuicServerId& server_id = key.server_id();
+  const std::string encocded_host =
+      base::EscapeQueryParamValue(last_proxy.GetHost().c_str(), false);
+  GURL url(base::StringPrintf("https://%s:%d/.well-known/masque/udp/%s/%d/",
+                              last_proxy.GetHost().c_str(),
+                              last_proxy.GetPort(), server_id.host().c_str(),
+                              server_id.port()));
+
+  auto socket = std::make_unique<QuicProxyDatagramClientSocket>(
+      url, key.session_key().proxy_chain(), user_agent, net_log,
+      proxy_delegate_);
+  QuicProxyDatagramClientSocket* socket_ptr = socket.get();
+
+  socket->ApplySocketTag(key.session_key().socket_tag());
+
+  // No host resolution took place, so pass an empty metadata,
+  // pretend resolution started and ended right now, and pass an
+  // invalid network handle.
+  ConnectionEndpointMetadata metadata;
+  auto dns_resolution_time = base::TimeTicks::Now();
+  auto network = handles::kInvalidNetworkHandle;
+
+  CompletionOnceCallback on_connected_via_stream = base::BindOnce(
+      &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
+      std::move(callback), key, quic_version, cert_verify_flags,
+      require_confirmation, proxy_peer_address, std::move(metadata),
+      dns_resolution_time, dns_resolution_time, net_log, session, &network,
+      std::move(socket));
+
+  return socket_ptr->ConnectViaStream(
+      std::move(local_address), std::move(proxy_peer_address),
+      std::move(proxy_stream), std::move(on_connected_via_stream));
 }
 
 void QuicSessionPool::FinishCreateSession(
@@ -1388,8 +1441,6 @@ bool QuicSessionPool::CreateSessionHelper(
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
     std::unique_ptr<DatagramClientSocket> socket) {
-  // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
-  // endpoint.
   const quic::QuicServerId& server_id = key.server_id();
 
   if (params_.migrate_sessions_on_network_change_v2 &&
@@ -1481,6 +1532,10 @@ bool QuicSessionPool::CreateSessionHelper(
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);
   (*session)->AddConnectivityObserver(&connectivity_monitor_);
+
+  net_log.AddEventReferencingSource(
+      NetLogEventType::QUIC_SESSION_POOL_JOB_RESULT,
+      (*session)->net_log().source());
 
   (*session)->Initialize();
   bool closed_during_initialize = !base::Contains(all_sessions_, *session) ||

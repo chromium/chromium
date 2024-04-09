@@ -74,6 +74,29 @@ QuicSessionPool::SessionAttempt::SessionAttempt(
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }
 
+QuicSessionPool::SessionAttempt::SessionAttempt(
+    Job* job,
+    IPEndPoint local_endpoint,
+    IPEndPoint proxy_peer_endpoint,
+    quic::ParsedQuicVersion quic_version,
+    int cert_verify_flags,
+    std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+    const HttpUserAgentSettings* http_user_agent_settings)
+    : job_(job),
+      ip_endpoint_(std::move(proxy_peer_endpoint)),
+      quic_version_(std::move(quic_version)),
+      cert_verify_flags_(cert_verify_flags),
+      was_alternative_service_recently_broken_(
+          pool()->WasQuicRecentlyBroken(key().session_key())),
+      retry_on_alternate_network_before_handshake_(false),
+      use_dns_aliases_(false),
+      proxy_stream_(std::move(proxy_stream)),
+      http_user_agent_settings_(http_user_agent_settings),
+      local_endpoint_(std::move(local_endpoint)) {
+  CHECK(job_);
+  DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
+}
+
 QuicSessionPool::SessionAttempt::~SessionAttempt() = default;
 
 int QuicSessionPool::SessionAttempt::Start(CompletionOnceCallback callback) {
@@ -127,20 +150,34 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
       NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, NetLogEventPhase::BEGIN,
       "require_confirmation", require_confirmation);
 
-  if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
-    return pool()->CreateSessionAsync(
+  int rv;
+  if (proxy_stream_) {
+    std::string user_agent;
+    if (http_user_agent_settings_) {
+      user_agent = http_user_agent_settings_->GetUserAgent();
+    }
+    rv = pool()->CreateSessionOnProxyStream(
         base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
+        std::move(local_endpoint_), std::move(ip_endpoint_),
+        std::move(proxy_stream_), user_agent, net_log(), &session_);
+  } else {
+    if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
+      return pool()->CreateSessionAsync(
+          base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
+                         weak_ptr_factory_.GetWeakPtr()),
+          key(), quic_version_, cert_verify_flags_, require_confirmation,
+          ip_endpoint_, metadata_, dns_resolution_start_time_,
+          dns_resolution_end_time_, net_log(), &session_, &network_);
+    }
+    rv = pool()->CreateSessionSync(
+        key(), quic_version_, cert_verify_flags_, require_confirmation,
         ip_endpoint_, metadata_, dns_resolution_start_time_,
         dns_resolution_end_time_, net_log(), &session_, &network_);
-  }
-  int rv = pool()->CreateSessionSync(
-      key(), quic_version_, cert_verify_flags_, require_confirmation,
-      ip_endpoint_, metadata_, dns_resolution_start_time_,
-      dns_resolution_end_time_, net_log(), &session_, &network_);
 
-  DVLOG(1) << "Created session on network: " << network_;
+    DVLOG(1) << "Created session on network: " << network_;
+  }
 
   if (rv == ERR_QUIC_PROTOCOL_ERROR) {
     DCHECK(!session_);

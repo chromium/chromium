@@ -34,11 +34,14 @@ QuicSessionPool::DirectJob::DirectJob(
     bool require_dns_https_alpn,
     int cert_verify_flags,
     const NetLogWithSource& net_log)
-    : QuicSessionPool::Job::Job(pool,
-                                key,
-                                std::move(client_config_handle),
-                                priority,
-                                net_log),
+    : QuicSessionPool::Job::Job(
+          pool,
+          key,
+          std::move(client_config_handle),
+          priority,
+          NetLogWithSource::Make(
+              net_log.net_log(),
+              NetLogSourceType::QUIC_SESSION_POOL_DIRECT_JOB)),
       quic_version_(std::move(quic_version)),
       host_resolver_(host_resolver),
       use_dns_aliases_(use_dns_aliases),
