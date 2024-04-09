@@ -24,8 +24,6 @@
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
-class PrefService;
-
 namespace ash {
 
 // This class manages per-device/global settings.
@@ -153,23 +151,6 @@ class CrosSettings {
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-};
-
-// DEPRECATED: please use CrosSettingsHolder in new code.
-// Helper class for tests. Initializes the CrosSettings singleton on
-// construction and tears it down again on destruction.
-class CrosSettingsHolder;
-class ScopedTestCrosSettings {
- public:
-  explicit ScopedTestCrosSettings(PrefService* local_state);
-
-  ScopedTestCrosSettings(const ScopedTestCrosSettings&) = delete;
-  ScopedTestCrosSettings& operator=(const ScopedTestCrosSettings&) = delete;
-
-  ~ScopedTestCrosSettings();
-
- private:
-  std::unique_ptr<CrosSettingsHolder> holder_;
 };
 
 }  // namespace ash

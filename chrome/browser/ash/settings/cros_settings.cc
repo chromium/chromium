@@ -16,8 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings_holder.h"
-#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -294,12 +292,5 @@ void CrosSettings::FireObservers(const std::string& path) {
 
   observer_iterator->second->Notify();
 }
-
-ScopedTestCrosSettings::ScopedTestCrosSettings(PrefService* local_state)
-    : holder_(std::make_unique<CrosSettingsHolder>(
-          ash::DeviceSettingsService::Get(),
-          local_state)) {}
-
-ScopedTestCrosSettings::~ScopedTestCrosSettings() = default;
 
 }  // namespace ash

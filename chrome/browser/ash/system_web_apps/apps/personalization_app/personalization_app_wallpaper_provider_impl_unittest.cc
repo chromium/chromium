@@ -36,6 +36,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -312,13 +313,13 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   InProcessDataDecoder in_process_data_decoder_;
   TestingPrefServiceSimple pref_service_;
-  // Required for |ScopedTestCrosSettings|.
+  // Required for CrosSettings.
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  // Required for |ScopedTestCrosSettings|.
+  // Required for CrosSettings.
   ash::ScopedTestDeviceSettingsService scoped_device_settings_;
   // Required for |WallpaperControllerClientImpl|.
-  ash::ScopedTestCrosSettings scoped_testing_cros_settings_{
-      RegisterPrefs(&pref_service_)};
+  ash::CrosSettingsHolder cros_settings_holder_{
+      ash::DeviceSettingsService::Get(), RegisterPrefs(&pref_service_)};
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;

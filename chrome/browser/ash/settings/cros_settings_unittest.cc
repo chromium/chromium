@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
@@ -59,11 +60,8 @@ void NotReached() {
 
 class CrosSettingsTest : public testing::Test {
  protected:
-  CrosSettingsTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        scoped_test_cros_settings_(local_state_.Get()) {}
-
-  ~CrosSettingsTest() override {}
+  CrosSettingsTest() = default;
+  ~CrosSettingsTest() override = default;
 
   void SetUp() override {
     // Disable owner key migration.
@@ -157,10 +155,11 @@ class CrosSettingsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
 
-  ScopedTestingLocalState local_state_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   ScopedStubInstallAttributes scoped_install_attributes_;
   ScopedTestDeviceSettingsService scoped_test_device_settings_;
-  ScopedTestCrosSettings scoped_test_cros_settings_;
+  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
+                                           local_state_.Get()};
 
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
       std::make_unique<FakeChromeUserManager>()};

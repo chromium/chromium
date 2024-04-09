@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -127,7 +127,8 @@ class StatsReportingControllerTest : public testing::Test {
   ScopedStubInstallAttributes scoped_install_attributes_;
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedTestDeviceSettingsService scoped_device_settings_;
-  ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&local_state_)};
+  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
+                                           RegisterPrefs(&local_state_)};
   policy::DevicePolicyBuilder device_policy_;
 
   bool value_at_last_notification_{false};

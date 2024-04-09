@@ -12,6 +12,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace chromeos {
 
