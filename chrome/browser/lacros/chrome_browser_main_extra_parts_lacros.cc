@@ -222,6 +222,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateLacros>();
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>();
+  search_controller_->RegisterWithAsh();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();

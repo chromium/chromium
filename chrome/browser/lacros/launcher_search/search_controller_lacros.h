@@ -26,6 +26,8 @@ class SearchControllerLacros : public mojom::SearchController,
                                public AutocompleteController::Observer,
                                public ProfileObserver {
  public:
+  // Does not automatically register with Ash's `SearchControllerRegistry`.
+  // Call `RegisterWithAsh()` to do so.
   SearchControllerLacros();
   SearchControllerLacros(const SearchControllerLacros&) = delete;
   SearchControllerLacros& operator=(const SearchControllerLacros&) = delete;
@@ -33,6 +35,9 @@ class SearchControllerLacros : public mojom::SearchController,
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // Registers this with Ash's `SearchControllerRegistry`.
+  void RegisterWithAsh();
 
  private:
   // mojom::SearchController:

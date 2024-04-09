@@ -40,12 +40,6 @@ SearchControllerLacros::SearchControllerLacros()
                                            ServiceAccessType::EXPLICIT_ACCESS),
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::EXPLICIT_ACCESS));
-
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<mojom::SearchControllerRegistry>())
-    return;
-  service->GetRemote<mojom::SearchControllerRegistry>()
-      ->RegisterSearchController(receiver_.BindNewPipeAndPassRemote());
 }
 
 SearchControllerLacros::~SearchControllerLacros() = default;
@@ -61,6 +55,15 @@ void SearchControllerLacros::OnProfileWillBeDestroyed(Profile* profile) {
   favicon_cache_.reset();
   profile_observation_.Reset();
   profile_ = nullptr;
+}
+
+void SearchControllerLacros::RegisterWithAsh() {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<mojom::SearchControllerRegistry>()) {
+    return;
+  }
+  service->GetRemote<mojom::SearchControllerRegistry>()
+      ->RegisterSearchController(receiver_.BindNewPipeAndPassRemote());
 }
 
 void SearchControllerLacros::Search(const std::u16string& query,
