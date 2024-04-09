@@ -20,6 +20,7 @@ using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::SizeIs;
 using ::testing::Truly;

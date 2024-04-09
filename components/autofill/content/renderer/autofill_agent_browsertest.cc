@@ -55,6 +55,7 @@ using ::testing::IsNull;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Optional;
+using ::testing::Property;
 using ::testing::SizeIs;
 
 class MockAutofillAgent : public AutofillAgent {
@@ -125,12 +126,21 @@ auto HasType(FormControlType type) {
   return Field(&FormFieldData::form_control_type, type);
 }
 
+// Matches a FormFieldData if its `i`th field's `member` matches the
+// `expected_values[i]`.
+// `member` may point to a data member or to a member function of
+// `FormFieldData`.
 auto FieldsAre(std::string field_name,
-               std::u16string FormFieldData::*field,
-               std::vector<std::u16string> expecteds) {
-  std::vector<decltype(Field(field_name, field, expecteds[0]))> matchers;
-  for (const std::u16string& expected : expecteds) {
-    matchers.push_back(Field(field_name, field, expected));
+               auto&& member,
+               std::vector<std::u16string> expected_values) {
+  std::vector<::testing::Matcher<FormFieldData>> matchers;
+  for (const std::u16string& expected : expected_values) {
+    if constexpr (std::is_member_function_pointer_v<
+                      std::decay_t<decltype(member)>>) {
+      matchers.push_back(Property(field_name, member, expected));
+    } else {
+      matchers.push_back(Field(field_name, member, expected));
+    }
   }
   return Field(&FormData::fields, ElementsAreArray(matchers));
 }

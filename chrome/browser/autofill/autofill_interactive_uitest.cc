@@ -118,6 +118,7 @@ using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Property;
 using ::testing::StartsWith;
 using ::testing::UnorderedElementsAreArray;
 

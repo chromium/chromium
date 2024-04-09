@@ -739,9 +739,9 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
     field.origin = triggered_origin;
     field.value = u"dummy_value";
   }
-  ASSERT_TRUE(base::ranges::all_of(address_form().fields,
-                                   std::not_fn(&std::u16string::empty),
-                                   &FormFieldData::value));
+  ASSERT_TRUE(base::ranges::all_of(
+      address_form().fields,
+      [](const FormFieldData& field) { return !field.value.empty(); }));
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
