@@ -1,8 +1,6 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/tpcd/metadata/updater_service.h"
 
 #include <string>
 #include <tuple>
@@ -19,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/tpcd/metadata/updater_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -73,12 +70,9 @@ Profile* CreateRegularProfile() {
 
 }  // namespace
 
-class UpdaterServiceBrowserTest : public PlatformBrowserTest {
+class ManagerBrowserTest : public PlatformBrowserTest {
  public:
-  ~UpdaterServiceBrowserTest() override = default;
-
-  UpdaterServiceBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  ManagerBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     CHECK(fake_install_dir_.CreateUniqueTempDir());
     CHECK(fake_install_dir_.IsValid());
     scoped_feature_list_.InitWithFeatures(
@@ -86,6 +80,7 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
          net::features::kTpcdMetadataGrants},
         {});
   }
+  ~ManagerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -101,10 +96,6 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
 
   net::test_server::EmbeddedTestServer* https_server() {
     return &https_server_;
-  }
-
-  UpdaterService* updater_service() {
-    return UpdaterServiceFactory::GetForProfile(browser()->profile());
   }
 
   Parser* parser() { return tpcd::metadata::Parser::GetInstance(); }
@@ -206,8 +197,7 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
   net::test_server::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
-                       ContentSettingsForOneType_Empty) {
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, GetTpcdMetadataGrants_Empty) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
 
@@ -215,11 +205,10 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   ASSERT_EQ(metadata.metadata_entries_size(), 0);
 
   MockComponentInstallation(metadata);
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
+  ASSERT_TRUE(GetCookieSettings()->GetTpcdMetadataGrants().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
-                       ContentSettingsForOneType_SuccessfullyUpdated) {
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, GetTpcdMetadataGrants) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   const GURL kEmbedded = GURL("http://www.bar.com");
@@ -245,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 }
 
-IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
-                       ContentSettingsForOneType_SuccessfullyCleared) {
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   const GURL kEmbedded1 = GURL("http://www.bar.com");
@@ -295,11 +283,13 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   }
 }
 
-class UpdaterServiceCookiePrefsBrowserTest
-    : public UpdaterServiceBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class ManagerPrefsBrowserTest
+    : public ManagerBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple</*net::features::kThirdPartyStoragePartitioning*/ bool,
+                     /*prefs::kBlockAll3pcToggleEnabled*/ bool>> {
  public:
-  UpdaterServiceCookiePrefsBrowserTest() {
+  ManagerPrefsBrowserTest() {
     scoped_feature_list_.InitWithFeatureStates(
         {{net::features::kForceThirdPartyCookieBlocking, false},
          {net::features::kThirdPartyStoragePartitioning,
@@ -335,7 +325,16 @@ class UpdaterServiceCookiePrefsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
+// The first Bool controls the enablement of
+// `net::features::kThirdPartyStoragePartitioning`.
+//
+// The first Bool controls the
+// enablement of `prefs::kBlockAll3pcToggleEnabled`.
+INSTANTIATE_TEST_SUITE_P(All,
+                         ManagerPrefsBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        RelevantUserCookieSpecsPrecede) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -384,8 +383,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
                 ThirdPartyStoragePartitioningEnabled());
 }
 
-IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
-                       NoSpecificBlockedCookieSpecs) {
+IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest, NoSpecificBlockedCookieSpecs) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   SimulateTrackingProtectionSettings();
@@ -465,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 
 // ChromeOS doesn't support multiple profiles.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        NoSpecificBlockedCookieSpecs_AltRegularProfile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -486,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
   {
     SimulateTrackingProtectionSettings();
 
-    // Expected to be updated by the TPCD metadata updater service as soon as
+    // Expected to be updated by the TPCD metadata manager instance as soon as
     // the profiles are created.
     EXPECT_THAT(
         ContentSettingsToString(ContentSettingsType::TPCD_METADATA_GRANTS),
@@ -513,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 
     SimulateTrackingProtectionSettings(alt_profile);
 
-    // Expected to be updated by the TPCD metadata updater service as soon as
+    // Expected to be updated by the TPCD metadata manager instance as soon as
     // the profiles are created.
     EXPECT_THAT(ContentSettingsToString(
                     ContentSettingsType::TPCD_METADATA_GRANTS, alt_profile),
@@ -539,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        NoSpecificBlockedCookieSpecs_IncognitoProfile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -586,7 +584,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
               BlockAll3pcToggleEnabled());
     Browser* browser = CreateBrowser(incognito_profile);
 
-    // Expected to be left unaffected by the TPCD metadata updater as no service
+    // Expected to be left unaffected by the TPCD metadata manager instance
     // is spawned for this profile. And, the content setting will only be
     // inherited by incognito if it's less permissive.
     EXPECT_TRUE(
@@ -613,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 
 // ChromeOS doesn't support multiple profiles.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
                        NoSpecificBlockedCookieSpecs_GuestProfile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -689,12 +687,4 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 }
 #endif
 
-// The first Bool controls the enablement of
-// `net::features::kThirdPartyStoragePartitioning`.
-//
-// The first Bool controls the
-// enablement of `prefs::kBlockAll3pcToggleEnabled`.
-INSTANTIATE_TEST_SUITE_P(All,
-                         UpdaterServiceCookiePrefsBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
 }  // namespace tpcd::metadata

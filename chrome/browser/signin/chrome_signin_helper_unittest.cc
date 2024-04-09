@@ -180,9 +180,9 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       new content_settings::CookieSettings(
           settings_map.get(), &prefs,
-          /*tracking_protection_settings=*/nullptr, false,
-          content_settings::CookieSettings::
-              NoFedCmSharingPermissionsCallback());
+          /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false,
+          content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+          /*tpcd_metadata_manager=*/nullptr);
 
   {
     // Non-elligible request, no header.

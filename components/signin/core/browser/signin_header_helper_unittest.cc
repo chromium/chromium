@@ -91,7 +91,7 @@ class SigninHeaderHelperTest : public testing::Test {
         settings_map_.get(), &prefs_, /*tracking_protection_settings_=*/nullptr,
         false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        "");
+        /*tpcd_metadata_manager=*/nullptr, "");
   }
 
   void TearDown() override { settings_map_->ShutdownOnUIThread(); }

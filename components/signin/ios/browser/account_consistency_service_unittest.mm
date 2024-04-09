@@ -183,7 +183,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
         settings_map_.get(), &prefs_, /*tracking_protection_settings=*/nullptr,
         false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        "");
+        /*tpcd_metadata_manager=*/nullptr, "");
     // Use a NiceMock here to suppress "uninteresting call" warnings.
     account_reconcilor_ =
         std::make_unique<NiceMock<MockAccountReconcilor>>(signin_client_.get());

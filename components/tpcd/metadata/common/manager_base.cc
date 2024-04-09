@@ -29,9 +29,7 @@ ContentSetting ManagerBase::GetContentSetting(
       if (found) {
         result = content_settings::ValueToContentSetting(found->second.value);
         if (out_info) {
-          out_info->primary_pattern = found->first.primary_pattern;
-          out_info->secondary_pattern = found->first.secondary_pattern;
-          out_info->metadata = found->second.metadata;
+          out_info->SetAttributes(*found);
         }
       }
     } else {
@@ -42,9 +40,7 @@ ContentSetting ManagerBase::GetContentSetting(
       if (found) {
         result = found->GetContentSetting();
         if (out_info) {
-          out_info->primary_pattern = found->primary_pattern;
-          out_info->secondary_pattern = found->secondary_pattern;
-          out_info->metadata = found->metadata;
+          out_info->SetAttributes(*found);
         }
       }
     }

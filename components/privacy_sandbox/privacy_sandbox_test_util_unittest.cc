@@ -63,7 +63,7 @@ class PrivacySandboxTestUtilTest : public testing::Test {
         host_content_settings_map_.get(), &prefs_,
         /*tracking_protection_settings=*/nullptr, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        "chrome-extension");
+        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
   }
 
   ~PrivacySandboxTestUtilTest() override {

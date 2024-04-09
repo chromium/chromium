@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/cookie_settings.h"
+
 #include <tuple>
 #include <utility>
-
-#include "services/network/cookie_settings.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +26,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "services/network/tpcd/metadata/manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -1925,10 +1926,11 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest, Grants) {
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
 
   // Allowlisting.
-  settings.set_content_settings(
-      ContentSettingsType::TPCD_METADATA_GRANTS,
+  network::tpcd::metadata::Manager manager;
+  manager.SetGrants(
       {CreateSetting(third_party_url_1.host(), first_party_url.host(),
                      CONTENT_SETTING_ALLOW)});
+  settings.set_tpcd_metadata_manager(&manager);
 
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 
@@ -1965,9 +1967,9 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest, IsCookieAccessible) {
   settings.set_mitigations_enabled_for_3pcd(true);
 
   // Allowlisting.
-  settings.set_content_settings(
-      ContentSettingsType::TPCD_METADATA_GRANTS,
-      {CreateSetting(kOtherURL, kURL, CONTENT_SETTING_ALLOW)});
+  network::tpcd::metadata::Manager manager;
+  manager.SetGrants({CreateSetting(kOtherURL, kURL, CONTENT_SETTING_ALLOW)});
+  settings.set_tpcd_metadata_manager(&manager);
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalSameSiteNoneCookie("name", kOtherURL);
@@ -1990,9 +1992,9 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest,
   settings.set_mitigations_enabled_for_3pcd(true);
 
   // Allowlisting.
-  settings.set_content_settings(
-      ContentSettingsType::TPCD_METADATA_GRANTS,
-      {CreateSetting(kOtherURL, kURL, CONTENT_SETTING_ALLOW)});
+  network::tpcd::metadata::Manager manager;
+  manager.SetGrants({CreateSetting(kOtherURL, kURL, CONTENT_SETTING_ALLOW)});
+  settings.set_tpcd_metadata_manager(&manager);
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party", kOtherURL), {}}};
@@ -2079,10 +2081,10 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest, ExplicitSettingPreserved) {
       {CreateSetting("*", first_party_url.host(), CONTENT_SETTING_BLOCK)});
 
   // Allowlisting.
-  settings.set_content_settings(
-      ContentSettingsType::TPCD_METADATA_GRANTS,
-      {CreateSetting(third_party_url.host(), first_party_url.host(),
-                     CONTENT_SETTING_ALLOW)});
+  network::tpcd::metadata::Manager manager;
+  manager.SetGrants({CreateSetting(
+      third_party_url.host(), first_party_url.host(), CONTENT_SETTING_ALLOW)});
+  settings.set_tpcd_metadata_manager(&manager);
 
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 

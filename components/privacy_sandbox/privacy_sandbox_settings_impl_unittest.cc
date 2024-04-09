@@ -37,9 +37,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
-
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace privacy_sandbox {
 
@@ -97,7 +96,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
         host_content_settings_map_.get(), &prefs_,
         tracking_protection_settings_.get(), false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        "chrome-extension");
+        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
   }
   ~PrivacySandboxSettingsTest() override {
     cookie_settings()->ShutdownOnUIThread();

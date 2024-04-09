@@ -31,6 +31,8 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/parser.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -172,12 +174,17 @@ class CookieSettingsTestBase {
     auto has_fedcm_sharing_permission =
         CookieSettings::NoFedCmSharingPermissionsCallback();
 
+    tpcd_metadata_manager_ = tpcd::metadata::Manager::GetInstance(
+        tpcd::metadata::Parser::GetInstance(), base::NullCallback());
+
     cookie_settings_ = new CookieSettings(
         settings_map_.get(), &prefs_, tracking_protection_settings_.get(),
-        false, has_fedcm_sharing_permission, "chrome-extension");
+        false, has_fedcm_sharing_permission, tpcd_metadata_manager_,
+        "chrome-extension");
     cookie_settings_incognito_ = new CookieSettings(
         settings_map_.get(), &prefs_, tracking_protection_settings_.get(), true,
-        has_fedcm_sharing_permission, "chrome-extension");
+        has_fedcm_sharing_permission, /*tpcd_metadata_manager=*/nullptr,
+        "chrome-extension");
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -196,6 +203,7 @@ class CookieSettingsTestBase {
   scoped_refptr<CookieSettings> cookie_settings_incognito_;
   std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   const GURL kBlockedSite;
   const GURL kAllowedSite;
@@ -735,7 +743,8 @@ TEST_P(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
   // ForceThirdPartyCookieBlocking was enabled.
   scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
       settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
-      CookieSettings::NoFedCmSharingPermissionsCallback(), "chrome-extension");
+      CookieSettings::NoFedCmSharingPermissionsCallback(),
+      /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
 
   EXPECT_EQ(kSupports3pcBlocking,
             cookie_settings->ShouldBlockThirdPartyCookies());
@@ -1313,7 +1322,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAViaFedCM) {
                 /*source=*/"", /*incognito=*/false),
         };
       }),
-      "chrome-extension");
+      /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
@@ -1541,8 +1550,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(), false);
-  cookie_settings_->SetContentSettingsFor3pcdMetadataGrants(
-      tpcd_metadata_grants);
+  tpcd_metadata_manager_->SetGrantsForTesting(tpcd_metadata_grants);
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),

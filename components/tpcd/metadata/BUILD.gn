@@ -6,6 +6,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("metadata") {
   sources = [
+    "manager.cc",
+    "manager.h",
     "parser.cc",
     "parser.h",
   ]
@@ -15,6 +17,7 @@ source_set("metadata") {
     "//components/content_settings/core/common",
     "//components/content_settings/core/common:content_settings_enums",
     "//components/content_settings/core/common:features",
+    "//components/tpcd/metadata/common",
     "//net",
     "//third_party/abseil-cpp:absl",
     "//third_party/zlib/google:compression_utils",
@@ -25,22 +28,6 @@ source_set("metadata") {
 proto_library("metadata_proto") {
   sources = [ "metadata.proto" ]
   proto_out_dir = "components/tpcd/metadata"
-}
-
-source_set("manager") {
-  sources = [
-    "manager.cc",
-    "manager.h",
-  ]
-  deps = [
-    ":metadata",
-    ":metadata_proto",
-  ]
-  public_deps = [
-    "//components/content_settings/core/common",
-    "//components/content_settings/core/common:features",
-    "//components/tpcd/metadata/common",
-  ]
 }
 
 source_set("test_support") {
@@ -72,7 +59,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":manager",
     ":metadata",
     ":metadata_proto",
     ":test_support",

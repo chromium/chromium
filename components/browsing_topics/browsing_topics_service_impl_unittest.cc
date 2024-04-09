@@ -207,7 +207,7 @@ class BrowsingTopicsServiceImplTest
         host_content_settings_map_.get(), &prefs_,
         tracking_protection_settings_.get(), false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        "chrome-extension");
+        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
 
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();

@@ -32,6 +32,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "services/network/tpcd/metadata/manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -47,8 +48,9 @@ bool AffectedByThirdPartyCookiePhaseout(
 }
 
 bool IsValidType(ContentSettingsType type) {
-  // Metadata exceptions are updated separately by
-  // tpcd::metadata::UpdaterService.
+  // ContentSettingsType::TPCD_METADATA_GRANTS settings are managed by the
+  // `network::tpcd::metadata::Manager` and are considered valid ContentSettings
+  // for CookieSettings.
   if (type == ContentSettingsType::TPCD_METADATA_GRANTS) {
     return true;
   }
@@ -146,9 +148,6 @@ CookieSettings::CookieSettings() {
   for (auto type : GetContentSettingsTypes()) {
     set_content_settings(type, {});
   }
-  // Metadata grants are relevant for CookieSettings but not synced
-  // automatically. Initialize them as well.
-  set_content_settings(ContentSettingsType::TPCD_METADATA_GRANTS, {});
 }
 
 CookieSettings::~CookieSettings() = default;
@@ -156,7 +155,11 @@ CookieSettings::~CookieSettings() = default;
 void CookieSettings::set_content_settings(
     ContentSettingsType type,
     const ContentSettingsForOneType& settings) {
+  CHECK_NE(type, ContentSettingsType::TPCD_METADATA_GRANTS)
+      << "TPCD Metadata exceptions are managed by the "
+         "`network::tpcd::metadata::Manager`.";
   CHECK(IsValidType(type)) << static_cast<int>(type);
+
   // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
   // holds_alternative<>, not the flag, because b/328475709 is changing the flag
   // value during execution and leading to "bad variant access".
@@ -478,35 +481,40 @@ ContentSetting CookieSettings::GetContentSetting(
     content_settings::SettingInfo* info) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.GetContentSetting.Network.Duration");
-  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
-  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
-  // value during execution and leading to "bad variant access".
-  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
-    for (const auto& index : GetHostIndexedContentSettings(content_type)) {
-      const content_settings::RuleEntry* result =
-          index.Find(primary_url, secondary_url);
-      if (result) {
-        if (info) {
-          info->primary_pattern = result->first.primary_pattern;
-          info->secondary_pattern = result->first.secondary_pattern;
-          info->metadata = result->second.metadata;
-        }
-        return content_settings::ValueToContentSetting(result->second.value);
-      }
+
+  if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
+    if (tpcd_metadata_manager_) {
+      return tpcd_metadata_manager_->GetContentSetting(primary_url,
+                                                       secondary_url, info);
     }
   } else {
-    const ContentSettingPatternSource* result =
-        content_settings::FindContentSetting(primary_url, secondary_url,
-                                             GetContentSettings(content_type));
-    if (result) {
-      if (info) {
-        info->primary_pattern = result->primary_pattern;
-        info->secondary_pattern = result->secondary_pattern;
-        info->metadata = result->metadata;
+    // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+    // holds_alternative<>, not the flag, because b/328475709 is changing the
+    // flag value during execution and leading to "bad variant access".
+    if (absl::holds_alternative<EntryIndex>(content_settings_)) {
+      for (const auto& index : GetHostIndexedContentSettings(content_type)) {
+        const content_settings::RuleEntry* result =
+            index.Find(primary_url, secondary_url);
+        if (result) {
+          if (info) {
+            info->SetAttributes(*result);
+          }
+          return content_settings::ValueToContentSetting(result->second.value);
+        }
       }
-      return result->GetContentSetting();
+    } else {
+      const ContentSettingPatternSource* result =
+          content_settings::FindContentSetting(
+              primary_url, secondary_url, GetContentSettings(content_type));
+      if (result) {
+        if (info) {
+          info->SetAttributes(*result);
+        }
+        return result->GetContentSetting();
+      }
     }
   }
+
   if (info) {
     info->primary_pattern = ContentSettingsPattern::Wildcard();
     info->secondary_pattern = ContentSettingsPattern::Wildcard();

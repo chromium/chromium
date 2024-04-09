@@ -21,6 +21,8 @@ using GrantsSyncCallback =
     base::RepeatingCallback<void(const ContentSettingsForOneType&)>;
 namespace tpcd::metadata {
 
+// TODO(b/333529481): Implement an observer pattern for the Manager class
+//
 // The Manager class will hold the content setting generated from any installed
 // TPCD Metadata component and will make it available within the browser process
 // and keep a synced copy within the network process.
@@ -29,23 +31,34 @@ namespace tpcd::metadata {
 // and will affect cookie access decisions.
 class Manager : public common::ManagerBase, public Parser::Observer {
  public:
+  static Manager* GetInstance(Parser* parser, GrantsSyncCallback callback);
   Manager(Parser* parser, GrantsSyncCallback callback);
   virtual ~Manager();
 
   Manager(const Manager&) = delete;
   Manager& operator=(const Manager&) = delete;
 
+  // IsAllowed checks whether the TPCD Metadata has any entry matching `url` and
+  // `first_party_url`, if so returns true. `out_info` is used to collect
+  // information about the matched entry to be used upstream.
   [[nodiscard]] bool IsAllowed(const GURL& url,
                                const GURL& first_party_url,
                                content_settings::SettingInfo* out_info) const;
+
+  // GetGrants returns a copy of the TPCD Metadata in the form of
+  // `ContentSettingsForOneType`.
   [[nodiscard]] ContentSettingsForOneType GetGrants() const;
 
- protected:
-  static Manager* GetInstance(Parser* parser, GrantsSyncCallback callback);
-  void SetGrants(const ContentSettingsForOneType& grants);
+  // SetGrantsForTesting calls on the private method `SetGrants()` to set the
+  // TPCD Metadata grants for testing.
+  void SetGrantsForTesting(const ContentSettingsForOneType& grants) {
+    SetGrants(grants);
+  }
 
  private:
   friend base::NoDestructor<Manager>;
+
+  void SetGrants(const ContentSettingsForOneType& grants);
 
   // Parser::Observer:
   void OnMetadataReady() override;

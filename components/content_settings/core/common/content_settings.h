@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 // Different settings that can be assigned for a particular content type.  We
@@ -124,6 +125,17 @@ struct SettingInfo {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   RuleMetaData metadata;
+
+  void SetAttributes(const content_settings::RuleEntry& rule_entry) {
+    primary_pattern = rule_entry.first.primary_pattern;
+    secondary_pattern = rule_entry.first.secondary_pattern;
+    metadata = rule_entry.second.metadata;
+  }
+  void SetAttributes(const ContentSettingPatternSource& content_setting) {
+    primary_pattern = content_setting.primary_pattern;
+    secondary_pattern = content_setting.secondary_pattern;
+    metadata = content_setting.metadata;
+  }
 };
 
 }  // namespace content_settings

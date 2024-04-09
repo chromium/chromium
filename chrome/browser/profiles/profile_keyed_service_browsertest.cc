@@ -184,7 +184,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
           blink::features::kBrowsingTopics,
-          net::features::kTpcdMetadataGrants,
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -311,7 +310,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(IS_WIN)
     "UnexportableKeyService",
 #endif  // BUILDFLAG(IS_WIN)
-    "UpdaterService",
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
     "sct_reporting::Factory"
@@ -561,7 +559,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "TtsAPI",
     "UDPSocketEventDispatcher",
     "UkmBackgroundRecorderService",
-    "UpdaterService",
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
     "UserCloudPolicyInvalidator",

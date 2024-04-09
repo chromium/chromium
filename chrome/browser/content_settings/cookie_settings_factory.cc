@@ -11,6 +11,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -114,5 +115,5 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       host_content_settings_map, prefs,
       TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->IsIncognitoProfile(), compute_fedcm_sharing_permissions,
-      extension_scheme);
+      tpcd::metadata::ManagerFactory::GetForProfile(profile), extension_scheme);
 }

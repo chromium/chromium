@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/tpcd/metadata/manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -47,10 +48,12 @@ CookieSettings::CookieSettings(
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito,
     ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
+    tpcd::metadata::Manager* tpcd_metadata_manager,
     const char* extension_scheme)
     : tracking_protection_settings_(tracking_protection_settings),
       host_content_settings_map_(host_content_settings_map),
       is_incognito_(is_incognito),
+      tpcd_metadata_manager_(tpcd_metadata_manager),
       extension_scheme_(extension_scheme),
       block_third_party_cookies_(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
@@ -72,13 +75,6 @@ CookieSettings::CookieSettings(
                           base::Unretained(this)));
   OnCookiePreferencesChanged();
   OnBlockAllThirdPartyCookiesChanged();
-
-  if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
-    settings_for_3pcd_metadata_grants_ = HostIndexedContentSettings();
-  } else {
-    settings_for_3pcd_metadata_grants_ = ContentSettingsForOneType();
-  }
-
   UpdateFedCmSharingPermissions();
 }
 
@@ -121,36 +117,14 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(const GURL& url,
           net::CookieSettingOverrides())) {
     return false;
   }
+  if (!tpcd_metadata_manager_) {
+    return false;
+  }
+
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.IsAllowedByTpcdMetadataGrant.Duration");
-  base::AutoLock lock(tpcd_lock_);
-  ContentSetting result = CONTENT_SETTING_DEFAULT;
-  if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
-    auto* found = absl::get<HostIndexedContentSettings>(
-                      settings_for_3pcd_metadata_grants_)
-                      .Find(url, first_party_url);
-    if (found) {
-      result = ValueToContentSetting(found->second.value);
-      if (out_info) {
-        out_info->primary_pattern = found->first.primary_pattern;
-        out_info->secondary_pattern = found->first.secondary_pattern;
-        out_info->metadata = found->second.metadata;
-      }
-    }
-  } else {
-    auto* found = FindContentSetting(url, first_party_url,
-                                     absl::get<ContentSettingsForOneType>(
-                                         settings_for_3pcd_metadata_grants_));
-    if (found) {
-      result = found->GetContentSetting();
-      if (out_info) {
-        out_info->primary_pattern = found->primary_pattern;
-        out_info->secondary_pattern = found->secondary_pattern;
-        out_info->metadata = found->metadata;
-      }
-    }
-  }
-  return result == CONTENT_SETTING_ALLOW;
+
+  return tpcd_metadata_manager_->IsAllowed(url, first_party_url, out_info);
 }
 
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(

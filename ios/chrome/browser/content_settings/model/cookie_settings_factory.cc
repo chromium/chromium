@@ -57,7 +57,8 @@ CookieSettingsFactory::BuildServiceInstanceFor(
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
       browser_state->GetPrefs(), /*tracking_protection_settings=*/nullptr,
       browser_state->IsOffTheRecord(),
-      content_settings::CookieSettings::NoFedCmSharingPermissionsCallback());
+      content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+      /*tpcd_metadata_manager=*/nullptr);
 }
 
 }  // namespace ios

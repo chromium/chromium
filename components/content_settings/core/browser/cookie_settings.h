@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "components/tpcd/metadata/manager.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
@@ -81,6 +83,7 @@ class CookieSettings
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       bool is_incognito,
       ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
+      tpcd::metadata::Manager* tpcd_metadata_manager,
       const char* extension_scheme = kDummyExtensionScheme);
 
   CookieSettings(const CookieSettings&) = delete;
@@ -156,40 +159,9 @@ class CookieSettings
   // not covered by user bypass at this state of art.
   bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url);
 
-  // Sets the `settings_for_3pcd_metadata_grants_` `ContentSettingsForOneType`
-  // to be held and accessed from memory by the cookie settings object.
-  void SetContentSettingsFor3pcdMetadataGrants(
-      const ContentSettingsForOneType settings) {
-    base::AutoLock lock(tpcd_lock_);
-    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
-      if (settings.empty()) {
-        settings_for_3pcd_metadata_grants_ = HostIndexedContentSettings();
-      } else {
-        auto indices = HostIndexedContentSettings::Create(settings);
-        // All 3pcd metadata grants should use the same source attribute.
-        CHECK_EQ(indices.size(), 1u);
-        settings_for_3pcd_metadata_grants_ = std::move(indices.front());
-      }
-    } else {
-      settings_for_3pcd_metadata_grants_ = settings;
-    }
-  }
-
-  ContentSettingsForOneType GetTpcdMetadataGrants() {
-    base::AutoLock lock(tpcd_lock_);
-    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
-      ContentSettingsForOneType result;
-      for (const auto& it : absl::get<HostIndexedContentSettings>(
-               settings_for_3pcd_metadata_grants_)) {
-        result.emplace_back(it.first.primary_pattern,
-                            it.first.secondary_pattern, it.second.value.Clone(),
-                            std::string(), false, it.second.metadata);
-      }
-      return result;
-    } else {
-      return absl::get<ContentSettingsForOneType>(
-          settings_for_3pcd_metadata_grants_);
-    }
+  const ContentSettingsForOneType GetTpcdMetadataGrants() const {
+    return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
+                                  : ContentSettingsForOneType();
   }
 
   // Resets the cookie setting for the given url.
@@ -320,22 +292,12 @@ class CookieSettings
       content_settings_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const bool is_incognito_;
+
+  // Not owned by `this` as the lifetime of `tpcd::metadata::Manager` (lives
+  // "forever" as a singleton) will exceed that of `this`.
+  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
+
   const char* extension_scheme_;  // Weak.
-
-  // Used to represent content settings for 3PC accesses granted via the
-  // component updater service. This type will only be populated when
-  // `net::features::kTpcdMetadataGrants` is enabled.
-  //
-  // TODO(http://b/290039145): There's a chance for the list to get considerably
-  // big. Look into optimizing memory by querying straight from a global
-  // service.
-
-  mutable base::Lock tpcd_lock_;
-  // This member holds a HostIndexedContentSettings if
-  // kHostIndexedMetadataGrants is enabled. It holds a ContentSettingsForOneType
-  // otherwise.
-  absl::variant<ContentSettingsForOneType, HostIndexedContentSettings>
-      settings_for_3pcd_metadata_grants_ GUARDED_BY(tpcd_lock_);
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);

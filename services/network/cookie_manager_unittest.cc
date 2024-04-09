@@ -348,8 +348,10 @@ class CookieManagerTest : public testing::Test {
     context_builder->SetCookieStore(std::move(cookie_monster));
     url_request_context_ = context_builder->Build();
     cookie_service_ = std::make_unique<CookieManager>(
-        url_request_context_.get(), nullptr /* first_party_sets */,
-        std::move(cleanup_store), nullptr);
+        url_request_context_.get(),
+        /*first_party_sets_access_delegate=*/nullptr, std::move(cleanup_store),
+        /*params=*/nullptr,
+        /*tpcd_metadata_manager=*/nullptr);
     cookie_service_->AddReceiver(
         cookie_service_remote_.BindNewPipeAndPassReceiver());
     service_wrapper_ = std::make_unique<SynchronousCookieManager>(
