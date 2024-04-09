@@ -405,7 +405,6 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:
       return StepUIType::WINDOW;
 
-    case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
     case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
       return StepUIType::BUBBLE;
 
@@ -1475,6 +1474,7 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(*cred);
   model_->creds.clear();
+  model_->preselected_cred = *cred;
 
   if (source != device::AuthenticatorType::kPhone &&
       source != device::AuthenticatorType::kEnclave) {
@@ -1654,6 +1654,9 @@ void AuthenticatorRequestDialogController::set_account_state(
       // The account was recovered but now we need to prompt for an existing
       // GPM PIN.
       PromptForGPMPin();
+    } else if (state == AccountState::kReadyWithBiometrics) {
+      // The account was recovered, prompt for biometrics.
+      SetCurrentStep(Step::kGPMTouchID);
     }
   }
 

@@ -246,6 +246,27 @@ class AuthenticatorBlePermissionMacSheetModel
   void OnAccept() override;
 };
 
+class AuthenticatorTouchIdSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorTouchIdSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  // Called after the user taps their Touch ID sensor.
+  void OnTouchIDSensorTapped(std::optional<crypto::ScopedLAContext> lacontext);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonVisible() const override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+
+  bool touch_id_completed_ = false;
+};
+
 #endif  // IS_MAC
 
 class AuthenticatorOffTheRecordInterstitialSheetModel

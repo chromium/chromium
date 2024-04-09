@@ -852,7 +852,9 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
-  ShowAndVerifyUi();
+  if (__builtin_available(macos 12, *)) {
+    ShowAndVerifyUi();
+  }
 }
 #endif  // BUILDFLAG(IS_MAC)
 

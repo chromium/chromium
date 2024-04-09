@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -42,10 +43,12 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   struct ObjCStorage;
 
   void OnAuthenticationComplete(bool success);
+  void OnTouchIDAnimationComplete(bool success);
 
   Callback callback_;
   std::unique_ptr<ObjCStorage> storage_;
   bool evaluation_requested_ = false;
+  base::OneShotTimer touch_id_animation_timer_;
 
   base::WeakPtrFactory<MacAuthenticationView> weak_factory_{this};
 };
