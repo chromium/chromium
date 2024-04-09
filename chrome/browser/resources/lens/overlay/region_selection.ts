@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
 import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,21 +38,6 @@ export class RegionSelectionElement extends PolymerElement {
   private canvasHeight: number;
   private canvasWidth: number;
   private context: CanvasRenderingContext2D;
-  private parentResizeObserver: ResizeObserver = new ResizeObserver(() => {
-    this.setCanvasSizeToParent();
-  });
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    assert(this.parentElement);
-    this.parentResizeObserver.observe(this.parentElement);
-  }
-
-  override disconnectedCallback() {
-    assert(this.parentElement);
-    this.parentResizeObserver.unobserve(this.parentElement);
-  }
 
   override ready() {
     super.ready();
@@ -76,11 +60,10 @@ export class RegionSelectionElement extends PolymerElement {
     this.clearCanvas();
   }
 
-  private setCanvasSizeToParent() {
-    assert(this.parentElement);
+  setCanvasSizeTo(width: number, height: number) {
     // Resetting the canvas width and height also clears the canvas.
-    this.canvasWidth = this.parentElement.offsetWidth;
-    this.canvasHeight = this.parentElement.offsetHeight;
+    this.canvasWidth = width;
+    this.canvasHeight = height;
   }
 
   private clearCanvas() {

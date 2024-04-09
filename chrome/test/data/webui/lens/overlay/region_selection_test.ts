@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
-import {assertDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -198,4 +198,28 @@ suite('ManualRegionSelection', function() {
         await assertDragGestureSendsRequest(
             startPointInsideOverlay, endPointRightOfOverlay, expectedRect);
       });
+
+  test('verify canvas resizes', async () => {
+    selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(50, 50);
+    await flushTasks();
+    assertEquals(
+        50,
+        selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
+            .width);
+    assertEquals(
+        50,
+        selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
+            .height);
+
+    selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(100, 100);
+    await flushTasks();
+    assertEquals(
+        100,
+        selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
+            .width);
+    assertEquals(
+        100,
+        selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
+            .height);
+  });
 });

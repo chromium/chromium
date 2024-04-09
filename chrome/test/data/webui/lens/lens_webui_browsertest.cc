@@ -109,10 +109,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, SelectionOverlay) {
   RunOverlayTest("lens/overlay/selection_overlay_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, ManualRegionSelectionCanvas) {
-  RunOverlayTest("lens/overlay/region_selection_canvas_test.js", "mocha.run()");
-}
-
 using LensSidePanelTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
   RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");

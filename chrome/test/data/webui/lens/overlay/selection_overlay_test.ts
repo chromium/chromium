@@ -11,7 +11,7 @@ import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webu
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
@@ -141,5 +141,36 @@ suite('SelectionOverlay', function() {
         const rect =
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertDeepEquals(expectedRect, rect);
+      });
+
+  test(
+      'verify region search canvas resizes when selection overlay resizes',
+      async () => {
+        selectionOverlayElement.style.display = 'block';
+        selectionOverlayElement.style.width = '50px';
+        selectionOverlayElement.style.height = '50px';
+        // Resize observer does not trigger with flushTasks(), so we need to use
+        // waitAfterNextRender() instead.
+        await waitAfterNextRender(selectionOverlayElement);
+        assertEquals(
+            50,
+            selectionOverlayElement.$.regionSelectionLayer.$
+                .regionSelectionCanvas.width);
+        assertEquals(
+            50,
+            selectionOverlayElement.$.regionSelectionLayer.$
+                .regionSelectionCanvas.height);
+
+        selectionOverlayElement.style.width = '200px';
+        selectionOverlayElement.style.height = '200px';
+        await waitAfterNextRender(selectionOverlayElement);
+        assertEquals(
+            200,
+            selectionOverlayElement.$.regionSelectionLayer.$
+                .regionSelectionCanvas.width);
+        assertEquals(
+            200,
+            selectionOverlayElement.$.regionSelectionLayer.$
+                .regionSelectionCanvas.height);
       });
 });

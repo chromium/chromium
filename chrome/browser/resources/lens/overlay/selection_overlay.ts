@@ -42,6 +42,19 @@ export class SelectionOverlayElement extends PolymerElement {
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   private draggingRespondent = DragFeature.NONE;
+  private resizeObserver: ResizeObserver = new ResizeObserver(() => {
+    this.handleResize();
+  });
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.resizeObserver.observe(this);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver.unobserve(this);
+  }
 
   override ready() {
     super.ready();
@@ -142,6 +155,11 @@ export class SelectionOverlayElement extends PolymerElement {
     this.currentGesture = emptyGestureEvent();
     this.draggingRespondent = DragFeature.NONE;
     this.removeDragListeners();
+  }
+
+  private handleResize() {
+    const newRect = this.getBoundingClientRect();
+    this.$.regionSelectionLayer.setCanvasSizeTo(newRect.width, newRect.height);
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.
