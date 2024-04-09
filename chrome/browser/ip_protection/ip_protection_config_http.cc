@@ -112,6 +112,11 @@ void IpProtectionConfigHttp::DoRequest(
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetTokenTrafficAnnotation);
+
+  // Retry on network changes, for consistency with GetProxyConfig requests.
+  url_loader->SetRetryOptions(
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
