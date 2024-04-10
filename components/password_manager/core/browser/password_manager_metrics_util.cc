@@ -402,22 +402,6 @@ void LogProcessIncomingPasswordSharingInvitationResult(
       "PasswordManager.ProcessIncomingPasswordSharingInvitationResult", result);
 }
 
-void LogGroupedPasswordsResults(
-    const std::vector<password_manager::PasswordForm>& logins) {
-  auto is_grouped_match = [](const password_manager::PasswordForm& form) {
-    return form.match_type ==
-           password_manager::PasswordForm::MatchType::kGrouped;
-  };
-  GroupedPasswordFetchResult result = GroupedPasswordFetchResult::kNoMatches;
-  if (!logins.empty() && base::ranges::all_of(logins, is_grouped_match)) {
-    result = GroupedPasswordFetchResult::kOnlyGroupedMatches;
-  } else if (base::ranges::any_of(logins, is_grouped_match)) {
-    result = GroupedPasswordFetchResult::kBetterMatchesExist;
-  }
-  base::UmaHistogramEnumeration(
-      "PasswordManager.GetLogins.GroupedMatchesStatus", result);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void LogLocalPwdMigrationProgressState(
     LocalPwdMigrationProgressState scheduling_state) {

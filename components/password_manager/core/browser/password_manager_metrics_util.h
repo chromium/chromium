@@ -20,10 +20,6 @@
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace password_manager {
-struct PasswordForm;
-}
-
 namespace password_manager::metrics_util {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -878,10 +874,6 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
 // Log the result of processing an incoming password sharing invitation.
 void LogProcessIncomingPasswordSharingInvitationResult(
     ProcessIncomingPasswordSharingInvitationResult result);
-
-// Logs GroupedPasswordFetchResult.
-void LogGroupedPasswordsResults(
-    const std::vector<password_manager::PasswordForm>& logins);
 
 #if BUILDFLAG(IS_ANDROID)
 // Records the scheduling state of the local passwords migration to the

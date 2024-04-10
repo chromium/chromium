@@ -299,7 +299,6 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
                 [](const auto& form) { return !form.match_type.has_value(); });
 
   TrimUsernameOnlyCredentials(final_result);
-  password_manager::metrics_util::LogGroupedPasswordsResults(final_result);
 
   // TODO(b/331409076): Remove this filtering and add filtering on the caller
   // side.

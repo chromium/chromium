@@ -1827,11 +1827,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForGroupedMatchingLogi
       Run(VariantWith<LoginsResult>(ElementsAreArray(expected_logins))));
   consumer().OnCompleteWithLogins(kJobId, std::move(returned_logins));
   RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GetLogins.GroupedMatchesStatus",
-      password_manager::metrics_util::GroupedPasswordFetchResult::
-          kBetterMatchesExist,
-      1);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,

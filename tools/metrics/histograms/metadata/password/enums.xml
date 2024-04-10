@@ -716,12 +716,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User moved or closed the tab, or closed the browser."/>
 </enum>
 
-<enum name="PasswordManager.GroupedPasswordFetchResult">
-  <int value="0" label="No grouped matches"/>
-  <int value="1" label="Grouped matches exist among other matches"/>
-  <int value="2" label="Only grouped matches exist"/>
-</enum>
-
 <enum name="PasswordManager.MoveToAccountStoreTrigger">
   <summary>
     Triggers that will cause Chrome to offer to move a password from the profile

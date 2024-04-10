@@ -105,10 +105,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, NoMatchesTest) {
 
   EXPECT_CALL(result_callback, Run(VariantWith<LoginsResult>(IsEmpty())));
   RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GetLogins.GroupedMatchesStatus",
-      password_manager::metrics_util::GroupedPasswordFetchResult::kNoMatches,
-      1);
 }
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
@@ -331,12 +327,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesClearedTest) {
 
   EXPECT_CALL(result_callback, Run(VariantWith<LoginsResult>(IsEmpty())));
   RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GetLogins.GroupedMatchesStatus",
-      password_manager::metrics_util::GroupedPasswordFetchResult::
-          kOnlyGroupedMatches,
-      1);
 }
 
 // TODO(b/331409076): Enable this test once filtering is done on the caller
@@ -385,11 +375,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   EXPECT_CALL(result_callback,
               Run(VariantWith<LoginsResult>(ElementsAreArray(expected_forms))));
   RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.GetLogins.GroupedMatchesStatus",
-      password_manager::metrics_util::GroupedPasswordFetchResult::
-          kBetterMatchesExist,
-      1);
 }
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,

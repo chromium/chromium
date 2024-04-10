@@ -1453,18 +1453,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.GetLogins.GroupedMatchesStatus"
-    enum="PasswordManager.GroupedPasswordFetchResult"
-    expires_after="2024-09-29">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Represent all possible states of GetLogins call in regards to grouped
-    matches. This metric helps to evaluate grouped matches usefulness. Recorded
-    when a call finished and only if it was successful.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.HttpCredentials2"
     enum="PasswordManagerHttpCredentialType" expires_after="2024-09-22">
   <owner>kazinova@google.com</owner>
