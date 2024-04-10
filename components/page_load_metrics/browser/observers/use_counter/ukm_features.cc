@@ -400,6 +400,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use,
           WebFeature::kServiceWorkerStaticRouter_AddRoutes,
           WebFeature::kServiceWorkerStaticRouter_Evaluate,
+          WebFeature::kSimplifyLoadingTransparentPlaceholderImage,
       }));
   return *opt_in_features;
 }
