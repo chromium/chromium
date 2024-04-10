@@ -2003,9 +2003,16 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// TODO(crbug.com/333641972): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
+  DISABLED_WindowSetResizableBlocksResizeToAndResizeByApis
+#else
+#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis WindowSetResizableBlocksResizeToAndResizeByApis
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableBlocksResizeToAndResizeByApis) {
+    MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
