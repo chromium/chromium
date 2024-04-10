@@ -66,7 +66,9 @@ const darkThemeSelectionColor = 'var(--google-blue-200)';
 const defaultSelectionColor = 'var(--google-yellow-100)';
 const yellowThemeSelectionColor = 'var(--google-blue-100)';
 
-const previousReadHighlightClass = 'previous-read-highlight';
+export const previousReadHighlightClass = 'previous-read-highlight';
+export const currentReadHighlightClass = 'current-read-highlight';
+const parentOfHighlightClass = 'parent-of-highlight';
 
 const linkDataAttribute = 'link';
 
@@ -216,6 +218,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
   private domNodeToAxNodeIdMap_: TwoWayMap<Node, number> = new TwoWayMap();
+  // Key: a DOM node that's already been read aloud
+  // Value: the index offset at which this node's text begins within its parent
+  // text. For reading aloud we sometimes split up nodes so the speech sounds
+  // more natural. When that text is then selected we need to pass the correct
+  // index down the pipeline, so we store that info here.
+  private highlightedNodeToOffsetInParent: Map<Node, number> = new Map();
   private imageNodeIdsToFetch_: Set<number> = new Set();
   private pendingImageRequest_?: PendingImageRequest;
 
@@ -317,11 +325,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         chrome.readingMode.onCollapseSelection();
         return;
       }
-      const anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
-      const focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
+      let anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
+      let focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
+      let adjustedAnchorOffset = anchorOffset;
+      let adjustedFocusOffset = focusOffset;
+      // If the node was highlighted, then we need to find the parent node which
+      // we stored in the map, rather than the node itself
+      if (!anchorNodeId) {
+        anchorNodeId = this.getHighlightedAncestorId_(anchorNode);
+        adjustedAnchorOffset += this.getOffsetInAncestor(anchorNode);
+      }
+      if (!focusNodeId) {
+        focusNodeId = this.getHighlightedAncestorId_(focusNode);
+        adjustedFocusOffset += this.getOffsetInAncestor(focusNode);
+      }
       assert(anchorNodeId && focusNodeId, 'anchor or focus node is undefined');
       chrome.readingMode.onSelectionChange(
-          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+          anchorNodeId, adjustedAnchorOffset, focusNodeId, adjustedFocusOffset);
     };
 
     document.onscroll = () => {
@@ -335,6 +355,31 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readingMode.onCopy();
       return false;
     };
+  }
+
+  private getOffsetInAncestor(node: Node): number {
+    if (this.highlightedNodeToOffsetInParent.has(node)) {
+      return this.highlightedNodeToOffsetInParent.get(node)!;
+    }
+
+    return 0;
+  }
+
+  private getHighlightedAncestorId_(node: Node): number|undefined {
+    if (!node.parentElement || !node.parentNode) {
+      return undefined;
+    }
+
+    let ancestor;
+    if (node.parentElement.className === parentOfHighlightClass) {
+      ancestor = node.parentNode;
+    } else if (
+        node.parentElement.parentElement?.className ===
+        parentOfHighlightClass) {
+      ancestor = node.parentNode.parentNode;
+    }
+
+    return ancestor ? this.domNodeToAxNodeIdMap_.get(ancestor) : undefined;
   }
 
   private buildSubtree_(nodeId: number): Node {
@@ -891,7 +936,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // updateContent, such as for links being toggled on or off via a Read
       // Aloud play / pause or via a preference change, rehighlight the nodes
       // after a pause.
-      if (!container.querySelector('.current-read-highlight')) {
+      if (!container.querySelector('.' + currentReadHighlightClass)) {
         // TODO(crbug.com/1474951): Investigate adding a mock voice in tests
         // to make this testable.
         this.highlightNodes(chrome.readingMode.getCurrentText());
@@ -1129,8 +1174,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // If the start or end index is invalid, don't use this node.
         continue;
       }
-      const newElement: Node = this.highlightCurrentText_(start, end, element);
-      this.domNodeToAxNodeIdMap_.set(newElement, nodeId);
+      this.highlightCurrentText_(start, end, element as HTMLElement);
     }
   }
 
@@ -1157,16 +1201,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //   <span class="current-read-highlight"> highlighted text </span>
   //   suffix text
   // </span>
-  // and returns the top-level span node
   private highlightCurrentText_(
-      toHighlightStart: number, toHighlightEnd: number,
-      currentNode: Node): Node {
+      highlightStart: number, highlightEnd: number,
+      currentNode: HTMLElement): void {
     const parentOfHighlight = document.createElement('span');
+    parentOfHighlight.className = parentOfHighlightClass;
 
     // First pull out any text within this node before the highlighted section.
     // Since it's already been highlighted, we fade it out.
     const highlightPrefix =
-        currentNode.textContent!.substring(0, toHighlightStart);
+        currentNode.textContent!.substring(0, highlightStart);
     if (highlightPrefix.length > 0) {
       const prefixNode = document.createElement('span');
       prefixNode.className = previousReadHighlightClass;
@@ -1177,29 +1221,29 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Then get the section of text to highlight and mark it for
     // highlighting.
     const readingHighlight = document.createElement('span');
-    readingHighlight.className = 'current-read-highlight';
-    readingHighlight.textContent =
-        currentNode.textContent!.substring(toHighlightStart, toHighlightEnd);
+    readingHighlight.className = currentReadHighlightClass;
+    const textNode = document.createTextNode(
+        currentNode.textContent!.substring(highlightStart, highlightEnd));
+    readingHighlight.appendChild(textNode);
+    this.highlightedNodeToOffsetInParent.set(textNode, highlightStart);
     parentOfHighlight.appendChild(readingHighlight);
 
     // Finally, append the rest of the text for this node that has yet to be
     // highlighted.
-    const highlightSuffix = currentNode.textContent!.substring(toHighlightEnd);
+    const highlightSuffix = currentNode.textContent!.substring(highlightEnd);
     if (highlightSuffix.length > 0) {
       const suffixNode = document.createTextNode(highlightSuffix);
+      this.highlightedNodeToOffsetInParent.set(suffixNode, highlightEnd);
       parentOfHighlight.appendChild(suffixNode);
     }
 
     // Replace the current node in the tree with the split up version of the
     // node.
     this.previousHighlight_.push(readingHighlight);
-    if (currentNode.parentNode) {
-      currentNode.parentNode.replaceChild(parentOfHighlight, currentNode);
-    }
+    this.replaceElement(currentNode, parentOfHighlight);
 
     // Automatically scroll the text so the highlight stays roughly centered.
     readingHighlight.scrollIntoViewIfNeeded();
-    return parentOfHighlight;
   }
 
   private onSpeechFinished() {

@@ -133,10 +133,12 @@ suite('ReadAloud_UpdateContentSelection', () => {
       assertFalse(app.speechPlayingState.paused);
       assertTrue(app.speechPlayingState.speechStarted);
       // The expected HTML with the current highlights.
-      const expected =
-          '<div><p><span><span class="current-read-highlight">World</span>' +
-          '</span></p><p><span><span class="current-read-highlight">Friend' +
-          '</span></span><span><span class="current-read-highlight">!</span>' +
+      const expected = '<div><p><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">World</span>' +
+          '</span></p><p><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">Friend' +
+          '</span></span><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">!</span>' +
           '</span></p></div>';
       const innerHTML = app.$.container.innerHTML;
       assertEquals(innerHTML, expected);
@@ -170,10 +172,12 @@ suite('ReadAloud_UpdateContentSelection', () => {
       assertTrue(app.speechPlayingState.paused);
       assertTrue(app.speechPlayingState.speechStarted);
       // The expected HTML with the current highlights.
-      const expected =
-          '<div><p><span><span class="current-read-highlight">World</span>' +
-          '</span></p><p><span><span class="current-read-highlight">Friend' +
-          '</span></span><span><span class="current-read-highlight">!</span>' +
+      const expected = '<div><p><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">World</span>' +
+          '</span></p><p><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">Friend' +
+          '</span></span><span class="parent-of-highlight">' +
+          '<span class="current-read-highlight">!</span>' +
           '</span></p></div>';
       const innerHTML = app.$.container.innerHTML;
       assertEquals(innerHTML, expected);
