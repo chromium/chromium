@@ -5,7 +5,7 @@ include_rules = [
 
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
-  "+chrome/browser/ash/accessibility/service",
+  "+chrome/browser/ash/accessibility/live_caption",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
@@ -14,27 +14,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/accessibility/service",
-  "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/extensions/speech",
+  "+chrome/browser/accessibility/live_caption",
+  "+chrome/browser/ash/login/session",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
-  "+chrome/browser/ui/ash/keyboard",
-  "+chrome/browser/ui/aura/accessibility",
-  "+chrome/common/extensions",
   "+chrome/test/base",
-  "+chrome/common/chrome_paths.h",
+  "+chrome/browser/browser_process.h",
   "+chrome/browser/ui/browser.h",
-
-  # Dependencies outside of //chrome:
-  "+services/accessibility/public/mojom",
+  "+chrome/browser/ui/browser_window.h",
 ]
-
-specific_include_rules = {
-  "tts_client_impl.cc": [
-    "+content/public/browser/tts_controller.h",
-  ],
-  "accessibility_service_client_browsertest.cc": [
-    "+third_party/skia/include/core/SkColor.h",
-  ],
-}
