@@ -754,10 +754,6 @@ void ChromeMetricsServiceClient::Initialize() {
 
   AsyncInitSystemProfileProvider();
 
-  // TODO(tluk): Consider setting up the UserActivityDetector observation for
-  // all platforms once the detector is well supported on these other platforms.
-  user_activity_observation_.Observe(ui::UserActivityDetector::Get());
-
   // Set is_demo_mode_ to true in ukm_consent_state_observer if the device is
   // currently in Demo Mode.
   SetIsDemoMode(ash::DemoSession::IsDeviceInDemoMode());
@@ -1032,10 +1028,6 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
               g_browser_process->component_updater())));
 }
 
-void ChromeMetricsServiceClient::NotifyApplicationNotIdle() {
-  metrics_service_->OnApplicationNotIdle();
-}
-
 void ChromeMetricsServiceClient::CollectFinalHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1201,16 +1193,12 @@ void ChromeMetricsServiceClient::OnProfileManagerDestroying() {
   profile_manager_observer_.Reset();
 }
 
-void ChromeMetricsServiceClient::OnUserActivity(const ui::Event* event) {
-  NotifyApplicationNotIdle();
-}
-
 void ChromeMetricsServiceClient::LoadingStateChanged(bool /*is_loading*/) {
-  NotifyApplicationNotIdle();
+  metrics_service_->OnApplicationNotIdle();
 }
 
 void ChromeMetricsServiceClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  NotifyApplicationNotIdle();
+  metrics_service_->OnApplicationNotIdle();
 }
 
 bool ChromeMetricsServiceClient::IsOnCellularConnection() {
@@ -1283,7 +1271,7 @@ void ChromeMetricsServiceClient::OnRenderProcessHostCreated(
 void ChromeMetricsServiceClient::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  NotifyApplicationNotIdle();
+  metrics_service_->OnApplicationNotIdle();
 }
 
 void ChromeMetricsServiceClient::RenderProcessHostDestroyed(

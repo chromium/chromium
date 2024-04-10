@@ -96,8 +96,6 @@ class ChromeMetricsServiceClientTestWithoutUKMProviders
     return client;
   }
 
-  bool notified_not_idle() const { return notified_not_idle_; }
-
  private:
   explicit ChromeMetricsServiceClientTestWithoutUKMProviders(
       metrics::MetricsStateManager* state_manager,
@@ -105,9 +103,6 @@ class ChromeMetricsServiceClientTestWithoutUKMProviders
       : ChromeMetricsServiceClient(state_manager, synthetic_trial_registry) {}
 
   void RegisterUKMProviders() override {}
-  void NotifyApplicationNotIdle() override { notified_not_idle_ = true; }
-
-  bool notified_not_idle_ = false;
 };
 
 class MockSyncService : public syncer::TestSyncService {
@@ -243,13 +238,13 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     profile_manager_.reset();
   }
 
-  std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders> Init(
+  std::unique_ptr<ChromeMetricsServiceClient> Init(
       sync_preferences::TestingPrefServiceSyncable& prefs) {
     ChromeMetricsServiceClient::RegisterPrefs(prefs.registry());
     RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
     SetUrlKeyedAnonymizedDataCollectionEnabled(prefs, /*enabled=*/true);
 
-    auto chrome_metrics_service_client =
+    std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
         ChromeMetricsServiceClientTestWithoutUKMProviders::Create(
             metrics_state_manager_.get(), synthetic_trial_registry_.get());
     chrome_metrics_service_client->StartObserving(&sync_service_, &prefs);
@@ -377,16 +372,6 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
 };
-
-TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
-       NotifyNotIdleOnUserActivity) {
-  sync_preferences::TestingPrefServiceSyncable prefs;
-  auto chrome_metrics_service_client = Init(prefs);
-  EXPECT_FALSE(chrome_metrics_service_client->notified_not_idle());
-
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-  EXPECT_TRUE(chrome_metrics_service_client->notified_not_idle());
-}
 
 TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
        VerifyPurgeOnConsentChange) {

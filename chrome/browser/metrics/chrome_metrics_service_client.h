@@ -40,8 +40,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-#include "ui/base/user_activity/user_activity_detector.h"
-#include "ui/base/user_activity/user_activity_observer.h"
 
 class BrowserActivityWatcher;
 class Profile;
@@ -69,8 +67,7 @@ class ChromeMetricsServiceClient
       public ukm::UkmConsentStateObserver,
       public content::RenderProcessHostObserver,
       public content::RenderProcessHostCreationObserver,
-      public ProfileManagerObserver,
-      public ui::UserActivityObserver {
+      public ProfileManagerObserver {
  public:
   ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
   ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
@@ -159,9 +156,6 @@ class ChromeMetricsServiceClient
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  // ui::UserActivityObserver:
-  void OnUserActivity(const ui::Event* event) override;
-
   // Determine what to do with a file based on filename. Visible for testing.
   using IsProcessRunningFunction = bool (*)(base::ProcessId);
   static metrics::FileMetricsProvider::FilterAction FilterBrowserMetricsFiles(
@@ -189,9 +183,6 @@ class ChromeMetricsServiceClient
   // Registers providers to the UkmService. These provide data from alternate
   // sources.
   virtual void RegisterUKMProviders();
-
-  // Notifies the metrics service that user activity has been detected.
-  virtual void NotifyApplicationNotIdle();
 
   // Returns true iff profiler data should be included in the next metrics log.
   // NOTE: This method is probabilistic and also updates internal state as a
@@ -296,11 +287,6 @@ class ChromeMetricsServiceClient
 
   // Subscription for receiving callbacks that user metrics consent has changed.
   base::CallbackListSubscription per_user_consent_change_subscription_;
-
-  // Used to notify metrics service if user activity has been detected on the
-  // system.
-  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
-      user_activity_observation_{this};
 #endif
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
