@@ -390,15 +390,21 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
     trace_[i] = NULL;
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
-  OutputToStreamWithPrefix(&std::cerr, prefix_string);
+// static
+void StackTrace::PrintMessageWithPrefix(const char* prefix_string,
+                                        cstring_view message) {
+  if (prefix_string) {
+    std::cerr << prefix_string;
+  }
+  std::cerr << message;
 }
 
-void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
-  if (!count_ || ShouldSuppressOutput()) {
-    return;
-  }
+void StackTrace::PrintWithPrefixImpl(const char* prefix_string) const {
+  OutputToStreamWithPrefixImpl(&std::cerr, prefix_string);
+}
+
+void StackTrace::OutputToStreamWithPrefixImpl(std::ostream* os,
+                                              const char* prefix_string) const {
   SymbolContext* context = SymbolContext::GetInstance();
   if (g_init_error != ERROR_SUCCESS) {
     (*os) << "Error initializing symbols (" << g_init_error

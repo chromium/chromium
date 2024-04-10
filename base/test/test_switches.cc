@@ -134,6 +134,10 @@ const char switches::kTestTinyTimeout[] = "test-tiny-timeout";
 const char switches::kUiTestActionMaxTimeout[] = "ui-test-action-max-timeout";
 const char switches::kUiTestActionTimeout[] = "ui-test-action-timeout";
 
+// Do not suppress stack traces in death tests.
+const char switches::kWithDeathTestStackTraces[] =
+    "with-death-test-stack-traces";
+
 #if BUILDFLAG(IS_IOS)
 // If enabled, runs unittests using the XCTest test runner.
 const char switches::kEnableRunIOSUnittestsWithXCTest[] =

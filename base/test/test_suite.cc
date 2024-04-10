@@ -36,6 +36,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
@@ -339,6 +340,31 @@ void AbortHandler(int signal) {
 }
 #endif
 
+#if GTEST_HAS_DEATH_TEST
+// Returns a friendly message to tell developers how to see the stack traces for
+// unexpected crashes in death test child processes. Since death tests generate
+// stack traces as a consequence of their expected crashes and stack traces are
+// expensive to compute, stack traces in death test child processes are
+// suppressed unless `--with-stack-traces` is on the command line.
+std::string GetStackTraceMessage() {
+  // When Google Test launches a "threadsafe" death test's child proc, it uses
+  // `--gtest_filter` to convey the test to be run. It appendeds it to the end
+  // of the command line, so Chromium's `CommandLine` will preserve only the
+  // value of interest.
+  auto filter_switch =
+      CommandLine::ForCurrentProcess()->GetSwitchValueNative("gtest_filter");
+  return StrCat({"Stack trace suppressed; retry with `--",
+                 switches::kWithDeathTestStackTraces, " --gtest_filter=",
+#if BUILDFLAG(IS_WIN)
+                 WideToUTF8(filter_switch)
+#else
+                 filter_switch
+#endif
+                     ,
+                 "`."});
+}
+#endif  // GTEST_HAS_DEATH_TEST
+
 }  // namespace
 
 int RunUnitTestsUsingBaseTestSuite(int argc, char** argv) {
@@ -507,14 +533,17 @@ void TestSuite::Initialize() {
   InitializeFromCommandLine(&argc_, argv_);
 
 #if GTEST_HAS_DEATH_TEST
-  if (::testing::internal::InDeathTestChild()) {
+  if (::testing::internal::InDeathTestChild() &&
+      !CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWithDeathTestStackTraces)) {
     // For death tests using the "threadsafe" style (which includes all such
     // tests on Windows and Fuchsia, and is the default for all Chromium tests
     // on all platforms except Android; see `PreInitialize`),
     //
     // For more information, see
     // https://github.com/google/googletest/blob/main/docs/advanced.md#death-test-styles.
-    internal::SetInDeathTestChildForTesting(true);
+    debug::StackTrace::SuppressStackTracesWithMessageForTesting(
+        GetStackTraceMessage());
   }
 #endif
 
@@ -641,6 +670,11 @@ int TestSuite::RunAllTests() {
 
 void TestSuite::Shutdown() {
   DCHECK(is_initialized_);
+#if GTEST_HAS_DEATH_TEST
+  if (::testing::internal::InDeathTestChild()) {
+    debug::StackTrace::SuppressStackTracesWithMessageForTesting({});
+  }
+#endif
   debug::StopProfiling();
 }
 

@@ -1042,12 +1042,20 @@ size_t CollectStackTrace(const void** trace, size_t count) {
 #endif
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
+// static
+void StackTrace::PrintMessageWithPrefix(const char* prefix_string,
+                                        cstring_view message) {
+  // NOTE: This code MUST be async-signal safe (it's used by in-process
+  // stack dumping signal handler). NO malloc or stdio is allowed here.
+  if (prefix_string) {
+    PrintToStderr(prefix_string);
+  }
+  PrintToStderr(message.c_str());
+}
+
+void StackTrace::PrintWithPrefixImpl(const char* prefix_string) const {
 // NOTE: This code MUST be async-signal safe (it's used by in-process
 // stack dumping signal handler). NO malloc or stdio is allowed here.
-if (!count_ || ShouldSuppressOutput()) {
-  return;
-}
 #if defined(HAVE_BACKTRACE)
   PrintBacktraceOutputHandler handler;
   ProcessBacktrace(trace_, count_, prefix_string, &handler);
@@ -1055,11 +1063,8 @@ if (!count_ || ShouldSuppressOutput()) {
 }
 
 #if defined(HAVE_BACKTRACE)
-void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
-  if (!count_ || ShouldSuppressOutput()) {
-    return;
-  }
+void StackTrace::OutputToStreamWithPrefixImpl(std::ostream* os,
+                                              const char* prefix_string) const {
   StreamBacktraceOutputHandler handler(os);
   ProcessBacktrace(trace_, count_, prefix_string, &handler);
 }

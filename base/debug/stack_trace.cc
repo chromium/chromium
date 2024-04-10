@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <sstream>
+#include <utility>
 
 #include "base/check_op.h"
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -164,8 +164,15 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
+// A message to be emitted in place of a symbolized stack trace. Ordinarily used
+// in death test child processes to inform a developer that they may rerun a
+// failing test with a switch to prevent the test launcher from suppressing
+// stacks in such processes.
+std::string* g_stack_trace_message = nullptr;
+
 // True if an OverrideStackTraceOutputForTesting instance is alive to force
-// generation of symbolized stack traces in death tests.
+// or prevent generation of symbolized stack traces despite a suppression
+// message having been set (or not).
 OverrideStackTraceOutputForTesting::Mode g_override_suppression =
     OverrideStackTraceOutputForTesting::Mode::kUnset;
 
@@ -273,13 +280,38 @@ void StackTrace::Print() const {
   PrintWithPrefix(nullptr);
 }
 
+void StackTrace::PrintWithPrefix(const char* prefix_string) const {
+  if (!count_ || ShouldSuppressOutput()) {
+    if (g_stack_trace_message) {
+      PrintMessageWithPrefix(prefix_string, *g_stack_trace_message);
+    }
+    return;
+  }
+  PrintWithPrefixImpl(prefix_string);
+}
+
 void StackTrace::OutputToStream(std::ostream* os) const {
   OutputToStreamWithPrefix(os, nullptr);
+}
+
+void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
+                                          const char* prefix_string) const {
+  if (!count_ || ShouldSuppressOutput()) {
+    if (g_stack_trace_message) {
+      if (prefix_string) {
+        (*os) << prefix_string;
+      }
+      (*os) << *g_stack_trace_message;
+    }
+    return;
+  }
+  OutputToStreamWithPrefixImpl(os, prefix_string);
 }
 
 std::string StackTrace::ToString() const {
   return ToStringWithPrefix(nullptr);
 }
+
 std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
   std::stringstream stream;
 #if !defined(__UCLIBC__) && !defined(_AIX)
@@ -289,14 +321,20 @@ std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
 }
 
 // static
+void StackTrace::SuppressStackTracesWithMessageForTesting(std::string message) {
+  delete std::exchange(
+      g_stack_trace_message,
+      (message.empty() ? nullptr : new std::string(std::move(message))));
+}
+
+// static
 bool StackTrace::ShouldSuppressOutput() {
   using Mode = OverrideStackTraceOutputForTesting::Mode;
-  // Backtraces are not visible in death test children, so do not waste
-  // resources by generating any unless an OverrideStackTraceOutputForTesting
-  // instance is alive.
+  // Do not generate stack traces if a suppression message has been provided,
+  // unless an OverrideStackTraceOutputForTesting instance is alive.
   return g_override_suppression != Mode::kUnset
              ? (g_override_suppression == Mode::kSuppressOutput)
-             : ::base::internal::InDeathTestChild();
+             : (g_stack_trace_message != nullptr);
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {
