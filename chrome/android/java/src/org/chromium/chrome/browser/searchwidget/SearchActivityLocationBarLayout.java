@@ -243,7 +243,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
                     mUrlBar.requestFocus();
                     mUrlCoordinator.setKeyboardVisibility(true, false);
-                    mAutocompleteCoordinator.startCachedZeroSuggest();
                 });
     }
 

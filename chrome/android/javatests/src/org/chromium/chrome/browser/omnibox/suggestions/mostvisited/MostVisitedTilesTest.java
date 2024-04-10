@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -313,7 +314,9 @@ public class MostVisitedTilesTest {
     public void touchNavigation_deleteMostVisitedTile() throws Exception {
         ModalDialogManager manager = mAutocomplete.getModalDialogManagerForTest();
         longClickTileAtPosition(2);
-        verify(mController, times(1)).stop(/* clear?=*/ eq(false));
+        // onTopResumedActivityChanged calls `hideSuggestions()` which may bump the number of times
+        // `stop()` is called.
+        verify(mController, atLeastOnce()).stop(/* clear?=*/ eq(false));
 
         // Wait for the delete dialog to come up...
         CriteriaHelper.pollUiThread(

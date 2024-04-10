@@ -62,8 +62,8 @@ public class AutocompleteController {
          *     always comes in last, even if the query is canceled.
          */
         void onSuggestionsReceived(
-                AutocompleteResult autocompleteResult,
-                String inlineAutocompleteText,
+                @NonNull AutocompleteResult autocompleteResult,
+                @NonNull String inlineAutocompleteText,
                 boolean isFinal);
     }
 

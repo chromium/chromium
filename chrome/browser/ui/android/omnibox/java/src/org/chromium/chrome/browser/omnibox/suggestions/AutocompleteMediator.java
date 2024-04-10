@@ -111,9 +111,9 @@ class AutocompleteMediator
     private @Nullable TemplateUrlService mTemplateUrlService;
 
     private boolean mNativeInitialized;
+    private boolean mIsInZeroPrefixContext;
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
-    private boolean mShouldCacheSuggestions;
     private boolean mClearFocusAfterNavigation;
     private boolean mClearFocusAfterNavigationAsynchronously;
     // When set, indicates an active omnibox session.
@@ -320,7 +320,27 @@ class AutocompleteMediator
      * <p>Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
      */
     void startCachedZeroSuggest() {
-        if (mNativeInitialized) return;
+        maybeServeCachedResult();
+        postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+    }
+
+    private void maybeCacheResult(@NonNull AutocompleteResult result) {
+        if (mIsInZeroPrefixContext
+                && !result.isFromCachedResult()
+                && mDataProvider.getPageClassification(false, false)
+                        == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
+            CachedZeroSuggestionsManager.saveToCache(result);
+        }
+    }
+
+    private void maybeServeCachedResult() {
+        int pageClass = mDataProvider.getPageClassification(false, false);
+        if (mNativeInitialized
+                || !mIsInZeroPrefixContext
+                || (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
+                        && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)) {
+            return;
+        }
         onSuggestionsReceived(CachedZeroSuggestionsManager.readFromCache(), "", true);
     }
 
@@ -377,20 +397,14 @@ class AutocompleteMediator
 
             // Ask directly for zero-suggestions related to current input, unless the user is
             // currently visiting SearchActivity and the input is populated from the launch intent.
-            // For SearchActivity, in most cases the input will be empty, triggering the same
-            // response (starting zero suggestions), but if the Activity was launched with a QUERY,
+            // In all contexts, the input will most likely be empty, triggering the same response
+            // (starting zero suggestions), but if the SearchActivity was launched with a QUERY,
             // then the query might point to a different URL than the reported Page, and the
             // suggestion would take the user to the DSE home page.
             // This is tracked by MobileStartup.LaunchCause / EXTERNAL_SEARCH_ACTION_INTENT
             // metric.
-            if (mDataProvider.getPageClassification(
-                            /* isFocusedFromFakebox= */ false, /* isPrefetch= */ false)
-                    != PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
-                postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
-            } else {
-                String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-                onTextChanged(text);
-            }
+            String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+            onTextChanged(text);
         } else {
             stopMeasuringSuggestionRequestToUiModelTime();
             cancelAutocompleteRequests();
@@ -770,9 +784,11 @@ class AutocompleteMediator
         }
 
         stopAutocomplete(false);
-        if (TextUtils.isEmpty(textWithoutAutocomplete)) {
+        mIsInZeroPrefixContext = TextUtils.isEmpty(textWithoutAutocomplete);
+
+        if (mIsInZeroPrefixContext) {
             hideSuggestions();
-            postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+            startCachedZeroSuggest();
         } else {
             // There may be no tabs when searching form omnibox in overview mode. In that case,
             // LocationBarDataProvider.getCurrentUrl() returns NTP url.
@@ -807,10 +823,10 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionsReceived(
-            AutocompleteResult autocompleteResult, String inlineAutocompleteText, boolean isFinal) {
-        if (mShouldCacheSuggestions) {
-            CachedZeroSuggestionsManager.saveToCache(autocompleteResult);
-        }
+            @NonNull AutocompleteResult autocompleteResult,
+            @NonNull String inlineAutocompleteText,
+            boolean isFinal) {
+        maybeCacheResult(autocompleteResult);
 
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
@@ -1032,8 +1048,6 @@ class AutocompleteMediator
             int pageClassification =
                     mDataProvider.getPageClassification(
                             mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false);
-            mShouldCacheSuggestions =
-                    pageClassification == PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
             mAutocomplete.startZeroSuggest(
                     mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                     mDataProvider.getCurrentGurl(),
@@ -1230,7 +1244,6 @@ class AutocompleteMediator
 
     /** Cancel any pending autocomplete actions. */
     private void cancelAutocompleteRequests() {
-        mShouldCacheSuggestions = false;
         stopMeasuringSuggestionRequestToUiModelTime();
         if (mCurrentAutocompleteRequest != null) {
             mHandler.removeCallbacks(mCurrentAutocompleteRequest);

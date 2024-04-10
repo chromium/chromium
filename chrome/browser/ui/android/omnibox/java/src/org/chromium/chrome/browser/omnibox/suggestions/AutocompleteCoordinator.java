@@ -374,14 +374,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     /**
-     * Show cached zero suggest results. Enables Autocomplete subsystem to offer most recently
-     * presented suggestions in the event where Native counterpart is not yet initialized.
-     */
-    public void startCachedZeroSuggest() {
-        mMediator.startCachedZeroSuggest();
-    }
-
-    /**
      * Handle the key events associated with the suggestion list.
      *
      * @param keyCode The keycode representing what key was interacted with.

@@ -46,7 +46,7 @@ import java.util.function.Function;
 /** CachedZeroSuggestionsManager manages caching and restoring zero suggestions. */
 public class CachedZeroSuggestionsManager {
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
-    public static void saveToCache(AutocompleteResult resultToCache) {
+    public static void saveToCache(@NonNull AutocompleteResult resultToCache) {
         final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         cacheSuggestionList(manager, resultToCache.getSuggestionsList());
         cacheGroupsDetails(manager, resultToCache.getGroupsInfo());
@@ -57,7 +57,7 @@ public class CachedZeroSuggestionsManager {
      *
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
-    static AutocompleteResult readFromCache() {
+    static @NonNull AutocompleteResult readFromCache() {
         final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
