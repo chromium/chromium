@@ -122,11 +122,23 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(19, TabLaunchTypeAtCreation.FROM_TAB_SWITCHER_UI);
         Assert.assertEquals(20, TabLaunchTypeAtCreation.FROM_RESTORE_TABS_UI);
         Assert.assertEquals(21, TabLaunchTypeAtCreation.FROM_OMNIBOX);
+        Assert.assertEquals(22, TabLaunchTypeAtCreation.UNSET);
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                24,
+                25,
                 TabLaunchTypeAtCreation.names.length);
+    }
+
+    @Test
+    public void testTabLaunchTypeAddShouldUpdateFlatBuffer() {
+        Assert.assertEquals(
+                "When adding a new TabLaunchType please update tab_state_common.fbs,"
+                        + " FlatBufferTabStateSerizer#getLaunchTypeFromFlatBuffer,"
+                        + " FlatBufferTabStateSerizer#getLaunchTypeToFlatBuffer"
+                        + " and this test file.",
+                23,
+                TabLaunchType.SIZE);
     }
 
     @Test
@@ -236,6 +248,10 @@ public class TabStateFileManagerUnitTest {
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_OMNIBOX));
         Assert.assertEquals(
+                (Integer) TabLaunchType.UNSET,
+                FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
+                        TabLaunchTypeAtCreation.UNSET));
+        Assert.assertEquals(
                 (Integer) TabLaunchType.SIZE,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.SIZE));
@@ -335,6 +351,9 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(
                 TabLaunchTypeAtCreation.FROM_OMNIBOX,
                 FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(TabLaunchType.FROM_OMNIBOX));
+        Assert.assertEquals(
+                TabLaunchTypeAtCreation.UNSET,
+                FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(TabLaunchType.UNSET));
         Assert.assertEquals(
                 TabLaunchTypeAtCreation.SIZE,
                 FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(TabLaunchType.SIZE));
