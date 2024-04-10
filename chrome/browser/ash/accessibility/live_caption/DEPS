@@ -16,10 +16,10 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/accessibility/live_caption",
   "+chrome/browser/ash/login/session",
+  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
-  "+chrome/test/base",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/test/base",
 ]

@@ -21,10 +21,10 @@ include_rules = [
   "+chrome/browser/speech",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/aura/accessibility",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/test/base",
-  "+chrome/common/chrome_paths.h",
-  "+chrome/browser/ui/browser.h",
 
   # Dependencies outside of //chrome:
   "+services/accessibility/public/mojom",
