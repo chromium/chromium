@@ -882,11 +882,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   InitializeDawnProcs();
 
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
-    // TODO(crbug.com/325000752): Check if GPU_FEATURE_TYPE_SKIA_GRAPHITE is
-    // blocklisted and fail GPU process initialization if so.
     if (!InitializeDawn()) {
-      // Fail initialization and restart the GPU process.
-      return false;
+      if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          kGpuFeatureStatusEnabled) {
+        return false;
+      }
+      // SkiaGraphite is disabled by software_rendering_list.json
+      gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
   }
 

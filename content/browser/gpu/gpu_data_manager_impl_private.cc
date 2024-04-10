@@ -1209,8 +1209,9 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
                     gpu::GpuMode::HARDWARE_GL),
         fallback_modes_.end());
   }
-  // If Vulkan initialization fails, the GPU process can silently fallback to
-  // GL.
+
+  // If Vulkan or Graphite initialization fails, the GPU process can silently
+  // fallback to GL.
   if (gpu_mode_ == gpu::GpuMode::HARDWARE_VULKAN &&
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
           gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
@@ -1218,6 +1219,11 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     // HARDWARE_VULKAN. This isn't a big issue right now because both GPU modes
     // report to the same histogram. The first fallback will occur after 4
     // crashes, instead of 3.
+    FallBackToNextGpuMode();
+  } else if (gpu_mode_ == gpu::GpuMode::HARDWARE_GRAPHITE &&
+             gpu_feature_info_
+                     .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
+                 gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
     FallBackToNextGpuMode();
   }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
