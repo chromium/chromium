@@ -1254,6 +1254,14 @@ BASE_FEATURE(kWebViewSuppressTapDuringFling,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If true, then GpuMemoryBuffer video frames are enabled only if HW support for
+// NV12 is present (as determined by the relevant command-line flags).
+BASE_FEATURE(kGateNV12GMBVideoFramesOnHWSupport,
+             "GateNV12GMBVideoFramesOnHWSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Enables backgrounding hidden renderers on Mac.
 BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,

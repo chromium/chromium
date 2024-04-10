@@ -23439,6 +23439,7 @@ from previous Chrome versions.
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
+  <int value="1062563622" label="GateNV12GMBVideoFramesOnHWSupport:enabled"/>
   <int value="1063490936" label="ExoSurroundingTextOffset:enabled"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
@@ -24677,6 +24678,7 @@ from previous Chrome versions.
   <int value="1616418306" label="AssistAutoCorrect:disabled"/>
   <int value="1616445483" label="OmniboxAnswerActions:disabled"/>
   <int value="1616782064" label="shelf-dense-clamshell"/>
+  <int value="1616881431" label="GateNV12GMBVideoFramesOnHWSupport:disabled"/>
   <int value="1616938915"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>
   <int value="1617187093" label="enable-improved-a2hs"/>

@@ -8841,6 +8841,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemAccessGetCloudIdentifiers)},
 
+    {"gate-nv12-gmb-video-frames-on-hw-support",
+     flag_descriptions::kGateNV12GMBVideoFramesOnHWSupportName,
+     flag_descriptions::kGateNV12GMBVideoFramesOnHWSupportDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kGateNV12GMBVideoFramesOnHWSupport)},
+
     {"lacros-color-management", flag_descriptions::kLacrosColorManagementName,
      flag_descriptions::kLacrosColorManagementDescription, kOsLacros,
      FEATURE_VALUE_TYPE(features::kLacrosColorManagement)},

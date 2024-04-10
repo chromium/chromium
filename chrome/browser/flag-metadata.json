@@ -4684,6 +4684,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "gate-nv12-gmb-video-frames-on-hw-support",
+    "owners": [ "blundell@chromium.org", "chrome-gpu-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "gesture-properties-dbus-service",
     "owners": [ "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Used by developers for debugging and input device tuning.

@@ -7574,6 +7574,12 @@ const char kDisableOfficeEditingComponentAppDescription[] =
     "handlers won't be registered, making it possible to install another "
     "version for testing.";
 
+const char kGateNV12GMBVideoFramesOnHWSupportName[] =
+    "Gate NV12 GpuMemoryBuffer VideoFrames on hardware support.";
+const char kGateNV12GMBVideoFramesOnHWSupportDescription[] =
+    "Gates enabling client-side use of GPUMemoryBuffers for NV12 video frames "
+    "on hardware support for NV12 format being present.";
+
 const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
 const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "

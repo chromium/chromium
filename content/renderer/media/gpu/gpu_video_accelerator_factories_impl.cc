@@ -19,6 +19,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/media/codec_factory.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -387,6 +388,14 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
       !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
     return OutputFormat::NV12_SINGLE_GMB;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          features::kGateNV12GMBVideoFramesOnHWSupport)) {
+    return OutputFormat::UNDEFINED;
+  }
+#endif
+
   if (capabilities.texture_rg) {
     return UseSingleNV12() ? OutputFormat::NV12_SINGLE_GMB
                            : OutputFormat::NV12_DUAL_GMB;
