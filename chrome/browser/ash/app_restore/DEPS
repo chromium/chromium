@@ -1,0 +1,53 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/app_restore",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/app/vector_icons",
+  "+chrome/browser/app_mode",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/platform_apps",
+  "+chrome/browser/ash",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/chromeos/full_restore",
+  "+chrome/browser/first_run",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sessions",
+  "+chrome/browser/signin",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_tabstrip.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/startup",
+  "+chrome/browser/ui/web_applications/test",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/browser/web_applications/web_app_install_info.h",
+  "+chrome/browser/web_applications/web_app_utils.h",
+  "+chrome/common/buildflags.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/common/webui_url_constants.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+  "+chrome/test/views",
+]

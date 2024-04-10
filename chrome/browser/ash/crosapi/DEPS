@@ -1,3 +1,95 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/crosapi",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/app_mode",
+  "+chrome/browser/apps/almanac_api_client",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/digital_goods",
+  "+chrome/browser/ash",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/certificate_provider",
+  "+chrome/browser/chromeos/extensions/file_system_provider",
+  "+chrome/browser/chromeos/extensions/login_screen/login",
+  "+chrome/browser/chromeos/kcer",
+  "+chrome/browser/chromeos/platform_keys",
+  "+chrome/browser/chromeos/policy/dlp",
+  "+chrome/browser/component_updater",
+  "+chrome/browser/device_identity",
+  "+chrome/browser/extensions/api/image_writer_private",
+  "+chrome/browser/extensions/api/printing",
+  "+chrome/browser/extensions/extension_apitest.h",
+  "+chrome/browser/extensions/extension_keeplist_chromeos.h",
+  "+chrome/browser/extensions/forced_extensions",
+  "+chrome/browser/file_system_access/cloud_identifier",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/media/router/discovery/access_code",
+  "+chrome/browser/metrics",
+  "+chrome/browser/net",
+  "+chrome/browser/notifications",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/printing",
+  "+chrome/browser/profiles",
+  "+chrome/browser/screen_ai",
+  "+chrome/browser/sharesheet",
+  "+chrome/browser/signin",
+  "+chrome/browser/speech",
+  "+chrome/browser/task_manager",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/views/task_manager_view.h",
+  "+chrome/browser/ui/web_applications/test",
+  "+chrome/browser/ui/webui/ash/app_install",
+  "+chrome/browser/ui/webui/ash/cloud_upload",
+  "+chrome/browser/ui/webui/ash/kerberos",
+  "+chrome/browser/ui/webui/ash/parent_access",
+  "+chrome/browser/ui/webui/chrome_web_ui_controller_factory.h",
+  "+chrome/browser/ui/webui/management",
+  "+chrome/browser/web_applications/preinstalled_web_app_config_utils.h",
+  "+chrome/browser/web_applications/preinstalled_web_app_utils.h",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_ui_manager.h",
+  "+chrome/browser/web_applications/web_app_utils.h",
+  "+chrome/common/channel_info.h",
+  "+chrome/common/chrome_constants.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/extensions",
+  "+chrome/common/logging_chrome.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/common/printing",
+  "+chrome/common/ref_counted_util.h",
+  "+chrome/common/url_constants.h",
+  "+chrome/common/webui_url_constants.h",
+  "+chrome/test/base",
+]
+
 specific_include_rules = {
   "crosapi_ash\.cc": [
     "+services/video_capture/ash",

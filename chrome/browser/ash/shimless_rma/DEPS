@@ -1,3 +1,39 @@
 include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/shimless_rma",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/system",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/extensions/crx_installer.h",
+  "+chrome/browser/extensions/extension_garbage_collector_factory.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/extension_service_test_base.h",
+  "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/webui/ash",
+  "+chrome/browser/web_applications/isolated_web_apps",
+  "+chrome/browser/web_applications/web_app_command_scheduler.h",
+  "+chrome/browser/web_applications/web_app.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/common/chromeos/extensions",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+
+  # Dependencies outside of //chrome:
   "+components/web_package",
 ]

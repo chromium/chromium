@@ -1,0 +1,48 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/login/session",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/about_flags.h",
+  "+chrome/browser/app_mode",
+  "+chrome/browser/ash",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/component_updater",
+  "+chrome/browser/first_run",
+  "+chrome/browser/google",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/net",
+  "+chrome/browser/password_manager",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/rlz",
+  "+chrome/browser/scalable_iph",
+  "+chrome/browser/screen_ai",
+  "+chrome/browser/signin",
+  "+chrome/browser/supervised_user/child_accounts",
+  "+chrome/browser/sync",
+  "+chrome/browser/trusted_vault",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/startup",
+  "+chrome/browser/ui/webui/ash",
+  "+chrome/common/channel_info.h",
+  "+chrome/common/chrome_constants.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/logging_chrome.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/test/base",
+]

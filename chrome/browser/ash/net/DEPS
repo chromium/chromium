@@ -1,3 +1,47 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/net",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/notifications",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/affiliation",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/certificate_provider",
+  "+chrome/browser/extensions/api/settings_private",
+  "+chrome/browser/net",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sync",
+  "+chrome/browser/ui/ash/network",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/login",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+]
+
 specific_include_rules = {
   "system_proxy_manager_unittest\.cc": [
     "+services/network/network_context.h"
