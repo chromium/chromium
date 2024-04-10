@@ -8,7 +8,7 @@
  * rest of the code.
  */
 
-import { EarconId } from '../common/earcon_id.js';
+import {EarconId} from '../common/earcon_id.js';
 
 interface PlayProperties {
   pitch?: number;
@@ -139,7 +139,7 @@ export class EarconEngine {
    * Maps a earcon name to the last source input audio for that
    * earcon.
    */
-  private lastEarconSources_: { [id: EarconId]: (AudioNode | undefined) } = {};
+  private lastEarconSources_: Partial<Record<EarconId, AudioNode>> = {};
 
   private currentTrackedEarcon_?: EarconId;
 
