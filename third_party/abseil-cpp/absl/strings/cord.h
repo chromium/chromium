@@ -1354,7 +1354,8 @@ inline size_t Cord::EstimatedMemoryUsage(
   return result;
 }
 
-inline absl::optional<absl::string_view> Cord::TryFlat() const {
+inline absl::optional<absl::string_view> Cord::TryFlat() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
   absl::cord_internal::CordRep* rep = contents_.tree();
   if (rep == nullptr) {
     return absl::string_view(contents_.data(), contents_.size());
@@ -1366,7 +1367,7 @@ inline absl::optional<absl::string_view> Cord::TryFlat() const {
   return absl::nullopt;
 }
 
-inline absl::string_view Cord::Flatten() {
+inline absl::string_view Cord::Flatten() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   absl::cord_internal::CordRep* rep = contents_.tree();
   if (rep == nullptr) {
     return absl::string_view(contents_.data(), contents_.size());

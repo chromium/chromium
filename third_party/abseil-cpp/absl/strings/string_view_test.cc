@@ -47,6 +47,14 @@
 
 namespace {
 
+static_assert(!absl::type_traits_internal::IsOwner<absl::string_view>::value &&
+                  absl::type_traits_internal::IsView<absl::string_view>::value,
+              "string_view is a view, not an owner");
+
+static_assert(absl::type_traits_internal::IsLifetimeBoundAssignment<
+                  absl::string_view, std::string>::value,
+              "lifetimebound assignment not detected");
+
 // A minimal allocator that uses malloc().
 template <typename T>
 struct Mallocator {
