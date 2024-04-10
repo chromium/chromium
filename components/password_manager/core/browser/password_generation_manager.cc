@@ -12,10 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
@@ -389,7 +391,9 @@ void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const std::u16string& old_password,
-    FormSaver* form_saver) {
+    const PendingCredentialsStates& states,
+    FormSaver* profile_store_form_saver,
+    FormSaver* account_store_form_saver) {
   DCHECK(presaved_);
   generated.date_last_used = base::Time::Now();
   generated.date_created = base::Time::Now();
@@ -399,8 +403,24 @@ void PasswordGenerationManager::CommitGeneratedPassword(
     SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
         initial_generated_password_, generated.password_value);
   }
-  form_saver->UpdateReplace(generated, matches, old_password,
-                            presaved_.value() /* old_primary_key */);
+
+  if (account_store_form_saver &&
+      client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+    account_store_form_saver->UpdateReplace(
+        generated, AccountStoreMatches(matches), old_password,
+        presaved_.value() /* old_primary_key */);
+    // When the credential with the same username is detected in the profile
+    // store, then update in there too.
+    if (states.profile_store_state == PendingCredentialsState::UPDATE) {
+      profile_store_form_saver->Update(generated, ProfileStoreMatches(matches),
+                                       old_password);
+    }
+  } else {
+    profile_store_form_saver->UpdateReplace(
+        generated, ProfileStoreMatches(matches), old_password,
+        presaved_.value() /* old_primary_key */);
+  }
+
   presaved_ = std::move(generated);
 }
 

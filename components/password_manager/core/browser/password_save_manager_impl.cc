@@ -39,14 +39,6 @@ namespace password_manager {
 
 namespace {
 
-struct PendingCredentialsStates {
-  PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
-  PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
-
-  raw_ptr<const PasswordForm> similar_saved_form_from_profile_store = nullptr;
-  raw_ptr<const PasswordForm> similar_saved_form_from_account_store = nullptr;
-};
-
 AlternativeElement PasswordToSave(const PasswordForm& form) {
   if (form.new_password_value.empty()) {
     DCHECK(!form.password_value.empty() || form.IsFederatedCredential());
@@ -129,20 +121,6 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MatchesInStore(
   return store_matches;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-AccountStoreMatches(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
-  return MatchesInStore(matches, PasswordForm::Store::kAccountStore);
-}
-
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-ProfileStoreMatches(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
-  return MatchesInStore(matches, PasswordForm::Store::kProfileStore);
-}
-
 bool AccountStoreMatchesContainForm(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const PasswordForm& form) {
@@ -192,35 +170,6 @@ PendingCredentialsState ComputePendingCredentialsState(
   }
 
   return PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
-}
-
-PendingCredentialsStates ComputePendingCredentialsStates(
-    const PasswordForm& parsed_submitted_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
-    bool username_updated_in_bubble,
-    PasswordGenerationManager* generation_manager) {
-  PendingCredentialsStates result;
-
-  // Try to find a similar existing saved form from each of the stores.
-  result.similar_saved_form_from_profile_store =
-      password_manager_util::GetMatchForUpdating(parsed_submitted_form,
-                                                 ProfileStoreMatches(matches),
-                                                 username_updated_in_bubble);
-  result.similar_saved_form_from_account_store =
-      password_manager_util::GetMatchForUpdating(parsed_submitted_form,
-                                                 AccountStoreMatches(matches),
-                                                 username_updated_in_bubble);
-
-  // Compute the PendingCredentialsState (i.e. what to do - save, update, silent
-  // update) separately for the two stores.
-  result.profile_store_state = ComputePendingCredentialsState(
-      parsed_submitted_form, result.similar_saved_form_from_profile_store,
-      generation_manager);
-  result.account_store_state = ComputePendingCredentialsState(
-      parsed_submitted_form, result.similar_saved_form_from_account_store,
-      generation_manager);
-
-  return result;
 }
 
 PendingCredentialsState ResolvePendingCredentialsStates(
@@ -298,6 +247,49 @@ void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
 }
 
 }  // namespace
+
+PendingCredentialsStates ComputePendingCredentialsStates(
+    const PasswordForm& parsed_submitted_form,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    bool username_updated_in_bubble,
+    PasswordGenerationManager* generation_manager) {
+  PendingCredentialsStates result;
+
+  // Try to find a similar existing saved form from each of the stores.
+  result.similar_saved_form_from_profile_store =
+      password_manager_util::GetMatchForUpdating(parsed_submitted_form,
+                                                 ProfileStoreMatches(matches),
+                                                 username_updated_in_bubble);
+  result.similar_saved_form_from_account_store =
+      password_manager_util::GetMatchForUpdating(parsed_submitted_form,
+                                                 AccountStoreMatches(matches),
+                                                 username_updated_in_bubble);
+
+  // Compute the PendingCredentialsState (i.e. what to do - save, update, silent
+  // update) separately for the two stores.
+  result.profile_store_state = ComputePendingCredentialsState(
+      parsed_submitted_form, result.similar_saved_form_from_profile_store,
+      generation_manager);
+  result.account_store_state = ComputePendingCredentialsState(
+      parsed_submitted_form, result.similar_saved_form_from_account_store,
+      generation_manager);
+
+  return result;
+}
+
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+AccountStoreMatches(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        matches) {
+  return MatchesInStore(matches, PasswordForm::Store::kAccountStore);
+}
+
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+ProfileStoreMatches(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        matches) {
+  return MatchesInStore(matches, PasswordForm::Store::kProfileStore);
+}
 
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(
     std::unique_ptr<FormSaver> profile_form_saver,
@@ -740,22 +732,23 @@ void PasswordSaveManagerImpl::SavePendingToStore(
     const PasswordForm& parsed_submitted_form) {
   UploadVotesAndMetrics(observed_form, parsed_submitted_form);
 
+  PendingCredentialsStates states = ComputePendingCredentialsStates(
+      parsed_submitted_form, form_fetcher_->GetAllRelevantMatches(),
+      username_updated_in_bubble_, generation_manager_.get());
   if (HasGeneratedPassword()) {
     generation_manager_->CommitGeneratedPassword(
         pending_credentials_, form_fetcher_->GetAllRelevantMatches(),
-        GetOldPassword(parsed_submitted_form), GetFormSaverForGeneration());
+        GetOldPassword(parsed_submitted_form), states,
+        profile_store_form_saver_.get(), account_store_form_saver_.get());
   } else {
-    SavePendingToStoreImpl(parsed_submitted_form);
+    SavePendingToStoreImpl(parsed_submitted_form, states);
   }
 }
 
 void PasswordSaveManagerImpl::SavePendingToStoreImpl(
-    const PasswordForm& parsed_submitted_form) {
+    const PasswordForm& parsed_submitted_form,
+    const PendingCredentialsStates& states) {
   auto matches = form_fetcher_->GetAllRelevantMatches();
-  PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, matches, username_updated_in_bubble_,
-      generation_manager_.get());
-
   auto account_matches = AccountStoreMatches(matches);
   auto profile_matches = ProfileStoreMatches(matches);
 

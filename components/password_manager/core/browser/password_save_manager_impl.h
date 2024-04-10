@@ -20,6 +20,30 @@ enum class PendingCredentialsState {
   EQUAL_TO_SAVED_MATCH
 };
 
+struct PendingCredentialsStates {
+  PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
+  PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
+
+  raw_ptr<const PasswordForm> similar_saved_form_from_profile_store = nullptr;
+  raw_ptr<const PasswordForm> similar_saved_form_from_account_store = nullptr;
+};
+
+PendingCredentialsStates ComputePendingCredentialsStates(
+    const PasswordForm& parsed_submitted_form,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    bool username_updated_in_bubble,
+    PasswordGenerationManager* generation_manager);
+
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+AccountStoreMatches(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        matches);
+
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+ProfileStoreMatches(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        matches);
+
 class PasswordSaveManagerImpl : public PasswordSaveManager {
  public:
   PasswordSaveManagerImpl(std::unique_ptr<FormSaver> profile_form_saver,
@@ -106,7 +130,8 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void SavePendingToStore(const autofill::FormData* observed_form,
                           const PasswordForm& parsed_submitted_form);
 
-  void SavePendingToStoreImpl(const PasswordForm& parsed_submitted_form);
+  void SavePendingToStoreImpl(const PasswordForm& parsed_submitted_form,
+                              const PendingCredentialsStates& states);
 
   std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;

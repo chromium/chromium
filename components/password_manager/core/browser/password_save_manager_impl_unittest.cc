@@ -1582,6 +1582,73 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateInBothStores) {
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
 }
 
+TEST_F(MultiStorePasswordSaveManagerTest,
+       UpdateWithAGeneratedPasswordInBothStores) {
+  // This test assumes that there is a password with the same username and url
+  // saved in both account and profile stores and it's been updated with a
+  // generated password. Expected result: the password should be updated in both
+  // stores.
+
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  PasswordForm saved_match_in_profile_store(saved_match_in_account_store);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
+  // Password generation manager should call `UpdateRelace` to overwrite the
+  // pre-saved password form.
+  EXPECT_CALL(*mock_profile_form_saver(), Update);
+  EXPECT_CALL(*mock_account_form_saver(), UpdateReplace);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       CreateNewInAccountAndUpdateInProfileWithGeneratedPassword) {
+  // This test assumes that there is a credential saved in the profile password
+  // store and a credential with the same username and a newly generated
+  // password is being saved. Expected result: a new credential is saved in the
+  // account password store, the credential in the profile store is updated with
+  // the generated password.
+
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // Password generation manager should call `UpdateRelace` to overwrite the
+  // pre-saved password form.
+  EXPECT_CALL(*mock_profile_form_saver(), Update);
+  EXPECT_CALL(*mock_account_form_saver(), UpdateReplace);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
 TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
 

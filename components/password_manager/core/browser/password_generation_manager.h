@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
 
 namespace password_manager {
 
@@ -87,7 +88,9 @@ class PasswordGenerationManager {
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           matches,
       const std::u16string& old_password,
-      FormSaver* form_saver);
+      const PendingCredentialsStates& states,
+      FormSaver* profile_store_form_saver,
+      FormSaver* account_store_form_saver);
 
  private:
   void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,
