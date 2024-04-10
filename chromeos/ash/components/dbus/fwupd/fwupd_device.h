@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_DEVICE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <string>
+#import <vector>
 
 class PrefService;
 enum class PushNotificationClientId;

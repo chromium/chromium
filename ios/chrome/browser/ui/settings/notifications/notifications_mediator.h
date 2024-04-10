@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import <string>
+#import <vector>
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller_delegate.h"

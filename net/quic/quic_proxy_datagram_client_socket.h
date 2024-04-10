@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <queue>
+
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_POLICY_VALUE_VALIDATOR_H_
 
 #include <string>
+#include <vector>
 
 namespace policy {
 

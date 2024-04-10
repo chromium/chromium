@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_MANAGER_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_RESTORE_MANAGER_H_
 
+#include <deque>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

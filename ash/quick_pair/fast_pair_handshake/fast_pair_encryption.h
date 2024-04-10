@@ -10,6 +10,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 
