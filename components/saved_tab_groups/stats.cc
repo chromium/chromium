@@ -52,5 +52,18 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
   }
 }
 
+void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
+                                     size_t tabs_in_group) {
+  if (tabs_in_group > tabs_in_saved_group) {
+    base::UmaHistogramCounts100(
+        "TabGroups.SavedTabGroups.TabCountDifference.Positive",
+        tabs_in_group - tabs_in_saved_group);
+  } else if (tabs_in_group < tabs_in_saved_group) {
+    base::UmaHistogramCounts100(
+        "TabGroups.SavedTabGroups.TabCountDifference.Negative",
+        tabs_in_saved_group - tabs_in_group);
+  }
+}
+
 }  // namespace stats
 }  // namespace tab_groups

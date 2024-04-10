@@ -287,6 +287,7 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   const bool saved_group_has_less_tabs = tabs_in_saved_group < tabs_in_group;
   const bool saved_group_has_more_tabs = tabs_in_saved_group > tabs_in_group;
 
+  stats::RecordTabCountMismatchOnConnect(tabs_in_saved_group, tabs_in_group);
   if (saved_group_has_more_tabs) {
     AddMissingTabsToOutOfSyncLocalTabGroup(browser, tab_group, saved_group);
   } else if (saved_group_has_less_tabs) {

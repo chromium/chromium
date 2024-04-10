@@ -636,6 +636,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroups.TabCountDifference.Negative"
+    units="tabs" expires_after="2024-12-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the difference in the number of tabs between local tab group and its
+    synced counterpart when the synced version has more tabs compared to the
+    local version. Recorded on connect which happens on startup and also when
+    sync is turned on from an off state.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SavedTabGroups.TabCountDifference.Positive"
+    units="tabs" expires_after="2024-12-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the difference in the number of tabs between local tab group and its
+    synced counterpart when the local version has more tabs compared to the
+    synced version. Recorded on connect which happens on startup and also when
+    sync is turned on from an off state.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SavedTabGroupTabCount" units="tabs"
     expires_after="2024-09-01">
   <owner>dljames@chromium.org</owner>
