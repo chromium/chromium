@@ -173,11 +173,6 @@ def __rewrite_rewrapper(ctx, cmd, use_large = False):
             return
     if not rwcfg:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
-    if cmd.outputs[0] == ctx.fs.canonpath("./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o"):
-        # need longer timeout for any_invocable_test.o crbug.com/1484474
-        rwcfg.update({
-            "exec_timeout": "4m",
-        })
     if use_large:
         if "platform" in rwcfg:
             action_key = None
