@@ -1171,17 +1171,17 @@ void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
   }
 }
 
-bool DCLayerTree::CommitAndClearPendingOverlays() {
+bool DCLayerTree::CommitAndClearPendingOverlays(
+    std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
-               "num_pending_overlays", pending_overlays_.size());
+               "num_overlays", overlays.size());
   DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
 
   {
     Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
     Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface;
-    auto it = base::ranges::find(pending_overlays_, 0,
-                                 &DCLayerOverlayParams::z_order);
-    if (it != pending_overlays_.end() && (*it)->overlay_image) {
+    auto it = base::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+    if (it != overlays.end() && (*it)->overlay_image) {
       Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
           (*it)->overlay_image->dcomp_visual_content();
       CHECK(root_visual_content);
@@ -1204,9 +1204,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays() {
       needs_rebuild_visual_tree_ = true;
     }
   }
-
-  std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays;
-  std::swap(pending_overlays_, overlays);
 
   // Grow or shrink list of swap chain presenters to match pending overlays.
   const size_t num_swap_chain_presenters =
@@ -1281,12 +1278,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays() {
   solid_color_surface_pool_->TrimAfterCommit();
 
   return status;
-}
-
-bool DCLayerTree::ScheduleDCLayer(
-    std::unique_ptr<DCLayerOverlayParams> params) {
-  pending_overlays_.push_back(std::move(params));
-  return true;
 }
 
 size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {

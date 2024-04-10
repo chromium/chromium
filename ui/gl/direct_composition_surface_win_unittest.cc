@@ -1437,7 +1437,7 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(window_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    EXPECT_TRUE(surface->ScheduleDCLayer(std::move(params)));
+    surface->ScheduleDCLayer(std::move(params));
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,

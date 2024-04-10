@@ -73,7 +73,7 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // to remain in the layer tree. This surface's backbuffer doesn't have to be
   // scheduled with ScheduleDCLayer, as it's automatically placed in the layer
   // tree at z-order 0.
-  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
+  void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   void SetFrameRate(float frame_rate) override;
 
   void Present(SwapCompletionCallback completion_callback,
@@ -140,6 +140,8 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // Queue of pending presentation callbacks.
   base::circular_deque<PendingFrame> pending_frames_;
   const size_t max_pending_frames_;
+
+  std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
 
   base::TimeTicks last_vsync_time_;
   base::TimeDelta last_vsync_interval_;

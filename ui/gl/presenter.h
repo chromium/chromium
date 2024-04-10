@@ -114,7 +114,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   // Schedule a DCLayer to be shown at next Present(). Semantics is similar to
   // ScheduleOverlayPlane() above. All arguments correspond to their DCLayer
   // properties.
-  virtual bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
+  virtual void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
 
   // Presents current frame asynchronously. `completion_callback` will be called
   // once all necessary steps were taken to display the frame.

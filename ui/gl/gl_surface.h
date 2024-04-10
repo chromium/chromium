@@ -202,7 +202,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // default. Does nothing if vsync cannot be changed.
   virtual void SetVSyncEnabled(bool enabled);
 
-  virtual bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
+  virtual void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
 
   // Enables or disables DC layers, returning success. If failed, it is possible
   // that the context is no longer current.

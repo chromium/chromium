@@ -134,9 +134,8 @@ gfx::VSyncProvider* GLSurface::GetVSyncProvider() {
 
 void GLSurface::SetVSyncEnabled(bool enabled) {}
 
-bool GLSurface::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
+void GLSurface::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
   NOTIMPLEMENTED();
-  return false;
 }
 
 bool GLSurface::SetEnableDCLayers(bool enable) {

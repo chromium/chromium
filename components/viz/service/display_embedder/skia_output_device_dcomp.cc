@@ -462,10 +462,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
         dc_layer.possible_video_fullscreen_letterboxing;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
-    if (!presenter_->ScheduleDCLayer(std::move(params))) {
-      DLOG(ERROR) << "ScheduleDCLayer failed";
-      continue;
-    }
+    presenter_->ScheduleDCLayer(std::move(params));
     scheduled_overlay_mailboxes_.insert(mailbox);
   }
 }

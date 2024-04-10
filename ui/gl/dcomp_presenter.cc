@@ -90,9 +90,9 @@ void DCompPresenter::OnVSync(base::TimeTicks vsync_time,
                      weak_factory_.GetWeakPtr(), vsync_time, interval));
 }
 
-bool DCompPresenter::ScheduleDCLayer(
+void DCompPresenter::ScheduleDCLayer(
     std::unique_ptr<DCLayerOverlayParams> params) {
-  return layer_tree_->ScheduleDCLayer(std::move(params));
+  pending_overlays_.push_back(std::move(params));
 }
 
 void DCompPresenter::SetFrameRate(float frame_rate) {
@@ -114,7 +114,8 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
                       /*create_query=*/create_query_this_frame_);
   create_query_this_frame_ = false;
 
-  if (!layer_tree_->CommitAndClearPendingOverlays()) {
+  if (!layer_tree_->CommitAndClearPendingOverlays(
+          std::move(pending_overlays_))) {
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
     return;

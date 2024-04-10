@@ -261,7 +261,7 @@ class DCompPresenterTest : public testing::Test {
     params->z_order = 0;
     params->quad_rect = gfx::Rect(window_size);
     params->overlay_image = CreateDCompSurface(window_size, initial_color);
-    EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   // Wait for |presenter_| to present asynchronously check the swap result.
@@ -680,8 +680,7 @@ TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
   }
   layer_tree->SetDelegatedInkTrailStartPoint(std::move(metadata));
 
-  EXPECT_FALSE(layer_tree->HasPendingOverlaysForTesting());
-  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays());
+  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays({}));
 }
 
 class DCompPresenterPixelTest : public DCompPresenterTest {
@@ -1738,7 +1737,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformTranslate) {
 
   overlay->transform.Translate(25, 25);
 
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -1758,7 +1757,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformScale) {
   overlay->transform.Scale(1.2);
   overlay->transform.Translate(-25, -25);
 
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -1779,7 +1778,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
   overlay->transform.Rotate(15);
   overlay->transform.Translate(-25, -25);
 
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -1804,7 +1803,7 @@ TEST_F(DCompPresenterSkiaGoldTest, Transform3D) {
   overlay->transform.RotateAboutXAxis(30);
   overlay->transform.Translate(-25, -25);
 
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -1823,7 +1822,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
   overlay->transform.Translate(50, 50);
   overlay->transform.Skew(15, 30);
   overlay->transform.Translate(-25, -25);
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2164,7 +2163,7 @@ TEST_F(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
   overlay->background_color = SkColors::kGreen;
   overlay->z_order = 1;
 
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2236,7 +2235,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
       CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
-  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
+  presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 

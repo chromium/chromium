@@ -144,10 +144,11 @@ gfx::SwapResult DirectCompositionSurfaceWin::SwapBuffers(
         root_surface_->dcomp_surface_serial());
     root_params->content_rect = gfx::RectF(root_params->overlay_image->size());
     root_params->quad_rect = gfx::Rect(root_params->overlay_image->size());
-    CHECK(ScheduleDCLayer(std::move(root_params)));
+    ScheduleDCLayer(std::move(root_params));
   }
 
-  if (!layer_tree_->CommitAndClearPendingOverlays()) {
+  if (!layer_tree_->CommitAndClearPendingOverlays(
+          std::move(pending_overlays_))) {
     return gfx::SwapResult::SWAP_FAILED;
   }
 
@@ -182,9 +183,9 @@ void DirectCompositionSurfaceWin::OnVSync(base::TimeTicks vsync_time,
                      weak_factory_.GetWeakPtr(), vsync_time, interval));
 }
 
-bool DirectCompositionSurfaceWin::ScheduleDCLayer(
+void DirectCompositionSurfaceWin::ScheduleDCLayer(
     std::unique_ptr<DCLayerOverlayParams> params) {
-  return layer_tree_->ScheduleDCLayer(std::move(params));
+  pending_overlays_.push_back(std::move(params));
 }
 
 void DirectCompositionSurfaceWin::SetFrameRate(float frame_rate) {

@@ -139,9 +139,7 @@ class SolidColorSurfacePool final {
 };
 
 // DCLayerTree manages a tree of direct composition visuals, and associated
-// swap chains for given overlay layers.  It maintains a list of pending layers
-// submitted using ScheduleDCLayer() that are presented and committed in
-// CommitAndClearPendingOverlays().
+// swap chains for given overlay layers.
 class GL_EXPORT DCLayerTree {
  public:
   using DelegatedInkRenderer = DelegatedInkPointRendererGpu;
@@ -161,12 +159,10 @@ class GL_EXPORT DCLayerTree {
   void Initialize(HWND window,
                   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
-  // Present pending overlay layers, and perform a direct composition commit if
-  // necessary.  Returns true if presentation and commit succeeded.
-  bool CommitAndClearPendingOverlays();
-
-  // Schedule an overlay layer for the next CommitAndClearPendingOverlays call.
-  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
+  // Present overlay layers, and perform a direct composition commit if
+  // necessary. Returns true if presentation and commit succeeded.
+  bool CommitAndClearPendingOverlays(
+      std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays);
 
   // Called by SwapChainPresenter to initialize video processor that can handle
   // at least given input and output size.  The video processor is shared across
@@ -254,11 +250,6 @@ class GL_EXPORT DCLayerTree {
     return ink_renderer_.get();
   }
 
-  bool HasPendingOverlaysForTesting() const {
-    CHECK_IS_TEST();
-    return pending_overlays_.size() > 0;
-  }
-
   // Owns a list of |VisualSubtree|s that represent visual layers.
   class VisualTree {
    public:
@@ -269,7 +260,7 @@ class GL_EXPORT DCLayerTree {
     VisualTree& operator=(const VisualTree&) = delete;
 
     ~VisualTree();
-    // Given pending overlays, builds or updates this visual tree.
+    // Given overlays, builds or updates this visual tree.
     // Returns true if commit succeeded.
     bool BuildTree(
         const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
@@ -561,9 +552,6 @@ class GL_EXPORT DCLayerTree {
 
   // Root direct composition visual for window dcomp target.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
-
-  // List of pending overlay layers from ScheduleDCLayer().
-  std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
 
   // List of swap chain presenters for previous frame.
   std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;
