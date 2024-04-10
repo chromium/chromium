@@ -94,6 +94,10 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
               library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
       .init_user_data_service = reinterpret_cast<InitUserDataServiceFn>(
           library.GetFunctionPointer(kInitUserDataServiceFnName)),
+      .process_user_data_request = reinterpret_cast<ProcessUserDataRequestFn>(
+          library.GetFunctionPointer(kProcessUserDataRequestFnName)),
+      .delete_serialized_proto = reinterpret_cast<DeleteSerializedProtoFn>(
+          library.GetFunctionPointer(kDeleteSerializedProtoFnName)),
   };
 
   // Checking if entry_points are loaded.

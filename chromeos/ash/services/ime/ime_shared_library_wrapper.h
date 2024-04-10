@@ -55,6 +55,13 @@ typedef bool (*IsInputMethodConnectedFn)();
 inline constexpr char kInitUserDataServiceFnName[] = "InitUserDataService";
 typedef void (*InitUserDataServiceFn)(ImeCrosPlatform* platform);
 
+inline constexpr char kProcessUserDataRequestFnName[] =
+    "ProcessUserDataRequest";
+typedef C_SerializedProto (*ProcessUserDataRequestFn)(C_SerializedProto args);
+
+inline constexpr char kDeleteSerializedProtoFnName[] = "DeleteSerializedProto";
+typedef void (*DeleteSerializedProtoFn)(C_SerializedProto args);
+
 // END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
 
 // This class manages the dynamic loading of CrOS 1P IME shared lib
@@ -79,6 +86,8 @@ class ImeSharedLibraryWrapper {
     IsInputMethodConnectedFn mojo_mode_is_input_method_connected;
 
     InitUserDataServiceFn init_user_data_service;
+    ProcessUserDataRequestFn process_user_data_request;
+    DeleteSerializedProtoFn delete_serialized_proto;
   };
 
   // Loads the IME shared library (if not already loaded) then returns its entry
