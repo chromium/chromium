@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_DESKTOP_RESIZER_X11_H_
-#define REMOTING_HOST_DESKTOP_RESIZER_X11_H_
+#ifndef REMOTING_HOST_X11_DESKTOP_RESIZER_H_
+#define REMOTING_HOST_X11_DESKTOP_RESIZER_H_
 
 #include <string.h>
 
@@ -131,4 +131,4 @@ class DesktopResizerX11 : public DesktopResizer {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_DESKTOP_RESIZER_X11_H_
+#endif  // REMOTING_HOST_X11_DESKTOP_RESIZER_H_

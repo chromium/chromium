@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_resizer_x11.h"
+#include "remoting/host/x11_desktop_resizer.h"
 
 #include <gio/gio.h>
 
