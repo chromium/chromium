@@ -89,6 +89,7 @@ class HardwareDisplayPlaneManagerTest
   }
 
   void SetUp() override;
+  void TearDown() override;
 
   scoped_refptr<DrmFramebuffer> CreateBuffer(const gfx::Size& size) {
     return CreateBufferWithFormat(size, DRM_FORMAT_XRGB8888);
@@ -118,6 +119,10 @@ void HardwareDisplayPlaneManagerTest::SetUp() {
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
   fake_buffer_ = CreateBuffer(kDefaultBufferSize);
+}
+
+void HardwareDisplayPlaneManagerTest::TearDown() {
+  fake_drm_->ResetPlaneManagerForTesting();
 }
 
 void HardwareDisplayPlaneManagerTest::PerformPageFlip(
@@ -188,13 +193,7 @@ uint64_t HardwareDisplayPlaneManagerTest::GetPlanePropertyValue(
 using HardwareDisplayPlaneManagerLegacyTest = HardwareDisplayPlaneManagerTest;
 using HardwareDisplayPlaneManagerAtomicTest = HardwareDisplayPlaneManagerTest;
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_ResettingConnectorCache DISABLED_ResettingConnectorCache
-#else
-#define MAYBE_ResettingConnectorCache ResettingConnectorCache
-#endif
-TEST_P(HardwareDisplayPlaneManagerTest, MAYBE_ResettingConnectorCache) {
+TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
   const int connector_and_crtc_count = 3;
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       connector_and_crtc_count,
@@ -463,13 +462,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, CheckFramebufferFormatMatch) {
       &state_, assigns, fake_drm_->crtc_property(0).id));
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_Modeset DISABLED_Modeset
-#else
-#define MAYBE_Modeset Modeset
-#endif
-TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_Modeset) {
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, Modeset) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
@@ -505,13 +498,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, DisableModeset) {
   EXPECT_EQ(1, fake_drm_->get_commit_count());
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_CheckPropsAfterModeset DISABLED_CheckPropsAfterModeset
-#else
-#define MAYBE_CheckPropsAfterModeset CheckPropsAfterModeset
-#endif
-TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_CheckPropsAfterModeset) {
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
@@ -548,13 +535,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_CheckPropsAfterModeset) {
   EXPECT_EQ(kModePropId, crtc_prop_for_name.id);
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_CheckPropsAfterDisable DISABLED_CheckPropsAfterDisable
-#else
-#define MAYBE_CheckPropsAfterDisable CheckPropsAfterDisable
-#endif
-TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_CheckPropsAfterDisable) {
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
@@ -591,13 +572,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_CheckPropsAfterDisable) {
   EXPECT_EQ(0U, crtc_prop_for_name.value);
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_CheckVrrAfterModeset DISABLED_CheckVrrAfterModeset
-#else
-#define MAYBE_CheckVrrAfterModeset CheckVrrAfterModeset
-#endif
-TEST_P(HardwareDisplayPlaneManagerAtomicTest, MAYBE_CheckVrrAfterModeset) {
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckVrrAfterModeset) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/2);
   drm_state.crtc_properties[0].properties.push_back(
