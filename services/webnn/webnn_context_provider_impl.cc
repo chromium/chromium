@@ -17,6 +17,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <wrl.h>
 
+#include "base/notreached.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
@@ -168,6 +169,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     return;
   }
 #if BUILDFLAG(WEBNN_USE_TFLITE)
+  // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
+
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   auto receiver = blink_remote.InitWithNewPipeAndPassReceiver();
@@ -180,6 +183,16 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_WIN)
+  // TODO: crbug.com/325612086 - Consider using TFLite to support CPU contexts
+  // on Windows.
+  if (options->device == mojom::CreateContextOptions::Device::kCpu) {
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "The cpu device is not supported."));
+    DLOG(ERROR) << "WebNN Service is not supported on CPU on Windows.";
+    return;
+  }
+
   DCHECK(gpu_feature_info_.IsInitialized());
   if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=
       gpu::kGpuFeatureStatusEnabled) {
@@ -197,10 +210,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       adapter_creation_result;
   switch (options->device) {
     case mojom::CreateContextOptions::Device::kCpu:
-      std::move(callback).Run(mojom::CreateContextResult::NewError(
-          dml::CreateError(mojom::Error::Code::kNotSupportedError,
-                           "The cpu device is not supported.")));
-      return;
+      NOTREACHED_NORETURN();
     case mojom::CreateContextOptions::Device::kGpu:
       adapter_creation_result = GetDmlGpuAdapter(shared_context_state_.get());
       break;
@@ -240,6 +250,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     // The remote sent to the renderer.
     mojo::PendingRemote<mojom::WebNNContext> blink_remote;
     // The receiver bound to WebNNContextImpl.
+    //
+    // TODO: crbug.com/41481333 - Create the CoreML context using `options`.
     impls_.push_back(base::WrapUnique<WebNNContextImpl>(new coreml::ContextImpl(
         blink_remote.InitWithNewPipeAndPassReceiver(), this)));
     std::move(callback).Run(

@@ -78,6 +78,27 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
+
+// The DirectML implementation does not support CPU execution.
+TEST_F(WebNNContextProviderImplTest, CPUNotSupported) {
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
+  WebNNContextProviderImpl::CreateForTesting(
+      provider_remote.BindNewPipeAndPassReceiver(), /*is_gpu_supported=*/true);
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> future;
+  provider_remote->CreateWebNNContext(
+      mojom::CreateContextOptions::New(
+          mojom::CreateContextOptions::Device::kCpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      future.GetCallback());
+  mojom::CreateContextResultPtr result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::ErrorPtr& create_context_error = result->get_error();
+  EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(create_context_error->message, "The cpu device is not supported.");
+}
+
 // Checking for GPU compatibility is Windows-specific because only the DirectML
 // implementation unconditionally depends on a GPU.
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
@@ -87,8 +108,11 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
       provider_remote.BindNewPipeAndPassReceiver(), /*is_gpu_supported=*/false);
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
-  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
-                                      future.GetCallback());
+  provider_remote->CreateWebNNContext(
+      mojom::CreateContextOptions::New(
+          mojom::CreateContextOptions::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
   const mojom::ErrorPtr& create_context_error = result->get_error();
