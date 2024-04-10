@@ -1926,14 +1926,6 @@ extern const char kTabEngagementReportingDescription[];
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
-extern const char kTabGroupsSaveId[];
-extern const char kTabGroupsSaveName[];
-extern const char kTabGroupsSaveDescription[];
-
-extern const char kTabGroupsSaveV2Id[];
-extern const char kTabGroupsSaveV2Name[];
-extern const char kTabGroupsSaveV2Description[];
-
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 

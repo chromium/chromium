@@ -42,13 +42,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // Tab Groups Save.
-    lab_info.emplace_back(
-        flag_descriptions::kTabGroupsSaveId,
-        l10n_util::GetStringUTF16(IDS_TAB_GROUPS_SAVE_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_TAB_GROUPS_SAVE_DESCRIPTION),
-        "tab-groups-save", version_info::Channel::BETA);
-
     // ChromeRefresh2023.
     std::vector<std::u16string> chrome_refresh_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX)};
