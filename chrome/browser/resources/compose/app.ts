@@ -270,7 +270,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private hasOutput_: boolean = false;
   private displayedText_: string;
   private responseText_: string;
-  private userResponseText_: string|undefined;
 
   constructor() {
     super();
@@ -288,13 +287,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private getResponseText_(): TextInput {
-    if (this.userResponseText_ !== undefined) {
-      return {
-        text: this.userResponseText_,
-        isPartial: false,
-        streamingEnabled: false,
-      };
-    } else if (this.response_) {
+    if (this.response_) {
       return {
         text: this.response_.status === ComposeStatus.kOk ?
             this.response_.result.trim() :
@@ -626,7 +619,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
     }
 
-    this.userResponseText_ = undefined;
     const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
     this.undoEnabled_ = this.response_.undoAvailable;
@@ -757,11 +749,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return Boolean(
         this.response_?.status === ComposeStatus.kFiltered &&
         this.response_?.triggeredFromModifier);
-  }
-
-  private onResultEdit_(e: CustomEvent<string>) {
-    this.userResponseText_ = e.detail;
-    this.apiProxy_.editResult(this.userResponseText_);
   }
 
   private saveComposeAppState_() {
