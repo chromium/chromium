@@ -74,7 +74,7 @@ ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile),
-      std::move(hats_delegate));
+      std::move(hats_delegate), /*persister_root_path=*/profile->GetPath());
 }
 
 // static

@@ -12,9 +12,11 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/files/file_util.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -40,6 +42,16 @@ class PingManager : public KeyedService {
     EMPTY_REPORT = 2,
   };
 
+  enum class PersistThreatDetailsResult {
+    // The task to persist the report has posted. The actual file write
+    // operation may still fail.
+    kPersistTaskPosted = 0,
+    // There was a problem serializing the report to a string.
+    kSerializationError = 1,
+    // The report is empty, so it is not sent.
+    kEmptyReport = 2,
+  };
+
   // Interface via which a client of this class can surface relevant events in
   // WebUI. All methods must be called on the UI thread.
   class WebUIDelegate {
@@ -54,6 +66,23 @@ class PingManager : public KeyedService {
     virtual void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) = 0;
   };
 
+  // Helper class to read/write a report on disk.
+  class Persister {
+   public:
+    explicit Persister(const base::FilePath& persister_root_path);
+    Persister(const Persister&) = delete;
+    Persister& operator=(const Persister&) = delete;
+
+    ~Persister() = default;
+
+    // Writes |serialized_report| to a new file in |dir_path_|.
+    void WriteReport(const std::string& serialized_report);
+
+   private:
+    // The directory that the files will be written in.
+    base::FilePath dir_path_;
+  };
+
   explicit PingManager(
       const V4ProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -65,7 +94,8 @@ class PingManager : public KeyedService {
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
-      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+      const base::FilePath& persister_root_path);
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
@@ -83,7 +113,8 @@ class PingManager : public KeyedService {
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
-      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+      const base::FilePath& persister_root_path);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -107,7 +138,7 @@ class PingManager : public KeyedService {
 
   // Similar to |ReportThreatDetails|, but persists the report on disk and sends
   // it on next startup.
-  virtual ReportThreatDetailsResult PersistThreatDetailsAndReportOnNextStartup(
+  virtual PersistThreatDetailsResult PersistThreatDetailsAndReportOnNextStartup(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Launches a survey and attaches ThreatDetails to the survey response.
@@ -187,6 +218,8 @@ class PingManager : public KeyedService {
 
   // Launches HaTS surveys.
   std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate_;
+
+  base::SequenceBound<Persister> persister_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

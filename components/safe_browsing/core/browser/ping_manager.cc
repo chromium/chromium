@@ -11,15 +11,19 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -63,6 +67,11 @@ bool IsDownloadReport(
   }
 }
 
+std::string GetRandFileName() {
+  return base::NumberToString(
+      base::RandGenerator(std::numeric_limits<uint64_t>::max()));
+}
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_extended_reporting",
                                         R"(
@@ -104,6 +113,21 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 namespace safe_browsing {
 
+// SafeBrowsingPingManager::Persister implementation -----------------------
+
+PingManager::Persister::Persister(const base::FilePath& persister_root_path) {
+  dir_path_ = persister_root_path.AppendASCII("DownloadReports");
+}
+
+void PingManager::Persister::WriteReport(const std::string& serialized_report) {
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(dir_path_, &error)) {
+    return;
+  }
+  base::FilePath file_path = dir_path_.AppendASCII((GetRandFileName()));
+  base::WriteFile(file_path, serialized_report);
+}
+
 // SafeBrowsingPingManager implementation ----------------------------------
 
 // static
@@ -118,12 +142,13 @@ std::unique_ptr<PingManager> PingManager::Create(
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
         get_page_load_token_callback,
-    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+    const base::FilePath& persister_root_path) {
   return std::make_unique<PingManager>(
       config, url_loader_factory, std::move(token_fetcher),
       get_should_fetch_access_token, webui_delegate, ui_task_runner,
       get_user_population_callback, get_page_load_token_callback,
-      std::move(hats_delegate));
+      std::move(hats_delegate), persister_root_path);
 }
 
 PingManager::PingManager(
@@ -137,7 +162,8 @@ PingManager::PingManager(
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
         get_page_load_token_callback,
-    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate)
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+    const base::FilePath& persister_root_path)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
@@ -146,7 +172,15 @@ PingManager::PingManager(
       ui_task_runner_(ui_task_runner),
       get_user_population_callback_(get_user_population_callback),
       get_page_load_token_callback_(get_page_load_token_callback),
-      hats_delegate_(std::move(hats_delegate)) {}
+      hats_delegate_(std::move(hats_delegate)) {
+  persister_ = base::SequenceBound<Persister>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+      persister_root_path);
+  // TODO(crbug.com/329471668): Schedule tasks to read reports from persister
+  // and send them.
+}
 
 PingManager::~PingManager() {}
 
@@ -264,11 +298,20 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
   return ReportThreatDetailsResult::SUCCESS;
 }
 
-PingManager::ReportThreatDetailsResult
+PingManager::PersistThreatDetailsResult
 PingManager::PersistThreatDetailsAndReportOnNextStartup(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  // TODO(crbug.com/329471668): Persist report on disk.
-  return ReportThreatDetailsResult::SUCCESS;
+  SanitizeThreatDetailsReport(report.get());
+  std::string serialized_report;
+  if (!report->SerializeToString(&serialized_report)) {
+    return PersistThreatDetailsResult::kSerializationError;
+  }
+  if (serialized_report.empty()) {
+    return PersistThreatDetailsResult::kEmptyReport;
+  }
+  persister_.AsyncCall(&Persister::WriteReport)
+      .WithArgs(std::move(serialized_report));
+  return PersistThreatDetailsResult::kPersistTaskPosted;
 }
 
 void PingManager::AttachThreatDetailsAndLaunchSurvey(

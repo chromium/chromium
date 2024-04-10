@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
+
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/files/file_enumerator.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
@@ -80,6 +83,7 @@ class PingManagerTest : public testing::Test {
   std::string key_param_;
   std::unique_ptr<MockWebUIDelegate> webui_delegate_ =
       std::make_unique<MockWebUIDelegate>();
+  base::FilePath persister_root_path_;
   FakeSafeBrowsingHatsDelegate* SetUpHatsDelegate();
 
  private:
@@ -95,6 +99,7 @@ void PingManagerTest::SetUp() {
     key_param_ = base::StringPrintf(
         "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
   }
+  persister_root_path_ = base::CreateUniqueTempDirectoryScopedToTest();
   SetNewPingManager(std::nullopt, std::nullopt, std::nullopt);
 }
 
@@ -121,7 +126,8 @@ void PingManagerTest::SetNewPingManager(
           base::BindRepeating([]() { return false; })),
       webui_delegate_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
       get_user_population_callback.value_or(base::NullCallback()),
-      get_page_load_token_callback.value_or(base::NullCallback()), nullptr));
+      get_page_load_token_callback.value_or(base::NullCallback()), nullptr,
+      persister_root_path_));
 }
 
 void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
@@ -564,6 +570,53 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
       /*expected_user_population=*/std::nullopt,
       /*expected_page_load_token_value=*/"testing_page_load_token",
       /*expect_cookies_removed=*/false);
+}
+
+TEST_F(PingManagerTest, PersistThreatDetails) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_PROFILE_CLOSED);
+  report->set_url("https://some.url.com/");
+  PingManager::PersistThreatDetailsResult result =
+      ping_manager()->PersistThreatDetailsAndReportOnNextStartup(
+          std::move(report));
+  EXPECT_EQ(result,
+            PingManager::PersistThreatDetailsResult::kPersistTaskPosted);
+  task_environment_.RunUntilIdle();
+
+  base::FilePath persister_dir =
+      persister_root_path_.AppendASCII("DownloadReports");
+  ASSERT_TRUE(base::PathExists(persister_dir));
+  base::FileEnumerator directory_enumerator(persister_dir,
+                                            /*recursive=*/false,
+                                            base::FileEnumerator::FILES);
+  int number_of_files = 0;
+  for (base::FilePath file_name = directory_enumerator.Next();
+       !file_name.empty(); file_name = directory_enumerator.Next()) {
+    number_of_files++;
+    std::string persisted_report_string;
+    bool success = base::ReadFileToString(file_name, &persisted_report_string);
+    ASSERT_TRUE(success);
+    auto persisted_report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    bool parse_successful =
+        persisted_report->ParseFromString(persisted_report_string);
+    ASSERT_TRUE(parse_successful);
+    EXPECT_EQ(
+        persisted_report->type(),
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_PROFILE_CLOSED);
+    EXPECT_EQ(persisted_report->url(), "https://some.url.com/");
+  }
+  EXPECT_EQ(number_of_files, 1);
+}
+
+TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown_EmptyReport) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  PingManager::PersistThreatDetailsResult result =
+      ping_manager()->PersistThreatDetailsAndReportOnNextStartup(
+          std::move(report));
+  EXPECT_EQ(result, PingManager::PersistThreatDetailsResult::kEmptyReport);
 }
 
 TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
