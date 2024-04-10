@@ -2,6 +2,7 @@ include_rules = [
   "+components/consent_auditor",
   "+components/data_sharing/public",
   "+components/trusted_vault",
+  "+components/webauthn/core/browser",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/history/model",
@@ -23,6 +24,7 @@ include_rules = [
   "+ios/chrome/browser/dom_distiller/model",
   "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/supervised_user/model",
+  "+ios/chrome/browser/webauthn/model",
 ]
 
 specific_include_rules = {

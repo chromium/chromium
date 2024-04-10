@@ -20,7 +20,7 @@ source_set("browser") {
     ]
   }
 
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [
       "passkey_model.cc",
       "passkey_model.h",
@@ -53,24 +53,29 @@ source_set("unit_tests") {
 
 static_library("test_support") {
   testonly = true
+  sources = []
+  deps = []
+
   if (use_blink) {
-    sources = [
+    sources += [
       "mock_internal_authenticator.cc",
       "mock_internal_authenticator.h",
     ]
-    deps = [
+    deps += [
       ":browser",
-      "//base/test:test_support",
-      "//components/sync",
       "//content/public/browser",
       "//testing/gmock",
-      "//testing/gtest",
     ]
   }
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [
       "test_passkey_model.cc",
       "test_passkey_model.h",
+    ]
+    deps += [
+      ":browser",
+      "//base",
+      "//components/sync",
     ]
   }
 }

@@ -35,7 +35,7 @@ source_set("affiliation_fetching") {
     "//net",
     "//url",
   ]
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [
       "passkey_affiliation_source_adapter.cc",
       "passkey_affiliation_source_adapter.h",
@@ -108,7 +108,7 @@ source_set("affiliation_fetching_unittests") {
     "//testing/gtest",
   ]
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [ "passkey_affiliation_source_adapter_unittest.cc" ]
     deps += [ "//components/webauthn/core/browser:test_support" ]
   }

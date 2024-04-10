@@ -60,12 +60,9 @@ source_set("ui") {
     "//components/sync/base:features",
     "//components/undo",
     "//components/url_formatter",
+    "//components/webauthn/core/browser",
     "//url",
   ]
-
-  if (!is_ios) {
-    deps += [ "//components/webauthn/core/browser" ]
-  }
 
   if (!is_android) {
     sources += [

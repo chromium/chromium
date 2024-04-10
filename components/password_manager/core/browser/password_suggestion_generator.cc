@@ -87,7 +87,7 @@ autofill::Suggestion CreateGenerationEntry() {
 // Entry for opting in to password account storage and then filling.
 autofill::Suggestion CreateEntryToOptInToAccountStorageThenFill() {
   bool has_passkey_sync = false;
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   has_passkey_sync =
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
 #endif

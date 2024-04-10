@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/webauthn/core/browser",
+  "+ios/chrome/browser/passwords/model",
+  "+ios/chrome/browser/sync/model",
+]
