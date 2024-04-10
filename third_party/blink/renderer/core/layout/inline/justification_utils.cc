@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/justification_utils.h"
 
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -22,13 +23,13 @@ String BuildJustificationText(const String& text_content,
                               const InlineItemResults& results,
                               unsigned line_text_start_offset,
                               unsigned end_offset,
-                              bool may_have_text_combine) {
+                              bool may_have_text_combine_or_ruby) {
   if (results.empty()) {
     return String();
   }
 
   StringBuilder line_text_builder;
-  if (UNLIKELY(may_have_text_combine)) {
+  if (UNLIKELY(may_have_text_combine_or_ruby)) {
     for (const InlineItemResult& item_result : results) {
       if (item_result.StartOffset() >= end_offset) {
         break;
@@ -41,6 +42,27 @@ String BuildJustificationText(const String& text_content,
         // Note: The spec[1] says we should treat combined text as U+FFFC.
         // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
         line_text_builder.Append(kTextCombineItemMarker);
+        continue;
+      }
+      if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
+          item_result.ruby_column) {
+        line_text_builder.Append(StringView(text_content,
+                                            item_result.item->StartOffset(),
+                                            item_result.item->Length()));
+        // Add the ruby-base results only if the ruby-base is wider than its
+        // ruby-text. Shorter ruby-bases don't participate in the justification
+        // for the whole line.
+        if (item_result.inline_size ==
+            item_result.ruby_column->base_line.Width()) {
+          const LineInfo& base_line = item_result.ruby_column->base_line;
+          const InlineItemResults& base_results = base_line.Results();
+          if (!base_results.empty()) {
+            line_text_builder.Append(BuildJustificationText(
+                text_content, base_results, base_results.front().StartOffset(),
+                base_line.EndOffsetForJustify(),
+                base_line.MayHaveTextCombineOrRubyItem()));
+          }
+        }
         continue;
       }
       line_text_builder.Append(StringView(text_content,
@@ -75,11 +97,12 @@ String BuildJustificationText(const String& text_content,
   return line_text_builder.ReleaseString();
 }
 
-void JustifyResults(const String& line_text,
+void JustifyResults(String line_text,
                     unsigned line_text_start_offset,
                     ShapeResultSpacing<String>& spacing,
                     InlineItemResults& results) {
-  for (InlineItemResult& item_result : results) {
+  for (wtf_size_t i = 0; i < results.size(); ++i) {
+    InlineItemResult& item_result = results[i];
     if (item_result.has_only_pre_wrap_trailing_spaces) {
       break;
     }
@@ -113,6 +136,32 @@ void JustifyResults(const String& line_text,
         item_result.inline_size += spacing_after;
         // |spacing_before| is non-zero only before CJK characters.
         DCHECK_EQ(spacing_before, 0.0f);
+      }
+    } else if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
+               item_result.ruby_column) {
+      LineInfo& base_line = item_result.ruby_column->base_line;
+      if (item_result.inline_size == base_line.Width()) {
+        JustifyResults(line_text, line_text_start_offset, spacing,
+                       *base_line.MutableResults());
+        base_line.SetWidth(base_line.AvailableWidth(),
+                           base_line.ComputeWidth());
+        item_result.inline_size =
+            std::max(item_result.inline_size, base_line.Width());
+      }
+      if (i + 1 < results.size()) {
+        // Adjust line_text and line_text_start_offset because line_text is
+        // intermittent due to ruby annotations.
+        wtf_size_t next_start_offset = results[i + 1].StartOffset();
+        if (item_result.inline_size == base_line.Width()) {
+          line_text = line_text.Substring(base_line.EndTextOffset() -
+                                          line_text_start_offset);
+        } else {
+          // BuildJustificationText() didn't produce any text for this ruby
+          // column. We drop the text prior to this column.
+          line_text = line_text.Substring(base_line.StartOffset() -
+                                          line_text_start_offset);
+        }
+        line_text_start_offset = next_start_offset;
       }
     }
   }
@@ -150,7 +199,8 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   // Construct the line text to compute spacing for.
   String line_text = BuildJustificationText(
       line_info->ItemsData().text_content, line_info->Results(),
-      line_text_start_offset, end_offset, line_info->MayHaveTextCombineItem());
+      line_text_start_offset, end_offset,
+      line_info->MayHaveTextCombineOrRubyItem());
   if (line_text.empty()) {
     return std::nullopt;
   }

@@ -66,7 +66,7 @@ void LineInfo::Reset() {
   needs_accurate_end_position_ = false;
   is_ruby_base_ = false;
   is_ruby_text_ = false;
-  may_have_text_combine_item_ = false;
+  may_have_text_combine_or_ruby_item_ = false;
   allow_hang_for_alignment_ = false;
 }
 
@@ -153,12 +153,23 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
 }
 
 InlineItemTextIndex LineInfo::End() const {
-  return GetBreakToken() ? GetBreakToken()->Start() : ItemsData().End();
+  if (GetBreakToken()) {
+    return GetBreakToken()->Start();
+  }
+  if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
+    return {end_item_index_, ItemsData().items[end_item_index_].StartOffset()};
+  }
+  return ItemsData().End();
 }
 
 unsigned LineInfo::EndTextOffset() const {
-  return GetBreakToken() ? GetBreakToken()->StartTextOffset()
-                         : ItemsData().text_content.length();
+  if (GetBreakToken()) {
+    return GetBreakToken()->StartTextOffset();
+  }
+  if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
+    return ItemsData().items[end_item_index_].StartOffset();
+  }
+  return ItemsData().text_content.length();
 }
 
 unsigned LineInfo::InflowEndOffset() const {

@@ -215,10 +215,14 @@ class CORE_EXPORT LineInfo {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
-  // |MayHaveTextCombineItem()| is used for treating text-combine box as
-  // ideographic character during "text-align:justify".
-  bool MayHaveTextCombineItem() const { return may_have_text_combine_item_; }
-  void SetHaveTextCombineItem() { may_have_text_combine_item_ = true; }
+  // |MayHaveTextCombineOrRubyItem()| is a flag for special text handling
+  // during "text-align:justify".
+  bool MayHaveTextCombineOrRubyItem() const {
+    return may_have_text_combine_or_ruby_item_;
+  }
+  void SetHaveTextCombineOrRubyItem() {
+    may_have_text_combine_or_ruby_item_ = true;
+  }
 
   // Returns annotation block start adjustment base on annotation and initial
   // letter.
@@ -307,9 +311,11 @@ class CORE_EXPORT LineInfo {
   // Even if text combine item causes line break, this variable is not reset.
   // This variable is used to add spacing before/after text combine items if
   // "text-align: justify".
+  // Also, the variable is used to represent existence of <ruby>, which needs
+  // special handling for "text-align: justify".
   // Note: To avoid scanning |InlineItemResults|, this variable is true
   // when |InlineItemResult| to |results_|.
-  bool may_have_text_combine_item_ = false;
+  bool may_have_text_combine_or_ruby_item_ = false;
   bool allow_hang_for_alignment_ = false;
 
   // When adding fields, pelase ensure `Reset()` is in sync.

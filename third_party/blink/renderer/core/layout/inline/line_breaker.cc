@@ -483,7 +483,7 @@ inline InlineItemResult* LineBreaker::AddItem(const InlineItem& item,
   DCHECK_GE(end_offset, current_.text_offset);
   DCHECK_LE(end_offset, item.EndOffset());
   if (UNLIKELY(item.IsTextCombine()))
-    line_info->SetHaveTextCombineItem();
+    line_info->SetHaveTextCombineOrRubyItem();
   InlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
       &item, current_.item_index,
@@ -900,9 +900,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       continue;
     }
     if (item.Type() == InlineItem::kCloseRubyColumn) {
-      // Usually HandleRuby() consumes kCloseRubyColumn, but HandleRuby()
-      // doesn't do it if the ruby column has no <rt>. In that case, we can
-      // ignore kCloseRubyColumn.
+      AddItem(item, line_info);
       MoveToNextOf(item);
       continue;
     }
@@ -924,14 +922,17 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       continue;
     }
     if (item.Type() == InlineItem::kOpenRubyColumn) {
-      // Skip an empty ruby column.
+      // Skip to call HandleRuby() for an empty ruby column.
       if (Items()[current_.item_index + 1].Type() ==
           InlineItem::kCloseRubyColumn) {
+        AddItem(item, line_info);
         MoveToNextOf(item);
-        MoveToNextOf(Items()[current_.item_index]);
+        AddItem(items[current_.item_index], line_info);
+        MoveToNextOf(items[current_.item_index]);
         continue;
       }
       if (!HandleRuby(line_info)) {
+        AddItem(item, line_info);
         MoveToNextOf(item);
       }
       continue;
@@ -2979,12 +2980,8 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
     AddRubyColumnResult(item, base_line_info, annotation_line_list,
                         annotation_data, ruby_size, *line_info);
     position_ += ruby_size;
-    // Adjust the state in order to move to the next of kCloseRubyColumn.
-    current_.item_index = annotation_line_list[0].EndItemIndex();
-    const InlineItem& close_column = Items()[current_.item_index];
-    DCHECK_EQ(close_column.Type(), InlineItem::kCloseRubyColumn);
-    current_.text_offset = close_column.StartOffset();
-    MoveToNextOf(close_column);
+    // Move to a kCloseRubyColumn item.
+    current_ = annotation_line_list[0].End();
     return true;
   }
   // TODO(crbug.com/324111880): Break the ruby if ruby_size is longer than
@@ -3022,9 +3019,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   auto* data = MakeGarbageCollected<InlineItemResultRubyColumn>();
   column_result->ruby_column = data;
   data->base_line = base_line_info;
-  if (base_line_info.MayHaveTextCombineItem()) {
-    line_info.SetHaveTextCombineItem();
-  }
+  line_info.SetHaveTextCombineOrRubyItem();
 
   data->annotation_line_list = annotation_line_list;
   for (wtf_size_t i = 0; i < annotation_line_list.size(); ++i) {
