@@ -20,6 +20,7 @@
 #include "base/barrier_callback.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -745,57 +746,82 @@ void FullRestoreService::OnSessionInformationReceived(
   pine_contents_data->cancel_callback = base::BindOnce(
       &FullRestoreService::CancelForForest, weak_ptr_factory_.GetWeakPtr());
 
+  // Contains per-window app data to be sorted and and added to
+  // `pine_contents_data`.
+  struct WindowAppData {
+    int window_id;
+    std::string app_id;
+    raw_ptr<::app_restore::AppRestoreData> app_restore_data;
+  };
+
   // Retrieve app id's from `restore_data`. There can be multiple entries with
   // the same app id, these denote different windows.
-  // TODO(http://b/329152636): Order these by activation index.
+  std::vector<WindowAppData> complete_window_list;
   for (const auto& [app_id, launch_list] :
        restore_data->app_id_to_launch_list()) {
     for (const std::pair<const int,
                          std::unique_ptr<::app_restore::AppRestoreData>>&
-             app_restore_data : launch_list) {
-      const std::string stored_title = base::UTF16ToUTF8(
-          app_restore_data.second->window_info.app_title.value_or(
-              std::u16string()));
-
-      // For non browsers, the app id and title is sufficient for the UI we want
-      // to display.
-      if (app_id != app_constants::kChromeAppId &&
-          app_id != app_constants::kLacrosAppId) {
-        pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
-        continue;
-      }
-
-      // Find the `crosapi::mojom::SessionWindow` associated with `window_id` if
-      // it exists.
-      const int window_id = app_restore_data.first;
-
-      auto it = session_windows_map.find(window_id);
-      crosapi::mojom::SessionWindow* session_window =
-          it == session_windows_map.end() ? nullptr : it->second.get();
-
-      // Default to using the app id if we cannot find the associated window for
-      // whatever reason.
-      if (!session_window) {
-        pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
-        continue;
-      }
-
-      // App browsers app ID is the same as regular chrome browsers. To get the
-      // correct icon and title from the app service, we need to find the app
-      // name and remove the "_crx_", then use that result.
-      const std::string app_name = session_window->app_name;
-      if (!app_name.empty()) {
-        const std::string new_app_id =
-            ::app_restore::GetAppIdFromAppName(app_name);
-        pine_contents_data->apps_infos.emplace_back(
-            new_app_id.empty() ? app_id : new_app_id, stored_title);
-        continue;
-      }
-
-      pine_contents_data->apps_infos.emplace_back(
-          app_id, session_window->active_tab_title, session_window->urls,
-          session_window->tab_count, session_window->profile_id);
+             id_data_pair : launch_list) {
+      complete_window_list.emplace_back(id_data_pair.first, app_id,
+                                        id_data_pair.second.get());
     }
+  }
+
+  // Sort the windows based on their activation index (more recent windows have
+  // a lower index). Windows without an activation index can be placed at the
+  // end.
+  base::ranges::sort(complete_window_list, [](const WindowAppData& element_a,
+                                              const WindowAppData& element_b) {
+    return element_a.app_restore_data->window_info.activation_index.value_or(
+               INT_MAX) <
+           element_b.app_restore_data->window_info.activation_index.value_or(
+               INT_MAX);
+  });
+
+  for (auto info : complete_window_list) {
+    const int window_id = info.window_id;
+    const std::string app_id = info.app_id;
+    const std::string stored_title =
+        base::UTF16ToUTF8(info.app_restore_data->window_info.app_title.value_or(
+            std::u16string()));
+
+    // For non browsers, the app id and title is sufficient for the UI we want
+    // to display.
+    if (app_id != app_constants::kChromeAppId &&
+        app_id != app_constants::kLacrosAppId) {
+      pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
+      continue;
+    }
+
+    // Find the `crosapi::mojom::SessionWindow` associated with `window_id` if
+    // it exists.
+    auto it = session_windows_map.find(window_id);
+
+    crosapi::mojom::SessionWindow* session_window =
+        it == session_windows_map.end() ? nullptr : it->second.get();
+
+    // Default to using the app id if we cannot find the associated window for
+    // whatever reason.
+    if (!session_window) {
+      pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
+      continue;
+    }
+
+    // App browsers app ID is the same as regular chrome browsers. To get the
+    // correct icon and title from the app service, we need to find the app
+    // name and remove the "_crx_", then use that result.
+    const std::string app_name = session_window->app_name;
+    if (!app_name.empty()) {
+      const std::string new_app_id =
+          ::app_restore::GetAppIdFromAppName(app_name);
+      pine_contents_data->apps_infos.emplace_back(
+          new_app_id.empty() ? app_id : new_app_id, stored_title);
+      continue;
+    }
+
+    pine_contents_data->apps_infos.emplace_back(
+        app_id, session_window->active_tab_title, session_window->urls,
+        session_window->tab_count, session_window->profile_id);
   }
 
   delegate_->MaybeStartPineOverviewSession(std::move(pine_contents_data));

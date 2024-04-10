@@ -418,6 +418,8 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfo) {
   AppLaunchInfoSaveWaiter::Wait();
 }
 
+// TODO(http://b/329152636): Update or add to this test to check that the
+// windows and tabs are listed with proper activation order.
 // Verify that the tab info that is sent to ash shell is as expected.
 IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfo) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
