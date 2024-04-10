@@ -321,6 +321,17 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
 
 void EmbeddedPermissionPrompt::Dismiss() {
   PrecalculateVariantsForMetrics();
+  if (embedded_prompt_variant_ == Variant::kOsPrompt) {
+    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+        delegate()->Requests(), permissions::OsScreen::OS_PROMPT,
+        permissions::OsScreenAction::DISMISSED_X_BUTTON);
+  }
+  if (embedded_prompt_variant_ == Variant::kOsSystemSettings) {
+    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+        delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
+        permissions::OsScreenAction::DISMISSED_X_BUTTON);
+  }
+
   delegate_->Dismiss();
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_X_BUTTON);
@@ -353,12 +364,25 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
              permissions::RequestType::kMicStream) {
     OpenMicSystemSettingsOnMacOS();
   }
+  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+      delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
+      permissions::OsScreenAction::SYSTEM_SETTINGS);
 #endif
 }
 
 void EmbeddedPermissionPrompt::DismissScrim() {
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
+  if (embedded_prompt_variant_ == Variant::kOsPrompt) {
+    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+        delegate()->Requests(), permissions::OsScreen::OS_PROMPT,
+        permissions::OsScreenAction::DISMISSED_SCRIM);
+  }
+  if (embedded_prompt_variant_ == Variant::kOsSystemSettings) {
+    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+        delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
+        permissions::OsScreenAction::DISMISSED_SCRIM);
+  }
   CloseView();
   PrecalculateVariantsForMetrics();
   delegate_->Dismiss();

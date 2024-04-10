@@ -1781,6 +1781,37 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
 }
 
 // static
+void PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    OsScreen screen,
+    OsScreenAction action) {
+  CHECK(!requests.empty());
+
+  RequestTypeForUma type =
+      GetUmaValueForRequestType(requests[0]->request_type());
+  if (requests.size() > 1) {
+    type = RequestTypeForUma::MULTIPLE;
+  }
+
+  std::string screen_type;
+  switch (screen) {
+    case OsScreen::OS_PROMPT:
+      screen_type = "OS_PROMPT";
+      break;
+    case OsScreen::OS_SYSTEM_SETTINGS:
+      screen_type = "OS_SYSTEM_SETTINGS";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      "Permissions.Prompt." + GetPermissionRequestString(type) +
+          ".ElementAnchoredBubble" + screen_type + ".OsScreenAction",
+      action);
+}
+
+// static
 void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
     ContentSettingsType content_settings_type,
     PermissionAction action,

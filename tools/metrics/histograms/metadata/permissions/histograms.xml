@@ -63,6 +63,14 @@ chromium-metrics-reviews@google.com.
   <variant name="FromUser"/>
 </variants>
 
+<variants name="PermissionTypeForElementAnchoredBubble">
+  <variant name="AR"/>
+  <variant name="AudioAndVideoCapture"/>
+  <variant name="AudioCapture"/>
+  <variant name="Geolocation"/>
+  <variant name="VideoCapture"/>
+</variants>
+
 <variants name="PermissionTypesSupportPermissionsPolicy">
   <variant name="AR"/>
   <variant name="AudioCapture"/>
@@ -889,12 +897,25 @@ chromium-metrics-reviews@google.com.
     Tracks how a {PermissionType} prompt was dismissed by the user. Tracked when
     the user dimisses an ElementAnchoredBubble prompt.
   </summary>
-  <token key="PermissionType">
-    <variant name="AR"/>
-    <variant name="AudioAndVideoCapture"/>
-    <variant name="AudioCapture"/>
-    <variant name="Geolocation"/>
-    <variant name="VideoCapture"/>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.{OsScreen}.OsScreenAction"
+    enum="OsScreenAction" expires_after="2025-02-16">
+  <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Tracks the action taken on a {PermissionType} screen that informs the user
+    about state of the OS settings. Recorded when the user interacts with this
+    screen.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
+  <token key="OsScreen">
+    <variant name="OS_PROMPT"/>
+    <variant name="OS_SYSTEM_SETTINGS"/>
   </token>
 </histogram>
 

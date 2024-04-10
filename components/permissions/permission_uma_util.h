@@ -295,6 +295,30 @@ enum class DismissedReason {
   kMaxValue = DISMISSED_SCRIM
 };
 
+enum class OsScreen {
+  // Informs the user that Chrome needs permission from the OS level.
+  OS_PROMPT = 0,
+
+  // Informs the user that they need to go to OS system settings.
+  OS_SYSTEM_SETTINGS = 1,
+
+  kMaxValue = OS_SYSTEM_SETTINGS
+};
+
+enum class OsScreenAction {
+  // User clicks on "Go to System settings"
+  SYSTEM_SETTINGS = 0,
+
+  // The prompt was dismissed through the [x] button.
+  DISMISSED_X_BUTTON = 1,
+
+  // The prompt was dismissed through the user clicking on the scrim (area
+  // around the prompt).
+  DISMISSED_SCRIM = 2,
+
+  kMaxValue = DISMISSED_SCRIM
+};
+
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "OneTimePermissionEvent" in tools/metrics/histograms/enums.xml.
@@ -616,6 +640,12 @@ class PermissionUmaUtil {
       const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
           requests,
       DismissedReason reason);
+
+  static void RecordElementAnchoredBubbleOsScreenAction(
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
+      OsScreen screen,
+      OsScreenAction action);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(

@@ -88,6 +88,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Expired because the device was suspended"/>
 </enum>
 
+<enum name="OsScreen">
+  <int value="0" label="OS_PROMPT"/>
+  <int value="1" label="OS_SYSTEM_SETTINGS"/>
+</enum>
+
+<enum name="OsScreenAction">
+  <int value="0" label="SystemSettings"/>
+  <int value="1" label="Dismiss"/>
+  <int value="2" label="DismissScrim"/>
+</enum>
+
 <enum name="PageInfoDialogAccessType">
   <int value="0" label="Click on lock without confirmation chip context"/>
   <int value="1" label="Click on lock while confirmation chip is displayed"/>
