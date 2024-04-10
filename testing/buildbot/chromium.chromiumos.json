@@ -853,11 +853,10 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "video_decode_accelerator_tests",
+        "name": "video_decode_accelerator_tests_fake_vaapi",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",

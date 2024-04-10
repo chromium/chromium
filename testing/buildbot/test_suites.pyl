@@ -754,7 +754,8 @@
       'rust_gtest_interop_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
-      'video_decode_accelerator_tests': {
+      'video_decode_accelerator_tests_fake_vaapi': {
+        'test': 'video_decode_accelerator_tests',
         'args': [
           '--env-var',
           'LIBVA_DRIVERS_PATH',
@@ -766,7 +767,6 @@
           '../../media/test/data/test-25fps.vp9.json',
         ],
         'ci_only': True,
-        'experiment_percentage': 100,
       },
     },
 

@@ -928,7 +928,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "video_decode_accelerator_tests",
+    name = "video_decode_accelerator_tests_fake_vaapi",
     args = [
         "--env-var",
         "LIBVA_DRIVERS_PATH",
@@ -939,6 +939,7 @@ targets.tests.gtest_test(
         "../../media/test/data/test-25fps.vp9",
         "../../media/test/data/test-25fps.vp9.json",
     ],
+    binary = "video_decode_accelerator_tests",
 )
 
 targets.tests.gtest_test(

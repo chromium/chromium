@@ -1065,11 +1065,10 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "video_decode_accelerator_tests",
+        "name": "video_decode_accelerator_tests_fake_vaapi",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -1568,8 +1567,7 @@
         "ci_only": true,
         "cros_board": "brya",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
-        "name": "video_decode_accelerator_tests RELEASE_LKGM",
+        "name": "video_decode_accelerator_tests_fake_vaapi RELEASE_LKGM",
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,

@@ -734,9 +734,8 @@ targets.legacy_basic_suite(
         "cc_unittests": targets.legacy_test_config(),
         "crypto_unittests": targets.legacy_test_config(),
         "display_unittests": targets.legacy_test_config(),
-        "video_decode_accelerator_tests": targets.legacy_test_config(
+        "video_decode_accelerator_tests_fake_vaapi": targets.legacy_test_config(
             ci_only = True,
-            experiment_percentage = 100,
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,
