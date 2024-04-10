@@ -36,6 +36,16 @@ class InspectorWebSocketEvent {
                    uint64_t identifier);
 };
 
+class InspectorWebSocketTransferEvent {
+  STATIC_ONLY(InspectorWebSocketTransferEvent);
+
+ public:
+  static void Data(perfetto::TracedValue context,
+                   ExecutionContext*,
+                   uint64_t identifier,
+                   uint64_t data_length);
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_INSPECTOR_WEBSOCKET_EVENTS_H_

@@ -16,15 +16,11 @@
 
 namespace blink {
 
-void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
-                                         ExecutionContext* execution_context,
-                                         uint64_t identifier,
-                                         const KURL& url,
-                                         const String& protocol) {
-  auto dict = std::move(context).WriteDictionary();
+void AddCommonData(ExecutionContext* execution_context,
+                   uint64_t identifier,
+                   perfetto::TracedDictionary& dict) {
   DCHECK(execution_context->IsContextThread());
   dict.Add("identifier", identifier);
-  dict.Add("url", url.GetString());
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     dict.Add("frame", IdentifiersFactory::FrameId(window->GetFrame()));
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
@@ -34,6 +30,16 @@ void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
     NOTREACHED()
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
+}
+
+void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
+                                         ExecutionContext* execution_context,
+                                         uint64_t identifier,
+                                         const KURL& url,
+                                         const String& protocol) {
+  auto dict = std::move(context).WriteDictionary();
+  AddCommonData(execution_context, identifier, dict);
+  dict.Add("url", url.GetString());
   if (!protocol.IsNull())
     dict.Add("webSocketProtocol", protocol);
   SetCallStack(execution_context->GetIsolate(), dict);
@@ -42,18 +48,18 @@ void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
 void InspectorWebSocketEvent::Data(perfetto::TracedValue context,
                                    ExecutionContext* execution_context,
                                    uint64_t identifier) {
-  DCHECK(execution_context->IsContextThread());
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("identifier", identifier);
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    dict.Add("frame", IdentifiersFactory::FrameId(window->GetFrame()));
-  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
-    dict.Add("workerId", IdentifiersFactory::IdFromToken(
-                             scope->GetThread()->GetDevToolsWorkerToken()));
-  } else {
-    NOTREACHED()
-        << "WebSocket is available only in Window and WorkerGlobalScope";
-  }
+  AddCommonData(execution_context, identifier, dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
+}
+
+void InspectorWebSocketTransferEvent::Data(perfetto::TracedValue context,
+                                           ExecutionContext* execution_context,
+                                           uint64_t identifier,
+                                           uint64_t data_length) {
+  auto dict = std::move(context).WriteDictionary();
+  AddCommonData(execution_context, identifier, dict);
+  dict.Add("dataLength", data_length);
   SetCallStack(execution_context->GetIsolate(), dict);
 }
 

@@ -400,6 +400,9 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
                                  WebSocketOpCode::kOpCodeText, true,
                                  message.c_str(), message.length());
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+    "WebSocketSend", InspectorWebSocketTransferEvent::Data,
+    execution_context_.Get(), identifier_, message.length());
 
   bool did_attempt_to_send = false;
   base::span<const char> data = message;
@@ -438,6 +441,9 @@ void WebSocketChannelImpl::Send(
   // affect actual behavior.
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
                                  WebSocketOpCode::kOpCodeBinary, true, "", 0);
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+    "WebSocketSend", InspectorWebSocketTransferEvent::Data,
+    execution_context_.Get(), identifier_, blob_data_handle->size());
   messages_.push_back(Message(std::move(blob_data_handle)));
   ProcessSendQueue();
 }
@@ -453,7 +459,9 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
   probe::DidSendWebSocketMessage(
       execution_context_, identifier_, WebSocketOpCode::kOpCodeBinary, true,
       static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
-
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+    "WebSocketSend", InspectorWebSocketTransferEvent::Data,
+    execution_context_.Get(), identifier_, byte_length);
   bool did_attempt_to_send = false;
   base::span<const char> message = base::make_span(
       static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
@@ -1119,7 +1127,9 @@ void WebSocketChannelImpl::ConsumeDataFrame(
                     : WebSocketOpCode::kOpCodeBinary;
   probe::DidReceiveWebSocketMessage(execution_context_, identifier_, opcode,
                                     false, chunks);
-
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+    "WebSocketReceive", InspectorWebSocketTransferEvent::Data,
+    execution_context_.Get(), identifier_, size);
   if (receiving_message_type_is_text_) {
     String message = GetTextMessage(
         chunks, static_cast<wtf_size_t>(message_size_so_far + size));
