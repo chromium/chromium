@@ -275,6 +275,13 @@ class GpuIntegrationTest(
       # could technically be hit on any platform.
       default_args.append('--disable-backgrounding-occluded-windows')
 
+      if host_information.IsMac():
+        # TODO(crbug.com/333443445): Remove this once the feature no longer
+        # causes screenshot capturing to hang when run with multiple Chrome
+        # instances
+        default_args.append(
+            '--disable-features=UseScreenCaptureKitForSnapshots')
+
     return default_args + additional_args
 
   @classmethod
