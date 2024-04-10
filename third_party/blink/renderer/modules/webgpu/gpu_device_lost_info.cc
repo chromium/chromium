@@ -19,7 +19,7 @@ GPUDeviceLostInfo::GPUDeviceLostInfo(const WGPUDeviceLostReason reason,
       break;
     default:
       // If this is hit, Dawn gave us a reason we haven't implemented here yet.
-      NOTREACHED();
+      // TODO: http://crbug.com/dawn/2450 - Add new device lost reasons.
       reason_ = "unknown";
       break;
   }
