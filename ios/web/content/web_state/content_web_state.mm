@@ -138,6 +138,8 @@ ContentWebState::ContentWebState(const CreateParams& params,
   } else {
     UUID_ = [[[NSUUID UUID] UUIDString] copy];
   }
+
+  RegisterNotificationObservers();
 }
 
 ContentWebState::ContentWebState(BrowserState* browser_state,
@@ -161,6 +163,10 @@ ContentWebState::~ContentWebState() {
   for (auto& observer : policy_deciders_) {
     observer.ResetWebState();
   }
+
+  NSNotificationCenter* default_center = [NSNotificationCenter defaultCenter];
+  [default_center removeObserver:keyboard_showing_observer_];
+  [default_center removeObserver:keyboard_hiding_observer_];
 }
 
 content::WebContents* ContentWebState::GetWebContents() {
@@ -681,6 +687,11 @@ bool ContentWebState::DoBrowserControlsShrinkRendererSize(
   return false;
 }
 
+int ContentWebState::GetVirtualKeyboardHeight(
+    content::WebContents* web_contents) {
+  return keyboard_height_;
+}
+
 bool ContentWebState::OnlyExpandTopControlsAtPageTop() {
   return false;
 }
@@ -691,6 +702,42 @@ void ContentWebState::SetTopControlsGestureScrollInProgress(bool in_progress) {
         DoBrowserControlsShrinkRendererSize(web_contents_.get());
   }
   top_control_scroll_in_progress_ = in_progress;
+}
+
+// TODO(crbug.com/333624335): Consider moving notification observers to a
+// browser-level observer.
+void ContentWebState::RegisterNotificationObservers() {
+  base::RepeatingCallback<void(NSNotification * notification)>
+      keyboard_showing_closure = base::BindRepeating(
+          &ContentWebState::OnKeyboardShow, weak_factory_.GetWeakPtr());
+
+  base::RepeatingCallback<void(NSNotification * notification)>
+      keyboard_hiding_closure = base::BindRepeating(
+          &ContentWebState::OnKeyboardHide, weak_factory_.GetWeakPtr());
+
+  keyboard_showing_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIKeyboardDidShowNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(keyboard_showing_closure)];
+
+  keyboard_hiding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIKeyboardWillHideNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(keyboard_hiding_closure)];
+}
+
+void ContentWebState::OnKeyboardShow(NSNotification* notification) {
+  NSDictionary* info = [notification userInfo];
+  CGFloat height =
+      [[info valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]
+          .size.height;
+  keyboard_height_ = static_cast<int>(height);
+}
+
+void ContentWebState::OnKeyboardHide(NSNotification* notification) {
+  keyboard_height_ = 0;
 }
 
 }  // namespace web
