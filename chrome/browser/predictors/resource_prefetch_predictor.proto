@@ -95,6 +95,7 @@ message LcppStat {
   optional LcppStringFrequencyStatData fetched_font_url_stat = 3;
   optional LcppStringFrequencyStatData fetched_subresource_url_stat = 4;
   optional LcppStringFrequencyStatData preconnect_origin_stat = 5;
+  optional LcppStringFrequencyStatData unused_preload_stat = 6;
 }
 
 // [LCP Critical Path Predictor (LCPP)]

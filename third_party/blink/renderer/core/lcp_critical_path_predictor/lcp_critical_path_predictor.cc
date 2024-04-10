@@ -330,6 +330,19 @@ void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
   }
 }
 
+void LCPCriticalPathPredictor::OnWarnedUnusedPreloads(
+    Vector<KURL> unused_preloads) {
+  if (!base::FeatureList::IsEnabled(features::kLCPPDeferUnusedPreload) ||
+      has_sent_unused_preloads_) {
+    return;
+  }
+  // Limit the list of preload requests to be sent once. This function can be
+  // called after the load event, but we only take care of unused preloads
+  // dispatched before LCP.
+  has_sent_unused_preloads_ = true;
+  GetHost().SetUnusedPreloads(unused_preloads);
+}
+
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(host_);

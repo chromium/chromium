@@ -74,6 +74,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   void OnFontFetched(const KURL& url);
   void OnStartPreload(const KURL& url);
   void OnOutermostMainFrameDocumentLoad();
+  void OnWarnedUnusedPreloads(Vector<KURL> unused_preloads);
 
   using LCPCallback = base::OnceCallback<void(const Element*)>;
   void AddLCPPredictedCallback(LCPCallback callback);
@@ -103,6 +104,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   bool are_predicted_callbacks_called_ = false;
   bool has_lcp_occurred_ = false;
   bool is_outermost_main_frame_document_loaded_ = false;
+  bool has_sent_unused_preloads_ = false;
 };
 
 }  // namespace blink

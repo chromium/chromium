@@ -2077,7 +2077,8 @@ void ResourceFetcher::ClearPreloads(ClearPreloadsPolicy policy) {
   matched_preloads_.clear();
 }
 
-void ResourceFetcher::ScheduleWarnUnusedPreloads() {
+void ResourceFetcher::ScheduleWarnUnusedPreloads(
+    base::OnceCallback<void(Vector<KURL> unused_preloads)> callback) {
   // If preloads_ is not empty here, it's full of link
   // preloads, as speculative preloads should have already been cleared when
   // parsing finished.
@@ -2087,12 +2088,14 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads() {
   unused_preloads_timer_ = PostDelayedCancellableTask(
       *freezable_task_runner_, FROM_HERE,
       WTF::BindOnce(&ResourceFetcher::WarnUnusedPreloads,
-                    WrapWeakPersistent(this)),
+                    WrapWeakPersistent(this), std::move(callback)),
       kUnusedPreloadTimeout);
 }
 
-void ResourceFetcher::WarnUnusedPreloads() {
+void ResourceFetcher::WarnUnusedPreloads(
+    base::OnceCallback<void(Vector<KURL> unused_preloads)> callback) {
   int unused_resource_count = 0;
+  Vector<KURL> unused_preloads;
   for (const auto& pair : preloads_) {
     Resource* resource = pair.value;
     if (!resource || !resource->IsUnusedPreload()) {
@@ -2100,6 +2103,7 @@ void ResourceFetcher::WarnUnusedPreloads() {
     }
 
     ++unused_resource_count;
+    unused_preloads.push_back(resource->Url());
     if (resource->IsLinkPreload()) {
       String message =
           "The resource " + resource->Url().GetString() + " was preloaded " +
@@ -2151,6 +2155,9 @@ void ResourceFetcher::WarnUnusedPreloads() {
                  CreateTracedValueForUnusedEarlyHintsPreload(pair.key));
     pair.value.state = EarlyHintsPreloadEntry::State::kWarnedUnused;
   }
+
+  // Notify the unused preload list to the LCPP host.
+  std::move(callback).Run(unused_preloads);
 }
 
 void ResourceFetcher::HandleLoaderFinish(Resource* resource,

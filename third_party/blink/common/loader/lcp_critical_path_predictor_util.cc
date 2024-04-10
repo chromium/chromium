@@ -23,7 +23,8 @@ bool LcppEnabled() {
          base::FeatureList::IsEnabled(
              blink::features::kLCPPAutoPreconnectLcpOrigin) ||
          base::FeatureList::IsEnabled(
-             blink::features::kLCPTimingPredictorPrerender2);
+             blink::features::kLCPTimingPredictorPrerender2) ||
+         base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload);
 }
 
 bool LcppScriptObserverEnabled() {

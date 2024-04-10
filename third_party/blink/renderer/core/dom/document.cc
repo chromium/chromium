@@ -4164,7 +4164,9 @@ bool Document::CheckCompletedInternal() {
   }
 
   DCHECK(fetcher_);
-  fetcher_->ScheduleWarnUnusedPreloads();
+
+  fetcher_->ScheduleWarnUnusedPreloads(
+      WTF::BindOnce(&Document::OnWarnUnusedPreloads, WrapWeakPersistent(this)));
   fetcher_->RecordLCPPSubresourceMetrics();
 
   // The readystatechanged or load event may have disconnected this frame.
@@ -9766,6 +9768,16 @@ void Document::SetOverrideSiteForCookiesForCSPMedia(bool value) {
     return;
   }
   override_site_for_cookies_for_csp_media_ = value;
+}
+
+void Document::OnWarnUnusedPreloads(Vector<KURL> unused_preloads) {
+  if (!GetFrame() || !GetFrame()->GetLCPP()) {
+    return;
+  }
+
+  if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
+    lcpp->OnWarnedUnusedPreloads(unused_preloads);
+  }
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;

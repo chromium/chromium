@@ -275,6 +275,14 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetPreconnectOrigins(
   lcpp_data_inputs_->preconnect_origins = origins;
 }
 
+void LcpCriticalPathPredictorPageLoadMetricsObserver::SetUnusedPreloads(
+    const std::vector<GURL>& unused_preloads) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  lcpp_data_inputs_->unused_preload_resources = unused_preloads;
+}
+
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
     ReportUMAForTimingPredictor(
         std::optional<predictors::LcppData> lcpp_data_prelearn) {

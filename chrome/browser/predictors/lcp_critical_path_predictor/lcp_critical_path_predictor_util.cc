@@ -512,6 +512,25 @@ bool IsValidLcpElementLocatorHistogram(
   return true;
 }
 
+bool RecordUnusedPreloadUrlsHistogram(const LoadingPredictorConfig& config,
+                                      const std::vector<GURL>& unused_preloads,
+                                      LcppData& data) {
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
+          config, data.mutable_lcpp_stat()->unused_preload_stat());
+  CHECK(updater);
+  for (auto& url : unused_preloads) {
+    if (!IsValidUrlInLcppStringFrequencyStatData(url.spec())) {
+      continue;
+    }
+    updater->Update(url.spec());
+  }
+  *data.mutable_lcpp_stat()->mutable_unused_preload_stat() =
+      updater->ToLcppStringFrequencyStatData();
+
+  return updater->has_updated();
+}
+
 bool IsValidLcpUrlsHistogram(
     const LcppStringFrequencyStatData& lcpp_stat_data) {
   if (lcpp_stat_data.other_bucket_frequency() < 0.0) {
@@ -681,6 +700,8 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
       config, inputs.subresource_urls, data);
   data_updated |=
       RecordPreconnectOriginsHistogram(config, inputs.preconnect_origins, data);
+  data_updated |= RecordUnusedPreloadUrlsHistogram(
+      config, inputs.unused_preload_resources, data);
   base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
                                 base::checked_cast<int>(inputs.font_url_count));
   if (inputs.font_url_count > 0 && inputs.font_urls.size() > 0) {
@@ -726,6 +747,10 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
   }
   if (lcpp_stat.has_preconnect_origin_stat() &&
       !IsValidLcpUrlsHistogram(lcpp_stat.preconnect_origin_stat())) {
+    return false;
+  }
+  if (lcpp_stat.has_unused_preload_stat() &&
+      !IsValidLcpUrlsHistogram(lcpp_stat.unused_preload_stat())) {
     return false;
   }
   return true;

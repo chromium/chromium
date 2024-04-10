@@ -257,6 +257,69 @@ TEST(IsValidLcppStatTest, PreconnectOriginsStat) {
   }
 }
 
+TEST(IsValidLcppStatTest, DeferUnusedPreloads) {
+  {
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert(
+        {"https://example.com/unused.png", 0.1});
+    EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Without the map field.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Negative other frequency is invalid.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(-0.1);
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Negative frequency in an entry is invalid.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert(
+        {"https://example.com/unused.png", -0.1});
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Empty URL in an entry.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert({"", 0.1});
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Invalid URL in an entry.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert({"invalid url", 0.1});
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // No HTTP/HTTPS URL in an entry.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert({"wss://example.com/", 0.1});
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+  {  // Too long URL in an entry.
+    LcppStat lcpp_stat;
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert(
+        {"https://example.com/" +
+             std::string(ResourcePrefetchPredictorTables::kMaxStringLength,
+                         'a'),
+         0.1});
+    EXPECT_FALSE(IsValidLcppStat(lcpp_stat));
+  }
+}
+
 TEST(IsValidLcppStatTest, MixedPattern) {
   LcppStat lcpp_stat;
   auto* locator_stat = lcpp_stat.mutable_lcp_element_locator_stat();
@@ -281,6 +344,12 @@ TEST(IsValidLcppStatTest, MixedPattern) {
     auto* stat = lcpp_stat.mutable_preconnect_origin_stat();
     stat->set_other_bucket_frequency(0.1);
     stat->mutable_main_buckets()->insert({"https://example.com", 0.1});
+  }
+  {
+    auto* stat = lcpp_stat.mutable_unused_preload_stat();
+    stat->set_other_bucket_frequency(0.1);
+    stat->mutable_main_buckets()->insert(
+        {"https://example.com/unused.png", 0.1});
   }
   EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
 }

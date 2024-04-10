@@ -74,6 +74,9 @@ struct LcppDataInputs {
   // value. TimeDelta stores the duration from navigation start to resource
   // loading start time.
   std::map<GURL, base::TimeDelta> subresource_urls;
+
+  // URLs of preloaded but not actually used resources.
+  std::vector<GURL> unused_preload_resources;
 };
 
 bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,

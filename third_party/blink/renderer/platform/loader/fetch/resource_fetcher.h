@@ -243,7 +243,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   int CountPreloads() const { return preloads_.size(); }
   void ClearPreloads(ClearPreloadsPolicy = kClearAllPreloads);
-  void ScheduleWarnUnusedPreloads();
+  void ScheduleWarnUnusedPreloads(
+      base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
@@ -529,7 +530,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void ScheduleStaleRevalidate(Resource* stale_resource);
   void RevalidateStaleResource(Resource* stale_resource);
 
-  void WarnUnusedPreloads();
+  void WarnUnusedPreloads(
+      base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
   void RemoveResourceStrongReference(Resource* resource);
 

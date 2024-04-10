@@ -2346,6 +2346,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // document load completes.
   void FetchDictionaryFromLinkHeader();
 
+  void OnWarnUnusedPreloads(Vector<KURL> unused_preloads);
+
   Resource* GetPendingLinkPreloadForTesting(const KURL&);
 
   ResizeObserver& GetLazyLoadedAutoSizedImgObserver();

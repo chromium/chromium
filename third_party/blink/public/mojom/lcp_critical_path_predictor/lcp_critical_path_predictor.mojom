@@ -40,6 +40,9 @@ interface LCPCriticalPathPredictorHost {
   // Otherwise, the renderer will be killed.
   // 'subresource_load_start' is the duration from navigation start to resource loading start time.
   NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
+
+  // Let the LCPP know the list of resource URLs which are preloaded but actually never used.
+  SetUnusedPreloads(array<url.mojom.Url> unused_preloads);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.
