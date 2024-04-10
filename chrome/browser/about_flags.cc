@@ -2299,11 +2299,20 @@ const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
      std::size(kNtpSafeBrowsingModuleFastCooldown), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleFakeData[] =
+    {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "Fake Data"}};
+const FeatureEntry::FeatureVariation
+    kNtpMostRelevantTabResumptionModuleVariations[] = {
+        {"- Fake Data", kNtpMostRelevantTabResumptionModuleFakeData,
+         std::size(kNtpMostRelevantTabResumptionModuleFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpTabResumptionModuleFakeData[] = {
     {ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}};
 const FeatureEntry::FeatureVariation kNtpTabResumptionModuleVariations[] = {
     {"- Fake Data", kNtpTabResumptionModuleFakeData,
-     std::size(kNtpTabResumptionModuleFakeData), nullptr}};
+     std::size(kNtpTabResumptionModuleFakeData), nullptr},
+};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -6798,6 +6807,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-modules-redesigned", flag_descriptions::kNtpModulesRedesignedName,
      flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
+
+    {"ntp-most-relevant-tab-resumption-module",
+     flag_descriptions::kNtpMostRelevantTabResumptionModuleName,
+     flag_descriptions::kNtpMostRelevantTabResumptionModuleDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ntp_features::kNtpMostRelevantTabResumptionModule,
+         kNtpMostRelevantTabResumptionModuleVariations,
+         "NtpMostRelevantTabResumptionModules")},
 
     {"ntp-outlook-calendar-module",
      flag_descriptions::kNtpOutlookCalendarModuleName,

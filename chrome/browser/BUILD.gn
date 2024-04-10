@@ -4170,6 +4170,8 @@ static_library("browser") {
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.h",
       "new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.cc",
       "new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.h",
+      "new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.cc",
+      "new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h",
       "new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.cc",
       "new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h",
       "new_tab_page/modules/v2/tab_resumption/tab_resumption_util.cc",

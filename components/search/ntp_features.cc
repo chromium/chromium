@@ -414,6 +414,11 @@ BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the Tab Resumption module will be shown.
+BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
+             "NtpMostRelevantTabResumptionModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the Tab Resumption module will be shown.
 BASE_FEATURE(kNtpTabResumptionModule,
              "NtpTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -511,6 +516,8 @@ const char kNtpHistoryClustersModuleScoreThresholdParam[] =
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
+const char kNtpMostRelevantTabResumptionModuleDataParam[] =
+    "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleTimeLimitParam[] =

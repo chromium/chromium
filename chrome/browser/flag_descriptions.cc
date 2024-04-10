@@ -4848,6 +4848,11 @@ const char kNtpChromeCartHistoryClusterCoexistDescription[] =
     "Shows ChromeCart module and ChromeCart+Journeys module together when "
     "available on the New Tab Page.";
 
+const char kNtpMostRelevantTabResumptionModuleName[] =
+    "NTP Most Relevant Tab Resumption Module";
+const char kNtpMostRelevantTabResumptionModuleDescription[] =
+    "Shows the Most Relevant Tab Resumption Module on the New Tab Page.";
+
 const char kNtpTabResumptionModuleName[] =
     "NTP Cross Device Tab Resumption Module";
 const char kNtpTabResumptionModuleDescription[] =

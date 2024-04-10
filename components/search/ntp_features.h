@@ -98,6 +98,7 @@ BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
+BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
@@ -214,6 +215,7 @@ extern const char kNtpRealboxWidthBehaviorParam[];
 // Parameter for determining the categories a tab must not fall into
 // to be shown.
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
+extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
 // Parameter determining the recency of tabs in the Tab Resumption module.
 extern const char kNtpTabResumptionModuleTimeLimitParam[];

@@ -8229,6 +8229,7 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/test_support.cc",
       "../browser/new_tab_page/modules/test_support.h",
       "../browser/new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2_unittest.cc",
+      "../browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler_unittest.cc",
       "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler_unittest.cc",
       "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.cc",
       "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.h",
