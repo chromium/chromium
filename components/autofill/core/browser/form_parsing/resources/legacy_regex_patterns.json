@@ -84,7 +84,12 @@
 	],
     "es": [
       {
-        "positive_pattern": "interior|número.*apartamento|departamento",
+        // "(?:no|núm|num).*int" would be simpler than splitting the number
+        // and "int" via "\\.?\\s+" but generates false positives
+        // (e.g. "enter *no.* of po*int*s").
+        // We also go some extra mile to make sure that "teléfono internacional"
+        // (which contains "no int" does not match this regex).
+        "positive_pattern": "interior|número.*apartamento|departamento|(?:(?<!teléfo)no|n[úu]m(?:ero)?)\\.?\\s*(int\\b|interno)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -158,7 +163,10 @@
     ],
     "es": [
       {
-        "positive_pattern": "exterior",
+        // "(?:no|núm|num).*ext" would be simpler than splitting the number
+        // and "ext" via "\\.?\\s+" but generates false positives
+        // (e.g. "*no*te_t*ext*").
+        "positive_pattern": "exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -559,7 +567,7 @@
     ],
     "es": [
       {
-        "positive_pattern": "direccion2|adicional",
+        "positive_pattern": "direcci[óo]n.*2|informaci[óo]n\\s*adicional|complemento.*direcci[óo]n",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

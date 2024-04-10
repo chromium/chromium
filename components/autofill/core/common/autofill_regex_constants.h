@@ -38,17 +38,18 @@ inline constexpr char16_t kStreetNameRe[] =
     u"|dirección"                  // es-MX
     u"|calle";                     // es-MX
 inline constexpr char16_t kHouseNumberRe[] =
-    u"(house.?|street.?|^)(number|no\\.?$)"    // en
-    u"|(haus.?|^)(nummer|nr)"                  // de
-    u"|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
-    u"|exterior"                               // es
-    u"|дом|номер.?дома";                       // ru
+    u"(house.?|street.?|^)(number|no\\.?$)"        // en
+    u"|(haus.?|^)(nummer|nr)"                      // de
+    u"|^\\*?.?número(.?\\*?$| da residência)"      // pt-BR, pt-PT
+    u"|exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext"  // es
+    u"|дом|номер.?дома";                           // ru
 inline constexpr char16_t kApartmentNumberRe[] =
-    u"apartment"                      // en
-    u"|interior|departamento"         // es-MX
-    u"|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
-    u"|wohnung"                       // de
-    u"|квартир";                      // ru
+    u"apartment"                                                  // en
+    u"|interior|departamento"                                     // es-MX
+    u"|(?:(?<!teléfo)no|n[úu]m(?:ero)?)\\.?\\s*(int\\b|interno)"  // es-MX
+    u"|n(u|ú)mero.*app?art(a|e)ment"                              // es,fr,it
+    u"|wohnung"                                                   // de
+    u"|квартир";                                                  // ru
 inline constexpr char16_t kAddressLine1Re[] =
     u"^address$|address[_-]?line(one)?|address1|addr1|street"
     u"|(?:shipping|billing)address$"
@@ -86,14 +87,15 @@ inline constexpr char16_t kAddressLine1LabelRe[] =
 inline constexpr char16_t kAddressLine2Re[] =
     u"address[_-]?line(2|two)|address2|addr2|street|suite|unit"
     u"|adresszusatz|ergänzende.?angaben|adresszeile 2"  // de-DE
-    u"|direccion2|adicional"                            // es
-    u"|addresssuppl|complementnom|appartement"          // fr-FR
-    u"|indirizzo2"                                      // it-IT
-    u"|住所2"                                           // ja-JP
-    u"|complemento|addrcomplement"                      // pt-BR, pt-PT
-    u"|Улица"                                           // ru
-    u"|地址2"                                           // zh-CN
-    u"|주소.?2";                                        // ko-KR
+    u"|direcci[óo]n.*2|informaci[óo]n\\s*adicional"
+    u"|complemento.*direcci[óo]n"               // es
+    u"|addresssuppl|complementnom|appartement"  // fr-FR
+    u"|indirizzo2"                              // it-IT
+    u"|住所2"                                   // ja-JP
+    u"|complemento|addrcomplement"              // pt-BR, pt-PT
+    u"|Улица"                                   // ru
+    u"|地址2"                                   // zh-CN
+    u"|주소.?2";                                // ko-KR
 inline constexpr char16_t kAddressLine2LabelRe[] =
     u"address|line"
     u"|adresse"    // fr-FR
