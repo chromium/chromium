@@ -46,16 +46,6 @@ namespace url {
 
 namespace {
 
-static std::unique_ptr<GURL> FromJavaGURL(const std::string& spec,
-                                          bool is_valid,
-                                          jlong parsed_ptr) {
-  Parsed* parsed = reinterpret_cast<Parsed*>(parsed_ptr);
-  std::unique_ptr<GURL> gurl =
-      std::make_unique<GURL>(spec.data(), parsed->Length(), *parsed, is_valid);
-  delete parsed;
-  return gurl;
-}
-
 static void InitFromGURL(JNIEnv* env,
                          const GURL& gurl,
                          const JavaRef<jobject>& target) {
@@ -85,10 +75,15 @@ size_t SafeGetArrayLength(JNIEnv* env, const JavaRef<JavaArrayType>& jarray) {
 std::unique_ptr<GURL> GURLAndroid::ToNativeGURL(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_gurl) {
-  return base::WrapUnique<GURL>(
-      reinterpret_cast<GURL*>(Java_GURL_toNativeGURL(env, j_gurl)));
+  GURL ret;
+  Parsed parsed;
+  Java_GURL_toNativeGURL(env, j_gurl, reinterpret_cast<jlong>(&ret),
+                         reinterpret_cast<jlong>(&parsed));
+  // TODO(agrieve): Return GURL rather than unique_ptr<GURL>.
+  return std::make_unique<GURL>(ret);
 }
 
+// TODO(agrieve): Replace with @JniType("std::vector<GURL>")
 void GURLAndroid::JavaGURLArrayToGURLVector(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& array,
@@ -101,8 +96,7 @@ void GURLAndroid::JavaGURLArrayToGURLVector(
   for (size_t i = 0; i < len; ++i) {
     ScopedJavaLocalRef<jobject> j_gurl(
         env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
-    out->emplace_back(
-        *reinterpret_cast<GURL*>(Java_GURL_toNativeGURL(env, j_gurl)));
+    out->push_back(*ToNativeGURL(env, j_gurl));
   }
 }
 
@@ -135,21 +129,15 @@ ScopedJavaLocalRef<jobjectArray> GURLAndroid::ToJavaArrayOfGURLs(
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,
-                               std::string& spec,
-                               jboolean is_valid,
-                               jlong parsed_ptr,
+                               GURL& gurl,
                                const JavaParamRef<jobject>& target) {
-  std::unique_ptr<GURL> gurl = FromJavaGURL(spec, is_valid, parsed_ptr);
-  InitFromGURL(env, gurl->DeprecatedGetOriginAsURL(), target);
+  InitFromGURL(env, gurl.DeprecatedGetOriginAsURL(), target);
 }
 
 static jboolean JNI_GURL_DomainIs(JNIEnv* env,
-                                  std::string& spec,
-                                  jboolean is_valid,
-                                  jlong parsed_ptr,
+                                  GURL& gurl,
                                   std::string& domain) {
-  std::unique_ptr<GURL> gurl = FromJavaGURL(spec, is_valid, parsed_ptr);
-  return gurl->DomainIs(domain);
+  return gurl.DomainIs(domain);
 }
 
 static void JNI_GURL_Init(JNIEnv* env,
@@ -159,19 +147,19 @@ static void JNI_GURL_Init(JNIEnv* env,
   InitFromGURL(env, gurl, target);
 }
 
-static jlong JNI_GURL_CreateNative(JNIEnv* env,
-                                   std::string& spec,
-                                   jboolean is_valid,
-                                   jlong parsed_ptr) {
-  return reinterpret_cast<intptr_t>(
-      FromJavaGURL(spec, is_valid, parsed_ptr).release());
+static void JNI_GURL_InitNative(JNIEnv* env,
+                                std::string& spec,
+                                jboolean is_valid,
+                                jlong native_gurl,
+                                jlong native_parsed) {
+  GURL* gurl = reinterpret_cast<GURL*>(native_gurl);
+  Parsed* parsed = reinterpret_cast<Parsed*>(native_parsed);
+  *gurl = GURL(spec, *parsed, is_valid);
 }
 
 static void JNI_GURL_ReplaceComponents(
     JNIEnv* env,
-    std::string& spec,
-    jboolean is_valid,
-    jlong parsed_ptr,
+    GURL& gurl,
     const JavaParamRef<jstring>& j_username_replacement,
     jboolean clear_username,
     const JavaParamRef<jstring>& j_password_replacement,
@@ -199,8 +187,7 @@ static void JNI_GURL_ReplaceComponents(
     replacements.SetPasswordStr(password);
   }
 
-  std::unique_ptr<GURL> original = FromJavaGURL(spec, is_valid, parsed_ptr);
-  InitFromGURL(env, original->ReplaceComponents(replacements), j_result);
+  InitFromGURL(env, gurl.ReplaceComponents(replacements), j_result);
 }
 
 }  // namespace url

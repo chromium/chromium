@@ -48,49 +48,50 @@ ScopedJavaLocalRef<jobject> ParsedAndroid::InitFromParsed(
   return CreateJavaParsed(env, parsed, inner);
 }
 
-static jlong JNI_Parsed_CreateNative(JNIEnv* env,
-                                     jint scheme_begin,
-                                     jint scheme_length,
-                                     jint username_begin,
-                                     jint username_length,
-                                     jint password_begin,
-                                     jint password_length,
-                                     jint host_begin,
-                                     jint host_length,
-                                     jint port_begin,
-                                     jint port_length,
-                                     jint path_begin,
-                                     jint path_length,
-                                     jint query_begin,
-                                     jint query_length,
-                                     jint ref_begin,
-                                     jint ref_length,
-                                     jboolean potentially_dangling_markup,
-                                     jlong inner_parsed) {
-  Parsed* parsed = new Parsed();
-  parsed->scheme.begin = scheme_begin;
-  parsed->scheme.len = scheme_length;
-  parsed->username.begin = username_begin;
-  parsed->username.len = username_length;
-  parsed->password.begin = password_begin;
-  parsed->password.len = password_length;
-  parsed->host.begin = host_begin;
-  parsed->host.len = host_length;
-  parsed->port.begin = port_begin;
-  parsed->port.len = port_length;
-  parsed->path.begin = path_begin;
-  parsed->path.len = path_length;
-  parsed->query.begin = query_begin;
-  parsed->query.len = query_length;
-  parsed->ref.begin = ref_begin;
-  parsed->ref.len = ref_length;
-  parsed->potentially_dangling_markup = potentially_dangling_markup;
-  Parsed* inner = reinterpret_cast<Parsed*>(inner_parsed);
-  if (inner) {
-    parsed->set_inner_parsed(*inner);
-    delete inner;
+static void JNI_Parsed_InitNative(JNIEnv* env,
+                                  jlong native_ptr,
+                                  jboolean is_inner,
+                                  jint scheme_begin,
+                                  jint scheme_length,
+                                  jint username_begin,
+                                  jint username_length,
+                                  jint password_begin,
+                                  jint password_length,
+                                  jint host_begin,
+                                  jint host_length,
+                                  jint port_begin,
+                                  jint port_length,
+                                  jint path_begin,
+                                  jint path_length,
+                                  jint query_begin,
+                                  jint query_length,
+                                  jint ref_begin,
+                                  jint ref_length,
+                                  jboolean potentially_dangling_markup) {
+  Parsed inner_parsed;
+  Parsed* outer_parsed = reinterpret_cast<Parsed*>(native_ptr);
+  Parsed* target = is_inner ? &inner_parsed : outer_parsed;
+  target->scheme.begin = scheme_begin;
+  target->scheme.len = scheme_length;
+  target->username.begin = username_begin;
+  target->username.len = username_length;
+  target->password.begin = password_begin;
+  target->password.len = password_length;
+  target->host.begin = host_begin;
+  target->host.len = host_length;
+  target->port.begin = port_begin;
+  target->port.len = port_length;
+  target->path.begin = path_begin;
+  target->path.len = path_length;
+  target->query.begin = query_begin;
+  target->query.len = query_length;
+  target->ref.begin = ref_begin;
+  target->ref.len = ref_length;
+  target->potentially_dangling_markup = potentially_dangling_markup;
+
+  if (is_inner) {
+    outer_parsed->set_inner_parsed(inner_parsed);
   }
-  return reinterpret_cast<intptr_t>(parsed);
 }
 
 }  // namespace url
