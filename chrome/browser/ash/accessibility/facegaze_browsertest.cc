@@ -34,6 +34,15 @@ class Config {
   Config(const Config&) = delete;
   Config& operator=(const Config&) = delete;
 
+  // Returns a Config that sets required properties to default values.
+  Config& AsDefault() {
+    forehead_location_ = gfx::PointF(0.1, 0.2);
+    cursor_location_ = gfx::Point(600, 400);
+    buffer_size_ = 1;
+    use_cursor_acceleration_ = false;
+    return *this;
+  }
+
   Config& WithForeheadLocation(const gfx::PointF& location) {
     forehead_location_ = location;
     return *this;
@@ -179,15 +188,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
-  ConfigureFaceGaze(
-      Config()
-          .WithForeheadLocation(gfx::PointF(0.1, 0.2))
-          .WithCursorLocation(gfx::Point(600, 400))
-          .WithBufferSize(1)
-          .WithCursorAcceleration(false)
-          .WithGesturesToMacros(
-              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
-          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70)));
+  ConfigureFaceGaze(Config().AsDefault());
 
   // Move cursor using forehead.
   utils()->ProcessFaceLandmarkerResult(
@@ -199,10 +200,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   ConfigureFaceGaze(
       Config()
-          .WithForeheadLocation(gfx::PointF(0.1, 0.2))
-          .WithCursorLocation(gfx::Point(600, 400))
-          .WithBufferSize(1)
-          .WithCursorAcceleration(false)
+          .AsDefault()
           .WithGesturesToMacros(
               base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
           .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70)));
@@ -223,10 +221,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
                        IgnoreGesturesWithLowConfidence) {
   ConfigureFaceGaze(
       Config()
-          .WithForeheadLocation(gfx::PointF(0.1, 0.2))
-          .WithCursorLocation(gfx::Point(600, 400))
-          .WithBufferSize(1)
-          .WithCursorAcceleration(false)
+          .AsDefault()
           .WithGesturesToMacros(
               base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
           .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 100)));
@@ -247,16 +242,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
                        UpdateCursorLocationWithSpeed1) {
-  ConfigureFaceGaze(
-      Config()
-          .WithForeheadLocation(gfx::PointF(0.1, 0.2))
-          .WithCursorLocation(gfx::Point(600, 400))
-          .WithBufferSize(1)
-          .WithCursorAcceleration(false)
-          .WithGesturesToMacros(
-              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
-          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70))
-          .WithCursorSpeeds({/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1}));
+  ConfigureFaceGaze(Config().AsDefault().WithCursorSpeeds(
+      {/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1}));
 
   // With cursor acceleration off and buffer size 1, one-pixel head movements
   // correspond to one-pixel changes on screen.
