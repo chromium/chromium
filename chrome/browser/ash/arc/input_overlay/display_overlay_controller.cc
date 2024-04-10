@@ -121,7 +121,7 @@ class DisplayOverlayController::FocusCycler {
     // Once there is next focusable view (dont_loop==true), it means the current
     // focus is not the first or the last focusable view, so it doesn't need to
     // change focus to the next widget.
-    if (auto* next_focus = focus_manager->GetNextFocusableView(
+    if (focus_manager->GetNextFocusableView(
             /*starting_view=*/focus_manager->GetFocusedView(),
             /*starting_widget=*/target_widget, /*reverse=*/reverse,
             /*dont_loop=*/true)) {
@@ -1401,7 +1401,7 @@ TargetView* DisplayOverlayController::GetTargetView() const {
 }
 
 void DisplayOverlayController::AddRichNudge() {
-  if (auto* target_view = GetTargetView()) {
+  if (GetTargetView()) {
     rich_nudge_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<RichNudge>(target_widget_->GetNativeWindow()));
     rich_nudge_widget_->ShowInactive();

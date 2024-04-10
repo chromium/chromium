@@ -2548,8 +2548,7 @@ void SplitViewController::OnTabletModeStarted() {
     // `SplitViewOverviewSession` is for clamshell only.
     RootWindowController* root_window_controller =
         RootWindowController::ForWindow(root_window_);
-    if (SplitViewOverviewSession* split_view_overview_session =
-            root_window_controller->split_view_overview_session()) {
+    if (root_window_controller->split_view_overview_session()) {
       root_window_controller->EndSplitViewOverviewSession(
           SplitViewOverviewSessionExitPoint::kTabletConversion);
     }

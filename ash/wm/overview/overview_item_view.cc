@@ -189,8 +189,7 @@ void OverviewItemView::RefreshItemVisuals() {
   // needed for the overview group item.
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     const aura::Window* window = overview_item_->GetWindow();
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+    if (snap_group_controller->GetSnapGroupForGivenWindow(window)) {
       SetRoundedCornersRadius(window_util::GetMiniWindowRoundedCorners(
           window, /*include_header_rounding=*/true));
 

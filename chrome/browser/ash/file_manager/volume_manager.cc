@@ -1690,8 +1690,7 @@ void VolumeManager::SubscribeAndMountArc() {
   documents_provider_root_manager_->AddObserver(this);
   // Registers a mount point for Android files only when the flag is enabled.
   RegisterAndroidFilesMountPoint();
-  if (arc::ArcSessionManager* const session_manager =
-          arc::ArcSessionManager::Get()) {
+  if (arc::ArcSessionManager::Get()) {
     arc::ArcSessionManager::Get()->AddObserver(this);
   } else {
     // Can be NULL only in tests.

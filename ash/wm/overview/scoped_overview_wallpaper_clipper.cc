@@ -82,8 +82,7 @@ ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
           [](WallpaperWidgetController* wallpaper_widget_controller) {
             // `WallpaperWidgetController` owns the wallpaper view layer and
             // wallpaper underlay layer, so it's guaranteed to outlive it.
-            if (auto* wallpaper_underlay_layer =
-                    wallpaper_widget_controller->wallpaper_underlay_layer()) {
+            if (wallpaper_widget_controller->wallpaper_underlay_layer()) {
               wallpaper_widget_controller->wallpaper_underlay_layer()
                   ->SetVisible(false);
             }
