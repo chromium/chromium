@@ -23,7 +23,7 @@ int BOTTOM_BUTTON_2_INDEX = 2;
 TEST_F(ManualFillLabeledChipiOSTest, Creation_SingleChip) {
   // Create labeled chip.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initSingleChipWithSelector:0 target:0];
+      [[ManualFillLabeledChip alloc] initSingleChipWithTarget:0 selector:0];
 
   // Confirm there are 2 subviews: a UILabel and a UIButton.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
@@ -37,8 +37,9 @@ TEST_F(ManualFillLabeledChipiOSTest, Creation_SingleChip) {
 TEST_F(ManualFillLabeledChipiOSTest, Creation_ExpirationDateChip) {
   // Create labeled chip with a UIButton, a UILabel and another UIButton.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initExpirationDateChipWithSelector:0
-                                                                 target:0];
+      [[ManualFillLabeledChip alloc] initExpirationDateChipWithTarget:0
+                                                        monthSelector:0
+                                                         yearSelector:0];
 
   // Confirm there are 2 subviews: UILabel and UIStackView.
   NSArray<UIView*>* chipSubviews = labeledChip.arrangedSubviews;
@@ -64,7 +65,7 @@ TEST_F(ManualFillLabeledChipiOSTest, Creation_ExpirationDateChip) {
 TEST_F(ManualFillLabeledChipiOSTest, SetText_SingleChip) {
   // Create the labeled chip and populate it with text.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initSingleChipWithSelector:0 target:0];
+      [[ManualFillLabeledChip alloc] initSingleChipWithTarget:0 selector:0];
   [labeledChip setLabelText:TOP_LABEL_TEXT
                buttonTitles:@[ BOTTOM_BUTTON_TEXT_0 ]];
 
@@ -83,8 +84,9 @@ TEST_F(ManualFillLabeledChipiOSTest, SetText_SingleChip) {
 TEST_F(ManualFillLabeledChipiOSTest, SetText_ExpirationDateChip) {
   // Create labeled chip with a UIButton, a UILabel and another UIButton.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initExpirationDateChipWithSelector:0
-                                                                 target:0];
+      [[ManualFillLabeledChip alloc] initExpirationDateChipWithTarget:0
+                                                        monthSelector:0
+                                                         yearSelector:0];
   [labeledChip setLabelText:TOP_LABEL_TEXT
                buttonTitles:@[ BOTTOM_BUTTON_TEXT_0, BOTTOM_BUTTON_TEXT_2 ]];
 
@@ -110,7 +112,7 @@ TEST_F(ManualFillLabeledChipiOSTest, SetText_ExpirationDateChip) {
 TEST_F(ManualFillLabeledChipiOSTest, PrepareForReuse_SingleChip) {
   // Create the labeled chip and populate it with text.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initSingleChipWithSelector:0 target:0];
+      [[ManualFillLabeledChip alloc] initSingleChipWithTarget:0 selector:0];
   [labeledChip setLabelText:TOP_LABEL_TEXT
                buttonTitles:@[ BOTTOM_BUTTON_TEXT_0 ]];
 
@@ -131,8 +133,9 @@ TEST_F(ManualFillLabeledChipiOSTest, PrepareForReuse_SingleChip) {
 TEST_F(ManualFillLabeledChipiOSTest, PrepareForReuse_ExpirationDateChip) {
   // Create labeled chip with a UIButton, a UILabel and another UIButton.
   ManualFillLabeledChip* labeledChip =
-      [[ManualFillLabeledChip alloc] initExpirationDateChipWithSelector:0
-                                                                 target:0];
+      [[ManualFillLabeledChip alloc] initExpirationDateChipWithTarget:0
+                                                        monthSelector:0
+                                                         yearSelector:0];
   [labeledChip setLabelText:TOP_LABEL_TEXT
                buttonTitles:@[ BOTTOM_BUTTON_TEXT_0, BOTTOM_BUTTON_TEXT_2 ]];
 

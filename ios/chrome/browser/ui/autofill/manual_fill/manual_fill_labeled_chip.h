@@ -13,13 +13,14 @@
 
 // Creates an ManulFillLabeledChip of 1 UIButton with the given selector and
 // target.
-- (instancetype)initSingleChipWithSelector:(SEL)action
-                                    target:(id)target NS_DESIGNATED_INITIALIZER;
+- (instancetype)initSingleChipWithTarget:(id)target
+                                selector:(SEL)action NS_DESIGNATED_INITIALIZER;
 
 // Creates an ManulFillLabeledChip of 2 UIButtons (separated by a label with the
 // text '/') with the given selector and target.
-- (instancetype)initExpirationDateChipWithSelector:(SEL)action
-                                            target:(id)target
+- (instancetype)initExpirationDateChipWithTarget:(id)target
+                                   monthSelector:(SEL)monthAction
+                                    yearSelector:(SEL)yearAction
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

@@ -28,6 +28,7 @@
 #import "url/gurl.h"
 
 using autofill::CreditCard::RecordType::kVirtualCard;
+using base::SysNSStringToUTF8;
 
 @interface ManualFillCardItem ()
 
@@ -201,16 +202,18 @@ using autofill::CreditCard::RecordType::kVirtualCard;
       [self.contentView addSubview:self.virtualCardInstructionTextView];
     }
     self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
-        initSingleChipWithSelector:@selector(userDidTapCardNumber:)
-                            target:self];
+        initSingleChipWithTarget:self
+                        selector:@selector(userDidTapCardNumber:)];
     [self.contentView addSubview:self.cardNumberLabeledChip];
+
     self.expirationDateLabeledChip = [[ManualFillLabeledChip alloc]
-        initExpirationDateChipWithSelector:@selector(userDidTapCardInfo:)
-                                    target:self];
+        initExpirationDateChipWithTarget:self
+                           monthSelector:@selector(userDidTapExpirationMonth:)
+                            yearSelector:@selector(userDidTapExpirationYear:)];
     [self.contentView addSubview:self.expirationDateLabeledChip];
     self.cardholderLabeledChip = [[ManualFillLabeledChip alloc]
-        initSingleChipWithSelector:@selector(userDidTapCardInfo:)
-                            target:self];
+        initSingleChipWithTarget:self
+                        selector:@selector(userDidTapCardholderName:)];
     [self.contentView addSubview:self.cardholderLabeledChip];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
@@ -401,8 +404,16 @@ using autofill::CreditCard::RecordType::kVirtualCard;
                                             requiresHTTPS:YES]) {
     return;
   }
-  base::RecordAction(
-      base::UserMetricsAction("ManualFallback_CreditCard_SelectCardNumber"));
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    base::RecordAction(base::UserMetricsAction(
+        [self createMetricsAction:@"SelectCardNumber"]));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_CreditCard_SelectCardNumber"));
+  }
+
   if (!number.length) {
     [self.navigationDelegate requestFullCreditCard:self.card];
   } else {
@@ -412,27 +423,16 @@ using autofill::CreditCard::RecordType::kVirtualCard;
   }
 }
 
+// TODO(crbug.com/330329960): Deprecate this method once
+// kAutofillEnableVirtualCards is enabled.
 - (void)userDidTapCardInfo:(UIButton*)sender {
   const char* metricsAction = nullptr;
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    if (sender == [self.cardholderLabeledChip singleButton]) {
-      metricsAction = "ManualFallback_CreditCard_SelectCardholderName";
-    } else if (sender ==
-               [self.expirationDateLabeledChip expirationMonthButton]) {
-      metricsAction = "ManualFallback_CreditCard_SelectExpirationMonth";
-    } else if (sender ==
-               [self.expirationDateLabeledChip expirationYearButton]) {
-      metricsAction = "ManualFallback_CreditCard_SelectExpirationYear";
-    }
-  } else {
-    if (sender == self.cardholderButton) {
-      metricsAction = "ManualFallback_CreditCard_SelectCardholderName";
-    } else if (sender == self.expirationMonthButton) {
-      metricsAction = "ManualFallback_CreditCard_SelectExpirationMonth";
-    } else if (sender == self.expirationYearButton) {
-      metricsAction = "ManualFallback_CreditCard_SelectExpirationYear";
-    }
+  if (sender == self.cardholderButton) {
+    metricsAction = "ManualFallback_CreditCard_SelectCardholderName";
+  } else if (sender == self.expirationMonthButton) {
+    metricsAction = "ManualFallback_CreditCard_SelectExpirationMonth";
+  } else if (sender == self.expirationYearButton) {
+    metricsAction = "ManualFallback_CreditCard_SelectExpirationYear";
   }
   DCHECK(metricsAction);
   base::RecordAction(base::UserMetricsAction(metricsAction));
@@ -440,6 +440,39 @@ using autofill::CreditCard::RecordType::kVirtualCard;
   [self.contentInjector userDidPickContent:sender.titleLabel.text
                              passwordField:NO
                              requiresHTTPS:NO];
+}
+
+- (void)userDidTapCardholderName:(UIButton*)sender {
+  base::RecordAction(base::UserMetricsAction(
+      [self createMetricsAction:@"SelectCardholderName"]));
+  [self.contentInjector userDidPickContent:sender.titleLabel.text
+                             passwordField:NO
+                             requiresHTTPS:NO];
+}
+
+- (void)userDidTapExpirationMonth:(UIButton*)sender {
+  base::RecordAction(base::UserMetricsAction(
+      [self createMetricsAction:@"SelectExpirationMonth"]));
+  [self.contentInjector userDidPickContent:sender.titleLabel.text
+                             passwordField:NO
+                             requiresHTTPS:NO];
+}
+
+- (void)userDidTapExpirationYear:(UIButton*)sender {
+  base::RecordAction(base::UserMetricsAction(
+      [self createMetricsAction:@"SelectExpirationYear"]));
+  [self.contentInjector userDidPickContent:sender.titleLabel.text
+                             passwordField:NO
+                             requiresHTTPS:NO];
+}
+
+- (const char*)createMetricsAction:(NSString*)selectedChip {
+  return [NSString stringWithFormat:@"ManualFallback_%@_%@",
+                                    self.card.recordType == kVirtualCard
+                                        ? @"VirtualCard"
+                                        : @"CreditCard",
+                                    selectedChip]
+      .UTF8String;
 }
 
 - (NSString*)createCardName:(ManualFillCreditCard*)card {

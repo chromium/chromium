@@ -19362,6 +19362,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_VirtualCard_SelectCardholderName">
+  <owner>chbannon@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <description>
+    The user tapped on the cardholder name of a virtual card in the Credit Card
+    Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_VirtualCard_SelectCardNumber">
+  <owner>chbannon@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <description>
+    The user tapped on a virtual card number in the Credit Card Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_VirtualCard_SelectExpirationMonth">
+  <owner>chbannon@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <description>
+    The user tapped on the expiration month of a virtual card in the Credit Card
+    Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_VirtualCard_SelectExpirationYear">
+  <owner>chbannon@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <description>
+    The user tapped on the expiration year of a virtual card in the Credit Card
+    Fallback view.
+  </description>
+</action>
+
 <action name="MaxButton_Clk_ExitFS">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -21,7 +21,7 @@ static const CGFloat kHorizontalSpacing = 16;
 
 #pragma mark - Public
 
-- (id)initSingleChipWithSelector:(SEL)action target:(id)target {
+- (id)initSingleChipWithTarget:(id)target selector:(SEL)action {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -36,7 +36,9 @@ static const CGFloat kHorizontalSpacing = 16;
   return self;
 }
 
-- (id)initExpirationDateChipWithSelector:(SEL)action target:(id)target {
+- (id)initExpirationDateChipWithTarget:(id)target
+                         monthSelector:(SEL)monthAction
+                          yearSelector:(SEL)yearAction {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -45,8 +47,9 @@ static const CGFloat kHorizontalSpacing = 16;
 
     _label = CreateLabel();
     [self addArrangedSubview:_label];
-    UIButton* monthButton = CreateChipWithSelectorAndTarget(action, target);
-    UIButton* yearButton = CreateChipWithSelectorAndTarget(action, target);
+    UIButton* monthButton =
+        CreateChipWithSelectorAndTarget(monthAction, target);
+    UIButton* yearButton = CreateChipWithSelectorAndTarget(yearAction, target);
     _buttons = @[ monthButton, yearButton ];
 
     UIStackView* dateStackView = [[UIStackView alloc] initWithFrame:CGRectZero];
