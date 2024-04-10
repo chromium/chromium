@@ -68,8 +68,12 @@ void VirtualKeyboardLogSource::Fetch(SysLogsSourceCallback callback) {
               "\n";
 
   int external_keyboard_count = 1;
-  for (const ui::InputDevice& device :
-       virtual_keyboard_controller->GetExternalKeyboards()) {
+  std::vector<ui::InputDevice> external_keyboards =
+      virtual_keyboard_controller->GetExternalKeyboards();
+  if (external_keyboards.size() == 0) {
+    log_data += "No External Keyboard Detected\n";
+  }
+  for (const ui::InputDevice& device : external_keyboards) {
     const std::string external_keyboard_count_converted =
         base::NumberToString(external_keyboard_count);
     log_data +=
