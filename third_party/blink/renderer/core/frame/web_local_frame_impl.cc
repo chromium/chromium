@@ -345,18 +345,6 @@ class ChromePrintContext : public PrintContext {
   }
 
   void SpoolSinglePage(cc::PaintCanvas* canvas, wtf_size_t page_number) {
-    DispatchEventsForPrintingOnAllFrames();
-    if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView()) {
-      return;
-    }
-
-    GetFrame()->View()->UpdateLifecyclePhasesForPrinting();
-    if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView()) {
-      return;
-    }
-
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
     PaintRecordBuilder builder;
@@ -371,16 +359,6 @@ class ChromePrintContext : public PrintContext {
   void SpoolPagesWithBoundariesForTesting(cc::PaintCanvas* canvas,
                                           const gfx::Size& spool_size_in_pixels,
                                           const WebVector<uint32_t>* pages) {
-    DispatchEventsForPrintingOnAllFrames();
-    if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView())
-      return;
-
-    GetFrame()->View()->UpdateLifecyclePhasesForPrinting();
-    if (!GetFrame()->GetDocument() ||
-        !GetFrame()->GetDocument()->GetLayoutView())
-      return;
-
     gfx::Rect all_pages_rect(spool_size_in_pixels);
 
     PaintRecordBuilder builder;
@@ -448,6 +426,15 @@ class ChromePrintContext : public PrintContext {
 
  protected:
   virtual void SpoolPage(GraphicsContext& context, wtf_size_t page_number) {
+    DispatchEventsForPrintingOnAllFrames();
+    if (!IsFrameValid()) {
+      return;
+    }
+
+    auto* frame_view = GetFrame()->View();
+    DCHECK(frame_view);
+    frame_view->UpdateLifecyclePhasesForPrinting();
+
     if (!IsFrameValid() || page_number >= PageCount()) {
       // TODO(crbug.com/452672): The number of pages may change after layout for
       // pagination.
@@ -456,8 +443,6 @@ class ChromePrintContext : public PrintContext {
     gfx::Rect page_rect = PageRect(page_number);
     AffineTransform transform;
 
-    auto* frame_view = GetFrame()->View();
-    DCHECK(frame_view);
     const LayoutView* layout_view = frame_view->GetLayoutView();
 
     // Layout may have used a larger viewport size in order to fit more
