@@ -14,10 +14,26 @@ This is a [list of checks] that you might encounter.
 ## How Chromium uses lint
 
 Chromium only runs lint on apk or bundle targets that explicitly set
-`enable_lint = true`. Some example targets that have this set are:
+`enable_lint = true`. You can run lint by compiling the apk or bundle target
+with ninja; once the code finishes compiling, ninja will automatically run lint
+on the code.
+
+Some example targets that have lint enabled are:
 
  - `//chrome/android:monochrome_public_bundle`
  - `//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk`
+ - Other targets with `enable_lint` enabled: https://source.chromium.org/search?q=lang:gn%20enable_lint%5C%20%3D%5C%20true&ss=chromium
+
+If you think lint is not running and already verified your GN
+target has `enable_lint = true`, then you can double check that
+`android_static_analysis` is set to `"on"` (this is the default value):
+
+```shell
+$ gn args out/Default --list=android_static_analysis
+android_static_analysis
+    Current value (from the default) = "on"
+      From //build/config/android/config.gni:85
+```
 
 ## My code has a lint error
 
