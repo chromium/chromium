@@ -230,7 +230,12 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
 // Tests that `Dismissed` is called on the FET on disconnect when the Password
 // Manager widget promo was shown and was not dismissed by the user.
 TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
-  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+  // Show the promo first.
+  EXPECT_CALL(*mockTracker(), ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
+
+  ASSERT_TRUE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
 
   EXPECT_CALL(
       *mockTracker(),
@@ -244,7 +249,12 @@ TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
 // Tests that `NotifyEvent` and `Dismissed` is called on the FET when the user
 // taps the close button of the Password Manager widget promo.
 TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnPromoClosed) {
-  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+  // Show the promo first.
+  EXPECT_CALL(*mockTracker(), ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
+
+  ASSERT_TRUE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
 
   EXPECT_CALL(
       *mockTracker(),

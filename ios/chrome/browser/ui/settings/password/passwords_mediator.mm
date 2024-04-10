@@ -39,6 +39,22 @@
 
 using password_manager::WarningType;
 
+namespace {
+
+// Struct used to count and store the number of active Password Manager widget
+// promos, as the FET does not support showing multiple promos for the same FET
+// feature at the same time.
+struct PasswordManagerActiveWidgetPromoData
+    : public base::SupportsUserData::Data {
+  // The number of active promos.
+  int active_promos = 0;
+
+  // Key to use for this type in SupportsUserData
+  static constexpr char key[] = "PasswordManagerActiveWidgetPromoData";
+};
+
+}  // namespace
+
 @interface PasswordsMediator () <PasswordCheckObserver,
                                  SavedPasswordsPresenterObserver,
                                  SyncObserverModelBridge>
@@ -135,8 +151,7 @@ using password_manager::WarningType;
 
 - (void)disconnect {
   if (_shouldNotifyFETToDismissPasswordManagerWidgetPromo && _tracker) {
-    _tracker->Dismissed(
-        feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+    [self dismissFETIfNeeded];
   }
   _tracker = nullptr;
   _syncObserver.reset();
@@ -249,8 +264,7 @@ using password_manager::WarningType;
   if (self.tracker) {
     self.tracker->NotifyEvent(
         feature_engagement::events::kPasswordManagerWidgetPromoClosed);
-    self.tracker->Dismissed(
-        feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+    [self dismissFETIfNeeded];
   }
   _shouldNotifyFETToDismissPasswordManagerWidgetPromo = NO;
 }
@@ -358,13 +372,47 @@ using password_manager::WarningType;
 }
 
 - (BOOL)shouldShowPasswordManagerWidgetPromo {
-  if (self.tracker &&
-      self.tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)) {
-    self.shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
-    return YES;
+  if (self.tracker) {
+    // First check if another active Password Manager page (e.g. in another
+    // window) has an active promo. If so, just return that the promo should be
+    // shown here without querying the FET. Only query the FET if there is no
+    // currently active promo.
+    PasswordManagerActiveWidgetPromoData* data =
+        static_cast<PasswordManagerActiveWidgetPromoData*>(
+            self.tracker->GetUserData(
+                PasswordManagerActiveWidgetPromoData::key));
+    if (data) {
+      data->active_promos++;
+      self.shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+      return YES;
+    } else if (self.tracker->ShouldTriggerHelpUI(
+                   feature_engagement::
+                       kIPHiOSPromoPasswordManagerWidgetFeature)) {
+      std::unique_ptr<PasswordManagerActiveWidgetPromoData> new_data =
+          std::make_unique<PasswordManagerActiveWidgetPromoData>();
+      new_data->active_promos++;
+      self.tracker->SetUserData(PasswordManagerActiveWidgetPromoData::key,
+                                std::move(new_data));
+      self.shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+      return YES;
+    }
   }
   return NO;
+}
+
+// Check if this is the last active Password Manager showing the widget promo
+// and dismisses the FET if so.
+- (void)dismissFETIfNeeded {
+  PasswordManagerActiveWidgetPromoData* data =
+      static_cast<PasswordManagerActiveWidgetPromoData*>(
+          _tracker->GetUserData(PasswordManagerActiveWidgetPromoData::key));
+  CHECK(data, base::NotFatalUntil::M127);
+  data->active_promos--;
+  if (data->active_promos <= 0) {
+    _tracker->Dismissed(
+        feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+    _tracker->RemoveUserData(PasswordManagerActiveWidgetPromoData::key);
+  }
 }
 
 #pragma mark - SavedPasswordsPresenterObserver
