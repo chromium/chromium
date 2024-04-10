@@ -32,20 +32,14 @@ constexpr char kFeaturePolicyBlocked[] =
 
 }  // namespace
 
-PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
-                                   PressureObserverOptions* options,
-                                   ExceptionState& exception_state)
-    : observer_callback_(observer_callback),
-      sample_interval_(options->sampleInterval()) {}
+PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback)
+    : observer_callback_(observer_callback) {}
 
 PressureObserver::~PressureObserver() = default;
 
 // static
-PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
-                                           PressureObserverOptions* options,
-                                           ExceptionState& exception_state) {
-  return MakeGarbageCollected<PressureObserver>(callback, options,
-                                                exception_state);
+PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback) {
+  return MakeGarbageCollected<PressureObserver>(callback);
 }
 
 // static
@@ -57,6 +51,7 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
 ScriptPromise<IDLUndefined> PressureObserver::observe(
     ScriptState* script_state,
     V8PressureSource source,
+    PressureObserverOptions* options,
     ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -81,6 +76,7 @@ ScriptPromise<IDLUndefined> PressureObserver::observe(
     return ScriptPromise<IDLUndefined>();
   }
 
+  sample_interval_ = options->sampleInterval();
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   pending_resolvers_[ToSourceIndex(source.AsEnum())].insert(resolver);

@@ -42,18 +42,15 @@ class PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PressureObserver(V8PressureUpdateCallback*,
-                   PressureObserverOptions*,
-                   ExceptionState&);
+  explicit PressureObserver(V8PressureUpdateCallback*);
   ~PressureObserver() override;
 
-  static PressureObserver* Create(V8PressureUpdateCallback*,
-                                  PressureObserverOptions*,
-                                  ExceptionState&);
+  static PressureObserver* Create(V8PressureUpdateCallback*);
 
   // PressureObserver IDL implementation.
   ScriptPromise<IDLUndefined> observe(ScriptState*,
                                       V8PressureSource,
+                                      PressureObserverOptions*,
                                       ExceptionState&);
   void unobserve(V8PressureSource);
   void disconnect();
@@ -112,7 +109,7 @@ class PressureObserver final : public ScriptWrappable {
 
   // Requested sample interval from the user.
   // https://w3c.github.io/compute-pressure/#dfn-sampleinterval
-  uint32_t sample_interval_;
+  uint32_t sample_interval_ = 0;
 
   HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_resolvers_[V8PressureSource::kEnumSize];
