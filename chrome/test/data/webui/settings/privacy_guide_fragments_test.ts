@@ -9,8 +9,9 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -797,6 +798,7 @@ suite('CookiesFragment', function() {
 suite('CompletionFragment', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -808,6 +810,8 @@ suite('CompletionFragment', function() {
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-completion-fragment');
@@ -856,9 +860,16 @@ suite('CompletionFragment', function() {
     fragment.shadowRoot!.querySelector<HTMLElement>('#waaRow')!.click();
     flush();
 
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideEntryExitHistogram');
-    assertEquals(PrivacyGuideInteractions.SWAA_COMPLETION_LINK, result);
+    assertEquals(
+        PrivacyGuideInteractions.SWAA_COMPLETION_LINK,
+        await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideEntryExitHistogram'));
+    assertEquals(
+        'Settings.PrivacyGuide.CompletionSWAAClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    assertEquals(
+        loadTimeData.getString('activityControlsUrlInPrivacyGuide'),
+        await openWindowProxy.whenCalled('openUrl'));
   });
 
   test('privacySandboxLinkClick', async function() {
@@ -866,10 +877,13 @@ suite('CompletionFragment', function() {
                             '#privacySandboxRow')!.click();
     flush();
 
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideEntryExitHistogram');
     assertEquals(
-        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK, result);
+        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK,
+        await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideEntryExitHistogram'));
+    assertEquals(
+        'Settings.PrivacyGuide.CompletionPSClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('updateFragmentFromSignIn', function() {
