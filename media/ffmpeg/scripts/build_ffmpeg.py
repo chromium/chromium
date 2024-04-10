@@ -672,6 +672,7 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
         '--disable-securetransport',
         '--disable-faan',
         '--disable-alsa',
+        '--disable-iamf',
 
         # Disable automatically detected external libraries. This prevents
         # automatic inclusion of things like hardware decoders. Each roll should
