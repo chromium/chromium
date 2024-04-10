@@ -6617,6 +6617,21 @@
             ]
         }
     ],
+    "DynamicCrxDownloaderPriority": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DynamicCrxDownloaderPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "DynamicScrollCullRectExpansion": [
         {
             "platforms": [

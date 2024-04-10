@@ -11,8 +11,12 @@ namespace update_client::features {
 BASE_FEATURE(kPuffinPatches, "PuffinPatches", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kBackgroundCrxDownloaderMac,
-             "BackgroundCrxDownloaderMac",
+BASE_FEATURE(kDynamicCrxDownloaderPriority,
+             "DynamicCrxDownloaderPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kDynamicCrxDownloaderPrioritySizeThreshold{
+    &kDynamicCrxDownloaderPriority, "BackgroundCrxDownloaderSizeThreshold",
+    10000000 /*10 MB*/};
 #endif
 }  // namespace update_client::features

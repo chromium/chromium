@@ -562,6 +562,9 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   hash_sha256_ = package.hash_sha256;
   hashdiff_sha256_ = package.hashdiff_sha256;
 
+  size_ = package.size;
+  sizediff_ = package.sizediff;
+
   if (!result.manifest.run.empty()) {
     install_params_ = std::make_optional(CrxInstaller::InstallParams(
         result.manifest.run, result.manifest.arguments,
@@ -616,11 +619,18 @@ void Component::NotifyWait() {
   NotifyObservers(Events::COMPONENT_WAIT);
 }
 
-bool Component::CanDoBackgroundDownload() const {
+bool Component::CanDoBackgroundDownload(int64_t size) const {
   // Foreground component updates are always downloaded in foreground.
-  return !is_foreground() &&
-         (crx_component() && crx_component()->allows_background_download) &&
-         update_context_->config->EnabledBackgroundDownloader();
+  bool enabled =
+      !is_foreground() &&
+      (crx_component() && crx_component()->allows_background_download) &&
+      update_context_->config->EnabledBackgroundDownloader();
+#if BUILDFLAG(IS_MAC)
+  enabled &=
+      base::FeatureList::IsEnabled(features::kDynamicCrxDownloaderPriority) &&
+      size > features::kDynamicCrxDownloaderPrioritySizeThreshold.Get();
+#endif
+  return enabled;
 }
 
 void Component::AppendEvent(base::Value::Dict event) {
@@ -1031,7 +1041,7 @@ void Component::StateDownloadingDiff::DoHandle() {
 
   crx_downloader_ =
       component.config()->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          component.CanDoBackgroundDownload());
+          component.CanDoBackgroundDownload(component.sizediff_));
   crx_downloader_->set_progress_callback(
       base::BindRepeating(&Component::StateDownloadingDiff::DownloadProgress,
                           base::Unretained(this)));
@@ -1105,7 +1115,7 @@ void Component::StateDownloading::DoHandle() {
 
   crx_downloader_ =
       component.config()->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          component.CanDoBackgroundDownload());
+          component.CanDoBackgroundDownload(component.size_));
   crx_downloader_->set_progress_callback(base::BindRepeating(
       &Component::StateDownloading::DownloadProgress, base::Unretained(this)));
   cancel_callback_ = crx_downloader_->StartDownload(

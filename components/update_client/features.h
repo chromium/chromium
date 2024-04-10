@@ -9,11 +9,18 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/metrics/field_trial_params.h"
+#endif
+
 namespace update_client::features {
 BASE_DECLARE_FEATURE(kPuffinPatches);
 
 #if BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kBackgroundCrxDownloaderMac);
+BASE_DECLARE_FEATURE(kDynamicCrxDownloaderPriority);
+// The minimum size (in bytes) for which background downloads should be
+// attempted.
+extern const base::FeatureParam<int> kDynamicCrxDownloaderPrioritySizeThreshold;
 #endif
 }  // namespace update_client::features
 
