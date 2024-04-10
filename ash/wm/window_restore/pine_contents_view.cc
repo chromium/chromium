@@ -47,9 +47,6 @@ namespace ash {
 namespace {
 
 // TODO(http://b/322359738): Localize all these strings.
-// TODO(http://b/322360273): Match specs.
-// TODO(http://b/328459389): Update `SetFontList()` to use
-// `ash::TypographyProvider`.
 
 constexpr int kButtonContainerChildSpacing = 10;
 // The margins for the container view which houses the cancel and restore
@@ -59,8 +56,6 @@ constexpr gfx::Insets kButtonContainerChildMargins = gfx::Insets::VH(14, 0);
 constexpr int kContentsChildSpacing = 16;
 constexpr gfx::Insets kContentsInsets(20);
 constexpr int kContentsRounding = 20;
-constexpr int kContentsTitleFontSize = 22;
-constexpr int kContentsDescriptionFontSize = 14;
 constexpr int kLeftContentsChildSpacing = 6;
 constexpr int kSettingsIconSize = 24;
 
@@ -109,21 +104,23 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
               // Title.
               views::Builder<views::Label>()
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                             kContentsTitleFontSize,
-                                             gfx::Font::Weight::BOLD))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
-                  .SetText(l10n_util::GetStringUTF16(title_message_id)),
+                  .SetText(l10n_util::GetStringUTF16(title_message_id))
+                  .CustomConfigure(base::BindOnce([](views::Label* label) {
+                    TypographyProvider::Get()->StyleLabel(
+                        TypographyToken::kCrosDisplay7, *label);
+                  })),
               // Description.
               views::Builder<views::Label>()
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                             kContentsDescriptionFontSize,
-                                             gfx::Font::Weight::NORMAL))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
-                  .SetText(l10n_util::GetStringUTF16(description_message_id)),
+                  .SetText(l10n_util::GetStringUTF16(description_message_id))
+                  .CustomConfigure(base::BindOnce([](views::Label* label) {
+                    TypographyProvider::Get()->StyleLabel(
+                        TypographyToken::kCrosBody1, *label);
+                  })),
               // This box layout view is the container for the "No thanks" and
               // "Restore" pill buttons.
               views::Builder<views::BoxLayoutView>()

@@ -96,11 +96,12 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
             .AddChildren(
                 views::Builder<views::Label>()
                     .SetEnabledColorId(pine::kPineItemTextColorId)
-                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                               pine::kItemTitleFontSize,
-                                               gfx::Font::Weight::BOLD))
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetText(base::UTF8ToUTF16(title)),
+                    .SetText(base::UTF8ToUTF16(title))
+                    .CustomConfigure(base::BindOnce([](views::Label* label) {
+                      TypographyProvider::Get()->StyleLabel(
+                          TypographyToken::kCrosButton2, *label);
+                    })),
                 views::Builder<views::BoxLayoutView>()
                     .CopyAddressTo(&favicon_container_view_)
                     .SetID(pine::kFaviconContainerViewID)

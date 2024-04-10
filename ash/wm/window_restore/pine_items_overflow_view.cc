@@ -136,14 +136,13 @@ PineItemsOverflowView::PineItemsOverflowView(
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
                    .SetEnabledColorId(pine::kPineItemTextColorId)
-                   .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                              pine::kItemTitleFontSize,
-                                              gfx::Font::Weight::BOLD))
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetPluralStringFUTF16(
                        IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,
                        num_elements - pine::kOverflowMinThreshold))
                    .Build());
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *remaining_windows_label);
   SetFlexForView(remaining_windows_label, 1);
 }
 
