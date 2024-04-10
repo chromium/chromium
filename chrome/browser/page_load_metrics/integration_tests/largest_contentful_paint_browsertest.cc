@@ -339,8 +339,10 @@ IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
   EXPECT_EQ(*loading_attr, "");
 }
 
-IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
-                       LargestContentfulPaint_EventLazyLoadingImage_Video) {
+// TODO(crbug.com/333641374): Re-enable this test
+IN_PROC_BROWSER_TEST_F(
+    LCPLazyLoadingImageTest,
+    DISABLED_LargestContentfulPaint_EventLazyLoadingImage_Video) {
   std::string test_url = "/is_video.html";
 
   const base::Value::Dict data = setUpTraceEvent(test_url);
