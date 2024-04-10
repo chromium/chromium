@@ -817,9 +817,36 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.onKeyDown_(e, focusableElements);
   }
 
+  private getNewIndex_(e: KeyboardEvent, focusableElements: HTMLElement[]):
+      number {
+    let currentIndex = focusableElements.indexOf(e.target as HTMLElement);
+    const direction =
+        (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : -1;
+    // If e.target wasn't found in focusable elements, and we're going
+    // backwards, adjust currentIndex so we move to the last focusable element
+    if (currentIndex === -1 && direction === -1) {
+      currentIndex = focusableElements.length;
+    }
+    // Move to the next focusable item in the menu, wrapping around
+    // if we've reached the end or beginning.
+    return (currentIndex + direction + focusableElements.length) %
+        focusableElements.length;
+  }
+
   private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
-    this.onKeyDown_(
-        e, Array.from(this.$.fontSizeMenu.get().children) as HTMLElement[]);
+    // The font size selection menu is laid out horizontally, so users should be
+    // able to navigate it using either up and down arrows, or left and right
+    // arrows.
+    if (!['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      return;
+    }
+    e.preventDefault();
+    const focusableElements =
+        Array.from(this.$.fontSizeMenu.get().children) as HTMLElement[];
+    const elementToFocus =
+        focusableElements[this.getNewIndex_(e, focusableElements)];
+    assert(elementToFocus, 'no element to focus');
+    elementToFocus.focus();
   }
 
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
@@ -828,12 +855,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     e.preventDefault();
-    const currentIndex = focusableElements.indexOf(e.target as HTMLElement);
+    //  Move to the next focusable item in the toolbar, wrapping around
+    //  if we've reached the end or beginning.
+    let newIndex = this.getNewIndex_(e, focusableElements);
     const direction = e.key === 'ArrowRight' ? 1 : -1;
-    // Move to the next focusable item in the toolbar, wrapping around
-    // if we've reached the end or beginning.
-    let newIndex = (currentIndex + direction + focusableElements.length) %
-        focusableElements.length;
     // Skip focusing the button itself and go directly to the children. We still
     // need this button in the list of focusable elements because it can become
     // focused by tabbing while the menu is open and we want the arrow key

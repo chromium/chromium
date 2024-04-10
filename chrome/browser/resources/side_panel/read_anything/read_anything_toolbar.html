@@ -276,9 +276,9 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
-  <cr-lazy-render id="fontSizeMenu" on-keydown="onFontSizeMenuKeyDown_">
+  <cr-lazy-render id="fontSizeMenu">
     <template>
-      <cr-action-menu>
+      <cr-action-menu on-keydown="onFontSizeMenuKeyDown_">
         <cr-icon-button
             class="font-size"
             id="font-size-decrease"
