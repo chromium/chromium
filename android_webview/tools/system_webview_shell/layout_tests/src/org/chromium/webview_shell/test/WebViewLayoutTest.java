@@ -146,8 +146,9 @@ public class WebViewLayoutTest {
                 mTestActivity);
 
         // Process all expectations files.
-        String webviewExpected =
-                readFile(PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt");
+        String fileNameExpected =
+                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt";
+        String webviewExpected = readFile(fileNameExpected);
         HashMap<String, HashSet<String>> webviewExpectedInterfacesMap =
                 buildHashMap(webviewExpected);
 
@@ -159,6 +160,13 @@ public class WebViewLayoutTest {
 
         // Process web test results.
         String result = mTestActivity.getTestResult();
+
+        if (isRebaseline()) {
+            writeFile(fileNameExpected, result);
+            Log.i(TAG, "file: " + fileNameExpected + " --> rebaselined, length=" + result.length());
+            return;
+        }
+
         HashMap<String, HashSet<String>> webviewInterfacesMap = buildHashMap(result);
 
         StringBuilder newInterfaces = new StringBuilder();
