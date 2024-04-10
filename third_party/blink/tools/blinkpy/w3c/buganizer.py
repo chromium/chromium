@@ -215,8 +215,8 @@ class BuganizerClient:
     def NewComment(self, issue_id: IssueID, comment: str):
         """Makes a request to the issue tracker to add a comment."""
         new_comment_request = {'issueComment': {'comment': comment}}
-        request = self._service.issues().modify(
-            issueId=self._ResolveID(issue_id), body=new_comment_request)
+        request = self._service.issues().modify(issueId=str(
+            self._ResolveID(issue_id)), body=new_comment_request)
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
