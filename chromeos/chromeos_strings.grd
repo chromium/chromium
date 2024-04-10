@@ -3163,7 +3163,7 @@
           No internet. Connect to the internet and try again.
         </message>
         <message name="IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED" desc="Error message displayed when the resource is exhausted.">
-          We're at capacity. Please come back in a bit.
+          At capacity right now. Come back soon.
         </message>
         <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
           Something went wrong. Try again.
@@ -3236,7 +3236,7 @@
           When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>.
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
-          Generative AI is experimental, in early development, and currently has limited availability. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=copyeditor"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+          Generative AI is experimental, in early development, and currently has limited availability.
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it

@@ -140,8 +140,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     switch (statusCode) {
       case MantaStatusCode.kNoInternetConnection:
         return 'personalization-shared-illo:network_error';
-      default:
+      case MantaStatusCode.kPerUserQuotaExceeded:
+      case MantaStatusCode.kResourceExhausted:
         return 'personalization-shared-illo:resource_error';
+      default:
+        return 'personalization-shared-illo:generic_error';
     }
   }
 
