@@ -1685,7 +1685,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   CGFloat oldWidth = _moduleWidth.constant;
   CGFloat width;
   if (IsFeedContainmentEnabled()) {
-    width = MIN(self.view.frame.size.width * content_suggestions::kModuleWidth,
+    CGFloat widthMultiplier = (100 - HomeModuleMinimumPadding()) / 100;
+    width = MIN(self.view.frame.size.width * widthMultiplier,
                 kDiscoverFeedContentMaxWidth);
   } else {
     width =

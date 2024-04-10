@@ -9493,6 +9493,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "HomeModuleMinimumPadding": "8"
+                    },
                     "enable_features": [
                         "EnableFeedContainment"
                     ]

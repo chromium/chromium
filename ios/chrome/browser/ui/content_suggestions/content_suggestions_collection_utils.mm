@@ -149,7 +149,6 @@ namespace content_suggestions {
 
 const CGFloat kHintTextScale = 0.15;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
-const CGFloat kModuleWidth = 0.92;
 
 CGFloat DoodleHeight(BOOL logo_is_showing,
                      BOOL doodle_is_showing,

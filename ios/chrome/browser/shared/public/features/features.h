@@ -545,8 +545,9 @@ extern const char kTabResumptionAllTabsOneDayThresholdParam[];
 bool IsFeedContainmentEnabled();
 
 // The minimum padding between the modules and the screen bounds on the Home
-// surface. Relies on `IsFeedContainmentEnabled()` being enabled.
-int HomeModuleMinimumPadding();
+// surface. Relies on `IsFeedContainmentEnabled()` being enabled. This padding
+// is dynamic, so the value represents a percentage including both sides.
+CGFloat HomeModuleMinimumPadding();
 
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();

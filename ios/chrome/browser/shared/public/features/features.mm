@@ -685,9 +685,9 @@ bool IsFeedContainmentEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedContainment);
 }
 
-int HomeModuleMinimumPadding() {
-  return base::GetFieldTrialParamByFeatureAsInt(kEnableFeedContainment,
-                                                kHomeModuleMinimumPadding, 30);
+CGFloat HomeModuleMinimumPadding() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedContainment, kHomeModuleMinimumPadding, 8.0);
 }
 
 bool IsTabResumptionEnabled() {
