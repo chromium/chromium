@@ -12,8 +12,12 @@
 // The consumer interface that takes data from the mediator.
 @protocol OtpInputDialogConsumer <NSObject>
 
-// Set the Autofill OTP input dialog content data.
+// Set the Autofill OTP input dialog content data. This should be called only
+// once before the view is loaded.
 - (void)setContent:(OtpInputDialogContent*)content;
+
+// Updates the confirm button's enabling state.
+- (void)setConfirmButtonEnabled:(BOOL)enabled;
 
 // Update the dialog to show pending state.
 - (void)showPendingState;

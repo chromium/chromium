@@ -13,10 +13,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
 @implementation OtpInputDialogCoordinator {
+  // A reference to the base view controller with UINavigationController type.
+  __weak UINavigationController* _baseNavigationController;
+
   // The model layer controller. This model controller provide access to model
   // data and also handles interactions.
   std::unique_ptr<autofill::CardUnmaskOtpInputDialogControllerImpl>
@@ -28,6 +32,8 @@
   // destroyed after the `_mediator` so that the `_modelController` is
   // correctly notified of the closure.
   std::unique_ptr<OtpInputDialogMediator> _mediator;
+
+  __weak OtpInputDialogViewController* _viewController;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -36,6 +42,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    _baseNavigationController = navigationController;
     autofill::ChromeAutofillClientIOS* client =
         AutofillTabHelper::FromWebState(
             browser->GetWebStateList()->GetActiveWebState())
@@ -53,11 +60,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // TODO(crbug.com/324610713): Initiate the view controller.
+  auto viewController = [[OtpInputDialogViewController alloc] init];
+  _viewController = viewController;
+  _mediator->SetConsumer(_viewController);
+  [_baseNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)stop {
-  // TODO(crbug.com/324610713): Dismiss the view controller.
+  [_baseNavigationController popViewControllerAnimated:YES];
 }
 
 @end

@@ -27,8 +27,17 @@ source_set("otp_input_dialog_ui") {
     "otp_input_dialog_consumer.h",
     "otp_input_dialog_content.h",
     "otp_input_dialog_content.mm",
+    "otp_input_dialog_view_controller.h",
+    "otp_input_dialog_view_controller.mm",
   ]
-  deps = []
+  deps = [
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/shared/ui/list_model:list_model",
+    "//ios/chrome/browser/shared/ui/table_view:table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/autofill/cells:cells",
+    "//ui/base:base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
