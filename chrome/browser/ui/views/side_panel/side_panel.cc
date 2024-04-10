@@ -338,7 +338,7 @@ void SidePanel::ChildVisibilityChanged(View* child) {
 }
 
 double SidePanel::GetAnimationValue() const {
-  if (lens::features::IsLensOverlayEnabled()) {
+  if (ShouldShowAnimation()) {
     return animation_.GetCurrentValue();
   } else {
     return 1;
@@ -504,8 +504,7 @@ void SidePanel::UpdateVisibility() {
       border_view_->DestroyLayer();
     }
   }
-  if (lens::features::IsLensOverlayEnabled() &&
-      gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_) {
+  if (ShouldShowAnimation()) {
     if (should_be_open) {
       // If the side panel should remain open but there are views to hide, hide
       // them immediately.
@@ -524,6 +523,11 @@ void SidePanel::UpdateVisibility() {
   } else {
     SetVisible(should_be_open);
   }
+}
+
+bool SidePanel::ShouldShowAnimation() const {
+  return lens::features::IsLensOverlayEnabled() &&
+         gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
 }
 
 BEGIN_METADATA(SidePanel)

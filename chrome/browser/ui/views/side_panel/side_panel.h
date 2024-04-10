@@ -69,6 +69,7 @@ class SidePanel : public views::AccessiblePaneView,
 
  private:
   void UpdateVisibility();
+  bool ShouldShowAnimation() const;
 
   // views::View:
   void ChildVisibilityChanged(View* child) override;
