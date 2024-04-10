@@ -589,24 +589,6 @@ UserSessionManager* UserSessionManager::GetInstance() {
 }
 
 // static
-void UserSessionManager::OverrideHomedir() {
-  // Override user homedir, check for ProfileManager being initialized as
-  // it may not exist in unit tests.
-  if (g_browser_process->profile_manager()) {
-    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-    if (user_manager->GetLoggedInUsers().size() == 1) {
-      base::FilePath homedir = ProfileHelper::GetProfilePathByUserIdHash(
-          user_manager->GetPrimaryUser()->username_hash());
-      // This path has been either created by cryptohome (on real Chrome OS
-      // device) or by ProfileManager (on chromeos=1 desktop builds).
-      base::PathService::OverrideAndCreateIfNeeded(base::DIR_HOME, homedir,
-                                                   true /* path is absolute */,
-                                                   false /* don't create */);
-    }
-  }
-}
-
-// static
 void UserSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kRLZBrand, std::string());
   registry->RegisterBooleanPref(::prefs::kRLZDisabled, false);

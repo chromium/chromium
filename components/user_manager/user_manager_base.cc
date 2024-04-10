@@ -236,6 +236,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 
   if (!primary_user_) {
     primary_user_ = active_user_;
+    delegate_->OverrideDirHome(*primary_user_);
     if (primary_user_->HasGaiaAccount())
       SendGaiaUserLoginMetrics(account_id);
   } else if (primary_user_ != active_user_) {

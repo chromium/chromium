@@ -74,6 +74,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
     // Returns the application locale.
     virtual const std::string& GetApplicationLocale() = 0;
+
+    // Overrides the home directory path for the `primary_user`.
+    virtual void OverrideDirHome(const User& primary_user) = 0;
   };
 
   // Creates UserManagerBase with |task_runner| for UI thread, and given

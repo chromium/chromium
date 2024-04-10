@@ -668,7 +668,6 @@ bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
 void ChromeUserManagerImpl::NotifyOnLogin() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UserSessionManager::OverrideHomedir();
   UserManagerBase::NotifyOnLogin();
 
   CheckProfileForSanity();

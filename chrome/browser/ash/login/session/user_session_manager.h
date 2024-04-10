@@ -162,9 +162,6 @@ class UserSessionManager
   UserSessionManager(const UserSessionManager&) = delete;
   UserSessionManager& operator=(const UserSessionManager&) = delete;
 
-  // Called when user is logged in to override base::DIR_HOME path.
-  static void OverrideHomedir();
-
   // Registers session related preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

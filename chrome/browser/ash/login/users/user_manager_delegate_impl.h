@@ -19,6 +19,7 @@ class UserManagerDelegateImpl : public user_manager::UserManagerBase::Delegate {
 
   // UserManagerBase::Delegate:
   const std::string& GetApplicationLocale() override;
+  void OverrideDirHome(const user_manager::User& primary_user) override;
 };
 
 }  // namespace ash
