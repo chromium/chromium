@@ -794,6 +794,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
+      {"internetNoTetherHosts", IDS_SETTINGS_INTERNET_NO_TETHER_HOSTS},
       {"internetPageTitle", features::IsInstantHotspotRebrandEnabled()
                                 ? IDS_SETTINGS_INTERNET
                                 : IDS_SETTINGS_INTERNET_LEGACY},

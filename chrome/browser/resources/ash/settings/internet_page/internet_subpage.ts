@@ -892,9 +892,13 @@ export class SettingsInternetSubpageElement extends
       deviceState: OncMojo.DeviceStateProperties,
       _tetherDeviceState: OncMojo.DeviceStateProperties|undefined): string {
     const type = deviceState.type;
-    if (type === NetworkType.kTether ||
-        (!this.isInstantHotspotRebrandEnabled_ &&
-         type === NetworkType.kCellular && this.tetherDeviceState)) {
+    if (type === NetworkType.kTether && this.isInstantHotspotRebrandEnabled_) {
+      return this.i18n('internetNoTetherHosts');
+    }
+
+    if (!this.isInstantHotspotRebrandEnabled_ &&
+        (type === NetworkType.kCellular && this.tetherDeviceState ||
+         type === NetworkType.kTether)) {
       return this.i18nAdvanced('internetNoNetworksMobileData').toString();
     }
 
