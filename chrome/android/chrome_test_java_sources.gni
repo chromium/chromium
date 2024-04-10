@@ -40,6 +40,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundServiceTest.java",
   "javatests/src/org/chromium/chrome/browser/ShareIntentTest.java",
   "javatests/src/org/chromium/chrome/browser/SmartClipProviderTest.java",
+  "javatests/src/org/chromium/chrome/browser/TabArchiverTest.java",
   "javatests/src/org/chromium/chrome/browser/TabCountLabelTest.java",
   "javatests/src/org/chromium/chrome/browser/TabObserverTest.java",
   "javatests/src/org/chromium/chrome/browser/TabTest.java",

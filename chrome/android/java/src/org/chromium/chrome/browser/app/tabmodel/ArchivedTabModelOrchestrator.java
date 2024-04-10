@@ -15,9 +15,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -61,6 +63,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private final TabCreatorManager mArchivedTabCreatorManager;
 
     private WindowAndroid mWindow;
+    private TabArchiver mTabArchiver;
     private TabCreator mArchivedTabCreator;
     private boolean mNativeLibraryReadyCalled;
     private boolean mLoadStateCalled;
@@ -120,13 +123,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         // creating tabs.
         mWindow = new WindowAndroid(context);
         mArchivedTabCreator = new ArchivedTabCreator(mWindow);
+
+        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         mTabModelSelector =
                 new ArchivedTabModelSelectorImpl(
                         mProfile,
                         mArchivedTabCreatorManager,
                         new ChromeTabModelFilterFactory(context),
                         () -> NextTabPolicy.LOCATIONAL,
-                        AsyncTabParamsManagerSingleton.getInstance());
+                        asyncTabParamsManager);
 
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
@@ -137,6 +142,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabPersistentStore =
                 new TabPersistentStore(
                         mTabPersistencePolicy, mTabModelSelector, mArchivedTabCreatorManager);
+        mTabArchiver =
+                new TabArchiver(
+                        mArchivedTabCreator,
+                        mTabModelSelector.getModel(/* incognito= */ false),
+                        asyncTabParamsManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();
@@ -172,8 +182,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert false : "Not reached.";
     }
 
-    // Returns the {@link TabCreator} for archived tabs.
+    /** Returns the {@link TabCreator} for archived tabs. */
     public TabCreator getArchivedTabCreator() {
         return mArchivedTabCreatorManager.getTabCreator(false);
+    }
+
+    /** Returns the {@link TabArchiver}. */
+    public TabArchiver getTabArchiver() {
+        return mTabArchiver;
     }
 }

@@ -1104,6 +1104,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/RedirectHandlerTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/RequestDesktopUtils.java",
+  "java/src/org/chromium/chrome/browser/tab/TabArchiver.java",
   "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
   "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelper.java",
   "java/src/org/chromium/chrome/browser/tab/TabBuilder.java",
