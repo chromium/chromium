@@ -108,25 +108,10 @@ TEST(ContentSettingsTraitsTest, Roundtrips_RendererContentSettingRules) {
   RendererContentSettingRules original;
 
   ContentSettingPatternSource source;
-  source.primary_pattern =
-      ContentSettingsPattern::FromString("https://image.com:*");
-  original.image_rules = {source};
-
-  source.primary_pattern =
-      ContentSettingsPattern::FromString("https://script.com:*");
-  original.script_rules = {source};
-
-  source.primary_pattern =
-      ContentSettingsPattern::FromString("https://popup-redirect.com:*");
-  original.popup_redirect_rules = {source};
 
   source.primary_pattern =
       ContentSettingsPattern::FromString("https://mixed-content.com:*");
   original.mixed_content_rules = {source};
-
-  source.primary_pattern =
-      ContentSettingsPattern::FromString("https://auto-dark-content.com:*");
-  original.auto_dark_content_rules = {source};
 
   RendererContentSettingRules round_tripped;
 

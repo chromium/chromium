@@ -107,11 +107,7 @@ bool RendererContentSettingRules::IsRendererContentSetting(
 
 void RendererContentSettingRules::FilterRulesByOutermostMainFrameURL(
     const GURL& outermost_main_frame_url) {
-  FilterRulesForType(image_rules, outermost_main_frame_url);
-  FilterRulesForType(script_rules, outermost_main_frame_url);
-  FilterRulesForType(popup_redirect_rules, outermost_main_frame_url);
   FilterRulesForType(mixed_content_rules, outermost_main_frame_url);
-  FilterRulesForType(auto_dark_content_rules, outermost_main_frame_url);
 }
 
 RendererContentSettingRules::RendererContentSettingRules() = default;

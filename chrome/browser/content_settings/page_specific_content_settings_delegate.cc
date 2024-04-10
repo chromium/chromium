@@ -163,21 +163,6 @@ namespace {
 void GetGuestViewDefaultContentSettingRules(
     bool incognito,
     RendererContentSettingRules* rules) {
-  rules->image_rules.clear();
-  rules->image_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->auto_dark_content_rules.clear();
-  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->script_rules.clear();
-  rules->script_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
   rules->mixed_content_rules.clear();
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
@@ -190,26 +175,15 @@ void GetGuestViewDefaultContentSettingRules(
 void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
     content::RenderFrameHost* rfh,
     RendererContentSettingRules* rules) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool is_off_the_record =
       web_contents()->GetBrowserContext()->IsOffTheRecord();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (guest_view::GuestViewBase::IsGuest(rfh)) {
     GetGuestViewDefaultContentSettingRules(is_off_the_record, rules);
     return;
   }
 #endif
-  // Always allow scripting in PDF renderers to retain the functionality of
-  // the scripted messaging proxy in between the plugins in the PDF renderers
-  // and the PDF extension UI. Content settings for JavaScript embedded in
-  // PDFs are enforced by the PDF plugin.
-  if (rfh->GetProcess()->IsPdf()) {
-    rules->script_rules.clear();
-    rules->script_rules.emplace_back(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-        std::string(), is_off_the_record);
-  }
 }
 
 PageSpecificContentSettings::MicrophoneCameraState

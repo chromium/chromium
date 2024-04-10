@@ -123,7 +123,6 @@ class ContentSettingsAgentImpl
 
   // mojom::ContentSettingsAgent:
   void SetAllowRunningInsecureContent() override;
-  void SetDisabledMixedContentUpgrades() override;
   void SendRendererContentSettingRules(
       const RendererContentSettingRules& renderer_settings) override;
 
@@ -154,8 +153,6 @@ class ContentSettingsAgentImpl
   // Caches the result of AllowStorageAccess.
   using StoragePermissionsKey = std::pair<url::Origin, StorageType>;
   base::flat_map<StoragePermissionsKey, bool> cached_storage_permissions_;
-
-  bool mixed_content_autoupgrades_disabled_ = false;
 
   // If true, IsAllowlistedForContentSettings will always return true.
   const bool should_allowlist_;

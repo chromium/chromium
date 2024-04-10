@@ -168,29 +168,9 @@ template <>
 struct StructTraits<
     content_settings::mojom::RendererContentSettingRulesDataView,
     RendererContentSettingRules> {
-  static const std::vector<ContentSettingPatternSource>& image_rules(
-      const RendererContentSettingRules& r) {
-    return r.image_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>& script_rules(
-      const RendererContentSettingRules& r) {
-    return r.script_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>& popup_redirect_rules(
-      const RendererContentSettingRules& r) {
-    return r.popup_redirect_rules;
-  }
-
   static const std::vector<ContentSettingPatternSource>& mixed_content_rules(
       const RendererContentSettingRules& r) {
     return r.mixed_content_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>&
-  auto_dark_content_rules(const RendererContentSettingRules& r) {
-    return r.auto_dark_content_rules;
   }
 
   static bool Read(

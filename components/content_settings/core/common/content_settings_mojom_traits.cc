@@ -122,11 +122,7 @@ bool StructTraits<content_settings::mojom::RendererContentSettingRulesDataView,
                   RendererContentSettingRules>::
     Read(content_settings::mojom::RendererContentSettingRulesDataView data,
          RendererContentSettingRules* out) {
-  return data.ReadImageRules(&out->image_rules) &&
-         data.ReadScriptRules(&out->script_rules) &&
-         data.ReadPopupRedirectRules(&out->popup_redirect_rules) &&
-         data.ReadMixedContentRules(&out->mixed_content_rules) &&
-         data.ReadAutoDarkContentRules(&out->auto_dark_content_rules);
+  return data.ReadMixedContentRules(&out->mixed_content_rules);
 }
 
 }  // namespace mojo
