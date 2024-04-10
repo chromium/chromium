@@ -4100,6 +4100,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAudioA2DPAdvancedCodecsName,
      flag_descriptions::kAudioA2DPAdvancedCodecsDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioA2DPAdvancedCodecs")},
+    {"audio-aec-required-for-cras-processor",
+     flag_descriptions::kAudioAecRequiredForCrasProcessorName,
+     flag_descriptions::kAudioAecRequiredForCrasProcessorDescription, kOsCrOS,
+     PLATFORM_FEATURE_NAME_TYPE(
+         "CrOSLateBootAudioAecRequiredForCrasProcessor")},
     {"audio-ap-noise-cancellation",
      flag_descriptions::kAudioAPNoiseCancellationName,
      flag_descriptions::kAudioAPNoiseCancellationDescription, kOsCrOS,

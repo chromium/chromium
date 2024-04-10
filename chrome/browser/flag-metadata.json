@@ -544,6 +544,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "audio-aec-required-for-cras-processor",
+    "owners": [ "aaronyu@google.com", "chromeos-audio@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "audio-ap-noise-cancellation",
     "owners": ["aaronyu@chromium.org", "hunghsienchen@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 125

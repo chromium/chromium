@@ -18534,6 +18534,8 @@ from previous Chrome versions.
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
   <int value="-1150980351" label="CrosWebAppInstallDialog:enabled"/>
   <int value="-1150485573" label="HistoryClustersPersistedClusters:enabled"/>
+  <int value="-1148764533"
+      label="CrOSLateBootAudioAecRequiredForCrasProcessor:enabled"/>
   <int value="-1148269796" label="ProjectorUseUSMForS3:disabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146521164" label="EcheNetworkConnectionState:disabled"/>
@@ -24292,6 +24294,8 @@ from previous Chrome versions.
   <int value="1447295459" label="SyncPseudoUSSApps:enabled"/>
   <int value="1448622238" label="DeferTabSwitcherLayoutCreation:enabled"/>
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
+  <int value="1448974280"
+      label="CrOSLateBootAudioAecRequiredForCrasProcessor:disabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
