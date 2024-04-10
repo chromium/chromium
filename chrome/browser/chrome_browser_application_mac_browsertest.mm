@@ -5,6 +5,7 @@
 #import "chrome/browser/chrome_browser_application_mac.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #import "base/mac/mac_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -33,6 +34,23 @@ BOOL g_voice_over_enabled = NO;
 // monitoring code.
 - (void)setVoiceOverEnabled:(BOOL)flag {
   g_voice_over_enabled = flag;
+}
+
+@end
+
+@interface NSApplication (ChromeBrowserApplicationMacBrowserTestSwizzle)
+@end
+
+@implementation NSApplication (ChromeBrowserApplicationMacBrowserTestSwizzle)
+
+- (void)testObserveValueForKeyPath:(NSString*)keyPath
+                          ofObject:(id)object
+                            change:
+                                (NSDictionary<NSKeyValueChangeKey, id>*)change
+                           context:(void*)context {
+  if (context) {
+    *static_cast<bool*>(context) = true;
+  }
 }
 
 @end
@@ -110,6 +128,26 @@ class ChromeBrowserAppMacBrowserTest : public InProcessBrowserTest {
   BrowserCrApplication* br_cr_app_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Ensures that overrides to the application's
+// observeValueForKeyPath:ofObject:change:context: method call super on
+// unrecognized key paths.
+IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
+                       KVOObservationCallsSuper) {
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSApplication class],
+      @selector(observeValueForKeyPath:ofObject:change:context:),
+      @selector(testObserveValueForKeyPath:ofObject:change:context:));
+
+  bool super_was_called = false;
+
+  [NSApp observeValueForKeyPath:@"testKeyPath"
+                       ofObject:nil
+                         change:nil
+                        context:&super_was_called];
+
+  EXPECT_TRUE(super_was_called);
+}
 
 // Tests how BrowserCrApplication responds to VoiceOver activations.
 IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,

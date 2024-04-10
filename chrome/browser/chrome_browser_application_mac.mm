@@ -130,7 +130,6 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 }  // namespace
 
 @interface BrowserCrApplication () <NativeEventProcessor> {
-  __strong NSString* _voiceOverKVOKeyPath;
   // A counter for enhanced user interface enable (+1) and disable (-1)
   // requests.
   int _AXEnhancedUserInterfaceRequests;
@@ -192,26 +191,19 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       base::mac::MacOSVersion() >= 14'00'00 &&
       base::FeatureList::IsEnabled(
           features::kSonomaAccessibilityActivationRefinements);
-
-  if (!_sonomaAccessibilityRefinementsAreActive) {
-    return;
-  }
-
-  // Use Key-Value observing to watch for VoiceOver status changes. Also
-  // notify with the initial state.
-  _voiceOverKVOKeyPath = @"voiceOverEnabled";
-  [[NSWorkspace sharedWorkspace] addObserver:self
-                                  forKeyPath:_voiceOverKVOKeyPath
-                                     options:(NSKeyValueObservingOptionInitial |
-                                              NSKeyValueObservingOptionNew)
-                                     context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if ([keyPath isEqualToString:_voiceOverKVOKeyPath]) {
+  // KVO of the system's VoiceOver state gets set up during initialization of
+  // BrowserAccessibilityStateImplMac. The context is the browser's
+  // global accessibility object, which we must check to ensure we're acting
+  // on a notification we set up (vs. NSApplication, say).
+  if (_sonomaAccessibilityRefinementsAreActive &&
+      [keyPath isEqualToString:@"voiceOverEnabled"] &&
+      context == content::BrowserAccessibilityState::GetInstance()) {
     NSNumber* newValueNumber = [change objectForKey:NSKeyValueChangeNewKey];
 
     // In the if statement below, we check newValueNumber's class before
@@ -222,12 +214,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     if ([newValueNumber isKindOfClass:[NSNumber class]]) {
       [self voiceOverStateChanged:[newValueNumber boolValue]];
     }
-  } else {
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
+
+    return;
   }
+
+  [super observeValueForKeyPath:keyPath
+                       ofObject:object
+                         change:change
+                        context:context];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

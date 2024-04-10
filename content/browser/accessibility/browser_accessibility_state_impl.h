@@ -27,16 +27,16 @@ struct FocusedNodeDetails;
 // different for each platform.
 //
 // Screen Reader Detection
-// (1) On windows many screen reader detection mechinisms will give false
-// positives like relying on the SPI_GETSCREENREADER system parameter. In Chrome
-// we attempt to dynamically detect a MSAA client screen reader by calling
-// NotifiyWinEvent in NativeWidgetWin with a custom ID and wait to see if the ID
-// is requested by a subsequent call to WM_GETOBJECT.
-// (2) On mac we detect dynamically if VoiceOver is running.  We rely upon the
-// undocumented accessibility attribute @"AXEnhancedUserInterface" which is set
-// when VoiceOver is launched and unset when VoiceOver is closed.  This is an
-// improvement over reading defaults preference values (which has no callback
-// mechanism).
+// (1) On Windows, many screen reader detection mechanisms will give false
+//     positives, such as relying on the SPI_GETSCREENREADER system parameter.
+//     In Chrome, we attempt to dynamically detect a MSAA client screen reader
+//     by calling NotifyWinEvent in NativeWidgetWin with a custom ID and wait
+//     to see if the ID is requested by a subsequent call to WM_GETOBJECT.
+// (2) On macOS, we dynamically detect if VoiceOver is running by Key-Value
+//     Observing changes to the "voiceOverEnabled" property in NSWorkspace. We
+//     also monitor the undocumented accessibility attribute
+//     @"AXEnhancedUserInterface", which is set by other assistive
+//     technologies.
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
       public ui::AXPlatform::Delegate {
