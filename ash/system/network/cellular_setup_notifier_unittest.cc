@@ -12,7 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/timer/mock_timer.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -29,15 +30,29 @@ namespace ash {
 
 namespace {
 
-const char kShillManagerClientStubCellularDevice[] =
+constexpr char kShillManagerClientStubCellularDevice[] =
     "/device/stub_cellular_device";
-const char kShillManagerClientStubCellularDeviceName[] = "stub_cellular_device";
+constexpr char kShillManagerClientStubCellularDeviceName[] =
+    "stub_cellular_device";
+constexpr char kCellularNetworkWithActivationState[] = R"(
+{
+  "GUID": "cellular_guid",
+  "Type": "cellular",
+  "Technology": "LTE",
+  "State": "idle",
+  "Cellular.ActivationState": "%s"
+})";
+
+// Delay after OOBE when the notification is expected to be shown.
+constexpr base::TimeDelta kNotificationDelay = base::Minutes(15);
 
 }  // namespace
 
 class CellularSetupNotifierTest : public NoSessionAshTestBase {
  protected:
-  CellularSetupNotifierTest() = default;
+  CellularSetupNotifierTest()
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   CellularSetupNotifierTest(const CellularSetupNotifierTest&) = delete;
   CellularSetupNotifierTest& operator=(const CellularSetupNotifierTest&) =
       delete;
@@ -53,15 +68,6 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
         std::make_unique<network_config::CrosNetworkConfigTestHelper>();
 
     AshTestBase::SetUp();
-
-    auto mock_notification_timer = std::make_unique<base::MockOneShotTimer>();
-    mock_notification_timer_ = mock_notification_timer.get();
-    Shell::Get()
-        ->system_notification_controller()
-        ->cellular_setup_notifier_->SetTimerForTesting(
-            std::move(mock_notification_timer));
-
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
@@ -74,30 +80,64 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     SystemTokenCertDbStorage::Shutdown();
   }
 
-  // Returns the cellular setup notification if it is shown, and null if it is
-  // not shown.
-  message_center::Notification* GetCellularSetupNotification() {
+  void AddCellularDevice() {
+    network_config_helper_->network_state_helper().AddDevice(
+        kShillManagerClientStubCellularDevice, shill::kTypeCellular,
+        kShillManagerClientStubCellularDeviceName);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::string ConfigureCellularService(bool activated) {
+    const std::string path =
+        network_config_helper_->network_state_helper().ConfigureService(
+            base::StringPrintf(kCellularNetworkWithActivationState,
+                               activated
+                                   ? shill::kActivationStateActivated
+                                   : shill::kActivationStateNotActivated));
+    base::RunLoop().RunUntilIdle();
+    return path;
+  }
+
+  void ActivateCellularService(const std::string& path) {
+    network_config_helper_->network_state_helper().SetServiceProperty(
+        path, shill::kActivationStateProperty,
+        base::Value(shill::kActivationStateActivated));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Returns whether the cellular setup notification is shown.
+  bool IsNotificationShown() {
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
         CellularSetupNotifier::kCellularSetupNotificationId);
   }
 
-  void LogIn() { SimulateUserLogin("user1@test.com"); }
-
-  void LogOut() { ClearLogin(); }
-
-  void LogInAndFireTimer() {
-    LogIn();
-    EXPECT_TRUE(GetCanCellularSetupNotificationBeShown());
-
-    ASSERT_TRUE(mock_notification_timer_->IsRunning());
-    mock_notification_timer_->Fire();
-    // Wait for the async network calls to complete.
+  void LogIn() {
+    SimulateUserLogin("user1@test.com");
     base::RunLoop().RunUntilIdle();
   }
 
+  void LogOut() {
+    // Remove the notification if it is shown.
+    message_center::MessageCenter::Get()->RemoveNotification(
+        CellularSetupNotifier::kCellularSetupNotificationId, false);
+    ClearLogin();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void FastForwardNotificationDelay() {
+    task_environment()->FastForwardBy(kNotificationDelay);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Returns the pref that indicates whether the notification is able to be
+  // shown; the value will be |false| if the notification has already been
+  // shown, or if we should otherwise not show the notification.
   bool GetCanCellularSetupNotificationBeShown() {
     PrefService* prefs =
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    if (!prefs) {
+      return false;
+    }
     return prefs->GetBoolean(prefs::kCanCellularSetupNotificationBeShown);
   }
 
@@ -107,150 +147,162 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     prefs->SetBoolean(prefs::kCanCellularSetupNotificationBeShown, value);
   }
 
-  // Ownership passed to Shell owned CellularSetupNotifier instance.
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_notification_timer_;
-
+ private:
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
 };
 
 TEST_F(CellularSetupNotifierTest, DontShowNotificationUnfinishedOOBE) {
-  ASSERT_FALSE(mock_notification_timer_->IsRunning());
-
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_FALSE(notification);
+  FastForwardNotificationDelay();
+  EXPECT_FALSE(IsNotificationShown());
 }
 
-TEST_F(CellularSetupNotifierTest, ShowNotificationUnactivatedNetwork) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
+TEST_F(CellularSetupNotifierTest, ShowNotificationZeroUnactivatedNetworks) {
+  AddCellularDevice();
 
-  LogInAndFireTimer();
+  LogIn();
+  FastForwardNotificationDelay();
 
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(IsNotificationShown());
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest, ShowNotificationOneUnactivatedNetwork) {
+  AddCellularDevice();
+  ConfigureCellularService(/*activated=*/false);
+
+  LogIn();
+  FastForwardNotificationDelay();
+
+  EXPECT_TRUE(IsNotificationShown());
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest, ShowNotificationTwoUnactivatedNetworks) {
+  AddCellularDevice();
+  ConfigureCellularService(/*activated=*/false);
+  ConfigureCellularService(/*activated=*/false);
+
+  LogIn();
+  FastForwardNotificationDelay();
+
+  EXPECT_TRUE(IsNotificationShown());
   EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 }
 
 TEST_F(CellularSetupNotifierTest, DontShowNotificationActivatedNetwork) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
-  const std::string& cellular_path_ =
-      network_config_helper_->network_state_helper().ConfigureService(
-          R"({"GUID": "cellular_guid", "Type": "cellular", "Technology": "LTE",
-            "State": "idle"})");
-  network_config_helper_->network_state_helper().SetServiceProperty(
-      cellular_path_, shill::kActivationStateProperty,
-      base::Value(shill::kActivationStateActivated));
-
-  LogInAndFireTimer();
-
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_FALSE(notification);
-  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
-}
-
-TEST_F(CellularSetupNotifierTest, ShowNotificationMultipleUnactivatedNetworks) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
-  network_config_helper_->network_state_helper().ConfigureService(
-      R"({"GUID": "cellular_guid", "Type": "cellular", "Technology": "LTE",
-            "State": "idle"})");
-  network_config_helper_->network_state_helper().ConfigureService(
-      R"({"GUID": "cellular_guid1", "Type": "cellular", "Technology": "LTE",
-            "State": "idle"})");
-
-  LogInAndFireTimer();
-
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
-  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
-}
-
-TEST_F(CellularSetupNotifierTest, LogOutBeforeNotificationShowsLogInAgain) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
+  AddCellularDevice();
+  const std::string& cellular_path =
+      ConfigureCellularService(/*activated=*/true);
 
   LogIn();
-  ASSERT_TRUE(mock_notification_timer_->IsRunning());
+  FastForwardNotificationDelay();
+
+  EXPECT_FALSE(IsNotificationShown());
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest, LogOutBeforeNotificationShowsThenLogInAgain) {
+  AddCellularDevice();
+
+  LogIn();
+  task_environment()->FastForwardBy(kNotificationDelay - base::Minutes(1));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetCanCellularSetupNotificationBeShown());
 
   LogOut();
-  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+  FastForwardNotificationDelay();
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 
-  LogInAndFireTimer();
+  LogIn();
+  FastForwardNotificationDelay();
 
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(IsNotificationShown());
   EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 }
 
 TEST_F(CellularSetupNotifierTest, LogInAgainAfterShowingNotification) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
+  AddCellularDevice();
 
-  LogInAndFireTimer();
+  LogIn();
+  FastForwardNotificationDelay();
 
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(IsNotificationShown());
   EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 
-  message_center::MessageCenter::Get()->RemoveNotification(
-      CellularSetupNotifier::kCellularSetupNotificationId, false);
   LogOut();
   LogIn();
 
-  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+  // Check that even without a delay we correctly identify that a notification
+  // was already shown.
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+  FastForwardNotificationDelay();
+  EXPECT_FALSE(IsNotificationShown());
 }
 
 TEST_F(CellularSetupNotifierTest, LogInAgainAfterCheckingNonCellularDevice) {
-  LogInAndFireTimer();
+  // Perform the logic twice to check that even after logging out and back in
+  // the notification is not shown if there is no cellular device.
+  for (int i = 0; i < 2; ++i) {
+    LogIn();
+    FastForwardNotificationDelay();
 
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_FALSE(notification);
-  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+    EXPECT_FALSE(IsNotificationShown());
+    EXPECT_TRUE(GetCanCellularSetupNotificationBeShown());
 
-  LogOut();
-  LogIn();
-
-  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+    LogOut();
+  }
 }
 
-TEST_F(CellularSetupNotifierTest, RemoveNotificationAfterAddingNetwork) {
-  network_config_helper_->network_state_helper().AddDevice(
-      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
-      kShillManagerClientStubCellularDeviceName);
+TEST_F(CellularSetupNotifierTest,
+       NotificationStillShownAfterLatentCellularDevice) {
+  LogIn();
+  FastForwardNotificationDelay();
 
-  LogInAndFireTimer();
+  EXPECT_FALSE(IsNotificationShown());
+  EXPECT_TRUE(GetCanCellularSetupNotificationBeShown());
 
-  message_center::Notification* notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
+  AddCellularDevice();
+  FastForwardNotificationDelay();
+
+  EXPECT_TRUE(IsNotificationShown());
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest,
+       RemoveNotificationAfterAddingActivatedNetwork) {
+  AddCellularDevice();
+
+  LogIn();
+  FastForwardNotificationDelay();
+
+  EXPECT_TRUE(IsNotificationShown());
   EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 
-  const std::string& cellular_path_ =
-      network_config_helper_->network_state_helper().ConfigureService(
-          R"({"GUID": "cellular_guid", "Type": "cellular", "Technology": "LTE",
-            "State": "idle"})");
+  const std::string& cellular_path =
+      ConfigureCellularService(/*activated=*/true);
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsNotificationShown());
+}
+
+TEST_F(CellularSetupNotifierTest,
+       RemoveNotificationAfterExistingNetworkBecomesActivated) {
+  AddCellularDevice();
+
+  LogIn();
+  FastForwardNotificationDelay();
+
+  EXPECT_TRUE(IsNotificationShown());
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+
+  const std::string& cellular_path =
+      ConfigureCellularService(/*activated=*/false);
 
   // Notification is not removed after adding unactivated network.
-  notification = GetCellularSetupNotification();
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(IsNotificationShown());
 
-  network_config_helper_->network_state_helper().SetServiceProperty(
-      cellular_path_, shill::kActivationStateProperty,
-      base::Value(shill::kActivationStateActivated));
-
-  base::RunLoop().RunUntilIdle();
-
-  notification = GetCellularSetupNotification();
-  EXPECT_FALSE(notification);
-  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+  ActivateCellularService(cellular_path);
+  EXPECT_FALSE(IsNotificationShown());
 }
 
 }  // namespace ash
