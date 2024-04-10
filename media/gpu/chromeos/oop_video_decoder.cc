@@ -654,7 +654,11 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  // If we change |buffer| to have a fake timestamp, we'll need to restore the
+  // original timestamp in case higher layers rely on that timestamp. The
+  // |buffer_timestamp_restorer| ensures that happens before Decode() returns.
   CHECK(buffer);
+  base::ScopedClosureRunner buffer_timestamp_restorer;
   if (!buffer->end_of_stream()) {
     const base::TimeDelta next_fake_timestamp =
         current_fake_timestamp_ + base::Microseconds(1u);
@@ -669,6 +673,12 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         fake_timestamp_to_real_timestamp_cache_.end());
     fake_timestamp_to_real_timestamp_cache_.Put(current_fake_timestamp_,
                                                 buffer->timestamp());
+    buffer_timestamp_restorer.ReplaceClosure(base::BindOnce(
+        [](scoped_refptr<DecoderBuffer> decoder_buffer,
+           base::TimeDelta original_timestamp) {
+          decoder_buffer->set_timestamp(original_timestamp);
+        },
+        buffer, buffer->timestamp()));
     buffer->set_timestamp(current_fake_timestamp_);
   }
 

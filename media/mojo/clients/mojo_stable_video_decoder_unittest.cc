@@ -472,10 +472,21 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   ASSERT_TRUE(endpoints);
 
   constexpr uint8_t kEncodedData[] = {1, 2, 3};
+  constexpr base::TimeDelta kTimestamp = base::Milliseconds(128u);
+  constexpr base::TimeDelta kDuration = base::Milliseconds(16u);
+  constexpr base::TimeDelta kFrontDiscardPadding = base::Milliseconds(2u);
+  constexpr base::TimeDelta kBackDiscardPadding = base::Milliseconds(5u);
+  constexpr bool kIsKeyFrame = true;
+  constexpr uint64_t kSecureHandle = 42;
   scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
       DecoderBuffer::CopyFrom(kEncodedData, std::size(kEncodedData));
   ASSERT_TRUE(decoder_buffer_to_send);
-  decoder_buffer_to_send->WritableSideData().secure_handle = 42;
+  decoder_buffer_to_send->set_timestamp(kTimestamp);
+  decoder_buffer_to_send->set_duration(kDuration);
+  decoder_buffer_to_send->set_discard_padding(
+      std::make_pair(kFrontDiscardPadding, kBackDiscardPadding));
+  decoder_buffer_to_send->set_is_key_frame(kIsKeyFrame);
+  decoder_buffer_to_send->WritableSideData().secure_handle = kSecureHandle;
 
   // First, we'll call MojoStableVideoDecoder::Decode() and store both the
   // DecoderBuffer (without the encoded data) and the Decode() reply callback as
@@ -512,6 +523,14 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
           &received_decoder_buffer_with_data));
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(received_decoder_buffer_with_data);
+  // We want to check that the |received_decoder_buffer_with_data| matches the
+  // |decoder_buffer_to_send| except for the timestamp: that's because the
+  // OOPVideoDecoder sends DecoderBuffers to the service with fake timestamps.
+  // Hence, before calling MatchesForTesting(), let's restore the real
+  // timestamp.
+  ASSERT_FALSE(received_decoder_buffer_with_data->end_of_stream());
+  EXPECT_NE(received_decoder_buffer_with_data->timestamp(), kTimestamp);
+  received_decoder_buffer_with_data->set_timestamp(kTimestamp);
   EXPECT_TRUE(received_decoder_buffer_with_data->MatchesForTesting(
       *decoder_buffer_to_send));
 
@@ -525,6 +544,26 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
       });
   std::move(received_decode_cb).Run(kDecoderStatusToReplyWith);
   task_environment_.RunUntilIdle();
+
+  // Note: the VideoDecoder::Decode() API takes a scoped_refptr<DecoderBuffer>
+  // instead of a scoped_refptr<const DecoderBuffer>, so in theory, the
+  // implementation can change the DecoderBuffer in unexpected ways. The
+  // OOPVideoDecoder does change the DecoderBuffer internally, but it should
+  // restore it to its original state before returning from Decode(). The
+  // following expectations test that.
+  EXPECT_EQ(decoder_buffer_to_send->timestamp(), kTimestamp);
+  EXPECT_EQ(decoder_buffer_to_send->duration(), kDuration);
+  EXPECT_EQ(decoder_buffer_to_send->discard_padding().first,
+            kFrontDiscardPadding);
+  EXPECT_EQ(decoder_buffer_to_send->discard_padding().second,
+            kBackDiscardPadding);
+  EXPECT_EQ(decoder_buffer_to_send->is_key_frame(), kIsKeyFrame);
+  ASSERT_EQ(decoder_buffer_to_send->data_size(), std::size(kEncodedData));
+  EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
+                            decoder_buffer_to_send->data_size()),
+            base::make_span(kEncodedData, std::size(kEncodedData)));
+  ASSERT_TRUE(decoder_buffer_to_send->side_data().has_value());
+  EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle, kSecureHandle);
 }
 
 }  // namespace media
