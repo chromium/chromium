@@ -2809,7 +2809,7 @@ BASE_FEATURE(kTilingWindowResize,
 // Not used if time of day wallpaper is not enabled.
 BASE_FEATURE(kTimeOfDayWallpaperForcedAutoSchedule,
              "TimeOfDayWallpaperForcedAutoSchedule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables retrieving time of day screen saver assets from DLC, rather than from
 // rootfs.
