@@ -647,7 +647,7 @@ bool InspectorAnimationAgent::CompareAndUpdateInternalSnapshot(
     blink::Animation& animation,
     AnimationSnapshot* snapshot) {
   blink::Animation::AnimationPlayState new_play_state =
-      animation.pending() ? blink::Animation::AnimationPlayState::kPending
+      animation.PendingInternal() ? blink::Animation::AnimationPlayState::kPending
                           : animation.CalculateAnimationPlayState();
   bool should_notify_frontend = false;
   double start_time = NormalizedStartTime(animation);
@@ -722,7 +722,7 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
   // future comparisons.
   AnimationSnapshot* snapshot;
   blink::Animation::AnimationPlayState new_play_state =
-      animation->pending() ? blink::Animation::AnimationPlayState::kPending
+      animation->PendingInternal() ? blink::Animation::AnimationPlayState::kPending
                            : animation->CalculateAnimationPlayState();
   blink::Animation::AnimationPlayState old_play_state =
       blink::Animation::AnimationPlayState::kIdle;
