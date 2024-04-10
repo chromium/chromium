@@ -7,7 +7,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/ml/webnn/features.mojom-features.h"
+#include "components/ml/webnn/features.mojom-blink.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -39,7 +38,6 @@
 namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
-namespace webnn_features = webnn::mojom::features;
 
 // Helper struct to create faked mojom result of inference.
 struct ComputeResult {
@@ -51,8 +49,7 @@ class FakeWebNNBuffer;
 class MLGraphTestMojo : public MLGraphTestBase {
  public:
   MLGraphTestMojo()
-      : scoped_feature_list_(webnn_features::kWebMachineLearningNeuralNetwork) {
-  }
+      : scoped_feature_list_(webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
   void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
     graph_info_ = std::move(graph_info);

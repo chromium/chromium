@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
 #include "base/notreached.h"
+#include "components/ml/webnn/features.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -62,14 +63,12 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
 
-  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
-  // TFLite, but that code path is currently only hit when asking a "gpu"
-  // context for the sake of testing. This should be fixed.
-  if (options->deviceType() == V8MLDeviceType::Enum::kGpu ||
-      options->deviceType() == V8MLDeviceType::Enum::kNpu) {
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
         ConvertBlinkDeviceTypeToMojo(options->deviceType()),
         ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
+
     ml->CreateWebNNContext(
         std::move(options_mojo),
         WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(context),
@@ -77,6 +76,7 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
     return;
   }
 
+  // TODO: crbug.com/325612086 - Remove this fallback.
   resolver->Resolve(context);
 }
 
@@ -228,15 +228,13 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
     return nullptr;
   }
 
-  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
-  // TFLite, but that code path is currently only hit when asking a "gpu"
-  // context for the sake of testing. This should be fixed.
-  if (device_type_ == V8MLDeviceType::Enum::kGpu ||
-      device_type_ == V8MLDeviceType::Enum::kNpu) {
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
                                 descriptor, exception_state);
   }
 
+  // TODO: crbug.com/325612086 - Remove this fallback.
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Not implemented");
   return nullptr;
