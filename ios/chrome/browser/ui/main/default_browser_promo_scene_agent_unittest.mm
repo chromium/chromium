@@ -60,10 +60,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    FakeStartupInformation* startup_information =
-        [[FakeStartupInformation alloc] init];
+    startup_information_ = [[FakeStartupInformation alloc] init];
+    [startup_information_ setIsColdStart:YES];
     app_state_ =
-        [[AppState alloc] initWithStartupInformation:startup_information];
+        [[AppState alloc] initWithStartupInformation:startup_information_];
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:browser_state_.get()];
@@ -73,6 +73,12 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     agent_ = [[DefaultBrowserPromoSceneAgent alloc] init];
     agent_.sceneState = scene_state_;
     agent_.promosManager = promos_manager_.get();
+
+    // Set app state initialization stage to final.
+    // App state stage can be moved only one stage at a time.
+    while (app_state_.initStage < InitStageFinal) {
+      [app_state_ queueTransitionToNextInitStage];
+    }
   }
 
   void TearDown() override {
@@ -172,6 +178,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   std::unique_ptr<MockPromosManager> promos_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id dispatcher_;
+  FakeStartupInformation* startup_information_;
 };
 
 // Tests that DefaultBrowser was registered with the promo manager when a
