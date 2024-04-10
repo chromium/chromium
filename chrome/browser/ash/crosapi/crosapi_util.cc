@@ -934,6 +934,9 @@ void InjectBrowserInitParams(
 
   params->is_orca_enabled = chromeos::features::IsOrcaEnabled();
 
+  params->is_orca_use_l10n_strings_enabled =
+      chromeos::features::IsOrcaUseL10nStringsEnabled();
+
   params->is_cros_mall_enabled = chromeos::features::IsCrosMallEnabled();
 
   params->is_mahi_enabled = chromeos::features::IsMahiEnabled() &&

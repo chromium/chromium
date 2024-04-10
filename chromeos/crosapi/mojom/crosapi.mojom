@@ -1164,8 +1164,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 84
-// Next id: 84
+// Next version: 85
+// Next id: 85
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1647,6 +1647,10 @@ struct BrowserInitParams {
   // If true, the container app should be preinstalled.
   [MinVersion=83]
   bool is_container_app_preinstall_enabled@83;
+
+  // If true, Orca will use l10n strings, otherwise, en-us strings are used.
+  [MinVersion=84]
+  bool is_orca_use_l10n_strings_enabled@84;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

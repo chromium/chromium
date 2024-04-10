@@ -176,6 +176,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsContainerAppPreinstallEnabled() const;
 
+  bool IsOrcaUseL10nStringsEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

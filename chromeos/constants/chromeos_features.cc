@@ -213,6 +213,11 @@ BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling orca l10n strings.
+BASE_FEATURE(kOrcaUseL10nStrings,
+             "OrcaUseL10nStrings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Feature management flag used to gate preinstallation of the container app.
 // This flag is meant to be enabled by the feature management module.
@@ -454,6 +459,14 @@ bool IsOrcaEnabled() {
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
          (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
           base::FeatureList::IsEnabled(kFeatureManagementOrca));
+#endif
+}
+
+bool IsOrcaUseL10nStringsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsOrcaUseL10nStringsEnabled();
+#else
+  return base::FeatureList::IsEnabled(chromeos::features::kOrcaUseL10nStrings);
 #endif
 }
 
