@@ -72,6 +72,14 @@ class FederatedIdentityPermissionContextDelegate {
       const url::Origin& identity_provider,
       const std::string& account_id) = 0;
 
+  // Refreshes an existing sharing permission. Updates the timestamp
+  // corresponding to the last time in which the sharing permission was used.
+  virtual void RefreshExistingSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) = 0;
+
   // Returns whether the user is signed in with the IDP. If unknown, return
   // std::nullopt.
   virtual std::optional<bool> GetIdpSigninStatus(

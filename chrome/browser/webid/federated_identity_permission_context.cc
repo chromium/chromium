@@ -93,6 +93,16 @@ void FederatedIdentityPermissionContext::RevokeSharingPermission(
                                      account_id, base::DoNothing());
 }
 
+void FederatedIdentityPermissionContext::RefreshExistingSharingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  sharing_context_->RefreshExistingPermission(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_id);
+}
+
 ContentSettingsForOneType FederatedIdentityPermissionContext::
     GetSharingPermissionGrantsAsContentSettings() {
   return sharing_context_->GetSharingPermissionGrantsAsContentSettings();

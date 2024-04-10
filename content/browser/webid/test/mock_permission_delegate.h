@@ -51,6 +51,11 @@ class MockPermissionDelegate
                     const url::Origin&,
                     const url::Origin&,
                     const std::string&));
+  MOCK_METHOD4(RefreshExistingSharingPermission,
+               void(const url::Origin&,
+                    const url::Origin&,
+                    const url::Origin&,
+                    const std::string&));
   MOCK_METHOD1(GetIdpSigninStatus, std::optional<bool>(const url::Origin&));
   MOCK_METHOD2(SetIdpSigninStatus, void(const url::Origin&, bool));
   MOCK_METHOD1(RegisterIdP, void(const ::GURL&));

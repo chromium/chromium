@@ -7,9 +7,11 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,22 +26,12 @@
 #include "url/origin.h"
 
 namespace {
-const char kAccountIdsKey[] = "account-ids";
-const char kRpRequesterKey[] = "rp-requester";
-const char kRpEmbedderKey[] = "rp-embedder";
-const char kSharingIdpKey[] = "idp-origin";
-
-void AddToAccountList(base::Value::Dict& dict, const std::string& account_id) {
-  base::Value::List* account_list = dict.FindList(kAccountIdsKey);
-  if (account_list) {
-    account_list->Append(account_id);
-    return;
-  }
-
-  base::Value::List new_list;
-  new_list.Append(account_id);
-  dict.Set(kAccountIdsKey, base::Value(std::move(new_list)));
-}
+constexpr char kAccountIdsKey[] = "account-ids";
+constexpr char kRpRequesterKey[] = "rp-requester";
+constexpr char kRpEmbedderKey[] = "rp-embedder";
+constexpr char kSharingIdpKey[] = "idp-origin";
+constexpr char kAccountIdKey[] = "account-id";
+constexpr char kTimestampKey[] = "timestamp";
 
 std::string BuildKey(const std::optional<std::string>& relying_party_requester,
                      const std::optional<std::string>& relying_party_embedder,
@@ -64,6 +56,23 @@ std::string BuildKey(const url::Origin& relying_party_requester,
                   identity_provider.Serialize());
 }
 
+base::Value::List::iterator FindAccount(base::Value::List& account_list,
+                                        const std::string& account_id) {
+  return std::find_if(account_list.begin(), account_list.end(),
+                      [&account_id](const auto& value) {
+                        if (value.is_string()) {
+                          return value.GetString() == account_id;
+                        } else if (value.is_dict()) {
+                          const std::string* id =
+                              value.GetDict().FindString(kAccountIdKey);
+                          return id && *id == account_id;
+                        }
+                        // This is currently unreachable but we just bail out if
+                        // it is not a string or dict to future-proof the code.
+                        return false;
+                      });
+}
+
 }  // namespace
 
 FederatedIdentityAccountKeyedPermissionContext::
@@ -82,7 +91,8 @@ FederatedIdentityAccountKeyedPermissionContext::
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           host_content_settings_map),
       browser_context_(
-          raw_ref<content::BrowserContext>::from_ptr(browser_context)) {}
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
+      clock_(base::DefaultClock::GetInstance()) {}
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester) {
@@ -130,26 +140,23 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
   // than origin, and also ensure that duplicate sites cannot be added.
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
-  auto granted_object = GetGrantedObject(relying_party_requester, key);
+  const auto granted_object = GetGrantedObject(relying_party_requester, key);
 
-  if (!granted_object)
+  if (!granted_object) {
     return false;
+  }
 
-  const base::Value::List* account_list =
+  base::Value::List* account_list =
       granted_object->value.FindList(kAccountIdsKey);
-  if (!account_list)
+  if (!account_list) {
     return false;
+  }
 
   if (!account_id) {
     return true;
   }
 
-  for (auto& account_id_value : *account_list) {
-    if (account_id_value.GetString() == account_id)
-      return true;
-  }
-
-  return false;
+  return FindAccount(*account_list, *account_id) != account_list->end();
 }
 
 void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
@@ -157,10 +164,10 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
     const std::string& account_id) {
-  if (HasPermission(relying_party_requester, relying_party_embedder,
-                    identity_provider, account_id))
+  if (RefreshExistingPermission(relying_party_requester, relying_party_embedder,
+                                identity_provider, account_id)) {
     return;
-
+  }
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
   const auto granted_object = GetGrantedObject(relying_party_requester, key);
@@ -181,6 +188,45 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
   SyncSharingPermissionGrantsToNetworkService(base::DoNothing());
 }
 
+bool FederatedIdentityAccountKeyedPermissionContext::RefreshExistingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  std::string key = BuildKey(relying_party_requester, relying_party_embedder,
+                             identity_provider);
+  const auto granted_object = GetGrantedObject(relying_party_requester, key);
+  if (!granted_object) {
+    return false;
+  }
+
+  base::Value::Dict new_object = granted_object->value.Clone();
+  base::Value::List* account_list = new_object.FindList(kAccountIdsKey);
+  if (!account_list) {
+    return false;
+  }
+
+  auto it = FindAccount(*account_list, account_id);
+  if (it == account_list->end()) {
+    return false;
+  }
+  if (it->is_string()) {
+    // Erase the previous string, and add a list (id, timestamp).
+    account_list->erase(it);
+
+    base::Value::Dict account_dict;
+    account_dict.Set(kAccountIdKey, account_id);
+    account_dict.Set(kTimestampKey, base::TimeToValue(clock_->Now()));
+    account_list->Append(std::move(account_dict));
+  } else if (it->is_dict()) {
+    // Update the last used timestamp of the (id, timestamp) pair.
+    it->GetDict().Set(kTimestampKey, base::TimeToValue(clock_->Now()));
+  }
+  UpdateObjectPermission(relying_party_requester, granted_object->value,
+                         std::move(new_object));
+  return true;
+}
+
 void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
@@ -198,7 +244,10 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
   base::Value::Dict new_object = object->value.Clone();
   base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
   if (account_ids) {
-    if (!account_ids->EraseValue(base::Value(account_id))) {
+    auto it = FindAccount(*account_ids, account_id);
+    if (it != account_ids->end()) {
+      account_ids->erase(it);
+    } else {
       account_ids->clear();
     }
   }
@@ -259,10 +308,17 @@ void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
 
     CHECK(idp_origin && rp_requester_origin && rp_embedder_origin);
     for (const auto& account : *accounts) {
-      data_keys.emplace_back(url::Origin::Create(GURL(*rp_requester_origin)),
-                             url::Origin::Create(GURL(*rp_embedder_origin)),
-                             url::Origin::Create(GURL(*idp_origin)),
-                             account.GetString());
+      if (account.is_string()) {
+        data_keys.emplace_back(url::Origin::Create(GURL(*rp_requester_origin)),
+                               url::Origin::Create(GURL(*rp_embedder_origin)),
+                               url::Origin::Create(GURL(*idp_origin)),
+                               account.GetString());
+      } else if (account.is_dict()) {
+        data_keys.emplace_back(url::Origin::Create(GURL(*rp_requester_origin)),
+                               url::Origin::Create(GURL(*rp_embedder_origin)),
+                               url::Origin::Create(GURL(*idp_origin)),
+                               *account.GetDict().FindString(kAccountIdKey));
+      }
     }
   }
   std::move(callback).Run(std::move(data_keys));
@@ -330,4 +386,22 @@ void FederatedIdentityAccountKeyedPermissionContext::
       ->SetContentSettings(ContentSettingsType::FEDERATED_IDENTITY_SHARING,
                            GetSharingPermissionGrantsAsContentSettings(),
                            std::move(callback));
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::AddToAccountList(
+    base::Value::Dict& dict,
+    const std::string& account_id) {
+  base::Value::Dict account_dict;
+  account_dict.Set(kAccountIdKey, account_id);
+  account_dict.Set(kTimestampKey, base::TimeToValue(clock_->Now()));
+
+  base::Value::List* account_list = dict.FindList(kAccountIdsKey);
+  if (account_list) {
+    account_list->Append(std::move(account_dict));
+    return;
+  }
+
+  base::Value::List new_list;
+  new_list.Append(std::move(account_dict));
+  dict.Set(kAccountIdsKey, base::Value(std::move(new_list)));
 }

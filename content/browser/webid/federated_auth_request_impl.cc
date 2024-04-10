@@ -2444,6 +2444,10 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
         permission_delegate_->GrantSharingPermission(
             origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
             account_id_);
+      } else {
+        permission_delegate_->RefreshExistingSharingPermission(
+            origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+            account_id_);
       }
 
       SetRequiresUserMediation(false);

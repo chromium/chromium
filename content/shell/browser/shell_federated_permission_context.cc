@@ -178,6 +178,15 @@ void ShellFederatedPermissionContext::RevokeSharingPermission(
   }
 }
 
+void ShellFederatedPermissionContext::RefreshExistingSharingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  // `sharing_permissions_` does not currently store timestamps, so this method
+  // does nothing.
+}
+
 std::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());

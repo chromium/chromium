@@ -243,7 +243,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, GrantAndRevoke) {
 }
 
 // Test that granting a permission for an account, if the permission has already
-// been granted, is a noop.
+// been granted, is a noop, except for the timestamps.
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
        GrantPermissionForSameAccount) {
   const url::Origin rp_requester =
@@ -259,9 +259,41 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantPermission(rp_requester, rp_embedder, idp, account);
   auto granted_objects2 = context()->GetAllGrantedObjects();
 
-  EXPECT_EQ(1u, granted_objects1.size());
-  EXPECT_EQ(1u, granted_objects2.size());
-  EXPECT_EQ(granted_objects1[0]->value, granted_objects2[0]->value);
+  ASSERT_EQ(1u, granted_objects1.size());
+  ASSERT_EQ(1u, granted_objects2.size());
+
+  const std::string strs[] = {"idp-origin", "rp-embedder", "rp-requester"};
+  for (const auto& str : strs) {
+    std::string* str1 = granted_objects1[0]->value.FindString(str);
+    ASSERT_TRUE(str1);
+    std::string* str2 = granted_objects1[0]->value.FindString(str);
+    ASSERT_TRUE(str2);
+    EXPECT_EQ(*str1, *str2);
+  }
+
+  base::Value::List* account_list1 =
+      granted_objects1[0]->value.FindList("account-ids");
+  ASSERT_TRUE(account_list1);
+  ASSERT_EQ(account_list1->size(), 1u);
+  ASSERT_TRUE(account_list1->front().is_dict());
+  const auto& account_dict1 = account_list1->front().GetDict();
+  ASSERT_EQ(account_dict1.size(), 2u);
+  EXPECT_TRUE(account_dict1.FindString("account-id"));
+  EXPECT_TRUE(account_dict1.FindString("timestamp"));
+
+  base::Value::List* account_list2 =
+      granted_objects1[0]->value.FindList("account-ids");
+  ASSERT_TRUE(account_list2);
+  ASSERT_EQ(account_list2->size(), 1u);
+  ASSERT_TRUE(account_list2->front().is_dict());
+  const auto& account_dict2 = account_list2->front().GetDict();
+  ASSERT_EQ(account_dict2.size(), 2u);
+  EXPECT_TRUE(account_dict2.FindString("account-id"));
+  EXPECT_TRUE(account_dict2.FindString("timestamp"));
+
+  // The strings should match.
+  EXPECT_EQ(account_dict1.FindString("account-id"),
+            account_dict2.FindString("account-id"));
 }
 
 // Test that FederatedIdentityAccountKeyedPermissionContext can recover from
@@ -398,4 +430,105 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
 
   EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
               IsEmpty());
+}
+
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
+       PermissionWithAndWithoutTimestamp) {
+  const url::Origin relying_party_requester =
+      url::Origin::Create(GURL("https://www.relying_party_requester.com"));
+  const url::Origin relying_party_embedder =
+      url::Origin::Create(GURL("https://www.relying_party_embedder.com"));
+  const url::Origin identity_provider =
+      url::Origin::Create(GURL("https://www.identity_provider.com"));
+
+  const std::string account_a("conestogo");
+  const std::string account_b("woolwich");
+  const std::string account_c("wellesley");
+
+  // Add a couple of accounts without timestamps.
+  std::string key =
+      base::StringPrintf("%s<%s", identity_provider.Serialize().c_str(),
+                         relying_party_embedder.Serialize().c_str());
+
+  base::Value::Dict new_object;
+  new_object.Set("rp-requester", relying_party_requester.Serialize());
+  new_object.Set("rp-embedder", relying_party_embedder.Serialize());
+  new_object.Set("idp-origin", identity_provider.Serialize());
+
+  base::Value::List account_list;
+  account_list.Append(account_a);
+  account_list.Append(account_b);
+  new_object.Set("account-ids", base::Value(std::move(account_list)));
+  context()->GrantObjectPermission(relying_party_requester,
+                                   std::move(new_object));
+
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_a));
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_b));
+  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
+                                        relying_party_embedder,
+                                        identity_provider, account_c));
+  EXPECT_TRUE(
+      context()->HasPermission(relying_party_requester, relying_party_embedder,
+                               identity_provider, /*account_id=*/std::nullopt));
+
+  // RefreshExistingPermission works with an old account but does not work if
+  // account does not exist.
+  EXPECT_TRUE(context()->RefreshExistingPermission(
+      relying_party_requester, relying_party_embedder, identity_provider,
+      account_b));
+  EXPECT_FALSE(context()->RefreshExistingPermission(
+      relying_party_requester, relying_party_embedder, identity_provider,
+      account_c));
+
+  // Add a third account, with timestamp.
+  context()->GrantPermission(relying_party_requester, relying_party_embedder,
+                             identity_provider, account_c);
+
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_a));
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_b));
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_c));
+
+  // RefreshExistingPermission works with the new format.
+  EXPECT_TRUE(context()->RefreshExistingPermission(
+      relying_party_requester, relying_party_embedder, identity_provider,
+      account_c));
+
+  // GetAllDataKeys() does not crash.
+  context()->GetAllDataKeys(base::DoNothing());
+
+  // Revoke works with both formats.
+  base::test::TestFuture<void> future;
+  context()->RevokePermission(relying_party_requester, relying_party_embedder,
+                              identity_provider, account_a,
+                              future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  // Revoke works with both formats.
+  base::test::TestFuture<void> future2;
+  context()->RevokePermission(relying_party_requester, relying_party_embedder,
+                              identity_provider, account_c,
+                              future2.GetCallback());
+  ASSERT_TRUE(future2.Wait());
+
+  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
+                                        relying_party_embedder,
+                                        identity_provider, account_a));
+  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
+                                       relying_party_embedder,
+                                       identity_provider, account_b));
+  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
+                                        relying_party_embedder,
+                                        identity_provider, account_c));
+  EXPECT_TRUE(
+      context()->HasPermission(relying_party_requester, relying_party_embedder,
+                               identity_provider, /*account_id=*/std::nullopt));
 }

@@ -68,6 +68,14 @@ class FederatedIdentityAccountKeyedPermissionContext
                        const url::Origin& identity_provider,
                        const std::string& account_id);
 
+  // Updates the timestamp of an existing permission, or does nothing if no
+  // permission matching the key is found. Returns true if a permission is
+  // found, false otherwise.
+  bool RefreshExistingPermission(const url::Origin& relying_party_requester,
+                                 const url::Origin& relying_party_embedder,
+                                 const url::Origin& identity_provider,
+                                 const std::string& account_id);
+
   // Revokes previously-granted permission for the (`relying_party_requester`,
   // `relying_party_embedder`, `identity_provider`, `account_id`) tuple. If the
   // `account_id` is not found, we revoke all accounts associated with the
@@ -103,8 +111,12 @@ class FederatedIdentityAccountKeyedPermissionContext
   // given network request or `document.cookie` evaluation.
   void SyncSharingPermissionGrantsToNetworkService(base::OnceClosure callback);
 
+  void AddToAccountList(base::Value::Dict& dict, const std::string& account_id);
+
   // The BrowserContext associated with this permission context.
   base::raw_ref<content::BrowserContext> browser_context_;
+
+  raw_ptr<base::Clock> clock_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_ACCOUNT_KEYED_PERMISSION_CONTEXT_H_
