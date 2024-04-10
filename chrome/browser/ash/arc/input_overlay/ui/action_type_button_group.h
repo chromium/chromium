@@ -35,6 +35,11 @@ class ActionTypeButtonGroup : public ash::OptionButtonGroup,
   ActionTypeButtonGroup& operator=(const ActionTypeButtonGroup&) = delete;
   ~ActionTypeButtonGroup() override;
 
+  // Process the arrow key pressed event. Returns `true` if `event` is
+  // processed.
+  bool HandleArrowKeyPressed(ActionTypeButton* button,
+                             const ui::KeyEvent& event);
+
   void set_action(Action* action) { action_ = action; }
 
  private:

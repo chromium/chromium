@@ -44,6 +44,7 @@ class ActionTypeButton : public ash::OptionButtonBase {
   void OnThemeChanged() override;
   // Assigns a11y name/label and a11y role as a radio button.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   const raw_ref<const gfx::VectorIcon> icon_;
 };

@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -13,6 +14,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -49,6 +51,7 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
   SetBorder(views::CreateThemedRoundedRectBorder(
       /*thickness=*/kBorderThickness,
       /*radius=*/kCornerRadius, cros_tokens::kCrosSysHoverOnSubtle));
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   // Set highlight path.
   views::HighlightPathGenerator::Install(
@@ -143,6 +146,15 @@ void ActionTypeButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(label()->GetText());
   node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
                                         : ax::mojom::CheckedState::kFalse);
+}
+
+bool ActionTypeButton::OnKeyPressed(const ui::KeyEvent& event) {
+  if (auto* button_group = views::AsViewClass<ActionTypeButtonGroup>(parent());
+      button_group && selected()) {
+    return button_group->HandleArrowKeyPressed(this, event) ||
+           OptionButtonBase::OnKeyPressed(event);
+  }
+  return OptionButtonBase::OnKeyPressed(event);
 }
 
 BEGIN_METADATA(ActionTypeButton)
