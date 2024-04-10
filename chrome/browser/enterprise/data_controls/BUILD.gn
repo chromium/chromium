@@ -60,8 +60,6 @@ source_set("test_support") {
   sources = [
     "dlp_reporting_manager_test_helper.cc",
     "dlp_reporting_manager_test_helper.h",
-    "test_utils.cc",
-    "test_utils.h",
   ]
   public_deps = [
     ":data_controls",
@@ -70,6 +68,7 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//components/account_id",
     "//components/enterprise/data_controls:dlp_policy_event_proto",
+    "//components/enterprise/data_controls:test_support",
     "//components/prefs",
     "//components/reporting/client:test_support",
     "//components/reporting/util:status",

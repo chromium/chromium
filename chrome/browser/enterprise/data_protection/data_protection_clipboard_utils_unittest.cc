@@ -6,10 +6,10 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/enterprise/data_controls/test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"

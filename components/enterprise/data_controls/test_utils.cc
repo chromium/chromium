@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_controls/test_utils.h"
+#include "components/enterprise/data_controls/test_utils.h"
 
 #include "base/json/json_reader.h"
 #include "components/enterprise/data_controls/prefs.h"

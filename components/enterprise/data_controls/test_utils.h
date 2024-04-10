@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
 
 #include <string>
 #include <vector>
@@ -19,4 +19,4 @@ void SetDataControls(PrefService* prefs,
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_TEST_UTILS_H_
