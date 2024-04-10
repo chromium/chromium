@@ -2052,7 +2052,7 @@
 <translation id="2501173422421700905">လက်မှတ်ကို ဆိုင်းငံ့ထား</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2501797496290880632">ဖြတ်လမ်းတစ်ခု ရိုက်ထည့်ရန်</translation>
-<translation id="2501920221385095727">Sticky keys</translation>
+<translation id="2501920221385095727">ကပ်ခွာကီးများ</translation>
 <translation id="2502441965851148920">အလိုအလျောက် အပ်ဒိတ် လုပ်မှု ဖွင့်ထားသည်။ လက်ဖြင့် အပ်ဒိတ်လုပ်မှုကို သင်၏ စီမံခန့်ခွဲသူမှ ပိတ်ထားသည်။</translation>
 <translation id="2502719318159902502">အကန့်အသတ်မရှိ အသုံးပြုခွင့်</translation>
 <translation id="2504801073028762184">လုံခြုံမှုဆိုင်ရာ အကြံပြုချက်များ</translation>
@@ -3966,7 +3966,7 @@
 <translation id="397703832102027365">အဆုံးသတ်နေ...</translation>
 <translation id="3977145907578671392">‘ရုပ်ဖျက်မုဒ်’ တွင် အချို့ဝဘ်ဆိုက်များရှိ ဝန်ဆောင်မှုများ အလုပ်မလုပ်နိုင်ပါ</translation>
 <translation id="3977886311744775419">ဤကွန်ရက်အမျိုးအစားတွင် အလိုအလျောက် အပ်ဒိတ်များကို ဒေါင်းလုဒ်မလုပ်သော်လည်း အပ်ဒိတ်များကို ကိုယ်တိုင်စစ်ဆေးနိုင်သည်။</translation>
-<translation id="3978325380690188371">ChromeVox ဖွင့်ထားစဉ် ကပ်ခွာ ခလုတ်များ မရနိုင်ပါ</translation>
+<translation id="3978325380690188371">ChromeVox ဖွင့်ထားစဉ် ကပ်ခွာကီးများ မရနိုင်ပါ</translation>
 <translation id="3979395879372752341">အိတ်စတန်းရှင်း အသစ် ထပ်ထည့်ပြီး (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ကို ဖွင့်ထားရန်</translation>
 <translation id="3981058120448670012">အနီးရှိစက်များက <ph name="DEVICE_NAME" /> အဖြစ် <ph name="REMAINING_TIME" /> ကြာ မြင်နိုင်သည်...</translation>
