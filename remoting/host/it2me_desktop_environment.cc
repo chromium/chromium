@@ -103,6 +103,11 @@ std::string It2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kFileTransferCapability;
   }
 
+  // TODO: joedow - Move MultiStream capability to a shared base
+  // class once all platforms and connection modes support it.
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
+
   return capabilities;
 }
 
