@@ -63,7 +63,10 @@ static const char* kBadFlags[] = {
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kDisableSetuidSandbox,
-    sandbox::policy::switches::kNoSandbox,
+    // [TT-859] remove this switch from the list chrome complains about in an info bar,
+    // until/unless we can re-enable the sandbox and remove the flag.
+    // sandbox::policy::switches::kNoSandbox,
+
 #if BUILDFLAG(IS_WIN)
     sandbox::policy::switches::kAllowThirdPartyModules,
 #endif
