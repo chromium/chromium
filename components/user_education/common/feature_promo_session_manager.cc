@@ -30,6 +30,10 @@ void FeaturePromoSessionManager::Init(
   storage_service_ = storage_service;
   idle_policy_ = std::move(idle_policy);
   idle_policy_->Init(this, storage_service_.get());
+  // Assume the application is active at application start; this avoids making
+  // additional system calls during startup.
+  UpdateLastActiveTime(storage_service_->GetCurrentTime());
+  // Start observing state.
   SetIdleObserver(std::move(idle_observer));
 }
 
@@ -85,12 +89,6 @@ void FeaturePromoSessionManager::SetIdleObserver(
     std::unique_ptr<FeaturePromoIdleObserver> new_observer) {
   idle_observer_ = std::move(new_observer);
   idle_observer_->Init(storage_service_.get());
-
-  // Immediately update the current state, then subscribe to future updates.
-  const auto last_active = idle_observer_->MaybeGetNewLastActiveTime();
-  if (last_active) {
-    UpdateLastActiveTime(*last_active);
-  }
   idle_observer_subscription_ = idle_observer_->AddUpdateCallback(
       base::BindRepeating(&FeaturePromoSessionManager::UpdateLastActiveTime,
                           base::Unretained(this)));
