@@ -129,6 +129,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   fullscreen_style_sheet_.Clear();
   selectlist_style_sheet_.Clear();
   stylable_select_style_sheet_.Clear();
+  stylable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   form_controls_not_vertical_style_text_sheet_.Clear();
@@ -460,10 +461,17 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     return false;
   }
 
-  String forced_colors_rules =
-      RuntimeEnabledFeatures::ForcedColorsEnabled()
-          ? UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS)
-          : String();
+  String forced_colors_rules = String();
+  if (RuntimeEnabledFeatures::ForcedColorsEnabled()) {
+    forced_colors_rules =
+        forced_colors_rules +
+        UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS);
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      forced_colors_rules = forced_colors_rules +
+                            UncompressResourceAsASCIIString(
+                                IDR_UASTYLE_STYLABLE_SELECT_FORCED_COLORS_CSS);
+    }
+  }
   forced_colors_style_sheet_ = ParseUASheet(forced_colors_rules);
 
   if (!default_forced_color_style_) {
@@ -530,6 +538,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(stylable_select_style_sheet_);
+  visitor->Trace(stylable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_text_sheet_);

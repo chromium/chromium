@@ -19,8 +19,14 @@ LayoutTheme& LayoutTheme::NativeTheme() {
 }
 
 String LayoutThemeLinux::ExtraDefaultStyleSheet() {
-  return LayoutThemeDefault::ExtraDefaultStyleSheet() +
-         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS);
+  String stylesheet =
+      LayoutThemeDefault::ExtraDefaultStyleSheet() +
+      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS);
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    stylesheet = stylesheet + UncompressResourceAsASCIIString(
+                                  IDR_UASTYLE_STYLABLE_SELECT_LINUX_CSS);
+  }
+  return stylesheet;
 }
 
 }  // namespace blink

@@ -2761,6 +2761,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   bool HasEffectiveAppearance() const {
     return ComputedStyle::HasEffectiveAppearance(EffectiveAppearance());
   }
+  bool HasBaseSelectAppearance() const {
+    return Appearance() == ControlPart::kBaseSelectPart;
+  }
 
   // backdrop-filter
   FilterOperations::FilterOperationVector& MutableBackdropFilterOperations() {

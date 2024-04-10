@@ -203,6 +203,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsLightDarkValuePair() const {
     return class_type_ == kLightDarkValuePairClass;
   }
+  bool IsAppearanceAutoBaseSelectValuePair() const {
+    return class_type_ == kAppearanceAutoBaseSelectValuePairClass;
+  }
 
   bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsViewValue() const { return class_type_ == kViewClass; }
@@ -251,6 +254,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kURIClass,
     kValuePairClass,
     kLightDarkValuePairClass,
+    kAppearanceAutoBaseSelectValuePairClass,
     kScrollClass,
     kViewClass,
     kRatioClass,

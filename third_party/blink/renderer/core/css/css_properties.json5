@@ -5810,6 +5810,9 @@
       computed_style_protected_functions: ["getter"],
       default_value: "kNoControlPart",
       type_name: "ControlPart",
+      // appearance needs to be computed before
+      // -internal-appearance-auto-base-select() can be resolved.
+      priority: 1,
     },
     {
       name: "-webkit-appearance",

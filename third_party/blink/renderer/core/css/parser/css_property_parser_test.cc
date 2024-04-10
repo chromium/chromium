@@ -978,6 +978,17 @@ TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
   }
 }
 
+TEST(CSSPropertyParserTest, UAAppearanceAutoBaseSelectSerialization) {
+  auto* ua_context = MakeGarbageCollected<CSSParserContext>(
+      kUASheetMode, SecureContextMode::kInsecureContext);
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kBackgroundColor,
+      "-internal-appearance-auto-base-select(red, blue)", ua_context);
+  ASSERT_TRUE(value);
+  EXPECT_EQ("-internal-appearance-auto-base-select(red, blue)",
+            value->CssText());
+}
+
 namespace {
 
 bool ParseCSSValue(CSSPropertyID property_id,

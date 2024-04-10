@@ -6,6 +6,10 @@
  * feature is enabled.
  */
 
+select {
+  background-color: -internal-appearance-auto-base-select(Field, transparent);
+}
+
 /* Undo unwanted styles from select rules */
 select > button,
 select > datalist,

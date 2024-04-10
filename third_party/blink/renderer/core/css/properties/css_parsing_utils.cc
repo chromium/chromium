@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
+#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -828,6 +829,32 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   }
   range = range_copy;
   return MakeGarbageCollected<CSSLightDarkValuePair>(light_value, dark_value);
+}
+
+CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    bool accept_quirky_colors,
+    AllowedColorKeywords allowed_color_keywords) {
+  if (range.Peek().FunctionId() !=
+      CSSValueID::kInternalAppearanceAutoBaseSelect) {
+    return nullptr;
+  }
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+  CSSValue* auto_value = ConsumeColor(arg_range, context, accept_quirky_colors,
+                                      allowed_color_keywords);
+  if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
+    return nullptr;
+  }
+  CSSValue* base_select_value = ConsumeColor(
+      arg_range, context, accept_quirky_colors, allowed_color_keywords);
+  if (!base_select_value || !arg_range.AtEnd()) {
+    return nullptr;
+  }
+  range = range_copy;
+  return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
+      auto_value, base_select_value);
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
@@ -2020,6 +2047,16 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   ColorFunctionParser parser;
   if (parser.ConsumeFunctionalSyntaxColor(range, context, color)) {
     return cssvalue::CSSColor::Create(color);
+  }
+
+  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+      IsUASheetBehavior(context.Mode())) {
+    if (CSSAppearanceAutoBaseSelectValuePair* auto_base_select_pair =
+            ConsumeAppearanceAutoBaseSelectColor(range, context,
+                                                 /*accept_quirky_colors=*/false,
+                                                 allowed_keywords)) {
+      return auto_base_select_pair;
+    }
   }
 
   if (IsUASheetBehavior(context.Mode()) ||

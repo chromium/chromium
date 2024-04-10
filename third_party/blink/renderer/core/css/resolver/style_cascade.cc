@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -986,6 +987,19 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   }
   if (const auto* v = DynamicTo<CSSFlipRevertValue>(result)) {
     return ResolveFlipRevert(*v, priority, origin, resolver);
+  }
+  if (auto* auto_base_select_pair =
+          DynamicTo<CSSAppearanceAutoBaseSelectValuePair>(value)) {
+    // The UA stylesheet only uses -internal-auto-base-select() on select
+    // elements, which is currently the only element which supports
+    // appearance:base-select.
+    CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
+
+    if (state_.StyleBuilder().HasBaseSelectAppearance()) {
+      return &auto_base_select_pair->Second();
+    } else {
+      return &auto_base_select_pair->First();
+    }
   }
 
   resolver.CollectFlags(property, origin);

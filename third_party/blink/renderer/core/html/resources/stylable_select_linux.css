@@ -1,0 +1,13 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render <select> when the StylableSelect
+ * feature is enabled and the platform is Linux. It can be merged into
+ * linux.css when StylableSelect is enabled and the flag is removed.
+ */
+
+select:not(:-internal-list-box) {
+    /* Selects with popup menus look like buttons with a drop down triangle on Linux. */
+    background-color: -internal-appearance-auto-base-select(ButtonFace, transparent);
+}

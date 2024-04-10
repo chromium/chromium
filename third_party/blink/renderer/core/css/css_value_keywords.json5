@@ -894,6 +894,7 @@
     // TODO(crbug.com/1511354): "base-select" is a temporary name for stylable
     // <select>. It should be renamed when a standardized name is chosen.
     "base-select",
+    "-internal-appearance-auto-base-select",
 
     //
     // background-clip/background-origin

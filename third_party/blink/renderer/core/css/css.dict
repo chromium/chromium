@@ -939,6 +939,7 @@
 "color-contrast"
 "accentcolor"
 "accentcolortext"
+"-internal-auto-base-select"
 
 # display-state
 # normal

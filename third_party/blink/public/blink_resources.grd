@@ -24,6 +24,8 @@
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SELECTLIST_CSS" file="../renderer/core/html/resources/selectlist.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_STYLABLE_SELECT_CSS" file="../renderer/core/html/resources/stylable_select.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_STYLABLE_SELECT_LINUX_CSS" file="../renderer/core/html/resources/stylable_select_linux.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_STYLABLE_SELECT_FORCED_COLORS_CSS" file="../renderer/core/html/resources/stylable_select_forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MARKER_CSS" file="../renderer/core/css/marker.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MATHML_CSS" file="../renderer/core/css/mathml.css" type="BINDATA" compress="brotli"/>

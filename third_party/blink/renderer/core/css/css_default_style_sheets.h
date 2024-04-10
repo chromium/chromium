@@ -87,6 +87,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* StylableSelectStyleSheet() {
     return stylable_select_style_sheet_.Get();
   }
+  StyleSheetContents* StylableSelectForcedColorsStyleSheet() {
+    return stylable_select_forced_colors_style_sheet_.Get();
+  }
   StyleSheetContents* SvgStyleSheet() { return svg_style_sheet_.Get(); }
   StyleSheetContents* MathmlStyleSheet() { return mathml_style_sheet_.Get(); }
   StyleSheetContents* MediaControlsStyleSheet() {
@@ -167,6 +170,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> selectlist_style_sheet_;
   Member<StyleSheetContents> stylable_select_style_sheet_;
+  Member<StyleSheetContents> stylable_select_forced_colors_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
   Member<StyleSheetContents> form_controls_not_vertical_style_sheet_;
