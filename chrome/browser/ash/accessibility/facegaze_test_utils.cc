@@ -43,18 +43,23 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::MockFaceLandmarkerResult() =
 FaceGazeTestUtils::MockFaceLandmarkerResult::~MockFaceLandmarkerResult() =
     default;
 
-void FaceGazeTestUtils::MockFaceLandmarkerResult::SetNormalizedForeheadLocation(
-    double x, double y) {
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
+    double x,
+    double y) {
   forehead_location_.Set("x", x);
   forehead_location_.Set("y", y);
+  return *this;
 }
 
-void FaceGazeTestUtils::MockFaceLandmarkerResult::AddGestureWithConfidence(
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
     const std::string& gesture,
     double confidence) {
   recognized_gestures_.Append(base::Value::Dict()
                                   .Set("categoryName", gesture)
                                   .Set("score", confidence));
+  return *this;
 }
 
 FaceGazeTestUtils::FaceGazeTestUtils() = default;

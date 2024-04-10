@@ -27,13 +27,14 @@ class FaceGazeTestUtils {
     MockFaceLandmarkerResult& operator=(const MockFaceLandmarkerResult&) =
         delete;
 
-    void SetNormalizedForeheadLocation(double x, double y);
+    MockFaceLandmarkerResult& WithNormalizedForeheadLocation(double x,
+                                                             double y);
     const base::Value::Dict& forehead_location() const {
       return forehead_location_;
     }
 
-    void AddGestureWithConfidence(const std::string& gesture,
-                                  double confidence);
+    MockFaceLandmarkerResult& WithGesture(const std::string& gesture,
+                                          double confidence);
     const base::Value::List& recognized_gestures() const {
       return recognized_gestures_;
     }

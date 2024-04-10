@@ -57,9 +57,9 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     // No matter the starting location, the cursor position won't change
     // initially, and upcoming forehead locations will be computed relative to
     // this.
-    FaceGazeTestUtils::MockFaceLandmarkerResult result;
-    result.SetNormalizedForeheadLocation(0.1, 0.2);
-    utils_->ProcessFaceLandmarkerResult(result);
+    utils_->ProcessFaceLandmarkerResult(
+        FaceGazeTestUtils::MockFaceLandmarkerResult()
+            .WithNormalizedForeheadLocation(0.1, 0.2));
     utils_->TriggerMouseControllerInterval();
     ASSERT_EQ(gfx::Point(600, 400),
               display::Screen::GetScreen()->GetCursorScreenPoint());
@@ -82,9 +82,9 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateMouseLocation) {
-  FaceGazeTestUtils::MockFaceLandmarkerResult result;
-  result.SetNormalizedForeheadLocation(0.11, 0.21);
-  utils()->ProcessFaceLandmarkerResult(result);
+  utils()->ProcessFaceLandmarkerResult(
+      FaceGazeTestUtils::MockFaceLandmarkerResult()
+          .WithNormalizedForeheadLocation(0.11, 0.21));
   utils()->TriggerMouseControllerInterval();
 
   // Verify mouse location.
@@ -94,17 +94,17 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateMouseLocation) {
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   // Move mouse to location.
-  FaceGazeTestUtils::MockFaceLandmarkerResult move_mouse_result;
-  move_mouse_result.SetNormalizedForeheadLocation(0.11, 0.21);
-  utils()->ProcessFaceLandmarkerResult(move_mouse_result);
+  utils()->ProcessFaceLandmarkerResult(
+      FaceGazeTestUtils::MockFaceLandmarkerResult()
+          .WithNormalizedForeheadLocation(0.11, 0.21));
   utils()->TriggerMouseControllerInterval();
   ASSERT_EQ(gfx::Point(360, 560),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 
   // Reset the mouse to the center of the screen using a gesture.
-  FaceGazeTestUtils::MockFaceLandmarkerResult gesture_result;
-  gesture_result.AddGestureWithConfidence("jawOpen", 0.9);
-  utils()->ProcessFaceLandmarkerResult(gesture_result);
+  utils()->ProcessFaceLandmarkerResult(
+      FaceGazeTestUtils::MockFaceLandmarkerResult().WithGesture("jawOpen",
+                                                                0.9));
   ASSERT_EQ(gfx::Point(600, 400),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 }
