@@ -1833,15 +1833,6 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
     return {RevalidationPolicy::kReload, "Reload due to type mismatch."};
   }
 
-  // Always create a new resource for SVG resource documents since they are
-  // tied to the requesting document. There's a document-scoped cache in-front
-  // of the ResourceFetcher that will handle reuse (see
-  // SVGResourceDocumentContent::Fetch()).
-  if (type == ResourceType::kSVGDocument) {
-    return {RevalidationPolicy::kReload,
-            "SVG resource documents cannot be reused."};
-  }
-
   // If resource was populated from archive or data: url, use it.
   // This doesn't necessarily mean that |resource| was just created by using
   // CreateResourceForStaticData().

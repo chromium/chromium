@@ -28,7 +28,8 @@ TEST_F(SVGResourceDocumentContentTest, GetDocumentBeforeLoadComplete) {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(kSVGUrl), options);
-  auto* entry = SVGResourceDocumentContent::Fetch(params, GetDocument());
+  auto* entry =
+      SVGResourceDocumentContent::Fetch(params, GetDocument(), nullptr);
 
   // Write part of the response. The document should not be initialized yet,
   // because the response is not complete. The document would be invalid at this

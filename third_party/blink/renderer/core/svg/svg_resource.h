@@ -6,10 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -149,8 +148,7 @@ class LocalSVGResource final : public SVGResource {
 };
 
 // External resource reference (see SVGResource).
-class ExternalSVGResource final : public SVGResource,
-                                  public SVGResourceDocumentObserver {
+class ExternalSVGResource final : public SVGResource, public ResourceClient {
  public:
   explicit ExternalSVGResource(const KURL&);
 
@@ -162,8 +160,9 @@ class ExternalSVGResource final : public SVGResource,
  private:
   Element* ResolveTarget();
 
-  // SVGResourceDocumentObserver:
-  void ResourceNotifyFinished(SVGResourceDocumentContent*) override;
+  // ResourceClient implementation
+  void NotifyFinished(Resource*) override;
+  WTF::String DebugName() const override;
 
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
