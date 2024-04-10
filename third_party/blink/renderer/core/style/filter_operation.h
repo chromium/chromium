@@ -364,6 +364,11 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
   explicit DropShadowFilterOperation(const ShadowData& shadow)
       : FilterOperation(OperationType::kDropShadow), shadow_(shadow) {}
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(shadow_);
+    FilterOperation::Trace(visitor);
+  }
+
   const ShadowData& Shadow() const { return shadow_; }
 
   bool AffectsOpacity() const override { return true; }

@@ -72,8 +72,13 @@ class InheritedShadowListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedShadowListChecker(const CSSProperty& property,
-                             scoped_refptr<const ShadowList> shadow_list)
-      : property_(property), shadow_list_(std::move(shadow_list)) {}
+                             const ShadowList* shadow_list)
+      : property_(property), shadow_list_(shadow_list) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(shadow_list_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
@@ -88,7 +93,7 @@ class InheritedShadowListChecker
   }
 
   const CSSProperty& property_;
-  scoped_refptr<const ShadowList> shadow_list_;
+  Member<const ShadowList> shadow_list_;
 };
 
 InterpolationValue CSSShadowListInterpolationType::MaybeConvertInherit(
@@ -177,7 +182,7 @@ void CSSShadowListInterpolationType::Composite(
   underlying_value_owner.Set(*this, value);
 }
 
-static scoped_refptr<ShadowList> CreateShadowList(
+static ShadowList* CreateShadowList(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     const StyleResolverState& state) {
@@ -186,25 +191,26 @@ static scoped_refptr<ShadowList> CreateShadowList(
   if (length == 0)
     return nullptr;
   ShadowDataVector shadows;
+  shadows.ReserveInitialCapacity(length);
   for (wtf_size_t i = 0; i < length; i++) {
     shadows.push_back(To<InterpolableShadow>(interpolable_list.Get(i))
                           ->CreateShadowData(state));
   }
-  return ShadowList::Adopt(shadows);
+  return MakeGarbageCollected<ShadowList>(std::move(shadows));
 }
 
 void CSSShadowListInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  scoped_refptr<ShadowList> shadow_list =
+  ShadowList* shadow_list =
       CreateShadowList(interpolable_value, non_interpolable_value, state);
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kBoxShadow:
-      state.StyleBuilder().SetBoxShadow(std::move(shadow_list));
+      state.StyleBuilder().SetBoxShadow(shadow_list);
       return;
     case CSSPropertyID::kTextShadow:
-      state.StyleBuilder().SetTextShadow(std::move(shadow_list));
+      state.StyleBuilder().SetTextShadow(shadow_list);
       return;
     default:
       NOTREACHED();

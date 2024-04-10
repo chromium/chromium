@@ -167,8 +167,13 @@ class InheritedColorChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedColorChecker(const CSSProperty& property,
-                        const std::optional<StyleColor>& color)
+                        const OptionalStyleColor& color)
       : property_(property), color_(color) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(color_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
@@ -178,7 +183,7 @@ class InheritedColorChecker
   }
 
   const CSSProperty& property_;
-  const std::optional<StyleColor> color_;
+  const OptionalStyleColor color_;
 };
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
@@ -196,9 +201,8 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSColorInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  std::optional<StyleColor> initial_color =
-      ColorPropertyFunctions::GetInitialColor(
-          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
+  OptionalStyleColor initial_color = ColorPropertyFunctions::GetInitialColor(
+      CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
   if (!initial_color.has_value()) {
     return nullptr;
   }
@@ -219,7 +223,7 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertInherit(
     return nullptr;
   // Visited color can never explicitly inherit from parent visited color so
   // only use the unvisited color.
-  std::optional<StyleColor> inherited_color =
+  OptionalStyleColor inherited_color =
       ColorPropertyFunctions::GetUnvisitedColor(CssProperty(),
                                                 *state.ParentStyle());
   conversion_checkers.push_back(MakeGarbageCollected<InheritedColorChecker>(
@@ -301,8 +305,8 @@ PairwiseInterpolationValue CSSColorInterpolationType::MaybeMergeSingles(
 }
 
 InterpolationValue CSSColorInterpolationType::ConvertStyleColorPair(
-    const std::optional<StyleColor>& unvisited_color,
-    const std::optional<StyleColor>& visited_color,
+    const OptionalStyleColor& unvisited_color,
+    const OptionalStyleColor& visited_color,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) {
   if (!unvisited_color.has_value() || !visited_color.has_value()) {

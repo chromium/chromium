@@ -7354,16 +7354,16 @@ const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  std::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
-  if (scrollbar_color == std::nullopt) {
+  const StyleScrollbarColor* scrollbar_color = style.ScrollbarColor();
+  if (!scrollbar_color) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
-      style, scrollbar_color.value().GetThumbColor(), value_phase));
+      style, scrollbar_color->GetThumbColor(), value_phase));
   list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
-      style, scrollbar_color.value().GetTrackColor(), value_phase));
+      style, scrollbar_color->GetTrackColor(), value_phase));
   return list;
 }
 

@@ -51,9 +51,9 @@ class CSSScrollbarColorNonInterpolableValue final
   ~CSSScrollbarColorNonInterpolableValue() final = default;
 
   static scoped_refptr<CSSScrollbarColorNonInterpolableValue> Create(
-      std::optional<StyleScrollbarColor> scrollbar_color) {
+      const StyleScrollbarColor* scrollbar_color) {
     return base::AdoptRef(
-        new CSSScrollbarColorNonInterpolableValue(scrollbar_color.has_value()));
+        new CSSScrollbarColorNonInterpolableValue(scrollbar_color));
   }
 
   bool HasValue() const { return has_value_; }
@@ -91,8 +91,13 @@ class InheritedScrollbarColorChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit InheritedScrollbarColorChecker(
-      std::optional<StyleScrollbarColor> scrollbar_color)
+      const StyleScrollbarColor* scrollbar_color)
       : scrollbar_color_(scrollbar_color) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(scrollbar_color_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
@@ -100,7 +105,7 @@ class InheritedScrollbarColorChecker
     return scrollbar_color_ == state.ParentStyle()->ScrollbarColor();
   }
 
-  std::optional<StyleScrollbarColor> scrollbar_color_;
+  Member<const StyleScrollbarColor> scrollbar_color_;
 };
 
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertNeutral(
@@ -113,7 +118,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  std::optional<StyleScrollbarColor> initial_scrollbar_color =
+  const StyleScrollbarColor* initial_scrollbar_color =
       state.GetDocument().GetStyleResolver().InitialStyle().ScrollbarColor();
   return InterpolationValue(
       CreateScrollbarColorValue(initial_scrollbar_color),
@@ -127,13 +132,13 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
 
-  std::optional<StyleScrollbarColor> inherited_scrollbar_color =
+  const StyleScrollbarColor* inherited_scrollbar_color =
       state.ParentStyle()->ScrollbarColor();
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedScrollbarColorChecker>(
           inherited_scrollbar_color));
 
-  if (!inherited_scrollbar_color.has_value()) {
+  if (!inherited_scrollbar_color) {
     return nullptr;
   }
 
@@ -167,9 +172,9 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
 
   StyleScrollbarColor scrollbar_color(thumb_color.value(), track_color.value());
 
-  return InterpolationValue(InterpolableScrollbarColor::Create(scrollbar_color),
-                            CSSScrollbarColorNonInterpolableValue::Create(
-                                std::make_optional(scrollbar_color)));
+  return InterpolationValue(
+      InterpolableScrollbarColor::Create(scrollbar_color),
+      CSSScrollbarColorNonInterpolableValue::Create(&scrollbar_color));
 }
 
 PairwiseInterpolationValue
@@ -219,18 +224,17 @@ void CSSScrollbarColorInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& interpolable_scrollbar_color =
       To<InterpolableScrollbarColor>(interpolable_value);
-  StyleScrollbarColor scrollbar_color =
-      interpolable_scrollbar_color.GetScrollbarColor(state);
-  state.StyleBuilder().SetScrollbarColor(scrollbar_color);
+  state.StyleBuilder().SetScrollbarColor(
+      interpolable_scrollbar_color.GetScrollbarColor(state));
 }
 
 InterpolableScrollbarColor*
 CSSScrollbarColorInterpolationType::CreateScrollbarColorValue(
-    std::optional<StyleScrollbarColor> scrollbar_color) const {
-  if (!scrollbar_color.has_value()) {
+    const StyleScrollbarColor* scrollbar_color) const {
+  if (!scrollbar_color) {
     return nullptr;
   }
-  return InterpolableScrollbarColor::Create(scrollbar_color.value());
+  return InterpolableScrollbarColor::Create(*scrollbar_color);
 }
 
 }  // namespace blink

@@ -212,10 +212,6 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, div_text, kPseudoIdHighlight, paint_style,
           paint_info, AtomicString("highlight1"));
-  HighlightStyleUtils::HighlightTextPaintStyle selection_paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(GetDocument(), div_style,
-                                                  div_text, kPseudoIdSelection,
-                                                  paint_style, paint_info);
 
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
@@ -247,6 +243,10 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
 #else
+  HighlightStyleUtils::HighlightTextPaintStyle selection_paint_style =
+      HighlightStyleUtils::HighlightPaintingStyle(GetDocument(), div_style,
+                                                  div_text, kPseudoIdSelection,
+                                                  paint_style, paint_info);
   // Selection uses explicit default colors.
   EXPECT_TRUE(selection_paint_style.properties_using_current_color.empty());
 #endif

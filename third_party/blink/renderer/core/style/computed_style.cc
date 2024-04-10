@@ -2711,19 +2711,17 @@ std::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
 }
 
 std::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved() const {
-  const std::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
-  if (scrollbar_color.has_value()) {
-    return scrollbar_color.value().GetThumbColor().Resolve(GetCurrentColor(),
-                                                           UsedColorScheme());
+  if (const StyleScrollbarColor* scrollbar_color = ScrollbarColor()) {
+    return scrollbar_color->GetThumbColor().Resolve(GetCurrentColor(),
+                                                    UsedColorScheme());
   }
   return std::nullopt;
 }
 
 std::optional<blink::Color> ComputedStyle::ScrollbarTrackColorResolved() const {
-  const std::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
-  if (scrollbar_color.has_value()) {
-    return scrollbar_color.value().GetTrackColor().Resolve(GetCurrentColor(),
-                                                           UsedColorScheme());
+  if (const StyleScrollbarColor* scrollbar_color = ScrollbarColor()) {
+    return scrollbar_color->GetTrackColor().Resolve(GetCurrentColor(),
+                                                    UsedColorScheme());
   }
   return std::nullopt;
 }

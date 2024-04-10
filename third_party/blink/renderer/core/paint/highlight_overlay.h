@@ -44,7 +44,10 @@ class CORE_EXPORT HighlightOverlay {
     explicit HighlightLayer(HighlightLayerType type,
                             const AtomicString& name = g_null_atom);
 
-    void Trace(Visitor* visitor) const { visitor->Trace(style); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(style);
+      visitor->Trace(text_style);
+    }
 
     String ToString() const;
     enum PseudoId PseudoId() const;
@@ -160,6 +163,8 @@ class CORE_EXPORT HighlightOverlay {
                   Vector<HighlightDecoration>);
     HighlightPart(HighlightLayerType, uint16_t, HighlightRange);
 
+    void Trace(Visitor* visitor) const { visitor->Trace(style); }
+
     String ToString() const;
 
     bool operator==(const HighlightPart&) const;
@@ -205,7 +210,7 @@ class CORE_EXPORT HighlightOverlay {
   //
   // The edges must not represent overlapping ranges. If the highlight is active
   // in overlapping ranges, those ranges must be merged before ComputeEdges.
-  static Vector<HighlightPart> ComputeParts(
+  static HeapVector<HighlightPart> ComputeParts(
       const TextFragmentPaintInfo& originating,
       const HeapVector<HighlightLayer>& layers,
       const Vector<HighlightEdge>& edges);
@@ -222,5 +227,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&,
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::HighlightOverlay::HighlightLayer)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::HighlightOverlay::HighlightPart)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_OVERLAY_H_

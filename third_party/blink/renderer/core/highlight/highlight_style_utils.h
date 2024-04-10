@@ -44,9 +44,14 @@ class CORE_EXPORT HighlightStyleUtils {
                     HighlightColorProperty::kCurrentColor,
                     HighlightColorProperty::kTextDecorationColor>;
   struct HighlightTextPaintStyle {
+    DISALLOW_NEW();
+
+   public:
     TextPaintStyle style;
     Color text_decoration_color;
     HighlightColorPropertySet properties_using_current_color;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(style); }
   };
 
   static Color ResolveColor(const Document&,

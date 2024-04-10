@@ -60,7 +60,6 @@ ALIGNMENT_ORDER = [
     'TextDecorationThickness',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
-    'std::optional<StyleScrollbarColor>',
     'std::optional<StyleOverflowClipMargin>',
     'std::optional<blink::InsetAreaOffsets>',
     'std::optional<PhysicalOffset>',

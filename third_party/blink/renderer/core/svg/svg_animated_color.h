@@ -44,6 +44,11 @@ class SVGColorProperty final : public SVGPropertyBase {
  public:
   explicit SVGColorProperty(const String&);
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(style_color_);
+    SVGPropertyBase::Trace(visitor);
+  }
+
   SVGPropertyBase* CloneForAnimation(const String&) const override;
   String ValueAsString() const override;
 

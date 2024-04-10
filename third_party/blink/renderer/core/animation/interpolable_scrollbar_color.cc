@@ -46,9 +46,9 @@ InterpolableScrollbarColor* InterpolableScrollbarColor::RawCloneAndZero()
       thumb_color_->CloneAndZero(), track_color_->CloneAndZero());
 }
 
-StyleScrollbarColor InterpolableScrollbarColor::GetScrollbarColor(
+StyleScrollbarColor* InterpolableScrollbarColor::GetScrollbarColor(
     const StyleResolverState& state) const {
-  return StyleScrollbarColor(
+  return MakeGarbageCollected<StyleScrollbarColor>(
       StyleColor(CSSColorInterpolationType::ResolveInterpolableColor(
           *thumb_color_, state)),
       StyleColor(CSSColorInterpolationType::ResolveInterpolableColor(

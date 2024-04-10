@@ -519,7 +519,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
   return result;
 }
 
-Vector<HighlightPart> HighlightOverlay::ComputeParts(
+HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
     const TextFragmentPaintInfo& content_offsets,
     const HeapVector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
@@ -531,7 +531,7 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
       {content_offsets.from, content_offsets.to},
       originating_text_style.text_decoration_color};
 
-  Vector<HighlightPart> result{};
+  HeapVector<HighlightPart> result;
   Vector<std::optional<HighlightRange>> active(layers.size());
   std::optional<unsigned> prev_offset{};
   if (edges.empty()) {

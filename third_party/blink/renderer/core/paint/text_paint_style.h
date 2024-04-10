@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -27,10 +29,12 @@ struct CORE_EXPORT TextPaintStyle {
   Color emphasis_mark_color;
   float stroke_width;
   mojom::blink::ColorScheme color_scheme;
-  scoped_refptr<const ShadowList> shadow;
+  Member<const ShadowList> shadow;
   TextDecorationLine selection_decoration_lines;
   Color selection_decoration_color;
   EPaintOrder paint_order;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(shadow); }
 
   bool operator==(const TextPaintStyle& other) const {
     return current_color == other.current_color &&

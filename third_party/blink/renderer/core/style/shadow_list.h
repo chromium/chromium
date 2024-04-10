@@ -44,18 +44,19 @@ class RectF;
 
 namespace blink {
 
-typedef Vector<ShadowData, 1> ShadowDataVector;
+typedef HeapVector<ShadowData, 1> ShadowDataVector;
 
 // These are used to store shadows in specified order, but we usually want to
 // iterate over them backwards as the first-specified shadow is painted on top.
-class ShadowList : public RefCounted<ShadowList> {
-  USING_FAST_MALLOC(ShadowList);
-
+class ShadowList : public GarbageCollected<ShadowList> {
  public:
-  // This consumes passed in vector.
-  static scoped_refptr<ShadowList> Adopt(ShadowDataVector& shadows) {
-    return base::AdoptRef(new ShadowList(shadows));
+  explicit ShadowList(ShadowDataVector&& shadows) : shadows_(shadows) {
+    // If we have no shadows, we use a null ShadowList
+    DCHECK(!shadows.empty());
   }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(shadows_); }
+
   const ShadowDataVector& Shadows() const { return shadows_; }
   bool operator==(const ShadowList& o) const { return shadows_ == o.shadows_; }
   bool operator!=(const ShadowList& o) const { return !(*this == o); }
@@ -67,12 +68,6 @@ class ShadowList : public RefCounted<ShadowList> {
   void AdjustRectForShadow(gfx::RectF&) const;
 
  private:
-  ShadowList(ShadowDataVector& shadows) {
-    // If we have no shadows, we use a null ShadowList
-    DCHECK(!shadows.empty());
-    shadows_.swap(shadows);
-    shadows_.shrink_to_fit();
-  }
   ShadowDataVector shadows_;
 };
 

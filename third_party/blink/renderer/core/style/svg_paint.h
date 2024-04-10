@@ -58,7 +58,10 @@ struct SVGPaint {
   CORE_EXPORT ~SVGPaint();
   CORE_EXPORT SVGPaint& operator=(const SVGPaint& paint);
 
-  void Trace(Visitor* visitor) const { visitor->Trace(resource); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(color);
+    visitor->Trace(resource);
+  }
 
   CORE_EXPORT bool operator==(const SVGPaint&) const;
   bool operator!=(const SVGPaint& other) const { return !(*this == other); }

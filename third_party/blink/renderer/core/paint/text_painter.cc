@@ -150,7 +150,7 @@ void UpdateGraphicsContext(GraphicsContext& context,
     if (text_style.shadow || shadow_mode == TextPainter::kShadowsOnly) {
       state_saver.SaveIfNeeded();
       context.SetDrawLooper(CreateDrawLooper(
-          text_style.shadow.get(), DrawLooperBuilder::kShadowIgnoresAlpha,
+          text_style.shadow.Get(), DrawLooperBuilder::kShadowIgnoresAlpha,
           text_style.current_color, text_style.color_scheme, shadow_mode));
     }
   }

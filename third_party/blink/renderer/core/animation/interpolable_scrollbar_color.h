@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_SCROLLBAR_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_SCROLLBAR_COLOR_H_
 
-#include <memory>
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
@@ -26,7 +25,7 @@ class CORE_EXPORT InterpolableScrollbarColor : public InterpolableValue {
   static InterpolableScrollbarColor* Create(StyleScrollbarColor);
   bool IsScrollbarColor() const final { return true; }
 
-  StyleScrollbarColor GetScrollbarColor(const StyleResolverState&) const;
+  StyleScrollbarColor* GetScrollbarColor(const StyleResolverState&) const;
 
   void Scale(double scale) final;
   void Add(const InterpolableValue& other) final;

@@ -255,8 +255,7 @@ class StyleBuilderConverter {
   static ShadowData ConvertShadow(const CSSToLengthConversionData&,
                                   StyleResolverState*,
                                   const CSSValue&);
-  static scoped_refptr<ShadowList> ConvertShadowList(StyleResolverState&,
-                                                     const CSSValue&);
+  static ShadowList* ConvertShadowList(StyleResolverState&, const CSSValue&);
   static ShapeValue* ConvertShapeValue(StyleResolverState&, const CSSValue&);
   static float ConvertSpacing(StyleResolverState&, const CSSValue&);
   template <CSSValueID IdForNone>
@@ -345,9 +344,8 @@ class StyleBuilderConverter {
   static RubyPosition ConvertRubyPosition(StyleResolverState& state,
                                           const CSSValue& value);
 
-  static std::optional<StyleScrollbarColor> ConvertScrollbarColor(
-      StyleResolverState& state,
-      const CSSValue& value);
+  static StyleScrollbarColor* ConvertScrollbarColor(StyleResolverState& state,
+                                                    const CSSValue& value);
 
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);

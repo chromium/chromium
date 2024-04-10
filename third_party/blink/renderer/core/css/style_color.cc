@@ -16,8 +16,8 @@ StyleColor::UnresolvedColorMix::UnresolvedColorMix(
     const StyleColor& c2)
     : color_interpolation_space_(in->ColorInterpolationSpace()),
       hue_interpolation_method_(in->HueInterpolationMethod()),
-      color1_(c1),
-      color2_(c2) {
+      color1_(c1.color_or_unresolved_color_mix_),
+      color2_(c2.color_or_unresolved_color_mix_) {
   if (c1.IsUnresolvedColorMixFunction()) {
     color1_type_ = UnderlyingColorType::kColorMix;
   } else if (c1.IsCurrentColor()) {
@@ -38,72 +38,6 @@ StyleColor::UnresolvedColorMix::UnresolvedColorMix(
   // be rejected at parse time.
   cssvalue::CSSColorMixValue::NormalizePercentages(
       in->Percentage1(), in->Percentage2(), percentage_, alpha_multiplier_);
-}
-
-StyleColor::UnresolvedColorMix::UnresolvedColorMix(
-    const UnresolvedColorMix& other)
-    : color_interpolation_space_(other.color_interpolation_space_),
-      hue_interpolation_method_(other.hue_interpolation_method_),
-      percentage_(other.percentage_),
-      alpha_multiplier_(other.alpha_multiplier_),
-      color1_type_(other.color1_type_),
-      color2_type_(other.color2_type_) {
-  if (color1_type_ == UnderlyingColorType::kColorMix) {
-    new (&color1_.unresolved_color_mix) std::unique_ptr<UnresolvedColorMix>(
-        new UnresolvedColorMix(*other.color1_.unresolved_color_mix));
-  } else if (color1_type_ == UnderlyingColorType::kColor) {
-    color1_.color = other.color1_.color;
-  }
-
-  if (color2_type_ == UnderlyingColorType::kColorMix) {
-    new (&color2_.unresolved_color_mix) std::unique_ptr<UnresolvedColorMix>(
-        new UnresolvedColorMix(*other.color2_.unresolved_color_mix));
-  } else if (color2_type_ == UnderlyingColorType::kColor) {
-    color2_.color = other.color2_.color;
-  }
-}
-
-StyleColor::UnresolvedColorMix& StyleColor::UnresolvedColorMix::operator=(
-    const StyleColor::UnresolvedColorMix& other) {
-  if (this == &other) {
-    return *this;
-  }
-  color_interpolation_space_ = other.color_interpolation_space_;
-  hue_interpolation_method_ = other.hue_interpolation_method_;
-  percentage_ = other.percentage_;
-  alpha_multiplier_ = other.alpha_multiplier_;
-
-  if (other.color1_type_ == UnderlyingColorType::kColorMix) {
-    if (color1_type_ == UnderlyingColorType::kColorMix) {
-      // Avoid leaking an UnresolvedColorMix that is already stored on "this"
-      color1_.unresolved_color_mix.reset();
-      color1_.unresolved_color_mix = std::make_unique<UnresolvedColorMix>(
-          *other.color1_.unresolved_color_mix);
-    } else {
-      new (&color1_.unresolved_color_mix) std::unique_ptr<UnresolvedColorMix>(
-          new UnresolvedColorMix(*other.color1_.unresolved_color_mix));
-    }
-  } else if (other.color1_type_ == UnderlyingColorType::kColor) {
-    color1_.color = other.color1_.color;
-  }
-
-  if (other.color2_type_ == UnderlyingColorType::kColorMix) {
-    if (color2_type_ == UnderlyingColorType::kColorMix) {
-      // Avoid leaking an UnresolvedColorMix that is already stored on "this"
-      color2_.unresolved_color_mix.reset();
-      color2_.unresolved_color_mix = std::make_unique<UnresolvedColorMix>(
-          *other.color2_.unresolved_color_mix);
-    } else {
-      new (&color2_.unresolved_color_mix) std::unique_ptr<UnresolvedColorMix>(
-          new UnresolvedColorMix(*other.color2_.unresolved_color_mix));
-    }
-  } else if (other.color2_type_ == UnderlyingColorType::kColor) {
-    color2_.color = other.color2_.color;
-  }
-
-  color1_type_ = other.color1_type_;
-  color2_type_ = other.color2_type_;
-  return *this;
 }
 
 Color StyleColor::UnresolvedColorMix::Resolve(
@@ -131,99 +65,8 @@ Color StyleColor::UnresolvedColorMix::Resolve(
                              alpha_multiplier_);
 }
 
-StyleColor::ColorOrUnresolvedColorMix::ColorOrUnresolvedColorMix(
-    UnresolvedColorMix color_mix) {
-  new (&unresolved_color_mix)
-      std::unique_ptr<UnresolvedColorMix>(new UnresolvedColorMix(color_mix));
-}
-
-StyleColor::ColorOrUnresolvedColorMix::ColorOrUnresolvedColorMix(
-    const StyleColor style_color) {
-  if (style_color.IsUnresolvedColorMixFunction()) {
-    new (&unresolved_color_mix) std::unique_ptr<UnresolvedColorMix>(
-        new UnresolvedColorMix(style_color.GetUnresolvedColorMix()));
-  } else {
-    color = style_color.color_or_unresolved_color_mix_.color;
-  }
-}
-
-StyleColor::StyleColor(const StyleColor& other)
-    : color_keyword_(other.color_keyword_) {
-  if (IsUnresolvedColorMixFunction()) {
-    new (&color_or_unresolved_color_mix_.unresolved_color_mix)
-        std::unique_ptr<UnresolvedColorMix>(new UnresolvedColorMix(
-            *other.color_or_unresolved_color_mix_.unresolved_color_mix));
-  } else {
-    color_or_unresolved_color_mix_.color =
-        other.color_or_unresolved_color_mix_.color;
-  }
-}
-
-StyleColor& StyleColor::operator=(const StyleColor& other) {
-  if (this == &other) {
-    return *this;
-  }
-  if (other.IsUnresolvedColorMixFunction()) {
-    if (IsUnresolvedColorMixFunction()) {
-      color_or_unresolved_color_mix_.unresolved_color_mix.reset();
-      color_or_unresolved_color_mix_.unresolved_color_mix =
-          std::make_unique<UnresolvedColorMix>(
-              *other.color_or_unresolved_color_mix_.unresolved_color_mix);
-    } else {
-      new (&color_or_unresolved_color_mix_.unresolved_color_mix)
-          std::unique_ptr<UnresolvedColorMix>(new UnresolvedColorMix(
-              *other.color_or_unresolved_color_mix_.unresolved_color_mix));
-    }
-  } else {
-    if (IsUnresolvedColorMixFunction()) {
-      color_or_unresolved_color_mix_.unresolved_color_mix.reset();
-    }
-    color_or_unresolved_color_mix_.color =
-        other.color_or_unresolved_color_mix_.color;
-  }
-  color_keyword_ = other.color_keyword_;
-  return *this;
-}
-
-StyleColor::StyleColor(StyleColor&& other)
-    : color_keyword_(other.color_keyword_) {
-  if (other.IsUnresolvedColorMixFunction()) {
-    new (&color_or_unresolved_color_mix_.unresolved_color_mix)
-        std::unique_ptr<UnresolvedColorMix>(std::move(
-            other.color_or_unresolved_color_mix_.unresolved_color_mix));
-  } else {
-    color_or_unresolved_color_mix_.color =
-        other.color_or_unresolved_color_mix_.color;
-  }
-}
-
-StyleColor& StyleColor::operator=(StyleColor&& other) {
-  if (this == &other) {
-    return *this;
-  }
-  if (other.IsUnresolvedColorMixFunction()) {
-    if (IsUnresolvedColorMixFunction()) {
-      color_or_unresolved_color_mix_.unresolved_color_mix.reset();
-      color_or_unresolved_color_mix_.unresolved_color_mix =
-          std::make_unique<UnresolvedColorMix>(std::move(
-              *other.color_or_unresolved_color_mix_.unresolved_color_mix));
-    } else {
-      new (&color_or_unresolved_color_mix_.unresolved_color_mix)
-          std::unique_ptr<UnresolvedColorMix>((std::move(
-              other.color_or_unresolved_color_mix_.unresolved_color_mix)));
-    }
-  } else {
-    color_or_unresolved_color_mix_.color =
-        other.color_or_unresolved_color_mix_.color;
-  }
-  color_keyword_ = other.color_keyword_;
-  return *this;
-}
-
-StyleColor::~StyleColor() {
-  if (IsUnresolvedColorMixFunction()) {
-    color_or_unresolved_color_mix_.unresolved_color_mix.reset();
-  }
+void StyleColor::ColorOrUnresolvedColorMix::Trace(Visitor* visitor) const {
+  visitor->Trace(unresolved_color_mix);
 }
 
 Color StyleColor::Resolve(const Color& current_color,

@@ -2229,21 +2229,22 @@ ShadowData StyleBuilderConverter::ConvertShadow(
   return ShadowData(offset, blur, spread, shadow_style, color);
 }
 
-scoped_refptr<ShadowList> StyleBuilderConverter::ConvertShadowList(
-    StyleResolverState& state,
-    const CSSValue& value) {
+ShadowList* StyleBuilderConverter::ConvertShadowList(StyleResolverState& state,
+                                                     const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return scoped_refptr<ShadowList>();
+    return nullptr;
   }
 
+  const auto& list = To<CSSValueList>(value);
   ShadowDataVector shadows;
-  for (const auto& item : To<CSSValueList>(value)) {
+  shadows.ReserveInitialCapacity(list.length());
+  for (const auto& item : list) {
     shadows.push_back(
         ConvertShadow(state.CssToLengthConversionData(), &state, *item));
   }
 
-  return ShadowList::Adopt(shadows);
+  return MakeGarbageCollected<ShadowList>(std::move(shadows));
 }
 
 ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
@@ -2382,7 +2383,7 @@ StyleColor ResolveColorValue(const CSSValue& value,
     // StyleColor.
     if (!CanResolveAtComputedValueTime(style_color1) ||
         !CanResolveAtComputedValueTime(style_color2)) {
-      return StyleColor(StyleColor::UnresolvedColorMix(
+      return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
           color_mix_value, style_color1, style_color2));
     }
 
@@ -3091,12 +3092,12 @@ RubyPosition StyleBuilderConverter::ConvertRubyPosition(
   return RubyPosition::kBefore;
 }
 
-std::optional<StyleScrollbarColor> StyleBuilderConverter::ConvertScrollbarColor(
+StyleScrollbarColor* StyleBuilderConverter::ConvertScrollbarColor(
     StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto) {
-    return std::nullopt;
+    return nullptr;
   }
 
   const CSSValueList& list = To<CSSValueList>(value);
@@ -3105,7 +3106,7 @@ std::optional<StyleScrollbarColor> StyleBuilderConverter::ConvertScrollbarColor(
   const StyleColor thumb_color = ConvertStyleColor(state, list.First());
   const StyleColor track_color = ConvertStyleColor(state, list.Last());
 
-  return StyleScrollbarColor(thumb_color, track_color);
+  return MakeGarbageCollected<StyleScrollbarColor>(thumb_color, track_color);
 }
 
 ScrollbarGutter StyleBuilderConverter::ConvertScrollbarGutter(

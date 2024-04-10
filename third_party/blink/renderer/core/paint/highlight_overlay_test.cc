@@ -421,7 +421,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   // clang-format off
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kOriginating, 0, {0,25}, originating_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
             }))
@@ -441,7 +441,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *grammar, *spelling, *target);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges2),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kCustom, 1, {0,6}, foo_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
                                {HighlightLayerType::kCustom, 1, {0,14}, foo_color}}},
@@ -502,7 +502,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *grammar, *spelling, *target);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges3),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kOriginating, 0, {0,6}, originating_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
                 HighlightPart{HighlightLayerType::kSpelling, 3, {6,9}, spelling_text_style.style,
@@ -560,7 +560,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *grammar, *spelling, *target);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges4),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kSpelling, 3, {8,9}, spelling_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
                                {HighlightLayerType::kCustom, 1, {8,14}, foo_color},
@@ -605,7 +605,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *spelling, *none);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges5),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kSpelling, 3, {8,9}, spelling_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
                                {HighlightLayerType::kSpelling, 3, {8,9}, spelling_color}}},
@@ -635,7 +635,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *grammar, *spelling, *target);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating3, layers, edges6),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kOriginating, 0, {1,4}, originating_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {1,4}, originating_color}}},
             }))
@@ -657,7 +657,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       *grammar, *spelling, *target);
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating4, layers, edges7),
-            (Vector<HighlightPart>{
+            (HeapVector<HighlightPart>{
                 HighlightPart{HighlightLayerType::kOriginating, 0, {25,28}, originating_text_style.style,
                               {{HighlightLayerType::kOriginating, 0, {25,28}, originating_color}}},
             }))

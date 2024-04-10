@@ -707,8 +707,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool UsesStandardScrollbarStyle() const {
-    return ScrollbarWidth() != EScrollbarWidth::kAuto ||
-           ScrollbarColor().has_value();
+    return ScrollbarWidth() != EScrollbarWidth::kAuto || ScrollbarColor();
   }
 
   bool HasCustomScrollbarStyle(const Document& document) const;

@@ -44,6 +44,7 @@ class CORE_EXPORT InterpolableStyleColor : public BaseInterpolableColor {
 
   void Trace(Visitor* v) const override {
     BaseInterpolableColor::Trace(v);
+    v->Trace(style_color_);
     v->Trace(from_color_);
     v->Trace(to_color_);
   }

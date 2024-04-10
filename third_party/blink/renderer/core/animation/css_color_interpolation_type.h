@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class OptionalStyleColor;
 class StyleColor;
 
 class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
@@ -84,8 +85,8 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
   static InterpolationValue ConvertStyleColorPair(
-      const std::optional<StyleColor>&,
-      const std::optional<StyleColor>&,
+      const OptionalStyleColor&,
+      const OptionalStyleColor&,
       mojom::blink::ColorScheme color_scheme,
       const ui::ColorProvider* color_provider);
   static InterpolationValue ConvertStyleColorPair(

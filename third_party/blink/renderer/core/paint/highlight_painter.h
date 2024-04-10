@@ -284,7 +284,7 @@ class CORE_EXPORT HighlightPainter {
   DocumentMarkerVector grammar_;
   DocumentMarkerVector custom_;
   HeapVector<HighlightLayer> layers_;
-  Vector<HighlightPart> parts_;
+  HeapVector<HighlightPart> parts_;
   Vector<HighlightEdgeInfo> edges_info_;
   Case paint_case_;
 };

@@ -90,6 +90,11 @@ class InheritedPaintChecker
   InheritedPaintChecker(const CSSProperty& property, const StyleColor& color)
       : property_(property), valid_color_(true), color_(color) {}
 
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(color_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
