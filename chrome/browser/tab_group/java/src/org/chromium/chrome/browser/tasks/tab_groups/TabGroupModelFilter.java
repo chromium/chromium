@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -272,8 +273,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                     removedRootIds.add(tab.getRootId());
                 }
 
-                tab.setRootId(destinationRootId);
-                tab.setTabGroupId(destinationTabGroupId);
+                setBothGroupIds(tab, destinationRootId, destinationTabGroupId);
             }
             resetFilterState();
 
@@ -393,8 +393,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
-            tab.setRootId(destinationRootId);
-            tab.setTabGroupId(destinationTabGroupId);
+            setBothGroupIds(tab, destinationRootId, destinationTabGroupId);
             if (index == destinationIndexInTabModel || index + 1 == destinationIndexInTabModel) {
                 // If the tab is not moved TabModelImpl will not invoke
                 // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
@@ -506,6 +505,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             observer.willMoveTabOutOfGroup(sourceTab, newRootId);
         }
 
+        TabStateAttributes tabStateAttributes = TabStateAttributes.from(sourceTab);
+        tabStateAttributes.beginBatchEdit();
         sourceTab.setTabGroupId(null);
         if (sourceTabIdWasRootId) {
             for (int tabId : sourceTabGroup.getTabIdList()) {
@@ -518,6 +519,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             resetFilterState();
         }
         sourceTab.setRootId(sourceTab.getId());
+        tabStateAttributes.endBatchEdit();
 
         if (sourceTabIdWasRootId) {
             // Must be done here instead of lower down, as the GTS currently does not listen to
@@ -586,8 +588,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         // Unconditionally signal removal of the tab from the group it is in.
         mIsUndoing = true;
         boolean groupExistedBeforeMove = mRootIdToGroupMap.get(originalRootId) != null;
-        tab.setRootId(originalRootId);
-        tab.setTabGroupId(originalTabGroupId);
+        setBothGroupIds(tab, originalRootId, originalTabGroupId);
         if (currentIndex == originalIndex) {
             didMoveTab(tab, originalIndex, currentIndex);
         } else {
@@ -1399,5 +1400,13 @@ public class TabGroupModelFilter extends TabModelFilter {
             tab.setTabGroupId(tabGroupId);
         }
         return tabGroupId;
+    }
+
+    private static void setBothGroupIds(Tab tab, int rootId, Token tabGroupId) {
+        TabStateAttributes tabStateAttributes = TabStateAttributes.from(tab);
+        tabStateAttributes.beginBatchEdit();
+        tab.setRootId(rootId);
+        tab.setTabGroupId(tabGroupId);
+        tabStateAttributes.endBatchEdit();
     }
 }

@@ -865,6 +865,11 @@ public class TabPersistentStore {
             return;
         }
 
+        if (mSaveTabTask != null && mSaveTabTask.mId == tab.getId()) {
+            RecordHistogram.recordCount100Histogram(
+                    "Tabs.PotentialDoubleDirty.SaveQueueSize", mTabsToSave.size());
+        }
+
         mTabsToSave.addLast(tab);
     }
 
@@ -1345,6 +1350,7 @@ public class TabPersistentStore {
         @Override
         protected void onPreExecute() {
             if (mDestroyed || isCancelled()) return;
+            TabStateAttributes.from(mTab).clearTabStateDirtiness();
             mState = TabStateExtractor.from(mTab);
         }
 
@@ -1357,9 +1363,6 @@ public class TabPersistentStore {
         @Override
         protected void onPostExecute(Void v) {
             if (mDestroyed || isCancelled()) return;
-            if (mStateSaved) {
-                if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).clearTabStateDirtiness();
-            }
             mSaveTabTask = null;
             saveNextTab();
         }

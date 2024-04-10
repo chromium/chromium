@@ -1446,6 +1446,33 @@ chromium-metrics-reviews@google.com.
   <summary>[iOS] The number of pinned tabs opened at cold launch.</summary>
 </histogram>
 
+<histogram name="Tabs.PotentialDoubleDirty.SaveQueueSize" units="tabs"
+    expires_after="2024-09-01">
+  <owner>skym@chromium.org</owner>
+  <owner>ckitagawa@chroimum.org</owner>
+  <summary>
+    On Android, when a tab becomes dirty, it is queued to be saved to disk.
+    Clients that make multiple modifications in a sequence to the same tab can
+    cause poor performance by triggering a synchronous save from the first
+    modification, and then a second one from the others. This can be manually
+    worked around by notifying the TabStateAttributes, but clients that need
+    this change need to be identified first. This histogram is trying to help
+    identify the frequency that this situation is encountered.
+
+    This histogram, only on Android, is specifically recorded when we go to
+    queue a tab's data to be saved to persistent storage, and we notice that
+    we're also currently writing the same tab to disk. This is not always a
+    problem, as there could be many pending async writes happening to various
+    tabs, when new fresh modifications come in.
+
+    The value being recorded is the number of tabs in the save queue in front of
+    the tab being added. If the number is zero, it's very likely because of a
+    client making multiple sequential modifications. On the other hand, a larger
+    number is likely just the same tab being modified asynchronously and the
+    queue is backed up with other changes.
+  </summary>
+</histogram>
+
 <histogram
     name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
     units="entries restored" expires_after="2024-08-05">

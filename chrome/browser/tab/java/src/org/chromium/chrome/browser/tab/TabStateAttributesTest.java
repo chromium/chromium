@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 import android.os.Handler;
@@ -574,5 +577,72 @@ public class TabStateAttributesTest {
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.UNTIDY,
                 TabStateAttributes.from(mTab).getDirtinessState());
+    }
+
+    @Test
+    public void testBatchEdit() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        mTab.setRootId(1);
+        mTab.setTabGroupId(Token.createRandom());
+        mTab.setRootId(2);
+        mTab.setTabGroupId(null);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        Mockito.reset(mAttributesObserver);
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.CLEAN);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.CLEAN);
+        Mockito.reset(mAttributesObserver);
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.CLEAN);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.UNTIDY);
+        Mockito.reset(mAttributesObserver);
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.CLEAN);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.CLEAN);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        Mockito.reset(mAttributesObserver);
+    }
+
+    @Test
+    public void testNestedBatchEdit() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+
+        TabStateAttributes.from(mTab).beginBatchEdit();
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.DIRTY);
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver, never()).onTabStateDirtinessChanged(eq(mTab), anyInt());
+
+        TabStateAttributes.from(mTab).endBatchEdit();
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        Mockito.verifyNoMoreInteractions(mAttributesObserver);
     }
 }

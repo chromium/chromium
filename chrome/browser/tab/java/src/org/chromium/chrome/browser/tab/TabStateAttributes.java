@@ -32,10 +32,13 @@ public class TabStateAttributes extends TabWebContentsUserData {
     private static final Class<TabStateAttributes> USER_DATA_KEY = TabStateAttributes.class;
     @VisibleForTesting static final long DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS = 30 * 1000L;
 
-    /** Defines the dirtiness states of the tab attributes. */
+    /**
+     * Defines the dirtiness states of the tab attributes. Numerical values should be setup such
+     * that higher values are more dirty.
+     */
     @IntDef({DirtinessState.CLEAN, DirtinessState.UNTIDY, DirtinessState.DIRTY})
     @Retention(RetentionPolicy.SOURCE)
-    public static @interface DirtinessState {
+    public @interface DirtinessState {
         /** The state of the tab has no meaningful changes. */
         int CLEAN = 0;
 
@@ -55,10 +58,20 @@ public class TabStateAttributes extends TabWebContentsUserData {
     private WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
 
+    /**
+     * When this number is greater than zero, all dirty observations are currently being suppressed.
+     * Using an int instead of boolean to support reentrancy.
+     */
+    private int mNumberOpenBatchEdits;
+
+    /** The most dirty end state transition that's been had during the current changes, or null. */
+    private @Nullable Integer mPendingDirty;
+
     /** Allows observing changes for Tab state dirtiness updates. */
     public interface Observer {
         /**
          * Triggered when the tab state dirtiness has changed.
+         *
          * @param tab The tab whose state has changed.
          * @param dirtiness Tne state of dirtiness for the tab state.
          */
@@ -253,8 +266,12 @@ public class TabStateAttributes extends TabWebContentsUserData {
             mDirtinessState = dirtiness;
         }
 
-        for (Observer observer : mObservers) {
-            observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
+        if (mNumberOpenBatchEdits > 0) {
+            updatePendingDirty(mDirtinessState);
+        } else {
+            for (Observer observer : mObservers) {
+                observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
+            }
         }
     }
 
@@ -283,6 +300,34 @@ public class TabStateAttributes extends TabWebContentsUserData {
      */
     public void removeObserver(Observer obs) {
         mObservers.removeObserver(obs);
+    }
+
+    /**
+     * Temporarily suppress dirty observations while multiple changes are made to this tab. This can
+     * be helpful to coalesce multiple changes into a single write to persistent storage. If you
+     * call this method you must call {@link #endBatchEdit()} as soon as changes are done being
+     * made, otherwise this tab will be left in a broken state.
+     */
+    public void beginBatchEdit() {
+        mNumberOpenBatchEdits++;
+    }
+
+    public void endBatchEdit() {
+        mNumberOpenBatchEdits--;
+        assert mNumberOpenBatchEdits >= 0;
+        if (mNumberOpenBatchEdits == 0 && mPendingDirty != null) {
+            // Reset mPendingDirty just in case we need to support reentrancy from observers.
+            int pendingDirtyCopy = mPendingDirty;
+            mPendingDirty = null;
+            for (Observer observer : mObservers) {
+                observer.onTabStateDirtinessChanged(mTab, pendingDirtyCopy);
+            }
+        }
+    }
+
+    private void updatePendingDirty(@DirtinessState int newDirty) {
+        mPendingDirty =
+                mPendingDirty == null ? newDirty : Math.max(mPendingDirty.intValue(), newDirty);
     }
 
     /** Allows overriding the current value for tests. */
