@@ -99,6 +99,7 @@
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                         tabGroup:tabGroup];
+  _tabGroupCoordinator.tabContextMenuDelegate = self.tabContextMenuDelegate;
   [_tabGroupCoordinator start];
 }
 

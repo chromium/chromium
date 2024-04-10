@@ -31,6 +31,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
   ]

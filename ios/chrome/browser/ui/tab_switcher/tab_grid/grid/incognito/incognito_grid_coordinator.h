@@ -33,9 +33,6 @@ class Browser;
 
 // Audience for this coordinator.
 @property(nonatomic, weak) id<GridCoordinatorAudience> audience;
-// Tab Context Menu delegate.
-// TODO(crbug.com/1457146): This protocol should be implemented by this object.
-@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // The incognito browser can be reset during the execution of the app.
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser;

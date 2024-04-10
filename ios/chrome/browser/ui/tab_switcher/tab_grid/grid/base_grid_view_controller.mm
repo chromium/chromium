@@ -680,6 +680,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
+
+  // GroupGridCell case.
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
     return [self.menuProvider
         contextMenuConfigurationForTabGroupCell:ObjCCastStrict<GroupGridCell>(
@@ -688,6 +690,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                        kMenuScenarioHistogramTabGroupGridEntry];
   }
 
+  // GridCell case.
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
   MenuScenarioHistogram scenario;

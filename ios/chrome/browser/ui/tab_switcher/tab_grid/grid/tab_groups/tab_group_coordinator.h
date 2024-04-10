@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol TabContextMenuDelegate;
 class TabGroup;
 @class TabGroupViewController;
 
@@ -15,6 +16,9 @@ class TabGroup;
 
 // View controller for tab groups.
 @property(weak, readonly) TabGroupViewController* viewController;
+
+// Tab Context Menu delegate.
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // Init the coordinator with the tab group to display.
 // - `tabGroup` should not be nil.

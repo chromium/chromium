@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_transition_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/web/public/web_state_id.h"
 
 @interface TabGroupCoordinator () <GridViewControllerDelegate>
@@ -28,6 +29,8 @@
   TabGroupViewController* _viewController;
   // Transition delegate for the animation to show/hide a Tab Group.
   TabGroupTransitionDelegate* _transitionDelegate;
+  // Context Menu helper for the tabs.
+  TabContextMenuHelper* _tabContextMenuHelper;
   // Tab group to display.
   const TabGroup* _tabGroup;
 }
@@ -72,8 +75,13 @@
   _mediator.browser = self.browser;
   _mediator.tabGroupsHandler = handler;
 
+  _tabContextMenuHelper = [[TabContextMenuHelper alloc]
+        initWithBrowserState:self.browser->GetBrowserState()
+      tabContextMenuDelegate:self.tabContextMenuDelegate];
+
   _viewController.mutator = _mediator;
   _viewController.gridViewController.mutator = _mediator;
+  _viewController.gridViewController.menuProvider = _tabContextMenuHelper;
 
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _transitionDelegate = [[TabGroupTransitionDelegate alloc]
@@ -86,6 +94,7 @@
 
 - (void)stop {
   _mediator = nil;
+  _tabContextMenuHelper = nil;
 
   // TODO(crbug.com/1501837): Make the hide tab group animation.
   [_viewController dismissViewControllerAnimated:YES completion:nil];

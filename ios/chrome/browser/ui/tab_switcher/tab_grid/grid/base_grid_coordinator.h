@@ -13,6 +13,7 @@ class Browser;
 @class GridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@protocol TabContextMenuDelegate;
 
 @interface BaseGridCoordinator : ChromeCoordinator <TabGroupsCommands>
 
@@ -26,6 +27,9 @@ class Browser;
 // TODO(crbug.com/1457146): This protocol should be implemented by this object.
 @property(nonatomic, weak) id<DisabledGridViewControllerDelegate>
     disabledTabViewControllerDelegate;
+// Delegate for the context menu.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
