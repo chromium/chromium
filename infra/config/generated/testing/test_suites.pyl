@@ -4830,6 +4830,33 @@
       },
     },
 
+    'ondevice_quality_tests_suite': {
+      'ondevice_quality_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'chrome',
+        ],
+        'mac_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'Google Chrome.app/Contents/MacOS/Google Chrome',
+        ],
+        'win_args': [
+          '--chromedriver',
+          'chromedriver.exe',
+          '--binary',
+          'Chrome.exe',
+        ],
+        'experiment_percentage': 100,
+      },
+    },
+
     'ondevice_stability_tests_suite': {
       'ondevice_stability_tests': {
         'mixins': [
@@ -8070,6 +8097,7 @@
           'MODEL_VALIDATION_TRUNK',
         ],
       },
+      'ondevice_quality_tests_suite': {},
       'ondevice_stability_tests_suite': {},
     },
 
@@ -8095,6 +8123,12 @@
         'variants': [
           'MODEL_VALIDATION_BASE',
           'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_quality_tests_suite': {
+        'variants': [
+          'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {
@@ -8128,6 +8162,13 @@
         'variants': [
           'MODEL_VALIDATION_BASE',
           'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_quality_tests_suite': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {

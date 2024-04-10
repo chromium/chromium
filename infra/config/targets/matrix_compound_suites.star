@@ -1483,6 +1483,7 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
+        "ondevice_quality_tests_suite": None,
         "ondevice_stability_tests_suite": None,
     },
 )
@@ -1515,6 +1516,12 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "ondevice_quality_tests_suite": targets.legacy_matrix_config(
+            variants = [
+                "INTEL_UHD_630",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(
@@ -1554,6 +1561,13 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "ondevice_quality_tests_suite": targets.legacy_matrix_config(
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "INTEL_UHD_630",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(

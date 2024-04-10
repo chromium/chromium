@@ -1256,6 +1256,10 @@
     "label": "//components/optimization_guide/internal:ondevice_model_example",
     "type": "additional_compile_target",
   },
+  "ondevice_quality_tests": {
+    "label": "//components/optimization_guide/internal/testing:ondevice_quality_tests",
+    "type": "generated_script",
+  },
   "ondevice_stability_tests": {
     "label": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
     "type": "generated_script",
