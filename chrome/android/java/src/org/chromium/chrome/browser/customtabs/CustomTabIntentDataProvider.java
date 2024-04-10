@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -332,6 +333,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private boolean mShowShareItemInMenu;
     private List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
     private List<CustomButtonParams> mBottombarButtons = new ArrayList<>(2);
+    private List<CustomButtonParams> mGoogleBottomBarButtons = new ArrayList<>();
     private RemoteViews mRemoteViews;
     @ActivitySideSheetDecorationType private int mSideSheetDecorationType;
     @ActivitySideSheetRoundedCornersPosition private int mSideSheetRoundedCornersPosition;
@@ -783,8 +785,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private void retrieveCustomButtons(Intent intent, Context context) {
         assert mCustomButtonParams == null;
         mCustomButtonParams = CustomButtonParamsImpl.fromIntent(context, intent);
+        boolean isGoogleBottomBarEnabled = isGoogleBottomBarEnabled(this);
         for (CustomButtonParams params : mCustomButtonParams) {
-            if (!params.showOnToolbar()) {
+            if (isGoogleBottomBarEnabled
+                    && GoogleBottomBarCoordinator.shouldUseCustomButtonParams(params.getId())) {
+                mGoogleBottomBarButtons.add(params);
+            } else if (!params.showOnToolbar()) {
                 mBottombarButtons.add(params);
             } else if (mToolbarButtons.size() < getMaxCustomToolbarItems()) {
                 mToolbarButtons.add(params);
@@ -792,6 +798,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 Log.w(TAG, "Only %d items are allowed in the toolbar", getMaxCustomToolbarItems());
             }
         }
+    }
+
+    private static boolean isGoogleBottomBarEnabled(BrowserServicesIntentDataProvider provider) {
+        return GoogleBottomBarCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance()
+                        .shouldEnableGoogleBottomBarForIntent(provider);
     }
 
     private int getMaxCustomToolbarItems() {
@@ -1201,6 +1213,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public List<CustomButtonParams> getCustomButtonsOnBottombar() {
         return mBottombarButtons;
+    }
+
+    @Override
+    public List<CustomButtonParams> getCustomButtonsOnGoogleBottomBar() {
+        return mGoogleBottomBarButtons;
     }
 
     @Override
