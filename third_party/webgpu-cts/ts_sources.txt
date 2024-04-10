@@ -803,6 +803,11 @@ src/webgpu/shader/validation/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleLevel.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureStore.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/trunc.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/unpack2x16float.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/unpack2x16snorm.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/unpack2x16unorm.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/unpack4x8snorm.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
