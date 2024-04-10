@@ -25,9 +25,6 @@ CGFloat const kLogoPadding = 16;
 // The padding above and below the illustration image.
 CGFloat const kIllustrationPadding = 20;
 
-// The extra padding on the left and right of the title and explanatory message.
-CGFloat const kTitlePadding = 24;
-
 // The spacing between vertically stacked elements.
 CGFloat const kVerticalSpacingMedium = 16;
 
@@ -139,8 +136,6 @@ CGFloat const kCreditCardCellHeight = 64;
   UIStackView* aboveTitleStackView =
       [[UIStackView alloc] initWithFrame:CGRectZero];
   aboveTitleStackView.layoutMarginsRelativeArrangement = YES;
-  aboveTitleStackView.layoutMargins =
-      UIEdgeInsetsMake(0, kTitlePadding, 0, kTitlePadding);
   aboveTitleStackView.axis = UILayoutConstraintAxisVertical;
   aboveTitleStackView.spacing = kVerticalSpacingMedium;
 
@@ -199,7 +194,12 @@ CGFloat const kCreditCardCellHeight = 64;
   UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   titleLabel.text = _bottomSheetData.title;
   titleLabel.numberOfLines = 0;  // Allow multiple lines.
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  UIFontDescriptor* title2FontDescriptor =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2].fontDescriptor;
+  titleLabel.font = [UIFont
+      fontWithDescriptor:[title2FontDescriptor fontDescriptorWithSymbolicTraits:
+                                                   UIFontDescriptorTraitBold]
+                    size:0];
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.textAlignment = NSTextAlignmentCenter;
   return titleLabel;
@@ -228,9 +228,9 @@ CGFloat const kCreditCardCellHeight = 64;
   NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
       initWithString:_bottomSheetData.explanatoryMessage
           attributes:@{
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
             NSParagraphStyleAttributeName : centeredTextStyle,
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextSecondaryColor]
           }];
   [attributedText addAttribute:NSLinkAttributeName
                          value:@"unused"
