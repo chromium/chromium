@@ -30,6 +30,7 @@
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_sans-serif.TTF
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_serif.TTF
 ../../web_tests/external/wpt/fonts/fail.woff
+../../web_tests/external/wpt/fonts/hasubi-mono/HasubiMono-Regular.woff2
 ../../web_tests/external/wpt/fonts/math/axisheight5000-verticalarrow14000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-axisheight7000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-denominatordisplaystylegapmin5000-rulethickness1000.woff
@@ -107,10 +108,13 @@
 ../../web_tests/external/wpt/fonts/math/underover-accentbaseheight4000-underbarverticalgap7000.woff
 ../../web_tests/external/wpt/fonts/math/xheight500.woff
 ../../web_tests/external/wpt/fonts/mplus-1p-regular.woff
+../../web_tests/external/wpt/fonts/noto/NotoNaskhArabic-regular.woff2
 ../../web_tests/external/wpt/fonts/noto/NotoSansAdlam-hinted/NotoSansAdlam-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansCypriot-hinted/NotoSansCypriot-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansDeseret-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansDevanagari-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/NotoSansMongolian-regular.woff2
+../../web_tests/external/wpt/fonts/noto/NotoSansNko-regular-webfont.woff2
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-min.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf
