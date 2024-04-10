@@ -50,18 +50,20 @@ crosapi::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
   return crosapi::TelemetryDiagnosticRoutineStateRunning::New();
 }
 
+crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiryPtr UncheckedConvertPtr(
+    healthd::CheckLedLitUpStateInquiryPtr input) {
+  return crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiry::New();
+}
+
 crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     healthd::RoutineInquiryPtr input) {
   switch (input->which()) {
     case healthd::RoutineInquiry::Tag::kUnrecognizedInquiry:
       return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
           input->get_unrecognizedInquiry());
-    // The LED lit up routine is not in the crosapi yet.
-    // TODO(b/302279338): add LED lit up routine to crosapi and update the
-    // conversion logic.
     case healthd::RoutineInquiry::Tag::kCheckLedLitUpState:
-      return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
-          false);
+      return crosapi::TelemetryDiagnosticRoutineInquiry::NewCheckLedLitUpState(
+          ConvertRoutinePtr(std::move(input->get_check_led_lit_up_state())));
   }
   NOTREACHED_NORETURN();
 }
@@ -165,6 +167,9 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan:
       return healthd::RoutineArgument::NewFan(
           ConvertRoutinePtr(std::move(input->get_fan())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kLedLitUp:
+      return healthd::RoutineArgument::NewLedLitUp(
+          ConvertRoutinePtr(std::move(input->get_led_lit_up())));
   }
 }
 
@@ -201,6 +206,21 @@ healthd::FanRoutineArgumentPtr UncheckedConvertPtr(
   return healthd::FanRoutineArgument::New();
 }
 
+healthd::LedLitUpRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticLedLitUpRoutineArgumentPtr input) {
+  auto arg = healthd::LedLitUpRoutineArgument::New();
+  arg->name = Convert(input->name);
+  arg->color = Convert(input->color);
+  return arg;
+}
+
+healthd::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticCheckLedLitUpStateReplyPtr input) {
+  auto arg = healthd::CheckLedLitUpStateReply::New();
+  arg->state = Convert(input->state);
+  return arg;
+}
+
 healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr input) {
   switch (input->which()) {
@@ -208,11 +228,68 @@ healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
         kUnrecognizedReply:
       return healthd::RoutineInquiryReply::NewUnrecognizedReply(
           input->get_unrecognizedReply());
+    case crosapi::TelemetryDiagnosticRoutineInquiryReply::Tag::
+        kCheckLedLitUpState:
+      return healthd::RoutineInquiryReply::NewCheckLedLitUpState(
+          ConvertRoutinePtr(std::move(input->get_check_led_lit_up_state())));
   }
   NOTREACHED_NORETURN();
 }
 
 }  // namespace unchecked
+
+healthd::LedName Convert(crosapi::TelemetryDiagnosticLedName input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticLedName::kUnmappedEnumField:
+      return healthd::LedName::kUnmappedEnumField;
+    case crosapi::TelemetryDiagnosticLedName::kBattery:
+      return healthd::LedName::kBattery;
+    case crosapi::TelemetryDiagnosticLedName::kPower:
+      return healthd::LedName::kPower;
+    case crosapi::TelemetryDiagnosticLedName::kAdapter:
+      return healthd::LedName::kAdapter;
+    case crosapi::TelemetryDiagnosticLedName::kLeft:
+      return healthd::LedName::kLeft;
+    case crosapi::TelemetryDiagnosticLedName::kRight:
+      return healthd::LedName::kRight;
+  }
+  NOTREACHED_NORETURN();
+}
+
+healthd::LedColor Convert(crosapi::TelemetryDiagnosticLedColor input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticLedColor::kUnmappedEnumField:
+      return healthd::LedColor::kUnmappedEnumField;
+    case crosapi::TelemetryDiagnosticLedColor::kRed:
+      return healthd::LedColor::kRed;
+    case crosapi::TelemetryDiagnosticLedColor::kGreen:
+      return healthd::LedColor::kGreen;
+    case crosapi::TelemetryDiagnosticLedColor::kBlue:
+      return healthd::LedColor::kBlue;
+    case crosapi::TelemetryDiagnosticLedColor::kYellow:
+      return healthd::LedColor::kYellow;
+    case crosapi::TelemetryDiagnosticLedColor::kWhite:
+      return healthd::LedColor::kWhite;
+    case crosapi::TelemetryDiagnosticLedColor::kAmber:
+      return healthd::LedColor::kAmber;
+  }
+  NOTREACHED_NORETURN();
+}
+
+healthd::CheckLedLitUpStateReply::State Convert(
+    crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+        kUnmappedEnumField:
+      return healthd::CheckLedLitUpStateReply::State::kUnmappedEnumField;
+    case crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+        kCorrectColor:
+      return healthd::CheckLedLitUpStateReply::State::kCorrectColor;
+    case crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::kNotLitUp:
+      return healthd::CheckLedLitUpStateReply::State::kNotLitUp;
+  }
+  NOTREACHED_NORETURN();
+}
 
 crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     healthd::MemtesterTestItemEnum input) {

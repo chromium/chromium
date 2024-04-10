@@ -36,6 +36,9 @@ UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
 crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineStateRunningPtr input);
 
+crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateInquiryPtr
+UncheckedConvertPtr(cros_healthd::mojom::CheckLedLitUpStateInquiryPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineInquiryPtr input);
 
@@ -69,10 +72,25 @@ cros_healthd::mojom::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
 cros_healthd::mojom::FanRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticFanRoutineArgumentPtr input);
 
+cros_healthd::mojom::LedLitUpRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticLedLitUpRoutineArgumentPtr input);
+
+cros_healthd::mojom::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateReplyPtr input);
+
 cros_healthd::mojom::RoutineInquiryReplyPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr input);
 
 }  // namespace unchecked
+
+cros_healthd::mojom::LedName Convert(
+    crosapi::mojom::TelemetryDiagnosticLedName input);
+
+cros_healthd::mojom::LedColor Convert(
+    crosapi::mojom::TelemetryDiagnosticLedColor input);
+
+cros_healthd::mojom::CheckLedLitUpStateReply::State Convert(
+    crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateReply::State input);
 
 crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     cros_healthd::mojom::MemtesterTestItemEnum input);
