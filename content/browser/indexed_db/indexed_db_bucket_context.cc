@@ -1352,10 +1352,11 @@ void IndexedDBBucketContext::BindFileReader(
 
   auto itr = file_reader_map_.find(path);
   if (itr == file_reader_map_.end()) {
+    // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<IndexedDBDataItemReader>(
         path, expected_modification_time,
         base::BindOnce(&IndexedDBBucketContext::RemoveBoundReaders,
-                       weak_factory_.GetWeakPtr()),
+                       base::Unretained(this)),
         io_task_runner_);
     itr = file_reader_map_
               .insert({path, std::make_tuple(std::move(reader),
@@ -1704,6 +1705,7 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
 }
 
 void IndexedDBBucketContext::ResetBackingStore() {
+  file_reader_map_.clear();
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
