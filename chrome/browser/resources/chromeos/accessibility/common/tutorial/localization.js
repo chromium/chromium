@@ -24,3 +24,12 @@ export const Localization = {
     return message;
   },
 };
+
+export class LocalizationInterface {
+  /**
+   * @param {string} id
+   * @param {Array<string>=} opt_subs
+   * @return {string}
+   */
+  getMsg(id, opt_subs) {}
+}

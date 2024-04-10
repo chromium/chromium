@@ -18,7 +18,7 @@ import {LessonContainer} from './lesson_container.js';
 import {LessonMenu} from './lesson_menu.js';
 import {Localization} from './localization.js';
 import {MainMenu} from './main_menu.js';
-import {NavigationButtons} from './navigation_buttons.js';
+import './navigation_buttons.js';
 import {TutorialBehavior} from './tutorial_behavior.js';
 import {TutorialLesson} from './tutorial_lesson.js';
 
