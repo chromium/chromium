@@ -22,6 +22,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
@@ -2855,17 +2856,16 @@ bool BackTexture::AllocateStorage(
   {
     // Add extra scope to destroy zero_data and the object it owns right
     // after its usage.
-    std::unique_ptr<char[]> zero_data;
+    base::HeapArray<char> zero_data;
     if (zero) {
-      zero_data.reset(new char[image_size]);
-      memset(zero_data.get(), 0, image_size);
+      zero_data = base::HeapArray<char>::WithSize(image_size);
     }
 
     api()->glTexImage2DFn(Target(),
                           0,  // mip level
                           format, size.width(), size.height(),
                           0,  // border
-                          format, GL_UNSIGNED_BYTE, zero_data.get());
+                          format, GL_UNSIGNED_BYTE, zero_data.data());
   }
 
   decoder_->texture_manager()->SetLevelInfo(
@@ -12917,8 +12917,7 @@ bool GLES2DecoderImpl::ClearLevel(Texture* texture,
     // Add extra scope to destroy zero and the object it owns right
     // after its usage.
     // Assumes the size has already been checked.
-    std::unique_ptr<char[]> zero(new char[size]);
-    memset(zero.get(), 0, size);
+    auto zero = base::HeapArray<char>::WithSize(size);
 
     ScopedPixelUnpackState reset_restore(&state_);
     GLint y = 0;
@@ -12927,7 +12926,7 @@ bool GLES2DecoderImpl::ClearLevel(Texture* texture,
       api()->glTexSubImage2DFn(
           target, level, xoffset, yoffset + y, width, h,
           TextureManager::AdjustTexFormat(feature_info_.get(), format), type,
-          zero.get());
+          zero.data());
       y += tile_height;
     }
   }
@@ -13028,11 +13027,10 @@ bool GLES2DecoderImpl::ClearCompressedTextureLevel(Texture* texture,
   {
     // Add extra scope to destroy zero and the object it owns right
     // after its usage.
-    std::unique_ptr<char[]> zero(new char[bytes_required]);
-    memset(zero.get(), 0, bytes_required);
+    auto zero = base::HeapArray<char>::WithSize(bytes_required);
     api()->glBindTextureFn(texture->target(), texture->service_id());
     api()->glCompressedTexSubImage2DFn(target, level, 0, 0, width, height,
-                                       format, bytes_required, zero.get());
+                                       format, zero.size(), zero.data());
   }
   TextureRef* bound_texture =
       texture_manager()->GetTextureInfoForTarget(&state_, texture->target());
@@ -13074,12 +13072,10 @@ bool GLES2DecoderImpl::ClearCompressedTextureLevel3D(Texture* texture,
   {
     // Add extra scope to destroy zero and the object it owns right
     // after its usage.
-    std::unique_ptr<char[]> zero(new char[bytes_required]);
-    memset(zero.get(), 0, bytes_required);
+    auto zero = base::HeapArray<char>::WithSize(bytes_required);
     api()->glBindTextureFn(texture->target(), texture->service_id());
     api()->glCompressedTexSubImage3DFn(target, level, 0, 0, 0, width, height,
-                                       depth, format, bytes_required,
-                                       zero.get());
+                                       depth, format, zero.size(), zero.data());
   }
   TextureRef* bound_texture =
       texture_manager()->GetTextureInfoForTarget(&state_, texture->target());
@@ -13195,10 +13191,9 @@ bool GLES2DecoderImpl::ClearLevel3D(Texture* texture,
       // Include padding as some drivers incorrectly requires padding for the
       // last row.
       buffer_size += padding;
-      std::unique_ptr<char[]> zero(new char[buffer_size]);
-      memset(zero.get(), 0, buffer_size);
+      auto zero = base::HeapArray<char>::WithSize(buffer_size);
       // TODO(zmo): Consider glMapBufferRange instead.
-      api()->glBufferDataFn(GL_PIXEL_UNPACK_BUFFER, buffer_size, zero.get(),
+      api()->glBufferDataFn(GL_PIXEL_UNPACK_BUFFER, zero.size(), zero.data(),
                             GL_STATIC_DRAW);
     }
 
@@ -14334,11 +14329,10 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
       // after its usage.
       // some part was clipped so clear the rect.
 
-      std::unique_ptr<char[]> zero(new char[pixels_size]);
-      memset(zero.get(), 0, pixels_size);
+      auto zero = base::HeapArray<char>::WithSize(pixels_size);
       ScopedPixelUnpackState reset_restore(&state_);
       api()->glTexImage2DFn(target, level, final_internal_format, width, height,
-                            border, format, type, zero.get());
+                            border, format, type, zero.data());
     }
 
     if (!src.IsEmpty()) {
